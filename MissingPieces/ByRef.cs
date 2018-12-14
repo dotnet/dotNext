@@ -72,5 +72,11 @@ namespace MissingPieces
 			=> new ByRef<T>(ref Unsafe.AsRef(in value));
 
 		public static implicit operator T(ByRef<T> reference) => reference.Value;
+
+		public static bool operator ==(ByRef<T> first, ByRef<T> second)
+			=> first.location == second.location;
+
+		public static bool operator !=(ByRef<T> first, ByRef<T> second)
+			=> first.location == second.location;
 	}
 }

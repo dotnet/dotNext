@@ -10,6 +10,7 @@
 		/// Default value.
 		/// </summary>
 		public static readonly T Value = default;
+
 		internal static readonly System.Linq.Expressions.DefaultExpression Expression = System.Linq.Expressions.Expression.Default(typeof(T));
 	}
 }
