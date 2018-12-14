@@ -27,9 +27,15 @@ namespace MissingPieces.Metaprogramming
 		{
 			property = typeof(T).GetProperty(name, BindingFlags.Static | BindingFlags.Public);
 			if (property is null || property.PropertyType != typeof(P))
-				throw MissingPropertyException.Create<T, P>(name);
-			getter = property.GetMethod?.CreateDelegate<Func<P>>(null);
-			setter = property.SetMethod?.CreateDelegate<Action<P>>(null);
+			{
+				getter = null;
+				setter = null;
+			}
+			else
+			{
+				getter = property.GetMethod?.CreateDelegate<Func<P>>(null);
+				setter = property.SetMethod?.CreateDelegate<Action<P>>(null);
+			}
 		}
 
 		/// <summary>
@@ -64,6 +70,11 @@ namespace MissingPieces.Metaprogramming
 		/// Indicates that property has setter method.
 		/// </summary>
 		public bool CanWrite => setter != null;
+
+		/// <summary>
+		/// Indicates that this object references property.
+		/// </summary>
+		public bool Exists => property != null;
 
 		PropertyInfo IMember<PropertyInfo>.Member => property;
 

@@ -32,14 +32,19 @@ namespace MissingPieces.Metaprogramming
 		private InstanceEvent(string eventName)
 		{
 			@event = typeof(T).GetEvent(eventName, BindingFlags.Instance | BindingFlags.Public);
-			var instanceParam = Expression.Parameter(@event.DeclaringType.MakeByRefType());
-			var handlerParam = Expression.Parameter(@event.EventHandlerType);
-			addHandler = @event.AddMethod is null ?
-				null :
-				Expression.Lambda<AddOrRemove>(Expression.Invoke(instanceParam, handlerParam)).Compile();
-			removeHandler = @event.RemoveMethod is null ?
-				null :
-				Expression.Lambda<AddOrRemove>(Expression.Invoke(instanceParam, handlerParam)).Compile();
+			if (@event is null || @event.EventHandlerType != typeof(E))
+				addHandler = removeHandler = null;
+			else
+			{
+				var instanceParam = Expression.Parameter(@event.DeclaringType.MakeByRefType());
+				var handlerParam = Expression.Parameter(@event.EventHandlerType);
+				addHandler = @event.AddMethod is null ?
+					null :
+					Expression.Lambda<AddOrRemove>(Expression.Invoke(instanceParam, handlerParam)).Compile();
+				removeHandler = @event.RemoveMethod is null ?
+					null :
+					Expression.Lambda<AddOrRemove>(Expression.Invoke(instanceParam, handlerParam)).Compile();
+			}
 		}
 
 		/// <summary>
@@ -76,6 +81,11 @@ namespace MissingPieces.Metaprogramming
 		/// Indicates that caller code can detach event handler.
 		/// </summary>
 		public bool CanRemove => removeHandler != null;
+
+		/// <summary>
+		/// Indicates that this object references event.
+		/// </summary>
+		public bool Exists => @event != null;
 
 		public bool Equals(EventInfo other) => @event == other;
 

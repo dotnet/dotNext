@@ -27,9 +27,14 @@ namespace MissingPieces.Metaprogramming
 		private StaticEvent(string eventName)
 		{
 			@event = typeof(T).GetEvent(eventName, BindingFlags.Static | BindingFlags.Public);
-			var handlerParam = Expression.Parameter(@event.EventHandlerType);
-			addHandler = @event.AddMethod?.CreateDelegate<Action<E>>(null);
-			removeHandler = @event.RemoveMethod?.CreateDelegate<Action<E>>(null);
+			if (@event == null)
+				addHandler = removeHandler = null;
+			else
+			{
+				var handlerParam = Expression.Parameter(@event.EventHandlerType);
+				addHandler = @event.AddMethod?.CreateDelegate<Action<E>>(null);
+				removeHandler = @event.RemoveMethod?.CreateDelegate<Action<E>>(null);
+			}
 		}
 
 		/// <summary>
@@ -64,6 +69,11 @@ namespace MissingPieces.Metaprogramming
 		/// Indicates that caller code can detach event handler.
 		/// </summary>
 		public bool CanRemove => removeHandler != null;
+
+		/// <summary>
+		/// Indicates that this object references event.
+		/// </summary>
+		public bool Exists => @event != null;
 
 		public bool Equals(EventInfo other) => @event == other;
 

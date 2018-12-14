@@ -7,5 +7,6 @@ namespace MissingPieces.Metaprogramming
 	{
 		string Name { get; }
 		M Member { get; }
+		bool Exists { get; }
 	}
 }

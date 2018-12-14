@@ -95,7 +95,7 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void StaticPropertyTest()
 		{
-			var property = Type<ClassWithProperties>.StaticProperty<long>(nameof(ClassWithProperties.StaticProp));
+			var property = Type<ClassWithProperties>.StaticPropertyIfExists<long>(nameof(ClassWithProperties.StaticProp));
 			True(property.CanRead);
 			True(property.CanWrite);
 			property.Value = 42;

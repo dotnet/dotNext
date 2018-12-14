@@ -33,18 +33,24 @@ namespace MissingPieces.Metaprogramming
 		{
 			property = typeof(T).GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
 			if (property is null || property.PropertyType != typeof(P))
-				throw MissingPropertyException.Create<T, P>(name);
-			var instanceParam = Expression.Parameter(property.DeclaringType.MakeByRefType());
-			if (property.GetMethod is null)
+			{
 				getter = null;
-			else
-				getter = Expression.Lambda<PropertyGetter>(Expression.Property(instanceParam, property), instanceParam).Compile();
-			if (property.SetMethod is null)
 				setter = null;
+			}
 			else
 			{
-				var valueParam = Expression.Parameter(property.PropertyType);
-				setter = Expression.Lambda<PropertySetter>(Expression.Assign(Expression.Property(instanceParam, property), valueParam), instanceParam, valueParam).Compile();
+				var instanceParam = Expression.Parameter(property.DeclaringType.MakeByRefType());
+				if (property.GetMethod is null)
+					getter = null;
+				else
+					getter = Expression.Lambda<PropertyGetter>(Expression.Property(instanceParam, property), instanceParam).Compile();
+				if (property.SetMethod is null)
+					setter = null;
+				else
+				{
+					var valueParam = Expression.Parameter(property.PropertyType);
+					setter = Expression.Lambda<PropertySetter>(Expression.Assign(Expression.Property(instanceParam, property), valueParam), instanceParam, valueParam).Compile();
+				}
 			}
 		}
 
@@ -83,6 +89,11 @@ namespace MissingPieces.Metaprogramming
 		/// Indicates that property has setter method.
 		/// </summary>
 		public bool CanWrite => setter != null;
+
+		/// <summary>
+		/// Indicates that this object references property.
+		/// </summary>
+		public bool Exists => property != null;
 
 		PropertyInfo IMember<PropertyInfo>.Member => property;
 

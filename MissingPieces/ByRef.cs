@@ -1,9 +1,8 @@
 ﻿using System;
-using static System.Runtime.CompilerServices.Unsafe;
+using System.Runtime.CompilerServices;
 
 namespace MissingPieces
 {
-	using System.Runtime.CompilerServices;
 	using static Reflection.Types;
 
 	public static class ByRef
@@ -37,7 +36,7 @@ namespace MissingPieces
 		/// <param name="value">A reference to a value.</param>
 		public ByRef(ref T value)
 		{
-			location = AsPointer(ref value);
+			location = Unsafe.AsPointer(ref value);
 		}
 
 		/// <summary>
@@ -46,7 +45,7 @@ namespace MissingPieces
 		public ref T Reference
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ref AsRef<T>(location);
+			get => ref Unsafe.AsRef<T>(location);
 		}
 
 		/// <summary>
@@ -55,9 +54,9 @@ namespace MissingPieces
 		public T Value
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => AsRef<T>(location);
+			get => Unsafe.AsRef<T>(location);
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			set => Copy(location, ref value);
+			set => Unsafe.Copy(location, ref value);
 		}
 
 		/// <summary>
@@ -70,7 +69,7 @@ namespace MissingPieces
 		/// <param name="value">A reference to convert.</param>
 		/// <returns>Converted reference.</returns>
 		public static explicit operator ByRef<T>(in T value)
-			=> new ByRef<T>(ref AsRef(in value));
+			=> new ByRef<T>(ref Unsafe.AsRef(in value));
 
 		public static implicit operator T(ByRef<T> reference) => reference.Value;
 	}
