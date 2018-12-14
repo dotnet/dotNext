@@ -74,9 +74,29 @@ namespace MissingPieces
 		public static implicit operator T(ByRef<T> reference) => reference.Value;
 
 		public static bool operator ==(ByRef<T> first, ByRef<T> second)
-			=> first.location == second.location;
+			=> first.Equals(second);
 
 		public static bool operator !=(ByRef<T> first, ByRef<T> second)
-			=> first.location == second.location;
+			=> !first.Equals(second);
+
+		public bool Equals(ByRef<T> other)
+			=> location == other.location;
+
+		public override bool Equals(object other)
+		{
+			switch (other)
+			{
+				case IntPtr iptr:
+					return iptr == new IntPtr(location);
+				case UIntPtr uptr:
+					return uptr == new UIntPtr(location);
+				default:
+					return false;
+			}
+		}
+
+		public override int GetHashCode() => new UIntPtr(location).GetHashCode();
+
+		public override string ToString() => new UIntPtr(location).ToString();
 	}
 }
