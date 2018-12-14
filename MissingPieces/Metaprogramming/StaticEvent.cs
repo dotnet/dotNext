@@ -73,7 +73,7 @@ namespace MissingPieces.Metaprogramming
 		/// <summary>
 		/// Indicates that this object references event.
 		/// </summary>
-		public bool Exists => @event != null;
+		public bool IsPresent => @event != null;
 
 		public bool Equals(EventInfo other) => @event == other;
 

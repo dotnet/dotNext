@@ -1,6 +1,7 @@
 ﻿using System;
 using static System.Linq.Expressions.Expression;
 using System.Reflection;
+using System.Linq.Expressions;
 
 namespace MissingPieces.Metaprogramming
 {
@@ -124,14 +125,18 @@ namespace MissingPieces.Metaprogramming
 		/// </summary>
 		/// <typeparam name="P">Type of property.</typeparam>
 		/// <param name="propertyName">Name of property.</param>
-		/// <param name="optional">False to throw exception if property doesn't exist.</param>
+		/// <returns>Instance property; or null, if property doesn't exist</returns>
+		public static InstanceProperty<T, P>? InstancePropertyOrNull<P>(string propertyName)
+			=> InstanceProperty<T, P>.Get(propertyName).GetOrNull();
+
+		/// <summary>
+		/// Returns public instance property of type <typeparamref name="P"/>.
+		/// </summary>
+		/// <typeparam name="P">Type of property.</typeparam>
+		/// <param name="propertyName">Name of property.</param>
 		/// <returns>Instance property.</returns>
-		/// <exception cref="MissingPropertyException">Property doesn't exist.</exception>
 		public static InstanceProperty<T, P> InstanceProperty<P>(string propertyName, bool optional = false)
-		{
-			var property = InstanceProperty<T, P>.Get(propertyName);
-			return property.Exists || optional ? property : throw MissingPropertyException.Create<T, P>(propertyName);
-		}
+			=> InstancePropertyOrNull<P>(propertyName) ?? throw MissingPropertyException.Create<T, P>(propertyName);
 
 		/// <summary>
 		/// Returns public static property of type <typeparamref name="P"/>.

@@ -74,7 +74,7 @@ namespace MissingPieces.Metaprogramming
 		/// <summary>
 		/// Indicates that this object references property.
 		/// </summary>
-		public bool Exists => property != null;
+		public bool IsPresent => property != null;
 
 		PropertyInfo IMember<PropertyInfo>.Member => property;
 

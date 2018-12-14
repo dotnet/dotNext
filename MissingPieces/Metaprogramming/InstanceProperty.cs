@@ -93,7 +93,7 @@ namespace MissingPieces.Metaprogramming
 		/// <summary>
 		/// Indicates that this object references property.
 		/// </summary>
-		public bool Exists => property != null;
+		public bool IsPresent => property != null;
 
 		PropertyInfo IMember<PropertyInfo>.Member => property;
 
@@ -131,7 +131,7 @@ namespace MissingPieces.Metaprogramming
 		public static implicit operator PropertyInfo(in InstanceProperty<T, P> property)
 			=> property.property;
 
-		internal static InstanceProperty<T, P> Get(string propertyName)
+		internal static Optional<InstanceProperty<T, P>> Get(string propertyName)
 			=> properties.GetOrCreate(propertyName);
 	}
 }

@@ -2,11 +2,10 @@
 
 namespace MissingPieces.Metaprogramming
 {
-	internal interface IMember<out M>
+	internal interface IMember<out M>: IOptional
 		where M : MemberInfo
 	{
 		string Name { get; }
 		M Member { get; }
-		bool Exists { get; }
 	}
 }
