@@ -2,6 +2,9 @@
 
 namespace MissingPieces.Metaprogramming
 {
+	/// <summary>
+	/// Indicates that requested property doesn't exist.
+	/// </summary>
 	public sealed class MissingPropertyException : ConstraintException
 	{
 		private MissingPropertyException(Type declaringType,

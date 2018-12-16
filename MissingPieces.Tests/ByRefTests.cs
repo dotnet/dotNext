@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace MissingPieces.Tests
+namespace MissingPieces
 {
 	public sealed class ByRefTests : Assert
 	{
@@ -25,7 +25,7 @@ namespace MissingPieces.Tests
 			Equal(42, value.field);
 			var valueRef = (ByRef<MutableStruct>)value;
 			Equal(42, valueRef.Value.field);
-			valueRef.Reference.field = 50;
+			valueRef.GetPinnableReference().field = 50;
 			Equal(50, valueRef.Value.field);
 		}
 

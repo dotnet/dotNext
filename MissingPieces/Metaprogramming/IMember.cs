@@ -2,10 +2,21 @@
 
 namespace MissingPieces.Metaprogramming
 {
-	internal interface IMember<out M>: IOptional
+	/// <summary>
+	/// Basic interface for all reflected members.
+	/// </summary>
+	/// <typeparam name="M">Type of reflected member.</typeparam>
+	public interface IMember<out M>: ICustomAttributeProvider
 		where M : MemberInfo
 	{
+		/// <summary>
+		/// Name of member.
+		/// </summary>
 		string Name { get; }
-		M Member { get; }
+
+		/// <summary>
+		/// Member metadata.
+		/// </summary>
+		M RuntimeMember { get; }
 	}
 }

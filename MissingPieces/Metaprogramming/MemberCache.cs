@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
@@ -13,7 +14,7 @@ namespace MissingPieces.Metaprogramming
 
 		internal MemberCache()
 		{
-			members = new Dictionary<string, E>();
+			members = new Dictionary<string, E>(StringComparer.Ordinal);
 			syncObject = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 		}
 

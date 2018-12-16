@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.ComponentModel;
 
 namespace MissingPieces
 {
@@ -11,10 +12,17 @@ namespace MissingPieces
 			where T : struct
 			=> new ByRef<T>(ref value);
 
-		internal static bool IsByRef(Type type)
-			=> type != null &&
-				type.IsByRef ||
-				type.IsGenericInstanceOf(typeof(ByRef<>));
+		public static Type GetUnderlyingType(Type byRefType)
+		{
+			if(byRefType is null)
+				return null;
+			else if(byRefType.IsByRef)
+				return byRefType.GetElementType();
+			else if(byRefType.IsGenericInstanceOf(typeof(ByRef<>)))
+				return byRefType.GetGenericArguments()[0];
+			else
+				return null;
+		}
 	}
 
 	/// <summary>
@@ -27,6 +35,11 @@ namespace MissingPieces
 		/// By-ref type.
 		/// </summary>
 		public static readonly Type Type = typeof(T).MakeByRefType();
+
+		/// <summary>
+		/// Size of an object of type <typeparamref name="T"/>.
+		/// </summary>
+		public static readonly int Size = Unsafe.SizeOf<T>();
 
 		private readonly void* location;
 
@@ -42,11 +55,8 @@ namespace MissingPieces
 		/// <summary>
 		/// Gets managed reference to the underlying memory storage.
 		/// </summary>
-		public ref T Reference
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => ref Unsafe.AsRef<T>(location);
-		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public ref T GetPinnableReference() => ref Unsafe.AsRef<T>(location);
 
 		/// <summary>
 		/// Gets or sets value by reference.
@@ -82,6 +92,7 @@ namespace MissingPieces
 		public bool Equals(ByRef<T> other)
 			=> location == other.location;
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public override bool Equals(object other)
 		{
 			switch (other)
@@ -95,6 +106,7 @@ namespace MissingPieces
 			}
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public override int GetHashCode() => new UIntPtr(location).GetHashCode();
 
 		public override string ToString() => new UIntPtr(location).ToString();
