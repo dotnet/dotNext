@@ -252,6 +252,7 @@ namespace MissingPieces
 		bool IEquatable<Optional<T>>.Equals(Optional<T> other)
 			=> Equals(in other);
 
+		[CLSCompliant(false)]
 		public bool Equals(in Optional<T> other)
 		{
 			var present1 = IsPresent;

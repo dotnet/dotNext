@@ -1,5 +1,10 @@
-﻿namespace MissingPieces.Metaprogramming
+﻿using System;
+using System.Runtime.CompilerServices;
+
+namespace MissingPieces.Metaprogramming
 {
+	using static System.Linq.Expressions.Expression;
+
 	/// <summary>
 	/// Provides access to default value of type <typeparamref name="T"/>.
 	/// </summary>
@@ -12,5 +17,26 @@
 		public static readonly T Value = default;
 
 		internal static readonly System.Linq.Expressions.DefaultExpression Expression = System.Linq.Expressions.Expression.Default(typeof(T));
+
+		private delegate bool IsDefaultPredicate(in T value);
+		private static readonly IsDefaultPredicate isDefault;
+
+		static Default()
+		{
+			var parameter = Parameter(typeof(T).MakeByRefType());
+			isDefault = Lambda<IsDefaultPredicate>(parameter.Type.IsValueType ?
+				ValueTypes.BitwiseEqualsMethodCall(parameter, Expression) :
+				ReferenceEqual(parameter, Expression).Upcast<System.Linq.Expressions.Expression, System.Linq.Expressions.BinaryExpression>(),
+				parameter
+			).Compile();
+		}
+
+		/// <summary>
+		/// Checks whether the specified value is default value.
+		/// </summary>
+		/// <param name="value">Value to check.</param>
+		/// <returns>True, if specified value is default value; otherwise, false.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool Is(in T value) => isDefault(in value);
 	}
 }
