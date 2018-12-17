@@ -1194,6 +1194,7 @@ namespace MissingPieces.Metaprogramming
 
 			public sealed override object GetValue(object obj) => field.GetValue(obj);
 
+			[CLSCompliant(false)]
 			public sealed override object GetValueDirect(TypedReference obj) => field.GetValueDirect(obj);
 
 			public sealed override bool IsSecurityCritical => field.IsSecurityCritical;
@@ -1205,6 +1206,7 @@ namespace MissingPieces.Metaprogramming
 			public sealed override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
 				=> field.SetValue(obj, value, invokeAttr, binder, culture);
 
+			[CLSCompliant(false)]
 			public sealed override void SetValueDirect(TypedReference obj, object value)
 				=> field.SetValueDirect(obj, value);
 

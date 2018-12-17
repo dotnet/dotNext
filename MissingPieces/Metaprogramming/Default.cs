@@ -24,11 +24,13 @@ namespace MissingPieces.Metaprogramming
 		static Default()
 		{
 			var parameter = Parameter(typeof(T).MakeByRefType());
-			isDefault = Lambda<IsDefaultPredicate>(parameter.Type.IsValueType ?
-				ValueTypes.BitwiseEqualsMethodCall(parameter, Expression) :
-				ReferenceEqual(parameter, Expression).Upcast<System.Linq.Expressions.Expression, System.Linq.Expressions.BinaryExpression>(),
-				parameter
-			).Compile();
+			if(parameter.Type.IsValueType)
+			{
+				var bitwiseEquality = typeof(StackValue<>).MakeGenericType(parameter.Type).GetMethod(nameof(StackValue<int>.BitwiseEquals));
+				isDefault = Lambda<IsDefaultPredicate>(Call(null, bitwiseEquality, parameter, Expression), parameter).Compile();
+			}
+			else
+				isDefault = Lambda<IsDefaultPredicate>(ReferenceEqual(parameter, Expression), parameter).Compile();
 		}
 
 		/// <summary>
