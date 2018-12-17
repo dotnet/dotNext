@@ -255,7 +255,7 @@ namespace MissingPieces.Metaprogramming
 		}
 
 		/// <summary>
-		/// Provides typed access to the property contained in type <typeparamref name="T"/>.
+		/// Provides typed access to the property declared in type <typeparamref name="T"/>.
 		/// </summary>
 		/// <typeparam name="P">Type of property.</typeparam>
 		public abstract class Property<P>: PropertyInfo, IProperty, IEquatable<Property<P>>, IEquatable<PropertyInfo>
@@ -360,50 +360,33 @@ namespace MissingPieces.Metaprogramming
 			/// <summary>
 			/// Provides typed access to the static property.
 			/// </summary>	
-			public abstract class Static: Property<P>
+			public sealed class Static: Property<P>, IProperty<P>
 			{
-				internal sealed class Public: Static
+				private sealed class PublicCache : MemberCache<PropertyInfo, Static>
 				{
-					private sealed class Cache : MemberCache<PropertyInfo, Static>
+					private protected override Static CreateMember(string propertyName)
 					{
-						private protected override Static CreateMember(string propertyName)
-						{
-							var property = RuntimeType.GetProperty(propertyName, BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-							return property == null ? null : new Public(property);
-						}
-					}
-
-					internal static readonly MemberCache<PropertyInfo, Static> Properties = new Cache();
-
-					private Public(PropertyInfo property)
-						: base(property, false)
-					{
+						var property = RuntimeType.GetProperty(propertyName, BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+						return property == null ? null : new Static(property, false);
 					}
 				}
 
-				internal sealed class NonPublic: Static
+				private sealed class NonPublicCache : MemberCache<PropertyInfo, Static>
 				{
-					private sealed class Cache : MemberCache<PropertyInfo, Static>
+					private protected override Static CreateMember(string propertyName)
 					{
-						private protected override Static CreateMember(string propertyName)
-						{
-							var property = RuntimeType.GetProperty(propertyName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-							return property == null ? null : new NonPublic(property);
-						}
-					}
-
-					internal static MemberCache<PropertyInfo, Static> Properties = new Cache();
-
-					private NonPublic(PropertyInfo property)
-						: base(property, true)
-					{
+						var property = RuntimeType.GetProperty(propertyName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						return property == null ? null : new Static(property, true);
 					}
 				}
+
+				private static readonly MemberCache<PropertyInfo, Static> Public = new PublicCache();
+				private static readonly MemberCache<PropertyInfo, Static> NonPublic = new NonPublicCache();
 
 				private readonly Func<P> getter;
 				private readonly Action<P> setter;
 
-				private protected Static(PropertyInfo property, bool nonPublic)
+				private Static(PropertyInfo property, bool nonPublic)
 					: base(property)
 				{
 					getter = property.GetGetMethod(nonPublic)?.CreateDelegate<Func<P>>(null);
@@ -425,8 +408,7 @@ namespace MissingPieces.Metaprogramming
 					set => setter(value);
 				}
 
-				public static explicit operator P(Static property)
-					=> property.Value;
+				public static explicit operator P(Static property) => property.Value;
 
 				/// <summary>
 				/// Gets static property.
@@ -435,7 +417,7 @@ namespace MissingPieces.Metaprogramming
 				/// <param name="nonPublic">True to reflect non-public property.</param>
 				/// <returns>Static property; or null, if property doesn't exist.</returns>
 				public static Static GetOrNull(string propertyName, bool nonPublic = false) 
-					=> (nonPublic ? NonPublic.Properties : Public.Properties).GetOrCreate(propertyName);
+					=> (nonPublic ? NonPublic : Public).GetOrCreate(propertyName);
 				
 				/// <summary>
 				/// Gets static property.
@@ -474,50 +456,33 @@ namespace MissingPieces.Metaprogramming
 			/// <summary>
 			/// Provides typed access to the instance property.
 			/// </summary>
-			public abstract class Instance: Property<P>
+			public sealed class Instance: Property<P>, IProperty<T, P>
 			{
-				private sealed class Public: Instance
+				private sealed class PublicCache : MemberCache<PropertyInfo, Instance>
 				{
-					private sealed class Cache : MemberCache<PropertyInfo, Instance>
+					private protected override Instance CreateMember(string propertyName)
 					{
-						private protected override Instance CreateMember(string propertyName)
-						{
-							var property = RuntimeType.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-							return property == null ? null : new Public(property);
-						}
-					}
-
-					internal static readonly MemberCache<PropertyInfo, Instance> Properties = new Cache();
-
-					private Public(PropertyInfo property)
-						: base(property, false)
-					{
+						var property = RuntimeType.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+						return property == null ? null : new Instance(property, false);
 					}
 				}
 
-				private sealed class NonPublic: Instance
+				private sealed class NonPublicCache : MemberCache<PropertyInfo, Instance>
 				{
-					private sealed class Cache : MemberCache<PropertyInfo, Instance>
+					private protected override Instance CreateMember(string propertyName)
 					{
-						private protected override Instance CreateMember(string propertyName)
-						{
-							var property = RuntimeType.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-							return property == null ? null : new NonPublic(property);
-						}
-					}
-
-					internal static readonly MemberCache<PropertyInfo, Instance> Properties = new Cache();
-
-					private NonPublic(PropertyInfo property)
-						: base(property, true)
-					{
+						var property = RuntimeType.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						return property == null ? null : new Instance(property, true);
 					}
 				}
+
+				private static readonly MemberCache<PropertyInfo, Instance> Public = new PublicCache();
+				private static readonly MemberCache<PropertyInfo, Instance> NonPublic = new NonPublicCache();
 
 				private readonly PropertyGetter<P> getter;
 				private readonly PropertySetter<P> setter;
 
-				private protected Instance(PropertyInfo property, bool nonPublic)
+				private Instance(PropertyInfo property, bool nonPublic)
 					: base(property)
 				{
 					var instanceParam = Parameter(property.DeclaringType.MakeByRefType());
@@ -559,7 +524,7 @@ namespace MissingPieces.Metaprogramming
 				/// <param name="nonPublic">True to reflect non-public property.</param>
 				/// <returns>Static instance; or null, if property doesn't exist.</returns>
 				public static Instance GetOrNull(string propertyName, bool nonPublic = false)
-					=> (nonPublic ? NonPublic.Properties : Public.Properties).GetOrCreate(propertyName);
+					=> (nonPublic ? NonPublic : Public).GetOrCreate(propertyName);
 				
 				/// <summary>
 				/// Gets instance property.
@@ -597,7 +562,7 @@ namespace MissingPieces.Metaprogramming
 		}
 
 		/// <summary>
-		/// Provides typed access to the event contained in type <typeparamref name="T"/>.
+		/// Provides typed access to the event declared in type <typeparamref name="T"/>.
 		/// </summary>
 		/// <typeparam name="H">Type of event handler.</typeparam>
 		public abstract class Event<H>: EventInfo, IEvent, IEquatable<Event<H>>, IEquatable<EventInfo>
@@ -686,50 +651,33 @@ namespace MissingPieces.Metaprogramming
 			/// <summary>
 			/// Provides typed access to the static event.
 			/// </summary>		
-			public abstract class Static: Event<H>, IEvent<H>
+			public sealed class Static: Event<H>, IEvent<H>
 			{
-				private sealed class Public: Static
+				private sealed class PublicCache : MemberCache<EventInfo, Static>
 				{
-					private sealed class Cache : MemberCache<EventInfo, Static>
+					private protected override Static CreateMember(string eventName)
 					{
-						private protected override Static CreateMember(string eventName)
-						{
-							var @event = RuntimeType.GetEvent(eventName, BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-							return @event == null ? null : new Public(@event);
-						}
-					}
-
-					internal static readonly MemberCache<EventInfo, Static> Events = new Cache();
-
-					private Public(EventInfo property)
-						: base(property, false)
-					{
+						var @event = RuntimeType.GetEvent(eventName, BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+						return @event == null ? null : new Static(@event, false);
 					}
 				}
 
-				private sealed class NonPublic: Static
+				private sealed class NonPublicCache : MemberCache<EventInfo, Static>
 				{
-					private sealed class Cache : MemberCache<EventInfo, Static>
+					private protected override Static CreateMember(string eventName)
 					{
-						private protected override Static CreateMember(string eventName)
-						{
-							var @event = RuntimeType.GetEvent(eventName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-							return @event == null ? null : new NonPublic(@event);
-						}
-					}
-
-					internal static readonly MemberCache<EventInfo, Static> Events = new Cache();
-
-					private NonPublic(EventInfo property)
-						: base(property, true)
-					{
+						var @event = RuntimeType.GetEvent(eventName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						return @event == null ? null : new Static(@event, true);
 					}
 				}
+
+				private static readonly MemberCache<EventInfo, Static> Public = new PublicCache();
+				private static readonly MemberCache<EventInfo, Static> NonPublic = new NonPublicCache();
 
 				private readonly Action<H> addHandler;
 				private readonly Action<H> removeHandler;
 
-				private protected Static(EventInfo @event, bool nonPublic)
+				private Static(EventInfo @event, bool nonPublic)
 					: base(@event)
 				{
 					var handlerParam = Parameter(@event.EventHandlerType);
@@ -778,7 +726,7 @@ namespace MissingPieces.Metaprogramming
 				/// <param name="nonPublic">True to reflect non-public event.</param>
 				/// <returns>Static event; or null, if event doesn't exist.</returns>
 				public static Static GetOrNull(string eventName, bool nonPublic = false) 
-					=> (nonPublic ? NonPublic.Events : Public.Events).GetOrCreate(eventName);
+					=> (nonPublic ? NonPublic : Public).GetOrCreate(eventName);
 				
 				/// <summary>
 				/// Gets static event.
@@ -817,49 +765,32 @@ namespace MissingPieces.Metaprogramming
 			/// <summary>
 			/// Provides typed access to the instance event.
 			/// </summary>
-			public abstract class Instance: Event<H>, IEvent<T, H>
+			public sealed class Instance: Event<H>, IEvent<T, H>
 			{
-				private sealed class Public: Instance
+				private sealed class PublicCache : MemberCache<EventInfo, Instance>
 				{
-					private sealed class Cache : MemberCache<EventInfo, Instance>
+					private protected override Instance CreateMember(string eventName)
 					{
-						private protected override Instance CreateMember(string eventName)
-						{
-							var @event = RuntimeType.GetEvent(eventName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-							return @event is null || @event.EventHandlerType != typeof(H) ?
-								null :
-								new Public(@event);
-						}
-					}
-
-					internal static MemberCache<EventInfo, Instance> Events = new Cache();
-
-					private Public(EventInfo @event)
-						: base(@event, false)
-					{
+						var @event = RuntimeType.GetEvent(eventName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+						return @event is null || @event.EventHandlerType != typeof(H) ?
+							null :
+							new Instance(@event, false);
 					}
 				}
 
-				private sealed class NonPublic: Instance
+				private sealed class NonPublicCache : MemberCache<EventInfo, Instance>
 				{
-					private sealed class Cache : MemberCache<EventInfo, Instance>
+					private protected override Instance CreateMember(string eventName)
 					{
-						private protected override Instance CreateMember(string eventName)
-						{
-							var @event = RuntimeType.GetEvent(eventName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-							return @event is null || @event.EventHandlerType != typeof(H) ?
-								null :
-								new NonPublic(@event);
-						}
-					}
-
-					internal static MemberCache<EventInfo, Instance> Events = new Cache();
-
-					private NonPublic(EventInfo @event)
-						: base(@event, true)
-					{
+						var @event = RuntimeType.GetEvent(eventName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						return @event is null || @event.EventHandlerType != typeof(H) ?
+							null :
+							new Instance(@event, true);
 					}
 				}
+
+				private static readonly MemberCache<EventInfo, Instance> Public = new PublicCache();
+				private static readonly MemberCache<EventInfo, Instance> NonPublic = new NonPublicCache();
 
 				private delegate void AddOrRemove(in T instance, H handler);
 
@@ -924,7 +855,7 @@ namespace MissingPieces.Metaprogramming
 				/// <param name="nonPublic">True to reflect non-public event.</param>
 				/// <returns>Instance event; or null, if event doesn't exist.</returns>
 				public static Instance GetOrNull(string eventName, bool nonPublic = false)
-					=> (nonPublic ? NonPublic.Events : Public.Events).GetOrCreate(eventName);
+					=> (nonPublic ? NonPublic : Public).GetOrCreate(eventName);
 				
 				/// <summary>
 				/// Gets instance event.
@@ -1026,7 +957,7 @@ namespace MissingPieces.Metaprogramming
 		}
 
 		/// <summary>
-		/// Provides typed access to the public field contained in type <typeparamref name="T"/>.
+		/// Provides typed access to the field declared in type <typeparamref name="T"/>.
 		/// </summary>
 		/// <typeparam name="F">Type of field value.</typeparam>
 		public abstract class Field<F>: FieldInfo, IField, IEquatable<Field<F>>, IEquatable<FieldInfo>
@@ -1034,16 +965,32 @@ namespace MissingPieces.Metaprogramming
 			/// <summary>
 			/// Provides access to public instance field.
 			/// </summary>
-			public sealed class Instance : Field<F>
+			public sealed class Instance : Field<F>, IField<T, F>
 			{
-				private sealed class Cache : MemberCache<FieldInfo, Instance>
+				private sealed class PublicCache : MemberCache<FieldInfo, Instance>
 				{
-					private protected override Instance CreateMember(string memberName)
+					private protected override Instance CreateMember(string eventName)
 					{
-						var field = RuntimeType.GetField(memberName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-						return field != null && field.FieldType == typeof(F) ? new Instance(field) : null;
+						var field = RuntimeType.GetField(eventName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+						return field is null || field.FieldType != typeof(F) ?
+							null :
+							new Instance(field);
 					}
 				}
+
+				private sealed class NonPublicCache : MemberCache<FieldInfo, Instance>
+				{
+					private protected override Instance CreateMember(string eventName)
+					{
+						var field = RuntimeType.GetField(eventName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						return field is null || field.FieldType != typeof(F) ?
+							null :
+							new Instance(field);
+					}
+				}
+
+				private static readonly MemberCache<FieldInfo, Instance> Public = new PublicCache();
+				private static readonly MemberCache<FieldInfo, Instance> NonPublic = new NonPublicCache();
 
 				private readonly PropertyGetter<F> reader;
 				private readonly PropertySetter<F> writer;
@@ -1058,6 +1005,151 @@ namespace MissingPieces.Metaprogramming
 						null :
 						Lambda<PropertySetter<F>>(Assign(Field(instanceParam, field), valueParam), instanceParam, valueParam).Compile();
 				}
+
+				public F this[in T instance]
+				{
+					get => reader(instance);
+					set => writer(in instance, value);
+				}
+
+				/// <summary>
+				/// Gets instane field.
+				/// </summary>
+				/// <param name="fieldName">Name of field.</param>
+				/// <param name="nonPublic">True to reflect non-public field.</param>
+				/// <returns>Instance field; or null, if field doesn't exist.</returns>
+				public static Instance GetOrNull(string fieldName, bool nonPublic = false)
+					=> (nonPublic ? NonPublic : Public).GetOrCreate(fieldName);
+
+				/// <summary>
+				/// Gets instance field.
+				/// </summary>
+				/// <param name="fieldName">Name of field.</param>
+				/// <param name="nonPublic">True to reflect non-public field.</param>
+				/// <typeparam name="E">Type of exception to throw if field doesn't exist.</typeparam>
+				/// <returns>Instance field.</returns>
+				public static Instance GetOrThrow<E>(string fieldName, bool nonPublic = false)
+					where E : Exception, new()
+					=> GetOrNull(fieldName, nonPublic) ?? throw new E();
+
+				/// <summary>
+				/// Gets instance field.
+				/// </summary>
+				/// <param name="fieldName">Name of field.</param>
+				/// <param name="exceptionFactory">A factory used to produce exception.</param>
+				/// <param name="nonPublic">True to reflect non-public field.</param>
+				/// <typeparam name="E">Type of exception to throw if field doesn't exist.</typeparam>
+				/// <returns>Instance field.</returns>
+				public static Instance GetOrThrow<E>(string fieldName, Func<string, E> exceptionFactory, bool nonPublic = false)
+					where E : Exception
+					=> GetOrNull(fieldName, nonPublic) ?? throw exceptionFactory(fieldName);
+
+				/// <summary>
+				/// Gets instance field.
+				/// </summary>
+				/// <param name="fieldName">Name of field.</param>
+				/// <param name="nonPublic">True to reflect non-public field.</param>
+				/// <returns>Instance field.</returns>
+				/// <exception cref="MissingEventException">Field doesn't exist.</exception>
+				public static Instance Get(string fieldName, bool nonPublic = false)
+					=> GetOrThrow(fieldName, MissingFieldException.Create<T, F>, nonPublic);
+			}
+
+			/// <summary>
+			/// Provides access to public instance field.
+			/// </summary>
+			public sealed class Static : Field<F>, IField<F>
+			{
+				private sealed class PublicCache : MemberCache<FieldInfo, Static>
+				{
+					private protected override Static CreateMember(string eventName)
+					{
+						var field = RuntimeType.GetField(eventName, BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+						return field is null || field.FieldType != typeof(F) ?
+							null :
+							new Static(field);
+					}
+				}
+
+				private sealed class NonPublicCache : MemberCache<FieldInfo, Static>
+				{
+					private protected override Static CreateMember(string eventName)
+					{
+						var field = RuntimeType.GetField(eventName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						return field is null || field.FieldType != typeof(F) ?
+							null :
+							new Static(field);
+					}
+				}
+
+				private static readonly MemberCache<FieldInfo, Static> Public = new PublicCache();
+				private static readonly MemberCache<FieldInfo, Static> NonPublic = new NonPublicCache();
+
+				private readonly Func<F> reader;
+				private readonly Action<F> writer;
+
+				private Static(FieldInfo field)
+					: base(field)
+				{
+					reader = Lambda<Func<F>>(Field(null, field)).Compile();
+					var valueParam = Parameter(typeof(F));
+					writer = field.Attributes.HasFlag(FieldAttributes.InitOnly) ?
+						null :
+						Lambda<Action<F>>(Assign(Field(null, field), valueParam), valueParam).Compile();
+				}
+
+				/// <summary>
+				/// Gets or sets field value.
+				/// </summary>
+				public F Value
+				{
+					get => reader();
+					set => writer(value);
+				}
+
+				public static explicit operator F(Static field) => field.Value;
+
+				/// <summary>
+				/// Gets static field.
+				/// </summary>
+				/// <param name="fieldName">Name of field.</param>
+				/// <param name="nonPublic">True to reflect non-public field.</param>
+				/// <returns>Static field; or null, if field doesn't exist.</returns>
+				public static Static GetOrNull(string fieldName, bool nonPublic = false)
+					=> (nonPublic ? NonPublic : Public).GetOrCreate(fieldName);
+
+				/// <summary>
+				/// Gets static field.
+				/// </summary>
+				/// <param name="fieldName">Name of field.</param>
+				/// <param name="nonPublic">True to reflect non-public field.</param>
+				/// <typeparam name="E">Type of exception to throw if field doesn't exist.</typeparam>
+				/// <returns>Static field.</returns>
+				public static Static GetOrThrow<E>(string fieldName, bool nonPublic = false)
+					where E : Exception, new()
+					=> GetOrNull(fieldName, nonPublic) ?? throw new E();
+
+				/// <summary>
+				/// Gets static field.
+				/// </summary>
+				/// <param name="fieldName">Name of field.</param>
+				/// <param name="exceptionFactory">A factory used to produce exception.</param>
+				/// <param name="nonPublic">True to reflect non-public field.</param>
+				/// <typeparam name="E">Type of exception to throw if field doesn't exist.</typeparam>
+				/// <returns>Static field.</returns>
+				public static Static GetOrThrow<E>(string fieldName, Func<string, E> exceptionFactory, bool nonPublic = false)
+					where E : Exception
+					=> GetOrNull(fieldName, nonPublic) ?? throw exceptionFactory(fieldName);
+
+				/// <summary>
+				/// Gets static field.
+				/// </summary>
+				/// <param name="fieldName">Name of field.</param>
+				/// <param name="nonPublic">True to reflect non-public field.</param>
+				/// <returns>Static field.</returns>
+				/// <exception cref="MissingEventException">Field doesn't exist.</exception>
+				public static Static Get(string fieldName, bool nonPublic = false)
+					=> GetOrThrow(fieldName, MissingFieldException.Create<T, F>, nonPublic);
 			}
 
 			private readonly FieldInfo field;

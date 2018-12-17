@@ -17,7 +17,7 @@ namespace MissingPieces.Metaprogramming
 	/// Represents static field.
 	/// </summary>
 	/// <typeparam name="F">Type of field .</typeparam>
-	public interface IField<F> : IProperty
+	public interface IField<F> : IField
 	{
 		/// <summary>
 		/// Gets or sets field value.
@@ -30,8 +30,8 @@ namespace MissingPieces.Metaprogramming
 	/// </summary>
 	/// <typeparam name="T">Field declaring type.</typeparam>
 	/// <typeparam name="F">Type of field.</typeparam>
-	public interface IField<T, F> : IProperty
+	public interface IField<T, F> : IField
 	{
-		F this[T instance] { get; set; }
+		F this[in T instance] { get; set; }
 	}
 }
