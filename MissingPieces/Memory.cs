@@ -237,7 +237,7 @@ namespace MissingPieces
         {
             internal delegate ref T Converter(in T value);
 
-            internal static readonly Converter converter;
+            internal static readonly Converter ToRegularRef;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private static ref T Identity(ref T value) => ref value;
@@ -246,7 +246,7 @@ namespace MissingPieces
             {
                 var parameter = Parameter(typeof(T).MakeByRefType());
                 var identity = typeof(Ref<T>).GetMethod(nameof(Identity), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-                converter = Lambda<Converter>(Call(null, identity, parameter), parameter).Compile();
+                ToRegularRef = Lambda<Converter>(Call(null, identity, parameter), parameter).Compile();
             }
         }
 
@@ -256,7 +256,7 @@ namespace MissingPieces
         /// <param name="value">A reference to convert.</param>
         /// <typeparam name="T">Type of reference.</typeparam>
         /// <returns>Converted reference.</returns>
-        public static ref T AsRef<T>(in T value) => ref Ref<T>.converter(in value);
+        public static ref T AsRef<T>(in T value) => ref Ref<T>.ToRegularRef(in value);
 
         public static bool ContentAreEqual(this ReadOnlySpan<byte> first, ReadOnlySpan<byte> second)
         {

@@ -1240,12 +1240,20 @@ namespace MissingPieces.Metaprogramming
 			public static bool operator !=(Field<F> first, Field<F> second) => !Equals(first, second);
 		}
 
-		public static class Method
+		public static class Method<D>
+			where D: class, MulticastDelegate
 		{
-			public static class Definition<D>
-				where D: class, MulticastDelegate
+			public static class Instance
 			{
+				public static D GetOrNull(string methodName, bool nonPublic = false)
+				{
+					
+				}
+			}
 
+			public static class Static
+			{
+				
 			}
 		}
 
