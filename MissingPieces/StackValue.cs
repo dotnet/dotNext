@@ -18,7 +18,7 @@ namespace MissingPieces
 		public static readonly int Size = Unsafe.SizeOf<T>();
 
 		/// <summary>
-		/// Gets or sets structure allocated on the stack.
+		/// Gets structure allocated on the stack.
 		/// </summary>
 		public readonly T Value;
 
