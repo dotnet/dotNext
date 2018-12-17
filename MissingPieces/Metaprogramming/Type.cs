@@ -24,76 +24,76 @@ namespace MissingPieces.Metaprogramming
 		public static Type RuntimeType => typeof(T);
 
 		/// <summary>
+		/// Provides constructor definition based on delegate signature.
+		/// </summary>
+		/// <typeparam name="D">Type of delegate representing constructor of type <typeparamref name="D"/>.</typeparam>
+		public static class Constructor<D>
+			where D : class, MulticastDelegate
+		{
+			private static D CompileConstructor(bool nonPublic)
+			{
+				var invokeMethod = Delegates.GetInvokeMethod<D>();
+
+				if (RuntimeType.IsValueType && invokeMethod.GetParameters().LongLength == 0L)
+					return Lambda<D>(Default<T>.Expression).Compile();
+				else
+				{
+					var flags = BindingFlags.DeclaredOnly | BindingFlags.Instance | (nonPublic ? BindingFlags.NonPublic : BindingFlags.Public);
+					var ctor = RuntimeType.GetConstructor(flags, Type.DefaultBinder, invokeMethod.GetParameterTypes(), Array.Empty<ParameterModifier>());
+					if (ctor is null || !invokeMethod.ReturnType.IsAssignableFrom(RuntimeType))
+						return null;
+					else
+					{
+						var parameters = ctor.GetParameters().Map(p => Parameter(p.ParameterType));
+						return Lambda<D>(New(ctor, parameters), parameters).Compile();
+					}
+				}
+			}
+
+			private static class Public
+			{
+				internal static readonly D Implementation = CompileConstructor(false);
+			}
+
+			private static class NonPublic
+			{
+				internal static readonly D Implementation = CompileConstructor(true);
+			}
+
+			/// <summary>
+			/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+			/// </summary>
+			/// <param name="nonPublic">True to reflect non-public constructor.</param>
+			/// <returns>Constructor in the form of delegate; or null, if constructor doesn't exist.</returns>
+			public static D GetOrNull(bool nonPublic = false) => nonPublic ? NonPublic.Implementation : Public.Implementation;
+
+			/// <summary>
+			/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+			/// </summary>
+			/// <param name="nonPublic">True to reflect non-public constructor.</param>
+			/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
+			/// <returns>Constructor in the form of delegate.</returns>
+			public static D GetOrThrow<E>(bool nonPublic = false)
+				where E : Exception, new()
+				=> GetOrNull(nonPublic) ?? throw new E();
+
+			/// <summary>
+			/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+			/// </summary>
+			/// <param name="exceptionFactory">A factory used to produce exception.</param>
+			/// <param name="nonPublic">True to reflect non-public constructor.</param>
+			/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
+			/// <returns>Constructor in the form of delegate.</returns>
+			public static D GetOrThrow<E>(Func<E> exceptionFactory, bool nonPublic = false)
+				where E : Exception
+				=> GetOrNull(nonPublic) ?? throw exceptionFactory();
+		}
+
+		/// <summary>
 		/// Provides typed access to constructor of type <typeparamref name="T"/>.
 		/// </summary>
 		public static class Constructor
 		{
-			/// <summary>
-			/// Provides constructor definition based on delegate signature.
-			/// </summary>
-			/// <typeparam name="D">Type of delegate representing constructor of type <typeparamref name="D"/>.</typeparam>
-			public static class Definition<D>
-				where D: class, MulticastDelegate
-			{
-				private static D CompileConstructor(bool nonPublic)
-				{
-					var invokeMethod = Delegates.GetInvokeMethod<D>();
-					
-					if(RuntimeType.IsValueType && invokeMethod.GetParameters().LongLength == 0L)
-						return Lambda<D>(Default<T>.Expression).Compile();
-					else
-						{
-							var flags = BindingFlags.DeclaredOnly | BindingFlags.Instance | (nonPublic ? BindingFlags.NonPublic : BindingFlags.Public);
-							var ctor = RuntimeType.GetConstructor(flags, Type.DefaultBinder, invokeMethod.GetParameterTypes(), Array.Empty<ParameterModifier>());
-							if(ctor is null || !invokeMethod.ReturnType.IsAssignableFrom(RuntimeType))
-								return null;
-							else 
-							{
-								var parameters = ctor.GetParameters().Map(p => Parameter(p.ParameterType));
-								return Lambda<D>(New(ctor, parameters), parameters).Compile();
-							}
-						}
-				}
-
-				private static class Public
-				{
-					internal static readonly D Implementation = CompileConstructor(false);
-				}
-
-				private static class NonPublic
-				{
-					internal static readonly D Implementation = CompileConstructor(true);
-				}
-				
-				/// <summary>
-				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
-				/// </summary>
-				/// <param name="nonPublic">True to reflect non-public constructor.</param>
-				/// <returns>Constructor in the form of delegate; or null, if constructor doesn't exist.</returns>
-				public static D GetOrNull(bool nonPublic = false) => nonPublic ? NonPublic.Implementation : Public.Implementation;
-
-				/// <summary>
-				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
-				/// </summary>
-				/// <param name="nonPublic">True to reflect non-public constructor.</param>
-				/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
-				/// <returns>Constructor in the form of delegate.</returns>
-				public static D GetOrThrow<E>(bool nonPublic = false)
-					where E: Exception, new()
-					=> GetOrNull(nonPublic) ?? throw new E();
-
-				/// <summary>
-				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
-				/// </summary>
-				/// <param name="exceptionFactory">A factory used to produce exception.</param>
-				/// <param name="nonPublic">True to reflect non-public constructor.</param>
-				/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
-				/// <returns>Constructor in the form of delegate.</returns>
-				public static D GetOrThrow<E>(Func<E> exceptionFactory, bool nonPublic = false)
-					where E: Exception
-					=> GetOrNull(nonPublic) ?? throw exceptionFactory();
-			}
-
 			/// <summary>
 			/// Returns public constructor of type <typeparamref name="T"/> without parameters.
 			/// </summary>
@@ -101,7 +101,7 @@ namespace MissingPieces.Metaprogramming
 			/// <returns>A delegate representing public constructor without parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Func<T> Get(bool nonPublic = false)
-				=> Definition<Func<T>>.GetOrThrow(MissingConstructorException.Create<T>, nonPublic);
+				=> Constructor<Func<T>>.GetOrThrow(MissingConstructorException.Create<T>, nonPublic);
 
 			/// <summary>
 			/// Returns public constructor <typeparamref name="T"/> with single parameter of type <typeparamref name="P"/>.
@@ -111,7 +111,7 @@ namespace MissingPieces.Metaprogramming
 			/// <returns>A delegate representing public constructor with single parameter.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Func<P, T> Get<P>(bool nonPublic = false)
-				=> Definition<Func<P, T>>.GetOrThrow(MissingConstructorException.Create<T, P>, nonPublic);
+				=> Constructor<Func<P, T>>.GetOrThrow(MissingConstructorException.Create<T, P>, nonPublic);
 
 			/// <summary>
 			/// Returns public constructor <typeparamref name="T"/> with two 
@@ -123,7 +123,7 @@ namespace MissingPieces.Metaprogramming
 			/// <returns>A delegate representing public constructor with two parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Func<P1, P2, T> Get<P1, P2>(bool nonPublic = false)
-				=> Definition<Func<P1, P2, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2>, nonPublic);
+				=> Constructor<Func<P1, P2, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2>, nonPublic);
 
 			/// <summary>
 			/// Returns public constructor <typeparamref name="T"/> with three 
@@ -136,7 +136,7 @@ namespace MissingPieces.Metaprogramming
 			/// <returns>A delegate representing public constructor with three parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Func<P1, P2, P3, T> Get<P1, P2, P3>(bool nonPublic = false)
-				=> Definition<Func<P1, P2, P3, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3>, nonPublic);
+				=> Constructor<Func<P1, P2, P3, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3>, nonPublic);
 
 			/// <summary>
 			/// Returns public constructor <typeparamref name="T"/> with four 
@@ -150,7 +150,7 @@ namespace MissingPieces.Metaprogramming
 			/// <returns>A delegate representing public constructor with four parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Func<P1, P2, P3, P4, T> Get<P1, P2, P3, P4>(bool nonPublic = false)
-				=> Definition<Func<P1, P2, P3, P4, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4>, nonPublic);
+				=> Constructor<Func<P1, P2, P3, P4, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4>, nonPublic);
 
 			/// <summary>
 			/// Returns public constructor <typeparamref name="T"/> with five 
@@ -166,8 +166,8 @@ namespace MissingPieces.Metaprogramming
 			/// <returns>A delegate representing public constructor with five parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Func<P1, P2, P3, P4, P5, T> Get<P1, P2, P3, P4, P5>(bool nonPublic = false)
-				=> Definition<Func<P1, P2, P3, P4, P5, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5>, nonPublic);
-			
+				=> Constructor<Func<P1, P2, P3, P4, P5, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5>, nonPublic);
+
 			/// <summary>
 			/// Returns public constructor <typeparamref name="T"/> with six parameters.
 			/// </summary>
@@ -181,7 +181,7 @@ namespace MissingPieces.Metaprogramming
 			/// <returns>A delegate representing public constructor with six parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Func<P1, P2, P3, P4, P5, P6, T> Get<P1, P2, P3, P4, P5, P6>(bool nonPublic = false)
-				=> Definition<Func<P1, P2, P3, P4, P5, P6, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6>, nonPublic);
+				=> Constructor<Func<P1, P2, P3, P4, P5, P6, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6>, nonPublic);
 
 			/// <summary>
 			/// Returns public constructor <typeparamref name="T"/> with seven parameters.
@@ -197,7 +197,7 @@ namespace MissingPieces.Metaprogramming
 			/// <returns>A delegate representing public constructor with seven parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Func<P1, P2, P3, P4, P5, P6, P7, T> Get<P1, P2, P3, P4, P5, P6, P7>(bool nonPublic = false)
-				=> Definition<Func<P1, P2, P3, P4, P5, P6, P7, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7>, nonPublic);
+				=> Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7>, nonPublic);
 
 			/// <summary>
 			/// Returns public constructor <typeparamref name="T"/> with eight parameters.
@@ -214,7 +214,7 @@ namespace MissingPieces.Metaprogramming
 			/// <returns>A delegate representing public constructor with eight parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Func<P1, P2, P3, P4, P5, P6, P7, P8, T> Get<P1, P2, P3, P4, P5, P6, P7, P8>(bool nonPublic = false)
-				=> Definition<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8>, nonPublic);
+				=> Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8>, nonPublic);
 
 			/// <summary>
 			/// Returns public constructor <typeparamref name="T"/> with nine parameters.
@@ -232,8 +232,8 @@ namespace MissingPieces.Metaprogramming
 			/// <returns>A delegate representing public constructor with nine parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(bool nonPublic = false)
-				=> Definition<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>, nonPublic);
-			
+				=> Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>, nonPublic);
+
 			/// <summary>
 			/// Returns public constructor <typeparamref name="T"/> with ten parameters.
 			/// </summary>
@@ -251,7 +251,7 @@ namespace MissingPieces.Metaprogramming
 			/// <returns>A delegate representing public constructor with ten parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(bool nonPublic = false)
-				=> Definition<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>, nonPublic);
+				=> Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>, nonPublic);
 		}
 
 		/// <summary>
@@ -1236,6 +1236,32 @@ namespace MissingPieces.Metaprogramming
 			public static bool operator ==(Field<F> first, Field<F> second) => Equals(first, second);
 
 			public static bool operator !=(Field<F> first, Field<F> second) => !Equals(first, second);
+		}
+
+		public static class Method
+		{
+			public static class Definition<D>
+				where D: class, MulticastDelegate
+			{
+
+			}
+		}
+
+		/// <summary>
+		/// Provides access to declared method with non-void return type.
+		/// </summary>
+		/// <typeparam name="R">Return type.</typeparam>
+		public abstract class Function<R>
+		{
+			
+		}
+
+		/// <summary>
+		/// Provides access to declared method with void return type.
+		/// </summary>
+		public abstract class Action
+		{
+
 		}
 	}
 }

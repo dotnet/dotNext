@@ -15,10 +15,10 @@ namespace MissingPieces.Metaprogramming
 			var str = stringCtor('a', 3);
 			Equal("aaa", str);
 			var objCtor = Type<object>.Constructor.Get();
-			stringCtor = Type<string>.Constructor.Definition<Func<char, int, string>>.GetOrNull();
+			stringCtor = Type<string>.Constructor<Func<char, int, string>>.GetOrNull();
 			str = stringCtor('a', 3);
 			Equal("aaa", str);
-			var invalidCtor = Type<string>.Constructor.Definition<Func<int, int, string>>.GetOrNull();
+			var invalidCtor = Type<string>.Constructor<Func<int, int, string>>.GetOrNull();
 			Null(invalidCtor);
 			var classCtor = Type<ClassWithProperties>.Constructor.Get<int>(true);
 			var obj = classCtor(10);
