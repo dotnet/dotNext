@@ -30,6 +30,6 @@ namespace MissingPieces.Metaprogramming
 	/// <typeparam name="P"></typeparam>
 	public interface IProperty<T, P>: IProperty
 	{
-		P this[T instannce]{ get; set; }
+		P this[T instance]{ get; set; }
 	}
 }

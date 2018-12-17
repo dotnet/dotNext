@@ -2,6 +2,9 @@
 
 namespace MissingPieces.Metaprogramming
 {
+	/// <summary>
+	/// Indicates that requested attribute doesn't exist.
+	/// </summary>
 	public sealed class MissingAttributeException : ConstraintException
 	{
 		private MissingAttributeException(Type target, Type attributeType)

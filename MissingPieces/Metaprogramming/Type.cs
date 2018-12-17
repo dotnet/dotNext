@@ -15,6 +15,9 @@ namespace MissingPieces.Metaprogramming
 	/// </summary>
 	public static class Type<T>
 	{
+		private delegate P PropertyGetter<P>(in T instance);
+		private delegate void PropertySetter<P>(in T instance, P value);
+
 		/// <summary>
 		/// Gets reflected type.
 		/// </summary>
@@ -264,6 +267,10 @@ namespace MissingPieces.Metaprogramming
 				this.property = property;
 			}
 
+			public sealed override object GetValue(object obj, object[] index) => property.GetValue(obj, index);
+
+			public sealed override void SetValue(object obj, object value, object[] index) => property.SetValue(obj, value, index);
+
 			public sealed override string Name => property.Name;
 
 			public abstract override bool CanRead { get; }
@@ -507,10 +514,8 @@ namespace MissingPieces.Metaprogramming
 					}
 				}
 
-				private delegate P PropertyGetter(in T instance);
-				private delegate void PropertySetter(in T instance, P value);
-				private readonly PropertyGetter getter;
-				private readonly PropertySetter setter;
+				private readonly PropertyGetter<P> getter;
+				private readonly PropertySetter<P> setter;
 
 				private protected Instance(PropertyInfo property, bool nonPublic)
 					: base(property)
@@ -519,14 +524,14 @@ namespace MissingPieces.Metaprogramming
 					if (property.GetGetMethod(nonPublic) is null)
 						getter = null;
 					else
-						getter = Lambda<PropertyGetter>(Call(instanceParam, property.GetGetMethod(nonPublic)), instanceParam).Compile();
+						getter = Lambda<PropertyGetter<P>>(Call(instanceParam, property.GetGetMethod(nonPublic)), instanceParam).Compile();
 
 					if (property.GetSetMethod(nonPublic) is null)
 						setter = null;
 					else
 					{
 						var valueParam = Parameter(property.PropertyType);
-						setter = Lambda<PropertySetter>(Call(instanceParam, property.GetSetMethod(nonPublic), valueParam), instanceParam, valueParam).Compile();
+						setter = Lambda<PropertySetter<P>>(Call(instanceParam, property.GetSetMethod(nonPublic), valueParam), instanceParam, valueParam).Compile();
 					}
 				}
 
@@ -1018,6 +1023,127 @@ namespace MissingPieces.Metaprogramming
 				=> from attr in RuntimeType.GetCustomAttributes<A>(inherit)
 					where condition is null || condition(attr)
 					select attr;
+		}
+
+		/// <summary>
+		/// Provides typed access to the public field contained in type <typeparamref name="T"/>.
+		/// </summary>
+		/// <typeparam name="F">Type of field value.</typeparam>
+		public abstract class Field<F>: FieldInfo, IField, IEquatable<Field<F>>, IEquatable<FieldInfo>
+		{
+			/// <summary>
+			/// Provides access to public instance field.
+			/// </summary>
+			public sealed class Instance : Field<F>
+			{
+				private sealed class Cache : MemberCache<FieldInfo, Instance>
+				{
+					private protected override Instance CreateMember(string memberName)
+					{
+						var field = RuntimeType.GetField(memberName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+						return field != null && field.FieldType == typeof(F) ? new Instance(field) : null;
+					}
+				}
+
+				private readonly PropertyGetter<F> reader;
+				private readonly PropertySetter<F> writer;
+
+				private Instance(FieldInfo field)
+					: base(field)
+				{
+					var instanceParam = Parameter(RuntimeType);
+					reader = Lambda<PropertyGetter<F>>(Field(instanceParam, field), instanceParam).Compile();
+					var valueParam = Parameter(typeof(F));
+					writer = field.Attributes.HasFlag(FieldAttributes.InitOnly) ?
+						null :
+						Lambda<PropertySetter<F>>(Assign(Field(instanceParam, field), valueParam), instanceParam, valueParam).Compile();
+				}
+			}
+
+			private readonly FieldInfo field;
+
+			private protected Field(FieldInfo field)
+			{
+				this.field = field;
+			}
+
+			public sealed override Type DeclaringType => field.DeclaringType;
+
+			public sealed override MemberTypes MemberType => field.MemberType;
+
+			public sealed override string Name => field.Name;
+
+			public sealed override Type ReflectedType => field.ReflectedType;
+
+			public sealed override object[] GetCustomAttributes(bool inherit) => field.GetCustomAttributes(inherit);
+			public sealed override object[] GetCustomAttributes(Type attributeType, bool inherit) => field.GetCustomAttributes(attributeType, inherit);
+
+			public sealed override bool IsDefined(Type attributeType, bool inherit) => field.IsDefined(attributeType, inherit);
+
+			public sealed override int MetadataToken => field.MetadataToken;
+
+			public sealed override Module Module => field.Module;
+
+			public sealed override IList<CustomAttributeData> GetCustomAttributesData() => field.GetCustomAttributesData();
+
+			public sealed override IEnumerable<CustomAttributeData> CustomAttributes => field.CustomAttributes;
+
+			public sealed override FieldAttributes Attributes => field.Attributes;
+
+			public sealed override RuntimeFieldHandle FieldHandle => field.FieldHandle;
+
+			public sealed override Type FieldType => field.FieldType;
+
+			public sealed override Type[] GetOptionalCustomModifiers() => field.GetOptionalCustomModifiers();
+
+			public sealed override object GetRawConstantValue() => field.GetRawConstantValue();
+
+			public sealed override Type[] GetRequiredCustomModifiers() => field.GetRequiredCustomModifiers();
+
+			public sealed override object GetValue(object obj) => field.GetValue(obj);
+
+			public sealed override object GetValueDirect(TypedReference obj) => field.GetValueDirect(obj);
+
+			public sealed override bool IsSecurityCritical => field.IsSecurityCritical;
+
+			public sealed override bool IsSecuritySafeCritical => field.IsSecuritySafeCritical;
+
+			public sealed override bool IsSecurityTransparent => field.IsSecurityTransparent;
+
+			public sealed override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
+				=> field.SetValue(obj, value, invokeAttr, binder, culture);
+
+			public sealed override void SetValueDirect(TypedReference obj, object value)
+				=> field.SetValueDirect(obj, value);
+
+			public bool IsReadOnly => field.Attributes.HasFlag(FieldAttributes.InitOnly);
+
+			FieldInfo IMember<FieldInfo>.RuntimeMember => field;
+
+			public bool Equals(FieldInfo other) => field.Equals(other);
+
+			public bool Equals(Field<F> other) => other != null && Equals(other.field);
+
+			public sealed override int GetHashCode() => field.GetHashCode();
+
+			public sealed override bool Equals(object other)
+			{
+				switch (other)
+				{
+					case Field<F> field:
+						return Equals(field);
+					case FieldInfo field:
+						return Equals(field);
+					default:
+						return false;
+				}
+			}
+
+			public sealed override string ToString() => field.ToString();
+
+			public static bool operator ==(Field<F> first, Field<F> second) => Equals(first, second);
+
+			public static bool operator !=(Field<F> first, Field<F> second) => !Equals(first, second);
 		}
 	}
 }
