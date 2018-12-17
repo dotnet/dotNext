@@ -26,7 +26,7 @@ namespace MissingPieces
 		/// Allocates a new memory on the stack and initialize it with the specified content.
 		/// </summary>
 		/// <param name="value">The value to be placed onto stack.</param>
-		public StackValue(T value) => this.Value = value;
+		public StackValue(in T value) => this.Value = value;
 
 		/// <summary>
 		/// Gets byte value located at the specified position in the stack.
@@ -43,6 +43,16 @@ namespace MissingPieces
 				var address = new UIntPtr(Address) + position;
 				return *(byte*)address;
 			}
+		}
+
+		/// <summary>
+		/// Converts stack-allocated block of memory into byte array allocated on the heap.
+		/// </summary>
+		/// <returns>A copy of stack-allocated memory in the form of byte array.</returns>
+		public byte[] ToArray()
+		{
+			ReadOnlySpan<byte> span = this;
+			return span.ToArray();
 		}
 
 		/// <summary>
@@ -130,7 +140,7 @@ namespace MissingPieces
 		/// <param name="stack">Stack-allocated value.</param>
 		public static implicit operator T(in StackValue<T> stack) => stack.Value;
 
-		public static implicit operator StackValue<T>(in T value) => new StackValue<T>(value);
+		public static implicit operator StackValue<T>(in T value) => new StackValue<T>(in value);
 
 		/// <summary>
 		/// Represents stack memory in the form of read-only span.
@@ -158,6 +168,6 @@ namespace MissingPieces
 		/// <typeparam name="T">Type of structure.</typeparam>
 		/// <returns>True, if both structures have the same set of bits.</returns>
 		public static bool BitwiseEquals(in T first, in T second)
-			=> new StackValue<T>(first) == new StackValue<T>(second);
+			=> new StackValue<T>(in first) == new StackValue<T>(in second);
 	}
 }

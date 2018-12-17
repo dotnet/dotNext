@@ -16,14 +16,14 @@ namespace MissingPieces.Metaprogramming
 		/// </summary>
 		public static readonly T Value = default;
 
-		internal static readonly System.Linq.Expressions.DefaultExpression Expression = System.Linq.Expressions.Expression.Default(typeof(T));
+		internal static readonly System.Linq.Expressions.DefaultExpression Expression = Default(typeof(T));
 
 		private delegate bool IsDefaultPredicate(in T value);
 		private static readonly IsDefaultPredicate isDefault;
 
 		static Default()
 		{
-			var parameter = Parameter(typeof(T).MakeByRefType());
+			var parameter = Parameter(Expression.Type.MakeByRefType());
 			if(parameter.Type.IsValueType)
 			{
 				var bitwiseEquality = typeof(StackValue<>).MakeGenericType(parameter.Type).GetMethod(nameof(StackValue<int>.BitwiseEquals));

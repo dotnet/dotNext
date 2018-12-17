@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Xunit;
 
 namespace MissingPieces.Metaprogramming
@@ -146,6 +147,15 @@ namespace MissingPieces.Metaprogramming
 			Equal(StaticEvent, handler);
 			ev.RemoveEventHandler(handler);
 			Null(StaticEvent);
+		}
+
+		[Fact]
+		public void StaticFieldTest()
+		{
+			var structField = Type<Guid>.Field<Guid>.Static.Get(nameof(Guid.Empty));
+			StackValue<Guid>.BitwiseEquals(default, structField.Value);
+			var objField = Type<TextReader>.Field<TextReader>.Static.Get(nameof(TextReader.Null));
+			Same(TextReader.Null, objField.Value);
 		}
 	}
 }
