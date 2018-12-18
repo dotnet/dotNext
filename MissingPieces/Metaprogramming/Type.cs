@@ -456,26 +456,21 @@ namespace MissingPieces.Metaprogramming
 			/// </summary>	
 			public sealed class Static: Property<P>, IProperty<P>
 			{
-				private sealed class PublicCache : MemberCache<PropertyInfo, Static>
+				private sealed class Cache: MemberCache<PropertyInfo, Static>
 				{
+					private readonly BindingFlags flags;
+
+					internal Cache(BindingFlags flags) => this.flags = flags;
+
 					private protected override Static CreateMember(string propertyName)
 					{
-						var property = RuntimeType.GetProperty(propertyName, BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-						return property == null ? null : new Static(property, false);
+						var property = RuntimeType.GetProperty(propertyName, flags);
+						return property == null ? null : new Static(property, flags.HasFlag(BindingFlags.NonPublic));
 					}
 				}
 
-				private sealed class NonPublicCache : MemberCache<PropertyInfo, Static>
-				{
-					private protected override Static CreateMember(string propertyName)
-					{
-						var property = RuntimeType.GetProperty(propertyName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-						return property == null ? null : new Static(property, true);
-					}
-				}
-
-				private static readonly MemberCache<PropertyInfo, Static> Public = new PublicCache();
-				private static readonly MemberCache<PropertyInfo, Static> NonPublic = new NonPublicCache();
+				private static readonly Cache Public = new Cache(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+				private static readonly Cache NonPublic = new Cache(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
 				private readonly MemberAccess<P> accessor;
 
@@ -565,26 +560,21 @@ namespace MissingPieces.Metaprogramming
 			/// </summary>
 			public sealed class Instance: Property<P>, IProperty<T, P>
 			{
-				private sealed class PublicCache : MemberCache<PropertyInfo, Instance>
+				private sealed class Cache : MemberCache<PropertyInfo, Instance>
 				{
+					private readonly BindingFlags flags;
+
+					internal Cache(BindingFlags flags) => this.flags = flags;
+
 					private protected override Instance CreateMember(string propertyName)
 					{
-						var property = RuntimeType.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-						return property == null ? null : new Instance(property, false);
+						var property = RuntimeType.GetProperty(propertyName, flags);
+						return property == null ? null : new Instance(property, flags.HasFlag(BindingFlags.NonPublic));
 					}
 				}
 
-				private sealed class NonPublicCache : MemberCache<PropertyInfo, Instance>
-				{
-					private protected override Instance CreateMember(string propertyName)
-					{
-						var property = RuntimeType.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-						return property == null ? null : new Instance(property, true);
-					}
-				}
-
-				private static readonly MemberCache<PropertyInfo, Instance> Public = new PublicCache();
-				private static readonly MemberCache<PropertyInfo, Instance> NonPublic = new NonPublicCache();
+				private static readonly Cache Public = new Cache(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+				private static readonly Cache NonPublic = new Cache(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
 				private readonly MemberAccess<T, P> accessor;
 
@@ -762,26 +752,21 @@ namespace MissingPieces.Metaprogramming
 			/// </summary>		
 			public sealed class Static: Event<H>, IEvent<H>
 			{
-				private sealed class PublicCache : MemberCache<EventInfo, Static>
+				private sealed class Cache : MemberCache<EventInfo, Static>
 				{
+					private readonly BindingFlags flags;
+
+					internal Cache(BindingFlags flags) => this.flags = flags;
+
 					private protected override Static CreateMember(string eventName)
 					{
-						var @event = RuntimeType.GetEvent(eventName, BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-						return @event == null ? null : new Static(@event, false);
+						var @event = RuntimeType.GetEvent(eventName, flags);
+						return @event == null ? null : new Static(@event, flags.HasFlag(BindingFlags.NonPublic));
 					}
 				}
 
-				private sealed class NonPublicCache : MemberCache<EventInfo, Static>
-				{
-					private protected override Static CreateMember(string eventName)
-					{
-						var @event = RuntimeType.GetEvent(eventName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-						return @event == null ? null : new Static(@event, true);
-					}
-				}
-
-				private static readonly MemberCache<EventInfo, Static> Public = new PublicCache();
-				private static readonly MemberCache<EventInfo, Static> NonPublic = new NonPublicCache();
+				private static readonly Cache Public = new Cache(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+				private static readonly Cache NonPublic = new Cache(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
 				private readonly EventAccess<H> accessor;
 
@@ -881,30 +866,21 @@ namespace MissingPieces.Metaprogramming
 			/// </summary>
 			public sealed class Instance: Event<H>, IEvent<T, H>
 			{
-				private sealed class PublicCache : MemberCache<EventInfo, Instance>
+				private sealed class Cache : MemberCache<EventInfo, Instance>
 				{
+					private readonly BindingFlags flags;
+
+					internal Cache(BindingFlags flags) => this.flags = flags;
+
 					private protected override Instance CreateMember(string eventName)
 					{
-						var @event = RuntimeType.GetEvent(eventName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-						return @event is null || @event.EventHandlerType != typeof(H) ?
-							null :
-							new Instance(@event, false);
+						var @event = RuntimeType.GetEvent(eventName, flags);
+						return @event == null ? null : new Instance(@event, flags.HasFlag(BindingFlags.NonPublic));
 					}
 				}
 
-				private sealed class NonPublicCache : MemberCache<EventInfo, Instance>
-				{
-					private protected override Instance CreateMember(string eventName)
-					{
-						var @event = RuntimeType.GetEvent(eventName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-						return @event is null || @event.EventHandlerType != typeof(H) ?
-							null :
-							new Instance(@event, true);
-					}
-				}
-
-				private static readonly MemberCache<EventInfo, Instance> Public = new PublicCache();
-				private static readonly MemberCache<EventInfo, Instance> NonPublic = new NonPublicCache();
+				private static readonly Cache Public = new Cache(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+				private static readonly Cache NonPublic = new Cache(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
 				private readonly EventAccess<T, H> accessor;
 
@@ -1383,38 +1359,179 @@ namespace MissingPieces.Metaprogramming
 			public static bool operator !=(Field<F> first, Field<F> second) => !Equals(first, second);
 		}
 
-		public static class Method<D>
+		/// <summary>
+		/// Provides typed access to the method declared in type <typeparamref name="T"/>.
+		/// </summary>
+		/// <typeparam name="D">Delegate type describing method signature.</typeparam>
+		public sealed class Method<D>: MethodInfo, IMethod<D>, IEquatable<Method<D>>, IEquatable<MethodInfo>
 			where D: class, MulticastDelegate
 		{
-			public static class Instance
+			private sealed class Cache : MemberCache<MethodInfo, Method<D>>
 			{
-				public static D GetOrNull(string methodName, bool nonPublic = false)
+				private readonly BindingFlags flags;
+
+				internal Cache(BindingFlags flags) => this.flags = flags;
+
+				private protected override Method<D> CreateMember(string memberName)
 				{
-					return null;
+					var invokeMethod = Delegates.GetInvokeMethod<D>();
+					var targetMethod = RuntimeType.GetMethod(memberName, 
+						flags, 
+						Type.DefaultBinder, 
+						invokeMethod.GetParameterTypes(), 
+						Array.Empty<ParameterModifier>());
+					return invokeMethod.ReturnType.IsAssignableFrom(targetMethod.ReturnType) ?
+						new Method<D>(targetMethod) :
+						null;
 				}
 			}
 
+			private readonly MethodInfo method;
+			private readonly D invoker;
+
+			private Method(MethodInfo method)
+			{
+				this.method = method;
+				invoker = method.CreateDelegate<D>(null);
+			}
+
+			public override MethodAttributes Attributes => method.Attributes;
+			public override CallingConventions CallingConvention => method.CallingConvention;
+			public override bool ContainsGenericParameters => method.ContainsGenericParameters;
+			public override Delegate CreateDelegate(Type delegateType) => method.CreateDelegate(delegateType);
+			public override Delegate CreateDelegate(Type delegateType, object target) => method.CreateDelegate(delegateType, target);
+			public override IEnumerable<CustomAttributeData> CustomAttributes => method.CustomAttributes;
+			public override Type DeclaringType => method.DeclaringType;
+			public override MethodInfo GetBaseDefinition() => method.GetBaseDefinition();
+			public override object[] GetCustomAttributes(bool inherit) => method.GetCustomAttributes(inherit);
+			public override object[] GetCustomAttributes(Type attributeType, bool inherit) => method.GetCustomAttributes(attributeType, inherit);
+			public override IList<CustomAttributeData> GetCustomAttributesData() => method.GetCustomAttributesData();
+			public override Type[] GetGenericArguments() => method.GetGenericArguments();
+			public override MethodInfo GetGenericMethodDefinition() => method.GetGenericMethodDefinition();
+			public override MethodBody GetMethodBody() => method.GetMethodBody();
+			public override MethodImplAttributes GetMethodImplementationFlags() => method.GetMethodImplementationFlags();
+			public override ParameterInfo[] GetParameters() => method.GetParameters();
+			public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
+				=> method.Invoke(obj, invokeAttr, binder, parameters, culture);
+			public override bool IsDefined(Type attributeType, bool inherit)
+				=> method.IsDefined(attributeType, inherit);
+			public override bool IsGenericMethod => method.IsGenericMethod;
+			public override bool IsGenericMethodDefinition => method.IsGenericMethodDefinition;
+			public override bool IsSecurityCritical => method.IsSecurityCritical;
+			public override bool IsSecuritySafeCritical => method.IsSecuritySafeCritical;
+			public override bool IsSecurityTransparent => method.IsSecurityTransparent;
+			public override MethodInfo MakeGenericMethod(params Type[] typeArguments) => method.MakeGenericMethod(typeArguments);
+			public override MemberTypes MemberType => MemberTypes.Method;
+			public override int MetadataToken => method.MetadataToken;
+			public override RuntimeMethodHandle MethodHandle => method.MethodHandle;
+			public override MethodImplAttributes MethodImplementationFlags => method.MethodImplementationFlags;
+			public override Module Module => method.Module;
+			public override string Name => method.Name;
+			public override Type ReflectedType => method.ReflectedType;
+			public override ParameterInfo ReturnParameter => method.ReturnParameter;
+			public override Type ReturnType => method.ReturnType;
+			public override ICustomAttributeProvider ReturnTypeCustomAttributes => method.ReturnTypeCustomAttributes;
+
+			public bool Equals(MethodInfo other) => method == other;
+			public bool Equals(Method<D> other) => Equals(other?.method);
+
+			public override bool Equals(object other)
+			{
+				switch(other)
+				{
+					case Method<D> method:
+						return Equals(method);
+					case MethodInfo method:
+						return Equals(method);
+					default:
+						return false;
+				}
+			}
+
+			public override int GetHashCode() => method.GetHashCode();
+
+			public static implicit operator D(Method<D> method) => method?.invoker;
+
+			MethodInfo IMember<MethodInfo>.RuntimeMember => method;
+			D IMethod<MethodInfo, D>.Invoker => invoker;
+
+			public override string ToString() => method.ToString();
+
+			/// <summary>
+			/// Provides access to static methods.
+			/// </summary>
 			public static class Static
 			{
-				
+				private static readonly Cache Public = new Cache(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+				private static readonly Cache NonPublic = new Cache(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+
+				/// <summary>
+				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+				/// </summary>
+				/// <param name="nonPublic">True to reflect non-public constructor.</param>
+				/// <returns>Constructor in the form of delegate; or null, if constructor doesn't exist.</returns>
+				public static Method<D> GetOrNull(string methodName, bool nonPublic = false)
+					=> (nonPublic ? NonPublic : Public).GetOrCreate(methodName);
+
+				/// <summary>
+				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+				/// </summary>
+				/// <param name="nonPublic">True to reflect non-public constructor.</param>
+				/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
+				/// <returns>Constructor in the form of delegate.</returns>
+				public static Method<D> GetOrThrow<E>(string methodName, bool nonPublic = false)
+					where E : Exception, new()
+					=> GetOrNull(methodName, nonPublic) ?? throw new E();
+
+				/// <summary>
+				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+				/// </summary>
+				/// <param name="exceptionFactory">A factory used to produce exception.</param>
+				/// <param name="nonPublic">True to reflect non-public constructor.</param>
+				/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
+				/// <returns>Constructor in the form of delegate.</returns>
+				public static Method<D> GetOrThrow<E>(string methodName, Func<E> exceptionFactory, bool nonPublic = false)
+					where E : Exception
+					=> GetOrNull(methodName, nonPublic) ?? throw exceptionFactory();
 			}
-		}
 
-		/// <summary>
-		/// Provides access to declared method with non-void return type.
-		/// </summary>
-		/// <typeparam name="R">Return type.</typeparam>
-		public abstract class Function<R>
-		{
-			
-		}
+			/// <summary>
+			/// Provides access to static methods.
+			/// </summary>
+			public static class Instance
+			{
+				private static readonly Cache Public = new Cache(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+				private static readonly Cache NonPublic = new Cache(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
-		/// <summary>
-		/// Provides access to declared method with void return type.
-		/// </summary>
-		public abstract class Action
-		{
+				/// <summary>
+				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+				/// </summary>
+				/// <param name="nonPublic">True to reflect non-public constructor.</param>
+				/// <returns>Constructor in the form of delegate; or null, if constructor doesn't exist.</returns>
+				public static Method<D> GetOrNull(string methodName, bool nonPublic = false)
+					=> (nonPublic ? NonPublic : Public).GetOrCreate(methodName);
 
+				/// <summary>
+				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+				/// </summary>
+				/// <param name="nonPublic">True to reflect non-public constructor.</param>
+				/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
+				/// <returns>Constructor in the form of delegate.</returns>
+				public static Method<D> GetOrThrow<E>(string methodName, bool nonPublic = false)
+					where E : Exception, new()
+					=> GetOrNull(methodName, nonPublic) ?? throw new E();
+
+				/// <summary>
+				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+				/// </summary>
+				/// <param name="exceptionFactory">A factory used to produce exception.</param>
+				/// <param name="nonPublic">True to reflect non-public constructor.</param>
+				/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
+				/// <returns>Constructor in the form of delegate.</returns>
+				public static Method<D> GetOrThrow<E>(string methodName, Func<E> exceptionFactory, bool nonPublic = false)
+					where E : Exception
+					=> GetOrNull(methodName, nonPublic) ?? throw exceptionFactory();
+			}
 		}
 	}
 }
