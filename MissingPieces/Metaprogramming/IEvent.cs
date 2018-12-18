@@ -8,8 +8,6 @@ namespace MissingPieces.Metaprogramming
 	/// </summary>
 	public interface IEvent : IMember<EventInfo>
 	{
-		bool CanAdd { get; }
-		bool CanRemove { get; }
 	}
 
 	/// <summary>

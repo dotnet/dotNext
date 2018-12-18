@@ -15,7 +15,7 @@ namespace MissingPieces.Metaprogramming
 	public delegate bool MemberAccess<T, V>(in T instance, ref V value, MemberAction action);
 
 	/// <summary>
-	/// Represents accessing instance field or property.
+	/// Represents accessing static field or property.
 	/// </summary>
 	/// <typeparam name="V">Type of field or property value.</typeparam>
 	/// <param name="value">A value to set or get.</param>
@@ -85,5 +85,11 @@ namespace MissingPieces.Metaprogramming
 
 		public static V GetValue<V>(this MemberAccess<V> accessor)
 			=> accessor.TryGetValue(out var result) ? result : throw CannotReadValue();
+
+		public static MemberAccess<V> CaptureInstance<T, V>(this MemberAccess<T, V> accessor, T instance)
+			=> delegate (ref V value, MemberAction action)
+			{
+				return accessor(in instance, ref value, action);
+			};
 	}
 }

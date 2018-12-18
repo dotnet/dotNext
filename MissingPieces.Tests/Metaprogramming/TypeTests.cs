@@ -82,22 +82,18 @@ namespace MissingPieces.Metaprogramming
 			True(wProperty.CanWrite);
 			False(wProperty.CanRead);
 			wProperty[instance] = 42;
-			var rProperty = Type<StructWithProperties>.Property<int>.Instance.Get(nameof(StructWithProperties.ReadOnlyProp));
-			False(rProperty.CanWrite);
-			True(rProperty.CanRead);
-			Equal(42, rProperty[instance]);
+			MemberAccess<StructWithProperties, int> rProperty = Type<StructWithProperties>.Property<int>.Instance.Get(nameof(StructWithProperties.ReadOnlyProp));
+			Equal(42, rProperty.GetValue(in instance));
 		}
 
 		[Fact]
 		public void StructPropertyTest()
 		{
 			var instance = new ClassWithProperties();
-			var rwProperty = Type<ClassWithProperties>.Property<string>.Instance.Get(nameof(ClassWithProperties.ReadWriteProperty));
-			True(rwProperty.CanRead);
-			True(rwProperty.CanWrite);
-			rwProperty[instance] = "Hello, world";
+			MemberAccess<ClassWithProperties, string> rwProperty = Type<ClassWithProperties>.Property<string>.Instance.Get(nameof(ClassWithProperties.ReadWriteProperty));
+			rwProperty.SetValue(instance, "Hello, world");
 			Equal("Hello, world", instance.ReadWriteProperty);
-			Equal("Hello, world", rwProperty[instance]);
+			Equal("Hello, world", rwProperty.GetValue(instance));
 			var wProperty = Type<ClassWithProperties>.Property<int>.Instance.Get(nameof(ClassWithProperties.WriteOnlyProp));
 			True(wProperty.CanWrite);
 			False(wProperty.CanRead);
@@ -121,9 +117,7 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void InstanceEventTest()
 		{
-			var ev = Type<AppDomain>.Event<ResolveEventHandler>.Instance.Get(nameof(AppDomain.TypeResolve));
-			True(ev.CanAdd);
-			True(ev.CanRemove);
+			EventAccess<AppDomain, ResolveEventHandler> ev = Type<AppDomain>.Event<ResolveEventHandler>.Instance.Get(nameof(AppDomain.TypeResolve));
 			ResolveEventHandler handler = (sender, args) => null;
 			ev.AddEventHandler(AppDomain.CurrentDomain, handler);
 			ev.RemoveEventHandler(AppDomain.CurrentDomain, handler);
@@ -140,8 +134,6 @@ namespace MissingPieces.Metaprogramming
 		public void StaticEventTest()
 		{
 			var ev = Type<TypeTests>.Event<EventHandler>.Static.Get(nameof(StaticEvent), true);
-			True(ev.CanAdd);
-			True(ev.CanRemove);
 			EventHandler handler = (sender, args) => { };
 			ev.AddEventHandler(handler);
 			Equal(StaticEvent, handler);

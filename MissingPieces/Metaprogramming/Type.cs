@@ -380,7 +380,7 @@ namespace MissingPieces.Metaprogramming
 				private static readonly MemberCache<PropertyInfo, Static> Public = new PublicCache();
 				private static readonly MemberCache<PropertyInfo, Static> NonPublic = new NonPublicCache();
 
-				internal readonly MemberAccess<P> accessor;
+				private readonly MemberAccess<P> accessor;
 
 				private Static(PropertyInfo property, bool nonPublic)
 					: base(property)
@@ -417,6 +417,8 @@ namespace MissingPieces.Metaprogramming
 				}
 
 				public static explicit operator P(Static property) => property.Value;
+
+				public static implicit operator MemberAccess<P>(Static property) => property?.accessor;
 
 				/// <summary>
 				/// Gets static property.
@@ -487,7 +489,7 @@ namespace MissingPieces.Metaprogramming
 				private static readonly MemberCache<PropertyInfo, Instance> Public = new PublicCache();
 				private static readonly MemberCache<PropertyInfo, Instance> NonPublic = new NonPublicCache();
 
-				internal readonly MemberAccess<T, P> accessor;
+				private readonly MemberAccess<T, P> accessor;
 
 				private Instance(PropertyInfo property, bool nonPublic)
 					: base(property)
@@ -515,6 +517,8 @@ namespace MissingPieces.Metaprogramming
 							valueParam,
 							actionParam).Compile();
 				}
+
+				public static implicit operator MemberAccess<T, P>(Instance property) => property?.accessor;
 
 				/// <summary>
 				/// Gets or sets property value.
@@ -586,10 +590,6 @@ namespace MissingPieces.Metaprogramming
 			{
 				this.@event = @event;
 			}
-
-			public abstract bool CanAdd { get; }
-
-			public abstract bool CanRemove { get; }
 
 			EventInfo IMember<EventInfo>.RuntimeMember => @event;
 
@@ -686,32 +686,37 @@ namespace MissingPieces.Metaprogramming
 				private static readonly MemberCache<EventInfo, Static> Public = new PublicCache();
 				private static readonly MemberCache<EventInfo, Static> NonPublic = new NonPublicCache();
 
-				private readonly Action<H> addHandler;
-				private readonly Action<H> removeHandler;
+				private readonly EventAccess<H> accessor;
 
 				private Static(EventInfo @event, bool nonPublic)
 					: base(@event)
 				{
 					var handlerParam = Parameter(@event.EventHandlerType);
-					addHandler = @event.GetAddMethod(nonPublic)?.CreateDelegate<Action<H>>(null);
-					removeHandler = @event.GetRemoveMethod(nonPublic)?.CreateDelegate<Action<H>>(null);
+					var actionParam = Parameter(typeof(EventAction));
+
+					var addMethod = @event.GetAddMethod(nonPublic);
+					var removeMethod = @event.GetRemoveMethod(nonPublic);
+					if (addMethod is null)
+						accessor = Lambda<EventAccess<H>>(EventAccess.AddOrRemoveHandler(actionParam, null, Call(removeMethod, handlerParam)), handlerParam, actionParam).Compile();
+					else if (removeMethod is null)
+						accessor = Lambda<EventAccess<H>>(EventAccess.AddOrRemoveHandler(actionParam, Call(addMethod, handlerParam), null), handlerParam, actionParam).Compile();
+					else
+						accessor = Lambda<EventAccess<H>>(EventAccess.AddOrRemoveHandler(actionParam, Call(addMethod, handlerParam), Call(removeMethod, handlerParam)), handlerParam, actionParam).Compile();
 				}
 
-				public sealed override bool CanAdd => !(addHandler is null);
-
-				public sealed override bool CanRemove => !(removeHandler is null);
+				public static implicit operator EventAccess<H>(Static @event) => @event?.accessor;
 
 				/// <summary>
 				/// Add event handler.
 				/// </summary>
 				/// <param name="handler">An event handler to add.</param>
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				public void AddEventHandler(H handler) => addHandler(handler);
+				public void AddEventHandler(H handler) => accessor.AddEventHandler(handler);
 
 				public override void AddEventHandler(object target, Delegate handler)
 				{
 					if(handler is H typedHandler)
-						addHandler(typedHandler);
+						AddEventHandler(typedHandler);
 					else 
 						base.AddEventHandler(target, handler);
 				}
@@ -721,12 +726,12 @@ namespace MissingPieces.Metaprogramming
 				/// </summary>
 				/// <param name="handler">An event handler to remove.</param>
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
-				public void RemoveEventHandler(H handler) => removeHandler(handler);
+				public void RemoveEventHandler(H handler) => accessor.RemoveEventHandler(handler);
 
 				public override void RemoveEventHandler(object target, Delegate handler)
 				{
 					if(handler is H typedHandler)
-						removeHandler(typedHandler);
+						RemoveEventHandler(typedHandler);
 					else
 						base.RemoveEventHandler(target, handler);
 				}
@@ -804,27 +809,42 @@ namespace MissingPieces.Metaprogramming
 				private static readonly MemberCache<EventInfo, Instance> Public = new PublicCache();
 				private static readonly MemberCache<EventInfo, Instance> NonPublic = new NonPublicCache();
 
-				private delegate void AddOrRemove(in T instance, H handler);
-
-				private readonly AddOrRemove addHandler;
-				private readonly AddOrRemove removeHandler;
+				private readonly EventAccess<T, H> accessor;
 
 				private Instance(EventInfo @event, bool nonPublic)
 					: base(@event)
 				{
 					var instanceParam = Parameter(RuntimeType.MakeByRefType());
 					var handlerParam = Parameter(@event.EventHandlerType);
-					addHandler = @event.GetAddMethod(nonPublic) is null ?
-						null :
-						Lambda<AddOrRemove>(Call(instanceParam, @event.GetAddMethod(nonPublic), handlerParam), instanceParam, handlerParam).Compile();
-					removeHandler = @event.GetRemoveMethod(nonPublic) is null ?
-						null :
-						Lambda<AddOrRemove>(Call(instanceParam, @event.GetRemoveMethod(nonPublic), handlerParam), instanceParam, handlerParam).Compile();
+					var actionParam = Parameter(typeof(EventAction));
+
+					var addMethod = @event.GetAddMethod(nonPublic);
+					var removeMethod = @event.GetRemoveMethod(nonPublic);
+
+					if (addMethod is null)
+						accessor = Lambda<EventAccess<T, H>>(
+							EventAccess.AddOrRemoveHandler(actionParam, null, Call(instanceParam, removeMethod, handlerParam)),
+							instanceParam,
+							handlerParam,
+							actionParam
+							).Compile();
+					else if(removeMethod is null)
+						accessor = Lambda<EventAccess<T, H>>(
+							EventAccess.AddOrRemoveHandler(actionParam, Call(instanceParam, addMethod, handlerParam), null),
+							instanceParam,
+							handlerParam,
+							actionParam
+							).Compile();
+					else
+						accessor = Lambda<EventAccess<T, H>>(
+							EventAccess.AddOrRemoveHandler(actionParam, Call(instanceParam, addMethod, handlerParam), Call(instanceParam, removeMethod, handlerParam)),
+							instanceParam,
+							handlerParam,
+							actionParam
+							).Compile();
 				}
 
-				public sealed override bool CanAdd => !(addHandler is null);
-
-				public sealed override bool CanRemove => !(removeHandler is null);
+				public static implicit operator EventAccess<T, H>(Instance @event) => @event?.accessor;
 
 				/// <summary>
 				/// Add event handler.
@@ -833,12 +853,12 @@ namespace MissingPieces.Metaprogramming
 				/// <param name="handler">An event handler to add.</param>
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
 				public void AddEventHandler(in T instance, H handler)
-					=> addHandler(in instance, handler);
+					=> accessor.AddEventHandler(in instance, handler);
 
 				public override void AddEventHandler(object target, Delegate handler)
 				{
 					if(target is T typedTarget && handler is H typedHandler)
-						addHandler(typedTarget, typedHandler);
+						AddEventHandler(typedTarget, typedHandler);
 					else 
 						base.AddEventHandler(target, handler);
 				}
@@ -850,12 +870,12 @@ namespace MissingPieces.Metaprogramming
 				/// <param name="handler">An event handler to remove.</param>
 				[MethodImpl(MethodImplOptions.AggressiveInlining)]
 				public void RemoveEventHandler(in T instance, H handler)
-					=> removeHandler(in instance, handler);
+					=> accessor.RemoveEventHandler(in instance, handler);
 
 				public override void RemoveEventHandler(object target, Delegate handler)
 				{
 					if(target is T typedTarget && handler is H typedHandler)
-						removeHandler(typedTarget, typedHandler);
+						RemoveEventHandler(typedTarget, typedHandler);
 					else
 						base.RemoveEventHandler(target, handler);
 				}
@@ -1004,7 +1024,7 @@ namespace MissingPieces.Metaprogramming
 				private static readonly MemberCache<FieldInfo, Instance> Public = new PublicCache();
 				private static readonly MemberCache<FieldInfo, Instance> NonPublic = new NonPublicCache();
 
-				internal readonly MemberAccess<T, F> accessor;
+				private readonly MemberAccess<T, F> accessor;
 
 				private Instance(FieldInfo field)
 					: base(field)
@@ -1023,6 +1043,8 @@ namespace MissingPieces.Metaprogramming
 							valueParam,
 							actionParam).Compile();
 				}
+
+				public static implicit operator MemberAccess<T, F>(Instance field) => field?.accessor;
 
 				public F this[in T instance]
 				{
@@ -1103,7 +1125,7 @@ namespace MissingPieces.Metaprogramming
 				private static readonly MemberCache<FieldInfo, Static> Public = new PublicCache();
 				private static readonly MemberCache<FieldInfo, Static> NonPublic = new NonPublicCache();
 
-				internal readonly MemberAccess<F> accessor;
+				private readonly MemberAccess<F> accessor;
 
 				private Static(FieldInfo field)
 					: base(field)
@@ -1130,6 +1152,8 @@ namespace MissingPieces.Metaprogramming
 				}
 
 				public static explicit operator F(Static field) => field.Value;
+
+				public static implicit operator MemberAccess<F>(Static field) => field?.accessor;
 
 				/// <summary>
 				/// Gets static field.
