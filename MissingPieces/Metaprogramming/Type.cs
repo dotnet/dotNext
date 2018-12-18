@@ -497,6 +497,9 @@ namespace MissingPieces.Metaprogramming
 							actionParam).Compile();
 				}
 
+				public new Method<MemberAccess.Reader<P>> GetMethod { get; }
+				public new Method<MemberAccess.Writer<P>> SetMethod { get; }
+
 				/// <summary>
 				/// Gets or sets property value.
 				/// </summary>
@@ -604,6 +607,9 @@ namespace MissingPieces.Metaprogramming
 							valueParam,
 							actionParam).Compile();
 				}
+
+				public new Method<MemberAccess.Reader<T, P>> GetMethod { get; }
+				public new Method<MemberAccess.Writer<T, P>> SetMethod { get; }
 
 				public static implicit operator MemberAccess<T, P>(Instance property) => property?.accessor;
 
@@ -1366,26 +1372,6 @@ namespace MissingPieces.Metaprogramming
 		public sealed class Method<D>: MethodInfo, IMethod<D>, IEquatable<Method<D>>, IEquatable<MethodInfo>
 			where D: class, MulticastDelegate
 		{
-			private sealed class Cache : MemberCache<MethodInfo, Method<D>>
-			{
-				private readonly BindingFlags flags;
-
-				internal Cache(BindingFlags flags) => this.flags = flags;
-
-				private protected override Method<D> CreateMember(string memberName)
-				{
-					var invokeMethod = Delegates.GetInvokeMethod<D>();
-					var targetMethod = RuntimeType.GetMethod(memberName, 
-						flags, 
-						Type.DefaultBinder, 
-						invokeMethod.GetParameterTypes(), 
-						Array.Empty<ParameterModifier>());
-					return invokeMethod.ReturnType.IsAssignableFrom(targetMethod.ReturnType) ?
-						new Method<D>(targetMethod) :
-						null;
-				}
-			}
-
 			private readonly MethodInfo method;
 			private readonly D invoker;
 
@@ -1462,6 +1448,26 @@ namespace MissingPieces.Metaprogramming
 			/// </summary>
 			public static class Static
 			{
+				private sealed class Cache : MemberCache<MethodInfo, Method<D>>
+				{
+					private readonly BindingFlags flags;
+
+					internal Cache(BindingFlags flags) => this.flags = flags;
+
+					private protected override Method<D> CreateMember(string memberName)
+					{
+						var invokeMethod = Delegates.GetInvokeMethod<D>();
+						var targetMethod = RuntimeType.GetMethod(memberName,
+							flags,
+							Type.DefaultBinder,
+							invokeMethod.GetParameterTypes(),
+							Array.Empty<ParameterModifier>());
+						return invokeMethod.ReturnType.IsAssignableFrom(targetMethod.ReturnType) ?
+							new Method<D>(targetMethod) :
+							null;
+					}
+				}
+
 				private static readonly Cache Public = new Cache(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 				private static readonly Cache NonPublic = new Cache(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
@@ -1500,6 +1506,29 @@ namespace MissingPieces.Metaprogramming
 			/// </summary>
 			public static class Instance
 			{
+				private sealed class Cache : MemberCache<MethodInfo, Method<D>>
+				{
+					private readonly BindingFlags flags;
+
+					internal Cache(BindingFlags flags) => this.flags = flags;
+
+					private protected override Method<D> CreateMember(string memberName)
+					{
+						var invokeMethod = Delegates.GetInvokeMethod<D>();
+						var parameters = invokeMethod.GetParameterTypes();
+						//remove hidden this parameter
+						parameters = parameters.RemoveFirst(1);
+						var targetMethod = RuntimeType.GetMethod(memberName,
+							flags,
+							Type.DefaultBinder,
+							parameters,
+							Array.Empty<ParameterModifier>());
+						return invokeMethod.ReturnType.IsAssignableFrom(targetMethod.ReturnType) ?
+							new Method<D>(targetMethod) :
+							null;
+					}
+				}
+
 				private static readonly Cache Public = new Cache(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 				private static readonly Cache NonPublic = new Cache(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 

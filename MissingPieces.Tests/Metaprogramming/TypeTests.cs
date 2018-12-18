@@ -10,6 +10,14 @@ namespace MissingPieces.Metaprogramming
 		private event EventHandler InstanceEvent;
 
 		[Fact]
+		public void MethodTest()
+		{
+			Func<string, char, int> indexOf = Type<string>.Method<Func<string, char, int>>.Instance.GetOrNull(nameof(string.IndexOf));
+			NotNull(indexOf);
+			var result = indexOf("aba", 'b');
+		}
+
+		[Fact]
 		public void ConstructorTests()
 		{
 			var stringCtor = Type<string>.Constructor.Get<char, int>();
