@@ -1247,7 +1247,7 @@ namespace MissingPieces.Metaprogramming
 			{
 				public static D GetOrNull(string methodName, bool nonPublic = false)
 				{
-					
+					return null;
 				}
 			}
 

@@ -59,7 +59,11 @@ namespace MissingPieces
 		/// Gets stack pointer.
 		/// </summary>
 		[CLSCompliant(false)]
-		public unsafe void* Address => Unsafe.AsPointer(ref AsRef<T>(in Value));
+		public unsafe void* Address
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => Unsafe.AsPointer(ref AsRef<T>(in Value));
+		}
 
 		/// <summary>
 		/// Returns true of other stack-allocated memory points
@@ -83,11 +87,12 @@ namespace MissingPieces
 		{
 			if(Size != StackValue<U>.Size)
 				return false;
-			else if(Address == other.Address)
-				return true;
-			var size = Size;
+
 			var first = new IntPtr(Address);
 			var second = new IntPtr(other.Address);
+			if (first == second)
+				return true;
+			var size = Size;
             tail_call: switch(size)
             {
                 case 0:
@@ -148,9 +153,9 @@ namespace MissingPieces
 		/// <param name="stack">Stack-allocated memory.</param>
 		public static unsafe implicit operator ReadOnlySpan<byte>(in StackValue<T> stack) => new ReadOnlySpan<byte>(stack.Address, Size);
 
-		public static bool operator==(in StackValue<T> first, in StackValue<T> second) => first.Equals(in second);
+		public static bool operator==(in StackValue<T> first, in StackValue<T> second) => first.Equals(second);
 
-		public static bool operator!=(in StackValue<T> first, in StackValue<T> second) => !first.Equals(in second);
+		public static bool operator!=(in StackValue<T> first, in StackValue<T> second) => !first.Equals(second);
 
 		public bool Equals(in T value) => Value.Equals(value);
 
