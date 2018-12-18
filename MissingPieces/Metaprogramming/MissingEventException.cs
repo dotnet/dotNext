@@ -5,7 +5,7 @@ namespace MissingPieces.Metaprogramming
 	/// <summary>
 	/// Indicates that requested event doesn't exist.
 	/// </summary>
-	public sealed class MissingEventException : ConstraintException
+	public sealed class MissingEventException : ConstraintViolationException
 	{
 		private MissingEventException(Type declaringType,
 			string eventName,

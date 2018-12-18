@@ -64,6 +64,10 @@ namespace MissingPieces
 			where D : Delegate
 			=> (D)method.CreateDelegate(typeof(D), target);
 
+		public static D CreateDelegate<D>(this MethodInfo method)
+			where D : Delegate
+			=> method.CreateDelegate<D>(null);
+
 		public static MethodInfo GetInvokeMethod<D>()
 			where D: Delegate
 			=> Reflection.Types.GetInvokeMethod(typeof(D));

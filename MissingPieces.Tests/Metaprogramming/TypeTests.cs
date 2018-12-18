@@ -9,12 +9,49 @@ namespace MissingPieces.Metaprogramming
 		internal static event EventHandler StaticEvent;
 		private event EventHandler InstanceEvent;
 
+		private struct Point
+		{
+			public int X, Y;
+
+			public void Zero() => X = Y = 0;
+		}
+
+		private delegate void ByRefAction<T>(in T value);
+
+		private delegate R ByRefFunc<T1, T2, R>(in T1 value, T2 arg);
+
 		[Fact]
-		public void MethodTest()
+		public void InstanceMethodTest()
 		{
 			Func<string, char, int> indexOf = Type<string>.Method<Func<string, char, int>>.Instance.GetOrNull(nameof(string.IndexOf));
 			NotNull(indexOf);
 			var result = indexOf("aba", 'b');
+			Equal(1, result);
+
+			ByRefFunc<string, char, int> indexOf2 = Type<string>.Method<ByRefFunc<string, char, int>>.Instance.GetOrNull(nameof(string.IndexOf));
+			result = indexOf("abca", 'c');
+			Equal(2, result);
+
+			Func<string, char, int, int> indexOf3 = Type<string>.Method<Func<string, char, int, int>>.Instance.GetOrNull(nameof(string.IndexOf));
+			NotNull(indexOf3);
+			result = indexOf3("aba", 'b', 1);
+			Equal(1, result);
+
+			Null(Type<Point>.Method<Action<Point>>.Instance.GetOrNull(nameof(Point.Zero)));
+			ByRefAction<Point> zero = Type<Point>.Method<ByRefAction<Point>>.Instance.GetOrNull(nameof(Point.Zero));
+			NotNull(zero);
+			var point = new Point() { X = 10, Y = 20 };
+			zero(point);
+			Equal(0, point.X);
+			Equal(0, point.Y);
+		}
+
+		[Fact]
+		public void StaticMethodTest()
+		{
+			Func<string, string, int> compare = Type<string>.Method<Func<string, string, int>>.Static.GetOrNull(nameof(string.Compare));
+			NotNull(compare);
+			True(compare("a", "b") < 0);
 		}
 
 		[Fact]
@@ -83,12 +120,16 @@ namespace MissingPieces.Metaprogramming
 			var rwProperty = Type<StructWithProperties>.Property<string>.Instance.Get(nameof(StructWithProperties.ReadWriteProperty));
 			True(rwProperty.CanRead);
 			True(rwProperty.CanWrite);
+			NotNull(rwProperty.GetMethod);
+			NotNull(rwProperty.SetMethod);
 			rwProperty[instance] = "Hello, world";
 			Equal("Hello, world", instance.ReadWriteProperty);
 			Equal("Hello, world", rwProperty[instance]);
 			var wProperty = Type<StructWithProperties>.Property<int>.Instance.Get(nameof(StructWithProperties.WriteOnlyProp));
 			True(wProperty.CanWrite);
 			False(wProperty.CanRead);
+			NotNull(wProperty.SetMethod);
+			Null(wProperty.GetMethod);
 			wProperty[instance] = 42;
 			MemberAccess<StructWithProperties, int> rProperty = Type<StructWithProperties>.Property<int>.Instance.Get(nameof(StructWithProperties.ReadOnlyProp));
 			Equal(42, rProperty.GetValue(in instance));
@@ -97,19 +138,22 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void StructPropertyTest()
 		{
-			var instance = new ClassWithProperties();
-			MemberAccess<ClassWithProperties, string> rwProperty = Type<ClassWithProperties>.Property<string>.Instance.Get(nameof(ClassWithProperties.ReadWriteProperty));
+			var instance = new StructWithProperties();
+			MemberAccess<StructWithProperties, string> rwProperty = Type<StructWithProperties>.Property<string>.Instance.Get(nameof(StructWithProperties.ReadWriteProperty));
 			rwProperty.SetValue(instance, "Hello, world");
 			Equal("Hello, world", instance.ReadWriteProperty);
 			Equal("Hello, world", rwProperty.GetValue(instance));
-			var wProperty = Type<ClassWithProperties>.Property<int>.Instance.Get(nameof(ClassWithProperties.WriteOnlyProp));
+			var wProperty = Type<StructWithProperties>.Property<int>.Instance.Get(nameof(StructWithProperties.WriteOnlyProp));
 			True(wProperty.CanWrite);
 			False(wProperty.CanRead);
+			NotNull(wProperty.SetMethod);
+			Null(wProperty.GetMethod);
 			wProperty[instance] = 42;
-			var rProperty = Type<ClassWithProperties>.Property<int>.Instance.Get(nameof(ClassWithProperties.ReadOnlyProp));
+			var rProperty = Type<StructWithProperties>.Property<int>.Instance.Get(nameof(StructWithProperties.ReadOnlyProp));
 			False(rProperty.CanWrite);
 			True(rProperty.CanRead);
 			Equal(42, rProperty[instance]);
+			Equal(42, ((MemberAccess.Reader<StructWithProperties, int>)rProperty.GetMethod).Invoke(instance));
 		}
 
 		[Fact]

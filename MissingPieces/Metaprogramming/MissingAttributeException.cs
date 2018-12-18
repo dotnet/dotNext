@@ -5,7 +5,7 @@ namespace MissingPieces.Metaprogramming
 	/// <summary>
 	/// Indicates that requested attribute doesn't exist.
 	/// </summary>
-	public sealed class MissingAttributeException : ConstraintException
+	public sealed class MissingAttributeException : ConstraintViolationException
 	{
 		private MissingAttributeException(Type target, Type attributeType)
 			: base($"Attribute {attributeType.FullName} is not defined for type {target.FullName}", target)

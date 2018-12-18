@@ -5,7 +5,7 @@ namespace MissingPieces.Metaprogramming
 	/// <summary>
 	/// Indicates that requested property doesn't exist.
 	/// </summary>
-	public sealed class MissingPropertyException : ConstraintException
+	public sealed class MissingPropertyException : ConstraintViolationException
 	{
 		private MissingPropertyException(Type declaringType,
 			string propertyName,

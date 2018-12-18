@@ -5,7 +5,7 @@ namespace MissingPieces.Metaprogramming
 	/// <summary>
 	/// Indicates that requested field doesn't exist.
 	/// </summary>
-	public sealed class MissingFieldException : ConstraintException
+	public sealed class MissingFieldException : ConstraintViolationException
 	{
 		private MissingFieldException(Type declaringType,
 			string fieldName,

@@ -5,7 +5,7 @@ namespace MissingPieces.Metaprogramming
 	/// <summary>
 	/// Indicates that requested constructor doesn't exist.
 	/// </summary>
-	public sealed class MissingConstructorException: ConstraintException
+	public sealed class MissingConstructorException: ConstraintViolationException
 	{
 		private MissingConstructorException(Type target, params Type[] args)
 			: base($"Type {target.FullName} doesn't have constructor with parameters {args.ToString(",")}", target)

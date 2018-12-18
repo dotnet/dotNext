@@ -155,29 +155,29 @@ namespace MissingPieces.Metaprogramming
 			}
 
 			/// <summary>
-			/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+			/// Gets constructor matching to signature of delegate <typeparamref name="D"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <returns>Constructor in the form of delegate; or null, if constructor doesn't exist.</returns>
+			/// <returns>Reflected constructor; or null, if constructor doesn't exist.</returns>
 			public static Constructor<D> GetOrNull(bool nonPublic = false) => nonPublic ? NonPublic.Value : Public.Value;
 
 			/// <summary>
-			/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+			/// Gets constructor matching to signature of delegate <typeparamref name="D"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
-			/// <returns>Constructor in the form of delegate.</returns>
+			/// <returns>Reflected constructor.</returns>
 			public static Constructor<D> GetOrThrow<E>(bool nonPublic = false)
 				where E : Exception, new()
 				=> GetOrNull(nonPublic) ?? throw new E();
 
 			/// <summary>
-			/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+			/// Gets constructor matching to signature of delegate <typeparamref name="D"/>.
 			/// </summary>
 			/// <param name="exceptionFactory">A factory used to produce exception.</param>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
-			/// <returns>Constructor in the form of delegate.</returns>
+			/// <returns>Reflected constructor.</returns>
 			public static Constructor<D> GetOrThrow<E>(Func<E> exceptionFactory, bool nonPublic = false)
 				where E : Exception
 				=> GetOrNull(nonPublic) ?? throw exceptionFactory();
@@ -473,7 +473,6 @@ namespace MissingPieces.Metaprogramming
 				private static readonly Cache NonPublic = new Cache(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
 				private readonly MemberAccess<P> accessor;
-
 				private Static(PropertyInfo property, bool nonPublic)
 					: base(property)
 				{
@@ -497,8 +496,34 @@ namespace MissingPieces.Metaprogramming
 							actionParam).Compile();
 				}
 
-				public new Method<MemberAccess.Reader<P>> GetMethod { get; }
-				public new Method<MemberAccess.Writer<P>> SetMethod { get; }
+				public new Method<MemberAccess.Reader<P>> GetGetMethod(bool nonPublic)
+				{
+					var getter = base.GetGetMethod(nonPublic);
+					return getter == null ? null : Method<MemberAccess.Reader<P>>.Static.GetOrNull(getter.Name, nonPublic);
+				} 
+
+				public new Method<MemberAccess.Reader<P>> GetMethod
+				{
+					get
+					{
+						var getter = base.GetMethod;
+						return getter == null ? null : Method<MemberAccess.Reader<P>>.Static.GetOrNull(getter.Name, !getter.IsPublic);
+					}
+				}
+				public new Method<MemberAccess.Writer<P>> SetMethod 
+				{ 
+					get
+					{
+						var setter = base.SetMethod;
+						return setter == null ? null : Method<MemberAccess.Writer<P>>.Static.GetOrNull(setter.Name, !setter.IsPublic);
+					}
+				}
+
+				public new Method<MemberAccess.Writer<P>> GetSetMethod(bool nonPublic)
+				{
+					var setter = base.GetSetMethod(nonPublic);
+					return setter == null ? null : Method<MemberAccess.Writer<P>>.Static.GetOrNull(setter.Name, nonPublic);
+				}
 
 				/// <summary>
 				/// Gets or sets property value.
@@ -608,8 +633,34 @@ namespace MissingPieces.Metaprogramming
 							actionParam).Compile();
 				}
 
-				public new Method<MemberAccess.Reader<T, P>> GetMethod { get; }
-				public new Method<MemberAccess.Writer<T, P>> SetMethod { get; }
+				public new Method<MemberAccess.Reader<T, P>> GetGetMethod(bool nonPublic)
+				{
+					var getter = base.GetGetMethod(nonPublic);
+					return getter == null ? null : Method<MemberAccess.Reader<T, P>>.Instance.GetOrNull(getter.Name, nonPublic);
+				} 
+
+				public new Method<MemberAccess.Reader<T, P>> GetMethod
+				{
+					get
+					{
+						var getter = base.GetMethod;
+						return getter == null ? null : Method<MemberAccess.Reader<T, P>>.Instance.GetOrNull(getter.Name, !getter.IsPublic);
+					}
+				}
+				public new Method<MemberAccess.Writer<T, P>> SetMethod 
+				{ 
+					get
+					{
+						var setter = base.SetMethod;
+						return setter == null ? null : Method<MemberAccess.Writer<T, P>>.Instance.GetOrNull(setter.Name, !setter.IsPublic);
+					}
+				}
+
+				public new Method<MemberAccess.Writer<T, P>> GetSetMethod(bool nonPublic)
+				{
+					var setter = base.GetSetMethod(nonPublic);
+					return setter == null ? null : Method<MemberAccess.Writer<T, P>>.Instance.GetOrNull(setter.Name, nonPublic);
+				}
 
 				public static implicit operator MemberAccess<T, P>(Instance property) => property?.accessor;
 
@@ -1375,10 +1426,10 @@ namespace MissingPieces.Metaprogramming
 			private readonly MethodInfo method;
 			private readonly D invoker;
 
-			private Method(MethodInfo method)
+			private Method(MethodInfo method, Func<MethodInfo, D> invokerFactory)
 			{
 				this.method = method;
-				invoker = method.CreateDelegate<D>(null);
+				invoker = invokerFactory(method);
 			}
 
 			public override MethodAttributes Attributes => method.Attributes;
@@ -1462,8 +1513,8 @@ namespace MissingPieces.Metaprogramming
 							Type.DefaultBinder,
 							invokeMethod.GetParameterTypes(),
 							Array.Empty<ParameterModifier>());
-						return invokeMethod.ReturnType.IsAssignableFrom(targetMethod.ReturnType) ?
-							new Method<D>(targetMethod) :
+						return targetMethod != null && invokeMethod.ReturnType.IsAssignableFrom(targetMethod.ReturnType) ?
+							new Method<D>(targetMethod, Delegates.CreateDelegate<D>) :
 							null;
 					}
 				}
@@ -1472,33 +1523,33 @@ namespace MissingPieces.Metaprogramming
 				private static readonly Cache NonPublic = new Cache(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
 				/// <summary>
-				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+				/// Gets static method matching to signature of delegate <typeparamref name="D"/>.
 				/// </summary>
-				/// <param name="nonPublic">True to reflect non-public constructor.</param>
-				/// <returns>Constructor in the form of delegate; or null, if constructor doesn't exist.</returns>
+				/// <param name="nonPublic">True to reflect non-public method.</param>
+				/// <returns>Reflected method; or null, if method doesn't exist.</returns>
 				public static Method<D> GetOrNull(string methodName, bool nonPublic = false)
 					=> (nonPublic ? NonPublic : Public).GetOrCreate(methodName);
 
 				/// <summary>
-				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+				/// Gets static method matching to signature of delegate <typeparamref name="D"/>.
 				/// </summary>
-				/// <param name="nonPublic">True to reflect non-public constructor.</param>
-				/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
-				/// <returns>Constructor in the form of delegate.</returns>
+				/// <param name="nonPublic">True to reflect non-public method.</param>
+				/// <typeparam name="E">Type of exception to throw if method doesn't exist.</typeparam>
+				/// <returns>Reflected method.</returns>
 				public static Method<D> GetOrThrow<E>(string methodName, bool nonPublic = false)
 					where E : Exception, new()
 					=> GetOrNull(methodName, nonPublic) ?? throw new E();
 
 				/// <summary>
-				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+				/// Gets static method matching to signature of delegate <typeparamref name="D"/>.
 				/// </summary>
 				/// <param name="exceptionFactory">A factory used to produce exception.</param>
-				/// <param name="nonPublic">True to reflect non-public constructor.</param>
-				/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
-				/// <returns>Constructor in the form of delegate.</returns>
-				public static Method<D> GetOrThrow<E>(string methodName, Func<E> exceptionFactory, bool nonPublic = false)
+				/// <param name="nonPublic">True to reflect non-public method.</param>
+				/// <typeparam name="E">Type of exception to throw if method doesn't exist.</typeparam>
+				/// <returns>Reflected method.</returns>
+				public static Method<D> GetOrThrow<E>(string methodName, Func<string, E> exceptionFactory, bool nonPublic = false)
 					where E : Exception
-					=> GetOrNull(methodName, nonPublic) ?? throw exceptionFactory();
+					=> GetOrNull(methodName, nonPublic) ?? throw exceptionFactory(methodName);
 			}
 
 			/// <summary>
@@ -1516,16 +1567,32 @@ namespace MissingPieces.Metaprogramming
 					{
 						var invokeMethod = Delegates.GetInvokeMethod<D>();
 						var parameters = invokeMethod.GetParameterTypes();
-						//remove hidden this parameter
-						parameters = parameters.RemoveFirst(1);
+						var thisParam = parameters.FirstOrDefault();
+						if(thisParam is null)
+							return null;
 						var targetMethod = RuntimeType.GetMethod(memberName,
 							flags,
 							Type.DefaultBinder,
-							parameters,
+							parameters.RemoveFirst(1),	//remove hidden this parameter
 							Array.Empty<ParameterModifier>());
-						return invokeMethod.ReturnType.IsAssignableFrom(targetMethod.ReturnType) ?
-							new Method<D>(targetMethod) :
-							null;
+						//this parameter can be passed as REF so handle this situation
+						//first parameter should be passed by REF for structure types
+						Func<MethodInfo, D> factory;
+						if(thisParam.IsByRef)
+						{
+							thisParam = thisParam.GetElementType();
+							var formalParams = parameters.Map(Parameter);
+							factory = thisParam.IsValueType ? 
+								new Func<MethodInfo, D>(Delegates.CreateDelegate<D>) : 
+								method => Lambda<D>(Call(formalParams[0], method, formalParams.RemoveFirst(1)), formalParams).Compile();
+						}
+						else if(thisParam.IsValueType)
+							return null;
+						else
+							factory = Delegates.CreateDelegate<D>;
+						return thisParam == RuntimeType && invokeMethod.ReturnType.IsAssignableFrom(targetMethod.ReturnType) ?
+								new Method<D>(targetMethod, factory) :
+								null;
 					}
 				}
 
@@ -1533,33 +1600,72 @@ namespace MissingPieces.Metaprogramming
 				private static readonly Cache NonPublic = new Cache(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
 				/// <summary>
-				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+				/// Gets instance method matching to signature of delegate <typeparamref name="D"/>.
 				/// </summary>
-				/// <param name="nonPublic">True to reflect non-public constructor.</param>
-				/// <returns>Constructor in the form of delegate; or null, if constructor doesn't exist.</returns>
+				/// <param name="nonPublic">True to reflect non-public method.</param>
+				/// <returns>Reflected method; or null, if method doesn't exist.</returns>
 				public static Method<D> GetOrNull(string methodName, bool nonPublic = false)
 					=> (nonPublic ? NonPublic : Public).GetOrCreate(methodName);
 
 				/// <summary>
-				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+				/// Gets instance method matching to signature of delegate <typeparamref name="D"/>.
 				/// </summary>
-				/// <param name="nonPublic">True to reflect non-public constructor.</param>
-				/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
-				/// <returns>Constructor in the form of delegate.</returns>
+				/// <param name="nonPublic">True to reflect non-public method.</param>
+				/// <typeparam name="E">Type of exception to throw if method doesn't exist.</typeparam>
+				/// <returns>Reflected method.</returns>
 				public static Method<D> GetOrThrow<E>(string methodName, bool nonPublic = false)
 					where E : Exception, new()
 					=> GetOrNull(methodName, nonPublic) ?? throw new E();
 
 				/// <summary>
-				/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
+				/// Gets instance method matching to signature of delegate <typeparamref name="D"/>.
 				/// </summary>
 				/// <param name="exceptionFactory">A factory used to produce exception.</param>
-				/// <param name="nonPublic">True to reflect non-public constructor.</param>
-				/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
-				/// <returns>Constructor in the form of delegate.</returns>
-				public static Method<D> GetOrThrow<E>(string methodName, Func<E> exceptionFactory, bool nonPublic = false)
+				/// <param name="nonPublic">True to reflect non-public method.</param>
+				/// <typeparam name="E">Type of exception to throw if method doesn't exist.</typeparam>
+				/// <returns>Reflected method.</returns>
+				public static Method<D> GetOrThrow<E>(string methodName, Func<string, E> exceptionFactory, bool nonPublic = false)
 					where E : Exception
-					=> GetOrNull(methodName, nonPublic) ?? throw exceptionFactory();
+					=> GetOrNull(methodName, nonPublic) ?? throw exceptionFactory(methodName);
+			}
+		}
+
+		public static class Method
+		{
+			public static class Static
+			{
+				
+			}
+
+			public static class Static<R>
+			{
+				public static Func<R> Get(string methodName, bool nonPublic = false)
+					=> Method<Func<R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, R>, nonPublic);
+
+				public static Func<P, R> Get<P>(string methodName, bool nonPublic = false)
+					=> Method<Func<P, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P, R>, nonPublic);
+
+				public static Func<P1, P2, R> Get<P1, P2>(string methodName, bool nonPublic = false)
+					=> Method<Func<P1, P2, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, R>, nonPublic);
+
+				public static Func<P1, P2, P3, R> Get<P1, P2, P3>(string methodName, bool nonPublic = false)
+					=> Method<Func<P1, P2, P3, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, R>, nonPublic);
+				
+				public static Func<P1, P2, P3, P4, R> Get<P1, P2, P3, P4>(string methodName, bool nonPublic = false)
+					=> Method<Func<P1, P2, P3, P4, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, R>, nonPublic);
+				
+				public static Func<P1, P2, P3, P4, P5, R> Get<P1, P2, P3, P4, P5>(string methodName, bool nonPublic = false)
+					=> Method<Func<P1, P2, P3, P4, P5, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, R>, nonPublic);
+			}
+
+			public static class Instance
+			{
+				
+			}
+
+			public static class Instance<R>
+			{
+				
 			}
 		}
 	}
