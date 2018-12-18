@@ -316,10 +316,13 @@ namespace MissingPieces
         [CLSCompliant(false)]
         public static unsafe ulong DereferenceUInt64(this IntPtr pointer) => *(ulong*)pointer;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe float DereferenceSingle(this IntPtr pointer) => *(float*)pointer;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe double DereferenceDouble(this IntPtr pointer) => *(double*)pointer;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe decimal DereferenceDecimal(this IntPtr pointer) => *(decimal*)pointer;
     }
 }
