@@ -15,9 +15,6 @@ namespace MissingPieces.Metaprogramming
 	/// </summary>
 	public static class Type<T>
 	{
-		private delegate P PropertyGetter<P>(in T instance);
-		private delegate void PropertySetter<P>(in T instance, P value);
-
 		/// <summary>
 		/// Gets reflected type.
 		/// </summary>
@@ -273,9 +270,9 @@ namespace MissingPieces.Metaprogramming
 
 			public sealed override string Name => property.Name;
 
-			public abstract override bool CanRead { get; }
+			public sealed override bool CanRead => property.CanRead;
 
-			public abstract override bool CanWrite { get; }
+			public sealed override bool CanWrite => property.CanWrite;
 
 			public sealed override MethodInfo GetMethod => property.GetMethod;
 
@@ -383,19 +380,30 @@ namespace MissingPieces.Metaprogramming
 				private static readonly MemberCache<PropertyInfo, Static> Public = new PublicCache();
 				private static readonly MemberCache<PropertyInfo, Static> NonPublic = new NonPublicCache();
 
-				private readonly Func<P> getter;
-				private readonly Action<P> setter;
+				internal readonly MemberAccess<P> accessor;
 
 				private Static(PropertyInfo property, bool nonPublic)
 					: base(property)
 				{
-					getter = property.GetGetMethod(nonPublic)?.CreateDelegate<Func<P>>(null);
-					setter = property.GetSetMethod(nonPublic)?.CreateDelegate<Action<P>>(null);
+					var valueParam = Parameter(property.PropertyType.MakeByRefType());
+					var actionParam = Parameter(typeof(MemberAction));
+
+					var getter = property.GetGetMethod(nonPublic);
+					var setter = property.GetSetMethod(nonPublic);
+
+					if (getter is null) //write-only
+						accessor = Lambda<MemberAccess<P>>(MemberAccess.GetOrSetValue(actionParam, null, Call(null, setter, valueParam)),
+							valueParam,
+							actionParam).Compile();
+					else if (setter is null) //read-only
+						accessor = Lambda<MemberAccess<P>>(MemberAccess.GetOrSetValue(actionParam, Assign(valueParam, Call(null, getter)), null),
+							valueParam,
+							actionParam).Compile();
+					else //read-write
+						accessor = Lambda<MemberAccess<P>>(MemberAccess.GetOrSetValue(actionParam, Assign(valueParam, Call(null, getter)), Call(null, setter, valueParam)),
+							valueParam,
+							actionParam).Compile();
 				}
-
-				public sealed override bool CanRead => !(getter is null);
-
-				public sealed override bool CanWrite => !(setter is null);
 
 				/// <summary>
 				/// Gets or sets property value.
@@ -403,9 +411,9 @@ namespace MissingPieces.Metaprogramming
 				public P Value
 				{
 					[MethodImpl(MethodImplOptions.AggressiveInlining)]
-					get => getter();
+					get => accessor.GetValue();
 					[MethodImpl(MethodImplOptions.AggressiveInlining)]
-					set => setter(value);
+					set => accessor.SetValue(value);
 				}
 
 				public static explicit operator P(Static property) => property.Value;
@@ -479,30 +487,34 @@ namespace MissingPieces.Metaprogramming
 				private static readonly MemberCache<PropertyInfo, Instance> Public = new PublicCache();
 				private static readonly MemberCache<PropertyInfo, Instance> NonPublic = new NonPublicCache();
 
-				private readonly PropertyGetter<P> getter;
-				private readonly PropertySetter<P> setter;
+				internal readonly MemberAccess<T, P> accessor;
 
 				private Instance(PropertyInfo property, bool nonPublic)
 					: base(property)
 				{
-					var instanceParam = Parameter(property.DeclaringType.MakeByRefType());
-					if (property.GetGetMethod(nonPublic) is null)
-						getter = null;
-					else
-						getter = Lambda<PropertyGetter<P>>(Call(instanceParam, property.GetGetMethod(nonPublic)), instanceParam).Compile();
+					var instanceParam = Parameter(RuntimeType.MakeByRefType());
+					var valueParam = Parameter(property.PropertyType.MakeByRefType());
+					var actionParam = Parameter(typeof(MemberAction));
 
-					if (property.GetSetMethod(nonPublic) is null)
-						setter = null;
-					else
-					{
-						var valueParam = Parameter(property.PropertyType);
-						setter = Lambda<PropertySetter<P>>(Call(instanceParam, property.GetSetMethod(nonPublic), valueParam), instanceParam, valueParam).Compile();
-					}
+					var getter = property.GetGetMethod(nonPublic);
+					var setter = property.GetSetMethod(nonPublic);
+
+					if (getter is null) //write-only
+						accessor = Lambda<MemberAccess<T, P>>(MemberAccess.GetOrSetValue(actionParam, null, Call(instanceParam, setter, valueParam)),
+							instanceParam,
+							valueParam,
+							actionParam).Compile();
+					else if (setter is null) //read-only
+						accessor = Lambda<MemberAccess<T, P>>(MemberAccess.GetOrSetValue(actionParam, Assign(valueParam, Call(instanceParam, getter)), null),
+						instanceParam,
+							valueParam,
+							actionParam).Compile();
+					else //read-write
+						accessor = Lambda<MemberAccess<T, P>>(MemberAccess.GetOrSetValue(actionParam, Assign(valueParam, Call(instanceParam, getter)), Call(instanceParam, setter, valueParam)),
+							instanceParam,
+							valueParam,
+							actionParam).Compile();
 				}
-
-				public sealed override bool CanRead => !(getter is null);
-
-				public sealed override bool CanWrite => !(setter is null);
 
 				/// <summary>
 				/// Gets or sets property value.
@@ -512,9 +524,9 @@ namespace MissingPieces.Metaprogramming
 				public P this[in T owner]
 				{
 					[MethodImpl(MethodImplOptions.AggressiveInlining)]
-					get => getter(in owner);
+					get => accessor.GetValue(in owner);
 					[MethodImpl(MethodImplOptions.AggressiveInlining)]
-					set => setter(in owner, value);
+					set => accessor.SetValue(in owner, value);
 				}
 
 				/// <summary>
@@ -800,7 +812,7 @@ namespace MissingPieces.Metaprogramming
 				private Instance(EventInfo @event, bool nonPublic)
 					: base(@event)
 				{
-					var instanceParam = Parameter(@event.DeclaringType.MakeByRefType());
+					var instanceParam = Parameter(RuntimeType.MakeByRefType());
 					var handlerParam = Parameter(@event.EventHandlerType);
 					addHandler = @event.GetAddMethod(nonPublic) is null ?
 						null :
@@ -992,24 +1004,30 @@ namespace MissingPieces.Metaprogramming
 				private static readonly MemberCache<FieldInfo, Instance> Public = new PublicCache();
 				private static readonly MemberCache<FieldInfo, Instance> NonPublic = new NonPublicCache();
 
-				private readonly PropertyGetter<F> reader;
-				private readonly PropertySetter<F> writer;
+				internal readonly MemberAccess<T, F> accessor;
 
 				private Instance(FieldInfo field)
 					: base(field)
 				{
-					var instanceParam = Parameter(RuntimeType);
-					reader = Lambda<PropertyGetter<F>>(Field(instanceParam, field), instanceParam).Compile();
-					var valueParam = Parameter(typeof(F));
-					writer = field.Attributes.HasFlag(FieldAttributes.InitOnly) ?
-						null :
-						Lambda<PropertySetter<F>>(Assign(Field(instanceParam, field), valueParam), instanceParam, valueParam).Compile();
+					var instanceParam = Parameter(field.DeclaringType.MakeArrayType());
+					var valueParam = Parameter(field.FieldType.MakeByRefType());
+					var actionParam = Parameter(typeof(MemberAction));
+					if (field.Attributes.HasFlag(FieldAttributes.InitOnly))
+						accessor = Lambda<MemberAccess<T, F>>(MemberAccess.GetOrSetValue(actionParam, Assign(valueParam, Field(instanceParam, field)), null),
+							instanceParam,
+							valueParam,
+							actionParam).Compile();
+					else
+						accessor = Lambda<MemberAccess<T, F>>(MemberAccess.GetOrSetValue(actionParam, Assign(valueParam, Field(instanceParam, field)), Assign(Field(instanceParam, field), valueParam)),
+							instanceParam,
+							valueParam,
+							actionParam).Compile();
 				}
 
 				public F this[in T instance]
 				{
-					get => reader(instance);
-					set => writer(in instance, value);
+					get => accessor.GetValue(in instance);
+					set => accessor.SetValue(in instance, value);
 				}
 
 				/// <summary>
@@ -1085,17 +1103,21 @@ namespace MissingPieces.Metaprogramming
 				private static readonly MemberCache<FieldInfo, Static> Public = new PublicCache();
 				private static readonly MemberCache<FieldInfo, Static> NonPublic = new NonPublicCache();
 
-				private readonly Func<F> reader;
-				private readonly Action<F> writer;
+				internal readonly MemberAccess<F> accessor;
 
 				private Static(FieldInfo field)
 					: base(field)
 				{
-					reader = Lambda<Func<F>>(Field(null, field)).Compile();
-					var valueParam = Parameter(typeof(F));
-					writer = field.Attributes.HasFlag(FieldAttributes.InitOnly) ?
-						null :
-						Lambda<Action<F>>(Assign(Field(null, field), valueParam), valueParam).Compile();
+					var valueParam = Parameter(field.FieldType.MakeByRefType());
+					var actionParam = Parameter(typeof(MemberAction));
+					if (field.Attributes.HasFlag(FieldAttributes.InitOnly))
+						accessor = Lambda<MemberAccess<F>>(MemberAccess.GetOrSetValue(actionParam, Assign(valueParam, Field(null, field)), null),
+							valueParam,
+							actionParam).Compile();
+					else
+						accessor = Lambda<MemberAccess<F>>(MemberAccess.GetOrSetValue(actionParam, Assign(valueParam, Field(null, field)), Assign(Field(null, field), valueParam)),
+							valueParam,
+							actionParam).Compile();
 				}
 
 				/// <summary>
@@ -1103,8 +1125,8 @@ namespace MissingPieces.Metaprogramming
 				/// </summary>
 				public F Value
 				{
-					get => reader();
-					set => writer(value);
+					get => accessor.GetValue();
+					set => accessor.SetValue(value);
 				}
 
 				public static explicit operator F(Static field) => field.Value;

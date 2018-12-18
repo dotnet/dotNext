@@ -157,7 +157,11 @@ namespace MissingPieces
 		private readonly T value;
 		private readonly bool isPresent;
 
-		private Optional(T value)
+		/// <summary>
+		/// Constructs non-empty container.
+		/// </summary>
+		/// <param name="value">A value to be placed into container.</param>
+		public Optional(T value)
 		{
 			this.value = value;
 			isPresent = true;
