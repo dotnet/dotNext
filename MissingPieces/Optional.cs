@@ -133,16 +133,10 @@ namespace MissingPieces
 	/// <typeparam name="T">Type of value.</typeparam>
 	public readonly struct Optional<T> : IOptional, IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable
 	{
-		//'in' has the same semantics as 'ref'
-		//it means that actual type of delegate is T&
-		//passing by reference allows to avoid boxing
-		//of T if it is value type
-		private delegate bool Checker(in T value);
-
 		/// <summary>
 		/// Highly optimized checker of the content.
 		/// </summary>
-		private static readonly Checker HasValueChecker;
+		private static readonly Metaprogramming.MemberAccess.Reader<T, bool> HasValueChecker;
 
 		static Optional()
 		{
@@ -151,7 +145,7 @@ namespace MissingPieces
 			Expression checkerBody = parameter.Type.IsValueType ?
 				Optional.CheckerBodyForValueType(parameter) :
 				Optional.CheckerBodyForReferenceType(parameter);
-			HasValueChecker = Expression.Lambda<Checker>(checkerBody, parameter).Compile();
+			HasValueChecker = Expression.Lambda<Metaprogramming.MemberAccess.Reader<T, bool>>(checkerBody, parameter).Compile();
 		}
 
 		private readonly T value;
