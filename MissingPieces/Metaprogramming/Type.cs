@@ -24,45 +24,135 @@ namespace MissingPieces.Metaprogramming
 		/// Provides constructor definition based on delegate signature.
 		/// </summary>
 		/// <typeparam name="D">Type of delegate representing constructor of type <typeparamref name="D"/>.</typeparam>
-		public static class Constructor<D>
+		public sealed class Constructor<D>: ConstructorInfo, IConstructor<D>, IEquatable<ConstructorInfo>, IEquatable<Constructor<D>>
 			where D : class, MulticastDelegate
 		{
-			private static D CompileConstructor(bool nonPublic)
+			private readonly D invoker;
+			private readonly ConstructorInfo ctor;
+
+			private Constructor(ConstructorInfo ctor)
+			{
+				this.ctor = ctor;
+				if (ctor is null)
+					invoker = Lambda<D>(Default<T>.Expression).Compile();
+				else
+				{
+					var parameters = ctor.GetParameters().Map(p => Parameter(p.ParameterType));
+					invoker = Lambda<D>(New(ctor, parameters), parameters).Compile();
+				}
+			}
+
+			public static implicit operator D(Constructor<D> ctor) => ctor?.invoker;
+
+			public override string Name => ctor?.Name ?? ".ctor";
+
+			ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctor;
+
+			D IMethod<ConstructorInfo, D>.Invoker => invoker;
+
+			public override MethodAttributes Attributes => ctor == null ? invoker.Method.Attributes : ctor.Attributes;
+
+			public override RuntimeMethodHandle MethodHandle => ctor == null ? invoker.Method.MethodHandle : ctor.MethodHandle;
+
+			public override Type DeclaringType => ctor?.DeclaringType ?? RuntimeType;
+
+			public override Type ReflectedType => ctor?.ReflectedType ?? invoker.Method.ReflectedType;
+
+			public override CallingConventions CallingConvention => ctor == null ? invoker.Method.CallingConvention : ctor.CallingConvention;
+
+			public override bool ContainsGenericParameters => false;
+
+			public override IEnumerable<CustomAttributeData> CustomAttributes => ctor?.CustomAttributes ?? invoker.Method.CustomAttributes;
+
+			public override MethodBody GetMethodBody() => ctor?.GetMethodBody() ?? invoker.Method.GetMethodBody();
+
+			public override IList<CustomAttributeData> GetCustomAttributesData() => ctor?.GetCustomAttributesData() ?? invoker.Method.GetCustomAttributesData();
+
+			public override Type[] GetGenericArguments() => Array.Empty<Type>();
+
+			public override bool IsGenericMethod => false;
+
+			public override bool IsGenericMethodDefinition => false;
+
+			public override bool IsSecurityCritical => ctor == null ? invoker.Method.IsSecurityCritical : ctor.IsSecurityCritical;
+
+			public override bool IsSecuritySafeCritical => ctor == null ? invoker.Method.IsSecuritySafeCritical : ctor.IsSecuritySafeCritical;
+
+			public override bool IsSecurityTransparent => ctor == null ? invoker.Method.IsSecurityTransparent : ctor.IsSecurityTransparent;
+
+			public override MemberTypes MemberType => MemberTypes.Constructor;
+
+			public override int MetadataToken => ctor == null ? invoker.Method.MetadataToken : ctor.MetadataToken;
+
+			public override MethodImplAttributes MethodImplementationFlags => ctor == null ? invoker.Method.MethodImplementationFlags : ctor.MethodImplementationFlags;
+
+			public override Module Module => ctor?.Module ?? RuntimeType.Module;
+
+			public override object Invoke(BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
+				=> Invoke(null, invokeAttr, binder, parameters, culture);
+
+			public override MethodImplAttributes GetMethodImplementationFlags() => MethodImplementationFlags;
+
+			public override ParameterInfo[] GetParameters() => ctor?.GetParameters() ?? invoker.Method.GetParameters();
+
+			public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
+				=> ctor == null ? invoker.Method.Invoke(obj, invokeAttr, binder, parameters, culture) : ctor.Invoke(obj, invokeAttr, binder, parameters, culture);
+
+			public override object[] GetCustomAttributes(bool inherit) 
+				=> ctor?.GetCustomAttributes(inherit) ?? invoker.Method.GetCustomAttributes(inherit);
+
+			public override object[] GetCustomAttributes(Type attributeType, bool inherit) 
+				=> ctor?.GetCustomAttributes(attributeType, inherit) ?? invoker.Method.GetCustomAttributes(attributeType, inherit);
+
+			public override bool IsDefined(Type attributeType, bool inherit)
+				=> ctor == null ? invoker.Method.IsDefined(attributeType, inherit) : ctor.IsDefined(attributeType, inherit);
+
+			public bool Equals(ConstructorInfo other) => ctor == other;
+
+			public bool Equals(Constructor<D> other) => Equals(other?.ctor);
+
+			public override bool Equals(object other)
+			{
+				switch(other)
+				{
+					case Constructor<D> ctor:
+						return Equals(ctor);
+					case ConstructorInfo ctor:
+						return Equals(ctor);
+					default:
+						return false;
+				}
+			}
+
+			public override string ToString() => ctor == null ? invoker.Method.ToString() : ctor.ToString();
+
+			public override int GetHashCode() => ctor == null ? invoker.Method.GetHashCode() : ctor.GetHashCode();
+
+			private static Constructor<D> Create(bool nonPublic)
 			{
 				var invokeMethod = Delegates.GetInvokeMethod<D>();
 
 				if (RuntimeType.IsValueType && invokeMethod.GetParameters().LongLength == 0L)
-					return Lambda<D>(Default<T>.Expression).Compile();
+					return new Constructor<D>(null);
 				else
 				{
 					var flags = BindingFlags.DeclaredOnly | BindingFlags.Instance | (nonPublic ? BindingFlags.NonPublic : BindingFlags.Public);
 					var ctor = RuntimeType.GetConstructor(flags, Type.DefaultBinder, invokeMethod.GetParameterTypes(), Array.Empty<ParameterModifier>());
-					if (ctor is null || !invokeMethod.ReturnType.IsAssignableFrom(RuntimeType))
-						return null;
-					else
-					{
-						var parameters = ctor.GetParameters().Map(p => Parameter(p.ParameterType));
-						return Lambda<D>(New(ctor, parameters), parameters).Compile();
-					}
+					return ctor is null || !invokeMethod.ReturnType.IsAssignableFrom(RuntimeType) ?
+						null :
+						new Constructor<D>(ctor);
 				}
 			}
 
-			private static class Public
-			{
-				internal static readonly D Implementation = CompileConstructor(false);
-			}
-
-			private static class NonPublic
-			{
-				internal static readonly D Implementation = CompileConstructor(true);
-			}
+			private static readonly Constructor<D> Public = Create(false);
+			private static readonly Constructor<D> NonPublic = Create(true);
 
 			/// <summary>
 			/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Constructor in the form of delegate; or null, if constructor doesn't exist.</returns>
-			public static D GetOrNull(bool nonPublic = false) => nonPublic ? NonPublic.Implementation : Public.Implementation;
+			public static Constructor<D> GetOrNull(bool nonPublic = false) => nonPublic ? NonPublic : Public;
 
 			/// <summary>
 			/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
@@ -70,7 +160,7 @@ namespace MissingPieces.Metaprogramming
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
 			/// <returns>Constructor in the form of delegate.</returns>
-			public static D GetOrThrow<E>(bool nonPublic = false)
+			public static Constructor<D> GetOrThrow<E>(bool nonPublic = false)
 				where E : Exception, new()
 				=> GetOrNull(nonPublic) ?? throw new E();
 
@@ -81,7 +171,7 @@ namespace MissingPieces.Metaprogramming
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <typeparam name="E">Type of exception to throw if constructor doesn't exist.</typeparam>
 			/// <returns>Constructor in the form of delegate.</returns>
-			public static D GetOrThrow<E>(Func<E> exceptionFactory, bool nonPublic = false)
+			public static Constructor<D> GetOrThrow<E>(Func<E> exceptionFactory, bool nonPublic = false)
 				where E : Exception
 				=> GetOrNull(nonPublic) ?? throw exceptionFactory();
 		}
