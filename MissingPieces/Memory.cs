@@ -256,6 +256,7 @@ namespace MissingPieces
         /// <param name="value">A reference to convert.</param>
         /// <typeparam name="T">Type of reference.</typeparam>
         /// <returns>Converted reference.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T AsRef<T>(in T value) => ref Ref<T>.ToRegularRef(in value);
 
         public static bool ContentAreEqual(this ReadOnlySpan<byte> first, ReadOnlySpan<byte> second)
@@ -324,5 +325,56 @@ namespace MissingPieces
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe decimal DereferenceDecimal(this IntPtr pointer) => *(decimal*)pointer;
+
+        internal static bool BitwiseEquals(IntPtr first, IntPtr second, int size)
+        {
+            if (first == second)
+				return true;
+            
+            tail_call: switch(size)
+            {
+                case 0:
+                    return true;
+                case sizeof(byte): 
+                    return first.DereferenceByte() == second.DereferenceByte();
+                case sizeof(ushort): 
+                    return first.DereferenceUInt16() == second.DereferenceUInt16();
+                case sizeof(ushort) + sizeof(byte):
+					return Reader.ReadUInt16(ref first) == Reader.ReadUInt16(ref second) && 
+						first.DereferenceByte() == second.DereferenceByte();
+				case sizeof(uint):
+					return first.DereferenceUInt32() == second.DereferenceUInt32();
+                case sizeof(uint) + sizeof(byte):
+					return Reader.ReadUInt32(ref first) == Reader.ReadUInt32(ref second) &&
+						first.DereferenceByte() == second.DereferenceByte();
+                case sizeof(uint) + sizeof(ushort):
+					return Reader.ReadUInt32(ref first) == Reader.ReadUInt32(ref second) &&
+						first.DereferenceUInt16() == second.DereferenceUInt16();
+                case sizeof(uint) + sizeof(ushort) + sizeof(byte):
+					return Reader.ReadUInt32(ref first) == Reader.ReadUInt32(ref second) &&
+						Reader.ReadUInt16(ref first) == Reader.ReadUInt16(ref second) &&
+						first.DereferenceByte() == second.DereferenceByte();
+                case sizeof(ulong):
+                    return first.DereferenceUInt64() == second.DereferenceUInt64();
+				case sizeof(ulong) + sizeof(byte):
+					return Reader.ReadUInt64(ref first) == Reader.ReadUInt64(ref second) &&
+						first.DereferenceByte() == second.DereferenceByte();
+				case sizeof(ulong) +sizeof(ushort):
+					return Reader.ReadUInt64(ref first) == Reader.ReadUInt64(ref second) &&
+						first.DereferenceUInt16() == second.DereferenceUInt16();
+				case sizeof(ulong) + sizeof(uint):
+					return Reader.ReadUInt64(ref first) == Reader.ReadUInt64(ref second) &&
+						first.DereferenceUInt32() == second.DereferenceUInt32();
+				case sizeof(ulong) + sizeof(ulong):
+					return Reader.ReadUInt64(ref first) == Reader.ReadUInt64(ref second) &&
+						first.DereferenceUInt64() == second.DereferenceUInt64();
+                default:
+					size -= sizeof(ulong);
+                    if(first.DereferenceUInt64() == second.DereferenceUInt64())
+                        goto tail_call;
+                    else
+                        return false;
+            }
+        }
     }
 }
