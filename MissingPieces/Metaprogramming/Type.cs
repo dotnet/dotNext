@@ -144,15 +144,22 @@ namespace MissingPieces.Metaprogramming
 				}
 			}
 
-			private static readonly Constructor<D> Public = Create(false);
-			private static readonly Constructor<D> NonPublic = Create(true);
+			private static class Public
+			{
+				internal static readonly Constructor<D> Value = Create(false);
+			}
+
+			private static class NonPublic
+			{
+				internal static readonly Constructor<D> Value = Create(true);
+			}
 
 			/// <summary>
 			/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Constructor in the form of delegate; or null, if constructor doesn't exist.</returns>
-			public static Constructor<D> GetOrNull(bool nonPublic = false) => nonPublic ? NonPublic : Public;
+			public static Constructor<D> GetOrNull(bool nonPublic = false) => nonPublic ? NonPublic.Value : Public.Value;
 
 			/// <summary>
 			/// Get constructor in the form of delegate of type <typeparamref name="D"/>.
