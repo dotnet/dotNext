@@ -85,6 +85,7 @@ namespace MissingPieces
 			return optionalInterface.IsAssignableFrom(targetType) ?
 				optionalInterface.GetProperty(nameof(IOptional.IsPresent)) :
 				null;
+			
 		}
 
 		private static Expression HasContentPropertyExpression(Expression input)

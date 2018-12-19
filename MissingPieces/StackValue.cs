@@ -86,8 +86,9 @@ namespace MissingPieces
 			if(Size != StackValue<U>.Size)
 				return false;
 
-			var first = new IntPtr(Address);
-			var second = new IntPtr(other.Address);
+
+			var first = Address;
+			var second = other.Address;
 			return first == second || Memory.BitwiseEquals(first, second, Size);
 		}
 
