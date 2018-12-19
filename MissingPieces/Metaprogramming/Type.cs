@@ -35,7 +35,7 @@ namespace MissingPieces.Metaprogramming
 		static Type()
 		{
 			IsDefault = RuntimeType.IsValueType ?
-				new Predicate<int>(Memory.IsDefault).Reinterpret<Predicate<T>>() :
+				new Predicate<int>(ValueTypes.IsDefault).Reinterpret<Predicate<T>>() :
 				new Predicate<object>(input => input is null).ConvertDelegate<Predicate<T>>();
 		}
 
