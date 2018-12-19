@@ -72,8 +72,8 @@ namespace MissingPieces
 				.SequenceEqual(new ReadOnlySpan<byte>(Unsafe.AsPointer(ref second), Unsafe.SizeOf<T2>()));
 
 		public static unsafe int BitwiseCompare<T1, T2>(this T1 first, T2 second)
-			where T1: struct
-			where T2: struct
+			where T1: unmanaged
+			where T2: unmanaged
 			=> new ReadOnlySpan<byte>(Unsafe.AsPointer(ref first), Unsafe.SizeOf<T1>())
 				.SequenceCompareTo(new ReadOnlySpan<byte>(Unsafe.AsPointer(ref second), Unsafe.SizeOf<T2>()));
 		
