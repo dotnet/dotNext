@@ -8,18 +8,18 @@ namespace MissingPieces.Metaprogramming
         [Fact]
         public void RefTypeDefaultTest()
         {
-            Null(Default<string>.Value);
-            True(Default<string>.Is(null));
-            False(Default<string>.Is(""));
+            Null(Type<string>.Default);
+            True(Type<string>.IsDefault(default));
+            False(Type<string>.IsDefault(""));
         }
 
         [Fact]
         public void StructTypeDefaultTest()
         {
             var value = default(Guid);
-            True(Default<Guid>.Is(value));
+            True(Type<Guid>.IsDefault(value));
             value = Guid.NewGuid();
-            False(Default<Guid>.Is(value));
+            False(Type<Guid>.IsDefault(value));
         }
     }
 }

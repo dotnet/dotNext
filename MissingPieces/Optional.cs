@@ -44,6 +44,10 @@ namespace MissingPieces
 			where T : struct
 			=> value ?? Optional<T>.Empty;
 
+		public static Optional<T> EmptyIfNull<T>(this T value)
+			where T: class
+			=> value is null ? default : new Optional<T>(value);
+
 		/// <summary>
 		/// If a value is present, returns the value, otherwise null.
 		/// </summary>
@@ -179,6 +183,20 @@ namespace MissingPieces
 		/// <returns>True, if value has meaningful content; otherwise, false.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasValue(in T value) => HasValueChecker(in value);
+
+		public bool TryGet(out T value)
+		{
+			if(IsPresent)
+			{
+				value = this.value;
+				return true;
+			}
+			else
+			{
+				value = default;
+				return false;
+			}
+		}
 
 		/// <summary>
 		/// Returns the value if present; otherwise return default value.

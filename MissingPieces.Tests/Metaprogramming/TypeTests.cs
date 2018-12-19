@@ -196,7 +196,6 @@ namespace MissingPieces.Metaprogramming
 		public void StaticFieldTest()
 		{
 			var structField = Type<Guid>.Field<Guid>.Static.Get(nameof(Guid.Empty));
-			StackValue<Guid>.BitwiseEquals(default, structField.Value);
 			var objField = Type<TextReader>.Field<TextReader>.Static.Get(nameof(TextReader.Null));
 			Same(TextReader.Null, objField.Value);
 		}

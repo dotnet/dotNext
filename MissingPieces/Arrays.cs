@@ -44,22 +44,18 @@ namespace MissingPieces
 			}
 		}
 
-		public static unsafe bool BitwiseEquals<T>(this T[] first, T[] second)
-			where T : unmanaged
-		{
-			if (ReferenceEquals(first, second))
-				return true;
-			else if (first is null)
-				return false;
-			else if (first.LongLength != second.LongLength)
-				return false;
-			else if (first.LongLength == 0L)
-				return true;
-			else
-				fixed (T* firstPtr = first, secondPtr = second)
-					return Memory.BitwiseEquals(firstPtr, secondPtr, StackValue<T>.Size * first.Length);
-		}
+		public static bool SequenceEqual<T>(this T[] first, T[] second)
+			where T : IEquatable<T>
+			=> first is null ? second is null : new ReadOnlySpan<T>(first).SequenceEqual(new ReadOnlySpan<T>(second));
 
-		public static ReadOnlyCollection<T> AsReadOnly<T>(this T[] input) => new ReadOnlyCollection<T>(input);
+		public static bool IsNullOrEmpty(this Array array)
+		{
+			if(array is null)
+				return true;
+			for(int dimension = 0; dimension < array.Rank; dimension++)
+				if(array.GetLongLength(dimension) > 0L)
+					return false;
+			return true;
+		}
 	}
 }

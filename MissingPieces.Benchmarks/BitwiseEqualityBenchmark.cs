@@ -57,9 +57,9 @@ namespace MissingPieces
 		[Benchmark]
 		public void GuidBitwiseEqualsMethod()
 		{
-			StackValue<Guid> first = NonEmptyGuid;
-			StackValue<Guid> second = default;
-			first.Equals(in second);
+			var first = NonEmptyGuid;
+			var second = default(Guid);
+			first.BitwiseEquals(second);
 		}
 
 		[Benchmark]
@@ -73,23 +73,9 @@ namespace MissingPieces
 		[Benchmark]
 		public void BigStructBitwiseEqualsMethod()
 		{
-			StackValue<BigStructure> first = new BigStructure { C = 30 };
-			StackValue<BigStructure> second = default;
-			first.Equals(second);
-		}
-
-		[Benchmark]
-		public void ArrayEqualsMethod()
-		{
-			var span1 = new ReadOnlySpan<long>(Array1);
-			var span2 = new ReadOnlySpan<long>(Array2);
-			span1.SequenceEqual(span2);
-		}
-
-		[Benchmark]
-		public void ArrayBitwiseEqualsMethod()
-		{
-			Array1.BitwiseEquals(Array2);
+			var first = new BigStructure { C = 30 };
+			var second = default(BigStructure);
+			first.BitwiseEquals(second);
 		}
 	}
 }

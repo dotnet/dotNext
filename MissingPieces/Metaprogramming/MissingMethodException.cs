@@ -13,7 +13,7 @@ namespace MissingPieces.Metaprogramming
         {
             MethodName = methodName;
             ReturnType = returnType;
-            Parameters = parameters.AsReadOnly();
+            Parameters = Array.AsReadOnly(parameters);
         }
 
         public string MethodName { get; }

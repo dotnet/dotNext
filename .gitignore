@@ -2,3 +2,4 @@
 obj/
 .vs/
 .vscode/
+BenchmarkDotNet.Artifacts/

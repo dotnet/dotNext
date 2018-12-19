@@ -19,6 +19,25 @@ namespace MissingPieces.Metaprogramming
 		/// Gets reflected type.
 		/// </summary>
 		public static Type RuntimeType => typeof(T);
+		
+		/// <summary>
+		/// Returns default value for this type.
+		/// </summary>
+		public static T Default => default;
+
+		private static readonly System.Linq.Expressions.DefaultExpression DefaultExpression = Default(RuntimeType);
+
+		/// <summary>
+		/// Checks whether the specified value is default value.
+		/// </summary>
+		public static readonly Predicate<T> IsDefault;
+
+		static Type()
+		{
+			IsDefault = RuntimeType.IsValueType ?
+				new Predicate<int>(Memory.IsDefault).Reinterpret<Predicate<T>>() :
+				new Predicate<object>(input => input is null).ConvertDelegate<Predicate<T>>();
+		}
 
 		/// <summary>
 		/// Provides constructor definition based on delegate signature.
@@ -34,7 +53,7 @@ namespace MissingPieces.Metaprogramming
 			{
 				this.ctor = ctor;
 				if (ctor is null)
-					invoker = Lambda<D>(Default<T>.Expression).Compile();
+					invoker = Lambda<D>(DefaultExpression).Compile();
 				else
 				{
 					var parameters = ctor.GetParameters().Map(p => Parameter(p.ParameterType));

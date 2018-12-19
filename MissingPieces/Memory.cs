@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Reflection;
-using static System.Linq.Expressions.Expression;
 
 namespace MissingPieces
 {
@@ -12,20 +11,15 @@ namespace MissingPieces
 	{
 		private static class Ref<T>
 		{
-			internal delegate ref T Converter(in T value);
+			internal delegate ref T InConverter(in T value);
 
-			internal static readonly Converter ToRegularRef;
+			private static ref T Identity(ref T input) => ref input;
 
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			private static ref T Identity(ref T value) => ref value;
-
-			static Ref()
-			{
-				var parameter = Parameter(typeof(T).MakeByRefType());
-				var identity = typeof(Ref<T>).GetMethod(nameof(Identity), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-				ToRegularRef = Lambda<Converter>(Call(null, identity, parameter), parameter).Compile();
-			}
+			internal static readonly InConverter Convert = typeof(Ref<T>)
+									.GetMethod(nameof(Identity), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly)
+									.CreateDelegate<InConverter>();
 		}
+		
 
 		/// <summary>
 		/// Converts IN parameter into regular reference.
@@ -34,7 +28,7 @@ namespace MissingPieces
 		/// <typeparam name="T">Type of reference.</typeparam>
 		/// <returns>Converted reference.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ref T AsRef<T>(in T value) => ref Ref<T>.ToRegularRef(in value);
+		public static ref T AsRef<T>(in T value) => ref Ref<T>.Convert(in value);
 
 		/// <summary>
 		/// Dereferences pointer.
@@ -45,7 +39,7 @@ namespace MissingPieces
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static unsafe T Dereference<T>(IntPtr pointer)
 			where T : unmanaged
-			=> *(T*)pointer;
+			=> Unsafe.ReadUnaligned<T>((T*)pointer);
 
 		/// <summary>
 		/// Reads a value of type <typeparamref name="T"/> from the given location
@@ -63,51 +57,28 @@ namespace MissingPieces
 			return result;
 		}
 
-		internal static unsafe bool BitwiseEquals(void* first, void* second, int length)
-		{
-			var span1 = new ReadOnlySpan<byte>(first, length);
-			return span1.SequenceEqual(new ReadOnlySpan<byte>(second, length));
+		/// <summary>
+		/// Computes bitwise equality between two value types.
+		/// </summary>
+		/// <param name="first">The first structure to compare.</param>
+		/// <param name="second">The second structure to compare.</param>
+		/// <typeparam name="T1"></typeparam>
+		/// <typeparam name="T2"></typeparam>
+		/// <returns></returns>
+		public static unsafe bool BitwiseEquals<T1, T2>(this T1 first, T2 second)
+			where T1: struct
+			where T2: struct
+			=> new ReadOnlySpan<byte>(Unsafe.AsPointer(ref first), Unsafe.SizeOf<T1>())
+				.SequenceEqual(new ReadOnlySpan<byte>(Unsafe.AsPointer(ref second), Unsafe.SizeOf<T2>()));
 
-			/*tail_call: switch (count)
-			{
-				case 0:
-					return true;
-				case sizeof(byte):
-					return Dereference<byte>(first) == Dereference<byte>(second);
-				case sizeof(ushort):
-					return Dereference<ushort>(first) == Dereference<ushort>(second);
-				case sizeof(ushort) + sizeof(byte):
-					return Read<ushort>(ref first) == Read<ushort>(ref second) &&
-						Dereference<byte>(first) == Dereference<byte>(second);
-				case sizeof(uint):
-					return Dereference<uint>(first) == Dereference<uint>(second);
-				case sizeof(uint) + sizeof(byte):
-					return Read<uint>(ref first) == Read<uint>(ref second) &&
-						Dereference<byte>(first) == Dereference<byte>(second);
-				case sizeof(uint) + sizeof(ushort):
-					return Read<uint>(ref first) == Read<uint>(ref second) &&
-						Dereference<ushort>(first) == Dereference<ushort>(second);
-				case sizeof(uint) + sizeof(ushort) + sizeof(byte):
-					return Read<uint>(ref first) == Read<uint>(ref second) &&
-						Read<ushort>(ref first) == Read<ushort>(ref second) &&
-						Dereference<byte>(first) == Dereference<byte>(second);
-				case sizeof(ulong):
-					return Dereference<ulong>(first) == Dereference<ulong>(second);
-				default:
-					if (count > UIntPtr.Size)
-					{
-						count -= UIntPtr.Size;
-						if (Read<UIntPtr>(ref first) == Read<UIntPtr>(ref second))
-							goto tail_call;
-					}
-					else
-					{
-						count -= sizeof(ulong);
-						if (Read<ulong>(ref first) == Read<ulong>(ref second))
-							goto tail_call;
-					}
-					return false;
-			}*/
-		}
+		public static unsafe int BitwiseCompare<T1, T2>(this T1 first, T2 second)
+			where T1: struct
+			where T2: struct
+			=> new ReadOnlySpan<byte>(Unsafe.AsPointer(ref first), Unsafe.SizeOf<T1>())
+				.SequenceCompareTo(new ReadOnlySpan<byte>(Unsafe.AsPointer(ref second), Unsafe.SizeOf<T2>()));
+		
+		public static bool IsDefault<T>(this T value)
+			where T: struct
+			=> BitwiseEquals(value, default(T));
 	}
 }
