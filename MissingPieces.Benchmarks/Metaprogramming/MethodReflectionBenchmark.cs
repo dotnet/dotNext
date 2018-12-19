@@ -7,7 +7,6 @@ namespace MissingPieces.Metaprogramming
 {
 	[SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 	[Orderer(SummaryOrderPolicy.FastestToSlowest)]
-	[RankColumn]
 	public class MethodReflectionBenchmark
 	{
 		private static readonly Func<string, char, int> IndexOf = Type<string>.Method.Instance<int>.Get<char>(nameof(string.IndexOf));

@@ -328,9 +328,6 @@ namespace MissingPieces
 
         internal static bool BitwiseEquals(IntPtr first, IntPtr second, int size)
         {
-            if (first == second)
-				return true;
-            
             tail_call: switch(size)
             {
                 case 0:
