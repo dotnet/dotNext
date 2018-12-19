@@ -51,5 +51,40 @@ namespace MissingPieces.Metaprogramming
     
         internal static MissingMethodException CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>(string methodName) 
             => new MissingMethodException(typeof(T), methodName, typeof(R), typeof(P1), typeof(P2), typeof(P3), typeof(P4), typeof(P5), typeof(P6), typeof(P7), typeof(P8), typeof(P9), typeof(P10));
-    }
+
+		//
+
+		internal static MissingMethodException CreateAction<T>(string methodName)
+			=> new MissingMethodException(typeof(T), methodName, typeof(void));
+
+		internal static MissingMethodException CreateAction<T, P>(string methodName)
+			=> new MissingMethodException(typeof(T), methodName, typeof(void), typeof(P));
+
+		internal static MissingMethodException CreateAction<T, P1, P2>(string methodName)
+			=> new MissingMethodException(typeof(T), methodName, typeof(void), typeof(P1), typeof(P2));
+
+		internal static MissingMethodException CreateAction<T, P1, P2, P3>(string methodName)
+			=> new MissingMethodException(typeof(T), methodName, typeof(void), typeof(P1), typeof(P2), typeof(P3));
+
+		internal static MissingMethodException CreateAction<T, P1, P2, P3, P4>(string methodName)
+			=> new MissingMethodException(typeof(T), methodName, typeof(void), typeof(P1), typeof(P2), typeof(P3), typeof(P4));
+
+		internal static MissingMethodException CreateAction<T, P1, P2, P3, P4, P5>(string methodName)
+			=> new MissingMethodException(typeof(T), methodName, typeof(void), typeof(P1), typeof(P2), typeof(P3), typeof(P4), typeof(P5));
+
+		internal static MissingMethodException CreateAction<T, P1, P2, P3, P4, P5, P6>(string methodName)
+			=> new MissingMethodException(typeof(T), methodName, typeof(void), typeof(P1), typeof(P2), typeof(P3), typeof(P4), typeof(P5), typeof(P6));
+
+		internal static MissingMethodException CreateAction<T, P1, P2, P3, P4, P5, P6, P7>(string methodName)
+			=> new MissingMethodException(typeof(T), methodName, typeof(void), typeof(P1), typeof(P2), typeof(P3), typeof(P4), typeof(P5), typeof(P6), typeof(P7));
+
+		internal static MissingMethodException CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8>(string methodName)
+			=> new MissingMethodException(typeof(T), methodName, typeof(void), typeof(P1), typeof(P2), typeof(P3), typeof(P4), typeof(P5), typeof(P6), typeof(P7), typeof(P8));
+
+		internal static MissingMethodException CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>(string methodName)
+			=> new MissingMethodException(typeof(T), methodName, typeof(void), typeof(P1), typeof(P2), typeof(P3), typeof(P4), typeof(P5), typeof(P6), typeof(P7), typeof(P8), typeof(P9));
+
+		internal static MissingMethodException CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(string methodName)
+			=> new MissingMethodException(typeof(T), methodName, typeof(void), typeof(P1), typeof(P2), typeof(P3), typeof(P4), typeof(P5), typeof(P6), typeof(P7), typeof(P8), typeof(P9), typeof(P10));
+	}
 }

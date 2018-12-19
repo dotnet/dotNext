@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2019
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissingPieces", "MissingPieces\MissingPieces.csproj", "{9F11A994-0CC6-4982-963B-1255D2F82B2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MissingPieces", "MissingPieces\MissingPieces.csproj", "{9F11A994-0CC6-4982-963B-1255D2F82B2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissingPieces.Tests", "MissingPieces.Tests\MissingPieces.Tests.csproj", "{43A2FE6F-B997-4295-BBD2-B0BBC1861194}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MissingPieces.Tests", "MissingPieces.Tests\MissingPieces.Tests.csproj", "{43A2FE6F-B997-4295-BBD2-B0BBC1861194}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissingPieces.Benchmarks", "MissingPieces.Benchmarks\MissingPieces.Benchmarks.csproj", "{D8438838-088B-4559-8605-7DEAC889902C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{43A2FE6F-B997-4295-BBD2-B0BBC1861194}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43A2FE6F-B997-4295-BBD2-B0BBC1861194}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43A2FE6F-B997-4295-BBD2-B0BBC1861194}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8438838-088B-4559-8605-7DEAC889902C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8438838-088B-4559-8605-7DEAC889902C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8438838-088B-4559-8605-7DEAC889902C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8438838-088B-4559-8605-7DEAC889902C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

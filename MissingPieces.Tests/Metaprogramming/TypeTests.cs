@@ -23,8 +23,7 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void InstanceMethodTest()
 		{
-			Func<string, char, int> indexOf = Type<string>.Method<Func<string, char, int>>.Instance.GetOrNull(nameof(string.IndexOf));
-			NotNull(indexOf);
+			Func<string, char, int> indexOf = Type<string>.Method.Instance<int>.Get<char>(nameof(string.IndexOf));
 			var result = indexOf("aba", 'b');
 			Equal(1, result);
 
@@ -32,7 +31,7 @@ namespace MissingPieces.Metaprogramming
 			result = indexOf("abca", 'c');
 			Equal(2, result);
 
-			Func<string, char, int, int> indexOf3 = Type<string>.Method<Func<string, char, int, int>>.Instance.GetOrNull(nameof(string.IndexOf));
+			Func<string, char, int, int> indexOf3 = Type<string>.Method.Instance<int>.Get<char, int>(nameof(string.IndexOf));
 			NotNull(indexOf3);
 			result = indexOf3("aba", 'b', 1);
 			Equal(1, result);
@@ -49,7 +48,7 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void StaticMethodTest()
 		{
-			Func<string, string, int> compare = Type<string>.Method<Func<string, string, int>>.Static.GetOrNull(nameof(string.Compare));
+			Func<string, string, int> compare = Type<string>.Method.Static<int>.Get<string, string>(nameof(string.Compare));
 			NotNull(compare);
 			True(compare("a", "b") < 0);
 		}
@@ -57,16 +56,16 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void ConstructorTests()
 		{
-			var stringCtor = Type<string>.Constructor.Get<char, int>();
+			Func<char, int, string> stringCtor = Type<string>.Constructor.Get<char, int>();
 			var str = stringCtor('a', 3);
 			Equal("aaa", str);
-			var objCtor = Type<object>.Constructor.Get();
+			Func<object> objCtor = Type<object>.Constructor.Get();
+			NotNull(objCtor());
 			stringCtor = Type<string>.Constructor<Func<char, int, string>>.GetOrNull();
 			str = stringCtor('a', 3);
 			Equal("aaa", str);
-			var invalidCtor = Type<string>.Constructor<Func<int, int, string>>.GetOrNull();
-			Null(invalidCtor);
-			var classCtor = Type<ClassWithProperties>.Constructor.Get<int>(true);
+			Throws<MissingConstructorException>(() => Type<string>.Constructor.Get<int, int, string>());
+			Func<int, ClassWithProperties> classCtor = Type<ClassWithProperties>.Constructor.Get<int>(true);
 			var obj = classCtor(10);
 			Equal(10, obj.ReadOnlyProp);
 		}
@@ -74,7 +73,7 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void ValueTypeTests()
 		{
-			var longCtor = Type<long>.Constructor.Get();
+			Func<long> longCtor = Type<long>.Constructor.Get();
 			Equal(0L, longCtor());
 		}
 

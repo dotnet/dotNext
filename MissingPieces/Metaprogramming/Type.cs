@@ -194,7 +194,7 @@ namespace MissingPieces.Metaprogramming
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>A delegate representing public constructor without parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Func<T> Get(bool nonPublic = false)
+			public static Constructor<Func<T>> Get(bool nonPublic = false)
 				=> Constructor<Func<T>>.GetOrThrow(MissingConstructorException.Create<T>, nonPublic);
 
 			/// <summary>
@@ -204,7 +204,7 @@ namespace MissingPieces.Metaprogramming
 			/// <typeparam name="P">Type of constructor parameter.</typeparam>
 			/// <returns>A delegate representing public constructor with single parameter.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Func<P, T> Get<P>(bool nonPublic = false)
+			public static Constructor<Func<P, T>> Get<P>(bool nonPublic = false)
 				=> Constructor<Func<P, T>>.GetOrThrow(MissingConstructorException.Create<T, P>, nonPublic);
 
 			/// <summary>
@@ -216,7 +216,7 @@ namespace MissingPieces.Metaprogramming
 			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
 			/// <returns>A delegate representing public constructor with two parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Func<P1, P2, T> Get<P1, P2>(bool nonPublic = false)
+			public static Constructor<Func<P1, P2, T>> Get<P1, P2>(bool nonPublic = false)
 				=> Constructor<Func<P1, P2, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2>, nonPublic);
 
 			/// <summary>
@@ -229,7 +229,7 @@ namespace MissingPieces.Metaprogramming
 			/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
 			/// <returns>A delegate representing public constructor with three parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Func<P1, P2, P3, T> Get<P1, P2, P3>(bool nonPublic = false)
+			public static Constructor<Func<P1, P2, P3, T>> Get<P1, P2, P3>(bool nonPublic = false)
 				=> Constructor<Func<P1, P2, P3, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3>, nonPublic);
 
 			/// <summary>
@@ -243,7 +243,7 @@ namespace MissingPieces.Metaprogramming
 			/// <typeparam name="P4">Type of fourth constructor parameter,</typeparam>
 			/// <returns>A delegate representing public constructor with four parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Func<P1, P2, P3, P4, T> Get<P1, P2, P3, P4>(bool nonPublic = false)
+			public static Constructor<Func<P1, P2, P3, P4, T>> Get<P1, P2, P3, P4>(bool nonPublic = false)
 				=> Constructor<Func<P1, P2, P3, P4, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4>, nonPublic);
 
 			/// <summary>
@@ -259,7 +259,7 @@ namespace MissingPieces.Metaprogramming
 			/// <typeparam name="P5">Type of fifth constructor parameter.</typeparam>
 			/// <returns>A delegate representing public constructor with five parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Func<P1, P2, P3, P4, P5, T> Get<P1, P2, P3, P4, P5>(bool nonPublic = false)
+			public static Constructor<Func<P1, P2, P3, P4, P5, T>> Get<P1, P2, P3, P4, P5>(bool nonPublic = false)
 				=> Constructor<Func<P1, P2, P3, P4, P5, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5>, nonPublic);
 
 			/// <summary>
@@ -274,7 +274,7 @@ namespace MissingPieces.Metaprogramming
 			/// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>
 			/// <returns>A delegate representing public constructor with six parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Func<P1, P2, P3, P4, P5, P6, T> Get<P1, P2, P3, P4, P5, P6>(bool nonPublic = false)
+			public static Constructor<Func<P1, P2, P3, P4, P5, P6, T>> Get<P1, P2, P3, P4, P5, P6>(bool nonPublic = false)
 				=> Constructor<Func<P1, P2, P3, P4, P5, P6, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6>, nonPublic);
 
 			/// <summary>
@@ -290,7 +290,7 @@ namespace MissingPieces.Metaprogramming
 			/// <typeparam name="P7">Type of seventh constructor parameter.</typeparam>
 			/// <returns>A delegate representing public constructor with seven parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Func<P1, P2, P3, P4, P5, P6, P7, T> Get<P1, P2, P3, P4, P5, P6, P7>(bool nonPublic = false)
+			public static Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>> Get<P1, P2, P3, P4, P5, P6, P7>(bool nonPublic = false)
 				=> Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7>, nonPublic);
 
 			/// <summary>
@@ -307,7 +307,7 @@ namespace MissingPieces.Metaprogramming
 			/// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>
 			/// <returns>A delegate representing public constructor with eight parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Func<P1, P2, P3, P4, P5, P6, P7, P8, T> Get<P1, P2, P3, P4, P5, P6, P7, P8>(bool nonPublic = false)
+			public static Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>> Get<P1, P2, P3, P4, P5, P6, P7, P8>(bool nonPublic = false)
 				=> Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8>, nonPublic);
 
 			/// <summary>
@@ -325,7 +325,7 @@ namespace MissingPieces.Metaprogramming
 			/// <typeparam name="P9">Type of ninth constructor parameter.</typeparam>
 			/// <returns>A delegate representing public constructor with nine parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(bool nonPublic = false)
+			public static Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(bool nonPublic = false)
 				=> Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>, nonPublic);
 
 			/// <summary>
@@ -344,7 +344,7 @@ namespace MissingPieces.Metaprogramming
 			/// <typeparam name="P9">Type of tenth constructor parameter.</typeparam>
 			/// <returns>A delegate representing public constructor with ten parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(bool nonPublic = false)
+			public static Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(bool nonPublic = false)
 				=> Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>, nonPublic);
 		}
 
@@ -1630,42 +1630,167 @@ namespace MissingPieces.Metaprogramming
 			}
 		}
 
+		/// <summary>
+		/// Provides strongly typed way to reflect methods
+		/// </summary>
 		public static class Method
 		{
+			/// <summary>
+			/// Provides access to static methods without return value.
+			/// </summary>
 			public static class Static
 			{
-				
+				public static Method<Action> Get(string methodName, bool nonPublic = false)
+					=> Method<Action>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T>, nonPublic);
+
+				public static Method<Action<P>> Get<P>(string methodName, bool nonPublic = false)
+					=> Method<Action<P>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P>, nonPublic);
+
+				public static Method<Action<P1, P2>> Get<P1, P2>(string methodName, bool nonPublic = false)
+					=> Method<Action<P1, P2>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2>, nonPublic);
+
+				public static Method<Action<P1, P2, P3>> Get<P1, P2, P3>(string methodName, bool nonPublic = false)
+					=> Method<Action<P1, P2, P3>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3>, nonPublic);
+
+				public static Method<Action<P1, P2, P3, P4>> Get<P1, P2, P3, P4>(string methodName, bool nonPublic = false)
+					=> Method<Action<P1, P2, P3, P4>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4>, nonPublic);
+
+				public static Method<Action<P1, P2, P3, P4, P5>> Get<P1, P2, P3, P4, P5>(string methodName, bool nonPublic = false)
+					=> Method<Action<P1, P2, P3, P4, P5>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5>, nonPublic);
+
+				public static Method<Action<P1, P2, P3, P4, P5, P6>> Get<P1, P2, P3, P4, P5, P6>(string methodName, bool nonPublic = false)
+					=> Method<Action<P1, P2, P3, P4, P5, P6>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6>, nonPublic);
+
+				public static Method<Action<P1, P2, P3, P4, P5, P6, P7>> Get<P1, P2, P3, P4, P5, P6, P7>(string methodName, bool nonPublic = false)
+					=> Method<Action<P1, P2, P3, P4, P5, P6, P7>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7>, nonPublic);
+
+				public static Method<Action<P1, P2, P3, P4, P5, P6, P7, P8>> Get<P1, P2, P3, P4, P5, P6, P7, P8>(string methodName, bool nonPublic = false)
+					=> Method<Action<P1, P2, P3, P4, P5, P6, P7, P8>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8>, nonPublic);
+
+				public static Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(string methodName, bool nonPublic = false)
+					=> Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>, nonPublic);
+
+				public static Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(string methodName, bool nonPublic = false)
+					=> Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>, nonPublic);
 			}
 
+			/// <summary>
+			/// Provides access to static methods with return value.
+			/// </summary>
+			/// <typeparam name="R">Type of return value.</typeparam>
 			public static class Static<R>
 			{
-				public static Func<R> Get(string methodName, bool nonPublic = false)
+				public static Method<Func<R>> Get(string methodName, bool nonPublic = false)
 					=> Method<Func<R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, R>, nonPublic);
 
-				public static Func<P, R> Get<P>(string methodName, bool nonPublic = false)
+				public static Method<Func<P, R>> Get<P>(string methodName, bool nonPublic = false)
 					=> Method<Func<P, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P, R>, nonPublic);
 
-				public static Func<P1, P2, R> Get<P1, P2>(string methodName, bool nonPublic = false)
+				public static Method<Func<P1, P2, R>> Get<P1, P2>(string methodName, bool nonPublic = false)
 					=> Method<Func<P1, P2, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, R>, nonPublic);
 
-				public static Func<P1, P2, P3, R> Get<P1, P2, P3>(string methodName, bool nonPublic = false)
+				public static Method<Func<P1, P2, P3, R>> Get<P1, P2, P3>(string methodName, bool nonPublic = false)
 					=> Method<Func<P1, P2, P3, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, R>, nonPublic);
 				
-				public static Func<P1, P2, P3, P4, R> Get<P1, P2, P3, P4>(string methodName, bool nonPublic = false)
+				public static Method<Func<P1, P2, P3, P4, R>> Get<P1, P2, P3, P4>(string methodName, bool nonPublic = false)
 					=> Method<Func<P1, P2, P3, P4, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, R>, nonPublic);
 				
-				public static Func<P1, P2, P3, P4, P5, R> Get<P1, P2, P3, P4, P5>(string methodName, bool nonPublic = false)
+				public static Method<Func<P1, P2, P3, P4, P5, R>> Get<P1, P2, P3, P4, P5>(string methodName, bool nonPublic = false)
 					=> Method<Func<P1, P2, P3, P4, P5, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, R>, nonPublic);
+
+				public static Method<Func<P1, P2, P3, P4, P5, P6, R>> Get<P1, P2, P3, P4, P5, P6>(string methodName, bool nonPublic = false)
+					=> Method<Func<P1, P2, P3, P4, P5, P6, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, R>, nonPublic);
+
+				public static Method<Func<P1, P2, P3, P4, P5, P6, P7, R>> Get<P1, P2, P3, P4, P5, P6, P7>(string methodName, bool nonPublic = false)
+					=> Method<Func<P1, P2, P3, P4, P5, P6, P7, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, R>, nonPublic);
+
+				public static Method<Func<P1, P2, P3, P4, P5, P6, P7, P8, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8>(string methodName, bool nonPublic = false)
+					=> Method<Func<P1, P2, P3, P4, P5, P6, P7, P8, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, R>, nonPublic);
+
+				public static Method<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(string methodName, bool nonPublic = false)
+					=> Method<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>, nonPublic);
+
+				public static Method<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(string methodName, bool nonPublic = false)
+					=> Method<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, P10, R>, nonPublic);
 			}
 
+			/// <summary>
+			/// Provides access to instance methods without return value.
+			/// </summary>
 			public static class Instance
 			{
-				
+				public static Method<Action<T>> Get(string methodName, bool nonPublic = false)
+					=> Method<Action<T>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T>, nonPublic);
+
+				public static Method<Action<T, P>> Get<P>(string methodName, bool nonPublic = false)
+					=> Method<Action<T, P>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P>, nonPublic);
+
+				public static Method<Action<T, P1, P2>> Get<P1, P2>(string methodName, bool nonPublic = false)
+					=> Method<Action<T, P1, P2>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2>, nonPublic);
+
+				public static Method<Action<T, P1, P2, P3>> Get<P1, P2, P3>(string methodName, bool nonPublic = false)
+					=> Method<Action<T, P1, P2, P3>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3>, nonPublic);
+
+				public static Method<Action<T, P1, P2, P3, P4>> Get<P1, P2, P3, P4>(string methodName, bool nonPublic = false)
+					=> Method<Action<T, P1, P2, P3, P4>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4>, nonPublic);
+
+				public static Method<Action<T, P1, P2, P3, P4, P5>> Get<P1, P2, P3, P4, P5>(string methodName, bool nonPublic = false)
+					=> Method<Action<T, P1, P2, P3, P4, P5>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5>, nonPublic);
+
+				public static Method<Action<T, P1, P2, P3, P4, P5, P6>> Get<P1, P2, P3, P4, P5, P6>(string methodName, bool nonPublic = false)
+					=> Method<Action<T, P1, P2, P3, P4, P5, P6>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6>, nonPublic);
+
+				public static Method<Action<T, P1, P2, P3, P4, P5, P6, P7>> Get<P1, P2, P3, P4, P5, P6, P7>(string methodName, bool nonPublic = false)
+					=> Method<Action<T, P1, P2, P3, P4, P5, P6, P7>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7>, nonPublic);
+
+				public static Method<Action<T, P1, P2, P3, P4, P5, P6, P7, P8>> Get<P1, P2, P3, P4, P5, P6, P7, P8>(string methodName, bool nonPublic = false)
+					=> Method<Action<T, P1, P2, P3, P4, P5, P6, P7, P8>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8>, nonPublic);
+
+				public static Method<Action<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(string methodName, bool nonPublic = false)
+					=> Method<Action<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>, nonPublic);
+
+				public static Method<Action<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(string methodName, bool nonPublic = false)
+					=> Method<Action<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>, nonPublic);
 			}
 
+			/// <summary>
+			/// Provides access to instance methods without return value.
+			/// </summary>
+			/// <typeparam name="R">Type of return value.</typeparam>
 			public static class Instance<R>
 			{
-				
+				public static Method<Func<T, R>> Get(string methodName, bool nonPublic = false)
+					=> Method<Func<T, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, R>, nonPublic);
+
+				public static Method<Func<T, P, R>> Get<P>(string methodName, bool nonPublic = false)
+					=> Method<Func<T, P, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P, R>, nonPublic);
+
+				public static Method<Func<T, P1, P2, R>> Get<P1, P2>(string methodName, bool nonPublic = false)
+					=> Method<Func<T, P1, P2, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, R>, nonPublic);
+
+				public static Method<Func<T, P1, P2, P3, R>> Get<P1, P2, P3>(string methodName, bool nonPublic = false)
+					=> Method<Func<T, P1, P2, P3, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, R>, nonPublic);
+
+				public static Method<Func<T, P1, P2, P3, P4, R>> Get<P1, P2, P3, P4>(string methodName, bool nonPublic = false)
+					=> Method<Func<T, P1, P2, P3, P4, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, R>, nonPublic);
+
+				public static Method<Func<T, P1, P2, P3, P4, P5, R>> Get<P1, P2, P3, P4, P5>(string methodName, bool nonPublic = false)
+					=> Method<Func<T, P1, P2, P3, P4, P5, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, R>, nonPublic);
+
+				public static Method<Func<T, P1, P2, P3, P4, P5, P6, R>> Get<P1, P2, P3, P4, P5, P6>(string methodName, bool nonPublic = false)
+					=> Method<Func<T, P1, P2, P3, P4, P5, P6, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, R>, nonPublic);
+
+				public static Method<Func<T, P1, P2, P3, P4, P5, P6, P7, R>> Get<P1, P2, P3, P4, P5, P6, P7>(string methodName, bool nonPublic = false)
+					=> Method<Func<T, P1, P2, P3, P4, P5, P6, P7, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, R>, nonPublic);
+
+				public static Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8>(string methodName, bool nonPublic = false)
+					=> Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, R>, nonPublic);
+
+				public static Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(string methodName, bool nonPublic = false)
+					=> Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>, nonPublic);
+
+				public static Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(string methodName, bool nonPublic = false)
+					=> Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, P10, R>, nonPublic);
 			}
 		}
 	}
