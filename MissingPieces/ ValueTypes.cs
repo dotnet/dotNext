@@ -32,15 +32,15 @@ namespace MissingPieces
 		/// <typeparam name="I"></typeparam>
 		/// <typeparam name="O"></typeparam>
 		/// <returns></returns>
-        public static unsafe O BitCast<I, O>(this I input)
-            where I: unmanaged
-            where O: unmanaged
-        {
-            var output = new O();
-            var size = Math.Min(Unsafe.SizeOf<I>(), Unsafe.SizeOf<O>());
-            new Span<byte>(Unsafe.AsPointer(ref input), size).CopyTo(new Span<byte>(Unsafe.AsPointer(ref input), size));
-            return output;
-        }
+		public static unsafe O BitCast<I, O>(this I input)
+			where I : struct
+			where O : unmanaged
+		{
+			var output = new O();
+			var size = (uint)Math.Min(Unsafe.SizeOf<I>(), Unsafe.SizeOf<O>());
+			Unsafe.CopyBlockUnaligned(Unsafe.AsPointer(ref output), Unsafe.AsPointer(ref input), size);
+			return output;
+		}
 		
 		public static bool IsDefault<T>(this T value)
 			where T: struct

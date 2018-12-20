@@ -5,6 +5,20 @@ namespace MissingPieces
 {
 	public sealed class MemoryTests: Assert
 	{
+		public struct MyStruct
+		{
+			public Guid guid;
+			public decimal money;
+		}
+
+		[Fact]
+		public void BitcastTest()
+		{
+			var s = new MyStruct() { guid = Guid.NewGuid() };
+			var guid = s.BitCast<MyStruct, Guid>();
+			Equal(s.guid, guid);
+		}
+
 		[Fact]
 		public void BitwiseEqualityTest2()
 		{
