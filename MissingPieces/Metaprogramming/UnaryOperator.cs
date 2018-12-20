@@ -8,6 +8,8 @@ namespace MissingPieces.Metaprogramming
 	public enum UnaryOperator: int
 	{
 		Plus = ExpressionType.UnaryPlus,
+
+		Negate = ExpressionType.Negate,
 		Convert = ExpressionType.Convert,
 		ConvertChecked = ExpressionType.ConvertChecked,
 	}

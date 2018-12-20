@@ -42,6 +42,16 @@ namespace MissingPieces
 			Unsafe.CopyBlockUnaligned(Unsafe.AsPointer(ref output), Unsafe.AsPointer(ref input), size);
 			return output;
 		}
+
+		/// <summary>
+		/// Convert binary representation of structure into array of bytes.
+		/// </summary>
+		/// <param name="input">A structure to convert.</param>
+		/// <typeparam name="T">Structure type.</typeparam>
+		/// <returns>An array containing binary content of the structure in the form of bytes.</returns>
+		public unsafe static byte[] AsBinary<T>(this T input)
+			where T: struct
+			=> new ReadOnlySpan<byte>(Unsafe.AsPointer(ref input), Unsafe.SizeOf<T>()).ToArray();
 		
 		public static bool IsDefault<T>(this T value)
 			where T: struct

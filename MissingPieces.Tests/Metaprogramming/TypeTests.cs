@@ -21,37 +21,6 @@ namespace MissingPieces.Metaprogramming
 
 		private delegate R ByRefFunc<T1, T2, R>(in T1 value, T2 arg);
 
-		public class BaseClass
-		{
-			public static bool operator ==(int first, BaseClass second) => true;
-			public static bool operator !=(int first, BaseClass second) => false;
-
-			public static bool operator ==(BaseClass first, BaseClass second) => true;
-			public static bool operator !=(BaseClass first, BaseClass second) => false;
-
-			public static bool operator +(BaseClass bc) => true;
-
-			public override bool Equals(object obj)
-			{
-				return base.Equals(obj);
-			}
-		}
-
-		public sealed class DerivedClass: BaseClass
-		{
-			public override bool Equals(object obj)
-			{
-				return base.Equals(obj);
-			}
-		}
-
-		[Fact]
-		public void Tst()
-		{
-			Func<DerivedClass, bool> op = Type<DerivedClass>.Operator<Func<DerivedClass, bool>>.Unary.GetOrNull(UnaryOperator.Plus);
-			op(new DerivedClass());
-		}
-
 		[Fact]
 		public void NonExistentMethodTest()
 		{
@@ -154,7 +123,7 @@ namespace MissingPieces.Metaprogramming
 		public void InstancePropertyTest()
 		{
 			var instance = new StructWithProperties();
-			var rwProperty = Type<StructWithProperties>.Property<string>.Instance.Get(nameof(StructWithProperties.ReadWriteProperty));
+			var rwProperty = Type<StructWithProperties>.InstanceProperty<string>.Get(nameof(StructWithProperties.ReadWriteProperty));
 			True(rwProperty.CanRead);
 			True(rwProperty.CanWrite);
 			NotNull(rwProperty.GetMethod);
@@ -162,13 +131,13 @@ namespace MissingPieces.Metaprogramming
 			rwProperty[instance] = "Hello, world";
 			Equal("Hello, world", instance.ReadWriteProperty);
 			Equal("Hello, world", rwProperty[instance]);
-			var wProperty = Type<StructWithProperties>.Property<int>.Instance.Get(nameof(StructWithProperties.WriteOnlyProp));
+			var wProperty = Type<StructWithProperties>.InstanceProperty<int>.Get(nameof(StructWithProperties.WriteOnlyProp));
 			True(wProperty.CanWrite);
 			False(wProperty.CanRead);
 			NotNull(wProperty.SetMethod);
 			Null(wProperty.GetMethod);
 			wProperty[instance] = 42;
-			MemberAccess<StructWithProperties, int> rProperty = Type<StructWithProperties>.Property<int>.Instance.Get(nameof(StructWithProperties.ReadOnlyProp));
+			MemberAccess<StructWithProperties, int> rProperty = Type<StructWithProperties>.InstanceProperty<int>.Get(nameof(StructWithProperties.ReadOnlyProp));
 			Equal(42, rProperty.GetValue(in instance));
 		}
 
@@ -176,17 +145,17 @@ namespace MissingPieces.Metaprogramming
 		public void StructPropertyTest()
 		{
 			var instance = new StructWithProperties();
-			MemberAccess<StructWithProperties, string> rwProperty = Type<StructWithProperties>.Property<string>.Instance.Get(nameof(StructWithProperties.ReadWriteProperty));
+			MemberAccess<StructWithProperties, string> rwProperty = Type<StructWithProperties>.InstanceProperty<string>.Get(nameof(StructWithProperties.ReadWriteProperty));
 			rwProperty.SetValue(instance, "Hello, world");
 			Equal("Hello, world", instance.ReadWriteProperty);
 			Equal("Hello, world", rwProperty.GetValue(instance));
-			var wProperty = Type<StructWithProperties>.Property<int>.Instance.Get(nameof(StructWithProperties.WriteOnlyProp));
+			var wProperty = Type<StructWithProperties>.InstanceProperty<int>.Get(nameof(StructWithProperties.WriteOnlyProp));
 			True(wProperty.CanWrite);
 			False(wProperty.CanRead);
 			NotNull(wProperty.SetMethod);
 			Null(wProperty.GetMethod);
 			wProperty[instance] = 42;
-			var rProperty = Type<StructWithProperties>.Property<int>.Instance.Get(nameof(StructWithProperties.ReadOnlyProp));
+			var rProperty = Type<StructWithProperties>.InstanceProperty<int>.Get(nameof(StructWithProperties.ReadOnlyProp));
 			False(rProperty.CanWrite);
 			True(rProperty.CanRead);
 			Equal(42, rProperty[instance]);
@@ -196,21 +165,21 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void StaticPropertyTest()
 		{
-			var property = Type<ClassWithProperties>.Property<long>.Static.Get(nameof(ClassWithProperties.StaticProp), true);
+			var property = Type<ClassWithProperties>.StaticProperty<long>.Get(nameof(ClassWithProperties.StaticProp), true);
 			True(property.CanRead);
 			True(property.CanWrite);
 			property.Value = 42;
-			Equal(42L, (long)property);
+			Equal(42L, property.Value);
 		}
 
 		[Fact]
 		public void InstanceEventTest()
 		{
-			EventAccess<AppDomain, ResolveEventHandler> ev = Type<AppDomain>.Event<ResolveEventHandler>.Instance.Get(nameof(AppDomain.TypeResolve));
+			EventAccess<AppDomain, ResolveEventHandler> ev = Type<AppDomain>.InstanceEvent<ResolveEventHandler>.Get(nameof(AppDomain.TypeResolve));
 			ResolveEventHandler handler = (sender, args) => null;
 			ev.AddEventHandler(AppDomain.CurrentDomain, handler);
 			ev.RemoveEventHandler(AppDomain.CurrentDomain, handler);
-			var ev2 = Type<TypeTests>.Event<EventHandler>.Instance.Get(nameof(InstanceEvent), true);
+			var ev2 = Type<TypeTests>.InstanceEvent<EventHandler>.Get(nameof(InstanceEvent), true);
 			Null(InstanceEvent);
 			EventHandler handler2 = (sender, args) => { };
 			ev2.AddEventHandler(this, handler2);
@@ -222,7 +191,7 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void StaticEventTest()
 		{
-			var ev = Type<TypeTests>.Event<EventHandler>.Static.Get(nameof(StaticEvent), true);
+			var ev = Type<TypeTests>.StaticEvent<EventHandler>.Get(nameof(StaticEvent), true);
 			EventHandler handler = (sender, args) => { };
 			ev.AddEventHandler(handler);
 			Equal(StaticEvent, handler);
@@ -233,8 +202,8 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void StaticFieldTest()
 		{
-			var structField = Type<Guid>.Field<Guid>.Static.Get(nameof(Guid.Empty));
-			var objField = Type<TextReader>.Field<TextReader>.Static.Get(nameof(TextReader.Null));
+			var structField = Type<Guid>.StaticField<Guid>.Get(nameof(Guid.Empty));
+			var objField = Type<TextReader>.StaticField<TextReader>.Get(nameof(TextReader.Null));
 			Same(TextReader.Null, objField.Value);
 		}
 	}

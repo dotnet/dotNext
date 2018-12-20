@@ -20,6 +20,14 @@ namespace MissingPieces
 		}
 
 		[Fact]
+		public void AsBinaryTest()
+		{
+			var g = Guid.NewGuid();
+			var bytes = g.AsBinary();
+			True(g.ToByteArray().SequenceEqual(bytes));
+		}
+
+		[Fact]
 		public void BitwiseEqualityTest2()
 		{
 			var value1 = Guid.NewGuid();

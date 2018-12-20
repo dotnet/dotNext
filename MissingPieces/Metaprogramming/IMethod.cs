@@ -3,6 +3,7 @@ using System.Reflection;
 
 namespace MissingPieces.Metaprogramming
 {
+	
 	public interface IMethod<out M, out D>: IMember<M>
 		where M: MethodBase
 		where D: Delegate

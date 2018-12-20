@@ -1,14 +1,23 @@
 ﻿using System;
+using static System.Diagnostics.Debug;
 using System.Linq.Expressions;
 
 namespace MissingPieces.Metaprogramming
 {
-	public abstract class Operator
+	public abstract class Operator<D>: IOperator<D>
+		where D: Delegate
 	{
-		private protected Operator(ExpressionType type)
+		private readonly D invoker;
+
+		private protected Operator(D invoker, ExpressionType type)
 		{
 			Type = type;
+			this.invoker = invoker;
 		}
+
+		D IOperator<D>.Invoker => invoker;
+
+		public static implicit operator D(Operator<D> @operator) => @operator?.invoker;
 
 		/// <summary>
 		/// Gets type of operator.
@@ -17,22 +26,27 @@ namespace MissingPieces.Metaprogramming
 
 		private protected static ExpressionType ToExpressionType(UnaryOperator @operator) => (ExpressionType)@operator;
 
-		private static Expression<D> Unary<D>(UnaryOperator @operator, ParameterExpression param, Expression operand)
-			where D: Delegate
+		private static Expression<D> Unary(UnaryOperator @operator, ParameterExpression param, Expression operand)
 		{
 			try
 			{
 				return Expression.Lambda<D>(Expression.MakeUnary(ToExpressionType(@operator), operand, null), param);
 			}
+			catch(ArgumentException e)
+			{
+				WriteLine(e);
+				return null;
+			}
 			catch(InvalidOperationException)
 			{
+				//do not walk through inheritance hierarchy for value types
+				if(param.Type.IsValueType) return null;
 				var lookup = operand.Type.BaseType;
-				return lookup is null ? null : Unary<D>(@operator, param, Expression.Convert(param, lookup));
+				return lookup is null ? null : Unary(@operator, param, Expression.Convert(param, lookup));
 			}
 		}
 
-		private protected static Expression<D> MakeUnary<D>(UnaryOperator @operator, ParameterExpression operand)
-			where D : Delegate
-			=> Unary<D>(@operator, operand, operand);
+		private protected static Expression<D> MakeUnary(UnaryOperator @operator, ParameterExpression operand)
+			=> Unary(@operator, operand, operand);
 	}
 }
