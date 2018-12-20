@@ -28,10 +28,10 @@ namespace MissingPieces.Metaprogramming
 	/// </summary>
 	public static class MemberAccess
 	{
-		public delegate V Reader<T, out V>(in T instance);
-		public delegate V Reader<out V>();
-		public delegate void Writer<T, in V>(in T instance, V value);
-		public delegate void Writer<in V>(V value);
+		public delegate V Getter<T, out V>(in T instance);
+		public delegate V Getter<out V>();
+		public delegate void Setter<T, in V>(in T instance, V value);
+		public delegate void Setter<in V>(V value);
 
 		private static readonly ConstantExpression GetValueConst = Expression.Constant(MemberAction.GetValue, typeof(MemberAction));
 
@@ -97,16 +97,16 @@ namespace MissingPieces.Metaprogramming
 				return accessor(in instance, ref value, action);
 			};
 
-		public static Reader<T, V> ToReader<T, V>(this MemberAccess<T, V> accessor)
-			=> new Reader<T, V>(accessor.GetValue);
+		public static Getter<T, V> ToReader<T, V>(this MemberAccess<T, V> accessor)
+			=> new Getter<T, V>(accessor.GetValue);
 
-		public static Reader<V> ToReader<V>(this MemberAccess<V> accessor)
-			=> new Reader<V>(accessor.GetValue);
+		public static Getter<V> ToReader<V>(this MemberAccess<V> accessor)
+			=> new Getter<V>(accessor.GetValue);
 
-		public static Writer<T, V> ToWriter<T, V>(this MemberAccess<T, V> accessor)
-			=> new Writer<T, V>(accessor.SetValue);
+		public static Setter<T, V> ToWriter<T, V>(this MemberAccess<T, V> accessor)
+			=> new Setter<T, V>(accessor.SetValue);
 
-		public static Writer<V> ToWriter<V>(this MemberAccess<V> accessor)
-			=> new Writer<V>(accessor.SetValue);
+		public static Setter<V> ToWriter<V>(this MemberAccess<V> accessor)
+			=> new Setter<V>(accessor.SetValue);
 	}
 }

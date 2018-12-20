@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using ExpressionType = System.Linq.Expressions.ExpressionType;
 using static System.Linq.Expressions.Expression;
 using System.Reflection;
 using System.Collections.Generic;
@@ -481,7 +482,7 @@ namespace MissingPieces.Metaprogramming
 
 					internal Cache(BindingFlags flags) => this.flags = flags;
 
-					private protected override Static CreateMember(string propertyName)
+					private protected override Static Create(string propertyName)
 					{
 						var property = RuntimeType.GetProperty(propertyName, flags);
 						return property == null ? null : new Static(property, flags.HasFlag(BindingFlags.NonPublic));
@@ -515,33 +516,33 @@ namespace MissingPieces.Metaprogramming
 							actionParam).Compile();
 				}
 
-				public new Method<MemberAccess.Reader<P>> GetGetMethod(bool nonPublic)
+				public new Method<MemberAccess.Getter<P>> GetGetMethod(bool nonPublic)
 				{
 					var getter = base.GetGetMethod(nonPublic);
-					return getter == null ? null : Method<MemberAccess.Reader<P>>.Static.GetOrNull(getter.Name, nonPublic);
+					return getter == null ? null : Method<MemberAccess.Getter<P>>.Static.GetOrNull(getter.Name, nonPublic);
 				} 
 
-				public new Method<MemberAccess.Reader<P>> GetMethod
+				public new Method<MemberAccess.Getter<P>> GetMethod
 				{
 					get
 					{
 						var getter = base.GetMethod;
-						return getter == null ? null : Method<MemberAccess.Reader<P>>.Static.GetOrNull(getter.Name, !getter.IsPublic);
+						return getter == null ? null : Method<MemberAccess.Getter<P>>.Static.GetOrNull(getter.Name, !getter.IsPublic);
 					}
 				}
-				public new Method<MemberAccess.Writer<P>> SetMethod 
+				public new Method<MemberAccess.Setter<P>> SetMethod 
 				{ 
 					get
 					{
 						var setter = base.SetMethod;
-						return setter == null ? null : Method<MemberAccess.Writer<P>>.Static.GetOrNull(setter.Name, !setter.IsPublic);
+						return setter == null ? null : Method<MemberAccess.Setter<P>>.Static.GetOrNull(setter.Name, !setter.IsPublic);
 					}
 				}
 
-				public new Method<MemberAccess.Writer<P>> GetSetMethod(bool nonPublic)
+				public new Method<MemberAccess.Setter<P>> GetSetMethod(bool nonPublic)
 				{
 					var setter = base.GetSetMethod(nonPublic);
-					return setter == null ? null : Method<MemberAccess.Writer<P>>.Static.GetOrNull(setter.Name, nonPublic);
+					return setter == null ? null : Method<MemberAccess.Setter<P>>.Static.GetOrNull(setter.Name, nonPublic);
 				}
 
 				/// <summary>
@@ -613,7 +614,7 @@ namespace MissingPieces.Metaprogramming
 
 					internal Cache(BindingFlags flags) => this.flags = flags;
 
-					private protected override Instance CreateMember(string propertyName)
+					private protected override Instance Create(string propertyName)
 					{
 						var property = RuntimeType.GetProperty(propertyName, flags);
 						return property == null ? null : new Instance(property, flags.HasFlag(BindingFlags.NonPublic));
@@ -652,33 +653,33 @@ namespace MissingPieces.Metaprogramming
 							actionParam).Compile();
 				}
 
-				public new Method<MemberAccess.Reader<T, P>> GetGetMethod(bool nonPublic)
+				public new Method<MemberAccess.Getter<T, P>> GetGetMethod(bool nonPublic)
 				{
 					var getter = base.GetGetMethod(nonPublic);
-					return getter == null ? null : Method<MemberAccess.Reader<T, P>>.Instance.GetOrNull(getter.Name, nonPublic);
+					return getter == null ? null : Method<MemberAccess.Getter<T, P>>.Instance.GetOrNull(getter.Name, nonPublic);
 				} 
 
-				public new Method<MemberAccess.Reader<T, P>> GetMethod
+				public new Method<MemberAccess.Getter<T, P>> GetMethod
 				{
 					get
 					{
 						var getter = base.GetMethod;
-						return getter == null ? null : Method<MemberAccess.Reader<T, P>>.Instance.GetOrNull(getter.Name, !getter.IsPublic);
+						return getter == null ? null : Method<MemberAccess.Getter<T, P>>.Instance.GetOrNull(getter.Name, !getter.IsPublic);
 					}
 				}
-				public new Method<MemberAccess.Writer<T, P>> SetMethod 
+				public new Method<MemberAccess.Setter<T, P>> SetMethod 
 				{ 
 					get
 					{
 						var setter = base.SetMethod;
-						return setter == null ? null : Method<MemberAccess.Writer<T, P>>.Instance.GetOrNull(setter.Name, !setter.IsPublic);
+						return setter == null ? null : Method<MemberAccess.Setter<T, P>>.Instance.GetOrNull(setter.Name, !setter.IsPublic);
 					}
 				}
 
-				public new Method<MemberAccess.Writer<T, P>> GetSetMethod(bool nonPublic)
+				public new Method<MemberAccess.Setter<T, P>> GetSetMethod(bool nonPublic)
 				{
 					var setter = base.GetSetMethod(nonPublic);
-					return setter == null ? null : Method<MemberAccess.Writer<T, P>>.Instance.GetOrNull(setter.Name, nonPublic);
+					return setter == null ? null : Method<MemberAccess.Setter<T, P>>.Instance.GetOrNull(setter.Name, nonPublic);
 				}
 
 				public static implicit operator MemberAccess<T, P>(Instance property) => property?.accessor;
@@ -834,7 +835,7 @@ namespace MissingPieces.Metaprogramming
 
 					internal Cache(BindingFlags flags) => this.flags = flags;
 
-					private protected override Static CreateMember(string eventName)
+					private protected override Static Create(string eventName)
 					{
 						var @event = RuntimeType.GetEvent(eventName, flags);
 						return @event == null ? null : new Static(@event, flags.HasFlag(BindingFlags.NonPublic));
@@ -948,7 +949,7 @@ namespace MissingPieces.Metaprogramming
 
 					internal Cache(BindingFlags flags) => this.flags = flags;
 
-					private protected override Instance CreateMember(string eventName)
+					private protected override Instance Create(string eventName)
 					{
 						var @event = RuntimeType.GetEvent(eventName, flags);
 						return @event == null ? null : new Instance(@event, flags.HasFlag(BindingFlags.NonPublic));
@@ -1150,7 +1151,7 @@ namespace MissingPieces.Metaprogramming
 			{
 				private sealed class PublicCache : MemberCache<FieldInfo, Instance>
 				{
-					private protected override Instance CreateMember(string eventName)
+					private protected override Instance Create(string eventName)
 					{
 						var field = RuntimeType.GetField(eventName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 						return field is null || field.FieldType != typeof(F) ?
@@ -1161,7 +1162,7 @@ namespace MissingPieces.Metaprogramming
 
 				private sealed class NonPublicCache : MemberCache<FieldInfo, Instance>
 				{
-					private protected override Instance CreateMember(string eventName)
+					private protected override Instance Create(string eventName)
 					{
 						var field = RuntimeType.GetField(eventName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 						return field is null || field.FieldType != typeof(F) ?
@@ -1251,7 +1252,7 @@ namespace MissingPieces.Metaprogramming
 			{
 				private sealed class PublicCache : MemberCache<FieldInfo, Static>
 				{
-					private protected override Static CreateMember(string eventName)
+					private protected override Static Create(string eventName)
 					{
 						var field = RuntimeType.GetField(eventName, BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
 						return field is null || field.FieldType != typeof(F) ?
@@ -1262,7 +1263,7 @@ namespace MissingPieces.Metaprogramming
 
 				private sealed class NonPublicCache : MemberCache<FieldInfo, Static>
 				{
-					private protected override Static CreateMember(string eventName)
+					private protected override Static Create(string eventName)
 					{
 						var field = RuntimeType.GetField(eventName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 						return field is null || field.FieldType != typeof(F) ?
@@ -1524,7 +1525,7 @@ namespace MissingPieces.Metaprogramming
 
 					internal Cache(BindingFlags flags) => this.flags = flags;
 
-					private protected override Method<D> CreateMember(string memberName)
+					private protected override Method<D> Create(string memberName)
 					{
 						var invokeMethod = Delegates.GetInvokeMethod<D>();
 						var targetMethod = RuntimeType.GetMethod(memberName,
@@ -1582,7 +1583,7 @@ namespace MissingPieces.Metaprogramming
 
 					internal Cache(BindingFlags flags) => this.flags = flags;
 
-					private protected override Method<D> CreateMember(string memberName)
+					private protected override Method<D> Create(string memberName)
 					{
 						var invokeMethod = Delegates.GetInvokeMethod<D>();
 						var parameters = invokeMethod.GetParameterTypes();
@@ -1810,6 +1811,69 @@ namespace MissingPieces.Metaprogramming
 
 				public static Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(string methodName, bool nonPublic = false)
 					=> Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, P10, R>, nonPublic);
+			}
+		}
+
+		/// <summary>
+		/// Represents operator applicable to type <typeparamref name="T"/>.
+		/// </summary>
+		/// <typeparam name="D">Type of delegate describing operator signature.</typeparam>
+		public abstract class Operator<D>: Metaprogramming.Operator
+			where D: Delegate
+		{
+			private readonly D invoker;
+
+			private Operator(D invoker, ExpressionType type)
+				: base(type)
+			{
+				this.invoker = invoker;
+			}
+
+			public static implicit operator D(Operator<D> @operator) => @operator?.invoker;
+
+			/// <summary>
+			/// Represents unary operator applicable to type <typeparamref name="T"/>.
+			/// </summary>
+			public sealed class Unary: Operator<D>
+			{
+				private sealed class Cache : Cache<UnaryOperator, Unary>
+				{
+					private protected override Unary Create(UnaryOperator cacheKey)
+					{
+						var result = MakeUnary<D>(cacheKey, Parameter(RuntimeType));
+						return result == null ? null : new Unary(result.Compile(), cacheKey);
+					}
+				}
+
+				private Unary(D invoker, UnaryOperator type)
+					: base(invoker, ToExpressionType(type))
+				{
+					Type = type;
+				}
+
+				private static readonly Cache operators = new Cache();
+
+				/// <summary>
+				/// Type of operator.
+				/// </summary>
+				public new UnaryOperator Type { get; }
+
+				/// <summary>
+				/// Gets 
+				/// </summary>
+				/// <param name="op"></param>
+				/// <returns></returns>
+				public static Unary GetOrNull(UnaryOperator op) => operators.GetOrCreate(op);
+			}
+
+			
+		}
+
+		public static class Operator
+		{
+			public static Operator<Func<T, R>> Get<R>(UnaryOperator op)
+			{
+				return null;
 			}
 		}
 	}

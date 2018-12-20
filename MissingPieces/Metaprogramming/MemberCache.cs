@@ -5,49 +5,64 @@ using System.Threading;
 
 namespace MissingPieces.Metaprogramming
 {
-	internal abstract class MemberCache<M, E>
-		where M: MemberInfo
-		where E: IMember<M>
+	internal abstract class Cache<K, V>
+		where K: IComparable
+		where V: class
 	{
-		private readonly Dictionary<string, E> members;
+		private readonly Dictionary<K, V> elements;
 		private readonly ReaderWriterLockSlim syncObject;
 
-		internal MemberCache()
+		private protected Cache(IEqualityComparer<K> comparer)
 		{
-			members = new Dictionary<string, E>(StringComparer.Ordinal);
+			elements = new Dictionary<K, V>(comparer);
 			syncObject = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 		}
 
-		private protected abstract E CreateMember(string memberName);
+		private protected Cache()
+			: this(EqualityComparer<K>.Default)
+		{
+		}
 
-		internal E GetOrCreate(string memberName)
+		private protected abstract V Create(K cacheKey);
+
+		internal V GetOrCreate(K cacheKey)
 		{
 			syncObject.EnterReadLock();
-			var exists = members.TryGetValue(memberName, out var member);
+			var exists = elements.TryGetValue(cacheKey, out var item);
 			syncObject.ExitReadLock();
-			if (exists) return member;
-			//non-fast path, discover member
+			if (exists) return item;
+			//non-fast path, discover item
 			syncObject.EnterUpgradeableReadLock();
-			exists = members.TryGetValue(memberName, out member);
+			exists = elements.TryGetValue(cacheKey, out item);
 			if (exists)
 			{
 				syncObject.ExitUpgradeableReadLock();
-				return member;
+				return item;
 			}
 			else
 			{
 				syncObject.EnterWriteLock();
 				try
 				{
-					members[memberName] = member = CreateMember(memberName);
+					elements[cacheKey] = item = Create(cacheKey);
 				}
 				finally
 				{
 					syncObject.ExitWriteLock();
 					syncObject.ExitUpgradeableReadLock();
 				}
-				return member;
+				return item;
 			}
+		}
+	}
+
+	internal abstract class MemberCache<M, E>: Cache<string, E>
+		where M: MemberInfo
+		where E: class, IMember<M>
+	{
+		private protected MemberCache()
+			: base(StringComparer.Ordinal)
+		{
 		}
 	}
 }

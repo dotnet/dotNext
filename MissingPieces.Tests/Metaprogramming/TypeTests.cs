@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace MissingPieces.Metaprogramming
@@ -19,6 +20,43 @@ namespace MissingPieces.Metaprogramming
 		private delegate void ByRefAction<T>(in T value);
 
 		private delegate R ByRefFunc<T1, T2, R>(in T1 value, T2 arg);
+
+		public class BaseClass
+		{
+			public static bool operator ==(int first, BaseClass second) => true;
+			public static bool operator !=(int first, BaseClass second) => false;
+
+			public static bool operator ==(BaseClass first, BaseClass second) => true;
+			public static bool operator !=(BaseClass first, BaseClass second) => false;
+
+			public static bool operator +(BaseClass bc) => true;
+
+			public override bool Equals(object obj)
+			{
+				return base.Equals(obj);
+			}
+		}
+
+		public sealed class DerivedClass: BaseClass
+		{
+			public override bool Equals(object obj)
+			{
+				return base.Equals(obj);
+			}
+		}
+
+		[Fact]
+		public void Tst()
+		{
+			Func<DerivedClass, bool> op = Type<DerivedClass>.Operator<Func<DerivedClass, bool>>.Unary.GetOrNull(UnaryOperator.Plus);
+			op(new DerivedClass());
+		}
+
+		[Fact]
+		public void NonExistentMethodTest()
+		{
+			Throws<MissingMethodException>(() => Type<string>.Method.Instance<StringComparer>.Get<char>(nameof(string.IndexOf)));
+		}
 
 		[Fact]
 		public void InstanceMethodTest()
@@ -152,7 +190,7 @@ namespace MissingPieces.Metaprogramming
 			False(rProperty.CanWrite);
 			True(rProperty.CanRead);
 			Equal(42, rProperty[instance]);
-			Equal(42, ((MemberAccess.Reader<StructWithProperties, int>)rProperty.GetMethod).Invoke(instance));
+			Equal(42, ((MemberAccess.Getter<StructWithProperties, int>)rProperty.GetMethod).Invoke(instance));
 		}
 
 		[Fact]
