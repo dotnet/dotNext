@@ -40,6 +40,20 @@ namespace MissingPieces.Metaprogramming
                 new Predicate<object>(input => input is null).ConvertDelegate<Predicate<T>>();
         }
 
+		public static bool IsAssignableFrom<U>() => RuntimeType.IsAssignableFrom(typeof(U));
+
+		public static bool IsAssignableTo<U>() => typeof(U).IsAssignableFrom(RuntimeType);
+
+		public static Optional<T> TryConvert<U>(U value)
+		{
+			Func<U, T> converter = Typecast<U>.GetOrNull();
+			return converter is null ? Optional<T>.Empty : converter(value);
+		}
+
+		public static bool TryConvert<U>(U value, out T result) => TryConvert<U>(value).TryGet(out result);
+
+		public static T Convert<U>(U value) => TryConvert<U>(value).GetOrThrow<InvalidCastException>();
+
         /// <summary>
         /// Provides constructor definition based on delegate signature.
         /// </summary>
@@ -1463,6 +1477,26 @@ namespace MissingPieces.Metaprogramming
             }
         }
 
+		public sealed class Typecast<U>:  Metaprogramming.Operator<Func<U, T>>
+		{
+			private static readonly Typecast<U> Instance;
+
+			private Typecast(Func<U, T> invoker)
+				: base(invoker, ExpressionType.Convert)
+			{
+
+			}
+
+			static Typecast()
+			{
+				var parameter = Parameter(typeof(T));
+				var invoker = MakeConvert<Func<U, T>>(parameter, false).Compile();
+				Instance = invoker is null ? null : new Typecast<U>(invoker);
+			}
+
+			public static Typecast<U> GetOrNull() => Instance;
+		}
+
         /// <summary>
         /// Represents operator applicable to type <typeparamref name="T"/>.
         /// </summary>
@@ -1470,7 +1504,6 @@ namespace MissingPieces.Metaprogramming
         public static class Operator<D>
             where D : Delegate
         {
-
             /// <summary>
             /// Represents unary operator applicable to type <typeparamref name="T"/>.
             /// </summary>
@@ -1517,6 +1550,8 @@ namespace MissingPieces.Metaprogramming
             public static Metaprogramming.Operator<Func<T, R>> GetOrNull<R>(UnaryOperator op) => Operator<Func<T, R>>.Unary.GetOrNull(op);
 
             public static Metaprogramming.Operator<Func<T, R>> Get<R>(UnaryOperator op) => GetOrNull<R>(op) ?? throw MissingOperatorException.Create<T>(op);
-        }
+        
+		
+		}
     }
 }

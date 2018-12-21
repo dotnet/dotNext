@@ -9,8 +9,6 @@ namespace MissingPieces.Metaprogramming
 	{
 		Plus = ExpressionType.UnaryPlus,
 
-		Negate = ExpressionType.Negate,
-		Convert = ExpressionType.Convert,
-		ConvertChecked = ExpressionType.ConvertChecked,
+		Negate = ExpressionType.Negate
 	}
 }

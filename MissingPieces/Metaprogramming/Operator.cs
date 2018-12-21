@@ -48,5 +48,28 @@ namespace MissingPieces.Metaprogramming
 
 		private protected static Expression<D> MakeUnary(UnaryOperator @operator, ParameterExpression operand)
 			=> Unary(@operator, operand, operand);
+
+		private static Expression<D> Convert(ParameterExpression parameter, Expression operand, Type conversionType, bool @checked)
+		{
+			try
+			{
+				return Expression.Lambda<D>(@checked ? Expression.ConvertChecked(operand, conversionType) : Expression.Convert(operand, conversionType) , parameter);
+			}
+			catch(ArgumentException e)
+			{
+				WriteLine(e);
+				return null;
+			}
+			catch(InvalidOperationException)
+			{
+				//do not walk through inheritance hierarchy for value types
+				if(parameter.Type.IsValueType) return null;
+				var lookup = operand.Type.BaseType;
+				return lookup is null ? null : Convert(parameter, Expression.Convert(parameter, lookup), conversionType, @checked);
+			}
+		}
+
+		private protected static Expression<D> MakeConvert<T>(ParameterExpression parameter, bool @checked)
+			=> Convert(parameter, parameter, typeof(T), @checked);
 	}
 }
