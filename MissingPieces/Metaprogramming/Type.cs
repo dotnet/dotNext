@@ -1311,51 +1311,51 @@ namespace MissingPieces.Metaprogramming
                 => GetOrNull(methodName, nonPublic) ?? throw exceptionFactory(methodName);
         }
 
+		/// <summary>
+		/// Provides access to static methods without return value.
+		/// </summary>
+		public static class StaticMethod
+		{
+			public static Method<Action> Get(string methodName, bool nonPublic = false)
+				=> Method<Action>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T>, nonPublic);
 
+			public static Method<Action<P>> Get<P>(string methodName, bool nonPublic = false)
+				=> Method<Action<P>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P>, nonPublic);
 
-        /// <summary>
-        /// Provides strongly typed way to reflect methods
-        /// </summary>
-        public static class Method
+			public static Metaprogramming.Method<Action<P1, P2>> Get<P1, P2>(string methodName, bool nonPublic = false)
+				=> Method<Action<P1, P2>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2>, nonPublic);
+
+			public static Metaprogramming.Method<Action<P1, P2, P3>> Get<P1, P2, P3>(string methodName, bool nonPublic = false)
+				=> Method<Action<P1, P2, P3>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3>, nonPublic);
+
+			public static Metaprogramming.Method<Action<P1, P2, P3, P4>> Get<P1, P2, P3, P4>(string methodName, bool nonPublic = false)
+				=> Method<Action<P1, P2, P3, P4>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4>, nonPublic);
+
+			public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5>> Get<P1, P2, P3, P4, P5>(string methodName, bool nonPublic = false)
+				=> Method<Action<P1, P2, P3, P4, P5>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5>, nonPublic);
+
+			public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6>> Get<P1, P2, P3, P4, P5, P6>(string methodName, bool nonPublic = false)
+				=> Method<Action<P1, P2, P3, P4, P5, P6>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6>, nonPublic);
+
+			public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6, P7>> Get<P1, P2, P3, P4, P5, P6, P7>(string methodName, bool nonPublic = false)
+				=> Method<Action<P1, P2, P3, P4, P5, P6, P7>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7>, nonPublic);
+
+			public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6, P7, P8>> Get<P1, P2, P3, P4, P5, P6, P7, P8>(string methodName, bool nonPublic = false)
+				=> Method<Action<P1, P2, P3, P4, P5, P6, P7, P8>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8>, nonPublic);
+
+			public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(string methodName, bool nonPublic = false)
+				=> Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>, nonPublic);
+
+			public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(string methodName, bool nonPublic = false)
+				=> Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>, nonPublic);
+		}
+
+		/// <summary>
+		/// Provides strongly typed way to reflect methods
+		/// </summary>
+		public static class Method
         {
-            /// <summary>
-            /// Provides access to static methods without return value.
-            /// </summary>
-            public static class Static
-            {
-                public static Metaprogramming.Method<Action> Get(string methodName, bool nonPublic = false)
-                    => Method<Action>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T>, nonPublic);
-
-                public static Metaprogramming.Method<Action<P>> Get<P>(string methodName, bool nonPublic = false)
-                    => Method<Action<P>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P>, nonPublic);
-
-                public static Metaprogramming.Method<Action<P1, P2>> Get<P1, P2>(string methodName, bool nonPublic = false)
-                    => Method<Action<P1, P2>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2>, nonPublic);
-
-                public static Metaprogramming.Method<Action<P1, P2, P3>> Get<P1, P2, P3>(string methodName, bool nonPublic = false)
-                    => Method<Action<P1, P2, P3>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3>, nonPublic);
-
-                public static Metaprogramming.Method<Action<P1, P2, P3, P4>> Get<P1, P2, P3, P4>(string methodName, bool nonPublic = false)
-                    => Method<Action<P1, P2, P3, P4>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4>, nonPublic);
-
-                public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5>> Get<P1, P2, P3, P4, P5>(string methodName, bool nonPublic = false)
-                    => Method<Action<P1, P2, P3, P4, P5>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5>, nonPublic);
-
-                public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6>> Get<P1, P2, P3, P4, P5, P6>(string methodName, bool nonPublic = false)
-                    => Method<Action<P1, P2, P3, P4, P5, P6>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6>, nonPublic);
-
-                public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6, P7>> Get<P1, P2, P3, P4, P5, P6, P7>(string methodName, bool nonPublic = false)
-                    => Method<Action<P1, P2, P3, P4, P5, P6, P7>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7>, nonPublic);
-
-                public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6, P7, P8>> Get<P1, P2, P3, P4, P5, P6, P7, P8>(string methodName, bool nonPublic = false)
-                    => Method<Action<P1, P2, P3, P4, P5, P6, P7, P8>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8>, nonPublic);
-
-                public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(string methodName, bool nonPublic = false)
-                    => Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>, nonPublic);
-
-                public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(string methodName, bool nonPublic = false)
-                    => Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>, nonPublic);
-            }
+            
 
             /// <summary>
             /// Provides access to static methods with return value.
@@ -1477,6 +1477,10 @@ namespace MissingPieces.Metaprogramming
             }
         }
 
+		/// <summary>
+		/// Describes type conversion operation.
+		/// </summary>
+		/// <typeparam name="U">Type of operand to convert from.</typeparam>
 		public sealed class Typecast<U>:  Metaprogramming.Operator<Func<U, T>>
 		{
 			private static readonly Typecast<U> Instance;
@@ -1497,61 +1501,40 @@ namespace MissingPieces.Metaprogramming
 			public static Typecast<U> GetOrNull() => Instance;
 		}
 
-        /// <summary>
-        /// Represents operator applicable to type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="D">Type of delegate describing operator signature.</typeparam>
-        public static class Operator<D>
-            where D : Delegate
-        {
-            /// <summary>
-            /// Represents unary operator applicable to type <typeparamref name="T"/>.
-            /// </summary>
-            public sealed class Unary : Metaprogramming.Operator<D>
-            {
-                private sealed class Cache : Cache<UnaryOperator, Unary>
-                {
-                    private protected override Unary Create(UnaryOperator cacheKey)
-                    {
-                        var result = MakeUnary(cacheKey, Parameter(RuntimeType));
-                        return result == null ? null : new Unary(result.Compile(), cacheKey);
-                    }
-                }
+		/// <summary>
+		/// Represents unary operator applicable to type <typeparamref name="T"/>.
+		/// </summary>
+		/// <typeparam name="R">Type of unary operator result.</typeparam>
+		public sealed class UnaryOperator<R> : Operator<UnaryOperator<T, R>>
+		{
+			private sealed class Cache : Cache<UnaryOperator, UnaryOperator<R>>
+			{
+				private protected override UnaryOperator<R> Create(UnaryOperator cacheKey)
+				{
+					var result = MakeUnary(cacheKey, Parameter(RuntimeType));
+					return result == null ? null : new UnaryOperator<R>(result.Compile(), cacheKey);
+				}
+			}
 
-                private Unary(D invoker, UnaryOperator type)
-                    : base(invoker, ToExpressionType(type))
-                {
-                    Type = type;
-                }
+			private UnaryOperator(UnaryOperator<T, R> invoker, UnaryOperator type)
+				: base(invoker, ToExpressionType(type))
+			{
+				Type = type;
+			}
 
-                private static readonly Cache operators = new Cache();
+			private static readonly Cache operators = new Cache();
 
-                /// <summary>
-                /// Type of operator.
-                /// </summary>
-                public new UnaryOperator Type { get; }
+			/// <summary>
+			/// Type of operator.
+			/// </summary>
+			public new UnaryOperator Type { get; }
 
-                /// <summary>
-                /// Gets unary operator. 
-                /// </summary>
-                /// <param name="op">Unary operator type.</param>
-                /// <returns>Unary operator.</returns>
-                public static Unary GetOrNull(UnaryOperator op) => operators.GetOrCreate(op);
-            }
-
-
-        }
-
-        /// <summary>
-        /// Provides access to operators available for type <typeparamref name="T"/>.
-        /// </summary>
-        public static class Operator
-        {
-            public static Metaprogramming.Operator<Func<T, R>> GetOrNull<R>(UnaryOperator op) => Operator<Func<T, R>>.Unary.GetOrNull(op);
-
-            public static Metaprogramming.Operator<Func<T, R>> Get<R>(UnaryOperator op) => GetOrNull<R>(op) ?? throw MissingOperatorException.Create<T>(op);
-        
-		
+			/// <summary>
+			/// Gets unary operator. 
+			/// </summary>
+			/// <param name="op">Unary operator type.</param>
+			/// <returns>Unary operator.</returns>
+			public static UnaryOperator<R> GetOrNull(UnaryOperator op) => operators.GetOrCreate(op);
 		}
     }
 }

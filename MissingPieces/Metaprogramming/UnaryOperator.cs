@@ -11,4 +11,13 @@ namespace MissingPieces.Metaprogramming
 
 		Negate = ExpressionType.Negate
 	}
+
+	/// <summary>
+	/// Represents unary operator.
+	/// </summary>
+	/// <typeparam name="I">Type of operand.</typeparam>
+	/// <typeparam name="O">Type of result.</typeparam>
+	/// <param name="operand">Operand.</param>
+	/// <returns>Result.</returns>
+	public delegate O UnaryOperator<I, out O>(in I operand);
 }
