@@ -68,7 +68,7 @@ namespace MissingPieces.Metaprogramming
 			Equal("aaa", str);
 			Func<object> objCtor = Type<object>.Constructor.Get();
 			NotNull(objCtor());
-			stringCtor = Type<string>.Constructor<Func<char, int, string>>.GetOrNull();
+			stringCtor = Type<string>.Constructor<Func<char, int, string>>.Get();
 			str = stringCtor('a', 3);
 			Equal("aaa", str);
 			Throws<MissingConstructorException>(() => Type<string>.Constructor.Get<int, int, string>());
@@ -123,7 +123,7 @@ namespace MissingPieces.Metaprogramming
 		public void InstancePropertyTest()
 		{
 			var instance = new StructWithProperties();
-			var rwProperty = Type<StructWithProperties>.InstanceProperty<string>.Get(nameof(StructWithProperties.ReadWriteProperty));
+			var rwProperty = Type<StructWithProperties>.InstanceProperty<string>.GetOrThrow(nameof(StructWithProperties.ReadWriteProperty));
 			True(rwProperty.CanRead);
 			True(rwProperty.CanWrite);
 			NotNull(rwProperty.GetMethod);
@@ -131,13 +131,13 @@ namespace MissingPieces.Metaprogramming
 			rwProperty[instance] = "Hello, world";
 			Equal("Hello, world", instance.ReadWriteProperty);
 			Equal("Hello, world", rwProperty[instance]);
-			var wProperty = Type<StructWithProperties>.InstanceProperty<int>.Get(nameof(StructWithProperties.WriteOnlyProp));
+			var wProperty = Type<StructWithProperties>.InstanceProperty<int>.GetOrThrow(nameof(StructWithProperties.WriteOnlyProp));
 			True(wProperty.CanWrite);
 			False(wProperty.CanRead);
 			NotNull(wProperty.SetMethod);
 			Null(wProperty.GetMethod);
 			wProperty[instance] = 42;
-			MemberAccess<StructWithProperties, int> rProperty = Type<StructWithProperties>.InstanceProperty<int>.Get(nameof(StructWithProperties.ReadOnlyProp));
+			MemberAccess<StructWithProperties, int> rProperty = Type<StructWithProperties>.InstanceProperty<int>.GetOrThrow(nameof(StructWithProperties.ReadOnlyProp));
 			Equal(42, rProperty.GetValue(in instance));
 		}
 
@@ -145,17 +145,17 @@ namespace MissingPieces.Metaprogramming
 		public void StructPropertyTest()
 		{
 			var instance = new StructWithProperties();
-			MemberAccess<StructWithProperties, string> rwProperty = Type<StructWithProperties>.InstanceProperty<string>.Get(nameof(StructWithProperties.ReadWriteProperty));
+			MemberAccess<StructWithProperties, string> rwProperty = Type<StructWithProperties>.InstanceProperty<string>.GetOrThrow(nameof(StructWithProperties.ReadWriteProperty));
 			rwProperty.SetValue(instance, "Hello, world");
 			Equal("Hello, world", instance.ReadWriteProperty);
 			Equal("Hello, world", rwProperty.GetValue(instance));
-			var wProperty = Type<StructWithProperties>.InstanceProperty<int>.Get(nameof(StructWithProperties.WriteOnlyProp));
+			var wProperty = Type<StructWithProperties>.InstanceProperty<int>.GetOrThrow(nameof(StructWithProperties.WriteOnlyProp));
 			True(wProperty.CanWrite);
 			False(wProperty.CanRead);
 			NotNull(wProperty.SetMethod);
 			Null(wProperty.GetMethod);
 			wProperty[instance] = 42;
-			var rProperty = Type<StructWithProperties>.InstanceProperty<int>.Get(nameof(StructWithProperties.ReadOnlyProp));
+			var rProperty = Type<StructWithProperties>.InstanceProperty<int>.GetOrThrow(nameof(StructWithProperties.ReadOnlyProp));
 			False(rProperty.CanWrite);
 			True(rProperty.CanRead);
 			Equal(42, rProperty[instance]);
@@ -165,7 +165,7 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void StaticPropertyTest()
 		{
-			var property = Type<ClassWithProperties>.StaticProperty<long>.Get(nameof(ClassWithProperties.StaticProp), true);
+			var property = Type<ClassWithProperties>.StaticProperty<long>.GetOrThrow(nameof(ClassWithProperties.StaticProp), true);
 			True(property.CanRead);
 			True(property.CanWrite);
 			property.Value = 42;
@@ -175,11 +175,11 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void InstanceEventTest()
 		{
-			EventAccess<AppDomain, ResolveEventHandler> ev = Type<AppDomain>.InstanceEvent<ResolveEventHandler>.Get(nameof(AppDomain.TypeResolve));
+			EventAccess<AppDomain, ResolveEventHandler> ev = Type<AppDomain>.InstanceEvent<ResolveEventHandler>.GetOrThrow(nameof(AppDomain.TypeResolve));
 			ResolveEventHandler handler = (sender, args) => null;
 			ev.AddEventHandler(AppDomain.CurrentDomain, handler);
 			ev.RemoveEventHandler(AppDomain.CurrentDomain, handler);
-			var ev2 = Type<TypeTests>.InstanceEvent<EventHandler>.Get(nameof(InstanceEvent), true);
+			var ev2 = Type<TypeTests>.InstanceEvent<EventHandler>.GetOrThrow(nameof(InstanceEvent), true);
 			Null(InstanceEvent);
 			EventHandler handler2 = (sender, args) => { };
 			ev2.AddEventHandler(this, handler2);
@@ -191,7 +191,7 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void StaticEventTest()
 		{
-			var ev = Type<TypeTests>.StaticEvent<EventHandler>.Get(nameof(StaticEvent), true);
+			var ev = Type<TypeTests>.StaticEvent<EventHandler>.GetOrThrow(nameof(StaticEvent), true);
 			EventHandler handler = (sender, args) => { };
 			ev.AddEventHandler(handler);
 			Equal(StaticEvent, handler);
@@ -202,8 +202,8 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void StaticFieldTest()
 		{
-			var structField = Type<Guid>.StaticField<Guid>.Get(nameof(Guid.Empty));
-			var objField = Type<TextReader>.StaticField<TextReader>.Get(nameof(TextReader.Null));
+			var structField = Type<Guid>.StaticField<Guid>.GetOrThrow(nameof(Guid.Empty));
+			var objField = Type<TextReader>.StaticField<TextReader>.GetOrThrow(nameof(TextReader.Null));
 			Same(TextReader.Null, objField.Value);
 		}
 	}

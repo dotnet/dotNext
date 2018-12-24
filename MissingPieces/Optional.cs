@@ -252,6 +252,8 @@ namespace MissingPieces
 		/// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise an empty Optional.</returns>
 		public Optional<U> Map<U>(Func<T, U> mapper) => IsPresent ? mapper(value) : Optional<U>.Empty;
 
+		public Optional<U> FlatMap<U>(Func<T, Optional<U>> mapper) => IsPresent ? mapper(value) : Optional<U>.Empty;
+
 		/// <summary>
 		/// If a value is present, and the value matches the given predicate, 
 		/// return an Optional describing the value, otherwise return an empty Optional.
