@@ -203,14 +203,14 @@ namespace MissingPieces
 		/// </summary>
 		/// <param name="defaultValue">The value to be returned if there is no value present.</param>
 		/// <returns>The value, if present, otherwise default</returns>
-		public T GetOrDefault(T defaultValue) => IsPresent ? value : defaultValue;
+		public T Or(T defaultValue) => IsPresent ? value : defaultValue;
 
 		/// <summary>
 		/// If a value is present, returns the value, otherwise throw exception.
 		/// </summary>
 		/// <typeparam name="E">Type of exception to throw.</typeparam>
 		/// <returns>The value, if present.</returns>
-		public T GetOrThrow<E>()
+		public T OrThrow<E>()
 			where E : Exception, new()
 			=> IsPresent ? value : throw new E();
 
@@ -220,7 +220,7 @@ namespace MissingPieces
 		/// <typeparam name="E"></typeparam>
 		/// <param name="exceptionFactory">Exception factory.</param>
 		/// <returns>The value, if present.</returns>
-		public T GetOrThrow<E>(Func<E> exceptionFactory)
+		public T OrThrow<E>(Func<E> exceptionFactory)
 			where E : Exception
 			=> IsPresent ? value : throw exceptionFactory();
 
@@ -229,13 +229,13 @@ namespace MissingPieces
 		/// </summary>
 		/// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
 		/// <returns>The value, if present, otherwise returned from delegate.</returns>
-		public T GetOrInvoke(Func<T> defaultFunc) => IsPresent ? value : defaultFunc();
+		public T OrInvoke(Func<T> defaultFunc) => IsPresent ? value : defaultFunc();
 
 		/// <summary>
 		/// If a value is present, returns the value, otherwise return default value.
 		/// </summary>
 		/// <returns>The value, if present, otherwise default<</returns>
-		public T GetOrDefault() => GetOrDefault(default);
+		public T OrDefault() => Or(default);
 
 		/// <summary>
 		/// If a value is present, returns the value, otherwise throw exception.

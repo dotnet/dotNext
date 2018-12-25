@@ -13,5 +13,13 @@ namespace MissingPieces.Reflection
 			Equal(typeof(int), signature.GetParameters()[0].ParameterType);
 			Equal(typeof(string), signature.ReturnParameter.ParameterType);
 		}
+
+		[Fact]
+		public void ConstructorReflectionTest()
+		{
+			var ctor = typeof(string).GetConstructor(new[]{typeof(char), typeof(int)});
+			Func<char, int, string> reflected = ctor.ReflectAs<Func<char, int, string>>();
+			Equal("ccc", reflected('c', 3));
+		}
 	}
 }

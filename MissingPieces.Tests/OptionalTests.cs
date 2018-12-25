@@ -64,14 +64,14 @@ namespace MissingPieces
 			var intOptional = new int?(10).ToOptional();
 			True(intOptional.IsPresent);
 			Equal(10, (int)intOptional);
-			Equal(10, intOptional.GetOrDefault(20));
+			Equal(10, intOptional.Or(20));
 			Equal(10, intOptional.Value);
 			True(Nullable.Equals(10, intOptional.GetOrNull()));
 			Equal(typeof(int), Optional.GetUnderlyingType(intOptional.GetType()));
 
 			intOptional = default(int?).ToOptional();
 			False(intOptional.IsPresent);
-			Equal(20, intOptional.GetOrDefault(20));
+			Equal(20, intOptional.Or(20));
 			True(Nullable.Equals(null, intOptional.GetOrNull()));
 			Equal(30, intOptional.Coalesce(new int?(30).ToOptional()).Value);
 			Equal(40, (intOptional | new int?(40).ToOptional()).Value);
@@ -79,7 +79,7 @@ namespace MissingPieces
 
 			Optional<string> strOptional = null;
 			False(strOptional.IsPresent);
-			Equal("Hello, world", strOptional.GetOrDefault("Hello, world"));
+			Equal("Hello, world", strOptional.Or("Hello, world"));
 			Throws<InvalidOperationException>(() => strOptional.Value);
 			Equal(typeof(string), Optional.GetUnderlyingType(strOptional.GetType()));
 		}

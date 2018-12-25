@@ -65,5 +65,15 @@ namespace MissingPieces
 					return true;
 			return false;
         }
+
+		/// <summary>
+		/// Create boxed representation of the value type.
+		/// </summary>
+		/// <param name="value">Value to be placed into heap.</param>
+		/// <typeparam name="T">Value type.</typeparam>
+		/// <returns>Boxed representation of value type.</returns>
+		public static Box<T> Box<T>(this T value)
+			where T: struct
+			=> new Box<T>(value);
     }
 }

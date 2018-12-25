@@ -11,7 +11,7 @@ namespace MissingPieces.Reflection
 		public static Type[] GetParameterTypes(this MethodBase method)
             => method?.GetParameters().Map(p => p.ParameterType);
 
-		public static bool SignatureEquals(this MethodInfo method, MethodInfo other)
+		public static bool SignatureEquals(this MethodBase method, MethodBase other)
 		{
 			var firstParams = method.GetParameters();
 			var secondParams = method.GetParameters();
@@ -20,7 +20,10 @@ namespace MissingPieces.Reflection
 			for(long i = 0; i < firstParams.LongLength; i++)
 				if(firstParams[i].ParameterType != secondParams[i].ParameterType)
 					return false;
-			return method.ReturnType == other.ReturnType;
+			return true;
 		}
+
+		public static bool SignatureEquals(this MethodInfo method, MethodInfo other)
+			=> SignatureEquals(method.Upcast<MethodBase, MethodInfo>(), other) && method.ReturnType == other.ReturnType;
 	}
 }

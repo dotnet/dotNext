@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Xunit;
 
 namespace MissingPieces.Metaprogramming
@@ -19,6 +20,8 @@ namespace MissingPieces.Metaprogramming
 			{
 				return base.Equals(obj);
 			}
+
+			public static implicit operator string(BaseClass obj) => obj?.ToString();
 		}
 
 		public sealed class DerivedClass: BaseClass
@@ -32,11 +35,17 @@ namespace MissingPieces.Metaprogramming
 		[Fact]
 		public void UnaryOperatorTest()
 		{
-			Func<DerivedClass, string> unaryPlus = Type<DerivedClass>.Operator<Func<DerivedClass, string>>.Unary.GetOrNull(UnaryOperator.Plus);
+			var unaryPlus = Type<DerivedClass>.UnaryOperator<string>.Require(UnaryOperator.Plus);
 			var obj = new DerivedClass();
-			Equal(obj.ToString(), unaryPlus(obj));
-			Func<int, int> negate = Type<int>.Operator<Func<int, int>>.Unary.GetOrNull(UnaryOperator.Negate);
+			Equal(obj.ToString(), unaryPlus.Invoke(obj));
+			UnaryOperator<int, int>.Invoker negate = Type<int>.UnaryOperator<int>.Require(UnaryOperator.Negate);
 			Equal(-42, negate(42));
+			//typecast
+			var toLong = Type<byte>.UnaryOperator<ulong>.Require(UnaryOperator.Convert);
+			Equal(42UL, toLong.Invoke(42));
+			var toString = Type<DerivedClass>.UnaryOperator<string>.Require(UnaryOperator.Convert);
+			NotEmpty(toString.Invoke(new DerivedClass()));
+			NotEmpty(Type<string>.Convert(new DerivedClass()));
 		}
     }
 }

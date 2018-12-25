@@ -4,14 +4,10 @@ using System.Reflection;
 namespace MissingPieces.Metaprogramming
 {
 	
-	public interface IMethod<out M, out D>: IMember<M>
+	public interface IMethod<out M, out D>: IMember<M>, ICallable<D>
 		where M: MethodBase
 		where D: Delegate
 	{
-		/// <summary>
-		/// Gets delegate which can be used to invoke method.
-		/// </summary>
-		D Invoker { get; }
 	}
 
 	/// <summary>

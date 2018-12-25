@@ -17,5 +17,7 @@ namespace MissingPieces.Reflection
 			=> delegateType != null && typeof(Delegate).IsAssignableFrom(delegateType) ?
 			 delegateType.GetMethod("Invoke", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly):
 			 null;
+
+		internal static Type NonRefType(this Type type) => type.IsByRef ? type.GetElementType() : type;
 	}
 }

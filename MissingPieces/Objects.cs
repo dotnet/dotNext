@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace MissingPieces
 {
@@ -17,5 +18,9 @@ namespace MissingPieces
 					return true;
 			return false;
 		}
+
+		public static (R1, R2) Decompose<T, R1, R2>(this T obj, Func<T, R1> decomposer1, Func<T, R2> decomposer2)
+			where T: class
+			=> (decomposer1(obj), decomposer2(obj));
 	}
 }

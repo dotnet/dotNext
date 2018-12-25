@@ -42,259 +42,405 @@ namespace MissingPieces.Metaprogramming
 
         public static bool IsAssignableFrom<U>() => RuntimeType.IsAssignableFrom(typeof(U));
 
-        public static bool IsAssignableTo<U>() => typeof(U).IsAssignableFrom(RuntimeType);
+        public static bool IsAssignableTo<U>() => Type<U>.IsAssignableFrom<T>();
 
         public static Optional<T> TryConvert<U>(U value)
         {
-            Func<U, T> converter = Typecast<U>.GetOrNull();
+            UnaryOperator<U, T>.Invoker converter = Type<U>.UnaryOperator<T>.Get(Metaprogramming.UnaryOperator.Convert);
             return converter is null ? Optional<T>.Empty : converter(value);
         }
 
         public static bool TryConvert<U>(U value, out T result) => TryConvert<U>(value).TryGet(out result);
 
-        public static T Convert<U>(U value) => TryConvert<U>(value).GetOrThrow<InvalidCastException>();
+        public static T Convert<U>(U value) => TryConvert<U>(value).OrThrow<InvalidCastException>();
 
-		/// <summary>
-		/// Provides access to constructors of type <typeparamref name="T"/>.
+        /// <summary>
+        /// Provides access to constructor of type <typeparamref name="T"/> without parameters.
+        /// </summary>
+        [DefaultMember("Get")]
+        public static class Constructor
+        {
+            private static class Public<D>
+                where D : MulticastDelegate
+            {
+                internal static readonly Metaprogramming.Constructor<D> Value = Metaprogramming.Constructor<D>.Reflect<T>(false);
+            }
+
+            private static class NonPublic<D>
+                where D : MulticastDelegate
+            {
+                internal static readonly Metaprogramming.Constructor<D> Value = Metaprogramming.Constructor<D>.Reflect<T>(true);
+            }
+
+            /// <summary>
+            /// Reflects constructor of type <typeparamref name="T"/> which signature
+            /// is specified by delegate type.
+            /// </summary>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <typeparam name="D">Type of delegate describing constructor signature.</typeparam>
+            /// <returns>Reflected constructor; or null, if constructor doesn't exist.</returns>
+            public static Metaprogramming.Constructor<D> Get<D>(bool nonPublic = false)
+                where D : MulticastDelegate
+                => nonPublic ? NonPublic<D>.Value : Public<D>.Value;
+
+            public static Metaprogramming.Constructor<Function<A, T>> ReflectSpecial<A>(bool nonPublic = false)
+                where A: struct
+                => Get<Function<A, T>>(nonPublic);
+
+            /// <summary>
+            /// Returns public constructor of type <typeparamref name="T"/> without parameters.
+            /// </summary>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor without parameters; or null, if it doesn't exist.</returns>
+            public static Metaprogramming.Constructor<Func<T>> Get(bool nonPublic = false)
+                => Get<Func<T>>(nonPublic);
+
+            /// <summary>
+            /// Returns public constructor of type <typeparamref name="T"/> without parameters.
+            /// </summary>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor without parameters.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static Metaprogramming.Constructor<Func<T>> Require(bool nonPublic = false)
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<T>();
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
+            public static Optional<T> TryInvoke(bool nonPublic = false)
+            {
+                Func<T> ctor = Get(nonPublic);
+                return ctor is null ? Optional<T>.Empty : ctor();
+            }
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static T Invoke(bool nonPublic = false) => Require(nonPublic).Invoke();
+        }
+
+        /// <summary>
+		/// Provides access to constructor of type <typeparamref name="T"/> with single parameter.
 		/// </summary>
-		public static class Constructor
-		{
-			private static class Public<D>
-            	where D : MulticastDelegate
-			{
-				internal static readonly Constructor<D> Value = Constructor<D>.Create(RuntimeType, false);
-			}
-
-			private static class NonPublic<D>
-				where D : MulticastDelegate
-			{
-				internal static readonly Constructor<D> Value = Constructor<D>.Create(RuntimeType, true);
-			}
-
-			/// <summary>
-			/// Reflects constructor of type <typeparamref name="T"/> which signature
-			/// is specified by delegate type.
+        /// <typeparam name="P">Type of constructor parameter.</typeparam>
+        [DefaultMember("Get")]
+        public static class Constructor<P>
+        {
+            /// <summary>
+			/// Returns constructor <typeparamref name="T"/> with single parameter of type <typeparamref name="P"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="D">Type of delegate describing constructor signature.</typeparam>
-			/// <returns>Reflected constructor; or null, if constructor doesn't exist.</returns>
-			public static Constructor<D> Reflect<D>(bool nonPublic = false)
-				where D : MulticastDelegate
-				=> nonPublic ? NonPublic<D>.Value : Public<D>.Value;
+			/// <returns>Reflected constructor with single parameter; or null, if it doesn't exist.</returns>
+			public static Metaprogramming.Constructor<Func<P, T>> Get(bool nonPublic = false)
+                => Constructor.Get<Func<P, T>>(nonPublic);
 
-			/// <summary>
-			/// Returns public constructor of type <typeparamref name="T"/> without parameters.
-			/// </summary>
-			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <returns>A delegate representing public constructor without parameters; or null, if it doesn't exist.</returns>
-			public static Constructor<Func<T>> Get(bool nonPublic = false)
-				=> Reflect<Func<T>>(nonPublic);
+            public static Metaprogramming.Constructor<Function<ValueTuple<P>, T>> GetSpecial(bool nonPublic = false)
+                => Constructor.ReflectSpecial<ValueTuple<P>>(nonPublic);
 
-			/// <summary>
-			/// Returns public constructor of type <typeparamref name="T"/> without parameters.
-			/// </summary>
-			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <returns>A delegate representing public constructor without parameters.</returns>
-			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Constructor<Func<T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T>();
+            /// <summary>
+            /// Returns constructor <typeparamref name="T"/> with single parameter of type <typeparamref name="P"/>.
+            /// </summary>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Reflected constructor with single parameter.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static Metaprogramming.Constructor<Func<P, T>> Require(bool nonPublic = false)
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<T, P>();
 
-			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with single parameter of type <typeparamref name="P"/>.
-			/// </summary>
-			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P">Type of constructor parameter.</typeparam>
-			/// <returns>A delegate representing public constructor with single parameter; or null, if it doesn't exist.</returns>
-			public static Constructor<Func<P, T>> Get<P>(bool nonPublic = false)
-				=> Reflect<Func<P, T>>(nonPublic);
+            public static Metaprogramming.Constructor<Function<ValueTuple<P>, T>> RequireSpecial(bool nonPublic = false)
+                => GetSpecial(nonPublic) ?? throw MissingConstructorException.Create<T, P>();
+        }
 
-			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with single parameter of type <typeparamref name="P"/>.
-			/// </summary>
-			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P">Type of constructor parameter.</typeparam>
-			/// <returns>A delegate representing public constructor with single parameter.</returns>
-			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Constructor<Func<P, T>> Require<P>(bool nonPublic = false)
-				=> Get<P>(nonPublic) ?? throw MissingConstructorException.Create<T, P>();
-
-			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with two 
+        /// <summary>
+        /// Provides access to constructor of type <typeparamref name="T"/> with two parameters.
+        /// </summary>
+        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
+		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
+        [DefaultMember("Get")] 
+        public static class Constructor<P1, P2>
+        {
+            /// <summary>
+			/// Returns constructor <typeparamref name="T"/> with two 
 			/// parameters of type <typeparamref name="P1"/> and <typeparamref name="P2"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-			/// <returns>A delegate representing public constructor with two parameters; or null, if it doesn't exist.</returns>
-			public static Constructor<Func<P1, P2, T>> Get<P1, P2>(bool nonPublic = false)
-				=> Reflect<Func<P1, P2, T>>(nonPublic);
+			/// <returns>Reflected constructor with two parameters; or null, if it doesn't exist.</returns>
+			public static Metaprogramming.Constructor<Func<P1, P2, T>> Get(bool nonPublic = false)
+				=> Constructor.Get<Func<P1, P2, T>>(nonPublic);
+            
+            public static Metaprogramming.Constructor<Function<(P1, P2), T>> GetSpecial(bool nonPublic = false)
+                => Constructor.ReflectSpecial<(P1, P2)>(nonPublic);
 
 			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with two 
+			/// Returns constructor <typeparamref name="T"/> with two 
 			/// parameters of type <typeparamref name="P1"/> and <typeparamref name="P2"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-			/// <returns>A delegate representing public constructor with two parameters.</returns>
+			/// <returns>Reflected constructor with two parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Constructor<Func<P1, P2, T>> Require<P1, P2>(bool nonPublic = false)
-				=> Get<P1, P2>(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2>();
+			public static Metaprogramming.Constructor<Func<P1, P2, T>> Require(bool nonPublic = false)
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2>();
 
-			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with three 
+            
+            public static Metaprogramming.Constructor<Function<(P1, P2), T>> RequireSpecial(bool nonPublic = false)
+                => GetSpecial(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2>();
+        }
+
+        /// <summary>
+        /// Provides access to constructor of type <typeparamref name="T"/> with three parameters.
+        /// </summary>
+        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
+		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
+		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
+        [DefaultMember("Get")]
+        public static class Constructor<P1, P2, P3>
+        {
+            /// <summary>
+			/// Returns constructor <typeparamref name="T"/> with three 
 			/// parameters of type <typeparamref name="P1"/>, <typeparamref name="P2"/> and <typeparamref name="P3"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-			/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-			/// <returns>A delegate representing public constructor with three parameters; or null, if it doesn't exist.</returns>
-			public static Constructor<Func<P1, P2, P3, T>> Get<P1, P2, P3>(bool nonPublic = false)
-				=> Reflect<Func<P1, P2, P3, T>>(nonPublic);
+			/// <returns>Reflected constructor with three parameters; or null, if it doesn't exist.</returns>
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, T>> Get(bool nonPublic = false)
+				=> Constructor.Get<Func<P1, P2, P3, T>>(nonPublic);
 			
 			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with three 
+			/// Returns constructor <typeparamref name="T"/> with three 
 			/// parameters of type <typeparamref name="P1"/>, <typeparamref name="P2"/> and <typeparamref name="P3"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-			/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-			/// <returns>A delegate representing public constructor with three parameters.</returns>
+			/// <returns>Reflected constructor with three parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Constructor<Func<P1, P2, P3, T>> Require<P1, P2, P3>(bool nonPublic = false)
-				=> Get<P1, P2, P3>(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3>();
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, T>> Require(bool nonPublic = false)
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3>();            
+        }
 
-			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with four 
+        /// <summary>
+        /// Provides access to constructor of type <typeparamref name="T"/> with four parameters.
+        /// </summary>
+        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
+		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
+		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>      
+        [DefaultMember("Get")]
+        public static class Constructor<P1, P2, P3, P4>
+        {
+            /// <summary>
+			/// Returns constructor <typeparamref name="T"/> with four 
 			/// parameters of type <typeparamref name="P1"/>, <typeparamref name="P2"/>, <typeparamref name="P3"/> and <typeparamref name="P4"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-			/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-			/// <typeparam name="P4">Type of fourth constructor parameter,</typeparam>
-			/// <returns>A delegate representing public constructor with four parameters; or null, if it doesn't exist.</returns>
-			public static Constructor<Func<P1, P2, P3, P4, T>> Get<P1, P2, P3, P4>(bool nonPublic = false)
-				=> Reflect<Func<P1, P2, P3, P4, T>>(nonPublic);
-
+			/// <returns>Reflected constructor with four parameters; or null, if it doesn't exist.</returns>
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, T>> Get(bool nonPublic = false)
+				=> Constructor.Get<Func<P1, P2, P3, P4, T>>(nonPublic);
+			
 			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with four 
+			/// Returns constructor <typeparamref name="T"/> with four 
 			/// parameters of type <typeparamref name="P1"/>, <typeparamref name="P2"/>, <typeparamref name="P3"/> and <typeparamref name="P4"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-			/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-			/// <typeparam name="P4">Type of fourth constructor parameter,</typeparam>
-			/// <returns>A delegate representing public constructor with four parameters.</returns>
+			/// <returns>Reflected constructor with four parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Constructor<Func<P1, P2, P3, P4, T>> Require<P1, P2, P3, P4>(bool nonPublic = false)
-				=> Get<P1, P2, P3, P4>(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4>();
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, T>> Require(bool nonPublic = false)
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4>();            
+        }
 
-			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with five 
+        /// <summary>
+        /// Provides access to constructor of type <typeparamref name="T"/> with five parameters.
+        /// </summary>
+        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
+		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
+		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
+        /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam>             
+        [DefaultMember("Get")]
+        public static class Constructor<P1, P2, P3, P4, P5>
+        {
+            /// <summary>
+			/// Returns constructor <typeparamref name="T"/> with five 
 			/// parameters of type <typeparamref name="P1"/>, <typeparamref name="P2"/>, 
 			/// <typeparamref name="P3"/>, <typeparamref name="P4"/> and <typeparamref name="P5"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-			/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-			/// <typeparam name="P4">Type of fourth constructor parameter,</typeparam>
-			/// <typeparam name="P5">Type of fifth constructor parameter.</typeparam>
-			/// <returns>A delegate representing public constructor with five parameters.</returns>
-			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Constructor<Func<P1, P2, P3, P4, P5, T>> Get<P1, P2, P3, P4, P5>(bool nonPublic = false)
-				=> Constructor<Func<P1, P2, P3, P4, P5, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5>, nonPublic);
-
+			/// <returns>Reflected constructor with five parameters; or null, if it doesn't exist.</returns>
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, P5, T>> Get(bool nonPublic = false)
+				=> Constructor.Get<Func<P1, P2, P3, P4, P5, T>>(nonPublic);
+			
 			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with six parameters.
+			/// Returns constructor <typeparamref name="T"/> with five 
+			/// parameters of type <typeparamref name="P1"/>, <typeparamref name="P2"/>, 
+			/// <typeparamref name="P3"/>, <typeparamref name="P4"/> and <typeparamref name="P5"/>.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-			/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-			/// <typeparam name="P4">Type of fourth constructor parameter,</typeparam>
-			/// <typeparam name="P5">Type of fifth constructor parameter.</typeparam>
-			/// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>
-			/// <returns>A delegate representing public constructor with six parameters.</returns>
+			/// <returns>Reflected constructor with five parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Constructor<Func<P1, P2, P3, P4, P5, P6, T>> Get<P1, P2, P3, P4, P5, P6>(bool nonPublic = false)
-				=> Constructor<Func<P1, P2, P3, P4, P5, P6, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6>, nonPublic);
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, P5, T>> Require(bool nonPublic = false)
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5>();            
+        }
 
-			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with seven parameters.
+        /// <summary>
+        /// Provides access to constructor of type <typeparamref name="T"/> with six parameters.
+        /// </summary>
+        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
+		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
+		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
+        /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam> 
+        /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>              
+        [DefaultMember("Get")]
+        public static class Constructor<P1, P2, P3, P4, P5, P6>
+        {
+            /// <summary>
+			/// Returns constructor <typeparamref name="T"/> with six parameters.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-			/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-			/// <typeparam name="P4">Type of fourth constructor parameter,</typeparam>
-			/// <typeparam name="P5">Type of fifth constructor parameter.</typeparam>
-			/// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>
-			/// <typeparam name="P7">Type of seventh constructor parameter.</typeparam>
-			/// <returns>A delegate representing public constructor with seven parameters.</returns>
-			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>> Get<P1, P2, P3, P4, P5, P6, P7>(bool nonPublic = false)
-				=> Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7>, nonPublic);
-
+			/// <returns>Reflected constructor with six parameters; or null, if it doesn't exist.</returns>
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, P5, P6, T>> Get(bool nonPublic = false)
+				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, T>>(nonPublic);
+			
 			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with eight parameters.
+			/// Returns constructor <typeparamref name="T"/> with six parameters.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-			/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-			/// <typeparam name="P4">Type of fourth constructor parameter,</typeparam>
-			/// <typeparam name="P5">Type of fifth constructor parameter.</typeparam>
-			/// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>
-			/// <typeparam name="P7">Type of seventh constructor parameter.</typeparam>
-			/// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>
-			/// <returns>A delegate representing public constructor with eight parameters.</returns>
+			/// <returns>Reflected constructor with six parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>> Get<P1, P2, P3, P4, P5, P6, P7, P8>(bool nonPublic = false)
-				=> Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8>, nonPublic);
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, P5, P6, T>> Require(bool nonPublic = false)
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6>();            
+        }
 
-			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with nine parameters.
+        /// <summary>
+        /// Provides access to constructor of type <typeparamref name="T"/> with seven parameters.
+        /// </summary>
+        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
+		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
+		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
+        /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam> 
+        /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>      
+        /// <typeparam name="P7">Type of sixth constructor parameter.</typeparam>         
+        [DefaultMember("Get")]
+        public static class Constructor<P1, P2, P3, P4, P5, P6, P7>
+        {
+            /// <summary>
+			/// Returns constructor <typeparamref name="T"/> with seven parameters.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-			/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-			/// <typeparam name="P4">Type of fourth constructor parameter,</typeparam>
-			/// <typeparam name="P5">Type of fifth constructor parameter.</typeparam>
-			/// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>
-			/// <typeparam name="P7">Type of seventh constructor parameter.</typeparam>
-			/// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>
-			/// <typeparam name="P9">Type of ninth constructor parameter.</typeparam>
-			/// <returns>A delegate representing public constructor with nine parameters.</returns>
-			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(bool nonPublic = false)
-				=> Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>, nonPublic);
-
+			/// <returns>Reflected constructor with seven parameters; or null, if it doesn't exist.</returns>
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>> Get(bool nonPublic = false)
+				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, T>>(nonPublic);
+			
 			/// <summary>
-			/// Returns public constructor <typeparamref name="T"/> with ten parameters.
+			/// Returns constructor <typeparamref name="T"/> with seven parameters.
 			/// </summary>
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
-			/// <typeparam name="P1">Type of first constructor parameter.</typeparam>
-			/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-			/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-			/// <typeparam name="P4">Type of fourth constructor parameter,</typeparam>
-			/// <typeparam name="P5">Type of fifth constructor parameter.</typeparam>
-			/// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>
-			/// <typeparam name="P7">Type of seventh constructor parameter.</typeparam>
-			/// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>
-			/// <typeparam name="P9">Type of ninth constructor parameter.</typeparam>
-			/// <typeparam name="P9">Type of tenth constructor parameter.</typeparam>
-			/// <returns>A delegate representing public constructor with ten parameters.</returns>
+			/// <returns>Reflected constructor with seven parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
-			public static Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(bool nonPublic = false)
-				=> Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>>.GetOrThrow(MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>, nonPublic);
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>> Require(bool nonPublic = false)
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7>();            
+        }
 
-		}
+        /// <summary>
+        /// Provides access to constructor of type <typeparamref name="T"/> with eight parameters.
+        /// </summary>
+        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
+		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
+		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
+        /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam> 
+        /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>      
+        /// <typeparam name="P7">Type of sixth constructor parameter.</typeparam>  
+        /// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>        
+        [DefaultMember("Get")]
+        public static class Constructor<P1, P2, P3, P4, P5, P6, P7, P8>
+        {
+            /// <summary>
+			/// Returns constructor <typeparamref name="T"/> with eight parameters.
+			/// </summary>
+			/// <param name="nonPublic">True to reflect non-public constructor.</param>
+			/// <returns>Reflected constructor with eight parameters; or null, if it doesn't exist.</returns>
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>> Get(bool nonPublic = false)
+				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>>(nonPublic);
+			
+			/// <summary>
+			/// Returns constructor <typeparamref name="T"/> with eight parameters.
+			/// </summary>
+			/// <param name="nonPublic">True to reflect non-public constructor.</param>
+			/// <returns>Reflected constructor with eight parameters.</returns>
+			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>> Require(bool nonPublic = false)
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8>();            
+        }
+
+        /// <summary>
+        /// Provides access to constructor of type <typeparamref name="T"/> with nine parameters.
+        /// </summary>
+        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
+		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
+		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
+        /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam> 
+        /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>      
+        /// <typeparam name="P7">Type of sixth constructor parameter.</typeparam>  
+        /// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>  
+        /// <typeparam name="P9">Type of ninth constructor parameter.</typeparam>       
+        [DefaultMember("Get")]
+        public static class Constructor<P1, P2, P3, P4, P5, P6, P7, P8, P9>
+        {
+            /// <summary>
+			/// Returns constructor <typeparamref name="T"/> with nine parameters.
+			/// </summary>
+			/// <param name="nonPublic">True to reflect non-public constructor.</param>
+			/// <returns>Reflected constructor with nine parameters; or null, if it doesn't exist.</returns>
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>> Get(bool nonPublic = false)
+				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>>(nonPublic);
+			
+			/// <summary>
+			/// Returns constructor <typeparamref name="T"/> with nine parameters.
+			/// </summary>
+			/// <param name="nonPublic">True to reflect non-public constructor.</param>
+			/// <returns>Reflected constructor with nine parameters.</returns>
+			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>> Require(bool nonPublic = false)
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>();            
+        }
+
+        /// <summary>
+        /// Provides access to constructor of type <typeparamref name="T"/> with nine parameters.
+        /// </summary>
+        /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
+		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
+		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
+        /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
+        /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam> 
+        /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>      
+        /// <typeparam name="P7">Type of sixth constructor parameter.</typeparam>  
+        /// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>  
+        /// <typeparam name="P9">Type of ninth constructor parameter.</typeparam>  
+        /// <typeparam name="P10">Type of tenth constructor parameter.</typeparam>      
+        [DefaultMember("Get")]
+        public static class Constructor<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>
+        {
+            /// <summary>
+			/// Returns constructor <typeparamref name="T"/> with ten parameters.
+			/// </summary>
+			/// <param name="nonPublic">True to reflect non-public constructor.</param>
+			/// <returns>Reflected constructor with ten parameters; or null, if it doesn't exist.</returns>
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>> Get(bool nonPublic = false)
+				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>>(nonPublic);
+			
+			/// <summary>
+			/// Returns constructor <typeparamref name="T"/> with ten parameters.
+			/// </summary>
+			/// <param name="nonPublic">True to reflect non-public constructor.</param>
+			/// <returns>Reflected constructor with ten parameters.</returns>
+			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+			public static Metaprogramming.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>> Require(bool nonPublic = false)
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>();            
+        }
 
         /// <summary>
         /// Provides typed access to static declared in type <typeparamref name="T"/>.
@@ -342,34 +488,34 @@ namespace MissingPieces.Metaprogramming
                         actionParam).Compile();
             }
 
-            public new Method<MemberAccess.Getter<P>> GetGetMethod(bool nonPublic)
-            {
-                var getter = base.GetGetMethod(nonPublic);
-                return getter == null ? null : StaticMethod<MemberAccess.Getter<P>>.Get(getter.Name, nonPublic);
-            }
+            // public new Method<MemberAccess.Getter<P>> GetGetMethod(bool nonPublic)
+            // {
+            //     var getter = base.GetGetMethod(nonPublic);
+            //     return getter == null ? null : StaticMethod<MemberAccess.Getter<P>>.Get(getter.Name, nonPublic);
+            // }
 
-            public new Method<MemberAccess.Getter<P>> GetMethod
-            {
-                get
-                {
-                    var getter = base.GetMethod;
-                    return getter == null ? null : StaticMethod<MemberAccess.Getter<P>>.Get(getter.Name, !getter.IsPublic);
-                }
-            }
-            public new Method<MemberAccess.Setter<P>> SetMethod
-            {
-                get
-                {
-                    var setter = base.SetMethod;
-                    return setter == null ? null : StaticMethod<MemberAccess.Setter<P>>.Get(setter.Name, !setter.IsPublic);
-                }
-            }
+            // public new Method<MemberAccess.Getter<P>> GetMethod
+            // {
+            //     get
+            //     {
+            //         var getter = base.GetMethod;
+            //         return getter == null ? null : StaticMethod<MemberAccess.Getter<P>>.Get(getter.Name, !getter.IsPublic);
+            //     }
+            // }
+            // public new Method<MemberAccess.Setter<P>> SetMethod
+            // {
+            //     get
+            //     {
+            //         var setter = base.SetMethod;
+            //         return setter == null ? null : StaticMethod<MemberAccess.Setter<P>>.Get(setter.Name, !setter.IsPublic);
+            //     }
+            // }
 
-            public new Method<MemberAccess.Setter<P>> GetSetMethod(bool nonPublic)
-            {
-                var setter = base.GetSetMethod(nonPublic);
-                return setter == null ? null : StaticMethod<MemberAccess.Setter<P>>.Get(setter.Name, nonPublic);
-            }
+            // public new Method<MemberAccess.Setter<P>> GetSetMethod(bool nonPublic)
+            // {
+            //     var setter = base.GetSetMethod(nonPublic);
+            //     return setter == null ? null : StaticMethod<MemberAccess.Setter<P>>.Get(setter.Name, nonPublic);
+            // }
 
             /// <summary>
             /// Gets or sets property value.
@@ -478,34 +624,34 @@ namespace MissingPieces.Metaprogramming
                         actionParam).Compile();
             }
 
-            public new Method<MemberAccess.Getter<T, P>> GetGetMethod(bool nonPublic)
-            {
-                var getter = base.GetGetMethod(nonPublic);
-                return getter == null ? null : InstanceMethod<MemberAccess.Getter<T, P>>.Get(getter.Name, nonPublic);
-            }
+            // public new Method<MemberAccess.Getter<T, P>> GetGetMethod(bool nonPublic)
+            // {
+            //     var getter = base.GetGetMethod(nonPublic);
+            //     return getter == null ? null : InstanceMethod<MemberAccess.Getter<T, P>>.Get(getter.Name, nonPublic);
+            // }
 
-            public new Method<MemberAccess.Getter<T, P>> GetMethod
-            {
-                get
-                {
-                    var getter = base.GetMethod;
-                    return getter == null ? null : InstanceMethod<MemberAccess.Getter<T, P>>.Get(getter.Name, !getter.IsPublic);
-                }
-            }
-            public new Method<MemberAccess.Setter<T, P>> SetMethod
-            {
-                get
-                {
-                    var setter = base.SetMethod;
-                    return setter == null ? null : InstanceMethod<MemberAccess.Setter<T, P>>.Get(setter.Name, !setter.IsPublic);
-                }
-            }
+            // public new Method<MemberAccess.Getter<T, P>> GetMethod
+            // {
+            //     get
+            //     {
+            //         var getter = base.GetMethod;
+            //         return getter == null ? null : InstanceMethod<MemberAccess.Getter<T, P>>.Get(getter.Name, !getter.IsPublic);
+            //     }
+            // }
+            // public new Method<MemberAccess.Setter<T, P>> SetMethod
+            // {
+            //     get
+            //     {
+            //         var setter = base.SetMethod;
+            //         return setter == null ? null : InstanceMethod<MemberAccess.Setter<T, P>>.Get(setter.Name, !setter.IsPublic);
+            //     }
+            // }
 
-            public new Method<MemberAccess.Setter<T, P>> GetSetMethod(bool nonPublic)
-            {
-                var setter = base.GetSetMethod(nonPublic);
-                return setter == null ? null : InstanceMethod<MemberAccess.Setter<T, P>>.Get(setter.Name, nonPublic);
-            }
+            // public new Method<MemberAccess.Setter<T, P>> GetSetMethod(bool nonPublic)
+            // {
+            //     var setter = base.GetSetMethod(nonPublic);
+            //     return setter == null ? null : InstanceMethod<MemberAccess.Setter<T, P>>.Get(setter.Name, nonPublic);
+            // }
 
             public static implicit operator MemberAccess<T, P>(InstanceProperty<P> property) => property?.accessor;
 
@@ -1087,368 +1233,29 @@ namespace MissingPieces.Metaprogramming
         }
 
         /// <summary>
-        /// Provides typed access to the method declared in type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="D">Delegate type describing method signature.</typeparam>
-        public static class StaticMethod<D>
-            where D : Delegate
-        {
-            private sealed class Cache : MemberCache<MethodInfo, Method<D>>
-            {
-                private readonly BindingFlags flags;
-
-                internal Cache(BindingFlags flags) => this.flags = flags;
-
-                private protected override Metaprogramming.Method<D> Create(string memberName)
-                {
-                    var invokeMethod = Delegates.GetInvokeMethod<D>();
-                    var targetMethod = RuntimeType.GetMethod(memberName,
-                        flags,
-                        Type.DefaultBinder,
-                        invokeMethod.GetParameterTypes(),
-                        Array.Empty<ParameterModifier>());
-                    return targetMethod != null && invokeMethod.ReturnType.IsAssignableFrom(targetMethod.ReturnType) ?
-                        new Method<D>(targetMethod, Delegates.CreateDelegate<D>) :
-                        null;
-                }
-            }
-
-            private static readonly Cache Public = new Cache(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            private static readonly Cache NonPublic = new Cache(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-
-            /// <summary>
-            /// Gets static method matching to signature of delegate <typeparamref name="D"/>.
-            /// </summary>
-            /// <param name="nonPublic">True to reflect non-public method.</param>
-            /// <returns>Reflected method; or null, if method doesn't exist.</returns>
-            public static Method<D> Get(string methodName, bool nonPublic = false)
-                => (nonPublic ? NonPublic : Public).GetOrCreate(methodName);
-
-            /// <summary>
-            /// Gets static method matching to signature of delegate <typeparamref name="D"/>.
-            /// </summary>
-            /// <param name="nonPublic">True to reflect non-public method.</param>
-            /// <typeparam name="E">Type of exception to throw if method doesn't exist.</typeparam>
-            /// <returns>Reflected method.</returns>
-            public static Method<D> GetOrThrow<E>(string methodName, bool nonPublic = false)
-                where E : Exception, new()
-                => Get(methodName, nonPublic) ?? throw new E();
-
-            /// <summary>
-            /// Gets static method matching to signature of delegate <typeparamref name="D"/>.
-            /// </summary>
-            /// <param name="exceptionFactory">A factory used to produce exception.</param>
-            /// <param name="nonPublic">True to reflect non-public method.</param>
-            /// <typeparam name="E">Type of exception to throw if method doesn't exist.</typeparam>
-            /// <returns>Reflected method.</returns>
-            public static Method<D> GetOrThrow<E>(string methodName, Func<string, E> exceptionFactory, bool nonPublic = false)
-                where E : Exception
-                => Get(methodName, nonPublic) ?? throw exceptionFactory(methodName);
-        }
-
-        /// <summary>
-        /// Provides typed access to the method declared in type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="D">Delegate type describing method signature.</typeparam>
-        public static class InstanceMethod<D>
-            where D : Delegate
-        {
-            private sealed class Cache : MemberCache<MethodInfo, Method<D>>
-            {
-                private readonly BindingFlags flags;
-
-                internal Cache(BindingFlags flags) => this.flags = flags;
-
-                private protected override Metaprogramming.Method<D> Create(string memberName)
-                {
-                    var invokeMethod = Delegates.GetInvokeMethod<D>();
-                    var parameters = invokeMethod.GetParameterTypes();
-                    var thisParam = parameters.FirstOrDefault();
-                    if (thisParam is null)
-                        return null;
-                    var targetMethod = RuntimeType.GetMethod(memberName,
-                        flags,
-                        Type.DefaultBinder,
-                        parameters.RemoveFirst(1),  //remove hidden this parameter
-                        Array.Empty<ParameterModifier>());
-                    //this parameter can be passed as REF so handle this situation
-                    //first parameter should be passed by REF for structure types
-                    Func<MethodInfo, D> factory;
-                    if (thisParam.IsByRef)
-                    {
-                        thisParam = thisParam.GetElementType();
-                        var formalParams = parameters.Map(Parameter);
-                        factory = thisParam.IsValueType ?
-                            new Func<MethodInfo, D>(Delegates.CreateDelegate<D>) :
-                            method => Lambda<D>(Call(formalParams[0], method, formalParams.RemoveFirst(1)), formalParams).Compile();
-                    }
-                    else if (thisParam.IsValueType)
-                        return null;
-                    else
-                        factory = Delegates.CreateDelegate<D>;
-                    return thisParam == RuntimeType && invokeMethod.ReturnType.IsAssignableFrom(targetMethod.ReturnType) ?
-                            new Metaprogramming.Method<D>(targetMethod, factory) :
-                            null;
-                }
-            }
-
-            private static readonly Cache Public = new Cache(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            private static readonly Cache NonPublic = new Cache(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-
-            /// <summary>
-            /// Gets instance method matching to signature of delegate <typeparamref name="D"/>.
-            /// </summary>
-            /// <param name="nonPublic">True to reflect non-public method.</param>
-            /// <returns>Reflected method; or null, if method doesn't exist.</returns>
-            public static Method<D> Get(string methodName, bool nonPublic = false)
-                => (nonPublic ? NonPublic : Public).GetOrCreate(methodName);
-
-            /// <summary>
-            /// Gets instance method matching to signature of delegate <typeparamref name="D"/>.
-            /// </summary>
-            /// <param name="nonPublic">True to reflect non-public method.</param>
-            /// <typeparam name="E">Type of exception to throw if method doesn't exist.</typeparam>
-            /// <returns>Reflected method.</returns>
-            public static Method<D> GetOrThrow<E>(string methodName, bool nonPublic = false)
-                where E : Exception, new()
-                => Get(methodName, nonPublic) ?? throw new E();
-
-            /// <summary>
-            /// Gets instance method matching to signature of delegate <typeparamref name="D"/>.
-            /// </summary>
-            /// <param name="exceptionFactory">A factory used to produce exception.</param>
-            /// <param name="nonPublic">True to reflect non-public method.</param>
-            /// <typeparam name="E">Type of exception to throw if method doesn't exist.</typeparam>
-            /// <returns>Reflected method.</returns>
-            public static Method<D> GetOrThrow<E>(string methodName, Func<string, E> exceptionFactory, bool nonPublic = false)
-                where E : Exception
-                => Get(methodName, nonPublic) ?? throw exceptionFactory(methodName);
-        }
-
-        /// <summary>
-        /// Provides access to static methods without return value.
-        /// </summary>
-        public static class StaticMethod
-        {
-            public static Method<Action> Get(string methodName, bool nonPublic = false)
-                => StaticMethod<Action>.GetOrThrow(methodName, MissingMethodException.CreateAction<T>, nonPublic);
-
-            public static Method<Action<P>> Get<P>(string methodName, bool nonPublic = false)
-                => StaticMethod<Action<P>>.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P>, nonPublic);
-
-            public static Metaprogramming.Method<Action<P1, P2>> Get<P1, P2>(string methodName, bool nonPublic = false)
-                => Method<Action<P1, P2>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2>, nonPublic);
-
-            public static Metaprogramming.Method<Action<P1, P2, P3>> Get<P1, P2, P3>(string methodName, bool nonPublic = false)
-                => Method<Action<P1, P2, P3>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3>, nonPublic);
-
-            public static Metaprogramming.Method<Action<P1, P2, P3, P4>> Get<P1, P2, P3, P4>(string methodName, bool nonPublic = false)
-                => Method<Action<P1, P2, P3, P4>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4>, nonPublic);
-
-            public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5>> Get<P1, P2, P3, P4, P5>(string methodName, bool nonPublic = false)
-                => Method<Action<P1, P2, P3, P4, P5>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5>, nonPublic);
-
-            public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6>> Get<P1, P2, P3, P4, P5, P6>(string methodName, bool nonPublic = false)
-                => Method<Action<P1, P2, P3, P4, P5, P6>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6>, nonPublic);
-
-            public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6, P7>> Get<P1, P2, P3, P4, P5, P6, P7>(string methodName, bool nonPublic = false)
-                => Method<Action<P1, P2, P3, P4, P5, P6, P7>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7>, nonPublic);
-
-            public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6, P7, P8>> Get<P1, P2, P3, P4, P5, P6, P7, P8>(string methodName, bool nonPublic = false)
-                => Method<Action<P1, P2, P3, P4, P5, P6, P7, P8>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8>, nonPublic);
-
-            public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(string methodName, bool nonPublic = false)
-                => Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>, nonPublic);
-
-            public static Metaprogramming.Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(string methodName, bool nonPublic = false)
-                => Method<Action<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>>.Static.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>, nonPublic);
-        }
-
-        /// <summary>
-        /// Provides strongly typed way to reflect methods
-        /// </summary>
-        public static class Method
-        {
-
-
-            /// <summary>
-            /// Provides access to static methods with return value.
-            /// </summary>
-            /// <typeparam name="R">Type of return value.</typeparam>
-            public static class Static<R>
-            {
-                public static Metaprogramming.Method<Func<R>> Get(string methodName, bool nonPublic = false)
-                    => Method<Func<R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<P, R>> Get<P>(string methodName, bool nonPublic = false)
-                    => Method<Func<P, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<P1, P2, R>> Get<P1, P2>(string methodName, bool nonPublic = false)
-                    => Method<Func<P1, P2, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<P1, P2, P3, R>> Get<P1, P2, P3>(string methodName, bool nonPublic = false)
-                    => Method<Func<P1, P2, P3, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<P1, P2, P3, P4, R>> Get<P1, P2, P3, P4>(string methodName, bool nonPublic = false)
-                    => Method<Func<P1, P2, P3, P4, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<P1, P2, P3, P4, P5, R>> Get<P1, P2, P3, P4, P5>(string methodName, bool nonPublic = false)
-                    => Method<Func<P1, P2, P3, P4, P5, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<P1, P2, P3, P4, P5, P6, R>> Get<P1, P2, P3, P4, P5, P6>(string methodName, bool nonPublic = false)
-                    => Method<Func<P1, P2, P3, P4, P5, P6, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<P1, P2, P3, P4, P5, P6, P7, R>> Get<P1, P2, P3, P4, P5, P6, P7>(string methodName, bool nonPublic = false)
-                    => Method<Func<P1, P2, P3, P4, P5, P6, P7, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<P1, P2, P3, P4, P5, P6, P7, P8, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8>(string methodName, bool nonPublic = false)
-                    => Method<Func<P1, P2, P3, P4, P5, P6, P7, P8, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(string methodName, bool nonPublic = false)
-                    => Method<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(string methodName, bool nonPublic = false)
-                    => Method<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>>.Static.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, P10, R>, nonPublic);
-            }
-
-            /// <summary>
-            /// Provides access to instance methods without return value.
-            /// </summary>
-            public static class Instance
-            {
-                public static Metaprogramming.Method<Action<T>> Get(string methodName, bool nonPublic = false)
-                    => Method<Action<T>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T>, nonPublic);
-
-                public static Metaprogramming.Method<Action<T, P>> Get<P>(string methodName, bool nonPublic = false)
-                    => Method<Action<T, P>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P>, nonPublic);
-
-                public static Metaprogramming.Method<Action<T, P1, P2>> Get<P1, P2>(string methodName, bool nonPublic = false)
-                    => Method<Action<T, P1, P2>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2>, nonPublic);
-
-                public static Metaprogramming.Method<Action<T, P1, P2, P3>> Get<P1, P2, P3>(string methodName, bool nonPublic = false)
-                    => Method<Action<T, P1, P2, P3>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3>, nonPublic);
-
-                public static Metaprogramming.Method<Action<T, P1, P2, P3, P4>> Get<P1, P2, P3, P4>(string methodName, bool nonPublic = false)
-                    => Method<Action<T, P1, P2, P3, P4>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4>, nonPublic);
-
-                public static Metaprogramming.Method<Action<T, P1, P2, P3, P4, P5>> Get<P1, P2, P3, P4, P5>(string methodName, bool nonPublic = false)
-                    => Method<Action<T, P1, P2, P3, P4, P5>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5>, nonPublic);
-
-                public static Metaprogramming.Method<Action<T, P1, P2, P3, P4, P5, P6>> Get<P1, P2, P3, P4, P5, P6>(string methodName, bool nonPublic = false)
-                    => Method<Action<T, P1, P2, P3, P4, P5, P6>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6>, nonPublic);
-
-                public static Metaprogramming.Method<Action<T, P1, P2, P3, P4, P5, P6, P7>> Get<P1, P2, P3, P4, P5, P6, P7>(string methodName, bool nonPublic = false)
-                    => Method<Action<T, P1, P2, P3, P4, P5, P6, P7>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7>, nonPublic);
-
-                public static Metaprogramming.Method<Action<T, P1, P2, P3, P4, P5, P6, P7, P8>> Get<P1, P2, P3, P4, P5, P6, P7, P8>(string methodName, bool nonPublic = false)
-                    => Method<Action<T, P1, P2, P3, P4, P5, P6, P7, P8>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8>, nonPublic);
-
-                public static Metaprogramming.Method<Action<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(string methodName, bool nonPublic = false)
-                    => Method<Action<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>, nonPublic);
-
-                public static Metaprogramming.Method<Action<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(string methodName, bool nonPublic = false)
-                    => Method<Action<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateAction<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>, nonPublic);
-            }
-
-            /// <summary>
-            /// Provides access to instance methods without return value.
-            /// </summary>
-            /// <typeparam name="R">Type of return value.</typeparam>
-            public static class Instance<R>
-            {
-                public static Metaprogramming.Method<Func<T, R>> Get(string methodName, bool nonPublic = false)
-                    => Method<Func<T, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<T, P, R>> Get<P>(string methodName, bool nonPublic = false)
-                    => Method<Func<T, P, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<T, P1, P2, R>> Get<P1, P2>(string methodName, bool nonPublic = false)
-                    => Method<Func<T, P1, P2, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<T, P1, P2, P3, R>> Get<P1, P2, P3>(string methodName, bool nonPublic = false)
-                    => Method<Func<T, P1, P2, P3, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<T, P1, P2, P3, P4, R>> Get<P1, P2, P3, P4>(string methodName, bool nonPublic = false)
-                    => Method<Func<T, P1, P2, P3, P4, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<T, P1, P2, P3, P4, P5, R>> Get<P1, P2, P3, P4, P5>(string methodName, bool nonPublic = false)
-                    => Method<Func<T, P1, P2, P3, P4, P5, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<T, P1, P2, P3, P4, P5, P6, R>> Get<P1, P2, P3, P4, P5, P6>(string methodName, bool nonPublic = false)
-                    => Method<Func<T, P1, P2, P3, P4, P5, P6, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<T, P1, P2, P3, P4, P5, P6, P7, R>> Get<P1, P2, P3, P4, P5, P6, P7>(string methodName, bool nonPublic = false)
-                    => Method<Func<T, P1, P2, P3, P4, P5, P6, P7, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8>(string methodName, bool nonPublic = false)
-                    => Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9>(string methodName, bool nonPublic = false)
-                    => Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>, nonPublic);
-
-                public static Metaprogramming.Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>> Get<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(string methodName, bool nonPublic = false)
-                    => Method<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>>.Instance.GetOrThrow(methodName, MissingMethodException.CreateFunc<T, P1, P2, P3, P4, P5, P6, P7, P8, P10, R>, nonPublic);
-            }
-        }
-
-        /// <summary>
-        /// Describes type conversion operation.
-        /// </summary>
-        /// <typeparam name="U">Type of operand to convert from.</typeparam>
-        public sealed class Typecast<U> : Metaprogramming.Operator<Func<U, T>>
-        {
-            private static readonly Typecast<U> Instance;
-
-            private Typecast(Func<U, T> invoker)
-                : base(invoker, ExpressionType.Convert)
-            {
-
-            }
-
-            static Typecast()
-            {
-                var parameter = Parameter(typeof(T));
-                var invoker = MakeConvert<Func<U, T>>(parameter, false).Compile();
-                Instance = invoker is null ? null : new Typecast<U>(invoker);
-            }
-
-            public static Typecast<U> GetOrNull() => Instance;
-        }
-
-        /// <summary>
         /// Represents unary operator applicable to type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="R">Type of unary operator result.</typeparam>
-        public sealed class UnaryOperator<R> : Operator<UnaryOperator<T, R>>
+        public static class UnaryOperator<R>
         {
-            private sealed class Cache : Cache<UnaryOperator, UnaryOperator<R>>
+            private sealed class Cache : Cache<UnaryOperator, UnaryOperator<T, R>>
             {
-                private protected override UnaryOperator<R> Create(UnaryOperator cacheKey)
+                internal static readonly Cache Instance = new Cache();
+                private Cache()
                 {
-                    var result = MakeUnary(cacheKey, Parameter(RuntimeType));
-                    return result == null ? null : new UnaryOperator<R>(result.Compile(), cacheKey);
                 }
+
+                private protected override UnaryOperator<T, R> Create(UnaryOperator @operator) => UnaryOperator<T, R>.Reflect(@operator);
             }
-
-            private UnaryOperator(UnaryOperator<T, R> invoker, UnaryOperator type)
-                : base(invoker, ToExpressionType(type))
-            {
-                Type = type;
-            }
-
-            private static readonly Cache operators = new Cache();
-
-            /// <summary>
-            /// Type of operator.
-            /// </summary>
-            public new UnaryOperator Type { get; }
 
             /// <summary>
             /// Gets unary operator. 
             /// </summary>
             /// <param name="op">Unary operator type.</param>
             /// <returns>Unary operator.</returns>
-            public static UnaryOperator<R> GetOrNull(UnaryOperator op) => operators.GetOrCreate(op);
+            public static UnaryOperator<T, R> Get(UnaryOperator op) => Cache.Instance.GetOrCreate(op);
+
+            public static UnaryOperator<T, R> Require(UnaryOperator op) => Get(op) ?? throw MissingOperatorException.Create<T>(op);
         }
     }
 }
