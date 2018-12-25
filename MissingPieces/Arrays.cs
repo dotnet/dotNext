@@ -79,6 +79,8 @@ namespace MissingPieces
 			return true;
 		}
 
+		private static bool CheckIndex<T>(this T[] array, long index) =>  index >= 0 || index < array.LongLength;
+
 		/// <summary>
 		/// Gets element at the specified index
 		/// without throwing <see cref="IndexOutOfRangeException"/>.
@@ -88,24 +90,69 @@ namespace MissingPieces
 		/// <typeparam name="T">Type of array elements.</typeparam>
 		/// <returns>Array element.</returns>
 		public static Optional<T> At<T>(this T[] array, long index)
-			=> index >= 0 || index < array.LongLength ? array[index] : Optional<T>.Empty;
+			=> array.CheckIndex(index) ? array[index] : Optional<T>.Empty;
 
 		public static bool At<T>(this T[] array, long index, out T value)
 			=> array.At(index).TryGet(out value);
 		
-		public static bool TakeTwo<T>(this T[] array, out T first, out T second, long startIndex = 0)
+		public static long Take<T>(this T[] array, out T first, out T second, long startIndex = 0)
 		{
-			if(array.LongLength > (startIndex + 1))
-			{
-				first = array[startIndex++];
-				second = array[startIndex];
-				return true;
-			}
-			else 
-			{
-				first = second = default;
-				return false;
-			}
+			if(array.At(startIndex, out first))
+				startIndex += 1;
+			else
+				{
+					second = default;
+					return 0;
+				}
+			return array.At(startIndex, out second) ? 2L : 1L;
+		}
+
+		public static long Take<T>(this T[] array, out T first, out T second, out T third, long startIndex = 0)
+		{
+			if(array.At(startIndex, out first))
+				startIndex += 1;
+			else
+				{
+					second = third = default;
+					return 0L;
+				}
+			
+			if(array.At(startIndex, out second))
+				startIndex += 1;
+			else
+				{
+					third = default;
+					return 1L;
+				}
+			return array.At(startIndex, out third) ? 3L : 2L;
+		}
+
+		public static long Take<T>(this T[] array, out T first, out T second, out T third, out T fourth, long startIndex = 0)
+		{
+			if(array.At(startIndex, out first))
+				startIndex += 1;
+			else
+				{
+					second = third = fourth = default;
+					return 0L;
+				}
+			
+			if(array.At(startIndex, out second))
+				startIndex += 1;
+			else
+				{
+					fourth = third = default;
+					return 1L;
+				}
+			
+			if(array.At(startIndex, out third))
+				startIndex += 1;
+			else
+				{
+					fourth = default;
+					return 2L;
+				}
+			return array.At(startIndex, out fourth) ? 4L : 3L;
 		}
 	}
 }

@@ -31,7 +31,13 @@ namespace MissingPieces.Reflection
             internal new static Constructor<D> GetOrCreate(ConstructorInfo ctor) => Instance.GetOrCreate(ctor);
         }
 
-        public static M GetMember<M>(Expression<Action> exprTree)
+        /// <summary>
+        /// Extracts member metadata from expression tree.
+        /// </summary>
+        /// <param name="exprTree">Expression tree.</param>
+        /// <typeparam name="M">Type of member to reflect.</typeparam>
+        /// <returns>Reflected member; or null, if lambda expression doesn't reference a member.</returns>
+        public static M MemberOf<M>(Expression<Action> exprTree)
             where M: MemberInfo
         {
             if(exprTree.Body is MemberExpression member)
@@ -44,7 +50,13 @@ namespace MissingPieces.Reflection
                 return null;
         }
 
-        public static Constructor<D> ReflectAs<D>(this ConstructorInfo ctor)
+        /// <summary>
+        /// Binds constructor to its typed representation.
+        /// </summary>
+        /// <param name="ctor">Constructor to reflect.</param>
+        /// <typeparam name="D">A delegate representing signature of constructor.</typeparam>
+        /// <returns></returns>
+        public static Constructor<D> Bind<D>(this ConstructorInfo ctor)
             where D: MulticastDelegate
             => ConstructorCache<D>.GetOrCreate(ctor);
     }

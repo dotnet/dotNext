@@ -18,23 +18,6 @@ namespace MissingPieces.Reflection
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
 
-        private static readonly Func<Type, bool, Constructor<D>> Reflector;
-        
-        static Constructor()
-        {
-            var delegateType = typeof(D);
-            if(delegateType.IsGenericInstanceOf(typeof(Function<,>)))
-                if(delegateType.GetGenericArguments().TakeTwo(out var argumentsType, out var declaringType))
-                    Reflector = Reflection.Reflector.GetMember<MethodInfo>(() => Reflect<ValueTuple, object>(null, false))
-                            .GetGenericMethodDefinition()
-                            .MakeGenericMethod(argumentsType, declaringType)
-                            .CreateDelegate<Func<Type, bool, Constructor<D>>>();
-                else
-                    Reflector = null;
-            else
-                Reflector = Reflect;
-        }
-
         private readonly D invoker;
         private readonly Variant<ConstructorInfo, Type> ctorOrDeclaringType;
 
@@ -145,57 +128,47 @@ namespace MissingPieces.Reflection
 
         public override int GetHashCode() => ctorOrDeclaringType.GetHashCode();
 
-        private static Constructor<D> Reflect(Type declaringType, bool nonPublic)
+        private static Constructor<D> ReflectSimple(bool nonPublic)
         {
             var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType);
-            if (declaringType.IsValueType)
-                return returnType == declaringType ? new Constructor<D>(declaringType, parameters.Map(Expression.Parameter)) : null;
+            if (returnType.IsValueType)
+                return new Constructor<D>(returnType, parameters.Map(Expression.Parameter));
             else
             {
-                var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
-                return ctor is null || !returnType.IsAssignableFrom(declaringType) ?
-                    null :
-                    new Constructor<D>(ctor, parameters.Map(Expression.Parameter));
+                var ctor = returnType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
+                return ctor is null ? null : new Constructor<D>(ctor, parameters.Map(Expression.Parameter));
             }
         }
 
-        private static Constructor<Function<A, T>> Reflect<A, T>(Type ignored, bool nonPublic)
-            where A: struct
+        private static Constructor<D> ReflectSpecial(bool nonPublic)
         {
-            var declaringType = typeof(T);
-            var (parameters, arglist, input) = Signature<A>.Reflect();
+            typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType);
+            var (parameters, arglist, input) = Signature.Reflect(argumentsType);
             //handle value type
             if(declaringType.IsValueType)
-                return new Constructor<Function<A, T>>(declaringType, parameters.Map(Expression.Parameter));
-            //fast path - exact match of signature
-            var flags = nonPublic ? NonPublicFlags : PublicFlags;
-            var ctor = declaringType.GetConstructor(flags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
-            return ctor is null ? null : new Constructor<Function<A, T>>(ctor, arglist, new[]{ input });
+                return new Constructor<D>(declaringType, parameters.Map(Expression.Parameter));
+
+            var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
+            return ctor is null ? null : new Constructor<D>(ctor, arglist, new[]{ input });
         }
 
-        internal static Constructor<D> Reflect<T>(bool nonPublic)
-        {
-            var delegateType = typeof(D);
-            if(delegateType.IsGenericInstanceOf(typeof(Function<,>)))
-                return (delegateType.GetGenericArguments().At(1, out var declaringType) && declaringType == typeof(T)) ?
-                    Reflector?.Invoke(declaringType, nonPublic) :
-                    null;
-            return Reflector?.Invoke(typeof(T), nonPublic);
-        }
+        internal static Constructor<D> Reflect(bool nonPublic)
+            => typeof(D).IsGenericInstanceOf(typeof(Function<,>)) ? ReflectSpecial(nonPublic) : ReflectSimple(nonPublic);
 
         internal static Constructor<D> Reflect(ConstructorInfo ctor)
         {
             var delegateType = typeof(D);
             if(ctor is Constructor<D> existing)
                 return existing;
-            else if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().TakeTwo(out var argumentsType, out var declaringType))
+            else if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
             {
-                return null;
+                var (parameters, arglist, input) = Signature.Reflect(argumentsType);
+                return returnType.IsAssignableFrom(ctor.DeclaringType) && ctor.SignatureEquals(parameters) ? new Constructor<D>(ctor, arglist, new[]{ input }) : null;
             }
             else 
             {
                 var invokeMethod = Delegates.GetInvokeMethod<D>();
-                return ctor.SignatureEquals(invokeMethod) && ctor.DeclaringType == invokeMethod.ReturnType ?
+                return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
                     new Constructor<D>(ctor, ctor.GetParameterTypes().Map(Expression.Parameter)) :
                     null;
             }

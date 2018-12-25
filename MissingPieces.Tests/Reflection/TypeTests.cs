@@ -193,11 +193,11 @@ namespace MissingPieces.Reflection
 		[Fact]
 		public void InstanceEventTest()
 		{
-			EventAccess<AppDomain, ResolveEventHandler> ev = Type<AppDomain>.InstanceEvent<ResolveEventHandler>.GetOrThrow(nameof(AppDomain.TypeResolve));
+			var ev = Type<AppDomain>.InstanceEvent<ResolveEventHandler>.Require(nameof(AppDomain.TypeResolve));
 			ResolveEventHandler handler = (sender, args) => null;
 			ev.AddEventHandler(AppDomain.CurrentDomain, handler);
 			ev.RemoveEventHandler(AppDomain.CurrentDomain, handler);
-			var ev2 = Type<TypeTests>.InstanceEvent<EventHandler>.GetOrThrow(nameof(InstanceEvent), true);
+			var ev2 = Type<TypeTests>.InstanceEvent<EventHandler>.Require(nameof(InstanceEvent), true);
 			Null(InstanceEvent);
 			EventHandler handler2 = (sender, args) => { };
 			ev2.AddEventHandler(this, handler2);
@@ -209,7 +209,7 @@ namespace MissingPieces.Reflection
 		[Fact]
 		public void StaticEventTest()
 		{
-			var ev = Type<TypeTests>.StaticEvent<EventHandler>.GetOrThrow(nameof(StaticEvent), true);
+			var ev = Type<TypeTests>.StaticEvent<EventHandler>.Require(nameof(StaticEvent), true);
 			EventHandler handler = (sender, args) => { };
 			ev.AddEventHandler(handler);
 			Equal(StaticEvent, handler);

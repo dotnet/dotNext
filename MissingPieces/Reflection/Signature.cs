@@ -9,15 +9,13 @@ namespace MissingPieces.Reflection
     /// Describes signature of function or procedure.
     /// </summary>
     /// <typeparam name="A">Method parameters.</typeparam>
-    internal static class Signature<A>
-        where A : struct
+    internal static class Signature
     {
-        internal static (Type[] Parameters, Expression[] ArgList, ParameterExpression ArgListParameter) Reflect()
+        private static void Reflect(ParameterExpression argListParameter, out Type[] parameters, out Expression[] arglist)
         {
-            var argListParameter = Expression.Parameter(typeof(A).MakeByRefType(), "arguments");
-            var publicFields = typeof(A).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-            var parameters = new Type[publicFields.LongLength];
-            var arglist = new Expression[publicFields.LongLength];
+            var publicFields = argListParameter.Type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            parameters = new Type[publicFields.LongLength];
+            arglist = new Expression[publicFields.LongLength];
             for(var i = 0L; i < publicFields.LongLength; i++)
             {
                 var field = publicFields[i];
@@ -32,12 +30,20 @@ namespace MissingPieces.Reflection
                     arglist[i] = Expression.Field(argListParameter, field);
                 }
             }
-
-            return (
-                Parameters: parameters,
-                ArgList: arglist,
-                ArgListParameter: argListParameter
-            );
         }
+
+        internal static (Type[] Parameters, Expression[] ArgList, ParameterExpression ArgListParameter) Reflect(Type argumentsType)
+        {
+            var argListParameter = argumentsType.IsByRef ? 
+                Expression.Parameter(argumentsType, "arguments") :  
+                Expression.Parameter(argumentsType.MakeByRefType(), "arguments"); 
+            Reflect(argListParameter, out var parameters, out var arglist);
+
+            return (Parameters: parameters, ArgList: arglist, ArgListParameter: argListParameter);
+        }
+
+        internal static (Type[] Parameters, Expression[] ArgList, ParameterExpression ArgListParameter) Reflect<A>()
+            where A: struct
+            => Reflect(typeof(A));
     }
 }

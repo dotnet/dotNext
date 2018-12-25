@@ -18,7 +18,7 @@ namespace MissingPieces.Reflection
 		public void ConstructorReflectionTest()
 		{
 			var ctor = typeof(string).GetConstructor(new[]{typeof(char), typeof(int)});
-			Func<char, int, string> reflected = ctor.ReflectAs<Func<char, int, string>>();
+			Func<char, int, string> reflected = ctor.Bind<Func<char, int, string>>();
 			Equal("ccc", reflected('c', 3));
 		}
 	}

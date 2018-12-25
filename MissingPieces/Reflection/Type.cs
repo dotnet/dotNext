@@ -38,6 +38,11 @@ namespace MissingPieces.Reflection
                 new Predicate<object>(input => input is null).ConvertDelegate<Predicate<T>>();
         }
 
+        /// <summary>
+        /// Determines whether an instance of a specified type can be assigned to an instance of the current type.
+        /// </summary>
+        /// <typeparam name="U">The type to compare with the current type.</typeparam>
+        /// <returns>True, if instance of type <typeparamref name="U"/> can be assigned to type <typeparamref name="T"/>.</returns>
         public static bool IsAssignableFrom<U>() => RuntimeType.IsAssignableFrom(typeof(U));
 
         public static bool IsAssignableTo<U>() => Type<U>.IsAssignableFrom<T>();
@@ -50,6 +55,17 @@ namespace MissingPieces.Reflection
 
         public static bool TryConvert<U>(U value, out T result) => TryConvert<U>(value).TryGet(out result);
 
+        /// <summary>
+        /// Converts object into type <typeparamref name="T"/>.
+        /// </summary>
+        /// <remarks>
+        /// Semantics of this method includes typecast as well as conversion between numeric types
+        /// and implicit/explicit cast operators.
+        /// </remarks>
+        /// <param name="value">The value to convert.</param>
+        /// <typeparam name="U">Type of value to convert.</typeparam>
+        /// <returns>Converted value.</returns>
+        /// <exception cref="InvalidCastException">Cannot convert values.</exception>
         public static T Convert<U>(U value) => TryConvert<U>(value).OrThrow<InvalidCastException>();
 
         /// <summary>
@@ -61,13 +77,13 @@ namespace MissingPieces.Reflection
             private static class Public<D>
                 where D : MulticastDelegate
             {
-                internal static readonly Reflection.Constructor<D> Value = Reflection.Constructor<D>.Reflect<T>(false);
+                internal static readonly Reflection.Constructor<D> Value = Reflection.Constructor<D>.Reflect(false);
             }
 
             private static class NonPublic<D>
                 where D : MulticastDelegate
             {
-                internal static readonly Reflection.Constructor<D> Value = Reflection.Constructor<D>.Reflect<T>(true);
+                internal static readonly Reflection.Constructor<D> Value = Reflection.Constructor<D>.Reflect(true);
             }
 
             /// <summary>
@@ -713,74 +729,20 @@ namespace MissingPieces.Reflection
         /// Provides typed access to static event declared in type <typeparamref name="T"/>.
         /// </summary>
 		/// <typeparam name="H">Type of event handler.</typeparam>
-        public sealed class StaticEvent<H> : Reflection.Event<H>, IEvent<H>
+        public static class StaticEvent<H>
             where H : MulticastDelegate
         {
-            private sealed class Cache : MemberCache<EventInfo, StaticEvent<H>>
+            private sealed class Cache : MemberCache<EventInfo, Reflection.StaticEvent<H>>
             {
-                private readonly BindingFlags flags;
+                private readonly bool nonPublic;
+                internal Cache(bool nonPublic) => this.nonPublic = nonPublic;
 
-                internal Cache(BindingFlags flags) => this.flags = flags;
-
-                private protected override StaticEvent<H> Create(string eventName)
-                {
-                    var @event = RuntimeType.GetEvent(eventName, flags);
-                    return @event == null ? null : new StaticEvent<H>(@event, flags.HasFlag(BindingFlags.NonPublic));
-                }
+                private protected override Reflection.StaticEvent<H> Create(string eventName) 
+                    => Reflection.StaticEvent<H>.Reflect<T>(eventName, nonPublic);
             }
 
-            private static readonly Cache Public = new Cache(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            private static readonly Cache NonPublic = new Cache(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-
-            private readonly EventAccess<H> accessor;
-
-            private StaticEvent(EventInfo @event, bool nonPublic)
-                : base(@event)
-            {
-                var handlerParam = Parameter(@event.EventHandlerType);
-                var actionParam = Parameter(typeof(EventAction));
-
-                var addMethod = @event.GetAddMethod(nonPublic);
-                var removeMethod = @event.GetRemoveMethod(nonPublic);
-                if (addMethod is null)
-                    accessor = Lambda<EventAccess<H>>(EventAccess.AddOrRemoveHandler(actionParam, null, Call(removeMethod, handlerParam)), handlerParam, actionParam).Compile();
-                else if (removeMethod is null)
-                    accessor = Lambda<EventAccess<H>>(EventAccess.AddOrRemoveHandler(actionParam, Call(addMethod, handlerParam), null), handlerParam, actionParam).Compile();
-                else
-                    accessor = Lambda<EventAccess<H>>(EventAccess.AddOrRemoveHandler(actionParam, Call(addMethod, handlerParam), Call(removeMethod, handlerParam)), handlerParam, actionParam).Compile();
-            }
-
-            public static implicit operator EventAccess<H>(StaticEvent<H> @event) => @event?.accessor;
-
-            /// <summary>
-            /// Add event handler.
-            /// </summary>
-            /// <param name="handler">An event handler to add.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void AddEventHandler(H handler) => accessor.AddEventHandler(handler);
-
-            public override void AddEventHandler(object target, Delegate handler)
-            {
-                if (handler is H typedHandler)
-                    AddEventHandler(typedHandler);
-                else
-                    base.AddEventHandler(target, handler);
-            }
-
-            /// <summary>
-            /// Remove event handler.
-            /// </summary>
-            /// <param name="handler">An event handler to remove.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void RemoveEventHandler(H handler) => accessor.RemoveEventHandler(handler);
-
-            public override void RemoveEventHandler(object target, Delegate handler)
-            {
-                if (handler is H typedHandler)
-                    RemoveEventHandler(typedHandler);
-                else
-                    base.RemoveEventHandler(target, handler);
-            }
+            private static readonly Cache PublicCache = new Cache(false);
+            private static readonly Cache NonPublicCache = new Cache(true);
 
             /// <summary>
             /// Gets static event.
@@ -788,31 +750,8 @@ namespace MissingPieces.Reflection
             /// <param name="eventName">Name of event.</param>
             /// <param name="nonPublic">True to reflect non-public event.</param>
             /// <returns>Static event; or null, if event doesn't exist.</returns>
-            public static StaticEvent<H> Get(string eventName, bool nonPublic = false)
-                => (nonPublic ? NonPublic : Public).GetOrCreate(eventName);
-
-            /// <summary>
-            /// Gets static event.
-            /// </summary>
-            /// <param name="eventName">Name of event.</param>
-            /// <param name="nonPublic">True to reflect non-public event.</param>
-            /// <typeparam name="E">Type of exception to throw if event doesn't exist.</typeparam>
-            /// <returns>Static event.</returns>
-            public static StaticEvent<H> GetOrThrow<E>(string eventName, bool nonPublic = false)
-                where E : Exception, new()
-                => Get(eventName, nonPublic) ?? throw new E();
-
-            /// <summary>
-            /// Gets static event.
-            /// </summary>
-            /// <param name="eventName">Name of event.</param>
-            /// <param name="exceptionFactory">A factory used to produce exception.</param>
-            /// <param name="nonPublic">True to reflect non-public event.</param>
-            /// <typeparam name="E">Type of exception to throw if event doesn't exist.</typeparam>
-            /// <returns>Static event.</returns>
-            public static StaticEvent<H> GetOrThrow<E>(string eventName, Func<string, E> exceptionFactory, bool nonPublic = false)
-                where E : Exception
-                => Get(eventName, nonPublic) ?? throw exceptionFactory(eventName);
+            public static Reflection.StaticEvent<H> Get(string eventName, bool nonPublic = false)
+                => (nonPublic ? NonPublicCache : PublicCache).GetOrCreate(eventName);
 
             /// <summary>
             /// Gets static event.
@@ -821,103 +760,28 @@ namespace MissingPieces.Reflection
             /// <param name="nonPublic">True to reflect non-public event.</param>
             /// <returns>Static event.</returns>
             /// <exception cref="MissingEventException">Event doesn't exist.</exception>
-            public static StaticEvent<H> GetOrThrow(string eventName, bool nonPublic = false)
-                => GetOrThrow(eventName, MissingEventException.Create<T, H>, nonPublic);
+            public static Reflection.StaticEvent<H> Require(string eventName, bool nonPublic = false)
+                => Get(eventName, nonPublic) ?? throw MissingEventException.Create<T, H>(eventName);
         }
 
         /// <summary>
         /// Provides typed access to instance event declared in type <typeparamref name="T"/>.
         /// </summary>
 		/// <typeparam name="H">Type of event handler.</typeparam>
-        public sealed class InstanceEvent<H> : Event<H>, IEvent<T, H>
+        public static class InstanceEvent<H>
             where H : MulticastDelegate
         {
-            private sealed class Cache : MemberCache<EventInfo, InstanceEvent<H>>
+            private sealed class Cache : MemberCache<EventInfo, Reflection.InstanceEvent<T, H>>
             {
-                private readonly BindingFlags flags;
+                private readonly bool nonPublic;
+                internal Cache(bool nonPublic) => this.nonPublic = nonPublic;
 
-                internal Cache(BindingFlags flags) => this.flags = flags;
-
-                private protected override InstanceEvent<H> Create(string eventName)
-                {
-                    var @event = RuntimeType.GetEvent(eventName, flags);
-                    return @event == null ? null : new InstanceEvent<H>(@event, flags.HasFlag(BindingFlags.NonPublic));
-                }
+                private protected override Reflection.InstanceEvent<T, H> Create(string eventName) 
+                    => Reflection.InstanceEvent<T, H>.Reflect(eventName, nonPublic);
             }
 
-            private static readonly Cache Public = new Cache(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            private static readonly Cache NonPublic = new Cache(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-
-            private readonly EventAccess<T, H> accessor;
-
-            private InstanceEvent(EventInfo @event, bool nonPublic)
-                : base(@event)
-            {
-                var instanceParam = Parameter(RuntimeType.MakeByRefType());
-                var handlerParam = Parameter(@event.EventHandlerType);
-                var actionParam = Parameter(typeof(EventAction));
-
-                var addMethod = @event.GetAddMethod(nonPublic);
-                var removeMethod = @event.GetRemoveMethod(nonPublic);
-
-                if (addMethod is null)
-                    accessor = Lambda<EventAccess<T, H>>(
-                        EventAccess.AddOrRemoveHandler(actionParam, null, Call(instanceParam, removeMethod, handlerParam)),
-                        instanceParam,
-                        handlerParam,
-                        actionParam
-                        ).Compile();
-                else if (removeMethod is null)
-                    accessor = Lambda<EventAccess<T, H>>(
-                        EventAccess.AddOrRemoveHandler(actionParam, Call(instanceParam, addMethod, handlerParam), null),
-                        instanceParam,
-                        handlerParam,
-                        actionParam
-                        ).Compile();
-                else
-                    accessor = Lambda<EventAccess<T, H>>(
-                        EventAccess.AddOrRemoveHandler(actionParam, Call(instanceParam, addMethod, handlerParam), Call(instanceParam, removeMethod, handlerParam)),
-                        instanceParam,
-                        handlerParam,
-                        actionParam
-                        ).Compile();
-            }
-
-            public static implicit operator EventAccess<T, H>(InstanceEvent<H> @event) => @event?.accessor;
-
-            /// <summary>
-            /// Add event handler.
-            /// </summary>
-            /// <param name="instance">Object with declared event.</param>
-            /// <param name="handler">An event handler to add.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void AddEventHandler(in T instance, H handler)
-                => accessor.AddEventHandler(in instance, handler);
-
-            public override void AddEventHandler(object target, Delegate handler)
-            {
-                if (target is T typedTarget && handler is H typedHandler)
-                    AddEventHandler(typedTarget, typedHandler);
-                else
-                    base.AddEventHandler(target, handler);
-            }
-
-            /// <summary>
-            /// Remove event handler.
-            /// </summary>
-            /// <param name="instance">Object with declared event.</param>
-            /// <param name="handler">An event handler to remove.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public void RemoveEventHandler(in T instance, H handler)
-                => accessor.RemoveEventHandler(in instance, handler);
-
-            public override void RemoveEventHandler(object target, Delegate handler)
-            {
-                if (target is T typedTarget && handler is H typedHandler)
-                    RemoveEventHandler(typedTarget, typedHandler);
-                else
-                    base.RemoveEventHandler(target, handler);
-            }
+            private static readonly Cache PublicCache = new Cache(false);
+            private static readonly Cache NonPublicCache = new Cache(true);
 
             /// <summary>
             /// Gets instane event.
@@ -925,31 +789,8 @@ namespace MissingPieces.Reflection
             /// <param name="eventName">Name of event.</param>
             /// <param name="nonPublic">True to reflect non-public event.</param>
             /// <returns>Instance event; or null, if event doesn't exist.</returns>
-            public static InstanceEvent<H> Get(string eventName, bool nonPublic = false)
-                => (nonPublic ? NonPublic : Public).GetOrCreate(eventName);
-
-            /// <summary>
-            /// Gets instance event.
-            /// </summary>
-            /// <param name="eventName">Name of event.</param>
-            /// <param name="nonPublic">True to reflect non-public event.</param>
-            /// <typeparam name="E">Type of exception to throw if event doesn't exist.</typeparam>
-            /// <returns>Instance event.</returns>
-            public static InstanceEvent<H> GetOrThrow<E>(string eventName, bool nonPublic = false)
-                where E : Exception, new()
-                => Get(eventName, nonPublic) ?? throw new E();
-
-            /// <summary>
-            /// Gets instance event.
-            /// </summary>
-            /// <param name="eventName">Name of event.</param>
-            /// <param name="exceptionFactory">A factory used to produce exception.</param>
-            /// <param name="nonPublic">True to reflect non-public event.</param>
-            /// <typeparam name="E">Type of exception to throw if event doesn't exist.</typeparam>
-            /// <returns>Instance event.</returns>
-            public static InstanceEvent<H> GetOrThrow<E>(string eventName, Func<string, E> exceptionFactory, bool nonPublic = false)
-                where E : Exception
-                => Get(eventName, nonPublic) ?? throw exceptionFactory(eventName);
+            public static Reflection.InstanceEvent<T, H> Get(string eventName, bool nonPublic = false)
+                => (nonPublic ? NonPublicCache : PublicCache).GetOrCreate(eventName);
 
             /// <summary>
             /// Gets instance event.
@@ -958,8 +799,8 @@ namespace MissingPieces.Reflection
             /// <param name="nonPublic">True to reflect non-public event.</param>
             /// <returns>Instance event.</returns>
             /// <exception cref="MissingEventException">Event doesn't exist.</exception>
-            public static InstanceEvent<H> GetOrThrow(string eventName, bool nonPublic = false)
-                => GetOrThrow(eventName, MissingEventException.Create<T, H>, nonPublic);
+            public static Reflection.InstanceEvent<T, H> Require(string eventName, bool nonPublic = false)
+                => Get(eventName, nonPublic) ?? throw MissingEventException.Create<T, H>(eventName);
         }
 
         /// <summary>
