@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace MissingPieces.Metaprogramming
+namespace MissingPieces.Reflection
 {
     public sealed class DefaultTests: Assert
     {

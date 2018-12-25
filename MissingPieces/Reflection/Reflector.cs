@@ -5,8 +5,6 @@ using System.Reflection;
 
 namespace MissingPieces.Reflection
 {
-    using Metaprogramming;
-
     /// <summary>
     /// Reflection methods based on LINQ expression tree.
     /// </summary>

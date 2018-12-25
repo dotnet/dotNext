@@ -3,7 +3,7 @@ using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using System;
 
-namespace MissingPieces.Metaprogramming
+namespace MissingPieces.Reflection
 {
 	[SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 	[Orderer(SummaryOrderPolicy.FastestToSlowest)]

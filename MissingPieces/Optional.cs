@@ -141,7 +141,7 @@ namespace MissingPieces
 		/// <summary>
 		/// Highly optimized checker of the content.
 		/// </summary>
-		private static readonly Metaprogramming.MemberAccess.Getter<T, bool> HasValueChecker;
+		private static readonly Reflection.MemberAccess.Getter<T, bool> HasValueChecker;
 
 		static Optional()
 		{
@@ -150,7 +150,7 @@ namespace MissingPieces
 			Expression checkerBody = parameter.Type.IsValueType ?
 				Optional.CheckerBodyForValueType(parameter) :
 				Optional.CheckerBodyForReferenceType(parameter);
-			HasValueChecker = Expression.Lambda<Metaprogramming.MemberAccess.Getter<T, bool>>(checkerBody, parameter).Compile();
+			HasValueChecker = Expression.Lambda<Reflection.MemberAccess.Getter<T, bool>>(checkerBody, parameter).Compile();
 		}
 
 		private readonly T value;
