@@ -7,10 +7,8 @@ namespace MissingPieces.Reflection
 	/// </summary>
 	public sealed class MissingFieldException : ConstraintViolationException
 	{
-		private MissingFieldException(Type declaringType,
-			string fieldName,
-			Type fieldType)
-			: base($"Field {fieldName} of type {fieldType.FullName} doesn't exist in type {declaringType.FullName}", declaringType)
+		private MissingFieldException(Type declaringType, string fieldName, Type fieldType)
+			: base(declaringType, $"Field {fieldName} of type {fieldType.FullName} doesn't exist in type {declaringType.FullName}")
 		{
 			FieldType = fieldType;
 			FieldName = fieldName;

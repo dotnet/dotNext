@@ -9,7 +9,7 @@ namespace MissingPieces.Reflection
     public sealed class MissingMethodException: ConstraintViolationException
     {
         private MissingMethodException(Type declaringType, string methodName, Type returnType, params Type[] parameters)
-            : base($"Method {methodName} with parameters [{parameters.ToString(",")}] and return type {returnType} doesn't exist in type {declaringType}", declaringType)
+            : base(declaringType, $"Method {methodName} with parameters [{parameters.ToString(",")}] and return type {returnType} doesn't exist in type {declaringType}")
         {
             MethodName = methodName;
             ReturnType = returnType;

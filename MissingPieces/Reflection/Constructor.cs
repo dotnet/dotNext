@@ -160,16 +160,15 @@ namespace MissingPieces.Reflection
             if(delegateType.IsGenericInstanceOf(typeof(Function<,>)))
                 return ReflectSpecial(nonPublic);
             else if(delegateType.IsAbstract)
-                return null;
-            else
-                return ReflectSimple(nonPublic);                
+                throw GenericArgumentException.Create<D>("Delegate type should not be abstract");
+            return ReflectSimple(nonPublic);                
         }
 
         internal static Constructor<D> Reflect(ConstructorInfo ctor)
         {
             var delegateType = typeof(D);
             if(delegateType.IsAbstract)
-                return null;
+                throw GenericArgumentException.Create<D>("Delegate type should not be abstract");
             else if(ctor is Constructor<D> existing)
                 return existing;
             else if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)

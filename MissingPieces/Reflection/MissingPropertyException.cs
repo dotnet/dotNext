@@ -7,10 +7,8 @@ namespace MissingPieces.Reflection
 	/// </summary>
 	public sealed class MissingPropertyException : ConstraintViolationException
 	{
-		private MissingPropertyException(Type declaringType,
-			string propertyName,
-			Type propertyType)
-			: base($"Property {propertyName} of type {propertyType.FullName} doesn't exist in type {declaringType.FullName}", declaringType)
+		private MissingPropertyException(Type declaringType, string propertyName, Type propertyType)
+			: base(declaringType, $"Property {propertyName} of type {propertyType.FullName} doesn't exist in type {declaringType.FullName}")
 		{
 			PropertyType = propertyType;
 			PropertyName = propertyName;

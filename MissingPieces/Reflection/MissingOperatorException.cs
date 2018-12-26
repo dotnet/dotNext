@@ -8,12 +8,12 @@ namespace MissingPieces.Reflection
 	/// </summary>
     public sealed class MissingOperatorException: ConstraintViolationException
     {
-        private MissingOperatorException(ExpressionType @operator, Type target)
-            : base($"Operator {@operator} doesn't exist in type {target}", target)
+        private MissingOperatorException(Type target, ExpressionType @operator)
+            : base(target, $"Operator {@operator} doesn't exist in type {target}")
         {
         }
 
         internal static MissingOperatorException Create<T>(UnaryOperator @operator)
-            => new MissingOperatorException((ExpressionType)@operator, typeof(T));
+            => new MissingOperatorException(typeof(T), (ExpressionType)@operator);
     }
 }

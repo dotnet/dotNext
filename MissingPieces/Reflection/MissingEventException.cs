@@ -7,10 +7,8 @@ namespace MissingPieces.Reflection
 	/// </summary>
 	public sealed class MissingEventException : ConstraintViolationException
 	{
-		private MissingEventException(Type declaringType,
-			string eventName,
-			Type handlerType)
-			: base($"Event {eventName} of type {handlerType.FullName} doesn't exist in type {declaringType.FullName}", declaringType)
+		private MissingEventException(Type declaringType, string eventName, Type handlerType)
+			: base(declaringType, $"Event {eventName} of type {handlerType.FullName} doesn't exist in type {declaringType.FullName}")
 		{
 			HandlerType = handlerType;
 			EventName = eventName;

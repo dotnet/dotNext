@@ -5,14 +5,11 @@ namespace MissingPieces.Reflection
 	/// <summary>
 	/// Root type for all exceptions related to generic constraints.
 	/// </summary>
-	public abstract class ConstraintViolationException: Exception
+	public abstract class ConstraintViolationException: GenericArgumentException
 	{
-		private protected ConstraintViolationException(string message, Type target)
-			: base(message)
+		private protected ConstraintViolationException(Type target, string message)
+			: base(target, message)
 		{
-			Target = target;
 		}
-
-		public Type Target { get; }
 	}
 }

@@ -77,15 +77,13 @@ namespace MissingPieces.Reflection
 		[Fact]
 		public void SpecialConstructorTests()
 		{
-			var stringCtor = Type<string>.GetConstructor<(char, int)>();
-			NotNull(stringCtor);
+			var stringCtor = Type<string>.RequireConstructor<(char, int)>();
 			var str = stringCtor.Invoke(('a', 3));
 			Equal("aaa", str);
 
 			Null(Type<string>.GetConstructor<(bool, bool)>());
 
-			var ctorWithRef = Type<ClassWithProperties>.GetConstructor<(int first, Ref<bool> second)>();
-			NotNull(ctorWithRef);
+			var ctorWithRef = Type<ClassWithProperties>.RequireConstructor<(int first, Ref<bool> second)>();
 			var args = ctorWithRef.ArgList();
 			args.first = 20;
 			args.second = false;

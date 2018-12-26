@@ -76,7 +76,11 @@ namespace MissingPieces.Reflection
         /// <returns>Constructor for type <typeparamref name="T"/>; or null, if it doesn't exist.</returns>
         public static Reflection.Constructor<Function<A, T>> GetConstructor<A>(bool nonPublic = false)
             where A: struct
-            => Constructor.Get<Function<A, T>>(nonPublic);
+            => Constructor.Custom<Function<A, T>>(nonPublic);
+
+        public static Reflection.Constructor<Function<A, T>> RequireConstructor<A>(bool nonPublic = false)
+            where A: struct
+            => GetConstructor<A>(nonPublic) ?? throw MissingConstructorException.Create<T, A>();
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> without parameters.
@@ -103,9 +107,10 @@ namespace MissingPieces.Reflection
             /// <param name="nonPublic">True to reflect non-public constructor.</param>
             /// <typeparam name="D">Type of delegate describing constructor signature.</typeparam>
             /// <returns>Reflected constructor; or null, if constructor doesn't exist.</returns>
-            public static Reflection.Constructor<D> Get<D>(bool nonPublic = false)
+            public static Reflection.Constructor<D> Custom<D>(bool nonPublic = false)
                 where D : MulticastDelegate
                 => nonPublic ? NonPublic<D>.Value : Public<D>.Value;
+
 
             /// <summary>
             /// Returns public constructor of type <typeparamref name="T"/> without parameters.
@@ -113,7 +118,7 @@ namespace MissingPieces.Reflection
             /// <param name="nonPublic">True to reflect non-public constructor.</param>
             /// <returns>Reflected constructor without parameters; or null, if it doesn't exist.</returns>
             public static Reflection.Constructor<Func<T>> Get(bool nonPublic = false)
-                => Get<Func<T>>(nonPublic);
+                => Custom<Func<T>>(nonPublic);
 
             /// <summary>
             /// Returns public constructor of type <typeparamref name="T"/> without parameters.
@@ -122,7 +127,7 @@ namespace MissingPieces.Reflection
             /// <returns>Reflected constructor without parameters.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
             public static Reflection.Constructor<Func<T>> Require(bool nonPublic = false)
-                => Get(nonPublic) ?? throw MissingConstructorException.Create<T>();
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -157,7 +162,7 @@ namespace MissingPieces.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with single parameter; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P, T>> Get(bool nonPublic = false)
-                => Constructor.Get<Func<P, T>>(nonPublic);
+                => Constructor.Custom<Func<P, T>>(nonPublic);
 
             /// <summary>
             /// Returns constructor <typeparamref name="T"/> with single parameter of type <typeparamref name="P"/>.
@@ -166,7 +171,7 @@ namespace MissingPieces.Reflection
             /// <returns>Reflected constructor with single parameter.</returns>
             /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
             public static Reflection.Constructor<Func<P, T>> Require(bool nonPublic = false)
-                => Get(nonPublic) ?? throw MissingConstructorException.Create<T, P>();
+                => Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -205,7 +210,7 @@ namespace MissingPieces.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with two parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, T>> Get(bool nonPublic = false)
-				=> Constructor.Get<Func<P1, P2, T>>(nonPublic);
+				=> Constructor.Custom<Func<P1, P2, T>>(nonPublic);
 
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with two 
@@ -215,7 +220,7 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with two parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2>();
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -257,7 +262,7 @@ namespace MissingPieces.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with three parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, T>> Get(bool nonPublic = false)
-				=> Constructor.Get<Func<P1, P2, P3, T>>(nonPublic);
+				=> Constructor.Custom<Func<P1, P2, P3, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with three 
@@ -267,7 +272,7 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with three parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3>();
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -312,7 +317,7 @@ namespace MissingPieces.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with four parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, T>> Get(bool nonPublic = false)
-				=> Constructor.Get<Func<P1, P2, P3, P4, T>>(nonPublic);
+				=> Constructor.Custom<Func<P1, P2, P3, P4, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with four 
@@ -322,7 +327,7 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with four parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4>();    
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4>>();    
 
             /// <summary>
             /// Invokes constructor.
@@ -371,7 +376,7 @@ namespace MissingPieces.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with five parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, T>> Get(bool nonPublic = false)
-				=> Constructor.Get<Func<P1, P2, P3, P4, P5, T>>(nonPublic);
+				=> Constructor.Custom<Func<P1, P2, P3, P4, P5, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with five 
@@ -382,7 +387,7 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with five parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5>();   
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4, P5>>();   
 
             /// <summary>
             /// Invokes constructor.
@@ -433,7 +438,7 @@ namespace MissingPieces.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with six parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, T>> Get(bool nonPublic = false)
-				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, T>>(nonPublic);
+				=> Constructor.Custom<Func<P1, P2, P3, P4, P5, P6, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with six parameters.
@@ -442,7 +447,7 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with six parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6>();
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4, P5, P6>>();
 
             /// <summary>
             /// Invokes constructor.
@@ -496,7 +501,7 @@ namespace MissingPieces.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with seven parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>> Get(bool nonPublic = false)
-				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, T>>(nonPublic);
+				=> Constructor.Custom<Func<P1, P2, P3, P4, P5, P6, P7, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with seven parameters.
@@ -505,7 +510,7 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with seven parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7>();   
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4, P5, P6, P7>>();   
 
             /// <summary>
             /// Invokes constructor.
@@ -562,7 +567,7 @@ namespace MissingPieces.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with eight parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>> Get(bool nonPublic = false)
-				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>>(nonPublic);
+				=> Constructor.Custom<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with eight parameters.
@@ -571,7 +576,7 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with eight parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8>();   
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4, P5, P6, P7, P8>>();   
 
             /// <summary>
             /// Invokes constructor.
@@ -631,7 +636,7 @@ namespace MissingPieces.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with nine parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>> Get(bool nonPublic = false)
-				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>>(nonPublic);
+				=> Constructor.Custom<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with nine parameters.
@@ -640,7 +645,7 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with nine parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>();   
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>>();   
 
             /// <summary>
             /// Invokes constructor.
@@ -703,7 +708,7 @@ namespace MissingPieces.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with ten parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>> Get(bool nonPublic = false)
-				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>>(nonPublic);
+				=> Constructor.Custom<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with ten parameters.
@@ -712,7 +717,7 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with ten parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(); 
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<Func<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>>(); 
 
             /// <summary>
             /// Invokes constructor.
