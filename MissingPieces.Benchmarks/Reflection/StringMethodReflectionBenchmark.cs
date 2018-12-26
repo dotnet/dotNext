@@ -8,10 +8,9 @@ namespace MissingPieces.Reflection
 {
 	[SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 	[Orderer(SummaryOrderPolicy.Method)]
-	[BaselineColumn]
-	public class MethodReflectionBenchmark
+	public class StringMethodReflectionBenchmark
 	{
-		private static readonly Func<string, char, int, int> IndexOf = Type<string>.Method<char, int>.Get<int>(nameof(string.IndexOf));
+		private static readonly Func<string, char, int, int> IndexOf = Type<string>.Method<char, int>.Require<int>(nameof(string.IndexOf));
 		private static readonly Function<string, (char, int), int> IndexOfSpecial = Type<string>.RequireMethod<(char, int), int>(nameof(string.IndexOf));
 
 		private static readonly MethodInfo IndexOfReflected = typeof(string).GetMethod(nameof(string.IndexOf), new[]{ typeof(char), typeof(int) }, Array.Empty<ParameterModifier>());
