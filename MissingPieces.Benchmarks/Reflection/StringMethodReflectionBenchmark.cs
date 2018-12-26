@@ -25,12 +25,6 @@ namespace MissingPieces.Reflection
 		}
 
 		[Benchmark]
-		public void WithReflection()
-		{
-			IndexOfReflected.Invoke(StringValue, new object[]{ '7', 0 });
-		}
-
-		[Benchmark]
 		public void WithTypedReflection()
 		{
 			IndexOf(StringValue, '7', 0);
@@ -40,6 +34,12 @@ namespace MissingPieces.Reflection
 		public void WithTypedReflectionSpecial()
 		{
 			IndexOfSpecial(StringValue, ('7', 0));
+		}
+
+		[Benchmark]
+		public void WithReflection()
+		{
+			IndexOfReflected.Invoke(StringValue, new object[]{ '7', 0 });
 		}
 	}
 }
