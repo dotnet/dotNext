@@ -24,6 +24,12 @@ namespace MissingPieces.Reflection
         private readonly MethodInfo method;
         private readonly D invoker;
 
+        // private Method(MethodInfo ctor, Expression[] args, ParameterExpression[] parameters)
+        // {
+        //     ctorOrDeclaringType = ctor;
+        //     invoker = Expression.Lambda<D>(Expression.New(ctor, args), parameters).Compile();
+        // }
+
         private Method(MethodInfo method, D invoker)
         {
             this.method = method;
@@ -188,6 +194,43 @@ namespace MissingPieces.Reflection
                 Delegates.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType, out var parameters, out returnType);
                 return ReflectStatic(typeof(T), parameters, returnType, methodName, nonPublic);
             }
+        }
+
+        private static Method<D> ReflectStatic(MethodInfo method)
+        {
+            var delegateType = typeof(D);
+            if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
+            {
+                var (parameters, arglist, input) = Signature.Reflect(argumentsType);
+                return returnType == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(ctor, arglist, new[]{ input }) : null;
+            }
+            else 
+            {
+                var invokeMethod = Delegates.GetInvokeMethod<D>();
+                return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
+                    new Constructor<D>(ctor, ctor.GetParameterTypes().Map(Expression.Parameter)) :
+                    null;
+            }
+        }
+
+        private static Method<D> ReflectInstance(MethodInfo method)
+        {
+            
+        }
+
+        internal static Method<D> Reflect(MethodInfo method)
+        {
+            var delegateType = typeof(D);
+            if(delegateType.IsAbstract)
+                throw Delegates.ExpectNonAbstract<D>();
+            else if(method is Method<D> existing)
+                return existing;
+            else if(method.IsGenericMethodDefinition || method.IsAbstract || method.IsConstructor)
+                return null;
+            else if(method.IsStatic)
+                return ReflectStatic(method);
+            else
+                return ReflectInstance(method);
         }
     }
 }

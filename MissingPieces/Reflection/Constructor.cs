@@ -19,11 +19,12 @@ namespace MissingPieces.Reflection
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
 
         private readonly D invoker;
-        private readonly Variant<ConstructorInfo, Type> ctorOrDeclaringType;
+        private readonly ConstructorInfo ctor;
 
         private Constructor(ConstructorInfo ctor, Expression[] args, ParameterExpression[] parameters)
         {
-            ctorOrDeclaringType = ctor;
+            DeclaringType = ctor.DeclaringType;
+            this.ctor = ctor;
             invoker = Expression.Lambda<D>(Expression.New(ctor, args), parameters).Compile();
         }
 
@@ -34,7 +35,7 @@ namespace MissingPieces.Reflection
 
         private Constructor(Type valueType, ParameterExpression[] parameters)
         {
-            ctorOrDeclaringType = valueType;
+            DeclaringType = valueType;
             invoker = Expression.Lambda<D>(Expression.Default(valueType), parameters).Compile();
         }
 
@@ -42,30 +43,29 @@ namespace MissingPieces.Reflection
 
         public static implicit operator D(Constructor<D> ctor) => ctor?.invoker;
 
-        public override string Name => ctorOrDeclaringType.First.OrDefault()?.Name ?? ".ctor";
+        public override string Name => ctor?.Name ?? ".ctor";
 
-        ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => (ConstructorInfo)ctorOrDeclaringType;
+        ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctor;
 
         D ICallable<D>.Invoker => invoker;
 
-        public override MethodAttributes Attributes => ctorOrDeclaringType.First.Map(ctor => ctor.Attributes).Or(invoker.Method.Attributes);
+        public override MethodAttributes Attributes => ctor is null ? (MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName) : ctor.Attributes;
 
-        public override RuntimeMethodHandle MethodHandle => ctorOrDeclaringType.First.Map(ctor => ctor.MethodHandle).Or(invoker.Method.MethodHandle);
+        public override RuntimeMethodHandle MethodHandle => ctor is null ? invoker.Method.MethodHandle : ctor.MethodHandle;
 
-        public override Type DeclaringType => ctorOrDeclaringType.UnifyFirst(ctor => ctor.DeclaringType);
+        public override Type DeclaringType { get; }
 
-        public override Type ReflectedType => ctorOrDeclaringType.First.Map(ctor => ctor.ReflectedType).Or(invoker.Method.ReflectedType);
+        public override Type ReflectedType => ctor is null ? ctor.ReflectedType : invoker.Method.ReflectedType;
 
-        public override CallingConventions CallingConvention => ctorOrDeclaringType.First.Map(ctor => ctor.CallingConvention).Or(invoker.Method.CallingConvention);
-
+        public override CallingConventions CallingConvention => ctor is null ? invoker.Method.CallingConvention : ctor.CallingConvention;
 
         public override bool ContainsGenericParameters => false;
 
         public override IEnumerable<CustomAttributeData> CustomAttributes => GetCustomAttributesData();
 
-        public override MethodBody GetMethodBody() => ctorOrDeclaringType.First.Map(ctor => ctor.GetMethodBody()).OrInvoke(invoker.Method.GetMethodBody);
+        public override MethodBody GetMethodBody() => ctor?.GetMethodBody() ?? invoker.Method.GetMethodBody();
 
-        public override IList<CustomAttributeData> GetCustomAttributesData() => ctorOrDeclaringType.First.Map(ctor => ctor.GetCustomAttributesData()).OrInvoke(Array.Empty<CustomAttributeData>);
+        public override IList<CustomAttributeData> GetCustomAttributesData() => ctor?.GetCustomAttributesData() ?? Array.Empty<CustomAttributeData>();
 
         public override Type[] GetGenericArguments() => Array.Empty<Type>();
 
@@ -73,45 +73,42 @@ namespace MissingPieces.Reflection
 
         public override bool IsGenericMethodDefinition => false;
 
-        public override bool IsSecurityCritical => ctorOrDeclaringType.First.Map(ctor => ctor.IsSecurityCritical).Or(invoker.Method.IsSecurityCritical);
+        public override bool IsSecurityCritical => ctor is null ? invoker.Method.IsSecurityCritical : ctor.IsSecurityCritical;
 
-        public override bool IsSecuritySafeCritical => ctorOrDeclaringType.First.Map(ctor => ctor.IsSecuritySafeCritical).Or(invoker.Method.IsSecuritySafeCritical);
+        public override bool IsSecuritySafeCritical => ctor is null ? invoker.Method.IsSecuritySafeCritical : ctor.IsSecuritySafeCritical;
 
-        public override bool IsSecurityTransparent => ctorOrDeclaringType.First.Map(ctor => ctor.IsSecurityTransparent).Or(invoker.Method.IsSecurityTransparent);
+        public override bool IsSecurityTransparent => ctor is null ? invoker.Method.IsSecurityTransparent : ctor.IsSecurityTransparent;
 
         public override MemberTypes MemberType => MemberTypes.Constructor;
 
-        public override int MetadataToken => ctorOrDeclaringType.First.Map(ctor => ctor.MetadataToken).Or(invoker.Method.MetadataToken);
+        public override int MetadataToken => ctor is null ? invoker.Method.MetadataToken : ctor.MetadataToken;
 
-        public override MethodImplAttributes MethodImplementationFlags => ctorOrDeclaringType.First.Map(ctor => ctor.MethodImplementationFlags).Or(invoker.Method.MethodImplementationFlags);
+        public override MethodImplAttributes MethodImplementationFlags => ctor is null ? invoker.Method.MethodImplementationFlags : ctor.MethodImplementationFlags;
 
-        public override Module Module => ctorOrDeclaringType.UnifyFirst(ctor => ctor.DeclaringType).Module;
+        public override Module Module => ctor is null ? DeclaringType.Module : ctor.Module;
 
         public override object Invoke(BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
             => Invoke(null, invokeAttr, binder, parameters, culture);
 
         public override MethodImplAttributes GetMethodImplementationFlags() => MethodImplementationFlags;
 
-        public override ParameterInfo[] GetParameters() => ctorOrDeclaringType.First.Map(ctor => ctor.GetParameters()).OrInvoke(Array.Empty<ParameterInfo>);
+        public override ParameterInfo[] GetParameters() => ctor is null ? invoker.Method.GetParameters() : ctor.GetParameters();
 
         public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
-        {
-            var ctor = (ConstructorInfo)ctorOrDeclaringType;
-            return ctor == null ? invoker.Method.Invoke(obj, invokeAttr, binder, parameters, culture) : ctor.Invoke(obj, invokeAttr, binder, parameters, culture);
-        }
+            => ctor is null ? invoker.Method.Invoke(obj, invokeAttr, binder, parameters, culture) : ctor.Invoke(obj, invokeAttr, binder, parameters, culture);
 
         public override object[] GetCustomAttributes(bool inherit)
-            => ctorOrDeclaringType.First.Map(ctor => ctor.GetCustomAttributes(inherit)).OrInvoke(Array.Empty<object>);
+            => ctor is null ? Array.Empty<object>() : ctor.GetCustomAttributes(inherit);
 
         public override object[] GetCustomAttributes(Type attributeType, bool inherit)
-            => ctorOrDeclaringType.First.Map(ctor => ctor.GetCustomAttributes(attributeType, inherit)).OrInvoke(Array.Empty<object>);
+            => ctor is null ? Array.Empty<object>() : ctor.GetCustomAttributes(attributeType, inherit);
 
         public override bool IsDefined(Type attributeType, bool inherit)
-            => ctorOrDeclaringType.First.Map(ctor => ctor.IsDefined(attributeType, inherit)).Or(false);
+            => ctor is null ? false : ctor.IsDefined(attributeType, inherit);
 
-        public bool Equals(ConstructorInfo other) => ctorOrDeclaringType == other;
+        public bool Equals(ConstructorInfo other) => ctor == other;
 
-        public bool Equals(Constructor<D> other) => ctorOrDeclaringType == other.ctorOrDeclaringType;
+        public bool Equals(Constructor<D> other) => ctor == other.ctor;
 
         public override bool Equals(object other)
         {
@@ -126,9 +123,9 @@ namespace MissingPieces.Reflection
             }
         }
 
-        public override string ToString() => ctorOrDeclaringType.First.Map(ctor => ctor.ToString()).OrInvoke(invoker.Method.ToString);
+        public override string ToString() => ctor is null ? invoker.ToString() : ctor.ToString();
 
-        public override int GetHashCode() => ctorOrDeclaringType.GetHashCode();
+        public override int GetHashCode() => ctor is null ? DeclaringType.GetHashCode() : ctor.GetHashCode();
 
         private static Constructor<D> Reflect(Type declaringType, Type[] parameters, bool nonPublic)
         {
@@ -174,6 +171,8 @@ namespace MissingPieces.Reflection
                 throw Delegates.ExpectNonAbstract<D>();
             else if(ctor is Constructor<D> existing)
                 return existing;
+            else if(ctor.IsGenericMethodDefinition || ctor.IsAbstract)
+                return null;
             else if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
             {
                 var (parameters, arglist, input) = Signature.Reflect(argumentsType);
