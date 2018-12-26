@@ -77,14 +77,18 @@ namespace MissingPieces.Reflection
 		[Fact]
 		public void SpecialConstructorTests()
 		{
-			var stringCtor = Type<string>.Constructor<char, int>.RequireSpecial();
+			var stringCtor = Type<string>.GetConstructor<(char, int)>();
+			NotNull(stringCtor);
 			var str = stringCtor.Invoke(('a', 3));
 			Equal("aaa", str);
 
-			Throws<MissingConstructorException>(() => Type<string>.Constructor<bool, bool>.RequireSpecial());
+			Null(Type<string>.GetConstructor<(bool, bool)>());
 
-			var ctorWithRef = Type<ClassWithProperties>.Constructor<int, Ref<bool>>.RequireSpecial();
-			(int first, Ref<bool> second) args = (20, false);
+			var ctorWithRef = Type<ClassWithProperties>.GetConstructor<(int first, Ref<bool> second)>();
+			NotNull(ctorWithRef);
+			var args = ctorWithRef.ArgList();
+			args.first = 20;
+			args.second = false;
 			NotNull(ctorWithRef.Invoke(args));
 			True(args.second);
 		}
@@ -193,11 +197,11 @@ namespace MissingPieces.Reflection
 		[Fact]
 		public void InstanceEventTest()
 		{
-			var ev = Type<AppDomain>.InstanceEvent<ResolveEventHandler>.Require(nameof(AppDomain.TypeResolve));
+			var ev = Type<AppDomain>.Event<ResolveEventHandler>.Require(nameof(AppDomain.TypeResolve));
 			ResolveEventHandler handler = (sender, args) => null;
 			ev.AddEventHandler(AppDomain.CurrentDomain, handler);
 			ev.RemoveEventHandler(AppDomain.CurrentDomain, handler);
-			var ev2 = Type<TypeTests>.InstanceEvent<EventHandler>.Require(nameof(InstanceEvent), true);
+			var ev2 = Type<TypeTests>.Event<EventHandler>.Require(nameof(InstanceEvent), true);
 			Null(InstanceEvent);
 			EventHandler handler2 = (sender, args) => { };
 			ev2.AddEventHandler(this, handler2);
@@ -209,7 +213,7 @@ namespace MissingPieces.Reflection
 		[Fact]
 		public void StaticEventTest()
 		{
-			var ev = Type<TypeTests>.StaticEvent<EventHandler>.Require(nameof(StaticEvent), true);
+			var ev = Type<TypeTests>.Event<EventHandler>.RequireStatic(nameof(StaticEvent), true);
 			EventHandler handler = (sender, args) => { };
 			ev.AddEventHandler(handler);
 			Equal(StaticEvent, handler);

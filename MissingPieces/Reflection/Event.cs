@@ -10,15 +10,38 @@ namespace MissingPieces.Reflection
     /// Represents reflected event.
     /// </summary>
     /// <typeparam name="D">A delegate representing event handler.</typeparam>
-    public abstract class Event<D> : EventInfo, IEvent, IEquatable<Event<D>>, IEquatable<EventInfo>
+    public class EventBase<D> : EventInfo, IEvent, IEquatable<EventBase<D>>, IEquatable<EventInfo>
         where D : MulticastDelegate
     {
         private readonly EventInfo @event;
 
-        private protected Event(EventInfo @event)
+        private protected EventBase(EventInfo @event)
         {
             this.@event = @event;
         }
+
+        private static bool AddOrRemoveHandler(EventInfo @event, object target, D handler, Action<object, Delegate> modifier)
+        {
+            if(@event.AddMethod.IsStatic)
+            {
+                if(target is null)
+                {
+                    modifier(target, handler);
+                    return true;
+                }
+            }
+            else if(@event.DeclaringType.IsInstanceOfType(target))
+            {
+                modifier(target, handler);
+                return true;
+            }
+            return false;
+        }
+
+        public virtual bool AddEventHandler(object target, D handler)
+            => AddOrRemoveHandler(@event, target, handler, @event.AddEventHandler);
+        public virtual bool RemoveEventHandler(object target, D handler)
+            => AddOrRemoveHandler(@event, target, handler, @event.RemoveEventHandler);
 
         EventInfo IMember<EventInfo>.RuntimeMember => @event;
 
@@ -61,13 +84,13 @@ namespace MissingPieces.Reflection
 
         public sealed override MethodInfo[] GetOtherMethods(bool nonPublic) => @event.GetOtherMethods();
 
-        public static bool operator ==(Event<D> first, Event<D> second) => Equals(first, second);
+        public static bool operator ==(EventBase<D> first, EventBase<D> second) => Equals(first, second);
 
-        public static bool operator !=(Event<D> first, Event<D> second) => !Equals(first, second);
+        public static bool operator !=(EventBase<D> first, EventBase<D> second) => !Equals(first, second);
 
         public bool Equals(EventInfo other) => @event == other;
 
-        public bool Equals(Event<D> other)
+        public bool Equals(EventBase<D> other)
             => other != null &&
                 GetType() == other.GetType() &&
                 Equals(other.@event);
@@ -76,7 +99,7 @@ namespace MissingPieces.Reflection
         {
             switch (other)
             {
-                case Event<D> @event:
+                case EventBase<D> @event:
                     return Equals(@event);
                 case EventInfo @event:
                     return Equals(@event);
@@ -93,23 +116,43 @@ namespace MissingPieces.Reflection
     /// <summary>
     /// Provides typed access to static event declared in type <typeparamref name="T"/>.
     /// </summary>
-    /// <typeparam name="H">Type of event handler.</typeparam>
-    public sealed class StaticEvent<H> : Event<H>, IEvent<H>
-        where H : MulticastDelegate
+    /// <typeparam name="D">Type of event handler.</typeparam>
+    public sealed class Event<D> : EventBase<D>, IEvent<D>
+        where D : MulticastDelegate
     {
         private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
-        private readonly Action<H> addMethod;
-        private readonly Action<H> removeMethod;
+        private readonly Action<D> addMethod;
+        private readonly Action<D> removeMethod;
 
-        private StaticEvent(EventInfo @event)
+        private Event(EventInfo @event)
             : base(@event)
         {
             var addMethod = @event.AddMethod;
             var removeMethod = @event.RemoveMethod;
-            this.addMethod = addMethod is null ? null : addMethod.CreateDelegate<Action<H>>();
-            this.removeMethod = removeMethod is null ? null : removeMethod.CreateDelegate<Action<H>>();
+            this.addMethod = addMethod is null ? null : addMethod.CreateDelegate<Action<D>>();
+            this.removeMethod = removeMethod is null ? null : removeMethod.CreateDelegate<Action<D>>();
+        }
+
+        public override bool AddEventHandler(object target, D handler)
+        {
+            if(target is null){
+                addMethod(handler);
+                return true;
+            }
+            else
+                return false;
+        }
+        public override bool RemoveEventHandler(object target, D handler)
+        {
+            if(target is null)
+            {
+                removeMethod(handler);
+                return true;
+            }
+            else
+                return false;
         }
 
         /// <summary>
@@ -117,11 +160,11 @@ namespace MissingPieces.Reflection
         /// </summary>
         /// <param name="handler">An event handler to add.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddEventHandler(H handler) => addMethod(handler);
+        public void AddEventHandler(D handler) => addMethod(handler);
 
         public override void AddEventHandler(object target, Delegate handler)
         {
-            if (handler is H typedHandler)
+            if (handler is D typedHandler)
                 AddEventHandler(typedHandler);
             else
                 base.AddEventHandler(target, handler);
@@ -132,23 +175,33 @@ namespace MissingPieces.Reflection
         /// </summary>
         /// <param name="handler">An event handler to remove.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RemoveEventHandler(H handler) => removeMethod(handler);
+        public void RemoveEventHandler(D handler) => removeMethod(handler);
 
         public override void RemoveEventHandler(object target, Delegate handler)
         {
-            if (handler is H typedHandler)
+            if (handler is D typedHandler)
                 RemoveEventHandler(typedHandler);
             else
                 base.RemoveEventHandler(target, handler);
         }
 
-        public static Action<H> operator +(StaticEvent<H> @event) => @event.addMethod;
-        public static Action<H> operator -(StaticEvent<H> @event) => @event.removeMethod;
+        public static Action<D> operator +(Event<D> @event) => @event.addMethod;
+        public static Action<D> operator -(Event<D> @event) => @event.removeMethod;
 
-        internal static StaticEvent<H> Reflect<T>(string eventName, bool nonPublic)
+        internal static Event<D> Reflect<T>(string eventName, bool nonPublic)
         {
             var @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
-            return @event is null ? null : new StaticEvent<H>(@event);
+            return @event is null ? null : new Event<D>(@event);
+        }
+
+        internal static Event<D> Reflect(EventInfo @event)
+        {
+            if(@event is Event<D> other)
+                return other;
+            else if(@event.EventHandlerType == typeof(D))
+                return new Event<D>(@event);
+            else
+                return null;
         }
     }
 
@@ -156,19 +209,19 @@ namespace MissingPieces.Reflection
     /// Provides typed access to instance event declared in type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">Declaring type.</typeparam>
-    /// <typeparam name="H">Type of event handler.</typeparam>
-    public sealed class InstanceEvent<T, H> : Event<H>, IEvent<T, H>
-        where H : MulticastDelegate
+    /// <typeparam name="D">Type of event handler.</typeparam>
+    public sealed class Event<T, D> : EventBase<D>, IEvent<T, D>
+        where D : MulticastDelegate
     {
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
-        public delegate void Accessor(in T instance, H handler);
+        public delegate void Accessor(in T instance, D handler);
 
         private readonly Accessor addMethod;
         private readonly Accessor removeMethod;
 
-        private InstanceEvent(EventInfo @event)
+        private Event(EventInfo @event)
             : base(@event)
         {
             var instanceParam = Expression.Parameter(@event.DeclaringType.MakeByRefType());
@@ -188,18 +241,38 @@ namespace MissingPieces.Reflection
                 return Expression.Lambda<Accessor>(Expression.Call(instanceParam, accessor, handlerParam), instanceParam, handlerParam).Compile();
         }
 
+        public override bool AddEventHandler(object target, D handler)
+        {
+            if(target is T instance){
+                addMethod(instance, handler);
+                return true;
+            }
+            else
+                return false;
+        }
+        public override bool RemoveEventHandler(object target, D handler)
+        {
+            if(target is T instance)
+            {
+                removeMethod(instance, handler);
+                return true;
+            }
+            else
+                return false;
+        }
+
         /// <summary>
         /// Add event handler.
         /// </summary>
         /// <param name="instance">Object with declared event.</param>
         /// <param name="handler">An event handler to add.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddEventHandler(in T instance, H handler)
+        public void AddEventHandler(in T instance, D handler)
             => addMethod(in instance, handler);
 
         public override void AddEventHandler(object target, Delegate handler)
         {
-            if (target is T typedTarget && handler is H typedHandler)
+            if (target is T typedTarget && handler is D typedHandler)
                 AddEventHandler(typedTarget, typedHandler);
             else
                 base.AddEventHandler(target, handler);
@@ -211,25 +284,35 @@ namespace MissingPieces.Reflection
         /// <param name="instance">Object with declared event.</param>
         /// <param name="handler">An event handler to remove.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RemoveEventHandler(in T instance, H handler)
+        public void RemoveEventHandler(in T instance, D handler)
             => removeMethod(in instance, handler);
 
         public override void RemoveEventHandler(object target, Delegate handler)
         {
-            if (target is T typedTarget && handler is H typedHandler)
+            if (target is T typedTarget && handler is D typedHandler)
                 RemoveEventHandler(typedTarget, typedHandler);
             else
                 base.RemoveEventHandler(target, handler);
         }
 
-        public static Accessor operator+(InstanceEvent<T, H> @event) => @event.addMethod;
+        public static Accessor operator+(Event<T, D> @event) => @event.addMethod;
 
-        public static Accessor operator-(InstanceEvent<T, H> @event) => @event.removeMethod;
+        public static Accessor operator-(Event<T, D> @event) => @event.removeMethod;
 
-        internal static InstanceEvent<T, H> Reflect(string eventName, bool nonPublic)
+        internal static Event<T, D> Reflect(string eventName, bool nonPublic)
         {
             var @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
-            return @event is null ? null : new InstanceEvent<T, H>(@event);
+            return @event is null ? null : new Event<T, D>(@event);
+        }
+        
+        internal static Event<T, D> Reflect(EventInfo @event)
+        {
+            if(@event is Event<T, D> other)
+                return other;
+            else if(@event.EventHandlerType == typeof(D) && @event.DeclaringType == typeof(T))
+                return new Event<T, D>(@event);
+            else
+                return null;
         }
     }
 }

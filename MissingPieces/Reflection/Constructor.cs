@@ -38,6 +38,8 @@ namespace MissingPieces.Reflection
             invoker = Expression.Lambda<D>(Expression.Default(valueType), parameters).Compile();
         }
 
+        internal Constructor<D> OfType<T>() => DeclaringType == typeof(T) ? this : null;
+
         public static implicit operator D(Constructor<D> ctor) => ctor?.invoker;
 
         public override string Name => ctorOrDeclaringType.First.OrDefault()?.Name ?? ".ctor";
@@ -153,12 +155,22 @@ namespace MissingPieces.Reflection
         }
 
         internal static Constructor<D> Reflect(bool nonPublic)
-            => typeof(D).IsGenericInstanceOf(typeof(Function<,>)) ? ReflectSpecial(nonPublic) : ReflectSimple(nonPublic);
+        {
+            var delegateType = typeof(D);
+            if(delegateType.IsGenericInstanceOf(typeof(Function<,>)))
+                return ReflectSpecial(nonPublic);
+            else if(delegateType.IsAbstract)
+                return null;
+            else
+                return ReflectSimple(nonPublic);                
+        }
 
         internal static Constructor<D> Reflect(ConstructorInfo ctor)
         {
             var delegateType = typeof(D);
-            if(ctor is Constructor<D> existing)
+            if(delegateType.IsAbstract)
+                return null;
+            else if(ctor is Constructor<D> existing)
                 return existing;
             else if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
             {

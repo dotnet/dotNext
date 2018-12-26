@@ -13,17 +13,19 @@ namespace MissingPieces.Reflection
     /// Represents reflected method.
     /// </summary>
     /// <typeparam name="D">Type of delegate describing signature of the reflected method.</typeparam>
-    public class Method<D> : MethodInfo, IMethod<D>, IEquatable<Method<D>>, IEquatable<MethodInfo>
+    public sealed class Method<D> : MethodInfo, IMethod<D>, IEquatable<Method<D>>, IEquatable<MethodInfo>
         where D : Delegate
     {
         private readonly MethodInfo method;
         private readonly D invoker;
 
-        private protected Method(MethodInfo method, D invoker)
+        private Method(MethodInfo method, D invoker)
         {
             this.method = method;
             this.invoker = invoker;
         }
+
+        internal Method<D> OfType<T>() => method.DeclaringType.IsAssignableFrom(typeof(T)) ? this : null;
 
         public sealed override MethodAttributes Attributes => method.Attributes;
         public sealed override CallingConventions CallingConvention => method.CallingConvention;
@@ -86,80 +88,41 @@ namespace MissingPieces.Reflection
         D ICallable<D>.Invoker => invoker;
 
         public override string ToString() => method.ToString();
-    }
 
-    /// <summary>
-    /// Represents static method.
-    /// </summary>
-    /// <typeparam name="D">A delegate describing signature of static method.</typeparam>
-    public sealed class StaticMethod<D> : Method<D>
-        where D : Delegate
-    {
-        private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
-        private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-
-        private StaticMethod(MethodInfo method, D invoker)
-            : base(method, invoker)
+        private static Method<D> Reflect(Type declaringType, string methodName, bool nonPublic)
         {
-        }
+            const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+            const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
-        private static StaticMethod<D> Reflect(Type declaringType, string methodName, bool nonPublic)
-        {
-            var invokeMethod = Delegates.GetInvokeMethod<D>();
+            var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
             var targetMethod = declaringType.GetMethod(methodName,
                 nonPublic ? NonPublicFlags : PublicFlags,
                 Type.DefaultBinder,
-                invokeMethod.GetParameterTypes(),
+                parameters,
                 Array.Empty<ParameterModifier>());
-            if(targetMethod is null)
+            if (targetMethod is null)
                 return null;
-            else if(invokeMethod.ReturnType == targetMethod.ReturnType)
-                return new StaticMethod<D>(targetMethod, targetMethod.CreateDelegate<D>());
+            else if (returnType == targetMethod.ReturnType)
+                return new Method<D>(targetMethod, targetMethod.CreateDelegate<D>());
             else
                 return null;
         }
 
         /// <summary>
-        /// Reflects static method.
-        /// </summary>
-        /// <param name="methodName">Name of method to reflect.</param>
-        /// <param name="nonPublic">True to reflect non-public method.</param>
-        /// <typeparam name="T">A type declaring static method.</typeparam>
-        /// <returns>Reflected method; or null, if it doesn't exist.</returns>
-        public static StaticMethod<D> Reflect<T>(string methodName, bool nonPublic)
-            => Reflect(typeof(T), methodName, nonPublic);
-    }
-
-    /// <summary>
-    /// Represents instance method.
-    /// </summary>
-    /// <remarks>
-    /// First parameter of delegate treated as THIS hiddent parameter.
-    /// It can be passed by value or by reference.
-    /// </remarks>
-    /// <typeparam name="D">A delegate describing signature of instance method.</typeparam>
-    public sealed class InstanceMethod<D> : Method<D>
-        where D : Delegate
-    {
-        private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
-        private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-
-        private InstanceMethod(MethodInfo method, D invoker)
-            : base(method, invoker)
-        {
-        }
-
-        /// <summary>
         /// Reflects instance method.
         /// </summary>
-        /// <param name="methodName">Name of method to reflect.</param>
-        /// <param name="nonPublic">True to reflect non-public method.</param>
-        /// <returns>Reflected method; or null, if method doesn't exist.</returns>
-        /// <exception cref="ArgumentException">Delegate should have at least 1 parameter.</exception>
-        public static InstanceMethod<D> Reflect(string methodName, bool nonPublic)
+        /// <param name="methodName"></param>
+        /// <param name="nonPublic"></param>
+        /// <returns></returns>
+        internal static Method<D> Reflect(string methodName, bool nonPublic)
         {
-            var invokeMethod = Delegates.GetInvokeMethod<D>();
-            var parameters = invokeMethod.GetParameterTypes();
+            if(typeof(D).IsAbstract)
+                return null;
+
+            const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+            const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
+            var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
             var thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException("Delegate type should have THIS parameter");
             var targetMethod = thisParam.NonRefType().GetMethod(methodName,
                 nonPublic ? NonPublicFlags : PublicFlags,
@@ -186,9 +149,19 @@ namespace MissingPieces.Reflection
             }
             else
                 invokerFactory = targetMethod.CreateDelegate<D>;
-            return invokeMethod.ReturnType == targetMethod.ReturnType ?
-                    new InstanceMethod<D>(targetMethod, invokerFactory(targetMethod)) :
+            return returnType == targetMethod.ReturnType ?
+                    new Method<D>(targetMethod, invokerFactory(targetMethod)) :
                     null;
         }
+
+        /// <summary>
+        /// Reflects static method.
+        /// </summary>
+        /// <param name="methodName">Name of method.</param>
+        /// <param name="nonPublic">True to reflect non-public static method.</param>
+        /// <typeparam name="T">Declaring type.</typeparam>
+        /// <returns>Reflected static method.</returns>
+        internal static Method<D> Reflect<T>(string methodName, bool nonPublic)
+            => typeof(D).IsAbstract ? null : Reflect(typeof(T), methodName, nonPublic);
     }
 }

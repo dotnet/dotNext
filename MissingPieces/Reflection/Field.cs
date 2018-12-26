@@ -98,4 +98,5 @@ namespace MissingPieces.Reflection
 
         public static bool operator !=(Field<T> first, Field<T> second) => !Equals(first, second);
     }
+    
 }

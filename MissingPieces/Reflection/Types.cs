@@ -14,7 +14,7 @@ namespace MissingPieces.Reflection
 				type.GetGenericTypeDefinition() == genericDefinition;
 				
 		internal static MethodInfo GetInvokeMethod(this Type delegateType)
-			=> delegateType != null && typeof(Delegate).IsAssignableFrom(delegateType) ?
+			=> !(delegateType is null) && typeof(Delegate).IsAssignableFrom(delegateType) ?
 			 delegateType.GetMethod("Invoke", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly):
 			 null;
 

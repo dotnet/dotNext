@@ -69,21 +69,31 @@ namespace MissingPieces.Reflection
         public static T Convert<U>(U value) => TryConvert<U>(value).OrThrow<InvalidCastException>();
 
         /// <summary>
+        /// Reflects constructor as function.
+        /// </summary>
+        /// <param name="nonPublic">True to reflect non-public constructor.</param>
+        /// <typeparam name="A">A structure describing constructor signature.</typeparam>
+        /// <returns>Constructor for type <typeparamref name="T"/>; or null, if it doesn't exist.</returns>
+        public static Reflection.Constructor<Function<A, T>> GetConstructor<A>(bool nonPublic = false)
+            where A: struct
+            => Constructor.Get<Function<A, T>>(nonPublic);
+
+        /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> without parameters.
         /// </summary>
-        [DefaultMember("Get")]
+        [DefaultMember("Invoke")]
         public static class Constructor
         {
             private static class Public<D>
                 where D : MulticastDelegate
             {
-                internal static readonly Reflection.Constructor<D> Value = Reflection.Constructor<D>.Reflect(false);
+                internal static readonly Reflection.Constructor<D> Value = Reflection.Constructor<D>.Reflect(false)?.OfType<T>();
             }
 
             private static class NonPublic<D>
                 where D : MulticastDelegate
             {
-                internal static readonly Reflection.Constructor<D> Value = Reflection.Constructor<D>.Reflect(true);
+                internal static readonly Reflection.Constructor<D> Value = Reflection.Constructor<D>.Reflect(true)?.OfType<T>();
             }
 
             /// <summary>
@@ -96,10 +106,6 @@ namespace MissingPieces.Reflection
             public static Reflection.Constructor<D> Get<D>(bool nonPublic = false)
                 where D : MulticastDelegate
                 => nonPublic ? NonPublic<D>.Value : Public<D>.Value;
-
-            public static Reflection.Constructor<Function<A, T>> ReflectSpecial<A>(bool nonPublic = false)
-                where A: struct
-                => Get<Function<A, T>>(nonPublic);
 
             /// <summary>
             /// Returns public constructor of type <typeparamref name="T"/> without parameters.
@@ -142,7 +148,7 @@ namespace MissingPieces.Reflection
 		/// Provides access to constructor of type <typeparamref name="T"/> with single parameter.
 		/// </summary>
         /// <typeparam name="P">Type of constructor parameter.</typeparam>
-        [DefaultMember("Get")]
+        [DefaultMember("Invoke")]
         public static class Constructor<P>
         {
             /// <summary>
@@ -153,9 +159,6 @@ namespace MissingPieces.Reflection
 			public static Reflection.Constructor<Func<P, T>> Get(bool nonPublic = false)
                 => Constructor.Get<Func<P, T>>(nonPublic);
 
-            public static Reflection.Constructor<Function<ValueTuple<P>, T>> GetSpecial(bool nonPublic = false)
-                => Constructor.ReflectSpecial<ValueTuple<P>>(nonPublic);
-
             /// <summary>
             /// Returns constructor <typeparamref name="T"/> with single parameter of type <typeparamref name="P"/>.
             /// </summary>
@@ -165,8 +168,26 @@ namespace MissingPieces.Reflection
             public static Reflection.Constructor<Func<P, T>> Require(bool nonPublic = false)
                 => Get(nonPublic) ?? throw MissingConstructorException.Create<T, P>();
 
-            public static Reflection.Constructor<Function<ValueTuple<P>, T>> RequireSpecial(bool nonPublic = false)
-                => GetSpecial(nonPublic) ?? throw MissingConstructorException.Create<T, P>();
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg">Constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
+            public static Optional<T> TryInvoke(P arg, bool nonPublic = false)
+            {
+                Func<P, T> ctor = Get(nonPublic);
+                return ctor is null ? Optional<T>.Empty : ctor(arg);
+            }
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg">Constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static T Invoke(P arg, bool nonPublic = false) => Require(nonPublic).Invoke(arg);
         }
 
         /// <summary>
@@ -174,7 +195,7 @@ namespace MissingPieces.Reflection
         /// </summary>
         /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
 		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
-        [DefaultMember("Get")] 
+        [DefaultMember("Invoke")] 
         public static class Constructor<P1, P2>
         {
             /// <summary>
@@ -185,9 +206,6 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with two parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, T>> Get(bool nonPublic = false)
 				=> Constructor.Get<Func<P1, P2, T>>(nonPublic);
-            
-            public static Reflection.Constructor<Function<(P1, P2), T>> GetSpecial(bool nonPublic = false)
-                => Constructor.ReflectSpecial<(P1, P2)>(nonPublic);
 
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with two 
@@ -199,9 +217,28 @@ namespace MissingPieces.Reflection
 			public static Reflection.Constructor<Func<P1, P2, T>> Require(bool nonPublic = false)
 				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2>();
 
-            
-            public static Reflection.Constructor<Function<(P1, P2), T>> RequireSpecial(bool nonPublic = false)
-                => GetSpecial(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2>();
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
+            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, bool nonPublic = false)
+            {
+                Func<P1, P2, T> ctor = Get(nonPublic);
+                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2);
+            }
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static T Invoke(P1 arg1, P2 arg2, bool nonPublic = false) => Require(nonPublic).Invoke(arg1, arg2);
         }
 
         /// <summary>
@@ -210,7 +247,7 @@ namespace MissingPieces.Reflection
         /// <typeparam name="P1">Type of first constructor parameter.</typeparam>
 		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
 		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
-        [DefaultMember("Get")]
+        [DefaultMember("Invoke")]
         public static class Constructor<P1, P2, P3>
         {
             /// <summary>
@@ -230,7 +267,32 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with three parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3>();            
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3>();
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
+            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, bool nonPublic = false)
+            {
+                Func<P1, P2, P3, T> ctor = Get(nonPublic);
+                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3);
+            }
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, bool nonPublic = false) => Require(nonPublic).Invoke(arg1, arg2, arg3);            
         }
 
         /// <summary>
@@ -240,7 +302,7 @@ namespace MissingPieces.Reflection
 		/// <typeparam name="P2">Type of second constructor parameter.</typeparam>
 		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
         /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>      
-        [DefaultMember("Get")]
+        [DefaultMember("Invoke")]
         public static class Constructor<P1, P2, P3, P4>
         {
             /// <summary>
@@ -260,7 +322,34 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with four parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4>();            
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4>();    
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
+            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, bool nonPublic = false)
+            {
+                Func<P1, P2, P3, P4, T> ctor = Get(nonPublic);
+                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4);
+            }
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, bool nonPublic = false) => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4);        
         }
 
         /// <summary>
@@ -271,7 +360,7 @@ namespace MissingPieces.Reflection
 		/// <typeparam name="P3">Type of third constructor parameter.</typeparam>
         /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
         /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam>             
-        [DefaultMember("Get")]
+        [DefaultMember("Invoke")]
         public static class Constructor<P1, P2, P3, P4, P5>
         {
             /// <summary>
@@ -293,7 +382,37 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with five parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5>();            
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5>();   
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="arg5">Fifth constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
+            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, bool nonPublic = false)
+            {
+                Func<P1, P2, P3, P4, P5, T> ctor = Get(nonPublic);
+                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5);
+            }
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="arg5">Fifth constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, bool nonPublic = false) 
+                => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4, arg5);         
         }
 
         /// <summary>
@@ -305,7 +424,7 @@ namespace MissingPieces.Reflection
         /// <typeparam name="P4">Type of fourth constructor parameter.</typeparam>
         /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam> 
         /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>              
-        [DefaultMember("Get")]
+        [DefaultMember("Invoke")]
         public static class Constructor<P1, P2, P3, P4, P5, P6>
         {
             /// <summary>
@@ -323,7 +442,39 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with six parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6>();            
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6>();
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="arg5">Fifth constructor argument.</param>
+            /// <param name="arg6">Sixth constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
+            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, bool nonPublic = false)
+            {
+                Func<P1, P2, P3, P4, P5, P6, T> ctor = Get(nonPublic);
+                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6);
+            }
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="arg5">Fifth constructor argument.</param>
+            /// <param name="arg6">Sixth constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, bool nonPublic = false) 
+                => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4, arg5, arg6);      
         }
 
         /// <summary>
@@ -336,7 +487,7 @@ namespace MissingPieces.Reflection
         /// <typeparam name="P5">Type of fifth constructor parameter.</typeparam> 
         /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>      
         /// <typeparam name="P7">Type of sixth constructor parameter.</typeparam>         
-        [DefaultMember("Get")]
+        [DefaultMember("Invoke")]
         public static class Constructor<P1, P2, P3, P4, P5, P6, P7>
         {
             /// <summary>
@@ -354,7 +505,41 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with seven parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7>();            
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7>();   
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="arg5">Fifth constructor argument.</param>
+            /// <param name="arg6">Sixth constructor argument.</param>
+            /// <param name="arg7">Seventh constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
+            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, bool nonPublic = false)
+            {
+                Func<P1, P2, P3, P4, P5, P6, P7, T> ctor = Get(nonPublic);
+                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+            }
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="arg5">Fifth constructor argument.</param>
+            /// <param name="arg6">Sixth constructor argument.</param>
+            /// <param name="arg7">Seventh constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, bool nonPublic = false) 
+                => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7);         
         }
 
         /// <summary>
@@ -368,7 +553,7 @@ namespace MissingPieces.Reflection
         /// <typeparam name="P6">Type of sixth constructor parameter.</typeparam>      
         /// <typeparam name="P7">Type of sixth constructor parameter.</typeparam>  
         /// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>        
-        [DefaultMember("Get")]
+        [DefaultMember("Invoke")]
         public static class Constructor<P1, P2, P3, P4, P5, P6, P7, P8>
         {
             /// <summary>
@@ -386,7 +571,43 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with eight parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8>();            
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8>();   
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="arg5">Fifth constructor argument.</param>
+            /// <param name="arg6">Sixth constructor argument.</param>
+            /// <param name="arg7">Seventh constructor argument.</param>
+            /// <param name="arg8">Eighth constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
+            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, bool nonPublic = false)
+            {
+                Func<P1, P2, P3, P4, P5, P6, P7, P8, T> ctor = Get(nonPublic);
+                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+            }
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="arg5">Fifth constructor argument.</param>
+            /// <param name="arg6">Sixth constructor argument.</param>
+            /// <param name="arg7">Seventh constructor argument.</param>
+            /// <param name="arg8">Eighth constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, bool nonPublic = false) 
+                => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);         
         }
 
         /// <summary>
@@ -401,7 +622,7 @@ namespace MissingPieces.Reflection
         /// <typeparam name="P7">Type of sixth constructor parameter.</typeparam>  
         /// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>  
         /// <typeparam name="P9">Type of ninth constructor parameter.</typeparam>       
-        [DefaultMember("Get")]
+        [DefaultMember("Invoke")]
         public static class Constructor<P1, P2, P3, P4, P5, P6, P7, P8, P9>
         {
             /// <summary>
@@ -419,7 +640,45 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with nine parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>();            
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>();   
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="arg5">Fifth constructor argument.</param>
+            /// <param name="arg6">Sixth constructor argument.</param>
+            /// <param name="arg7">Seventh constructor argument.</param>
+            /// <param name="arg8">Eighth constructor argument.</param>
+            /// <param name="arg9">Ninth constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
+            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, bool nonPublic = false)
+            {
+                Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T> ctor = Get(nonPublic);
+                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+            }
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="arg5">Fifth constructor argument.</param>
+            /// <param name="arg6">Sixth constructor argument.</param>
+            /// <param name="arg7">Seventh constructor argument.</param>
+            /// <param name="arg8">Eighth constructor argument.</param>
+            /// <param name="arg9">Ninth constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, bool nonPublic = false) 
+                => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);         
         }
 
         /// <summary>
@@ -435,7 +694,7 @@ namespace MissingPieces.Reflection
         /// <typeparam name="P8">Type of eighth constructor parameter.</typeparam>  
         /// <typeparam name="P9">Type of ninth constructor parameter.</typeparam>  
         /// <typeparam name="P10">Type of tenth constructor parameter.</typeparam>      
-        [DefaultMember("Get")]
+        [DefaultMember("Invoke")]
         public static class Constructor<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>
         {
             /// <summary>
@@ -453,7 +712,47 @@ namespace MissingPieces.Reflection
 			/// <returns>Reflected constructor with ten parameters.</returns>
 			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>> Require(bool nonPublic = false)
-				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>();            
+				=> Get(nonPublic) ?? throw MissingConstructorException.Create<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(); 
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="arg5">Fifth constructor argument.</param>
+            /// <param name="arg6">Sixth constructor argument.</param>
+            /// <param name="arg7">Seventh constructor argument.</param>
+            /// <param name="arg8">Eighth constructor argument.</param>
+            /// <param name="arg9">Ninth constructor argument.</param>
+            /// <param name="arg10">Tenth constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
+            public static Optional<T> TryInvoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10, bool nonPublic = false)
+            {
+                Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T> ctor = Get(nonPublic);
+                return ctor is null ? Optional<T>.Empty : ctor(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+            }
+
+            /// <summary>
+            /// Invokes constructor.
+            /// </summary>
+            /// <param name="arg1">First constructor argument.</param>
+            /// <param name="arg2">Second constructor argument.</param>
+            /// <param name="arg3">Third constructor argument.</param>
+            /// <param name="arg4">Fourth constructor argument.</param>
+            /// <param name="arg5">Fifth constructor argument.</param>
+            /// <param name="arg6">Sixth constructor argument.</param>
+            /// <param name="arg7">Seventh constructor argument.</param>
+            /// <param name="arg8">Eighth constructor argument.</param>
+            /// <param name="arg9">Ninth constructor argument.</param>
+            /// <param name="arg10">Tenth constructor argument.</param>
+            /// <param name="nonPublic">True to reflect non-public constructor.</param>
+            /// <returns>Instance of <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+            public static T Invoke(P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10, bool nonPublic = false) 
+                => Require(nonPublic).Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);           
         }
 
         /// <summary>
@@ -726,62 +1025,34 @@ namespace MissingPieces.Reflection
         }
 
         /// <summary>
-        /// Provides typed access to static event declared in type <typeparamref name="T"/>.
-        /// </summary>
-		/// <typeparam name="H">Type of event handler.</typeparam>
-        public static class StaticEvent<H>
-            where H : MulticastDelegate
-        {
-            private sealed class Cache : MemberCache<EventInfo, Reflection.StaticEvent<H>>
-            {
-                private readonly bool nonPublic;
-                internal Cache(bool nonPublic) => this.nonPublic = nonPublic;
-
-                private protected override Reflection.StaticEvent<H> Create(string eventName) 
-                    => Reflection.StaticEvent<H>.Reflect<T>(eventName, nonPublic);
-            }
-
-            private static readonly Cache PublicCache = new Cache(false);
-            private static readonly Cache NonPublicCache = new Cache(true);
-
-            /// <summary>
-            /// Gets static event.
-            /// </summary>
-            /// <param name="eventName">Name of event.</param>
-            /// <param name="nonPublic">True to reflect non-public event.</param>
-            /// <returns>Static event; or null, if event doesn't exist.</returns>
-            public static Reflection.StaticEvent<H> Get(string eventName, bool nonPublic = false)
-                => (nonPublic ? NonPublicCache : PublicCache).GetOrCreate(eventName);
-
-            /// <summary>
-            /// Gets static event.
-            /// </summary>
-            /// <param name="eventName">Name of event.</param>
-            /// <param name="nonPublic">True to reflect non-public event.</param>
-            /// <returns>Static event.</returns>
-            /// <exception cref="MissingEventException">Event doesn't exist.</exception>
-            public static Reflection.StaticEvent<H> Require(string eventName, bool nonPublic = false)
-                => Get(eventName, nonPublic) ?? throw MissingEventException.Create<T, H>(eventName);
-        }
-
-        /// <summary>
         /// Provides typed access to instance event declared in type <typeparamref name="T"/>.
         /// </summary>
 		/// <typeparam name="H">Type of event handler.</typeparam>
-        public static class InstanceEvent<H>
+        public static class Event<H>
             where H : MulticastDelegate
         {
-            private sealed class Cache : MemberCache<EventInfo, Reflection.InstanceEvent<T, H>>
+            private sealed class InstanceEvents : MemberCache<EventInfo, Reflection.Event<T, H>>
             {
-                private readonly bool nonPublic;
-                internal Cache(bool nonPublic) => this.nonPublic = nonPublic;
+                internal static readonly InstanceEvents Public = new InstanceEvents(false);
+                internal static readonly InstanceEvents NonPublic = new InstanceEvents(true);
 
-                private protected override Reflection.InstanceEvent<T, H> Create(string eventName) 
-                    => Reflection.InstanceEvent<T, H>.Reflect(eventName, nonPublic);
+                private readonly bool nonPublic;
+                private InstanceEvents(bool nonPublic) => this.nonPublic = nonPublic;
+
+                private protected override Reflection.Event<T, H> Create(string eventName) 
+                    => Reflection.Event<T, H>.Reflect(eventName, nonPublic);
             }
 
-            private static readonly Cache PublicCache = new Cache(false);
-            private static readonly Cache NonPublicCache = new Cache(true);
+            private sealed class StaticEvents : MemberCache<EventInfo, Reflection.Event<H>>
+            {
+                internal static readonly StaticEvents Public = new StaticEvents(false);
+                internal static readonly StaticEvents NonPublic = new StaticEvents(true);
+                private readonly bool nonPublic;
+                private StaticEvents(bool nonPublic) => this.nonPublic = nonPublic;
+
+                private protected override Reflection.Event<H> Create(string eventName) 
+                    => Reflection.Event<H>.Reflect<T>(eventName, nonPublic);
+            }
 
             /// <summary>
             /// Gets instane event.
@@ -789,8 +1060,8 @@ namespace MissingPieces.Reflection
             /// <param name="eventName">Name of event.</param>
             /// <param name="nonPublic">True to reflect non-public event.</param>
             /// <returns>Instance event; or null, if event doesn't exist.</returns>
-            public static Reflection.InstanceEvent<T, H> Get(string eventName, bool nonPublic = false)
-                => (nonPublic ? NonPublicCache : PublicCache).GetOrCreate(eventName);
+            public static Reflection.Event<T, H> Get(string eventName, bool nonPublic = false)
+                => (nonPublic ? InstanceEvents.NonPublic : InstanceEvents.Public).GetOrCreate(eventName);
 
             /// <summary>
             /// Gets instance event.
@@ -799,8 +1070,27 @@ namespace MissingPieces.Reflection
             /// <param name="nonPublic">True to reflect non-public event.</param>
             /// <returns>Instance event.</returns>
             /// <exception cref="MissingEventException">Event doesn't exist.</exception>
-            public static Reflection.InstanceEvent<T, H> Require(string eventName, bool nonPublic = false)
+            public static Reflection.Event<T, H> Require(string eventName, bool nonPublic = false)
                 => Get(eventName, nonPublic) ?? throw MissingEventException.Create<T, H>(eventName);
+
+            /// <summary>
+            /// Gets static event.
+            /// </summary>
+            /// <param name="eventName">Name of event.</param>
+            /// <param name="nonPublic">True to reflect non-public event.</param>
+            /// <returns>Static event; or null, if event doesn't exist.</returns>
+            public static Reflection.Event<H> GetStatic(string eventName, bool nonPublic = false)
+                => (nonPublic ? StaticEvents.NonPublic : StaticEvents.Public).GetOrCreate(eventName);
+
+            /// <summary>
+            /// Gets static event.
+            /// </summary>
+            /// <param name="eventName">Name of event.</param>
+            /// <param name="nonPublic">True to reflect non-public event.</param>
+            /// <returns>Static event.</returns>
+            /// <exception cref="MissingEventException">Event doesn't exist.</exception>
+            public static Reflection.Event<H> RequireStatic(string eventName, bool nonPublic = false)
+                => GetStatic(eventName, nonPublic) ?? throw MissingEventException.Create<T, H>(eventName);
         }
 
         /// <summary>
@@ -827,33 +1117,10 @@ namespace MissingPieces.Reflection
             /// </summary>
             /// <param name="inherit">True to find inherited attribute.</param>
             /// <param name="condition">Optional predicate to check attribute properties.</param>
-            /// <typeparam name="E">Type of exception to throw if attribute doesn't exist.</typeparam>
-            /// <returns>Attribute associated with type <typeparamref name="T"/></returns>
-            public static A GetOrThrow<E>(bool inherit = false, Predicate<A> condition = null)
-                where E : Exception, new()
-                => Get(inherit, condition) ?? throw new E();
-
-            /// <summary>
-            /// Returns attribute associated with the type <typeparamref name="T"/>.
-            /// </summary>
-            /// <param name="exceptionFactory">Exception factory.</param>
-            /// <param name="inherit">True to find inherited attribute.</param>
-            /// <param name="condition">Optional predicate to check attribute properties.</param>
-            /// <typeparam name="E">Type of exception to throw if attribute doesn't exist.</typeparam>
-            /// <returns>Attribute associated with type <typeparamref name="T"/>.</returns>
-            public static A GetOrThrow<E>(Func<E> exceptionFactory, bool inherit = false, Predicate<A> condition = null)
-                where E : Exception
-                => Get(inherit, condition) ?? throw exceptionFactory();
-
-            /// <summary>
-            /// Returns attribute associated with the type <typeparamref name="T"/>.
-            /// </summary>
-            /// <param name="inherit">True to find inherited attribute.</param>
-            /// <param name="condition">Optional predicate to check attribute properties.</param>
             /// <returns>Attribute associated with type <typeparamref name="T"/>.</returns>
             /// <exception cref="MissingAttributeException">Event doesn't exist.</exception>
-            public static A GetOrThrow(bool inherit = false, Predicate<A> condition = null)
-                => GetOrThrow(MissingAttributeException.Create<T, A>, inherit, condition);
+            public static A Require(bool inherit = false, Predicate<A> condition = null)
+                => Get(inherit, condition) ?? throw MissingAttributeException.Create<T, A>();
 
             /// <summary>
             /// Get all custom attributes of type <typeparamref name="A"/>.
@@ -1072,19 +1339,91 @@ namespace MissingPieces.Reflection
         }
 
         /// <summary>
+        /// Provides access to methods declared in type <typeparamref name="T"/>.
+        /// </summary>
+        public static class Method
+        {
+            private sealed class InstanceMethods<D> : MemberCache<MethodInfo, Reflection.Method<D>>
+                where D: Delegate
+            {
+                internal static readonly InstanceMethods<D> Public = new InstanceMethods<D>(false);
+                internal static readonly InstanceMethods<D> NonPublic = new InstanceMethods<D>(true);
+
+                private readonly bool nonPublic;
+                private InstanceMethods(bool nonPublic) => this.nonPublic = nonPublic;
+
+                private protected override Reflection.Method<D> Create(string methodName) 
+                    => Reflection.Method<D>.Reflect(methodName, nonPublic)?.OfType<T>();
+            }
+
+            private sealed class StaticMethods<D> : MemberCache<MethodInfo, Reflection.Method<D>>
+                where D: Delegate
+            {
+                internal static readonly StaticMethods<D> Public = new StaticMethods<D>(false);
+                internal static readonly StaticMethods<D> NonPublic = new StaticMethods<D>(true);
+                private readonly bool nonPublic;
+                private StaticMethods(bool nonPublic) => this.nonPublic = nonPublic;
+
+                private protected override Reflection.Method<D> Create(string eventName) 
+                    => Reflection.Method<D>.Reflect<T>(eventName, nonPublic);
+            }
+
+            public static Reflection.Method<D> Get<D>(string methodName, bool nonPublic = false)
+                where D: Delegate
+                => (nonPublic ? InstanceMethods<D>.NonPublic : InstanceMethods<D>.Public).GetOrCreate(methodName);
+
+            public static Reflection.Method<D> GetStatic<D>(string methodName, bool nonPublic = false)
+                where D: Delegate
+                => (nonPublic ? StaticMethods<D>.NonPublic : StaticMethods<D>.Public).GetOrCreate(methodName);
+        }
+        
+        /// <summary>
+        /// Provides access to methods with single parameter declared in type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="P">Type of method parameter.</typeparam>
+        public static class Method<P>
+        {
+            public static Reflection.Method<Action<T, P>> Get(string methodName, bool nonPublic = false)
+                => Method.Get<Action<T, P>>(methodName, nonPublic);
+
+            public static Reflection.Method<Action<T, P>> Require(string methodName, bool nonPublic = false)
+                => Get(methodName, nonPublic) ?? throw MissingMethodException.CreateAction<T, P>(methodName);
+
+            public static Reflection.Method<Action<P>> GetStatic(string methodName, bool nonPublic = false)
+                => Method.GetStatic<Action<P>>(methodName, nonPublic);
+
+            public static Reflection.Method<Action<P>> RequireStatic(string methodName, bool nonPublic = false)
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.CreateAction<T, P>(methodName);
+            
+            public static Reflection.Method<Func<T, P, R>> Get<R>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<T, P, R>>(methodName, nonPublic);
+
+            public static Reflection.Method<Func<T, P, R>> Require<R>(string methodName, bool nonPublic = false)
+                => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.CreateAction<T, P>(methodName);
+
+            public static Reflection.Method<Func<P, R>> GetStatic<R>(string methodName, bool nonPublic = false)
+                => Method.GetStatic<Func<P, R>>(methodName, nonPublic);
+
+            public static Reflection.Method<Func<P, R>> RequireStatic<R>(string methodName, bool nonPublic = false)
+                => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.CreateAction<T, P>(methodName);
+        }
+
+        /// <summary>
         /// Represents unary operator applicable to type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="R">Type of unary operator result.</typeparam>
         public static class UnaryOperator<R>
         {
-            private sealed class Cache : Cache<UnaryOperator, UnaryOperator<T, R>>
+            private sealed class Operators : Cache<UnaryOperator, UnaryOperator<T, R>>
             {
-                internal static readonly Cache Instance = new Cache();
-                private Cache()
+                private static readonly Cache<UnaryOperator, UnaryOperator<T, R>> Instance = new Operators();
+                private Operators()
                 {
                 }
 
                 private protected override UnaryOperator<T, R> Create(UnaryOperator @operator) => UnaryOperator<T, R>.Reflect(@operator);
+
+                internal static new UnaryOperator<T, R> GetOrCreate(UnaryOperator @operator) => Instance.GetOrCreate(@operator);
             }
 
             /// <summary>
@@ -1092,7 +1431,7 @@ namespace MissingPieces.Reflection
             /// </summary>
             /// <param name="op">Unary operator type.</param>
             /// <returns>Unary operator.</returns>
-            public static UnaryOperator<T, R> Get(UnaryOperator op) => Cache.Instance.GetOrCreate(op);
+            public static UnaryOperator<T, R> Get(UnaryOperator op) => Operators.GetOrCreate(op);
 
             public static UnaryOperator<T, R> Require(UnaryOperator op) => Get(op) ?? throw MissingOperatorException.Create<T>(op);
         }
