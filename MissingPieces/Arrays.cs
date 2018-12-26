@@ -6,6 +6,22 @@ namespace MissingPieces
 {
 	public static class Arrays
 	{
+		public static T[] Insert<T>(this T[] array, T element, long index)
+		{
+			if(index < 0 || index > array.Length)
+				throw new IndexOutOfRangeException($"Invalid index {index}");
+			else if(array.LongLength == 0L)
+				return new[]{ element };
+			else 
+			{
+				var result = new T[array.LongLength + 1];
+				Array.Copy(array, 0, result, 0, Math.Min(index + 1, array.LongLength));
+				Array.Copy(array, index, result, index + 1, array.LongLength - index);
+				result[index] = element;
+				return result;
+			}
+		}
+
         public static O[] Map<I, O>(this I[] input, Func<I, O> mapper)
         {
             var output = New<O>(input.LongLength);

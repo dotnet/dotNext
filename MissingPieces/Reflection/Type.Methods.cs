@@ -5,6 +5,22 @@ namespace MissingPieces.Reflection
 {
     public static partial class Type<T>
     {
+        public static Reflection.Method<Function<A, R>> GetStaticMethod<A, R>(string methodName, bool nonPublic = false)
+            where A: struct
+            => Method.CustomStatic<Function<A, R>>(methodName, nonPublic);
+        
+        public static Reflection.Method<Function<A, R>> RequireStaticMethod<A, R>(string methodName, bool nonPublic = false)
+            where A: struct
+            => GetStaticMethod<A, R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, A, R>(methodName);
+
+        public static Reflection.Method<Function<T, A, R>> GetMethod<A, R>(string methodName, bool nonPublic = false)
+            where A: struct
+            => Method.Custom<Function<T, A, R>>(methodName, nonPublic);
+        
+        public static Reflection.Method<Function<T, A, R>> RequireMethod<A, R>(string methodName, bool nonPublic = false)
+            where A: struct
+            => GetMethod<A, R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, A, R>(methodName);
+
         /// <summary>
         /// Provides access to methods declared in type <typeparamref name="T"/>.
         /// </summary>

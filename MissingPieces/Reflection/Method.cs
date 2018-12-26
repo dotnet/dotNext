@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Reflection;
-using static System.Linq.Enumerable;
+using System.Linq;
 using static System.Linq.Expressions.Expression;
 
 namespace MissingPieces.Reflection
@@ -16,6 +16,11 @@ namespace MissingPieces.Reflection
     public sealed class Method<D> : MethodInfo, IMethod<D>, IEquatable<Method<D>>, IEquatable<MethodInfo>
         where D : Delegate
     {
+        private const BindingFlags StaticPublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags StaticNonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+        private const BindingFlags InstancePublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags InstanceNonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
         private readonly MethodInfo method;
         private readonly D invoker;
 
@@ -89,23 +94,58 @@ namespace MissingPieces.Reflection
 
         public override string ToString() => method.ToString();
 
-        private static Method<D> Reflect(Type declaringType, string methodName, bool nonPublic)
+        private static Method<D> ReflectStatic(Type declaringType, Type[] parameters, Type returnType, string methodName, bool nonPublic)
         {
-            const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
-            const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-
-            var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
             var targetMethod = declaringType.GetMethod(methodName,
-                nonPublic ? NonPublicFlags : PublicFlags,
+                nonPublic ? StaticNonPublicFlags : StaticPublicFlags,
                 Type.DefaultBinder,
                 parameters,
                 Array.Empty<ParameterModifier>());
-            if (targetMethod is null)
-                return null;
-            else if (returnType == targetMethod.ReturnType)
-                return new Method<D>(targetMethod, targetMethod.CreateDelegate<D>());
-            else
-                return null;
+            return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod, targetMethod.CreateDelegate<D>());
+        }
+
+        private static Method<D> ReflectStatic(Type declaringType, Type argumentsType, Type returnType, string methodName, bool nonPublic)
+        {
+            var (parameters, arglist, input) = Signature.Reflect(argumentsType);
+            var targetMethod = declaringType.GetMethod(methodName,
+                nonPublic ? StaticNonPublicFlags : StaticPublicFlags,
+                Type.DefaultBinder,
+                parameters,
+                Array.Empty<ParameterModifier>());
+            return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod, Lambda<D>(Call(null, targetMethod, arglist), input).Compile());
+        }
+
+        private static Method<D> ReflectInstance(Type thisParam, Type[] parameters, Type returnType, string methodName, bool nonPublic)
+        {
+            var thisParamDeclaration = Parameter(thisParam);
+            var parametersDeclaration = parameters.Map(Parameter);
+            //this parameter can be passed as REF so handle this situation
+            //first parameter should be passed by REF for structure types
+            var invokerFactory = thisParam.IsByRef ^ thisParam.IsValueType ?
+                method => Lambda<D>(Call(thisParamDeclaration, method, parametersDeclaration), parametersDeclaration.Insert(thisParamDeclaration, 0)).Compile() :
+                new Func<MethodInfo, D>(Delegates.CreateDelegate<D>);
+            
+            var targetMethod = thisParam.NonRefType().GetMethod(methodName,
+                nonPublic ? InstanceNonPublicFlags : InstancePublicFlags,
+                Type.DefaultBinder,
+                parameters, 
+                Array.Empty<ParameterModifier>());
+            
+            return targetMethod is null || returnType != targetMethod.ReturnType ?
+                    null :
+                    new Method<D>(targetMethod, invokerFactory(targetMethod));
+        }
+
+        private static Method<D> ReflectInstance(Type thisParam, Type argumentsType, Type returnType, string methodName, bool nonPublic)
+        {
+            var (parameters, arglist, input) = Signature.Reflect(argumentsType);
+            var thisParamDeclaration = Parameter(thisParam.MakeByRefType());
+            var targetMethod = thisParam.GetMethod(methodName,
+                nonPublic ? InstanceNonPublicFlags : InstancePublicFlags,
+                Type.DefaultBinder,
+                parameters, 
+                Array.Empty<ParameterModifier>());
+            return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod, Lambda<D>(Call(thisParamDeclaration, targetMethod, arglist), thisParamDeclaration, input).Compile());
         }
 
         /// <summary>
@@ -116,42 +156,17 @@ namespace MissingPieces.Reflection
         /// <returns></returns>
         internal static Method<D> Reflect(string methodName, bool nonPublic)
         {
-            if(typeof(D).IsAbstract)
+            var delegateType = typeof(D);
+            if(delegateType.IsAbstract)
                 throw Delegates.ExpectNonAbstract<D>();
-
-            const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
-            const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-
-            var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
-            var thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException("Delegate type should have THIS parameter");
-            var targetMethod = thisParam.NonRefType().GetMethod(methodName,
-                nonPublic ? NonPublicFlags : PublicFlags,
-                Type.DefaultBinder,
-                parameters.RemoveFirst(1),  //remove hidden this parameter
-                Array.Empty<ParameterModifier>());
-            if (targetMethod is null)
-                return null;
-            //this parameter can be passed as REF so handle this situation
-            //first parameter should be passed by REF for structure types
-            Func<MethodInfo, D> invokerFactory;
-            if (thisParam.IsByRef)
-            {
-                thisParam = thisParam.GetElementType();
-                var formalParams = parameters.Map(Parameter);
-                invokerFactory = thisParam.IsValueType ?
-                    new Func<MethodInfo, D>(Delegates.CreateDelegate<D>) :
-                    method => Lambda<D>(Call(formalParams[0], method, formalParams.RemoveFirst(1)), formalParams).Compile();
-            }
-            else if (thisParam.IsValueType)
-            {
-                var formalParams = parameters.Map(Parameter);
-                invokerFactory = method => Lambda<D>(Call(formalParams[0], targetMethod, formalParams.RemoveFirst(1)), formalParams).Compile();
-            }
+            else if(delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType) == 3L)
+                return ReflectInstance(thisParam, argumentsType, returnType, methodName, nonPublic);
             else
-                invokerFactory = Delegates.CreateDelegate<D>;
-            return returnType == targetMethod.ReturnType ?
-                    new Method<D>(targetMethod, invokerFactory(targetMethod)) :
-                    null;
+            {
+                Delegates.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType, out var parameters, out returnType);
+                thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException("Delegate type should have THIS parameter");
+                return ReflectInstance(thisParam, parameters.RemoveFirst(1), returnType, methodName, nonPublic);
+            }
         }
 
         /// <summary>
@@ -162,6 +177,17 @@ namespace MissingPieces.Reflection
         /// <typeparam name="T">Declaring type.</typeparam>
         /// <returns>Reflected static method.</returns>
         internal static Method<D> Reflect<T>(string methodName, bool nonPublic)
-            => typeof(D).IsAbstract ? throw Delegates.ExpectNonAbstract<D>() : Reflect(typeof(T), methodName, nonPublic);
+        {
+            var delegateType = typeof(D);
+            if(delegateType.IsAbstract)
+                throw Delegates.ExpectNonAbstract<D>();
+            else if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
+                return ReflectStatic(typeof(T), argumentsType, returnType, methodName, nonPublic);
+            else
+            {
+                Delegates.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType, out var parameters, out returnType);
+                return ReflectStatic(typeof(T), parameters, returnType, methodName, nonPublic);
+            }
+        }
     }
 }

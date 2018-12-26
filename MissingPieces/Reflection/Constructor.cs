@@ -130,21 +130,20 @@ namespace MissingPieces.Reflection
 
         public override int GetHashCode() => ctorOrDeclaringType.GetHashCode();
 
-        private static Constructor<D> ReflectSimple(bool nonPublic)
+        private static Constructor<D> Reflect(Type declaringType, Type[] parameters, bool nonPublic)
         {
-            var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType);
-            if (returnType.IsValueType)
-                return new Constructor<D>(returnType, parameters.Map(Expression.Parameter));
+            ;
+            if (declaringType.IsValueType)
+                return new Constructor<D>(declaringType, parameters.Map(Expression.Parameter));
             else
             {
-                var ctor = returnType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
+                var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
                 return ctor is null ? null : new Constructor<D>(ctor, parameters.Map(Expression.Parameter));
             }
         }
 
-        private static Constructor<D> ReflectSpecial(bool nonPublic)
+        private static Constructor<D> Reflect(Type declaringType, Type argumentsType, bool nonPublic)
         {
-            typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType);
             var (parameters, arglist, input) = Signature.Reflect(argumentsType);
             //handle value type
             if(declaringType.IsValueType)
@@ -157,11 +156,15 @@ namespace MissingPieces.Reflection
         internal static Constructor<D> Reflect(bool nonPublic)
         {
             var delegateType = typeof(D);
-            if(delegateType.IsGenericInstanceOf(typeof(Function<,>)))
-                return ReflectSpecial(nonPublic);
+            if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType) == 2L)
+                return Reflect(declaringType, argumentsType, nonPublic);
             else if(delegateType.IsAbstract)
                 throw Delegates.ExpectNonAbstract<D>();
-            return ReflectSimple(nonPublic);                
+            else 
+            {
+                var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType);
+                return Reflect(returnType, parameters, nonPublic);
+            }            
         }
 
         internal static Constructor<D> Reflect(ConstructorInfo ctor)

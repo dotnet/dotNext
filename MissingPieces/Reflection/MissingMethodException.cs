@@ -26,5 +26,9 @@ namespace MissingPieces.Reflection
             var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
             return new MissingMethodException(typeof(T), methodName, returnType, parameters);
         }
+
+        internal static MissingMethodException Create<T, A, R>(string methodName)
+			where A: struct
+			=> new MissingMethodException(typeof(T), methodName, typeof(R), Signature.Reflect(typeof(A)).Parameters);
 	}
 }

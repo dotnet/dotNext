@@ -36,13 +36,10 @@ namespace MissingPieces.Reflection
 
 			ByRefFunc<string, char, int> indexOf2 = Type<string>.Method.Custom<ByRefFunc<string, char, int>>(nameof(string.IndexOf));
 			NotNull(indexOf2);
-			result = indexOf("abca", 'c');
-			Equal(2, result);
+			Equal(2, indexOf("abca", 'c'));
 
 			Func<string, char, int, int> indexOf3 = Type<string>.Method<char, int>.Require<int>(nameof(string.IndexOf));
-			NotNull(indexOf3);
-			result = indexOf3("aba", 'b', 1);
-			Equal(1, result);
+			Equal(1, indexOf3("aba", 'b', 1));
 
 			ByRefAction<Point> zero = Type<Point>.Method.Custom<ByRefAction<Point>>(nameof(Point.Zero));
 			NotNull(zero);
@@ -50,14 +47,19 @@ namespace MissingPieces.Reflection
 			zero(point);
 			Equal(0, point.X);
 			Equal(0, point.Y);
+			
+			var indexOf4 = Type<string>.RequireMethod<(char, int), int>(nameof(string.IndexOf));
+			Equal(1, indexOf4.Invoke("aba", ('b', 1)));
 		}
 
 		[Fact]
 		public void StaticMethodTest()
 		{
 			Func<string, string, int> compare = Type<string>.Method<string, string>.RequireStatic<int>(nameof(string.Compare));
-			NotNull(compare);
 			True(compare("a", "b") < 0);
+
+			var compare2 = Type<string>.RequireStaticMethod<(string first, string second), int>(nameof(string.Compare));
+			True(compare2.Invoke((first: "a", second: "b")) < 0);
 		}
 
 		[Fact]

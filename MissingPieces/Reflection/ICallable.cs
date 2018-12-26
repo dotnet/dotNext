@@ -23,6 +23,16 @@ namespace MissingPieces.Reflection
             where A: struct
             => member.Invoker(in arguments);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static R Invoke<T, A, R>(this ICallable<Function<T, A, R>> member, in T @this, in A arguments)
+            where A: struct
+            => member.Invoker(in @this, in arguments);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static A ArgList<T, A, R>(this ICallable<Function<T, A, R>> member)
+            where A: struct
+            => new A();
+
         /// <summary>
         /// Allocates arguments list on the stack.
         /// </summary>
