@@ -222,8 +222,8 @@ namespace MissingPieces.Reflection
 		[Fact]
 		public void StaticFieldTest()
 		{
-			var structField = Type<Guid>.StaticField<Guid>.GetOrThrow(nameof(Guid.Empty));
-			var objField = Type<TextReader>.StaticField<TextReader>.GetOrThrow(nameof(TextReader.Null));
+			var structField = Type<Guid>.Field<Guid>.GetStatic(nameof(Guid.Empty));
+			var objField = Type<TextReader>.Field<TextReader>.GetStatic(nameof(TextReader.Null));
 			Same(TextReader.Null, objField.Value);
 		}
 	}
