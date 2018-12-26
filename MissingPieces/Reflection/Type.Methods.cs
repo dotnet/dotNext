@@ -35,11 +35,11 @@ namespace MissingPieces.Reflection
                     => Reflection.Method<D>.Reflect<T>(eventName, nonPublic);
             }
 
-            public static Reflection.Method<D> Get<D>(string methodName, bool nonPublic = false)
+            public static Reflection.Method<D> Custom<D>(string methodName, bool nonPublic = false)
                 where D: Delegate
                 => (nonPublic ? InstanceMethods<D>.NonPublic : InstanceMethods<D>.Public).GetOrCreate(methodName);
 
-            public static Reflection.Method<D> GetStatic<D>(string methodName, bool nonPublic = false)
+            public static Reflection.Method<D> CustomStatic<D>(string methodName, bool nonPublic = false)
                 where D: Delegate
                 => (nonPublic ? StaticMethods<D>.NonPublic : StaticMethods<D>.Public).GetOrCreate(methodName);
         }
@@ -51,25 +51,25 @@ namespace MissingPieces.Reflection
         public static class Method<P>
         {
             public static Reflection.Method<Action<T, P>> Get(string methodName, bool nonPublic = false)
-                => Method.Get<Action<T, P>>(methodName, nonPublic);
+                => Method.Custom<Action<T, P>>(methodName, nonPublic);
 
             public static Reflection.Method<Action<T, P>> Require(string methodName, bool nonPublic = false)
                 => Get(methodName, nonPublic) ?? throw MissingMethodException.CreateAction<T, P>(methodName);
 
             public static Reflection.Method<Action<P>> GetStatic(string methodName, bool nonPublic = false)
-                => Method.GetStatic<Action<P>>(methodName, nonPublic);
+                => Method.CustomStatic<Action<P>>(methodName, nonPublic);
 
             public static Reflection.Method<Action<P>> RequireStatic(string methodName, bool nonPublic = false)
                 => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.CreateAction<T, P>(methodName);
             
             public static Reflection.Method<Func<T, P, R>> Get<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<T, P, R>>(methodName, nonPublic);
+                => Method.Custom<Func<T, P, R>>(methodName, nonPublic);
 
             public static Reflection.Method<Func<T, P, R>> Require<R>(string methodName, bool nonPublic = false)
                 => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.CreateAction<T, P>(methodName);
 
             public static Reflection.Method<Func<P, R>> GetStatic<R>(string methodName, bool nonPublic = false)
-                => Method.GetStatic<Func<P, R>>(methodName, nonPublic);
+                => Method.CustomStatic<Func<P, R>>(methodName, nonPublic);
 
             public static Reflection.Method<Func<P, R>> RequireStatic<R>(string methodName, bool nonPublic = false)
                 => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.CreateAction<T, P>(methodName);

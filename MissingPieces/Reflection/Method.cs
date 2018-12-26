@@ -117,7 +117,7 @@ namespace MissingPieces.Reflection
         internal static Method<D> Reflect(string methodName, bool nonPublic)
         {
             if(typeof(D).IsAbstract)
-                return null;
+                throw Delegates.ExpectNonAbstract<D>();
 
             const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
             const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
@@ -162,6 +162,6 @@ namespace MissingPieces.Reflection
         /// <typeparam name="T">Declaring type.</typeparam>
         /// <returns>Reflected static method.</returns>
         internal static Method<D> Reflect<T>(string methodName, bool nonPublic)
-            => typeof(D).IsAbstract ? null : Reflect(typeof(T), methodName, nonPublic);
+            => typeof(D).IsAbstract ? throw Delegates.ExpectNonAbstract<D>() : Reflect(typeof(T), methodName, nonPublic);
     }
 }
