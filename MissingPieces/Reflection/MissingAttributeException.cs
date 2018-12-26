@@ -7,7 +7,7 @@ namespace MissingPieces.Reflection
 	/// </summary>
 	public sealed class MissingAttributeException : ConstraintViolationException
 	{
-		private MissingAttributeException(Type target, Type attributeType)
+		public MissingAttributeException(Type target, Type attributeType)
 			: base(target, $"Attribute {attributeType.FullName} is not defined for type {target.FullName}")
 		{
 			AttributeType = attributeType;

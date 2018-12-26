@@ -15,6 +15,13 @@ namespace MissingPieces.Reflection
             where A: struct
             => Constructor.Custom<Function<A, T>>(nonPublic);
 
+        /// <summary>
+        /// Reflects constructor as function.
+        /// </summary>
+        /// <param name="nonPublic">True to reflect non-public constructor.</param>
+        /// <typeparam name="A">A structure describing constructor signature.</typeparam>
+        /// <returns>Constructor for type <typeparamref name="T"/></returns>
+        /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
         public static Reflection.Constructor<Function<A, T>> RequireConstructor<A>(bool nonPublic = false)
             where A: struct
             => GetConstructor<A>(nonPublic) ?? throw MissingConstructorException.Create<T, A>();

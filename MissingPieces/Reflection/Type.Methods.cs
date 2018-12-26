@@ -42,6 +42,30 @@ namespace MissingPieces.Reflection
             public static Reflection.Method<D> CustomStatic<D>(string methodName, bool nonPublic = false)
                 where D: Delegate
                 => (nonPublic ? StaticMethods<D>.NonPublic : StaticMethods<D>.Public).GetOrCreate(methodName);
+            
+            public static Reflection.Method<Action<T>> Get(string methodName, bool nonPublic = false)
+                => Custom<Action<T>>(methodName, nonPublic);
+
+            public static Reflection.Method<Action<T>> Require(string methodName, bool nonPublic = false)
+                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action>(methodName);
+            
+            public static Reflection.Method<Action> GetStatic(string methodName, bool nonPublic = false)
+                => CustomStatic<Action>(methodName, nonPublic);
+
+            public static Reflection.Method<Action> RequireStatic(string methodName, bool nonPublic = false)
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action>(methodName);
+
+            public static Reflection.Method<Func<T, R>> Get<R>(string methodName, bool nonPublic = false)
+                => Custom<Func<T, R>>(methodName, nonPublic);
+
+            public static Reflection.Method<Func<T, R>> Require<R>(string methodName, bool nonPublic = false)
+                => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<R>>(methodName);
+            
+            public static Reflection.Method<Func<R>> GetStatic<R>(string methodName, bool nonPublic = false)
+                => CustomStatic<Func<R>>(methodName, nonPublic);
+
+            public static Reflection.Method<Func<R>> RequireStatic<R>(string methodName, bool nonPublic = false)
+                => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<R>>(methodName);
         }
         
         /// <summary>
@@ -54,25 +78,25 @@ namespace MissingPieces.Reflection
                 => Method.Custom<Action<T, P>>(methodName, nonPublic);
 
             public static Reflection.Method<Action<T, P>> Require(string methodName, bool nonPublic = false)
-                => Get(methodName, nonPublic) ?? throw MissingMethodException.CreateAction<T, P>(methodName);
+                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P>>(methodName);
 
             public static Reflection.Method<Action<P>> GetStatic(string methodName, bool nonPublic = false)
                 => Method.CustomStatic<Action<P>>(methodName, nonPublic);
 
             public static Reflection.Method<Action<P>> RequireStatic(string methodName, bool nonPublic = false)
-                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.CreateAction<T, P>(methodName);
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P>>( methodName);
             
             public static Reflection.Method<Func<T, P, R>> Get<R>(string methodName, bool nonPublic = false)
                 => Method.Custom<Func<T, P, R>>(methodName, nonPublic);
 
             public static Reflection.Method<Func<T, P, R>> Require<R>(string methodName, bool nonPublic = false)
-                => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.CreateAction<T, P>(methodName);
+                => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P>>(methodName);
 
             public static Reflection.Method<Func<P, R>> GetStatic<R>(string methodName, bool nonPublic = false)
                 => Method.CustomStatic<Func<P, R>>(methodName, nonPublic);
 
             public static Reflection.Method<Func<P, R>> RequireStatic<R>(string methodName, bool nonPublic = false)
-                => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.CreateAction<T, P>(methodName);
+                => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P>>(methodName);
         }
     }
 }
