@@ -219,12 +219,34 @@ namespace MissingPieces.Reflection
 			Null(StaticEvent);
 		}
 
+		private static long Field;
+
 		[Fact]
 		public void StaticFieldTest()
 		{
-			var structField = Type<Guid>.Field<Guid>.GetStatic(nameof(Guid.Empty));
-			var objField = Type<TextReader>.Field<TextReader>.GetStatic(nameof(TextReader.Null));
-			Same(TextReader.Null, objField.Value);
+			Func<Guid> structField = Type<Guid>.Field<Guid>.RequireStatic(nameof(Guid.Empty));
+			Guid.Empty.Equals(structField());
+			Func<TextReader> objField = Type<TextReader>.Field<TextReader>.RequireStatic(nameof(TextReader.Null));
+			Same(TextReader.Null, objField());
+			var statField = Type<TypeTests>.Field<long>.RequireStatic(nameof(Field), true);
+			statField.Value = 42L;
+			Equal(Field, statField.Value);
+		}
+
+		[Fact]
+		public void InstanceFieldTest()
+		{
+			var s = new StructWithProperties();
+			var structField = Type<StructWithProperties>.Field<int>.Require("value", true);
+			structField[s] = 42;
+			Equal(42, s.ReadOnlyProp);
+			Equal(42, structField[s]);
+
+			var obj = new ClassWithProperties();
+			var classField = Type<ClassWithProperties>.Field<int>.Require("value", true);
+			classField[obj] = 42;
+			Equal(42, obj.ReadOnlyProp);
+			Equal(42, classField[obj]);
 		}
 	}
 }

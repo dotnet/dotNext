@@ -137,7 +137,7 @@ namespace MissingPieces.Reflection
             var instanceParam = Parameter(field.DeclaringType.MakeByRefType());
             var valueParam = Parameter(field.FieldType);
             getter = Lambda<Getter>(Field(instanceParam, field), instanceParam).Compile();
-            setter = Lambda<Setter>(Assign(Field(instanceParam, field), valueParam), instanceParam, valueParam).Compile();
+            setter = field.IsInitOnly ? null : Lambda<Setter>(Assign(Field(instanceParam, field), valueParam), instanceParam, valueParam).Compile();
         }
 
         public static implicit operator Getter(Field<T, V> field) => field?.getter;
@@ -158,7 +158,9 @@ namespace MissingPieces.Reflection
         }
         public override bool SetValue(object obj, V value)
         {
-            if(obj is T instance)
+            if(IsInitOnly)
+                return false;
+            else if(obj is T instance)
             {
                 this[instance] = value;
                 return true;
@@ -172,7 +174,9 @@ namespace MissingPieces.Reflection
 
         public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
         {
-            if(!(obj is T))
+            if(IsInitOnly)
+                new InvalidOperationException($"Field {Name} is read-only");
+            else if(!(obj is T))
                 throw new ArgumentException($"Object {obj} must be of type {typeof(T)}");
             else if(value is null)
                 this[(T)obj] = FieldType.IsValueType ? throw new ArgumentException("Field value cannot be null") : default(V);
@@ -191,7 +195,13 @@ namespace MissingPieces.Reflection
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => getter(in @this);
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => setter(in @this, value);
+            set
+            {
+                if(setter is null)
+                    new InvalidOperationException($"Field {Name} is read-only");
+                else
+                    setter(@this, value);
+            }
         }
 
         internal static Field<T, V> Reflect(string fieldName, bool nonPublic)
@@ -218,7 +228,7 @@ namespace MissingPieces.Reflection
         {
             var valueParam = Parameter(field.FieldType);
             getter = Lambda<Func<V>>(Field(null, field)).Compile();
-            setter = Lambda<Action<V>>(Assign(Field(null, field), valueParam), valueParam).Compile();
+            setter = field.IsInitOnly ? null : Lambda<Action<V>>(Assign(Field(null, field), valueParam), valueParam).Compile();
         }
 
         public static implicit operator Func<V>(Field<V> field) => field?.getter;
@@ -239,7 +249,9 @@ namespace MissingPieces.Reflection
         }
         public override bool SetValue(object obj, V value)
         {
-            if(obj is null)
+            if(IsInitOnly)
+                return false;
+            else if(obj is null)
             {
                 Value = value;
                 return true;
@@ -252,7 +264,9 @@ namespace MissingPieces.Reflection
 
         public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
         {
-            if(value is null)
+            if(IsInitOnly)
+                throw new InvalidOperationException($"Field {Name} is read-only");
+            else if(value is null)
                 Value = FieldType.IsValueType ? throw new ArgumentException("Field value cannot be null") : default(V);
             else if(!(value is V))
                 throw new ArgumentException($"Value {value} must be of type {typeof(V)}");
@@ -268,7 +282,13 @@ namespace MissingPieces.Reflection
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => getter();
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => setter(value);
+            set
+            {
+                if(setter is null)
+                    throw new InvalidOperationException($"Field {Name} is read-only");
+                else
+                    setter(value);
+            }
         }
 
         internal static Field<V> Reflect<T>(string fieldName, bool nonPublic)
