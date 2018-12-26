@@ -139,7 +139,7 @@ namespace MissingPieces.Reflection
                 thisParam = thisParam.GetElementType();
                 var formalParams = parameters.Map(Parameter);
                 invokerFactory = thisParam.IsValueType ?
-                    new Func<MethodInfo, D>(targetMethod.CreateDelegate<D>) :
+                    new Func<MethodInfo, D>(Delegates.CreateDelegate<D>) :
                     method => Lambda<D>(Call(formalParams[0], method, formalParams.RemoveFirst(1)), formalParams).Compile();
             }
             else if (thisParam.IsValueType)
@@ -148,7 +148,7 @@ namespace MissingPieces.Reflection
                 invokerFactory = method => Lambda<D>(Call(formalParams[0], targetMethod, formalParams.RemoveFirst(1)), formalParams).Compile();
             }
             else
-                invokerFactory = targetMethod.CreateDelegate<D>;
+                invokerFactory = Delegates.CreateDelegate<D>;
             return returnType == targetMethod.ReturnType ?
                     new Method<D>(targetMethod, invokerFactory(targetMethod)) :
                     null;

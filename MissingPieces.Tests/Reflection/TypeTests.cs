@@ -21,44 +21,44 @@ namespace MissingPieces.Reflection
 
 		private delegate R ByRefFunc<T1, T2, R>(in T1 value, T2 arg);
 
-		// [Fact]
-		// public void NonExistentMethodTest()
-		// {
-		// 	Throws<MissingMethodException>(() => Type<string>.Method.Instance<StringComparer>.Get<char>(nameof(string.IndexOf)));
-		// }
+		[Fact]
+		public void NonExistentMethodTest()
+		{
+			Throws<MissingMethodException>(() => Type<string>.Method<StringComparer>.Require(nameof(string.IndexOf)));
+		}
 
-		// [Fact]
-		// public void InstanceMethodTest()
-		// {
-		// 	Func<string, char, int> indexOf = Type<string>.Method.Instance<int>.Get<char>(nameof(string.IndexOf));
-		// 	var result = indexOf("aba", 'b');
-		// 	Equal(1, result);
+		[Fact]
+		public void InstanceMethodTest()
+		{
+			Func<string, char, int> indexOf = Type<string>.Method<char>.Require<int>(nameof(string.IndexOf));
+			var result = indexOf("aba", 'b');
+			Equal(1, result);
 
-		// 	ByRefFunc<string, char, int> indexOf2 = Type<string>.Method<ByRefFunc<string, char, int>>.Instance.GetOrNull(nameof(string.IndexOf));
-		// 	result = indexOf("abca", 'c');
-		// 	Equal(2, result);
+			ByRefFunc<string, char, int> indexOf2 = Type<string>.Method.Custom<ByRefFunc<string, char, int>>(nameof(string.IndexOf));
+			NotNull(indexOf2);
+			result = indexOf("abca", 'c');
+			Equal(2, result);
 
-		// 	Func<string, char, int, int> indexOf3 = Type<string>.Method.Instance<int>.Get<char, int>(nameof(string.IndexOf));
-		// 	NotNull(indexOf3);
-		// 	result = indexOf3("aba", 'b', 1);
-		// 	Equal(1, result);
+			Func<string, char, int, int> indexOf3 = Type<string>.Method<char, int>.Require<int>(nameof(string.IndexOf));
+			NotNull(indexOf3);
+			result = indexOf3("aba", 'b', 1);
+			Equal(1, result);
 
-		// 	Null(Type<Point>.Method<Action<Point>>.Instance.GetOrNull(nameof(Point.Zero)));
-		// 	ByRefAction<Point> zero = Type<Point>.Method<ByRefAction<Point>>.Instance.GetOrNull(nameof(Point.Zero));
-		// 	NotNull(zero);
-		// 	var point = new Point() { X = 10, Y = 20 };
-		// 	zero(point);
-		// 	Equal(0, point.X);
-		// 	Equal(0, point.Y);
-		// }
+			ByRefAction<Point> zero = Type<Point>.Method.Custom<ByRefAction<Point>>(nameof(Point.Zero));
+			NotNull(zero);
+			var point = new Point() { X = 10, Y = 20 };
+			zero(point);
+			Equal(0, point.X);
+			Equal(0, point.Y);
+		}
 
-		// [Fact]
-		// public void StaticMethodTest()
-		// {
-		// 	Func<string, string, int> compare = Type<string>.Method.Static<int>.Get<string, string>(nameof(string.Compare));
-		// 	NotNull(compare);
-		// 	True(compare("a", "b") < 0);
-		// }
+		[Fact]
+		public void StaticMethodTest()
+		{
+			Func<string, string, int> compare = Type<string>.Method<string, string>.RequireStatic<int>(nameof(string.Compare));
+			NotNull(compare);
+			True(compare("a", "b") < 0);
+		}
 
 		[Fact]
 		public void ConstructorTests()

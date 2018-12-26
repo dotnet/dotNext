@@ -98,5 +98,37 @@ namespace MissingPieces.Reflection
             public static Reflection.Method<Func<P, R>> RequireStatic<R>(string methodName, bool nonPublic = false)
                 => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P>>(methodName);
         }
+
+        /// <summary>
+        /// Provides access to methods with single parameter declared in type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="P1">Type of first method parameter.</typeparam>
+        /// <typeparam name="P2">Type of first method parameter.</typeparam>
+        public static class Method<P1, P2>
+        {
+            public static Reflection.Method<Action<T, P1, P2>> Get(string methodName, bool nonPublic = false)
+                => Method.Custom<Action<T, P1, P2>>(methodName, nonPublic);
+
+            public static Reflection.Method<Action<T, P1, P2>> Require(string methodName, bool nonPublic = false)
+                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2>>(methodName);
+
+            public static Reflection.Method<Action<P1, P2>> GetStatic(string methodName, bool nonPublic = false)
+                => Method.CustomStatic<Action<P1, P2>>(methodName, nonPublic);
+
+            public static Reflection.Method<Action<P1, P2>> RequireStatic(string methodName, bool nonPublic = false)
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2>>( methodName);
+            
+            public static Reflection.Method<Func<T, P1, P2, R>> Get<R>(string methodName, bool nonPublic = false)
+                => Method.Custom<Func<T, P1, P2, R>>(methodName, nonPublic);
+
+            public static Reflection.Method<Func<T, P1, P2, R>> Require<R>(string methodName, bool nonPublic = false)
+                => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2>>(methodName);
+
+            public static Reflection.Method<Func<P1, P2, R>> GetStatic<R>(string methodName, bool nonPublic = false)
+                => Method.CustomStatic<Func<P1, P2, R>>(methodName, nonPublic);
+
+            public static Reflection.Method<Func<P1, P2, R>> RequireStatic<R>(string methodName, bool nonPublic = false)
+                => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2>>(methodName);
+        }
     }
 }
