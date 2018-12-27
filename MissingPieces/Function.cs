@@ -1,4 +1,4 @@
-namespace MissingPieces.Reflection
+namespace MissingPieces
 {
     /// <summary>
     /// Represents a static function with arbitrary number of arguments

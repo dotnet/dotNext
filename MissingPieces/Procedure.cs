@@ -1,4 +1,4 @@
-﻿namespace MissingPieces.Reflection
+﻿namespace MissingPieces
 {
 	/// <summary>
 	/// Represents a static procedure with arbitrary number of arguments
