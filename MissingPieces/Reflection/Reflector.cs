@@ -26,7 +26,7 @@ namespace MissingPieces.Reflection
             {
             }
 
-            private protected override Constructor<D> Create(ConstructorInfo ctor) => Constructor<D>.Reflect(ctor);
+            private protected override Constructor<D> Create(ConstructorInfo ctor) => Constructor<D>.Unreflect(ctor);
 
             internal new static Constructor<D> GetOrCreate(ConstructorInfo ctor) => Instance.GetOrCreate(ctor);
         }
@@ -41,7 +41,7 @@ namespace MissingPieces.Reflection
             {
             }
 
-            private protected override Method<D> Create(MethodInfo method) => Method<D>.Reflect(method);
+            private protected override Method<D> Create(MethodInfo method) => Method<D>.Unreflect(method);
 
             internal new static Method<D> GetOrCreate(MethodInfo method) => Instance.GetOrCreate(method);
         }

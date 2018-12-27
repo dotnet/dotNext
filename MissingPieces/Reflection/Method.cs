@@ -203,7 +203,7 @@ namespace MissingPieces.Reflection
 			}
         }
 
-        private static Method<D> ReflectStatic(MethodInfo method)
+        private static Method<D> UnreflectStatic(MethodInfo method)
         {
             var delegateType = typeof(D);
             if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
@@ -217,7 +217,7 @@ namespace MissingPieces.Reflection
                 return null;
         }
 
-        private static Method<D> ReflectInstance(MethodInfo method)
+        private static Method<D> UnreflectInstance(MethodInfo method)
         {
             var delegateType = typeof(D);
             if(delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType) == 3L)
@@ -236,7 +236,7 @@ namespace MissingPieces.Reflection
             }
         }
 
-        internal static Method<D> Reflect(MethodInfo method)
+        internal static Method<D> Unreflect(MethodInfo method)
         {
             var delegateType = typeof(D);
 			if (delegateType.IsAbstract)
@@ -246,9 +246,9 @@ namespace MissingPieces.Reflection
 			else if (method.IsGenericMethodDefinition || method.IsAbstract || method.IsConstructor)
 				return null;
 			else if (method.IsStatic)
-				return ReflectStatic(method);
+				return UnreflectStatic(method);
 			else
-				return ReflectInstance(method);
+				return UnreflectInstance(method);
         }
     }
 }

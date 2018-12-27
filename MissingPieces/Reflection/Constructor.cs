@@ -162,7 +162,7 @@ namespace MissingPieces.Reflection
 			}            
         }
 
-        internal static Constructor<D> Reflect(ConstructorInfo ctor)
+        internal static Constructor<D> Unreflect(ConstructorInfo ctor)
         {
             var delegateType = typeof(D);
 			if (delegateType.IsAbstract)
