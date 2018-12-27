@@ -174,6 +174,8 @@ namespace MissingPieces.Reflection
 				throw new AbstractDelegateException<D>();
 			else if (delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType) == 3L)
 				return ReflectInstance(thisParam, argumentsType, returnType, methodName, nonPublic);
+            else if(delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
+                return ReflectInstance(thisParam, argumentsType, typeof(void), methodName, nonPublic);
 			else
 			{
 				Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
@@ -196,6 +198,8 @@ namespace MissingPieces.Reflection
 				throw new AbstractDelegateException<D>();
 			else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
 				return ReflectStatic(typeof(T), argumentsType, returnType, methodName, nonPublic);
+            else if(delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
+                return ReflectStatic(typeof(T), delegateType.GetGenericArguments()[0], typeof(void), methodName, nonPublic);
 			else
 			{
 				Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
@@ -211,6 +215,12 @@ namespace MissingPieces.Reflection
                 var (parameters, arglist, input) = Signature.Reflect(argumentsType);
                 return returnType == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, arglist, new[]{ input }) : null;
             }
+            else if(delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
+            {
+                argumentsType = delegateType.GetGenericArguments()[0];
+                var (parameters, arglist, input) = Signature.Reflect(argumentsType);
+                return typeof(void) == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, arglist, new[]{ input }) : null; 
+            }
             else if(Delegates.GetInvokeMethod<D>().SignatureEquals(method))
                 return new Method<D>(method);
             else
@@ -224,6 +234,11 @@ namespace MissingPieces.Reflection
             {
                 var (parameters, arglist, input) = Signature.Reflect(argumentsType);
                 return returnType == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, Expression.Parameter(thisParam.MakeByRefType(), "this"), arglist, new[]{ input }) : null;
+            }
+            else if(delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
+            {
+                var (parameters, arglist, input) = Signature.Reflect(argumentsType);
+                return typeof(void) == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, Expression.Parameter(thisParam.MakeByRefType(), "this"), arglist, new[]{ input }) : null;
             }
             else
             {
