@@ -14,7 +14,7 @@ namespace MissingPieces.VariantType
         where T1: class
         where T2: class
     {
-        internal readonly object value;
+        private readonly object value;
 
         private Variant(object value) => this.value = value;
 
@@ -68,11 +68,9 @@ namespace MissingPieces.VariantType
         public Variant<T2, T1> Permute() => new Variant<T2, T1>(value);
 
         public static implicit operator Variant<T1, T2>(T1 value) => new Variant<T1, T2>(value);
-        
         public static explicit operator T1(Variant<T1, T2> var) => var.value as T1;
 
         public static implicit operator Variant<T1, T2>(T2 value) => new Variant<T1, T2>(value);
-        
         public static explicit operator T2(Variant<T1, T2> var) => var.value as T2;
 
 		public bool Equals(Variant<T1, T2> other) => Equals(value, other.value);
@@ -98,7 +96,6 @@ namespace MissingPieces.VariantType
         {
             switch(other)
             {
-                case Variant<T1, T2> variant: return Equals(variant);
                 case IVariant variant: return Equals(value, variant.Value);
                 default: return Equals(value, other);
             }
@@ -127,12 +124,18 @@ namespace MissingPieces.VariantType
 		public Variant(T3 value)
 			=> this.value = value;
 
-		public Variant(Variant<T1, T2> value) => this.value = value.value;
+		private Variant(IVariant other) => value = other.Value;
 
 		/// <summary>
 		/// Indicates that this container holds null value.
 		/// </summary>
 		public bool IsNull => value is null;
+
+		/// <summary>
+		/// Change order of type parameters.
+		/// </summary>
+		/// <returns>A copy of variant value with changed order of type parameters.</returns>
+		public Variant<T3, T1, T2> Permute() => new Variant<T3, T1, T2>(value);
 
 		object IVariant.Value => value;
 
@@ -143,6 +146,43 @@ namespace MissingPieces.VariantType
 		public bool Equals(T2 other) => Equals(value, other);
 
 		public bool Equals(T3 other) => Equals(value, other);
+
+		public static bool operator ==(Variant<T1, T2, T3> first, T1 second) => first.Equals(second);
+		public static bool operator !=(Variant<T1, T2, T3> first, T1 second) => !first.Equals(second);
+
+		public static bool operator ==(Variant<T1, T2, T3> first, T2 second) => first.Equals(second);
+		public static bool operator !=(Variant<T1, T2, T3> first, T2 second) => !first.Equals(second);
+
+		public static bool operator ==(Variant<T1, T2, T3> first, T3 second) => first.Equals(second);
+		public static bool operator !=(Variant<T1, T2, T3> first, T3 second) => !first.Equals(second);
+
+		public static bool operator ==(Variant<T1, T2, T3> first, Variant<T1, T2, T3> second) => first.Equals(second);
+		public static bool operator !=(Variant<T1, T2, T3> first, Variant<T1, T2, T3> second) => !first.Equals(second);
+
+		public static implicit operator Variant<T1, T2, T3>(T1 value) => new Variant<T1, T2, T3>(value);
+		public static explicit operator T1(Variant<T1, T2, T3> var) => var.value as T1;
+
+		public static implicit operator Variant<T1, T2, T3>(T2 value) => new Variant<T1, T2, T3>(value);
+		public static explicit operator T2(Variant<T1, T2, T3> var) => var.value as T2;
+
+		public static implicit operator Variant<T1, T2, T3>(T3 value) => new Variant<T1, T2, T3>(value);
+		public static explicit operator T3(Variant<T1, T2, T3> var) => var.value as T3;
+
+		public static explicit operator Variant<T1, T2, T3>(Variant<T1, T2> variant)
+			=> new Variant<T1, T2, T3>(variant);
+
+		public override string ToString() => value?.ToString() ?? "";
+
+		public override int GetHashCode() => value is null ? 0 : value.GetHashCode();
+
+		public override bool Equals(object other)
+		{
+			switch (other)
+			{
+				case IVariant variant: return Equals(value, variant.Value);
+				default: return Equals(value, other);
+			}
+		}
 
 		DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
 			=> new VariantImmutableMetaObject(parameter, this);

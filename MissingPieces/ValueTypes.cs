@@ -1,12 +1,44 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace MissingPieces
 {
-    public static class  ValueTypes
+	/// <summary>
+	/// Various extensions for value types.
+	/// </summary>
+    public static class ValueTypes
     {
-        /// <summary>
+		public static unsafe int BitwiseHashCode<T>(this T value, int intialHash, Func<int, int, int> hashFunction)
+			where T : struct
+		{
+			var pointer = new IntPtr(AsPointer(ref value));
+			for (var size = SizeOf<T>(); size > 0;)
+				if(size > sizeof(int))
+				{
+					intialHash = hashFunction(intialHash, pointer.Read<int>());
+					size -= sizeof(int);
+				}
+				else
+				{
+					intialHash = hashFunction(intialHash, pointer.Read<byte>());
+					size -= sizeof(byte);
+				}
+			return intialHash;
+		}
+
+		/// <summary>
+		/// Computes hash code for the structure content.
+		/// </summary>
+		/// <typeparam name="T">Stucture type.</typeparam>
+		/// <param name="value"></param>
+		/// <returns>Content hash code.</returns>
+		public static int BitwiseHashCode<T>(this T value)
+			where T : struct
+			=> BitwiseHashCode(value, 1474027755, (hash, word) => hash * -1521134295 + word);
+
+		/// <summary>
 		/// Computes bitwise equality between two value types.
 		/// </summary>
 		/// <param name="first">The first structure to compare.</param>
