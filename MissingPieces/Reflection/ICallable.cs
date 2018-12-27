@@ -18,6 +18,8 @@ namespace MissingPieces.Reflection
 
     public static class Callable
     {
+		private static readonly ValueTuple EmptyTuple = new ValueTuple();
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static R Invoke<A, R>(this ICallable<Function<A, R>> member, in A arguments)
             where A: struct
@@ -28,7 +30,15 @@ namespace MissingPieces.Reflection
             where A: struct
             => member.Invoker(in @this, in arguments);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static R Invoke<T, R>(this ICallable<Function<T, ValueTuple, R>> member, in T @this)
+			=> member.Invoke(in @this, in EmptyTuple);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static R Invoke<R>(this ICallable<Function<ValueTuple, R>> member)
+			=> member.Invoke(in EmptyTuple);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static A ArgList<T, A, R>(this ICallable<Function<T, A, R>> member)
             where A: struct
             => new A();

@@ -6,8 +6,6 @@ using System.Reflection;
 
 namespace MissingPieces.Reflection
 {
-    using VariantType;
-
     /// <summary>
     /// Provides constructor definition based on delegate signature.
     /// </summary>
@@ -153,38 +151,38 @@ namespace MissingPieces.Reflection
         internal static Constructor<D> Reflect(bool nonPublic)
         {
             var delegateType = typeof(D);
-            if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType) == 2L)
-                return Reflect(declaringType, argumentsType, nonPublic);
-            else if(delegateType.IsAbstract)
-                throw Delegates.ExpectNonAbstract<D>();
-            else 
-            {
-                var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType);
-                return Reflect(returnType, parameters, nonPublic);
-            }            
+			if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType) == 2L)
+				return Reflect(declaringType, argumentsType, nonPublic);
+			else if (delegateType.IsAbstract)
+				throw new AbstractDelegateException<D>();
+			else
+			{
+				var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType);
+				return Reflect(returnType, parameters, nonPublic);
+			}            
         }
 
         internal static Constructor<D> Reflect(ConstructorInfo ctor)
         {
             var delegateType = typeof(D);
-            if(delegateType.IsAbstract)
-                throw Delegates.ExpectNonAbstract<D>();
-            else if(ctor is Constructor<D> existing)
-                return existing;
-            else if(ctor.IsGenericMethodDefinition || ctor.IsAbstract)
-                return null;
-            else if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
-            {
-                var (parameters, arglist, input) = Signature.Reflect(argumentsType);
-                return returnType.IsAssignableFrom(ctor.DeclaringType) && ctor.SignatureEquals(parameters) ? new Constructor<D>(ctor, arglist, new[]{ input }) : null;
-            }
-            else 
-            {
-                var invokeMethod = Delegates.GetInvokeMethod<D>();
-                return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
-                    new Constructor<D>(ctor, ctor.GetParameterTypes().Map(Expression.Parameter)) :
-                    null;
-            }
+			if (delegateType.IsAbstract)
+				throw new AbstractDelegateException<D>();
+			else if (ctor is Constructor<D> existing)
+				return existing;
+			else if (ctor.IsGenericMethodDefinition || ctor.IsAbstract)
+				return null;
+			else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
+			{
+				var (parameters, arglist, input) = Signature.Reflect(argumentsType);
+				return returnType.IsAssignableFrom(ctor.DeclaringType) && ctor.SignatureEquals(parameters) ? new Constructor<D>(ctor, arglist, new[] { input }) : null;
+			}
+			else
+			{
+				var invokeMethod = Delegates.GetInvokeMethod<D>();
+				return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
+					new Constructor<D>(ctor, ctor.GetParameterTypes().Map(Expression.Parameter)) :
+					null;
+			}
         }
     }
 }

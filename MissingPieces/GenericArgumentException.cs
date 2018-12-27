@@ -14,4 +14,12 @@ namespace MissingPieces
         public static GenericArgumentException Create<T>(string message)
             => new GenericArgumentException(typeof(T), message);
     }
+
+	public class GenericArgumentException<G>: GenericArgumentException
+	{
+		public GenericArgumentException(string message)
+			: base(typeof(G), message)
+		{
+		}
+	}
 }

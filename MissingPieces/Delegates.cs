@@ -7,10 +7,6 @@ namespace MissingPieces
 {
 	public static class Delegates
 	{
-		internal static GenericArgumentException ExpectNonAbstract<D>()
-			where D: Delegate
-			=> GenericArgumentException.Create<D>("Delegate type should not be abstract");
-
 		public static Task InvokeAsync<E>(this EventHandler<E> handler, object sender, E args, bool parallel = true)
 		{
 			if (handler == null)
