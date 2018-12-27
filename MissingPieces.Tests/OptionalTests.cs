@@ -66,13 +66,13 @@ namespace MissingPieces
 			Equal(10, (int)intOptional);
 			Equal(10, intOptional.Or(20));
 			Equal(10, intOptional.Value);
-			True(Nullable.Equals(10, intOptional.GetOrNull()));
+			True(Nullable.Equals(10, intOptional.OrNull()));
 			Equal(typeof(int), Optional.GetUnderlyingType(intOptional.GetType()));
 
 			intOptional = default(int?).ToOptional();
 			False(intOptional.IsPresent);
 			Equal(20, intOptional.Or(20));
-			True(Nullable.Equals(null, intOptional.GetOrNull()));
+			True(Nullable.Equals(null, intOptional.OrNull()));
 			Equal(30, intOptional.Coalesce(new int?(30).ToOptional()).Value);
 			Equal(40, (intOptional | new int?(40).ToOptional()).Value);
 			Throws<InvalidOperationException>(() => intOptional.Value);

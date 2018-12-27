@@ -54,7 +54,7 @@ namespace MissingPieces
 		/// <typeparam name="T">Value type.</typeparam>
 		/// <param name="value">Optional value.</param>
 		/// <returns>Nullable value.</returns>
-		public static T? GetOrNull<T>(this in Optional<T> value)
+		public static T? OrNull<T>(this in Optional<T> value)
 			where T : struct
 			=> value.IsPresent ? new T?(value.Value) : null;
 
@@ -169,7 +169,7 @@ namespace MissingPieces
 		/// <summary>
 		/// Represents optional container without value.
 		/// </summary>
-		public static Optional<T> Empty => default;
+		public static Optional<T> Empty = default;
 
 		/// <summary>
 		/// Indicates whether the value is present.
