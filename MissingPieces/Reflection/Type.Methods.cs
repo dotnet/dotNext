@@ -27,7 +27,7 @@ namespace MissingPieces.Reflection
         public static class Method
         {
             private sealed class InstanceMethods<D> : MemberCache<MethodInfo, Reflection.Method<D>>
-                where D: Delegate
+                where D: MulticastDelegate
             {
                 internal static readonly InstanceMethods<D> Public = new InstanceMethods<D>(false);
                 internal static readonly InstanceMethods<D> NonPublic = new InstanceMethods<D>(true);
@@ -40,7 +40,7 @@ namespace MissingPieces.Reflection
             }
 
             private sealed class StaticMethods<D> : MemberCache<MethodInfo, Reflection.Method<D>>
-                where D: Delegate
+                where D: MulticastDelegate
             {
                 internal static readonly StaticMethods<D> Public = new StaticMethods<D>(false);
                 internal static readonly StaticMethods<D> NonPublic = new StaticMethods<D>(true);
@@ -52,11 +52,11 @@ namespace MissingPieces.Reflection
             }
 
             public static Reflection.Method<D> Custom<D>(string methodName, bool nonPublic = false)
-                where D: Delegate
+                where D: MulticastDelegate
                 => (nonPublic ? InstanceMethods<D>.NonPublic : InstanceMethods<D>.Public).GetOrCreate(methodName);
 
             public static Reflection.Method<D> CustomStatic<D>(string methodName, bool nonPublic = false)
-                where D: Delegate
+                where D: MulticastDelegate
                 => (nonPublic ? StaticMethods<D>.NonPublic : StaticMethods<D>.Public).GetOrCreate(methodName);
             
             public static Reflection.Method<Action<T>> Get(string methodName, bool nonPublic = false)

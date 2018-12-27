@@ -85,16 +85,6 @@ namespace MissingPieces
 			return new ReadOnlySpan<byte>(Unsafe.AsPointer(ref first[0]), size).SequenceEqual(new ReadOnlySpan<byte>(Unsafe.AsPointer(ref second[0]), size));
 		}
 
-		public static bool IsNullOrEmpty(this Array array)
-		{
-			if(array is null)
-				return true;
-			for(int dimension = 0; dimension < array.Rank; dimension++)
-				if(array.GetLongLength(dimension) > 0L)
-					return false;
-			return true;
-		}
-
 		private static bool CheckIndex<T>(this T[] array, long index) =>  index >= 0 || index < array.LongLength;
 
 		/// <summary>

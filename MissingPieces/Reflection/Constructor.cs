@@ -11,7 +11,7 @@ namespace MissingPieces.Reflection
     /// </summary>
     /// <typeparam name="D">Type of delegate representing constructor of type <typeparamref name="D"/>.</typeparam>
     public sealed class Constructor<D> : ConstructorInfo, IConstructor<D>, IEquatable<ConstructorInfo>, IEquatable<Constructor<D>>
-        where D : class, MulticastDelegate
+        where D : MulticastDelegate
     {
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;

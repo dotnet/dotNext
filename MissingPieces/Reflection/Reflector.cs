@@ -31,6 +31,21 @@ namespace MissingPieces.Reflection
             internal new static Constructor<D> GetOrCreate(ConstructorInfo ctor) => Instance.GetOrCreate(ctor);
         }
 
+        private sealed class MethodCache<D>: Cache<RuntimeMethodHandle, MethodInfo, Method<D>>
+            where D: MulticastDelegate
+        {
+            private static readonly Cache<RuntimeMethodHandle, MethodInfo, Method<D>> Instance = new MethodCache<D>();
+
+            private MethodCache()
+                : base(method => method.MethodHandle, new RuntimeMethodHandleEqualityComparer())
+            {
+            }
+
+            private protected override Method<D> Create(MethodInfo method) => Method<D>.Reflect(method);
+
+            internal new static Method<D> GetOrCreate(MethodInfo method) => Instance.GetOrCreate(method);
+        }
+
         /// <summary>
         /// Extracts member metadata from expression tree.
         /// </summary>
@@ -56,8 +71,12 @@ namespace MissingPieces.Reflection
         /// <param name="ctor">Constructor to reflect.</param>
         /// <typeparam name="D">A delegate representing signature of constructor.</typeparam>
         /// <returns></returns>
-        public static Constructor<D> Bind<D>(this ConstructorInfo ctor)
+        public static Constructor<D> Unreflect<D>(this ConstructorInfo ctor)
             where D: MulticastDelegate
             => ConstructorCache<D>.GetOrCreate(ctor);
+        
+        public static Method<D> Unreflect<D>(this MethodInfo method)
+            where D: MulticastDelegate
+            => MethodCache<D>.GetOrCreate(method);
     }
 }

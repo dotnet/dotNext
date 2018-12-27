@@ -24,5 +24,8 @@ namespace MissingPieces
                 output[i] = mapper(i, input[i]);
             return output;
         }
+
+        public static bool IsNullOrEmpty<T>(this ICollection<T> collection)
+            => collection is null || collection.Count == 0;
     }
 }

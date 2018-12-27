@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
-using static System.Linq.Expressions.Expression;
+using System.Linq.Expressions;
 
 namespace MissingPieces.Reflection
 {
@@ -14,7 +14,7 @@ namespace MissingPieces.Reflection
     /// </summary>
     /// <typeparam name="D">Type of delegate describing signature of the reflected method.</typeparam>
     public sealed class Method<D> : MethodInfo, IMethod<D>, IEquatable<Method<D>>, IEquatable<MethodInfo>
-        where D : Delegate
+        where D : MulticastDelegate
     {
         private const BindingFlags StaticPublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags StaticNonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
@@ -24,16 +24,22 @@ namespace MissingPieces.Reflection
         private readonly MethodInfo method;
         private readonly D invoker;
 
-        // private Method(MethodInfo ctor, Expression[] args, ParameterExpression[] parameters)
-        // {
-        //     ctorOrDeclaringType = ctor;
-        //     invoker = Expression.Lambda<D>(Expression.New(ctor, args), parameters).Compile();
-        // }
-
-        private Method(MethodInfo method, D invoker)
+        private Method(MethodInfo method, Expression[] args, ParameterExpression[] parameters)
         {
             this.method = method;
-            this.invoker = invoker;
+            invoker = Expression.Lambda<D>(Expression.Call(method, args), parameters).Compile();
+        }
+
+        private Method(MethodInfo method, ParameterExpression instance, Expression[] args, ParameterExpression[] parameters)
+        {
+            this.method = method;
+            invoker = Expression.Lambda<D>(Expression.Call(instance, method, args), parameters.Insert(instance, 0)).Compile();
+        }
+
+        private Method(MethodInfo method)
+        {
+            this.method = method;
+            this.invoker = Delegates.CreateDelegate<D>(method);
         }
 
         internal Method<D> OfType<T>() => method.DeclaringType.IsAssignableFrom(typeof(T)) ? this : null;
@@ -107,7 +113,7 @@ namespace MissingPieces.Reflection
                 Type.DefaultBinder,
                 parameters,
                 Array.Empty<ParameterModifier>());
-            return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod, targetMethod.CreateDelegate<D>());
+            return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod);
         }
 
         private static Method<D> ReflectStatic(Type declaringType, Type argumentsType, Type returnType, string methodName, bool nonPublic)
@@ -118,40 +124,41 @@ namespace MissingPieces.Reflection
                 Type.DefaultBinder,
                 parameters,
                 Array.Empty<ParameterModifier>());
-            return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod, Lambda<D>(Call(null, targetMethod, arglist), input).Compile());
+            return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod, arglist, new[]{ input });
         }
 
         private static Method<D> ReflectInstance(Type thisParam, Type[] parameters, Type returnType, string methodName, bool nonPublic)
         {
-            var thisParamDeclaration = Parameter(thisParam);
-            var parametersDeclaration = parameters.Map(Parameter);
-            //this parameter can be passed as REF so handle this situation
-            //first parameter should be passed by REF for structure types
-            var invokerFactory = thisParam.IsByRef ^ thisParam.IsValueType ?
-                method => Lambda<D>(Call(thisParamDeclaration, method, parametersDeclaration), parametersDeclaration.Insert(thisParamDeclaration, 0)).Compile() :
-                new Func<MethodInfo, D>(Delegates.CreateDelegate<D>);
-            
             var targetMethod = thisParam.NonRefType().GetMethod(methodName,
                 nonPublic ? InstanceNonPublicFlags : InstancePublicFlags,
                 Type.DefaultBinder,
                 parameters, 
                 Array.Empty<ParameterModifier>());
-            
-            return targetMethod is null || returnType != targetMethod.ReturnType ?
-                    null :
-                    new Method<D>(targetMethod, invokerFactory(targetMethod));
+
+            //this parameter can be passed as REF so handle this situation
+            //first parameter should be passed by REF for structure types
+            if(targetMethod is null || returnType != targetMethod.ReturnType)
+                return null;
+            else if(thisParam.IsByRef ^ thisParam.IsValueType)
+            {
+                var thisParamDeclaration = Expression.Parameter(thisParam);
+                var parametersDeclaration = parameters.Map(Expression.Parameter);
+                return new Method<D>(targetMethod, thisParamDeclaration, parametersDeclaration, parametersDeclaration);
+            }
+            else
+                return new Method<D>(targetMethod);
         }
 
         private static Method<D> ReflectInstance(Type thisParam, Type argumentsType, Type returnType, string methodName, bool nonPublic)
         {
             var (parameters, arglist, input) = Signature.Reflect(argumentsType);
-            var thisParamDeclaration = Parameter(thisParam.MakeByRefType());
+            var thisParamDeclaration = Expression.Parameter(thisParam.MakeByRefType());
             var targetMethod = thisParam.GetMethod(methodName,
                 nonPublic ? InstanceNonPublicFlags : InstancePublicFlags,
                 Type.DefaultBinder,
                 parameters, 
                 Array.Empty<ParameterModifier>());
-            return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod, Lambda<D>(Call(thisParamDeclaration, targetMethod, arglist), thisParamDeclaration, input).Compile());
+            return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod, thisParamDeclaration, arglist, new[]{ input });
         }
 
         /// <summary>
@@ -169,7 +176,7 @@ namespace MissingPieces.Reflection
 				return ReflectInstance(thisParam, argumentsType, returnType, methodName, nonPublic);
 			else
 			{
-				Delegates.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType, out var parameters, out returnType);
+				Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
 				thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException("Delegate type should have THIS parameter");
 				return ReflectInstance(thisParam, parameters.RemoveFirst(1), returnType, methodName, nonPublic);
 			}
@@ -191,7 +198,7 @@ namespace MissingPieces.Reflection
 				return ReflectStatic(typeof(T), argumentsType, returnType, methodName, nonPublic);
 			else
 			{
-				Delegates.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType, out var parameters, out returnType);
+				Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
 				return ReflectStatic(typeof(T), parameters, returnType, methodName, nonPublic);
 			}
         }
@@ -202,20 +209,31 @@ namespace MissingPieces.Reflection
             if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
             {
                 var (parameters, arglist, input) = Signature.Reflect(argumentsType);
-                return returnType == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(ctor, arglist, new[]{ input }) : null;
+                return returnType == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, arglist, new[]{ input }) : null;
             }
-            else 
-            {
-                var invokeMethod = Delegates.GetInvokeMethod<D>();
-                return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
-                    new Constructor<D>(ctor, ctor.GetParameterTypes().Map(Expression.Parameter)) :
-                    null;
-            }
+            else if(Delegates.GetInvokeMethod<D>().SignatureEquals(method))
+                return new Method<D>(method);
+            else
+                return null;
         }
 
         private static Method<D> ReflectInstance(MethodInfo method)
         {
-            
+            var delegateType = typeof(D);
+            if(delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType) == 3L)
+            {
+                var (parameters, arglist, input) = Signature.Reflect(argumentsType);
+                return returnType == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, Expression.Parameter(thisParam.MakeByRefType(), "this"), arglist, new[]{ input }) : null;
+            }
+            else
+            {
+                Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, m => m.ReturnType, out var parameters, out returnType);
+                thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException("Delegate type should have THIS parameter");
+                parameters = parameters.RemoveFirst(1);
+                return method.SignatureEquals(parameters) && method.ReturnType == returnType && method.DeclaringType.IsAssignableFrom(thisParam) ?
+                    new Method<D>(method) :
+                    null;
+            }
         }
 
         internal static Method<D> Reflect(MethodInfo method)
