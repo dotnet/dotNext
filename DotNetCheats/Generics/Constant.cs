@@ -29,6 +29,28 @@ namespace Cheats.Generics
             Value = constVal;
         }
 
+        public sealed override string ToString()
+        {
+            object boxed = Value;
+            return boxed is null ? "NULL" : boxed.ToString();
+        }
+
+        public sealed override int GetHashCode()
+        {
+            object boxed = Value;
+            return boxed is null ? 0 : boxed.GetHashCode();
+        }
+
+        public sealed override bool Equals(object other)
+        {
+            switch(other)
+            {
+                case T obj: return Equals(obj, Value);
+                case Constant<T> @const: return Equals(Value, @const.Value);
+                default: return false;
+            }
+        }
+
         public static implicit operator T(Constant<T> other) => other.Value;
         
         /// <summary>

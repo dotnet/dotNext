@@ -3,9 +3,9 @@ namespace Cheats.Generics
     /// <summary>
     /// Represents boolean constant as generic parameter.
     /// </summary>
-    public abstract class Bool: Constant<bool>
+    public abstract class BooleanConst: Constant<bool>
     {
-        private Bool(bool value)
+        private BooleanConst(bool value)
             : base(value)
         {
         }
@@ -13,7 +13,7 @@ namespace Cheats.Generics
         /// <summary>
         /// Represents TRUE constant value as generic parameter.
         /// </summary>
-        public sealed class True: Bool
+        public sealed class True: BooleanConst
         {
             public True()
                 : base(true)
@@ -24,7 +24,7 @@ namespace Cheats.Generics
         /// <summary>
         /// Represents FALSE constant value as generic parameter.
         /// </summary>
-        public sealed class False: Bool
+        public sealed class False: BooleanConst
         {
             public False()
                 : base(false)
