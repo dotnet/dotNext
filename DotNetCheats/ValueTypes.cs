@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using System.Linq;
 using static System.Runtime.CompilerServices.Unsafe;
 
@@ -49,14 +48,14 @@ namespace DotNetCheats
 		public static unsafe bool BitwiseEquals<T1, T2>(this T1 first, T2 second)
 			where T1: struct
 			where T2: struct
-			=> new ReadOnlySpan<byte>(Unsafe.AsPointer(ref first), Unsafe.SizeOf<T1>())
-				.SequenceEqual(new ReadOnlySpan<byte>(Unsafe.AsPointer(ref second), Unsafe.SizeOf<T2>()));
+			=> new ReadOnlySpan<byte>(AsPointer(ref first), SizeOf<T1>())
+				.SequenceEqual(new ReadOnlySpan<byte>(AsPointer(ref second), SizeOf<T2>()));
 
 		public static unsafe int BitwiseCompare<T1, T2>(this T1 first, T2 second)
 			where T1: unmanaged
 			where T2: unmanaged
-			=> new ReadOnlySpan<byte>(Unsafe.AsPointer(ref first), Unsafe.SizeOf<T1>())
-				.SequenceCompareTo(new ReadOnlySpan<byte>(Unsafe.AsPointer(ref second), Unsafe.SizeOf<T2>()));
+			=> new ReadOnlySpan<byte>(AsPointer(ref first), SizeOf<T1>())
+				.SequenceCompareTo(new ReadOnlySpan<byte>(AsPointer(ref second), SizeOf<T2>()));
 
 		/// <summary>
 		/// Converts one structure into another without changing any bits.
@@ -70,8 +69,8 @@ namespace DotNetCheats
 			where O : unmanaged
 		{
 			var output = new O();
-			var size = (uint)Math.Min(Unsafe.SizeOf<I>(), Unsafe.SizeOf<O>());
-			Unsafe.CopyBlockUnaligned(Unsafe.AsPointer(ref output), Unsafe.AsPointer(ref input), size);
+			var size = (uint)Math.Min(SizeOf<I>(), SizeOf<O>());
+			CopyBlockUnaligned(AsPointer(ref output), AsPointer(ref input), size);
 			return output;
 		}
 
@@ -83,7 +82,7 @@ namespace DotNetCheats
 		/// <returns>An array containing binary content of the structure in the form of bytes.</returns>
 		public unsafe static byte[] AsBinary<T>(this T input)
 			where T: struct
-			=> new ReadOnlySpan<byte>(Unsafe.AsPointer(ref input), Unsafe.SizeOf<T>()).ToArray();
+			=> new ReadOnlySpan<byte>(AsPointer(ref input), SizeOf<T>()).ToArray();
 		
 		public static bool IsDefault<T>(this T value)
 			where T: struct
