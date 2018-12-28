@@ -71,7 +71,7 @@ namespace Cheats.Threading
 		/// Select first unbusy object from pool and lock it.
 		/// </summary>
 		/// <returns>First unbusy object locked for the caller thread.</returns>
-		public Lock SelectChannelAndLock()
+		public Lock SelectAndLock()
 		{
 			Requires(objects.Count > 0, "This pool has no channels");
 			//each thread must have its own spin awaiter
