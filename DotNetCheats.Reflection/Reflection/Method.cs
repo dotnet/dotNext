@@ -7,8 +7,6 @@ using System.Linq.Expressions;
 
 namespace DotNetCheats.Reflection
 {
-    using Reflection;
-
     /// <summary>
     /// Represents reflected method.
     /// </summary>
@@ -127,9 +125,11 @@ namespace DotNetCheats.Reflection
             return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod, arglist, new[]{ input });
         }
 
-        private static Method<D> ReflectInstance(Type thisParam, Type[] parameters, Type returnType, string methodName, bool nonPublic)
+		private static Type NonRefType(Type type) => type.IsByRef ? type.GetElementType() : type;
+
+		private static Method<D> ReflectInstance(Type thisParam, Type[] parameters, Type returnType, string methodName, bool nonPublic)
         {
-            var targetMethod = thisParam.NonRefType().GetMethod(methodName,
+            var targetMethod = NonRefType(thisParam).GetMethod(methodName,
                 nonPublic ? InstanceNonPublicFlags : InstancePublicFlags,
                 Type.DefaultBinder,
                 parameters, 

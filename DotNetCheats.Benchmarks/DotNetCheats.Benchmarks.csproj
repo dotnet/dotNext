@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>DotNetCheats</RootNamespace>
-    <StartupObject>MissingPieces.Program</StartupObject>
+    <StartupObject>DotNetCheats.Program</StartupObject>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DotNetCheats.Reflection\DotNetCheats.Reflection.csproj" />
     <ProjectReference Include="..\DotNetCheats\DotNetCheats.csproj" />
   </ItemGroup>
 

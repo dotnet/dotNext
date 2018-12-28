@@ -138,10 +138,12 @@ namespace DotNetCheats
 	/// <typeparam name="T">Type of value.</typeparam>
 	public readonly struct Optional<T> : IOptional, IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable
 	{
+		private delegate bool ByRefPredicate(in T value);
+
 		/// <summary>
 		/// Highly optimized checker of the content.
 		/// </summary>
-		private static readonly Reflection.MemberAccess.Getter<T, bool> HasValueChecker;
+		private static readonly ByRefPredicate HasValueChecker;
 
 		static Optional()
 		{
@@ -150,7 +152,7 @@ namespace DotNetCheats
 			Expression checkerBody = parameter.Type.IsValueType ?
 				Optional.CheckerBodyForValueType(parameter) :
 				Optional.CheckerBodyForReferenceType(parameter);
-			HasValueChecker = Expression.Lambda<Reflection.MemberAccess.Getter<T, bool>>(checkerBody, parameter).Compile();
+			HasValueChecker = Expression.Lambda<ByRefPredicate>(checkerBody, parameter).Compile();
 		}
 
 		private readonly T value;
