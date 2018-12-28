@@ -11,14 +11,61 @@ namespace Cheats.Reflection
     /// </summary>
     public enum UnaryOperator : int
     {
-        Plus = ExpressionType.UnaryPlus,
+		/// <summary>
+		/// A unary plus operation, such as (+a).
+		/// </summary>
+		Plus = ExpressionType.UnaryPlus,
 
-        Negate = ExpressionType.Negate,
+		/// <summary>
+		/// An arithmetic negation operation, such as (-a)
+		/// </summary>
+		Negate = ExpressionType.Negate,
 
+		/// <summary>
+		/// A cast or unchecked conversion operation.
+		/// </summary>
 		Convert = ExpressionType.Convert,
 
-		ConvertChecked = ExpressionType.ConvertChecked
-    }
+		/// <summary>
+		/// A cast or checked conversion operation.
+		/// </summary>
+		ConvertChecked = ExpressionType.ConvertChecked,
+
+		/// <summary>
+		/// A bitwise complement or logical negation operation.
+		/// </summary>
+		Not = ExpressionType.Not,
+
+		/// <summary>
+		/// A ones complement operation.
+		/// </summary>
+		OnesComplement = ExpressionType.OnesComplement,
+
+		/// <summary>
+		/// A unary increment operation, such as (a + 1).
+		/// </summary>
+		Increment = ExpressionType.Increment,
+
+		/// <summary>
+		/// A unary decrement operation, such as (a - 1).
+		/// </summary>
+		Decrement = ExpressionType.Decrement,
+
+		/// <summary>
+		/// A type test, such as obj is T
+		/// </summary>
+		IsInstanceOf = ExpressionType.TypeIs,
+
+		/// <summary>
+		/// An exact type test.
+		/// </summary>
+		TypeTest = ExpressionType.TypeEqual,
+
+		/// <summary>
+		/// Safe typecast operation, such as obj as T
+		/// </summary>
+		TryConvert = ExpressionType.TypeAs
+	}
 
     /// <summary>
     /// Represents unary operator applicable to type <typeparamref name="T"/>.

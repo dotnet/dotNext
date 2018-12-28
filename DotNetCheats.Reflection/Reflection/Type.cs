@@ -43,11 +43,11 @@ namespace Cheats.Reflection
 
         public static Optional<T> TryConvert<U>(U value)
         {
-            UnaryOperator<U, T>.Invoker converter = Type<U>.UnaryOperator<T>.Get(Reflection.UnaryOperator.Convert);
+            UnaryOperator<U, T>.Invoker converter = Type<U>.UnaryOperator<T>.Get(UnaryOperator.Convert);
             return converter is null ? Optional<T>.Empty : converter(value);
         }
 
-        public static bool TryConvert<U>(U value, out T result) => TryConvert<U>(value).TryGet(out result);
+        public static bool TryConvert<U>(U value, out T result) => TryConvert(value).TryGet(out result);
 
         /// <summary>
         /// Converts object into type <typeparamref name="T"/>.

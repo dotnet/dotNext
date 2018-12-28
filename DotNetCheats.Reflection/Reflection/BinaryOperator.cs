@@ -2,26 +2,54 @@
 
 namespace Cheats.Reflection
 {
-	public enum BinaryOperator
-	{
-		Add = ExpressionType.Add,
-		AddChecked = ExpressionType.AddChecked,
-		And = ExpressionType.And,
-		Divide = ExpressionType.Divide,
-		Equal = ExpressionType.Equal,
-		ExclusiveOr = ExpressionType.ExclusiveOr,
-		GreaterThan = ExpressionType.GreaterThan,
-		GreaterThanOrEqual = ExpressionType.GreaterThanOrEqual
-	}
-
 	/// <summary>
 	/// Represents binary operator.
 	/// </summary>
-	/// <typeparam name="I1">Type of first operand.</typeparam>
-	/// <typeparam name="I2">Type of second operand.</typeparam>
-	/// <typeparam name="R">Type of result.</typeparam>
-	/// <param name="operand1">First operand.</param>
-	/// <param name="operand2">Second operand.</param>
-	/// <returns>Result.</returns>
-	public delegate R BinaryOperator<I1, I2, R>(in I1 operand1, in I2 operand2);
+	public enum BinaryOperator
+	{
+		/// <summary>
+		/// An addition operation, such as a + b, without overflow checking.
+		/// </summary>
+		Add = ExpressionType.Add,
+
+		/// <summary>
+		/// An addition operation, such as (a + b), with overflow checking.
+		/// </summary>
+		AddChecked = ExpressionType.AddChecked,
+
+		/// <summary>
+		/// a & b
+		/// </summary>
+		And = ExpressionType.And,
+
+		/// <summary>
+		/// a / b
+		/// </summary>
+		Divide = ExpressionType.Divide,
+
+		/// <summary>
+		/// a == b
+		/// </summary>
+		Equal = ExpressionType.Equal,
+
+		/// <summary>
+		/// a ^ b
+		/// </summary>
+		ExclusiveOr = ExpressionType.ExclusiveOr,
+
+		/// <summary>
+		/// a > b
+		/// </summary>
+		GreaterThan = ExpressionType.GreaterThan,
+
+		/// <summary>
+		/// a >= b
+		/// </summary>
+		GreaterThanOrEqual = ExpressionType.GreaterThanOrEqual,
+
+		/// <summary>
+		/// a ?? b
+		/// </summary>
+		Coalesce = ExpressionType.Coalesce
+	}
 }
