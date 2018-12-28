@@ -12,7 +12,7 @@ namespace Cheats.Generics
     /// <typeparam name="T">Type of constant to be passed as generic parameter.</typeparam>
     public abstract class Constant<T>
     {
-        private static class ValueHolder<G>
+        private static class Cache<G>
             where G: Constant<T>, new()
         {
             internal static readonly T Value = new G();
@@ -56,10 +56,11 @@ namespace Cheats.Generics
         /// <summary>
         /// Extracts constant value from generic parameter.
         /// </summary>
+        /// <param name="intern">True to return interned constant value; otherwise, false.</param>
         /// <typeparam name="G">A type representing a constant value.</typeparam>
         /// <returns>Constant value extracted from generic.</returns>
-        public static T Of<G>()
+        public static T Of<G>(bool intern = false)
             where G: Constant<T>, new()
-            => ValueHolder<G>.Value;
+            => intern ? Cache<G>.Value : new G();
     }
 }
