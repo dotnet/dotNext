@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2019
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MissingPieces", "MissingPieces\MissingPieces.csproj", "{9F11A994-0CC6-4982-963B-1255D2F82B2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetCheats", "DotNetCheats\DotNetCheats.csproj", "{9F11A994-0CC6-4982-963B-1255D2F82B2F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MissingPieces.Tests", "MissingPieces.Tests\MissingPieces.Tests.csproj", "{43A2FE6F-B997-4295-BBD2-B0BBC1861194}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetCheats.Tests", "DotNetCheats.Tests\MissingPieces.Tests.csproj", "{43A2FE6F-B997-4295-BBD2-B0BBC1861194}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissingPieces.Benchmarks", "MissingPieces.Benchmarks\MissingPieces.Benchmarks.csproj", "{D8438838-088B-4559-8605-7DEAC889902C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetCheats.Benchmarks", "DotNetCheats.Benchmarks\DotNetCheats.Benchmarks.csproj", "{D8438838-088B-4559-8605-7DEAC889902C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
