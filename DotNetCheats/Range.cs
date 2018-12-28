@@ -2,6 +2,9 @@ using System;
 
 namespace Cheats
 {
+	/// <summary>
+	/// Range checks.
+	/// </summary>
     public static class Range
     {
         /// <summary>
@@ -14,7 +17,6 @@ namespace Cheats
         public static T Clamp<T> (this T value, T min, T max, BoundType boundType = BoundType.Open) 
             where T : IComparable<T>
             => value.Max(min).Min(max);
-
 
         /// <summary>
         ///     Restricts a <paramref name="value" /> minimal value.
