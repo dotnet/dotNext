@@ -1,4 +1,4 @@
-﻿namespace DotNetCheats.Reflection
+﻿namespace Cheats.Reflection
 {
 	/// <summary>
 	/// Represents action performed to property of field.

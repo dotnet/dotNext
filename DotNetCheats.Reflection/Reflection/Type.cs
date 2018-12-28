@@ -1,7 +1,7 @@
 ﻿using System;
 using static System.Linq.Expressions.Expression;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     /// <summary>
     /// Provides typed access to class or value type metadata.

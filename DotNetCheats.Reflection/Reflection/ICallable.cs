@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     /// <summary>
     /// Represents callable program element.

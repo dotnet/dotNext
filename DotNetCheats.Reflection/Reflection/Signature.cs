@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Linq.Expressions;
 using System.Collections.ObjectModel;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     /// <summary>
     /// Describes signature of function or procedure.

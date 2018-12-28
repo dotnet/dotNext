@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
 	internal sealed class AbstractDelegateException<D>: GenericArgumentException<D>
 		where D: Delegate

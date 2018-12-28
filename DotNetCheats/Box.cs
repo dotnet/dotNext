@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DotNetCheats
+namespace Cheats
 {
     /// <summary>
     /// Various extensions for boxed value types.

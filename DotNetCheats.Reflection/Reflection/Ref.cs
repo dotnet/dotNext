@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Security;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     using static Reflection.Types;
 

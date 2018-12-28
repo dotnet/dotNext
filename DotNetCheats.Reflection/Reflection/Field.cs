@@ -5,7 +5,7 @@ using System.Reflection;
 using static System.Linq.Expressions.Expression;
 using System.Runtime.CompilerServices;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     /// <summary>
     /// Represents reflected field.

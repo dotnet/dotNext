@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using Xunit;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     public sealed class OperatorTests: Assert
     {

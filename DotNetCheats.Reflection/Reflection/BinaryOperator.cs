@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
 	public enum BinaryOperator
 	{

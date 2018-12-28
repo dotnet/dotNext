@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using static System.Runtime.CompilerServices.Unsafe;
 
-namespace DotNetCheats
+namespace Cheats
 {
 	/// <summary>
 	/// Various extensions for value types.

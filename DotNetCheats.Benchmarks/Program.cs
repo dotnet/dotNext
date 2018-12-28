@@ -2,7 +2,7 @@
 using BenchmarkDotNet.Running;
 
 
-namespace DotNetCheats
+namespace Cheats
 {
 	internal static class Program
 	{

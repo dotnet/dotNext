@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace DotNetCheats.Threading
+namespace Cheats.Threading
 {
 	/// <summary>
 	/// Various atomic operations for long data type

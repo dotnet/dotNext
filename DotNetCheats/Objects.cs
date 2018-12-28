@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace DotNetCheats
+namespace Cheats
 {
 	public static class Objects
 	{

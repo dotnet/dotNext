@@ -1,4 +1,4 @@
-﻿namespace DotNetCheats
+﻿namespace Cheats
 {
 	/// <summary>
 	/// Indicates that content of the implementing class or struct 

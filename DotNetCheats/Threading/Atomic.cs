@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DotNetCheats.Threading
+namespace Cheats.Threading
 {
 	internal static class Atomic<T, CAS>
 		where CAS : CASProvider<T>, new()

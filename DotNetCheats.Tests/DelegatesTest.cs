@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace DotNetCheats.Tests
+namespace Cheats.Tests
 {
     public sealed class DelegatesTest: Assert
     {

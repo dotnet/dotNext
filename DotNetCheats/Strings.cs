@@ -1,4 +1,4 @@
-namespace DotNetCheats
+namespace Cheats
 {
     public static class Strings
     {

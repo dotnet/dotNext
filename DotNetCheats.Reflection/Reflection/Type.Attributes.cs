@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     public static partial class Type<T>
     {

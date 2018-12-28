@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
 	/// <summary>
 	/// Represents reflected event.

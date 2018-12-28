@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     /// <summary>
     /// Represents reflected method.

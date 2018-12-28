@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using static System.Linq.Expressions.Expression;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     public static partial class Type<T>
     {

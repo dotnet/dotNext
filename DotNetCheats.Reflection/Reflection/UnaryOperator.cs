@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     /// <summary>
     /// Represents unary operator.

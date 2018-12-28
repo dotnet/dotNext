@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
 	/// <summary>
 	/// Indicates that requested property doesn't exist.

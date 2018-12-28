@@ -1,4 +1,4 @@
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     public static partial class Type<T>
     {

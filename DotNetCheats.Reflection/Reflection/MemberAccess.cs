@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
 	/// <summary>
 	/// Represents accessing instance field or property.

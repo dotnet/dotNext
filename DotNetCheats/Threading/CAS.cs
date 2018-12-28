@@ -1,4 +1,4 @@
-﻿namespace DotNetCheats.Threading
+﻿namespace Cheats.Threading
 {
 	/// <summary>
 	/// Represents generic Compare-And-Set (CAS) operation.

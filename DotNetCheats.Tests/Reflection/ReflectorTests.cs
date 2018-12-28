@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     public sealed class ReflectorTests: Assert
     {

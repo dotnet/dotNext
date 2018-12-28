@@ -1,6 +1,6 @@
 using System;
 
-namespace DotNetCheats
+namespace Cheats
 {
     public static class Range
     {

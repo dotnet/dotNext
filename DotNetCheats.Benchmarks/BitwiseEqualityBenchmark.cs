@@ -4,7 +4,7 @@ using BenchmarkDotNet.Order;
 using System;
 using System.Numerics;
 
-namespace DotNetCheats
+namespace Cheats
 {
 	[SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 	[Orderer(SummaryOrderPolicy.FastestToSlowest)]

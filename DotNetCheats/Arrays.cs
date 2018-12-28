@@ -2,7 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
 
-namespace DotNetCheats
+namespace Cheats
 {
 	public static class Arrays
 	{

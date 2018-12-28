@@ -1,7 +1,7 @@
 ﻿using System;
 using static System.Runtime.CompilerServices.Unsafe;
 
-namespace DotNetCheats
+namespace Cheats
 {
 	/// <summary>
 	/// Low-level methods for direct access to memory.
