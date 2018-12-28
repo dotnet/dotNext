@@ -13,12 +13,26 @@ namespace DotNetCheats
 			=> *(T*)pointer;
 
 		[CLSCompliant(false)]
+		public unsafe static T Dereference<T>(this UIntPtr pointer)
+			where T : unmanaged
+			=> *(T*)pointer;
+
+		[CLSCompliant(false)]
 		public unsafe static T Dereference<T>(void* pointer)
 			where T : unmanaged
 			=> *(T*)pointer;
 
 		[CLSCompliant(false)]
 		public unsafe static T Read<T>(ref byte* pointer)
+			where T : unmanaged
+		{
+			var result = Dereference<T>(pointer);
+			pointer += SizeOf<T>();
+			return result;
+		}
+
+		[CLSCompliant(false)]
+		public unsafe static T Read<T>(this ref UIntPtr pointer)
 			where T : unmanaged
 		{
 			var result = Dereference<T>(pointer);
