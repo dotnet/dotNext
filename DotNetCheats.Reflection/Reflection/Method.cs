@@ -221,7 +221,7 @@ namespace Cheats.Reflection
                 var (parameters, arglist, input) = Signature.Reflect(argumentsType);
                 return typeof(void) == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, arglist, new[]{ input }) : null; 
             }
-            else if(Delegates.GetInvokeMethod<D>().SignatureEquals(method))
+			else if(Delegates.GetInvokeMethod<D>().SignatureEquals(method))
                 return new Method<D>(method);
             else
                 return null;
@@ -233,13 +233,24 @@ namespace Cheats.Reflection
             if(delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType) == 3L)
             {
                 var (parameters, arglist, input) = Signature.Reflect(argumentsType);
-                return returnType == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, Expression.Parameter(thisParam.MakeByRefType(), "this"), arglist, new[]{ input }) : null;
+                return thisParam.IsAssignableFrom(method.DeclaringType) && returnType == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, Expression.Parameter(thisParam.MakeByRefType(), "this"), arglist, new[]{ input }) : null;
             }
             else if(delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
             {
                 var (parameters, arglist, input) = Signature.Reflect(argumentsType);
-                return typeof(void) == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, Expression.Parameter(thisParam.MakeByRefType(), "this"), arglist, new[]{ input }) : null;
+                return thisParam.IsAssignableFrom(method.DeclaringType) && typeof(void) == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, Expression.Parameter(thisParam.MakeByRefType(), "this"), arglist, new[]{ input }) : null;
             }
+			else if(delegateType.IsGenericInstanceOf(typeof(MemberGetter<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out returnType) == 2L)
+			{
+				var thisParamDecl = Expression.Parameter(thisParam.MakeByRefType(), "this");
+				return method.DeclaringType.IsAssignableFrom(thisParam) && returnType == method.ReturnType && method.GetParameters().IsNullOrEmpty() ? new Method<D>(method, thisParamDecl, Array.Empty<Expression>(), Array.Empty<ParameterExpression>()) : null;
+			}
+			else if(delegateType.IsGenericInstanceOf(typeof(MemberSetter<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
+			{
+				var thisParamDecl = Expression.Parameter(thisParam.MakeByRefType(), "this");
+				var argDecl = Expression.Parameter(argumentsType);
+				return thisParam.IsAssignableFrom(method.DeclaringType) && method.GetParameterTypes().FirstOrDefault() == argumentsType && method.ReturnType == typeof(void) ? new Method<D>(method, thisParamDecl, new[] { argDecl }, new[] { argDecl }) : null;
+			}
             else
             {
                 Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, m => m.ReturnType, out var parameters, out returnType);
