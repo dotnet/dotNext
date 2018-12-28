@@ -4,8 +4,10 @@ using System.Threading;
 
 namespace Cheats.Threading
 {
+	using Generics;
+
 	/// <summary>
-	/// Various atomic operations for integer data type
+	/// Various atomic operations for long data type
 	/// accessible as extension methods.
 	/// </summary>
 	/// <remarks>
@@ -13,9 +15,9 @@ namespace Cheats.Threading
 	/// of the field even if it is not declared as volatile field.
 	/// </remarks>
 	/// <see cref="Interlocked"/>
-	public static class AtomicInteger
+	public static class AtomicLong
 	{
-		private sealed class CASProvider : CASProvider<int>
+		private sealed class CASProvider : Constant<CAS<long>>
 		{
 			public CASProvider()
 				: base(CompareAndSet)
@@ -24,11 +26,11 @@ namespace Cheats.Threading
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int VolatileGet(ref this int value)
+		public static long VolatileGet(ref this long value)
 			=> Volatile.Read(ref value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void VolatileSet(ref this int value, int newValue)
+		public static void VolatileSet(ref this long value, long newValue)
 			=> Volatile.Write(ref value, newValue);
 
 		/// <summary>
@@ -37,7 +39,7 @@ namespace Cheats.Threading
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <returns>Incremented value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int IncrementAndGet(ref this int value)
+		public static long IncrementAndGet(ref this long value)
 			=> Interlocked.Increment(ref value);
 
 		/// <summary>
@@ -46,11 +48,11 @@ namespace Cheats.Threading
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <returns>Decremented value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int DecrementAndGet(ref this int value)
+		public static long DecrementAndGet(ref this long value)
 			=> Interlocked.Decrement(ref value);
 
 		/// <summary>
-		/// Compares two 32-bit signed integers for equality and, 
+		/// Compares two 64-bit signed integers for equality and, 
 		/// if they are equal, replaces referenced value.
 		/// </summary>
 		/// <param name="value">Reference to a value to be modified.</param>
@@ -58,7 +60,7 @@ namespace Cheats.Threading
 		/// <param name="update">The new value.</param>
 		/// <returns>Original (previous) value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int CompareExchange(ref this int value, int expected, int update)
+		public static long CompareExchange(ref this long value, long expected, long update)
 			=> Interlocked.CompareExchange(ref value, update, expected);
 
 		/// <summary>
@@ -69,18 +71,18 @@ namespace Cheats.Threading
 		/// <param name="update">The new value.</param>
 		/// <returns>true if successful. False return indicates that the actual value was not equal to the expected value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool CompareAndSet(ref this int value, int expected, int update)
+		public static bool CompareAndSet(ref this long value, long expected, long update)
 			=> CompareExchange(ref value, expected, update) == expected;
 
 		/// <summary>
-		/// Adds two 32-bit integers and replaces referenced integer with the sum, 
+		/// Adds two 64-bit integers and replaces referenced integer with the sum, 
 		/// as an atomic operation.
 		/// </summary>
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <param name="operand">The value to be added to the currently stored integer.</param>
 		/// <returns>Result of sum operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int Add(ref this int value, int operand)
+		public static long Add(ref this long value, long operand)
 			=> Interlocked.Add(ref value, operand);
 
 		/// <summary>
@@ -90,7 +92,7 @@ namespace Cheats.Threading
 		/// <param name="update">A new value to be stored inside of container.</param>
 		/// <returns>Original value before modification.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int GetAndSet(ref this int value, int update)
+		public static long GetAndSet(ref this long value, long update)
 			=> Interlocked.Exchange(ref value, update);
 
 		/// <summary>
@@ -100,7 +102,7 @@ namespace Cheats.Threading
 		/// <param name="update">A new value to be stored inside of container.</param>
 		/// <returns>A new value passed as argument.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int SetAndGet(ref this int value, int update)
+		public static long SetAndGet(ref this long value, long update)
 		{
 			Volatile.Write(ref value, update);
 			return update;
@@ -117,8 +119,8 @@ namespace Cheats.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
-		public static int AccumulateAndGet(ref this int value, int x, Func<int, int, int> accumulator)
-			=> Atomic<int, CASProvider>.Accumulute(ref value, x, accumulator).NewValue;
+		public static long AccumulateAndGet(ref this long value, long x, Func<long, long, long> accumulator)
+			=> Atomic<long, CASProvider>.Accumulute(ref value, x, accumulator).NewValue;
 
 		/// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -131,8 +133,8 @@ namespace Cheats.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
-		public static int GetAndAccumulate(ref this int value, int x, Func<int, int, int> accumulator)
-			=> Atomic<int, CASProvider>.Accumulute(ref value, x, accumulator).OldValue;
+		public static long GetAndAccumulate(ref this long value, long x, Func<long, long, long> accumulator)
+			=> Atomic<long, CASProvider>.Accumulute(ref value, x, accumulator).OldValue;
 
 		/// <summary>
 		/// Atomically updates the stored value with the results 
@@ -141,8 +143,8 @@ namespace Cheats.Threading
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
-		public static int UpdateAndGet(ref this int value, Func<int, int> updater)
-			=> Atomic<int, CASProvider>.Update(ref value, updater).NewValue;
+		public static long UpdateAndGet(ref this long value, Func<long, long> updater)
+			=> Atomic<long, CASProvider>.Update(ref value, updater).NewValue;
 
 		/// <summary>
 		/// Atomically updates the stored value with the results 
@@ -151,7 +153,7 @@ namespace Cheats.Threading
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value.</returns>
-		public static int GetAndUpdate(ref this int value, Func<int, int> updater)
-			=> Atomic<int, CASProvider>.Update(ref value, updater).OldValue;
+		public static long GetAndUpdate(ref this long value, Func<long, long> updater)
+			=> Atomic<long, CASProvider>.Update(ref value, updater).OldValue;
 	}
 }

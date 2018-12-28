@@ -2,12 +2,11 @@
 
 namespace Cheats.Threading
 {
+	using Generics;
 	internal static class Atomic<T, CAS>
-		where CAS : CASProvider<T>, new()
+		where CAS : Constant<CAS<T>>, new()
 	{
-		private static readonly CAS<T> CompareAndSet;
-
-		static Atomic() => CompareAndSet = new CAS();
+		private static CAS<T> CompareAndSet => Constant<CAS<T>>.Of<CAS>();
 
 		internal static (T OldValue, T NewValue) Update(ref T value, Func<T, T> updater)
 		{

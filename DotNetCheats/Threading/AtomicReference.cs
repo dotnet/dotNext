@@ -4,12 +4,15 @@ using System.Threading;
 
 namespace Cheats.Threading
 {
+	using Generics;
+
 	/// <summary>
 	/// Provides atomic operations for the reference type.
 	/// </summary>
 	public static class AtomicReference
 	{
-		private sealed class CASProvider<T> : Threading.CASProvider<T>
+		
+		private sealed class CASProvider<T> : Constant<CAS<T>>
 			where T : class
 		{
 			public CASProvider()
