@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
 	/// <summary>
 	/// Indicates that requested property doesn't exist.

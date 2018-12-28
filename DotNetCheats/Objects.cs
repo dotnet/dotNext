@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace MissingPieces
+namespace DotNetCheats
 {
 	public static class Objects
 	{

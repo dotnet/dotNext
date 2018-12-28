@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace MissingPieces.Tests
+namespace DotNetCheats.Tests
 {
     public sealed class ArraysTest: Assert
     {

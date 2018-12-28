@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Security;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
     using static Reflection.Types;
 

@@ -5,7 +5,7 @@ using System;
 using System.Reflection;
 using System.Security.Cryptography;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
     public class HashMethodReflectionBenchmark
     {

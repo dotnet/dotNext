@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
     /// <summary>
     /// Represents reflected event.

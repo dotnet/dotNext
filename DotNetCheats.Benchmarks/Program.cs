@@ -2,7 +2,7 @@
 using BenchmarkDotNet.Running;
 
 
-namespace MissingPieces
+namespace DotNetCheats
 {
 	internal static class Program
 	{

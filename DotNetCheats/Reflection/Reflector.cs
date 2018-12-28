@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
     /// <summary>
     /// Reflection methods based on LINQ expression tree.

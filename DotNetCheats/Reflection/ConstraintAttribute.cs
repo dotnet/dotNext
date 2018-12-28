@@ -1,6 +1,6 @@
 using System;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
     /// <summary>
     /// Indicates that generic parameter is constrained with a concept.

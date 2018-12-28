@@ -1,4 +1,4 @@
-﻿namespace MissingPieces
+﻿namespace DotNetCheats
 {
 	/// <summary>
 	/// Indicates that content of the implementing class or struct 

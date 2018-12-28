@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
     /// <summary>
 	/// Indicates that requested operator doesn't exist.

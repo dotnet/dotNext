@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
 	
 	public interface IMethod<out M, out D>: IMember<M>, ICallable<D>

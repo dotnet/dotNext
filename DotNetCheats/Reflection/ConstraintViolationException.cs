@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
 	/// <summary>
 	/// Root type for all exceptions related to generic constraints.

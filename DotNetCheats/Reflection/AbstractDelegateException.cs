@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
 	internal sealed class AbstractDelegateException<D>: GenericArgumentException<D>
 		where D: Delegate

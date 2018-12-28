@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
 	internal abstract class Cache<K, T, V>
 		where V: class

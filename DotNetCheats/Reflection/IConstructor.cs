@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
 	/// <summary>
 	/// Represents typed access to type constructor.

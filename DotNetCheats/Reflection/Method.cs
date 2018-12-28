@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
     using Reflection;
 

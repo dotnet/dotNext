@@ -2,7 +2,7 @@ using System;
 using System.Dynamic;
 using Expression = System.Linq.Expressions.Expression;
 
-namespace MissingPieces.VariantType
+namespace DotNetCheats.VariantType
 {
 	/// <summary>
 	/// Represents value that can be one of two possible types.

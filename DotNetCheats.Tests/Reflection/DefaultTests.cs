@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
     public sealed class DefaultTests: Assert
     {

@@ -2,7 +2,7 @@
 using static System.Diagnostics.Debug;
 using System.Linq.Expressions;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
 	public abstract class Operator<D>: IOperator<D>
 		where D: Delegate

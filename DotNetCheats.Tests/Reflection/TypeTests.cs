@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq.Expressions;
 using Xunit;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
 	public sealed class TypeTests: Assert
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MissingPieces.Threading
+namespace DotNetCheats.Threading
 {
 	/// <summary>
 	/// Helps to compute timeout for asynchronous operations.

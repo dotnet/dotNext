@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MissingPieces.Threading
+namespace DotNetCheats.Threading
 {
 	internal static class Atomic<T, CAS>
 		where CAS : CASProvider<T>, new()

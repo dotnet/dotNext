@@ -1,4 +1,4 @@
-namespace MissingPieces
+namespace DotNetCheats
 {
     /// <summary>
     /// Represents a static function with arbitrary number of arguments

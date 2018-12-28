@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
     /// <summary>
     /// Represents property.

@@ -1,4 +1,4 @@
-namespace MissingPieces
+namespace DotNetCheats
 {
     public static class Strings
     {

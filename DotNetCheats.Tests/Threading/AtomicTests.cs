@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace MissingPieces.Threading
+namespace DotNetCheats.Threading
 {
 	public sealed class AtomicTests : Assert
 	{

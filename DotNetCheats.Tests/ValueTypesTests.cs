@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace MissingPieces
+namespace DotNetCheats
 {
 	public sealed class MemoryTests: Assert
 	{

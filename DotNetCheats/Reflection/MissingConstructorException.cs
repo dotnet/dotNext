@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
 	/// <summary>
 	/// Indicates that requested constructor doesn't exist.

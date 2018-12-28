@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Linq;
 using static System.Runtime.CompilerServices.Unsafe;
 
-namespace MissingPieces
+namespace DotNetCheats
 {
 	/// <summary>
 	/// Various extensions for value types.

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
 	/// <summary>
 	/// Basic interface for all reflected members.

@@ -1,6 +1,6 @@
 using System;
 
-namespace MissingPieces
+namespace DotNetCheats
 {
     [Flags]
     public enum BoundType: byte

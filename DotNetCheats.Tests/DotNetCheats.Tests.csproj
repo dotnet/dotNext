@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 	  <TargetFramework>netcoreapp2.1</TargetFramework>
-    <RootNamespace>MissingPieces</RootNamespace>
+    <RootNamespace>DotNetCheats</RootNamespace>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MissingPieces\MissingPieces.csproj" />
+    <ProjectReference Include="..\DotNetCheats\DotNetCheats.csproj" />
   </ItemGroup>
 
 </Project>

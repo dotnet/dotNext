@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace MissingPieces.Threading
+namespace DotNetCheats.Threading
 {
 	/// <summary>
 	/// Various atomic operations for integer data type

@@ -1,4 +1,4 @@
-﻿namespace MissingPieces.Reflection
+﻿namespace DotNetCheats.Reflection
 {
 	/// <summary>
 	/// Represents action performed to property of field.

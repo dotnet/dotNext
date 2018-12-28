@@ -1,6 +1,6 @@
 using System.Dynamic;
 
-namespace MissingPieces.VariantType
+namespace DotNetCheats.VariantType
 {
 	/// <summary>
 	/// A root interface for all variant data containers.

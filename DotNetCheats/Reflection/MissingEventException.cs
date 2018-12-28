@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
 	/// <summary>
 	/// Indicates that requested event doesn't exist.

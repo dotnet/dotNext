@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace MissingPieces.Reflection
+namespace DotNetCheats.Reflection
 {
 	/// <summary>
 	/// Various extension methods for method reflection.
