@@ -51,7 +51,7 @@ namespace Cheats
                 case BoundType.RightClosed:
                     return leftCmp > 0 && rightCmp <= 0;
                 case BoundType.Closed:
-                    return rightCmp >= leftCmp;
+					return leftCmp >= 0 && rightCmp <= 0;
                 default:
                     return false;
             }
