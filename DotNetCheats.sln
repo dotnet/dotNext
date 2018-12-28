@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetCheats.Tests", "DotNe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetCheats.Benchmarks", "DotNetCheats.Benchmarks\DotNetCheats.Benchmarks.csproj", "{D8438838-088B-4559-8605-7DEAC889902C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetCheats.Reflection", "DotNetCheats.Reflection\DotNetCheats.Reflection.csproj", "{328F0106-4014-49E1-8DA0-35A37E8A0E96}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetCheats.Reflection", "DotNetCheats.Reflection\DotNetCheats.Reflection.csproj", "{328F0106-4014-49E1-8DA0-35A37E8A0E96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetCheats.Threading", "DotNetCheats.Threading\DotNetCheats.Threading.csproj", "{52822AF9-9831-48EA-A5DA-9FE8D6E1403F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{328F0106-4014-49E1-8DA0-35A37E8A0E96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{328F0106-4014-49E1-8DA0-35A37E8A0E96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{328F0106-4014-49E1-8DA0-35A37E8A0E96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52822AF9-9831-48EA-A5DA-9FE8D6E1403F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52822AF9-9831-48EA-A5DA-9FE8D6E1403F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52822AF9-9831-48EA-A5DA-9FE8D6E1403F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52822AF9-9831-48EA-A5DA-9FE8D6E1403F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
