@@ -145,7 +145,7 @@ namespace Cheats.Reflection
 		public void InstancePropertyTest()
 		{
 			var instance = new StructWithProperties();
-			var rwProperty = Type<StructWithProperties>.InstanceProperty<string>.GetOrThrow(nameof(StructWithProperties.ReadWriteProperty));
+			var rwProperty = Type<StructWithProperties>.Property<string>.Require(nameof(StructWithProperties.ReadWriteProperty));
 			True(rwProperty.CanRead);
 			True(rwProperty.CanWrite);
 			NotNull(rwProperty.GetMethod);
@@ -153,31 +153,31 @@ namespace Cheats.Reflection
 			rwProperty[instance] = "Hello, world";
 			Equal("Hello, world", instance.ReadWriteProperty);
 			Equal("Hello, world", rwProperty[instance]);
-			var wProperty = Type<StructWithProperties>.InstanceProperty<int>.GetOrThrow(nameof(StructWithProperties.WriteOnlyProp));
+			var wProperty = Type<StructWithProperties>.Property<int>.Require(nameof(StructWithProperties.WriteOnlyProp));
 			True(wProperty.CanWrite);
 			False(wProperty.CanRead);
 			NotNull(wProperty.SetMethod);
 			Null(wProperty.GetMethod);
 			wProperty[instance] = 42;
-			MemberAccess<StructWithProperties, int> rProperty = Type<StructWithProperties>.InstanceProperty<int>.GetOrThrow(nameof(StructWithProperties.ReadOnlyProp));
-			Equal(42, rProperty.GetValue(in instance));
+			var rProperty = Type<StructWithProperties>.Property<int>.Require(nameof(StructWithProperties.ReadOnlyProp));
+			Equal(42, rProperty[instance]);
 		}
 
 		[Fact]
 		public void StructPropertyTest()
 		{
 			var instance = new StructWithProperties();
-			MemberAccess<StructWithProperties, string> rwProperty = Type<StructWithProperties>.InstanceProperty<string>.GetOrThrow(nameof(StructWithProperties.ReadWriteProperty));
-			rwProperty.SetValue(instance, "Hello, world");
+			var rwProperty = Type<StructWithProperties>.Property<string>.Require(nameof(StructWithProperties.ReadWriteProperty));
+			rwProperty[instance] = "Hello, world";
 			Equal("Hello, world", instance.ReadWriteProperty);
 			Equal("Hello, world", rwProperty.GetValue(instance));
-			var wProperty = Type<StructWithProperties>.InstanceProperty<int>.GetOrThrow(nameof(StructWithProperties.WriteOnlyProp));
+			var wProperty = Type<StructWithProperties>.Property<int>.Require(nameof(StructWithProperties.WriteOnlyProp));
 			True(wProperty.CanWrite);
 			False(wProperty.CanRead);
 			NotNull(wProperty.SetMethod);
 			Null(wProperty.GetMethod);
 			wProperty[instance] = 42;
-			var rProperty = Type<StructWithProperties>.InstanceProperty<int>.GetOrThrow(nameof(StructWithProperties.ReadOnlyProp));
+			var rProperty = Type<StructWithProperties>.Property<int>.Require(nameof(StructWithProperties.ReadOnlyProp));
 			False(rProperty.CanWrite);
 			True(rProperty.CanRead);
 			Equal(42, rProperty[instance]);
@@ -187,7 +187,7 @@ namespace Cheats.Reflection
 		[Fact]
 		public void StaticPropertyTest()
 		{
-			var property = Type<ClassWithProperties>.StaticProperty<long>.GetOrThrow(nameof(ClassWithProperties.StaticProp), true);
+			var property = Type<ClassWithProperties>.Property<long>.RequireStatic(nameof(ClassWithProperties.StaticProp), true);
 			True(property.CanRead);
 			True(property.CanWrite);
 			property.Value = 42;
@@ -226,9 +226,9 @@ namespace Cheats.Reflection
 		[Fact]
 		public void StaticFieldTest()
 		{
-			Func<Guid> structField = Type<Guid>.Field<Guid>.RequireStatic(nameof(Guid.Empty));
+			MemberGetter<Guid> structField = Type<Guid>.Field<Guid>.RequireStatic(nameof(Guid.Empty));
 			Guid.Empty.Equals(structField());
-			Func<TextReader> objField = Type<TextReader>.Field<TextReader>.RequireStatic(nameof(TextReader.Null));
+			MemberGetter<TextReader> objField = Type<TextReader>.Field<TextReader>.RequireStatic(nameof(TextReader.Null));
 			Same(TextReader.Null, objField());
 			var statField = Type<TypeTests>.Field<long>.RequireStatic(nameof(Field), true);
 			statField.Value = 42L;

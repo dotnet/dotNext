@@ -109,39 +109,26 @@ namespace Cheats.Reflection
     /// </summary>
     /// <typeparam name="T">Declaring type.</typeparam>
     /// <typeparam name="V">Type of field value.</typeparam>
-    public sealed class Field<T, V> : Reflection.FieldBase<V>, IField<T, V>
+    public sealed class Field<T, V> : FieldBase<V>, IField<T, V>
     {
         private const BindingFlags PubicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
         
-        /// <summary>
-        /// Represents field getter.
-        /// </summary>
-        /// <param name="this">This parameter.</param>
-        /// <returns>Field value.</returns>
-        public delegate V Getter(in T @this);
 
-        /// <summary>
-        /// Represents field setter.
-        /// </summary>
-        /// <param name="this">This parameter.</param>
-        /// <param name="value">A value to set.</param>
-        public delegate void Setter(in T @this, V value);
-
-        private readonly Getter getter;
-        private readonly Setter setter;
+        private readonly MemberGetter<T, V> getter;
+        private readonly MemberSetter<T, V> setter;
 
         private Field(FieldInfo field)
             : base(field)
         {
             var instanceParam = Parameter(field.DeclaringType.MakeByRefType());
             var valueParam = Parameter(field.FieldType);
-            getter = Lambda<Getter>(Field(instanceParam, field), instanceParam).Compile();
-            setter = field.IsInitOnly ? null : Lambda<Setter>(Assign(Field(instanceParam, field), valueParam), instanceParam, valueParam).Compile();
+            getter = Lambda<MemberGetter<T, V>>(Field(instanceParam, field), instanceParam).Compile();
+            setter = field.IsInitOnly ? null : Lambda<MemberSetter<T, V>>(Assign(Field(instanceParam, field), valueParam), instanceParam, valueParam).Compile();
         }
 
-        public static implicit operator Getter(Field<T, V> field) => field?.getter;
-        public static implicit operator Setter(Field<T, V> field) => field?.setter;
+        public static implicit operator MemberGetter<T, V>(Field<T, V> field) => field?.getter;
+        public static implicit operator MemberSetter<T, V>(Field<T, V> field) => field?.setter;
 
         public override bool GetValue(object obj, out V value)
         {
@@ -215,24 +202,24 @@ namespace Cheats.Reflection
     /// Provides typed access to static field declared in type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="V">Type of field value.</typeparam>
-    public sealed class Field<V> : Reflection.FieldBase<V>, IField<V>
+    public sealed class Field<V> : FieldBase<V>, IField<V>
     {
         private const BindingFlags PubicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
-        private readonly Func<V> getter;
-        private readonly Action<V> setter;
+        private readonly MemberGetter<V> getter;
+        private readonly MemberSetter<V> setter;
 
         private Field(FieldInfo field)
             : base(field)
         {
             var valueParam = Parameter(field.FieldType);
-            getter = Lambda<Func<V>>(Field(null, field)).Compile();
-            setter = field.IsInitOnly ? null : Lambda<Action<V>>(Assign(Field(null, field), valueParam), valueParam).Compile();
+            getter = Lambda<MemberGetter<V>>(Field(null, field)).Compile();
+            setter = field.IsInitOnly ? null : Lambda<MemberSetter<V>>(Assign(Field(null, field), valueParam), valueParam).Compile();
         }
 
-        public static implicit operator Func<V>(Field<V> field) => field?.getter;
-        public static implicit operator Action<V>(Field<V> field) => field?.setter;
+        public static implicit operator MemberGetter<V>(Field<V> field) => field?.getter;
+        public static implicit operator MemberSetter<V>(Field<V> field) => field?.setter;
 
         public override bool GetValue(object obj, out V value)
         {
