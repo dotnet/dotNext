@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Cheats</RootNamespace>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
 </Project>

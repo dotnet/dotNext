@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DotNetCheats.Reflection\DotNetCheats.Reflection.csproj" />
+    <ProjectReference Include="..\DotNetCheats.Threading\DotNetCheats.Threading.csproj" />
     <ProjectReference Include="..\DotNetCheats\DotNetCheats.csproj" />
   </ItemGroup>
 
