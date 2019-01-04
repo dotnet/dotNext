@@ -31,14 +31,5 @@ namespace Cheats.Generics
             {
             }
         }
-
-        /// <summary>
-        /// Extracts boolean constant from generic parameter.
-        /// </summary>
-        /// <typeparam name="G">Type of boolean generic.</typeparam>
-        /// <returns>Boolean value.</returns>
-        public static new bool Of<G>()
-            where G: Bool, new()
-            => Constant<bool>.Of<G>();
     }
 }

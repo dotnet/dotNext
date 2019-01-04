@@ -32,18 +32,29 @@ namespace Cheats.Reflection
 			}
 		}
 
+		public void BinaryOperatorTest()
+		{
+			var op = Type<int>.BinaryOperator<BaseClass, bool>.Require(BinaryOperator.Equal);
+			True(op.Invoke(10, new BaseClass()));
+			True(20 == new DerivedClass());
+			var op2 = Type<int>.BinaryOperator<DerivedClass, bool>.Require(BinaryOperator.Equal);
+			True(op2.Invoke(20, new DerivedClass()));
+			var revertedOp = Type<DerivedClass>.BinaryOperator<int, bool>.Require(BinaryOperator.Equal);
+			True(revertedOp.Invoke(new DerivedClass(), 20));
+		}
+
 		[Fact]
 		public void UnaryOperatorTest()
 		{
-			var unaryPlus = Type<DerivedClass>.UnaryOperator<string>.Require(UnaryOperator.Plus);
+			var unaryPlus = Type<DerivedClass>.Operator<string>.Require(UnaryOperator.Plus);
 			var obj = new DerivedClass();
 			Equal(obj.ToString(), unaryPlus.Invoke(obj));
-			UnaryOperator<int, int>.Invoker negate = Type<int>.UnaryOperator<int>.Require(UnaryOperator.Negate);
+			Operator<int, int> negate = Type<int>.Operator<int>.Require(UnaryOperator.Negate);
 			Equal(-42, negate(42));
 			//typecast
-			var toLong = Type<byte>.UnaryOperator<ulong>.Require(UnaryOperator.Convert);
+			var toLong = Type<byte>.Operator<ulong>.Require(UnaryOperator.Convert);
 			Equal(42UL, toLong.Invoke(42));
-			var toString = Type<DerivedClass>.UnaryOperator<string>.Require(UnaryOperator.Convert);
+			var toString = Type<DerivedClass>.Operator<string>.Require(UnaryOperator.Convert);
 			NotEmpty(toString.Invoke(new DerivedClass()));
 			NotEmpty(Type<string>.Convert(new DerivedClass()));
 		}

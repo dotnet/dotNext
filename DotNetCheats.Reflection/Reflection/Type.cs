@@ -43,7 +43,7 @@ namespace Cheats.Reflection
 
         public static Optional<T> TryConvert<U>(U value)
         {
-            UnaryOperator<U, T>.Invoker converter = Type<U>.UnaryOperator<T>.Get(UnaryOperator.Convert);
+            Operator<U, T> converter = Type<U>.Operator.Get<T>(UnaryOperator.Convert);
             return converter is null ? Optional<T>.Empty : converter(value);
         }
 

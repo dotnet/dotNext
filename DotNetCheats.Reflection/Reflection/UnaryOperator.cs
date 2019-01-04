@@ -64,7 +64,17 @@ namespace Cheats.Reflection
 		/// <summary>
 		/// Safe typecast operation, such as obj as T
 		/// </summary>
-		TryConvert = ExpressionType.TypeAs
+		TryConvert = ExpressionType.TypeAs,
+
+		/// <summary>
+		/// if(value)
+		/// </summary>
+		IsTrue = ExpressionType.IsTrue,
+
+		/// <summary>
+		/// if(!value)
+		/// </summary>
+		IsFalse = ExpressionType.IsFalse
 	}
 
     /// <summary>
@@ -73,25 +83,17 @@ namespace Cheats.Reflection
 	/// <typeparam name="T">Target type.</typeparam>
     /// <typeparam name="R">Type of unary operator result.</typeparam>
 	[DefaultMember("Invoke")]
-    public sealed class UnaryOperator<T, R> : Operator<UnaryOperator<T, R>.Invoker>
+    public sealed class UnaryOperator<T, R> : Operator<Operator<T, R>>
     {
-		/// <summary>
-		/// A delegate representing unary operator.
-		/// </summary>
-		/// <param name="operand">An operand.</param>
-		/// <returns>Result of unary operator.</returns>
-		public delegate R Invoker(in T operand);
-
-        private UnaryOperator(Expression<Invoker> invoker, UnaryOperator type)
-            : base(invoker.Compile(), ToExpressionType(type))
+        private UnaryOperator(Expression<Operator<T, R>> invoker, UnaryOperator type, MethodInfo overloaded)
+            : base(invoker.Compile(), type.ToExpressionType(), overloaded)
         {
-            Type = type;
         }
 
         /// <summary>
         /// Type of operator.
         /// </summary>
-        public new UnaryOperator Type { get; }
+        public new UnaryOperator Type => (UnaryOperator)base.Type;
 
 		/// <summary>
 		/// Invokes unary operator.
@@ -101,11 +103,15 @@ namespace Cheats.Reflection
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public R Invoke(in T operand) => invoker(in operand);
 
-		private static Expression<Invoker> MakeUnary(UnaryOperator @operator, ParameterExpression param, Expression operand)
+		private static Expression<Operator<T, R>> MakeUnary(Operator.Kind @operator, Operator.Operand operand, out MethodInfo overloaded)
 		{
+			tail_call: //C# doesn't support tail calls so replace it with label/goto
+			overloaded = null;
 			try
 			{
-				return Expression.Lambda<Invoker>(Expression.MakeUnary(ToExpressionType(@operator), operand, typeof(R)), param);
+				var body = @operator.MakeUnary<R>(operand);
+				overloaded = body.Method;
+				return Expression.Lambda<Operator<T, R>>(body, operand.Source);
 			}
 			catch(ArgumentException e)
 			{
@@ -114,23 +120,20 @@ namespace Cheats.Reflection
 			}
 			catch(InvalidOperationException)
 			{
-				//do not walk through inheritance hierarchy for value types
-				if(param.Type.IsValueType) return null;
-				var lookup = operand.Type.BaseType;
-				return lookup is null ? null : MakeUnary(@operator, param, Expression.Convert(param, lookup));
+				//ignore exception
 			}
+			if(operand.Upcast())
+				goto tail_call;
+			else
+				return null;
 		}
 
-		/// <summary>
-		/// Reflects unary operator.
-		/// </summary>
-		/// <param name="@operator">Type of operator.</param>
-		/// <returns></returns>
-        public static UnaryOperator<T, R> Reflect(UnaryOperator @operator)
+
+        internal static UnaryOperator<T, R> Reflect(Operator.Kind op)
 		{
-			var parameter = Expression.Parameter(typeof(T).MakeByRefType());
-			var result = MakeUnary(@operator, parameter, parameter);
-            return result is null ? null : new UnaryOperator<T, R>(result, @operator);
+			var parameter = Expression.Parameter(typeof(T).MakeByRefType(), "operand");
+			var result = MakeUnary(op, parameter, out var overloaded);
+            return result is null ? null : new UnaryOperator<T, R>(result, op, overloaded);
 		}
     }
 }

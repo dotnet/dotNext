@@ -8,8 +8,6 @@ namespace Cheats.Reflection
 
     internal static class Ref
     {
-
-
         private static bool Is(Type type) => type.IsGenericInstanceOf(typeof(Ref<>));
 
         internal static bool Reflect(Type byRefType, out Type underlyingType, out FieldInfo valueField)

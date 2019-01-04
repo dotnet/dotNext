@@ -1,6 +1,5 @@
 using System;
-using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 
 namespace Cheats
 {
@@ -72,7 +71,7 @@ namespace Cheats
 			where T : IEquatable<T>
 			=> first is null ? second is null : new ReadOnlySpan<T>(first).SequenceEqual(new ReadOnlySpan<T>(second));
 
-		public static unsafe bool BitwiseEquals<T>(this T[] first, T[] second)
+		public static bool BitwiseEquals<T>(this T[] first, T[] second)
 			where T: struct
 		{
 			if(first is null)
@@ -81,11 +80,9 @@ namespace Cheats
 				return second.LongLength == 0L;
 			else if(first.LongLength != second.LongLength)
 				return false;
-			var size = Unsafe.SizeOf<T>() * first.Length;
-			return new ReadOnlySpan<byte>(Unsafe.AsPointer(ref first[0]), size).SequenceEqual(new ReadOnlySpan<byte>(Unsafe.AsPointer(ref second[0]), size));
+			else
+				return MemoryMarshal.AsBytes(new ReadOnlySpan<T>(first)).SequenceEqual(MemoryMarshal.AsBytes(new ReadOnlySpan<T>(second)));
 		}
-
-		private static bool CheckIndex<T>(this T[] array, long index) =>  index >= 0 || index < array.LongLength;
 
 		/// <summary>
 		/// Gets element at the specified index
@@ -96,7 +93,7 @@ namespace Cheats
 		/// <typeparam name="T">Type of array elements.</typeparam>
 		/// <returns>Array element.</returns>
 		public static Optional<T> At<T>(this T[] array, long index)
-			=> array.CheckIndex(index) ? array[index] : Optional<T>.Empty;
+			=> index >= 0 && index < array.LongLength ? array[index] : Optional<T>.Empty;
 
 		public static bool At<T>(this T[] array, long index, out T value)
 			=> array.At(index).TryGet(out value);
