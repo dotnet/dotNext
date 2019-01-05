@@ -6,6 +6,7 @@ namespace Cheats.Reflection
     /// <summary>
     /// Provides typed access to class or value type metadata.
     /// </summary>
+    /// <typeparam name="T">Reflected type.</typeparam>
     public static partial class Type<T>
     {
         /// <summary>

@@ -30,6 +30,7 @@ namespace Cheats.Reflection
     /// <summary>
     /// Wrapper for by-ref argument.
     /// </summary>
+    /// <typeparam name="T">Referenced type.</typeparam>
     [SecuritySafeCritical]
     public struct Ref<T>
     {
