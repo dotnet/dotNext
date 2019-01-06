@@ -5,31 +5,16 @@ using static System.Runtime.CompilerServices.Unsafe;
 
 namespace Cheats
 {
+	using Runtime.InteropServices;
+
 	/// <summary>
 	/// Various extensions for value types.
 	/// </summary>
     public static class ValueTypes
     {
-		private static readonly int BitwiseHashSalt = new Random().Next();
-
 		public static unsafe int BitwiseHashCode<T>(this T value, int hash, Func<int, int, int> hashFunction)
 			where T : struct
-		{
-			var pointer = new IntPtr(AsPointer(ref value));
-			for (var size = SizeOf<T>(); size > 0;)
-				if(size > sizeof(int))
-				{
-					hash = hashFunction(hash, pointer.Read<int>());
-					size -= sizeof(int);
-				}
-				else
-				{
-					hash = hashFunction(hash, pointer.Read<byte>());
-					size -= sizeof(byte);
-				}
-			
-			return hashFunction(hash, BitwiseHashSalt);
-		}
+			=> Memory.GetHashCode(AsPointer(ref value), SizeOf<T>(), hash, hashFunction);
 
 		/// <summary>
 		/// Computes hash code for the structure content.
@@ -41,9 +26,9 @@ namespace Cheats
 		/// <param name="value"></param>
 		/// <returns>Content hash code.</returns>
 		/// <seealso cref="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
-		public static int BitwiseHashCode<T>(this T value)
+		public static unsafe int BitwiseHashCode<T>(this T value)
 			where T : struct
-			=> BitwiseHashCode(value, unchecked((int)2166136261), (hash, word) => (hash ^ word) * 16777619);
+			=> Memory.GetHashCode(AsPointer(ref value), SizeOf<T>());
 
 		/// <summary>
 		/// Computes bitwise equality between two value types.
@@ -57,15 +42,13 @@ namespace Cheats
 		public static unsafe bool BitwiseEquals<T1, T2>(this T1 first, T2 second)
 			where T1: struct
 			where T2: struct
-			=> new ReadOnlySpan<byte>(AsPointer(ref first), SizeOf<T1>())
-				.SequenceEqual(new ReadOnlySpan<byte>(AsPointer(ref second), SizeOf<T2>()));
+			=> Memory.Equals(AsPointer(ref first), AsPointer(ref second), Math.Min(SizeOf<T1>(), SizeOf<T2>()));
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static unsafe int BitwiseCompare<T1, T2>(this T1 first, T2 second)
 			where T1: unmanaged
 			where T2: unmanaged
-			=> new ReadOnlySpan<byte>(AsPointer(ref first), SizeOf<T1>())
-				.SequenceCompareTo(new ReadOnlySpan<byte>(AsPointer(ref second), SizeOf<T2>()));
+			=> Memory.Compare(AsPointer(ref first), AsPointer(ref second), Math.Min(SizeOf<T1>(), SizeOf<T2>()));
 
 		/// <summary>
 		/// Converts one structure into another without changing any bits.
@@ -80,7 +63,7 @@ namespace Cheats
 			where O : unmanaged
 		{
 			var output = new O();
-			CopyBlockUnaligned(AsPointer(ref output), AsPointer(ref input), (uint)Math.Min(SizeOf<I>(), SizeOf<O>()));
+			Memory.Copy(AsPointer(ref input), AsPointer(ref output), Math.Min(SizeOf<I>(), SizeOf<O>()));
 			return output;
 		}
 

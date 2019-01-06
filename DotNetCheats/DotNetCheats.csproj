@@ -23,8 +23,9 @@
     <Folder Include="Reflection\" />
     <Folder Include="VariantType\" />
     <Folder Include="Threading\" />
+    <Folder Include="Threading\Tasks\" />
     <Folder Include="Generics\" />
-    <Folder Include="Runtime\InteropServices" />
+    <Folder Include="Runtime\InteropServices\" />
   </ItemGroup>
 
 </Project>
