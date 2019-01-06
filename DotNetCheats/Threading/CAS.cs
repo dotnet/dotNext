@@ -1,7 +1,5 @@
 ﻿namespace Cheats.Threading
 {
-	using Generics;
-
 	/// <summary>
 	/// Represents generic Compare-And-Set (CAS) operation.
 	/// </summary>

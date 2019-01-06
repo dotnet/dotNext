@@ -21,6 +21,10 @@
 
   <ItemGroup>
     <Folder Include="Reflection\" />
+    <Folder Include="VariantType\" />
+    <Folder Include="Threading\" />
+    <Folder Include="Generics\" />
+    <Folder Include="Runtime\" />
   </ItemGroup>
 
 </Project>

@@ -22,7 +22,7 @@ namespace Cheats
     /// </summary>
     /// <typeparam name="T">Value type.</typeparam>
     [Serializable]
-    public sealed class Box<T>
+    public sealed class Box<T>: IBox<T>
         where T: struct
     {
         private readonly T value;
@@ -32,6 +32,14 @@ namespace Cheats
         /// </summary>
         /// <param name="value">Value to be placed onto heap.</param>
         public Box(T value) => this.value = value;
+
+        /// <summary>
+        /// Creates bitwise clone of the boxed structure.
+        /// </summary>
+        /// <returns>A new cloned value.</returns>
+        public Box<T> Clone() => new Box<T>(value);
+
+        object ICloneable.Clone() => Clone();
 
         /// <summary>
         /// Unbox value type.

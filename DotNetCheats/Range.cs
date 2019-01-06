@@ -8,7 +8,7 @@ namespace Cheats
     public static class Range
     {
         /// <summary>
-        ///     Restricts a <paramref name="value" /> in specific range.
+        /// Restricts a <paramref name="value" /> in specific range.
         /// </summary>
         /// <typeparam name="T">Type of the values.</typeparam>
         /// <param name="value">Value.</param>
@@ -19,7 +19,7 @@ namespace Cheats
             => value.Max(min).Min(max);
 
         /// <summary>
-        ///     Restricts a <paramref name="value" /> minimal value.
+        /// Restricts a <paramref name="value" /> minimal value.
         /// </summary>
         /// <typeparam name="T">Type of the values.</typeparam>
         /// <param name="value">Value.</param>
@@ -29,7 +29,7 @@ namespace Cheats
 
 
         /// <summary>
-        ///     Restricts a <paramref name="value" /> maximum value.
+        /// Restricts a <paramref name="value" /> maximum value.
         /// </summary>
         /// <typeparam name="T">Type of the values.</typeparam>
         /// <param name="value">Value.</param>

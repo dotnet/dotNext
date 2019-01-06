@@ -8,6 +8,12 @@ namespace Cheats
 	/// </summary>
 	public static class Memory
 	{
+		/// <summary>
+		/// Represents null pointer.
+		/// </summary>
+		[CLSCompliant(false)]
+		public static unsafe readonly void* NullPtr = (void*)default(IntPtr);
+
 		public unsafe static T Dereference<T>(this IntPtr pointer)
 			where T: unmanaged
 			=> *(T*)pointer;
