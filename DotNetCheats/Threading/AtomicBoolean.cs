@@ -107,7 +107,7 @@ namespace Cheats.Threading
                 case bool b:
                     return Equals(b);
                 case AtomicBoolean b:
-                    return value == b.value;
+                    return b.value.VolatileGet() == value.VolatileGet();
                 default:
                     return false;
             }
