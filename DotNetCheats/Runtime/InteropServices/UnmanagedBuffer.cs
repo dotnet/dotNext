@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cheats.Runtime.InteropServices
 {
-    using static Threading.Tasks.TaskConverter;
+    using static Threading.Tasks.TaskCheats;
 
     /// <summary>
     /// Represents unmanaged memory buffer located outside of managed heap.
@@ -19,55 +19,55 @@ namespace Cheats.Runtime.InteropServices
     /// <typeparam name="T">Type to be allocated in the unmanaged heap.</typeparam>
     public unsafe readonly struct UnmanagedBuffer<T>: IUnmanagedMemory<T>, IBox<T>, IEquatable<UnmanagedBuffer<T>>
         where T: unmanaged
-    {  
-        /// <summary>
-        /// Represents GC-friendly reference to the unmanaged memory.
-        /// </summary>
+    {
+		/// <summary>
+		/// Represents GC-friendly reference to the unmanaged memory.
+		/// </summary>
 		/// <remarks>
 		/// Unmanaged memory allocated using handle can be reclaimed by GC automatically.
 		/// </remarks>
-        public sealed class Handle: UnmanagedMemoryHandle<T>
-        {
-            private Handle(UnmanagedBuffer<T> buffer, bool ownsHandle)
-                : base(buffer, ownsHandle)
-            {
-            }
+		public sealed class Handle : UnmanagedMemoryHandle<T>
+		{
+			private Handle(UnmanagedBuffer<T> buffer, bool ownsHandle)
+				: base(buffer, ownsHandle)
+			{
+			}
 
-            /// <summary>
-            /// Allocates a new unmanaged memory and associate it
-            /// with handle.
-            /// </summary>
-            /// <remarks>
-            /// Disposing of the handle created with this constructor
-            /// will release unmanaged memory.
-            /// </remarks>
-            public Handle()
-                : this(Alloc(), true)
-            {
-            }
+			/// <summary>
+			/// Allocates a new unmanaged memory and associate it
+			/// with handle.
+			/// </summary>
+			/// <remarks>
+			/// Disposing of the handle created with this constructor
+			/// will release unmanaged memory.
+			/// </remarks>
+			public Handle()
+				: this(Alloc(), true)
+			{
+			}
 
-            /// <summary>
-            /// Allocates a new unmanaged memory and associate it
-            /// with handle.
-            /// </summary>
-            /// <remarks>
-            /// Disposing of the handle created with this constructor
-            /// will release unmanaged memory.
-            /// </remarks>
-            /// <param name="value">A value to be placed into unmanaged memory.</param>
-            public Handle(T value)
-                : this(Box(value), true)
-            {
-            }
-            
-            public Handle(UnmanagedBuffer<T> buffer)
-                : this(buffer, false)
-            {
-            }
+			/// <summary>
+			/// Allocates a new unmanaged memory and associate it
+			/// with handle.
+			/// </summary>
+			/// <remarks>
+			/// Disposing of the handle created with this constructor
+			/// will release unmanaged memory.
+			/// </remarks>
+			/// <param name="value">A value to be placed into unmanaged memory.</param>
+			public Handle(T value)
+				: this(Box(value), true)
+			{
+			}
 
-            public override bool IsInvalid => handle == IntPtr.Zero;
+			public Handle(UnmanagedBuffer<T> buffer)
+				: this(buffer, false)
+			{
+			}
 
-            protected override bool ReleaseHandle() => FreeMem(handle);
+			public override bool IsInvalid => handle == IntPtr.Zero;
+
+			protected override bool ReleaseHandle() => FreeMem(handle);
 
 			/// <summary>
 			/// Converts handle into unmanaged buffer structure.
@@ -75,8 +75,15 @@ namespace Cheats.Runtime.InteropServices
 			/// <param name="handle">Handle to convert.</param>
 			/// <exception cref="ObjectDisposedException">Handle is closed.</exception>
 			public static implicit operator UnmanagedBuffer<T>(Handle handle)
-                => handle.IsClosed ? throw new ObjectDisposedException(handle.GetType().Name, "Handle is closed") : new UnmanagedBuffer<T>(handle.handle);
-        }
+			{
+				if (handle is null)
+					return default;
+				else if (handle.IsClosed)
+					throw new ObjectDisposedException(handle.GetType().Name, "Handle is closed");
+				else
+					return new UnmanagedBuffer<T>(handle.handle);
+			}
+		}
 
         /// <summary>
 		/// Size (in bytes) of unmanaged memory needed to allocate structure.

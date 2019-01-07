@@ -16,6 +16,58 @@ namespace Cheats.Runtime.InteropServices
 		where T : unmanaged
 	{
 		/// <summary>
+		/// Represents GC-friendly reference to the unmanaged array.
+		/// </summary>
+		/// <remarks>
+		/// Unmanaged array allocated using handle can be reclaimed by GC automatically.
+		/// </remarks>
+		public sealed class Handle : UnmanagedMemoryHandle<T>
+		{
+			private readonly int length;
+
+			private Handle(UnmanagedArray<T> array, bool ownsHandle)
+				: base(array, ownsHandle)
+			{
+				length = array.Length;
+			}
+
+			/// <summary>
+			/// Initializes a new unmanaged array and associate
+			/// it with the handle.
+			/// </summary>
+			/// <param name="length">Array length.</param>
+			public Handle(int length)
+				: this(new UnmanagedArray<T>(length), true)
+			{
+
+			}
+
+			public Handle(UnmanagedArray<T> array)
+				: this(array, false)
+			{
+			}
+
+			public override bool IsInvalid => handle == IntPtr.Zero;
+
+			protected override bool ReleaseHandle() => FreeMem(handle);
+
+			/// <summary>
+			/// Converts handle into unmanaged array reference.
+			/// </summary>
+			/// <param name="handle">A handle to convert.</param>
+			/// <exception cref="ObjectDisposedException">Handle is closed.</exception>
+			public static implicit operator UnmanagedArray<T>(Handle handle)
+			{
+				if (handle is null)
+					return default;
+				else if (handle.IsClosed)
+					throw new ObjectDisposedException(handle.GetType().Name, "Handle is closed");
+				else
+					return new UnmanagedArray<T>(handle.handle, handle.length);
+			}
+		}
+
+		/// <summary>
 		/// Size (in bytes) of single element type.
 		/// </summary>
 		public static readonly int ElementSize = Unsafe.SizeOf<T>();
@@ -45,6 +97,11 @@ namespace Cheats.Runtime.InteropServices
 		{
 			Length = length;
 			this.pointer = pointer;
+		}
+
+		private UnmanagedArray(IntPtr pointer, int length)
+			: this((T*)pointer, length)
+		{
 		}
 
 		private bool IsInvalid => pointer == Memory.NullPtr;

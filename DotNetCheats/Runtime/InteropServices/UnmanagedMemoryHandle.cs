@@ -3,8 +3,10 @@ using System.Runtime.InteropServices;
 
 namespace Cheats.Runtime.InteropServices
 {
-    using static Threading.AtomicInteger;
-
+	/// <summary>
+	/// Represents handle to unmanaged memory.
+	/// </summary>
+	/// <typeparam name="T">Type of pointer.</typeparam>
     public abstract class UnmanagedMemoryHandle<T>: SafeHandle
         where T: unmanaged
     {

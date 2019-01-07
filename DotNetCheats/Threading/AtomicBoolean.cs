@@ -4,6 +4,9 @@ using System.Runtime.CompilerServices;
 
 namespace Cheats.Threading
 {
+	/// <summary>
+	/// Represents atomic boolean.
+	/// </summary>
     [Serializable]
     public struct AtomicBoolean: IEquatable<bool>
     {
@@ -13,6 +16,9 @@ namespace Cheats.Threading
 
         public AtomicBoolean(bool value) => this.value = value ? True : False;
 
+		/// <summary>
+		/// Gets or sets boolean value in volatile manner.
+		/// </summary>
         public bool Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

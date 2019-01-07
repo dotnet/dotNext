@@ -22,11 +22,11 @@ namespace Cheats.Threading
 		/// Object lock should be lightweight
 		/// therefore it is struct.
 		/// </remarks>
-		public ref struct Lock
+		public ref struct Rental
 		{
 			private T lockedObject;
 
-			internal Lock(T obj, out bool lockTaken)
+			internal Rental(T obj, out bool lockTaken)
 			{
 				lockTaken = false;
 				Monitor.TryEnter(obj, ref lockTaken);
@@ -48,7 +48,7 @@ namespace Cheats.Threading
 			/// Gets channel/model associated with this lock.
 			/// </summary>
 			/// <param name="lock">Lock container.</param>
-			public static implicit operator T(Lock @lock) => @lock.lockedObject;
+			public static implicit operator T(Rental @lock) => @lock.lockedObject;
 		}
 
 		/// <summary>
@@ -68,10 +68,10 @@ namespace Cheats.Threading
 		}
 
 		/// <summary>
-		/// Select first unbusy object from pool and lock it.
+		/// Select first unbusy object from pool, lock it and return it.
 		/// </summary>
 		/// <returns>First unbusy object locked for the caller thread.</returns>
-		public Lock SelectAndLock()
+		public Rental Rent()
 		{
 			Requires(objects.Count > 0, "This pool has no channels");
 			//each thread must have its own spin awaiter
@@ -80,7 +80,7 @@ namespace Cheats.Threading
 				//apply selection using round-robin mechanism
 				var index = Math.Abs(counter.IncrementAndGet() % objects.Count);
 				//lock selected object if possible
-				var result = new Lock(objects[index], out var locked);
+				var result = new Rental(objects[index], out var locked);
 				if (locked)
 					return result;
 			}
