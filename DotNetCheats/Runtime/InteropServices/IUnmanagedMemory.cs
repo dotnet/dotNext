@@ -4,6 +4,11 @@ using System.IO;
 
 namespace Cheats.Runtime.InteropServices
 {
+	/// <summary>
+	/// Represents a common interface for unmanaged memory
+	/// managers.
+	/// </summary>
+	/// <typeparam name="T">Type of pointer.</typeparam>
     [CLSCompliant(false)]
     public interface IUnmanagedMemory<T>: IDisposable
         where T: unmanaged

@@ -18,6 +18,13 @@ namespace Cheats.Runtime.InteropServices
 		[CLSCompliant(false)]
 		public static unsafe readonly void* NullPtr = IntPtr.Zero.ToPointer();
 
+		/// <summary>
+		/// Reads a value of type <typeparamref name="T"/> from the given location
+		/// and adjust pointer according with size of type <typeparamref name="T"/>.
+		/// </summary>
+		/// <typeparam name="T">Unmanaged type to dereference.</typeparam>
+		/// <param name="source">A pointer to block of memory.</param>
+		/// <returns>Dereferenced value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public unsafe static T Read<T>(ref IntPtr source)
 			where T : unmanaged
@@ -27,6 +34,14 @@ namespace Cheats.Runtime.InteropServices
 			return result;
 		}
 
+		/// <summary>
+		/// Reads a value of type <typeparamref name="T"/> from the given location
+		/// without assuming architecture dependent alignment of the addresses;
+		/// and adjust pointer according with size of type <typeparamref name="T"/>.
+		/// </summary>
+		/// <typeparam name="T">Unmanaged type to dereference.</typeparam>
+		/// <param name="source">A pointer to block of memory.</param>
+		/// <returns>Dereferenced value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public unsafe static T ReadUnaligned<T>(ref IntPtr source)
 			where T : unmanaged
@@ -70,7 +85,7 @@ namespace Cheats.Runtime.InteropServices
 			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
 			{
 				var count = await source.ReadAsync(buffer, 0, buffer.Length);
-				WriteUnaligned<IntPtr>(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
+				WriteUnaligned(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
 				total += count;
 				if(count < IntPtr.Size)
 					return total;
@@ -103,7 +118,7 @@ namespace Cheats.Runtime.InteropServices
 			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
 			{
 				var count = source.Read(buffer, 0, buffer.Length);
-				WriteUnaligned<IntPtr>(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
+				WriteUnaligned(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
 				total += count;
 				if(count < IntPtr.Size)
 					return total;
@@ -168,7 +183,20 @@ namespace Cheats.Runtime.InteropServices
 		[CLSCompliant(false)]
 		public static unsafe Task WriteToSteamAsync(void* source, long length, Stream destination)
 			=> WriteToSteamAsync(new IntPtr(source), length, destination);
-		
+
+		/// <summary>
+		/// Computes hash code for the block of memory, 64-bit version.
+		/// </summary>
+		/// <remarks>
+		/// This method may give different value each time you run the program for
+		/// the same data. To disable this behavior, pass false to <paramref name="useSalt"/>. 
+		/// </remarks>
+		/// <param name="source">A pointer to the block of memory.</param>
+		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
+		/// <param name="hash">Initial value of the hash.</param>
+		/// <param name="hashFunction">Hashing function.</param>
+		/// <param name="useSalt">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <returns>Hash code of the memory block.</returns>
 		public static unsafe long GetHashCode(IntPtr pointer, long length, long hash, Func<long, long, long> hashFunction, bool useSalt = true)
 		{
 			while(length > IntPtr.Size)
@@ -184,38 +212,91 @@ namespace Cheats.Runtime.InteropServices
 			
 			return useSalt ? hashFunction(hash, BitwiseHashSalt) : hash;
 		}
-		
+
+		/// <summary>
+		/// Computes hash code for the block of memory, 64-bit version.
+		/// </summary>
+		/// <remarks>
+		/// This method may give different value each time you run the program for
+		/// the same data. To disable this behavior, pass false to <paramref name="useSalt"/>. 
+		/// </remarks>
+		/// <param name="source">A pointer to the block of memory.</param>
+		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
+		/// <param name="hash">Initial value of the hash.</param>
+		/// <param name="hashFunction">Hashing function.</param>
+		/// <param name="useSalt">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
 		public static unsafe long GetHashCode(void* pointer, long length, long hash, Func<long, long, long> hashFunction, bool useSalt = true)
 			=> GetHashCode(new IntPtr(pointer), length, hash, hashFunction, useSalt);
 
-		public static unsafe int GetHashCode(IntPtr pointer, long length, int hash, Func<int, int, int> hashFunction, bool useSalt = true)
+		/// <summary>
+		/// Computes hash code for the block of memory.
+		/// </summary>
+		/// <remarks>
+		/// This method may give different value each time you run the program for
+		/// the same data. To disable this behavior, pass false to <paramref name="useSalt"/>. 
+		/// </remarks>
+		/// <param name="source">A pointer to the block of memory.</param>
+		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
+		/// <param name="hash">Initial value of the hash.</param>
+		/// <param name="hashFunction">Hashing function.</param>
+		/// <param name="useSalt">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <returns>Hash code of the memory block.</returns>
+		public static unsafe int GetHashCode(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool useSalt = true)
 		{
 			while(length > sizeof(int))
 			{
-				hash = hashFunction(hash, ReadUnaligned<int>(ref pointer));
+				hash = hashFunction(hash, ReadUnaligned<int>(ref source));
 				length -= sizeof(int);
 			}
 			while(length > 0)
 			{
-				hash = hashFunction(hash, ReadUnaligned<byte>(ref pointer));
+				hash = hashFunction(hash, ReadUnaligned<byte>(ref source));
 				length -= sizeof(byte);
 			}
 			
 			return useSalt ? hashFunction(hash, BitwiseHashSalt) : hash;
 		}
 		
+		/// <summary>
+		/// Computes hash code for the block of memory.
+		/// </summary>
+		/// <remarks>
+		/// This method may give different value each time you run the program for
+		/// the same data. To disable this behavior, pass false to <paramref name="useSalt"/>. 
+		/// </remarks>
+		/// <param name="source">A pointer to the block of memory.</param>
+		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
+		/// <param name="hash">Initial value of the hash.</param>
+		/// <param name="hashFunction">Hashing function.</param>
+		/// <param name="useSalt">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
-		public static unsafe int GetHashCode(void* pointer, long length, int hash, Func<int, int, int> hashFunction, bool useSalt = true)
-			=> GetHashCode(new IntPtr(pointer), length, hash, hashFunction, useSalt);
+		public static unsafe int GetHashCode(void* source, long length, int hash, Func<int, int, int> hashFunction, bool useSalt = true)
+			=> GetHashCode(new IntPtr(source), length, hash, hashFunction, useSalt);
 		
-		internal static unsafe int GetHashCode(void* pointer, long length)
-			=> GetHashCode(pointer, length, unchecked((int)2166136261), (hash, word) => (hash ^ word) * 16777619);
+		internal static unsafe int GetHashCode(void* source, long length)
+			=> GetHashCode(source, length, unchecked((int)2166136261), (hash, word) => (hash ^ word) * 16777619);
 
+		/// <summary>
+		/// Computes equality between two blocks of memory.
+		/// </summary>
+		/// <param name="first">A pointer to the first memory block.</param>
+		/// <param name="second">A pointer to the second memory block.</param>
+		/// <param name="length">Length of first and second memory blocks, in bytes.</param>
+		/// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
 		[CLSCompliant(false)]
 		public static unsafe bool Equals(void* first, void* second, int length)
 			=> new ReadOnlySpan<byte>(first, length).SequenceEqual(new ReadOnlySpan<byte>(second, length));
-		
+
+		/// <summary>
+		/// Computes equality between two blocks of memory.
+		/// </summary>
+		/// <param name="first">A pointer to the first memory block.</param>
+		/// <param name="second">A pointer to the second memory block.</param>
+		/// <param name="length">Length of first and second memory blocks, in bytes.</param>
+		/// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
 		public static unsafe bool Equals(IntPtr first, IntPtr second, int length)
 			=> Equals(first.ToPointer(), second.ToPointer(), length);
 		

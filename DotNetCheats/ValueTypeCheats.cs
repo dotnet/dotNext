@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using System.Linq;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace Cheats
