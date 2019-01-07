@@ -10,6 +10,7 @@ namespace Cheats.Threading
 			var i = 10;
 			Equal(11, i.IncrementAndGet());
 			Equal(10, i.DecrementAndGet());
+			i = 20;
 			True(i.CompareAndSet(20, 30));
 			Equal(30, i);
 			False(i.CompareAndSet(20, 50));
@@ -33,6 +34,7 @@ namespace Cheats.Threading
 			var i = 10L;
 			Equal(11L, i.IncrementAndGet());
 			Equal(10L, i.DecrementAndGet());
+			i = 20L;
 			True(i.CompareAndSet(20L, 30L));
 			Equal(30L, i);
 			False(i.CompareAndSet(20L, 50L));

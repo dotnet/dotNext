@@ -59,7 +59,7 @@ namespace Cheats.Generic
         /// <param name="intern">True to return interned constant value; otherwise, false.</param>
         /// <typeparam name="G">A type representing a constant value.</typeparam>
         /// <returns>Constant value extracted from generic.</returns>
-        public static T Of<G>(bool intern = false)
+        public static T Of<G>(bool intern = true)
             where G: Constant<T>, new()
             => intern ? Cache<G>.Value : new G();
     }

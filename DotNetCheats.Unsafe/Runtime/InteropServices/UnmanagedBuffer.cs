@@ -310,7 +310,7 @@ namespace Cheats.Runtime.InteropServices
 		/// <typeparam name="U">New buffer type.</typeparam>
 		/// <returns>Reinterpreted reference pointing to the same memory as original buffer.</returns>
 		/// <exception cref="GenericArgumentException{U}">Target type should be of the same size or less than original type.</exception>
-		public UnmanagedBuffer<U> Reinterpret<U>() 
+		public UnmanagedBuffer<U> ReinterpretCast<U>() 
             where U: unmanaged
         {
             if(IsInvalid)

@@ -54,11 +54,15 @@ namespace Cheats
 		/// <returns></returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static unsafe O BitCast<I, O>(this I input)
-			where I : struct
+			where I : unmanaged
 			where O : unmanaged
 		{
-			var output = new O();
-			Memory.Copy(AsPointer(ref input), AsPointer(ref output), Math.Min(SizeOf<I>(), SizeOf<O>()));
+			var size1 = SizeOf<I>();
+			var size2 = SizeOf<O>();
+			if(size1 >= size2)
+                return As<I, O>(ref input);
+            var output = new O();
+			Memory.Copy(&input, &output, size1);
 			return output;
 		}
 

@@ -312,7 +312,7 @@ namespace Cheats.Runtime.InteropServices
 		/// <typeparam name="U">New element type.</typeparam>
 		/// <returns>Reinterpreted unmanaged array which points to the same memory as original array.</returns>
 		/// <exception cref="GenericArgumentException{U}">Invalid size of target element type.</exception>
-		public UnmanagedArray<U> Reinterpret<U>()
+		public UnmanagedArray<U> ReinterpretCast<U>()
 			where U : unmanaged
 		{
 			if (UnmanagedArray<U>.ElementSize > ElementSize)
