@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using static System.Runtime.CompilerServices.Unsafe;
 
 namespace Cheats
 {
@@ -13,7 +12,7 @@ namespace Cheats
     {
 		public static unsafe int BitwiseHashCode<T>(this T value, int hash, Func<int, int, int> hashFunction, bool useSalt = true)
 			where T : struct
-			=> Memory.GetHashCode(AsPointer(ref value), SizeOf<T>(), hash, hashFunction, useSalt);
+			=> ValueType<T>.GetHashCode(value, hash, hashFunction, useSalt);
 
 		/// <summary>
 		/// Computes hash code for the structure content.
@@ -23,7 +22,7 @@ namespace Cheats
 		/// <returns>Content hash code.</returns>
 		public static unsafe int BitwiseHashCode<T>(this T value)
 			where T : struct
-			=> Memory.GetHashCode(AsPointer(ref value), SizeOf<T>());
+			=> ValueType<T>.GetHashCode(value);
 
 		/// <summary>
 		/// Computes bitwise equality between two value types.
@@ -33,17 +32,16 @@ namespace Cheats
 		/// <typeparam name="T1"></typeparam>
 		/// <typeparam name="T2"></typeparam>
 		/// <returns></returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static unsafe bool BitwiseEquals<T1, T2>(this T1 first, T2 second)
 			where T1: struct
 			where T2: struct
-			=> Memory.Equals(AsPointer(ref first), AsPointer(ref second), Math.Min(SizeOf<T1>(), SizeOf<T2>()));
+			=> ValueType<T1>.Equals(first, second);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static unsafe int BitwiseCompare<T1, T2>(this T1 first, T2 second)
 			where T1: unmanaged
 			where T2: unmanaged
-			=> Memory.Compare(AsPointer(ref first), AsPointer(ref second), Math.Min(SizeOf<T1>(), SizeOf<T2>()));
+			=> Memory.Compare(&first, &second, Math.Min(ValueType<T1>.Size, ValueType<T2>.Size));
 
 		/// <summary>
 		/// Converts one structure into another without changing any bits.
@@ -57,30 +55,12 @@ namespace Cheats
 			where I : unmanaged
 			where O : unmanaged
 		{
-			var size1 = SizeOf<I>();
-			var size2 = SizeOf<O>();
-			if(size1 >= size2)
-                return As<I, O>(ref input);
+			if(ValueType<I>.Size >= ValueType<O>.Size)
+                return Unsafe.As<I, O>(ref input);
             var output = new O();
-			Memory.Copy(&input, &output, size1);
+			Memory.Copy(&input, &output, ValueType<I>.Size);
 			return output;
 		}
-
-		/// <summary>
-		/// Convert binary representation of structure into array of bytes.
-		/// </summary>
-		/// <param name="input">A structure to convert.</param>
-		/// <typeparam name="T">Structure type.</typeparam>
-		/// <returns>An array containing binary content of the structure in the form of bytes.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public unsafe static byte[] AsBinary<T>(this T input)
-			where T: struct
-			=> new ReadOnlySpan<byte>(AsPointer(ref input), SizeOf<T>()).ToArray();
-		
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsDefault<T>(this T value)
-			where T: struct
-			=> BitwiseEquals(value, default(T));
 
         public static bool OneOf<T>(this T value, params T[] values)
 			where T: struct, IEquatable<T>

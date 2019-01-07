@@ -10,6 +10,14 @@ namespace Cheats.Runtime.InteropServices
 	/// </summary>
 	public static class Memory
 	{
+		private static class FNV1a
+		{
+			internal const int Offset = unchecked((int)2166136261);
+			private const int Prime = 16777619;
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			internal static int HashRound(int hash, int data) => (hash ^ data) * Prime;
+		}
 		private static readonly int BitwiseHashSalt = new Random().Next();
 
 		/// <summary>
@@ -197,19 +205,29 @@ namespace Cheats.Runtime.InteropServices
 		/// <param name="hashFunction">Hashing function.</param>
 		/// <param name="useSalt">True to include randomized salt data into hashing; false to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
-		public static unsafe long GetHashCode(IntPtr pointer, long length, long hash, Func<long, long, long> hashFunction, bool useSalt = true)
+		public static unsafe long GetHashCode(IntPtr source, long length, long hash, Func<long, long, long> hashFunction, bool useSalt = true)
 		{
-			while(length > IntPtr.Size)
+			switch(length)
 			{
-				hash = hashFunction(hash, ReadUnaligned<IntPtr>(ref pointer).ToInt64());
-				length -= IntPtr.Size;
+				case sizeof(byte):
+					hash = hashFunction(hash, ReadUnaligned<byte>(ref source));
+					break;
+				case sizeof(short):
+					hash = hashFunction(hash, ReadUnaligned<short>(ref source));
+					break;
+				default:
+					while(length >= IntPtr.Size)
+					{
+						hash = hashFunction(hash, ReadUnaligned<IntPtr>(ref source).ToInt64());
+						length -= IntPtr.Size;
+					}
+					while(length > 0)
+					{
+						hash = hashFunction(hash, ReadUnaligned<byte>(ref source));
+						length -= sizeof(byte);
+					}
+					break;
 			}
-			while(length > 0)
-			{
-				hash = hashFunction(hash, ReadUnaligned<byte>(ref pointer));
-				length -= sizeof(byte);
-			}
-			
 			return useSalt ? hashFunction(hash, BitwiseHashSalt) : hash;
 		}
 
@@ -227,8 +245,8 @@ namespace Cheats.Runtime.InteropServices
 		/// <param name="useSalt">True to include randomized salt data into hashing; false to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
-		public static unsafe long GetHashCode(void* pointer, long length, long hash, Func<long, long, long> hashFunction, bool useSalt = true)
-			=> GetHashCode(new IntPtr(pointer), length, hash, hashFunction, useSalt);
+		public static unsafe long GetHashCode(void* source, long length, long hash, Func<long, long, long> hashFunction, bool useSalt = true)
+			=> GetHashCode(new IntPtr(source), length, hash, hashFunction, useSalt);
 
 		/// <summary>
 		/// Computes hash code for the block of memory.
@@ -245,17 +263,27 @@ namespace Cheats.Runtime.InteropServices
 		/// <returns>Hash code of the memory block.</returns>
 		public static unsafe int GetHashCode(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool useSalt = true)
 		{
-			while(length > sizeof(int))
+			switch(length)
 			{
-				hash = hashFunction(hash, ReadUnaligned<int>(ref source));
-				length -= sizeof(int);
+				case sizeof(byte):
+					hash = hashFunction(hash, ReadUnaligned<byte>(ref source));
+					break;
+				case sizeof(short):
+					hash = hashFunction(hash, ReadUnaligned<short>(ref source));
+					break;
+				default:
+					while(length >= sizeof(int))
+					{
+						hash = hashFunction(hash, ReadUnaligned<int>(ref source));
+						length -= sizeof(int);
+					}
+					while(length > 0)
+					{
+						hash = hashFunction(hash, ReadUnaligned<byte>(ref source));
+						length -= sizeof(byte);
+					}
+					break;
 			}
-			while(length > 0)
-			{
-				hash = hashFunction(hash, ReadUnaligned<byte>(ref source));
-				length -= sizeof(byte);
-			}
-			
 			return useSalt ? hashFunction(hash, BitwiseHashSalt) : hash;
 		}
 		
@@ -286,9 +314,46 @@ namespace Cheats.Runtime.InteropServices
 		/// <param name="value"></param>
 		/// <returns>Content hash code.</returns>
 		/// <see cref="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</see>
+		public static unsafe int GetHashCode(IntPtr source, long length, bool useSalt = true)
+		{
+			var hash = FNV1a.Offset;
+			switch(length)
+			{
+				case sizeof(byte):
+					hash = FNV1a.HashRound(FNV1a.Offset, ReadUnaligned<byte>(ref source));
+					break;
+				case sizeof(short):
+					hash = FNV1a.HashRound(FNV1a.Offset, ReadUnaligned<short>(ref source));
+					break;
+				default:
+					while(length >= sizeof(int))
+					{
+						hash = FNV1a.HashRound(hash, ReadUnaligned<int>(ref source));
+						length -= sizeof(int);
+					}
+					while(length > 0)
+					{
+						hash = FNV1a.HashRound(hash, ReadUnaligned<byte>(ref source));
+						length -= sizeof(byte);
+					}
+					break;
+			}
+			return useSalt ? FNV1a.HashRound(hash, BitwiseHashSalt) : hash;
+		}
+
+		/// <summary>
+		/// Computes hash code for the block of memory.
+		/// </summary>
+		/// <remarks>
+		/// This method uses FNV-1a hash algorithm.
+		/// </remarks>
+		/// <typeparam name="T">Stucture type.</typeparam>
+		/// <param name="value"></param>
+		/// <returns>Content hash code.</returns>
+		/// <see cref="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</see>
 		[CLSCompliant(false)]
-		public static unsafe int GetHashCode(void* source, long length)
-			=> GetHashCode(source, length, unchecked((int)2166136261), (hash, word) => (hash ^ word) * 16777619);
+		public static unsafe int GetHashCode(void* source, long length, bool useSalt = true)
+			=> GetHashCode(new IntPtr(source), length, useSalt);
 
 		/// <summary>
 		/// Computes equality between two blocks of memory.
@@ -299,7 +364,21 @@ namespace Cheats.Runtime.InteropServices
 		/// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
 		[CLSCompliant(false)]
 		public static unsafe bool Equals(void* first, void* second, int length)
-			=> new ReadOnlySpan<byte>(first, length).SequenceEqual(new ReadOnlySpan<byte>(second, length));
+		{
+			switch(length)
+			{
+				case sizeof(byte):
+					return Unsafe.ReadUnaligned<byte>(first) == Unsafe.ReadUnaligned<byte>(second);
+				case sizeof(ushort):
+					return Unsafe.ReadUnaligned<ushort>(first) == Unsafe.ReadUnaligned<ushort>(second);
+				case sizeof(uint):
+					return Unsafe.ReadUnaligned<uint>(first) == Unsafe.ReadUnaligned<uint>(second);
+				case sizeof(ulong):
+					return Unsafe.ReadUnaligned<ulong>(first) == Unsafe.ReadUnaligned<ulong>(second);
+				default:
+					return new ReadOnlySpan<byte>(first, length).SequenceEqual(new ReadOnlySpan<byte>(second, length));
+			}
+		}
 
 		/// <summary>
 		/// Computes equality between two blocks of memory.
@@ -313,7 +392,21 @@ namespace Cheats.Runtime.InteropServices
 		
 		[CLSCompliant(false)]
 		public static unsafe int Compare(void* first, void* second, int length)
-			=> new ReadOnlySpan<byte>(first, length).SequenceCompareTo(new ReadOnlySpan<byte>(second, length));
+		{
+			switch(length)
+			{
+				case sizeof(byte):
+					return Unsafe.ReadUnaligned<byte>(first).CompareTo(Unsafe.ReadUnaligned<byte>(second));
+				case sizeof(ushort):
+					return Unsafe.ReadUnaligned<ushort>(first).CompareTo(Unsafe.ReadUnaligned<ushort>(second));
+				case sizeof(uint):
+					return Unsafe.ReadUnaligned<uint>(first).CompareTo(Unsafe.ReadUnaligned<uint>(second));
+				case sizeof(ulong):
+					return Unsafe.ReadUnaligned<ulong>(first).CompareTo(Unsafe.ReadUnaligned<ulong>(second));
+				default:
+					return new ReadOnlySpan<byte>(first, length).SequenceCompareTo(new ReadOnlySpan<byte>(second, length));
+			}
+		}
 
 		public static unsafe int Compare(IntPtr first, IntPtr second, int length)
 			=> Compare(first.ToPointer(), second.ToPointer(), length);

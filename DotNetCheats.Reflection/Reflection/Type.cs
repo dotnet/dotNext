@@ -28,9 +28,13 @@ namespace Cheats.Reflection
 
         static Type()
         {
-            IsDefault = RuntimeType.IsValueType ?
-                new Predicate<int>(ValueTypeCheats.IsDefault).Reinterpret<Predicate<T>>() :
-                new Predicate<object>(input => input is null).ConvertDelegate<Predicate<T>>();
+            if(RuntimeType.IsValueType)
+            {
+                var isDefaultMethod = typeof(ValueType<int>).GetGenericTypeDefinition().MakeGenericType(RuntimeType).GetMethod(nameof(ValueType<int>.IsDefault));
+                IsDefault = isDefaultMethod.CreateDelegate<Predicate<T>>();
+            }
+            else
+                IsDefault = new Predicate<object>(input => input is null).ConvertDelegate<Predicate<T>>();
         }
 
         /// <summary>

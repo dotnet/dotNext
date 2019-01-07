@@ -23,7 +23,7 @@ namespace Cheats
 		public void AsBinaryTest()
 		{
 			var g = Guid.NewGuid();
-			var bytes = g.AsBinary();
+			var bytes = ValueType<Guid>.AsBinary(g);
 			True(g.ToByteArray().SequenceEqual(bytes));
 		}
 
@@ -41,9 +41,9 @@ namespace Cheats
 		public void DefaultTests()
 		{
 			var value = default(Guid);
-            True(value.IsDefault());
+            True(ValueType<Guid>.IsDefault(value));
             value = Guid.NewGuid();
-            False(value.IsDefault());
+            False(ValueType<Guid>.IsDefault(value));
 		}
 	}
 }

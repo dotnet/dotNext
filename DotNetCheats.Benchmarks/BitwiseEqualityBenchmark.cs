@@ -2,7 +2,6 @@
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using System;
-using System.Numerics;
 
 namespace Cheats
 {
@@ -45,37 +44,30 @@ namespace Cheats
 		}
 
 		private static readonly Guid NonEmptyGuid = Guid.NewGuid();
+		private static readonly BigStructure NonEmptyBigStruct = new BigStructure { C = 30 };
 
 		[Benchmark]
 		public void GuidEqualsMethod()
 		{
-			var first = NonEmptyGuid;
-			var second = default(Guid);
-			first.Equals(second);
+			NonEmptyGuid.Equals(default(Guid));
 		}
 
 		[Benchmark]
 		public void GuidBitwiseEqualsMethod()
 		{
-			var first = NonEmptyGuid;
-			var second = default(Guid);
-			first.BitwiseEquals(second);
+			ValueType<Guid>.Equals(NonEmptyGuid, default(Guid));
 		}
 
 		[Benchmark]
 		public void BigStructEqualsMethod()
 		{
-			var first = new BigStructure { C = 30 };
-			var second = default(BigStructure);
-			first.Equals(second);
+			NonEmptyBigStruct.Equals(default(BigStructure));
 		}
 
 		[Benchmark]
 		public void BigStructBitwiseEqualsMethod()
 		{
-			var first = new BigStructure { C = 30 };
-			var second = default(BigStructure);
-			first.BitwiseEquals(second);
+			ValueType<BigStructure>.Equals(NonEmptyBigStruct, default(BigStructure));
 		}
 	}
 }

@@ -70,7 +70,7 @@ namespace Cheats.Runtime.InteropServices
 		/// <summary>
 		/// Size (in bytes) of single element type.
 		/// </summary>
-		public static readonly int ElementSize = Unsafe.SizeOf<T>();
+		public static int ElementSize => ValueType<T>.Size;
 
 		private readonly T* pointer;
 

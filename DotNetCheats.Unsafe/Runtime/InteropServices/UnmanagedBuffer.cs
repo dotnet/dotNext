@@ -88,7 +88,7 @@ namespace Cheats.Runtime.InteropServices
         /// <summary>
 		/// Size (in bytes) of unmanaged memory needed to allocate structure.
 		/// </summary>
-        public static readonly int Size = Unsafe.SizeOf<T>();
+        public static int Size => ValueType<T>.Size;
 
         private readonly T* pointer;
 
