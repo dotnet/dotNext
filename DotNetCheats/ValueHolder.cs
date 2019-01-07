@@ -7,19 +7,19 @@ namespace Cheats
         private readonly T value;
         private readonly Func<T> supplier;
 
-        public ValueHolder(T value)
+        internal ValueHolder(T value)
         {
             this.value = value;
-            this.supplier = null;
+            supplier = null;
         }
         
-        public ValueHolder(Func<T> supplier)
+        internal ValueHolder(Func<T> supplier)
         {
-            this.value = default;
+            value = default;
             this.supplier = supplier ?? throw new ArgumentNullException(nameof(supplier));
         }
 
-        public T Value => supplier is null ? value : supplier();
+        internal T Value => supplier is null ? value : supplier();
 
         public static implicit operator ValueHolder<T>(T value) => new ValueHolder<T>(value);
 

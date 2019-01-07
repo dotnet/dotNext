@@ -3,97 +3,38 @@ using System.Threading.Tasks;
 
 namespace Cheats.Threading.Tasks
 {
-    
     public static class TaskConverter
     {
-        #region ToUInt64
-        [CLSCompliant(false)]
-        public static async Task<ulong> ToUInt64(this Task<byte> task) => Convert.ToUInt64(await task);
+		public static async Task<O> Map<I, O>(this Task<I> task, Converter<I, O> converter)
+			=> converter(await task);
 
-        [CLSCompliant(false)]
-        public static async Task<ulong> ToUInt64(this Task<sbyte> task) => Convert.ToUInt64(await task);
+		public static async Task<Optional<O>> Map<I, O>(this Task<Optional<I>> task, Converter<I, O> converter)
+			=> (await task).Map(converter);
 
-        [CLSCompliant(false)]
-        public static async Task<ulong> ToUInt64(this Task<short> task) => Convert.ToUInt64(await task);
+		public static async Task<O> FlatMap<I, O>(this Task<I> task, Converter<I, Task<O>> converter)
+			=> await converter(await task);
 
-        [CLSCompliant(false)]
-        public static async Task<ulong> ToUInt64(this Task<ushort> task) => Convert.ToUInt64(await task);
+		public static async Task<Optional<O>> FlatMap<I, O>(this Task<Optional<I>> task, Converter<I, Optional<O>> converter)
+			=> (await task).FlatMap(converter);
 
-        [CLSCompliant(false)]
-        public static async Task<ulong> ToUInt64(this Task<int> task) => Convert.ToUInt64(await task);
+		public static async Task<T> Or<T>(this Task<Optional<T>> task, T defaultValue)
+			=> (await task).Or(defaultValue);
 
-        [CLSCompliant(false)]
-        public static async Task<ulong> ToUInt64(this Task<uint> task) => Convert.ToUInt64(await task);
+		public static async Task<T> OrThrow<T, E>(this Task<Optional<T>> task)
+			where E : Exception, new()
+			=> (await task).OrThrow<E>();
 
-        [CLSCompliant(false)]
-        public static async Task<ulong> ToUInt64(this Task<long> task) => Convert.ToUInt64(await task);
+		public static async Task<T> OrThrow<T, E>(this Task<Optional<T>> task, Func<E> exceptionFactory)
+			where E : Exception
+			=> (await task).OrThrow(exceptionFactory);
 
-        #endregion
+		public static async Task<T> OrInvoke<T>(this Task<Optional<T>> task, Func<T> defaultFunc)
+			=> (await task).OrInvoke(defaultFunc);
 
-        #region ToInt64
-        public static async Task<long> ToInt64(this Task<byte> task) => Convert.ToInt64(await task);
-        
-        [CLSCompliant(false)]
-        public static async Task<long> ToInt64(this Task<sbyte> task) => Convert.ToInt64(await task);
+		public static async Task<T> OrDefault<T>(this Task<Optional<T>> task)
+			=> (await task).OrDefault();
 
-        public static async Task<long> ToInt64(this Task<short> task) => Convert.ToInt64(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<long> ToInt64(this Task<ushort> task) => Convert.ToInt64(await task);
-
-        public static async Task<long> ToInt64(this Task<int> task) => Convert.ToInt64(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<long> ToInt64(this Task<uint> task) => Convert.ToInt64(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<long> ToInt64(this Task<ulong> task) => Convert.ToInt64(await task);
-        #endregion
-
-        #region ToUInt32
-        [CLSCompliant(false)]
-        public static async Task<uint> ToUInt32(this Task<byte> task) => Convert.ToUInt32(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<uint> ToUInt32(this Task<sbyte> task) => Convert.ToUInt32(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<uint> ToUInt32(this Task<short> task) => Convert.ToUInt32(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<uint> ToUInt32(this Task<ushort> task) => Convert.ToUInt32(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<uint> ToUInt32(this Task<int> task) => Convert.ToUInt32(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<uint> ToUInt32(this Task<long> task) => Convert.ToUInt32(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<uint> ToUInt32(this Task<ulong> task) => Convert.ToUInt32(await task);
-        #endregion
-
-        #region ToInt32
-        [CLSCompliant(false)]
-        public static async Task<int> ToInt32(this Task<byte> task) => Convert.ToInt32(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<int> ToInt32(this Task<sbyte> task) => Convert.ToInt32(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<int> ToInt32(this Task<short> task) => Convert.ToInt32(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<int> ToInt32(this Task<ushort> task) => Convert.ToInt32(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<int> ToInt32(this Task<uint> task) => Convert.ToInt32(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<int> ToInt32(this Task<long> task) => Convert.ToInt32(await task);
-
-        [CLSCompliant(false)]
-        public static async Task<int> ToInt32(this Task<ulong> task) => Convert.ToInt32(await task);
-        #endregion
-    }
+		public static async Task<Optional<T>> If<T>(this Task<Optional<T>> task, Predicate<T> condition)
+			=> (await task).If(condition);
+	}
 }

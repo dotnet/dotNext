@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Cheats
 {
-    public static class Collections
+    public static class CollectionCheats
     {
         public static T? FirstOrNull<T>(this IEnumerable<T> collection)
             where T: struct

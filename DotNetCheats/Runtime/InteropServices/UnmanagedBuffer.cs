@@ -13,7 +13,8 @@ namespace Cheats.Runtime.InteropServices
     /// Represents unmanaged memory buffer located outside of managed heap.
     /// </summary>
     /// <remarks>
-    /// 
+    /// Memory allocated by unmanaged buffer is not controlled by Garbage Collector.
+	/// Therefore, it's your responsibility to release unmanaged memory using Dispose call.
     /// </remarks>
     /// <typeparam name="T">Type to be allocated in the unmanaged heap.</typeparam>
     public unsafe struct UnmanagedBuffer<T>: IUnmanagedMemory<T>, IBox<T>, IEquatable<UnmanagedBuffer<T>>
@@ -22,6 +23,9 @@ namespace Cheats.Runtime.InteropServices
         /// <summary>
         /// Represents GC-friendly reference to the unmanaged memory.
         /// </summary>
+		/// <remarks>
+		/// Unmanaged memory allocated using handle can be reclaimed by GC automatically.
+		/// </remarks>
         public sealed class Handle: UnmanagedMemoryHandle<T>
         {
             private Handle(UnmanagedBuffer<T> buffer, bool ownsHandle)
@@ -65,11 +69,18 @@ namespace Cheats.Runtime.InteropServices
 
             protected override bool ReleaseHandle() => FreeMem(handle);
 
-            public static implicit operator UnmanagedBuffer<T>(Handle handle)
+			/// <summary>
+			/// Converts handle into unmanaged buffer structure.
+			/// </summary>
+			/// <param name="handle">Handle to convert.</param>
+			/// <exception cref="ObjectDisposedException">Handle is closed.</exception>
+			public static implicit operator UnmanagedBuffer<T>(Handle handle)
                 => handle.IsClosed ? throw new ObjectDisposedException(handle.GetType().Name, "Handle is closed") : new UnmanagedBuffer<T>(handle.handle);
         }
 
-        [CLSCompliant(false)]
+        /// <summary>
+		/// Size of unmanaged memory needed to allocate structure.
+		/// </summary>
         public static readonly int Size = Unsafe.SizeOf<T>();
 
         private readonly T* pointer;
@@ -161,7 +172,7 @@ namespace Cheats.Runtime.InteropServices
 
         ulong IUnmanagedMemory<T>.ReadFrom(Stream source) => (ulong)Memory.ReadFromStream(source, pointer, Size);
 
-        Task<ulong> IUnmanagedMemory<T>.ReadFromAsync(Stream source) => Memory.ReadFromStreamAsync(source, pointer, Size).ToUInt64();
+		Task<ulong> IUnmanagedMemory<T>.ReadFromAsync(Stream source) => Memory.ReadFromStreamAsync(source, pointer, Size).Map(Convert.ToUInt64);
 
         [CLSCompliant(false)]
         public void WriteTo<U>(U* destination)
