@@ -23,7 +23,6 @@
     <Folder Include="Reflection\" />
     <Folder Include="VariantType\" />
     <Folder Include="Generics\" />
-    <Folder Include="Runtime\InteropServices\" />
   </ItemGroup>
 
 </Project>

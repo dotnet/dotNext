@@ -17,7 +17,7 @@ namespace Cheats.Runtime.InteropServices
 	/// Therefore, it's your responsibility to release unmanaged memory using Dispose call.
     /// </remarks>
     /// <typeparam name="T">Type to be allocated in the unmanaged heap.</typeparam>
-    public unsafe struct UnmanagedBuffer<T>: IUnmanagedMemory<T>, IBox<T>, IEquatable<UnmanagedBuffer<T>>
+    public unsafe readonly struct UnmanagedBuffer<T>: IUnmanagedMemory<T>, IBox<T>, IEquatable<UnmanagedBuffer<T>>
         where T: unmanaged
     {  
         /// <summary>
@@ -79,7 +79,7 @@ namespace Cheats.Runtime.InteropServices
         }
 
         /// <summary>
-		/// Size of unmanaged memory needed to allocate structure.
+		/// Size (in bytes) of unmanaged memory needed to allocate structure.
 		/// </summary>
         public static readonly int Size = Unsafe.SizeOf<T>();
 
@@ -129,11 +129,12 @@ namespace Cheats.Runtime.InteropServices
 
         private void InitMem(byte value)
             => Unsafe.InitBlock(pointer, 0, (uint)Size);
-        
-        /// <summary>
-        /// Sets all bits of allocated memory to zero.
-        /// </summary>
-        public void ZeroMem()
+
+		/// <summary>
+		/// Sets all bits of allocated memory to zero.
+		/// </summary>
+		/// <exception cref="NullPointerException">This buffer is not allocated.</exception>
+		public void ZeroMem()
         {
             if(IsInvalid)
                 throw new NullPointerException();
@@ -156,25 +157,51 @@ namespace Cheats.Runtime.InteropServices
                 Unsafe.Copy(pointer, ref source);
         }
 
-        public int ReadFrom(byte[] source)
-        {
-            if(IsInvalid)
-                throw new NullPointerException();
-            var size = Math.Min(Size, source.Length);
-            fixed(byte* src = source)
-                Memory.Copy(src, pointer, size);
-            return size;
-        }
+		public long ReadFrom(byte[] source, long offset, long length)
+		{
+			if (IsInvalid)
+				throw new NullPointerException();
+			else if (source is null)
+				throw new ArgumentNullException(nameof(source));
+			else if (source.LongLength == 0L)
+				return 0L;
+			else if (length < 0L || length > source.LongLength)
+				throw new IndexOutOfRangeException("Source length is invalid");
+			length = Math.Min(Size, length);
+			fixed (byte* src = &source[offset])
+				Memory.Copy(src, pointer, length);
+			return length;
+		}
 
-        ulong IUnmanagedMemory<T>.ReadFrom(byte[] source) => (ulong)ReadFrom(source);
+		public long ReadFrom(byte[] source) => ReadFrom(source, 0L, source.LongLength);
 
-        public int ReadFrom(Stream source) => (int)Memory.ReadFromStream(source, pointer, Size);
+		ulong IUnmanagedMemory<T>.ReadFrom(byte[] source, long offset, long length) => (ulong)ReadFrom(source, offset, length);
 
-        ulong IUnmanagedMemory<T>.ReadFrom(Stream source) => (ulong)Memory.ReadFromStream(source, pointer, Size);
+		public long ReadFrom(Stream source)
+		{
+			if (IsInvalid)
+				throw new NullPointerException();
+			else if (source is null)
+				throw new ArgumentNullException(nameof(source));
+			else
+				return Memory.ReadFromStream(source, pointer, Size);
+		}
 
-		Task<ulong> IUnmanagedMemory<T>.ReadFromAsync(Stream source) => Memory.ReadFromStreamAsync(source, pointer, Size).Map(Convert.ToUInt64);
+		public Task<long> ReadFromAsync(Stream source)
+		{
+			if (IsInvalid)
+				throw new NullPointerException();
+			else if (source is null)
+				throw new ArgumentNullException(nameof(source));
+			else
+				return Memory.ReadFromStreamAsync(source, pointer, Size);
+		}
 
-        [CLSCompliant(false)]
+        ulong IUnmanagedMemory<T>.ReadFrom(Stream source) => (ulong)ReadFrom(source);
+
+		Task<ulong> IUnmanagedMemory<T>.ReadFromAsync(Stream source) => ReadFromAsync(source).Map(Convert.ToUInt64);
+
+		[CLSCompliant(false)]
         public void WriteTo<U>(U* destination)
             where U: unmanaged
         {
@@ -196,21 +223,28 @@ namespace Cheats.Runtime.InteropServices
 
         public void WriteTo<U>(UnmanagedBuffer<U> destination)
             where U: unmanaged
-            => WriteTo<U>(destination.pointer);
+            => WriteTo(destination.pointer);
 
-        public int WriteTo(byte[] destination)
-        {
-            if(IsInvalid)
-                throw new NullPointerException();
-            else if(destination is null)
-                throw new ArgumentNullException(nameof(destination));
-            var size = Math.Min(Size, destination.Length);
-            fixed(byte* dest = destination)
-                Memory.Copy(pointer, dest, size);
-            return size;
-        }
+		public long WriteTo(byte[] destination, long offset, long length)
+		{
+			if (IsInvalid)
+				throw new NullPointerException();
+			else if (destination is null)
+				throw new ArgumentNullException(nameof(destination));
+			else if (destination.LongLength == 0L)
+				return 0L;
+			else if (length < 0 || length > destination.LongLength)
+				throw new IndexOutOfRangeException("Destination length is invalid");
+			length = Math.Min(Size, length);
+			fixed (byte* dest = &destination[offset])
+				Memory.Copy(pointer, dest, length);
+			return length;
+		}
 
-        ulong IUnmanagedMemory<T>.WriteTo(byte[] destination) => (ulong)WriteTo(destination);
+		public long WriteTo(byte[] destination) => WriteTo(destination, 0L, destination.LongLength);
+
+
+		ulong IUnmanagedMemory<T>.WriteTo(byte[] destination, long offset, long length) => (ulong)WriteTo(destination, offset, length);
 
         public void WriteTo(Stream destination)
         {
@@ -245,6 +279,10 @@ namespace Cheats.Runtime.InteropServices
         /// <returns>A boxed copy in the managed heap.</returns>
         public Box<T> CopyToManagedHeap() => new Box<T>(Unbox());
 
+		/// <summary>
+		/// Creates bitwise copy of unmanaged buffer.
+		/// </summary>
+		/// <returns>Bitwise copy of unmanaged buffer.</returns>
         public UnmanagedBuffer<T> Copy()
         {
             if(IsInvalid)
@@ -256,49 +294,74 @@ namespace Cheats.Runtime.InteropServices
 
         object ICloneable.Clone() => Copy();
 
-        public UnmanagedBuffer<U> Reinterpret<U>() 
+		/// <summary>
+		/// Reinterprets reference to the unmanaged buffer.
+		/// </summary>
+		/// <remarks>
+		/// Type <typeparamref name="U"/> should be of the same size or less than type <typeparamref name="U"/>.
+		/// </remarks>
+		/// <typeparam name="U">New buffer type.</typeparam>
+		/// <returns>Reinterpreted reference pointing to the same memory as original buffer.</returns>
+		/// <exception cref="GenericArgumentException{U}">Target type should be of the same size or less than original type.</exception>
+		public UnmanagedBuffer<U> Reinterpret<U>() 
             where U: unmanaged
         {
             if(IsInvalid)
                 throw new NullPointerException();
-            else if(Size < UnmanagedBuffer<U>.Size)
-                throw new GenericArgumentException<U>("Target type should be the same size or less");
+            else if(Size > UnmanagedBuffer<U>.Size)
+                throw new GenericArgumentException<U>("Target type should be the same size or less than original type");
             else
                 return new UnmanagedBuffer<U>(this);
         }
 
+		/// <summary>
+		/// Converts unmanaged buffer into managed array.
+		/// </summary>
+		/// <returns>Copy of unmanaged buffer in the form of managed byte array.</returns>
         public byte[] ToByteArray()
         {
-            if(IsInvalid)
-                throw new NullPointerException();
+			if (IsInvalid)
+				return Array.Empty<byte>();
             var result = new byte[Size];
             fixed(byte* destination = result)
                 Memory.Copy(pointer, destination, Size);
             return result;
         }
 
-        private byte* Offset(ulong offset)
-        {
-            if(IsInvalid)
-                throw new NullPointerException();
-            else if(offset >= 0 && offset < (ulong)Size) 
-                return (byte*)pointer + offset;
-            else 
-                throw new IndexOutOfRangeException($"Offset should be in range [0, {Size})");
-        }
+		/// <summary>
+		/// Gets memory byte at the specified offset.
+		/// </summary>
+		/// <param name="offset">Zero-based byte offset.</param>
+		/// <returns>Memory byte.</returns>
+		public byte GetByte(int offset) => *this[checked((ulong)offset)];
 
-        public byte this[int offset]
-        {
-            get => this[checked((ulong)offset)];
-            set => this[checked((ulong)offset)] = value;
-        }
+		/// <summary>
+		/// Sets memory byte at the specified offset.
+		/// </summary>
+		/// <param name="offset">Zero-based byte offset.</param>
+		/// <param name="value">Byte value to be written into memory.</param>
+		public void SetByte(int offset, byte value) => *this[checked((ulong)offset)] = value;
 
-        [CLSCompliant(false)]
-        public byte this[ulong offset]
-        {
-            get => Unsafe.ReadUnaligned<byte>(Offset(offset));
-            set => Unsafe.WriteUnaligned(Offset(offset), value);
-        }
+		/// <summary>
+		/// Gets pointer to the memory block.
+		/// </summary>
+		/// <param name="offset">Zero-based byte offset.</param>
+		/// <returns>Byte located at the specified offset in the memory.</returns>
+		/// <exception cref="NullPointerException">This buffer is not allocated.</exception>
+		/// <exception cref="IndexOutOfRangeException">Invalid offset.</exception>
+		[CLSCompliant(false)]
+		public byte* this[ulong offset]
+		{
+			get
+			{
+				if (IsInvalid)
+					throw new NullPointerException();
+				else if (offset >= 0 && offset < (ulong)Size)
+					return (byte*)pointer + offset;
+				else
+					throw new IndexOutOfRangeException($"Offset should be in range [0, {Size})");
+			}
+		}
 
         public static implicit operator IntPtr(UnmanagedBuffer<T> buffer) => new IntPtr(buffer.pointer);
 
@@ -337,9 +400,9 @@ namespace Cheats.Runtime.InteropServices
 
         public override int GetHashCode() => new IntPtr(pointer).ToInt32();
 
-        public int BitwiseHashCode() => pointer == Memory.NullPtr ? 0 : Memory.GetHashCode(pointer, Size);
+        public int BitwiseHashCode() => IsInvalid ? 0 : Memory.GetHashCode(pointer, Size);
 
-        public override bool Equals(object other)
+		public override bool Equals(object other)
         {
             switch(other)
             {
@@ -354,7 +417,9 @@ namespace Cheats.Runtime.InteropServices
             }
         }
 
-        [CLSCompliant(false)]
+		public override string ToString() => new IntPtr(pointer).ToString("X");
+
+		[CLSCompliant(false)]
         public bool BitwiseEquals(T* other)
         {
             if(pointer == other)
@@ -371,7 +436,7 @@ namespace Cheats.Runtime.InteropServices
         [CLSCompliant(false)]
         public int BitwiseCompare(T* other)
         {
-            if(pointer == Memory.NullPtr)
+            if(IsInvalid)
                 throw new NullPointerException();
             else if(other == Memory.NullPtr)
                 throw new ArgumentNullException(nameof(other));

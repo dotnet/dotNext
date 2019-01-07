@@ -10,7 +10,7 @@ namespace Cheats.Runtime.InteropServices
 	/// </summary>
 	/// <typeparam name="T">Type of pointer.</typeparam>
     [CLSCompliant(false)]
-    public interface IUnmanagedMemory<T>: IDisposable
+    public interface IUnmanagedMemory<T>: IDisposable, ICloneable
         where T: unmanaged
     {
         UnmanagedMemoryStream AsStream();
@@ -19,10 +19,9 @@ namespace Cheats.Runtime.InteropServices
 
         ulong Size { get; }
 
-        byte this[ulong offset]
+        unsafe byte* this[ulong offset]
         {
             get;
-            set;
         }
 
         byte[] ToByteArray();
@@ -31,9 +30,9 @@ namespace Cheats.Runtime.InteropServices
 
         Task WriteToAsync(Stream destination);
 
-        ulong WriteTo(byte[] destination);
+        ulong WriteTo(byte[] destination, long offset, long length);
 
-        ulong ReadFrom(byte[] source);
+		ulong ReadFrom(byte[] source, long offset, long length);
 
         ulong ReadFrom(Stream source);
 
