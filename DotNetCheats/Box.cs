@@ -4,20 +4,6 @@ using System.Collections.Generic;
 namespace Cheats
 {
     /// <summary>
-    /// Various extensions for boxed value types.
-    /// </summary>
-    public static class Box
-    {
-        public static bool Equals<T>(this Box<T> value, T other)
-            where T: struct, IEquatable<T>
-            => value.GetPinnableReference().Equals(other);
-
-        public static bool Equals<T>(this Box<T> value, Box<T> other)
-            where T: struct, IEquatable<T>
-            => !(other is null) && value.GetPinnableReference().Equals(other.GetPinnableReference());
-    }
-
-    /// <summary>
     /// Boxed representation of value type.
     /// </summary>
     /// <typeparam name="T">Value type.</typeparam>
@@ -25,6 +11,9 @@ namespace Cheats
     public sealed class Box<T>: IBox<T>
         where T: struct
     {
+        /// <summary>
+        /// Represents boxed value.
+        /// </summary>
         private readonly T value;
 
         /// <summary>
