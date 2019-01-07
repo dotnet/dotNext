@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetCheats.Benchmarks", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetCheats.Reflection", "DotNetCheats.Reflection\DotNetCheats.Reflection.csproj", "{328F0106-4014-49E1-8DA0-35A37E8A0E96}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetCheats.Unsafe", "DotNetCheats.Unsafe\DotNetCheats.Unsafe.csproj", "{BEFBC460-FFF8-4685-8ACF-EC37530845FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{328F0106-4014-49E1-8DA0-35A37E8A0E96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{328F0106-4014-49E1-8DA0-35A37E8A0E96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{328F0106-4014-49E1-8DA0-35A37E8A0E96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEFBC460-FFF8-4685-8ACF-EC37530845FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEFBC460-FFF8-4685-8ACF-EC37530845FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEFBC460-FFF8-4685-8ACF-EC37530845FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEFBC460-FFF8-4685-8ACF-EC37530845FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
