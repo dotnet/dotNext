@@ -11,6 +11,10 @@ namespace Cheats.Runtime.InteropServices
 	/// <summary>
 	/// Represents typed array allocated in the unmanaged heap.
 	/// </summary>
+	/// <remarks>
+    /// Allocated memory is not controlled by Garbage Collector.
+	/// Therefore, it's developer responsibility to release unmanaged memory using <see cref="IDisposable.Dispose"/> call.
+    /// </remarks>
 	/// <typeparam name="T">Array element type.</typeparam>
 	public unsafe struct UnmanagedArray<T> : IUnmanagedMemory<T>, IEquatable<UnmanagedArray<T>>
 		where T : unmanaged
@@ -116,7 +120,7 @@ namespace Cheats.Runtime.InteropServices
 		/// </summary>
 		public long Size => ElementSize * Length;
 
-		ulong IUnmanagedMemory<T>.Size => (uint)Size;
+		ulong IUnmanagedMemory<T>.Size => (ulong)Size;
 
 		T* IUnmanagedMemory<T>.Address => pointer;
 

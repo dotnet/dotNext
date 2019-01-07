@@ -10,14 +10,14 @@ namespace Cheats.Runtime.InteropServices
     using static Threading.Tasks.TaskCheats;
 
     /// <summary>
-    /// Represents unmanaged memory buffer located outside of managed heap.
+    /// Represents unmanaged structured memory located outside of managed heap.
     /// </summary>
     /// <remarks>
-    /// Memory allocated by unmanaged buffer is not controlled by Garbage Collector.
-	/// Therefore, it's your responsibility to release unmanaged memory using Dispose call.
+    /// Allocated memory is not controlled by Garbage Collector.
+	/// Therefore, it's developer responsibility to release unmanaged memory using <see cref="IDisposable.Dispose"/> call.
     /// </remarks>
     /// <typeparam name="T">Type to be allocated in the unmanaged heap.</typeparam>
-    public unsafe readonly struct UnmanagedBuffer<T>: IUnmanagedMemory<T>, IBox<T>, IEquatable<UnmanagedBuffer<T>>
+    public unsafe readonly struct UnmanagedMemory<T>: IUnmanagedMemory<T>, IBox<T>, IEquatable<UnmanagedMemory<T>>
         where T: unmanaged
     {
 		/// <summary>
@@ -28,7 +28,7 @@ namespace Cheats.Runtime.InteropServices
 		/// </remarks>
 		public sealed class Handle : UnmanagedMemoryHandle<T>
 		{
-			private Handle(UnmanagedBuffer<T> buffer, bool ownsHandle)
+			private Handle(UnmanagedMemory<T> buffer, bool ownsHandle)
 				: base(buffer, ownsHandle)
 			{
 			}
@@ -60,7 +60,7 @@ namespace Cheats.Runtime.InteropServices
 			{
 			}
 
-			public Handle(UnmanagedBuffer<T> buffer)
+			public Handle(UnmanagedMemory<T> buffer)
 				: this(buffer, false)
 			{
 			}
@@ -74,14 +74,14 @@ namespace Cheats.Runtime.InteropServices
 			/// </summary>
 			/// <param name="handle">Handle to convert.</param>
 			/// <exception cref="ObjectDisposedException">Handle is closed.</exception>
-			public static implicit operator UnmanagedBuffer<T>(Handle handle)
+			public static implicit operator UnmanagedMemory<T>(Handle handle)
 			{
 				if (handle is null)
 					return default;
 				else if (handle.IsClosed)
 					throw new ObjectDisposedException(handle.GetType().Name, "Handle is closed");
 				else
-					return new UnmanagedBuffer<T>(handle.handle);
+					return new UnmanagedMemory<T>(handle.handle);
 			}
 		}
 
@@ -92,10 +92,10 @@ namespace Cheats.Runtime.InteropServices
 
         private readonly T* pointer;
 
-        private UnmanagedBuffer(T* pointer)
+        private UnmanagedMemory(T* pointer)
             => this.pointer = pointer;
         
-        private UnmanagedBuffer(IntPtr pointer)
+        private UnmanagedMemory(IntPtr pointer)
             : this((T*)pointer)
         {
         }
@@ -108,14 +108,14 @@ namespace Cheats.Runtime.InteropServices
 
         ReadOnlySpan<T> IUnmanagedMemory<T>.Span => this;
 
-        private static UnmanagedBuffer<T> AllocUnitialized() => new UnmanagedBuffer<T>(Marshal.AllocHGlobal(Size));
+        private static UnmanagedMemory<T> AllocUnitialized() => new UnmanagedMemory<T>(Marshal.AllocHGlobal(Size));
 
         /// <summary>
         /// Boxes unmanaged type into unmanaged heap.
         /// </summary>
         /// <param name="value">A value to be placed into unmanaged memory.</param>
         /// <returns>Embedded reference to the allocated unmanaged memory.</returns>
-        public unsafe static UnmanagedBuffer<T> Box(T value)
+        public unsafe static UnmanagedMemory<T> Box(T value)
         {
             //allocate unmanaged memory
             var result = AllocUnitialized();
@@ -127,7 +127,7 @@ namespace Cheats.Runtime.InteropServices
         /// Allocates unmanaged type in the unmanaged heap.
         /// </summary>
         /// <returns>Embedded reference to the allocated unmanaged memory.</returns>
-        public static UnmanagedBuffer<T> Alloc()
+        public static UnmanagedMemory<T> Alloc()
         {
             var result = AllocUnitialized();
             result.InitMem(0);
@@ -152,7 +152,7 @@ namespace Cheats.Runtime.InteropServices
         public void ReadFrom<U>(U* source)
             where U: unmanaged
         {
-            var buffer = new UnmanagedBuffer<U>(source);
+            var buffer = new UnmanagedMemory<U>(source);
             buffer.WriteTo(pointer);
         }
 
@@ -217,7 +217,7 @@ namespace Cheats.Runtime.InteropServices
             else if(destination == Memory.NullPtr)
                 throw new ArgumentNullException(nameof(destination));
             else
-                Memory.Copy(pointer, destination, Math.Min(Size, UnmanagedBuffer<U>.Size));
+                Memory.Copy(pointer, destination, Math.Min(Size, UnmanagedMemory<U>.Size));
         }
 
         public void WriteTo(ref T destination)
@@ -228,7 +228,7 @@ namespace Cheats.Runtime.InteropServices
                 Unsafe.Copy(ref destination, pointer);
         }
 
-        public void WriteTo<U>(UnmanagedBuffer<U> destination)
+        public void WriteTo<U>(UnmanagedMemory<U> destination)
             where U: unmanaged
             => WriteTo(destination.pointer);
 
@@ -290,7 +290,7 @@ namespace Cheats.Runtime.InteropServices
 		/// Creates bitwise copy of unmanaged buffer.
 		/// </summary>
 		/// <returns>Bitwise copy of unmanaged buffer.</returns>
-        public UnmanagedBuffer<T> Copy()
+        public UnmanagedMemory<T> Copy()
         {
             if(IsInvalid)
                 return this;
@@ -310,15 +310,15 @@ namespace Cheats.Runtime.InteropServices
 		/// <typeparam name="U">New buffer type.</typeparam>
 		/// <returns>Reinterpreted reference pointing to the same memory as original buffer.</returns>
 		/// <exception cref="GenericArgumentException{U}">Target type should be of the same size or less than original type.</exception>
-		public UnmanagedBuffer<U> ReinterpretCast<U>() 
+		public UnmanagedMemory<U> ReinterpretCast<U>() 
             where U: unmanaged
         {
             if(IsInvalid)
                 throw new NullPointerException();
-            else if(Size > UnmanagedBuffer<U>.Size)
+            else if(Size > UnmanagedMemory<U>.Size)
                 throw new GenericArgumentException<U>("Target type should be the same size or less than original type");
             else
-                return new UnmanagedBuffer<U>(this);
+                return new UnmanagedMemory<U>(this);
         }
 
 		/// <summary>
@@ -370,19 +370,19 @@ namespace Cheats.Runtime.InteropServices
 			}
 		}
 
-        public static implicit operator IntPtr(UnmanagedBuffer<T> buffer) => new IntPtr(buffer.pointer);
+        public static implicit operator IntPtr(UnmanagedMemory<T> buffer) => new IntPtr(buffer.pointer);
 
         [CLSCompliant(false)]
-        public static implicit operator UIntPtr(UnmanagedBuffer<T> buffer) => new UIntPtr(buffer.pointer);
+        public static implicit operator UIntPtr(UnmanagedMemory<T> buffer) => new UIntPtr(buffer.pointer);
 
         [CLSCompliant(false)]
-        public static implicit operator T*(UnmanagedBuffer<T> buffer)
+        public static implicit operator T*(UnmanagedMemory<T> buffer)
             => buffer.IsInvalid ? throw new NullPointerException() : buffer.pointer;
 
-        public static implicit operator ReadOnlySpan<T>(UnmanagedBuffer<T> buffer)
+        public static implicit operator ReadOnlySpan<T>(UnmanagedMemory<T> buffer)
             => buffer.IsInvalid? throw new NullPointerException() : new ReadOnlySpan<T>(buffer.pointer, 1);
 
-        public static implicit operator T(UnmanagedBuffer<T> heap) => heap.Unbox();
+        public static implicit operator T(UnmanagedMemory<T> heap) => heap.Unbox();
 
         /// <summary>
         /// Gets unmanaged memory buffer as stream.
@@ -403,7 +403,7 @@ namespace Cheats.Runtime.InteropServices
         /// </summary>
         public void Dispose() => FreeMem(this);
 
-        public bool Equals(UnmanagedBuffer<T> other) => pointer == other.pointer;
+        public bool Equals(UnmanagedMemory<T> other) => pointer == other.pointer;
 
         public override int GetHashCode() => new IntPtr(pointer).ToInt32();
 
@@ -417,7 +417,7 @@ namespace Cheats.Runtime.InteropServices
                     return new IntPtr(this.pointer) == pointer;
                 case UIntPtr pointer:
                     return new UIntPtr(this.pointer) == pointer;
-                case UnmanagedBuffer<T> box:
+                case UnmanagedMemory<T> box:
                     return Equals(box);
                 default:
                     return false;
@@ -437,7 +437,7 @@ namespace Cheats.Runtime.InteropServices
                 return Memory.Equals(pointer, other, Size);
         }
 
-        public bool BitwiseEquals(UnmanagedBuffer<T> other)
+        public bool BitwiseEquals(UnmanagedMemory<T> other)
             => BitwiseEquals(other.pointer);
 
         [CLSCompliant(false)]
@@ -451,7 +451,7 @@ namespace Cheats.Runtime.InteropServices
                 return Memory.Compare(pointer, other, Size);
         }
 
-        public int BitwiseCompare(UnmanagedBuffer<T> other)
+        public int BitwiseCompare(UnmanagedMemory<T> other)
             => BitwiseCompare(other.pointer);
 
         public bool Equals(T other, IEqualityComparer<T> comparer)
@@ -461,17 +461,17 @@ namespace Cheats.Runtime.InteropServices
             => IsInvalid ? 0 : comparer.GetHashCode(*pointer); 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(UnmanagedBuffer<T> first, UnmanagedBuffer<T> second) => first.pointer == second.pointer;
+        public static bool operator ==(UnmanagedMemory<T> first, UnmanagedMemory<T> second) => first.pointer == second.pointer;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)] 
-        public static bool operator !=(UnmanagedBuffer<T> first, UnmanagedBuffer<T> second) => first.pointer != second.pointer;
+        public static bool operator !=(UnmanagedMemory<T> first, UnmanagedMemory<T> second) => first.pointer != second.pointer;
 
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)] 
-        public static bool operator ==(UnmanagedBuffer<T> first, void* second) => first.pointer == second;
+        public static bool operator ==(UnmanagedMemory<T> first, void* second) => first.pointer == second;
 
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(UnmanagedBuffer<T> first, void* second) => first.pointer != second;
+        public static bool operator !=(UnmanagedMemory<T> first, void* second) => first.pointer != second;
     }
 }
