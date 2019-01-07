@@ -97,6 +97,7 @@ namespace Cheats.Runtime.InteropServices
 				total += count;
 				if(count < IntPtr.Size)
 					return total;
+				buffer.Clear();
 			}
 			while(length > 0)
 			{
@@ -130,6 +131,7 @@ namespace Cheats.Runtime.InteropServices
 				total += count;
 				if(count < IntPtr.Size)
 					return total;
+				buffer.Clear();
 			}
 			while(length > 0)
 			{

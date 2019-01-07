@@ -5,6 +5,8 @@ namespace Cheats
 {
 	public static class ArrayCheats
 	{
+		public static void Clear<T>(this T[] array) => Array.Clear(array, 0, array.Length);
+
 		public static T[] Insert<T>(this T[] array, T element, long index)
 		{
 			if(index < 0 || index > array.Length)
@@ -21,13 +23,8 @@ namespace Cheats
 			}
 		}
 
-        public static O[] Map<I, O>(this I[] input, Func<I, O> mapper)
-        {
-            var output = New<O>(input.LongLength);
-            for(var i = 0L; i < input.LongLength; i++)
-                output[i] = mapper(input[i]);
-            return output;
-        }
+        public static O[] Map<I, O>(this I[] input, Converter<I, O> mapper) => Array.ConvertAll(input, mapper);
+		
 		public static O[] Map<I, O>(this I[] input, Func<long, I, O> mapper)
 		{
 			var output = New<O>(input.LongLength);
