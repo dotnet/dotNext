@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace Cheats.Threading
 {
-	using Generics;
+	using Generic;
 
 	/// <summary>
 	/// Various atomic operations for long data type

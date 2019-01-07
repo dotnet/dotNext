@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -22,7 +22,8 @@
   <ItemGroup>
     <Folder Include="Reflection\" />
     <Folder Include="VariantType\" />
-    <Folder Include="Generics\" />
+	<Folder Include="Generic\" />
+	<Folder Include="Threading\" />
   </ItemGroup>
 
 </Project>

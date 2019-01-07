@@ -1,4 +1,4 @@
-namespace Cheats.Generics
+namespace Cheats.Generic
 {
     /// <summary>
     /// Represents boolean constant as generic parameter.

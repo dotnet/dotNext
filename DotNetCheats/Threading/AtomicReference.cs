@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace Cheats.Threading
 {
-	using Generics;
+	using Generic;
 
 	/// <summary>
 	/// Provides atomic operations for the reference type.

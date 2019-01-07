@@ -2,7 +2,7 @@
 
 namespace Cheats.Threading
 {
-	using Generics;
+	using Generic;
 	internal static class Atomic<T, CAS>
 		where CAS : Constant<CAS<T>>, new()
 	{

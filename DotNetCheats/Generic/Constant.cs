@@ -1,6 +1,6 @@
 using System;
 
-namespace Cheats.Generics
+namespace Cheats.Generic
 {
     /// <summary>
     /// Allows to use constant values as generic parameters.
