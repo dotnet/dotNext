@@ -275,8 +275,19 @@ namespace Cheats.Runtime.InteropServices
 		[CLSCompliant(false)]
 		public static unsafe int GetHashCode(void* source, long length, int hash, Func<int, int, int> hashFunction, bool useSalt = true)
 			=> GetHashCode(new IntPtr(source), length, hash, hashFunction, useSalt);
-		
-		internal static unsafe int GetHashCode(void* source, long length)
+
+		/// <summary>
+		/// Computes hash code for the block of memory.
+		/// </summary>
+		/// <remarks>
+		/// This method uses FNV-1a hash algorithm.
+		/// </remarks>
+		/// <typeparam name="T">Stucture type.</typeparam>
+		/// <param name="value"></param>
+		/// <returns>Content hash code.</returns>
+		/// <see cref="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</see>
+		[CLSCompliant(false)]
+		public static unsafe int GetHashCode(void* source, long length)
 			=> GetHashCode(source, length, unchecked((int)2166136261), (hash, word) => (hash ^ word) * 16777619);
 
 		/// <summary>

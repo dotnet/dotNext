@@ -11,20 +11,16 @@ namespace Cheats
 	/// </summary>
     public static class ValueTypes
     {
-		public static unsafe int BitwiseHashCode<T>(this T value, int hash, Func<int, int, int> hashFunction)
+		public static unsafe int BitwiseHashCode<T>(this T value, int hash, Func<int, int, int> hashFunction, bool useSalt = true)
 			where T : struct
-			=> Memory.GetHashCode(AsPointer(ref value), SizeOf<T>(), hash, hashFunction);
+			=> Memory.GetHashCode(AsPointer(ref value), SizeOf<T>(), hash, hashFunction, useSalt);
 
 		/// <summary>
 		/// Computes hash code for the structure content.
 		/// </summary>
-		/// <remarks>
-		/// This method uses FNV-1a hash algorithm.
-		/// </remarks>
 		/// <typeparam name="T">Stucture type.</typeparam>
 		/// <param name="value"></param>
 		/// <returns>Content hash code.</returns>
-		/// <seealso cref="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
 		public static unsafe int BitwiseHashCode<T>(this T value)
 			where T : struct
 			=> Memory.GetHashCode(AsPointer(ref value), SizeOf<T>());
