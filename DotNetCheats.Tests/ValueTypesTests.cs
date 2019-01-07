@@ -38,6 +38,16 @@ namespace Cheats
 		}
 
 		[Fact]
+		public void BitwiseComparisonTest()
+		{
+			var value1 = 40M;
+			var value2 = 50M;
+			Equal(value1.CompareTo(value2) < 0, value1.BitwiseCompare(value2) < 0);
+			value2 = default;
+			Equal(value1.CompareTo(value2) > 0, value1.BitwiseCompare(value2) > 0);
+		}
+
+		[Fact]
 		public void DefaultTests()
 		{
 			var value = default(Guid);
