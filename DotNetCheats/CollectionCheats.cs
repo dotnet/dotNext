@@ -7,6 +7,12 @@ namespace Cheats
 {
     public static class CollectionCheats
     {
+		public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+		{
+			foreach (var item in collection)
+				action(item);
+		}
+
         public static T? FirstOrNull<T>(this IEnumerable<T> collection)
             where T: struct
         {

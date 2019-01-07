@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Cheats
 {
@@ -44,6 +45,50 @@ namespace Cheats
 			DisposeCore(true);
 			GC.SuppressFinalize(this);
 		}
+
+		/// <summary>
+		/// Disposes many objects in safe manner.
+		/// </summary>
+		/// <remarks>
+		/// This method calls <see cref="IDisposable.Dispose"/> for every
+		/// object even if one of them throws exception.
+		/// All exceptions will be combined into single one and raised again.
+		/// </remarks>
+		/// <param name="objects">An array of objects to dispose.</param>
+		/// <exception cref="AggregateException">One or more objects throw exception in dispose.</exception>
+		public static void Dispose(IEnumerable<IDisposable> objects)
+		{
+			LinkedList<Exception> exceptions = null;
+			foreach (var obj in objects)
+				if (!(obj is null))
+					try
+					{
+						obj.Dispose();
+					}
+					catch (Exception e)
+					{
+						if (exceptions is null)
+							exceptions = new LinkedList<Exception>();
+						exceptions.AddLast(e);
+					}
+			if (exceptions != null)
+				switch (exceptions.Count)
+				{
+					case 0:
+						return;
+					case 1:
+						throw exceptions.First.Value;
+					default:
+						throw new AggregateException(exceptions);
+				}
+		}
+
+		/// <summary>
+		/// Disposes many objects in safe manner.
+		/// </summary>
+		/// <param name="objects">An array of objects to dispose.</param>
+		public static void Dispose(params IDisposable[] objects)
+			=> Dispose(objects.Upcast<IEnumerable<IDisposable>, IDisposable[]>());
 
 		~Disposable() => DisposeCore(false);
 	}
