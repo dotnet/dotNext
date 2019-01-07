@@ -52,18 +52,6 @@ namespace Cheats.Threading
 			=> Interlocked.Decrement(ref value);
 
 		/// <summary>
-		/// Compares two 64-bit signed integers for equality and, 
-		/// if they are equal, replaces referenced value.
-		/// </summary>
-		/// <param name="value">Reference to a value to be modified.</param>
-		/// <param name="expected">The expected value.</param>
-		/// <param name="update">The new value.</param>
-		/// <returns>Original (previous) value.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static long CompareExchange(ref this long value, long expected, long update)
-			=> Interlocked.CompareExchange(ref value, update, expected);
-
-		/// <summary>
 		/// Atomically sets referenced value to the given updated value if the current value == the expected value.
 		/// </summary>
 		/// <param name="value">Reference to a value to be modified.</param>
@@ -72,7 +60,7 @@ namespace Cheats.Threading
 		/// <returns>true if successful. False return indicates that the actual value was not equal to the expected value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool CompareAndSet(ref this long value, long expected, long update)
-			=> CompareExchange(ref value, expected, update) == expected;
+			=> Interlocked.CompareExchange(ref value, update, expected) == expected;
 
 		/// <summary>
 		/// Adds two 64-bit integers and replaces referenced integer with the sum, 

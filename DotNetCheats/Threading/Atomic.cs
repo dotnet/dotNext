@@ -14,7 +14,8 @@ namespace Cheats.Threading
 			do
 			{
 				newValue = updater(oldValue = value);
-			} while (!CompareAndSet(ref value, oldValue, newValue));
+			} 
+			while (!CompareAndSet(ref value, oldValue, newValue));
 			return (oldValue, newValue);
 		}
 
@@ -24,7 +25,8 @@ namespace Cheats.Threading
 			do
 			{
 				newValue = accumulator(oldValue = value, x);
-			} while (!CompareAndSet(ref value, oldValue, newValue));
+			} 
+			while (!CompareAndSet(ref value, oldValue, newValue));
 			return (oldValue, newValue);
 		}
 	}

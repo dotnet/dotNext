@@ -104,6 +104,7 @@ namespace Cheats.Threading
 	/// otherwise you will get a local copy of the reference
 	/// not referred to the field.
 	/// </remarks>
+	[Serializable]
 	public struct AtomicReference<T> : IEquatable<T>
 		where T : class
 	{
