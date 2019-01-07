@@ -9,7 +9,7 @@ namespace Cheats
 	/// <summary>
 	/// Various extensions for value types.
 	/// </summary>
-    public static class ValueTypes
+    public static class ValueTypeCheats
     {
 		public static unsafe int BitwiseHashCode<T>(this T value, int hash, Func<int, int, int> hashFunction, bool useSalt = true)
 			where T : struct

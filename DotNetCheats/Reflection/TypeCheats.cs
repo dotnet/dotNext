@@ -6,7 +6,7 @@ namespace Cheats.Reflection
 	/// <summary>
 	/// Various extension methods for type reflection.
 	/// </summary>
-	public static class Types
+	public static class TypeCheats
 	{
 		private static readonly TypeSwitch<TypeCode> TypeCodes = TypeSwitch<TypeCode>.Define()
 					.Add<DBNull>(TypeCode.DBNull)

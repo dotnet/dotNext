@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Cheats
 {
-	public static class Arrays
+	public static class ArrayCheats
 	{
 		public static T[] Insert<T>(this T[] array, T element, long index)
 		{

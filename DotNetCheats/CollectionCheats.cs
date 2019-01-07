@@ -35,7 +35,7 @@ namespace Cheats
 
         public static O[] MapToArray<I, O>(this IList<I> input, Func<I, O> mapper)
         {
-            var output = Arrays.New<O>(input.Count);
+            var output = ArrayCheats.New<O>(input.Count);
             for(var i = 0; i < input.Count; i++)
                 output[i] = mapper(input[i]);
             return output;
@@ -43,7 +43,7 @@ namespace Cheats
 
         public static O[] MapToArray<I, O>(this IList<I> input, Func<int, I, O> mapper)
         {
-            var output = Arrays.New<O>(input.Count);
+            var output = ArrayCheats.New<O>(input.Count);
             for(var i = 0; i < input.Count; i++)
                 output[i] = mapper(i, input[i]);
             return output;

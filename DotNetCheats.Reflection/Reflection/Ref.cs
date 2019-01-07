@@ -4,7 +4,7 @@ using System.Security;
 
 namespace Cheats.Reflection
 {
-    using static Reflection.Types;
+    using static Reflection.TypeCheats;
 
     internal static class Ref
     {

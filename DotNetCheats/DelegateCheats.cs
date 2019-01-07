@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Cheats
 {
-	public static class Delegates
+	public static class DelegateCheats
 	{
 		public static Task InvokeAsync<E>(this EventHandler<E> handler, object sender, E args, bool parallel = true)
 		{
@@ -75,7 +75,7 @@ namespace Cheats
 		/// <returns>An object representing reflected method Invoke.</returns>
 		public static MethodInfo GetInvokeMethod<D>()
 			where D: Delegate
-			=> Reflection.Types.GetInvokeMethod(typeof(D));
+			=> Reflection.TypeCheats.GetInvokeMethod(typeof(D));
 
 		/// <summary>
 		/// Returns a new delegate of different type which

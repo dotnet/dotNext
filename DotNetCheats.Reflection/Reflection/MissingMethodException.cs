@@ -23,7 +23,7 @@ namespace Cheats.Reflection
         internal static MissingMethodException Create<T, D>(string methodName)
             where D: Delegate
         {
-            var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
+            var (parameters, returnType) = DelegateCheats.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
             return new MissingMethodException(typeof(T), methodName, returnType, parameters);
         }
 

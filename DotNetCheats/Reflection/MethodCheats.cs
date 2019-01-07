@@ -6,7 +6,7 @@ namespace Cheats.Reflection
 	/// <summary>
 	/// Various extension methods for method reflection.
 	/// </summary>
-	public static class Methods
+	public static class MethodCheats
 	{
 		public static Type[] GetParameterTypes(this MethodBase method)
             => method?.GetParameters().Map(p => p.ParameterType);

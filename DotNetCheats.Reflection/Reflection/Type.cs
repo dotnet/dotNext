@@ -29,7 +29,7 @@ namespace Cheats.Reflection
         static Type()
         {
             IsDefault = RuntimeType.IsValueType ?
-                new Predicate<int>(ValueTypes.IsDefault).Reinterpret<Predicate<T>>() :
+                new Predicate<int>(ValueTypeCheats.IsDefault).Reinterpret<Predicate<T>>() :
                 new Predicate<object>(input => input is null).ConvertDelegate<Predicate<T>>();
         }
 
