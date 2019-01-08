@@ -199,15 +199,15 @@ namespace Cheats.Runtime.InteropServices
 		/// </summary>
 		/// <remarks>
 		/// This method may give different value each time you run the program for
-		/// the same data. To disable this behavior, pass false to <paramref name="useSalt"/>. 
+		/// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
 		/// </remarks>
 		/// <param name="source">A pointer to the block of memory.</param>
 		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
 		/// <param name="hash">Initial value of the hash.</param>
 		/// <param name="hashFunction">Hashing function.</param>
-		/// <param name="useSalt">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <param name="salted">True to include randomized salt data into hashing; false to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
-		public static unsafe long GetHashCode(IntPtr source, long length, long hash, Func<long, long, long> hashFunction, bool useSalt = true)
+		public static unsafe long GetHashCode(IntPtr source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
 		{
 			switch(length)
 			{
@@ -230,7 +230,7 @@ namespace Cheats.Runtime.InteropServices
 					}
 					break;
 			}
-			return useSalt ? hashFunction(hash, BitwiseHashSalt) : hash;
+			return salted ? hashFunction(hash, BitwiseHashSalt) : hash;
 		}
 
 		/// <summary>
@@ -238,32 +238,32 @@ namespace Cheats.Runtime.InteropServices
 		/// </summary>
 		/// <remarks>
 		/// This method may give different value each time you run the program for
-		/// the same data. To disable this behavior, pass false to <paramref name="useSalt"/>. 
+		/// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
 		/// </remarks>
 		/// <param name="source">A pointer to the block of memory.</param>
 		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
 		/// <param name="hash">Initial value of the hash.</param>
 		/// <param name="hashFunction">Hashing function.</param>
-		/// <param name="useSalt">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <param name="salted">True to include randomized salt data into hashing; false to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
-		public static unsafe long GetHashCode(void* source, long length, long hash, Func<long, long, long> hashFunction, bool useSalt = true)
-			=> GetHashCode(new IntPtr(source), length, hash, hashFunction, useSalt);
+		public static unsafe long GetHashCode(void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
+			=> GetHashCode(new IntPtr(source), length, hash, hashFunction, salted);
 
 		/// <summary>
 		/// Computes hash code for the block of memory.
 		/// </summary>
 		/// <remarks>
 		/// This method may give different value each time you run the program for
-		/// the same data. To disable this behavior, pass false to <paramref name="useSalt"/>. 
+		/// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
 		/// </remarks>
 		/// <param name="source">A pointer to the block of memory.</param>
 		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
 		/// <param name="hash">Initial value of the hash.</param>
 		/// <param name="hashFunction">Hashing function.</param>
-		/// <param name="useSalt">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <param name="salted">True to include randomized salt data into hashing; false to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
-		public static unsafe int GetHashCode(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool useSalt = true)
+		public static unsafe int GetHashCode(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
 		{
 			switch(length)
 			{
@@ -286,7 +286,7 @@ namespace Cheats.Runtime.InteropServices
 					}
 					break;
 			}
-			return useSalt ? hashFunction(hash, BitwiseHashSalt) : hash;
+			return salted ? hashFunction(hash, BitwiseHashSalt) : hash;
 		}
 		
 		/// <summary>
@@ -294,17 +294,17 @@ namespace Cheats.Runtime.InteropServices
 		/// </summary>
 		/// <remarks>
 		/// This method may give different value each time you run the program for
-		/// the same data. To disable this behavior, pass false to <paramref name="useSalt"/>. 
+		/// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
 		/// </remarks>
 		/// <param name="source">A pointer to the block of memory.</param>
 		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
 		/// <param name="hash">Initial value of the hash.</param>
 		/// <param name="hashFunction">Hashing function.</param>
-		/// <param name="useSalt">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <param name="salted">True to include randomized salt data into hashing; false to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
-		public static unsafe int GetHashCode(void* source, long length, int hash, Func<int, int, int> hashFunction, bool useSalt = true)
-			=> GetHashCode(new IntPtr(source), length, hash, hashFunction, useSalt);
+		public static unsafe int GetHashCode(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
+			=> GetHashCode(new IntPtr(source), length, hash, hashFunction, salted);
 
 		/// <summary>
 		/// Computes hash code for the block of memory.
@@ -316,7 +316,7 @@ namespace Cheats.Runtime.InteropServices
 		/// <param name="value"></param>
 		/// <returns>Content hash code.</returns>
 		/// <see cref="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</see>
-		public static unsafe int GetHashCode(IntPtr source, long length, bool useSalt = true)
+		public static unsafe int GetHashCode(IntPtr source, long length, bool salted = true)
 		{
 			var hash = FNV1a.Offset;
 			switch(length)
@@ -340,7 +340,7 @@ namespace Cheats.Runtime.InteropServices
 					}
 					break;
 			}
-			return useSalt ? FNV1a.HashRound(hash, BitwiseHashSalt) : hash;
+			return salted ? FNV1a.HashRound(hash, BitwiseHashSalt) : hash;
 		}
 
 		/// <summary>
@@ -354,8 +354,8 @@ namespace Cheats.Runtime.InteropServices
 		/// <returns>Content hash code.</returns>
 		/// <see cref="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</see>
 		[CLSCompliant(false)]
-		public static unsafe int GetHashCode(void* source, long length, bool useSalt = true)
-			=> GetHashCode(new IntPtr(source), length, useSalt);
+		public static unsafe int GetHashCode(void* source, long length, bool salted = true)
+			=> GetHashCode(new IntPtr(source), length, salted);
 
 		/// <summary>
 		/// Computes equality between two blocks of memory.

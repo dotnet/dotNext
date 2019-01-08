@@ -76,8 +76,8 @@ namespace Cheats
         public static unsafe bool Equals(T first, T second)
             => Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
         
-        public static unsafe int GetHashCode(T value, int hash, Func<int, int, int> hashFunction, bool useSalt = true)
-			=> Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, hash, hashFunction, useSalt);
+        public static unsafe int GetHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
+			=> Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, hash, hashFunction, salted);
 
 		/// <summary>
 		/// Computes hash code for the structure content.
@@ -85,8 +85,8 @@ namespace Cheats
 		/// <param name="value"></param>
 		/// <returns>Content hash code.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]      
-		public static unsafe int GetHashCode(T value, bool useSalt = true)
-            => Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, useSalt);
+		public static unsafe int GetHashCode(T value, bool salted = true)
+            => Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, salted);
         
         internal unsafe static ReadOnlySpan<byte> RawBits(ref T value)
             => new ReadOnlySpan<byte>(Unsafe.AsPointer(ref value), Size);

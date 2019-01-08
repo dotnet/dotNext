@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.IO;
@@ -71,12 +72,7 @@ namespace Cheats.Runtime.InteropServices
 			}
 		}
 
-		/// <summary>
-		/// Size (in bytes) of single element type.
-		/// </summary>
-		public static int ElementSize => ValueType<T>.Size;
-
-		private readonly T* pointer;
+		private readonly Pointer<T> pointer;
 
 		/// <summary>
 		/// Allocates a new array in the unmanaged memory of the specified length.
@@ -89,15 +85,15 @@ namespace Cheats.Runtime.InteropServices
 				throw new ArgumentOutOfRangeException("Length of the array should not be less than zero");
 			else if ((Length = length) > 0L)
 			{
-				var size = length * ElementSize;
-				pointer = (T*)Marshal.AllocHGlobal(size);
-				Unsafe.InitBlock(pointer, 0, (uint)size);
+				var size = length * Pointer<T>.Size;
+				pointer = new Pointer<T>(Marshal.AllocHGlobal(size));
+				pointer.Clear(length);
 			}
 			else
-				pointer = (T*)Memory.NullPtr;
+				pointer = Pointer<T>.Null;
 		}
 
-		private UnmanagedArray(T* pointer, int length)
+		private UnmanagedArray(Pointer<T> pointer, int length)
 		{
 			Length = length;
 			this.pointer = pointer;
@@ -108,8 +104,6 @@ namespace Cheats.Runtime.InteropServices
 		{
 		}
 
-		private bool IsInvalid => pointer == Memory.NullPtr;
-
 		/// <summary>
 		/// Gets length of this array.
 		/// </summary>
@@ -118,7 +112,7 @@ namespace Cheats.Runtime.InteropServices
 		/// <summary>
 		/// Size of allocated memory, in bytes.
 		/// </summary>
-		public long Size => ElementSize * Length;
+		public long Size => Pointer<T>.Size * Length;
 
 		ulong IUnmanagedMemory<T>.Size => (ulong)Size;
 
@@ -128,12 +122,7 @@ namespace Cheats.Runtime.InteropServices
 		/// Zeroes all bits in the allocated memory.
 		/// </summary>
 		/// <exception cref="NullPointerException">Array is not allocated.</exception>
-		public void ZeroMem()
-		{
-			if (IsInvalid)
-				throw new NullPointerException();
-			Unsafe.InitBlock(pointer, 0, (uint)Size);
-		}
+		public void Clear() => pointer.Clear(Length);
 
 		/// <summary>
 		/// Gets or sets array element.
@@ -143,18 +132,9 @@ namespace Cheats.Runtime.InteropServices
 		/// <exception cref="NullPointerException">This array is not allocated.</exception>
 		/// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
 		[CLSCompliant(false)]
-		public T* this[uint index]
-		{
-			get
-			{
-				if (IsInvalid)
-					throw new NullPointerException();
-				else if (index >= 0 && index < Length)
-					return pointer + index;
-				else
-					throw new IndexOutOfRangeException($"Index should be in range [0, {Length})");
-			}
-		}
+		public Pointer<T> this[uint index] => index >= 0 && index < Length ?
+			pointer + index :
+			throw new IndexOutOfRangeException($"Index should be in range [0, {Length})");
 
 		/// <summary>
 		/// Gets or sets array element.
@@ -178,130 +158,62 @@ namespace Cheats.Runtime.InteropServices
 		/// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
 		public T this[long index]
 		{
-			get => *this[checked((uint)index)];
-			set => *this[checked((uint)index)] = value;
+			get => this[checked((uint)index)].ReadUnaligned();
+			set => this[checked((uint)index)].WriteUnaligned(value);
 		}
 		
-		byte* IUnmanagedMemory<T>.this[ulong offset]
-		{
-			get
-			{
-				if (IsInvalid)
-					throw new NullPointerException();
-				else if (offset >= 0 && offset < (ulong)Size)
-					return (byte*)pointer + offset;
-				else
-					throw new IndexOutOfRangeException($"Offset should be in range [0, {Size})");
-			}
-		}
+		byte* IUnmanagedMemory<T>.this[ulong offset] => offset >= 0 && offset < (ulong)Pointer<T>.Size ? 
+                pointer.As<byte>() + offset : 
+                throw new IndexOutOfRangeException($"Offset should be in range [0, {Pointer<T>.Size})");
 
-		public long WriteTo(T[] destination, long offset, long length)
+		public int WriteTo(in UnmanagedArray<T> destination, int offset, int length)
 		{
-			if (IsInvalid)
+			if (pointer.IsNull)
 				throw new NullPointerException();
-			else if (destination is null)
+			else if (destination.pointer.IsNull)
 				throw new ArgumentNullException(nameof(destination));
-			else if (destination.LongLength == 0L)
-				return 0L;
-			else if (length < 0 || length > destination.LongLength)
+			else if (length < 0)
 				throw new IndexOutOfRangeException("Destination length is invalid");
-			length = Math.Min(length, Length);
-			fixed (T* dest = &destination[offset])
-				Memory.Copy(pointer, dest, length * ElementSize);
+			else if (destination.Length == 0 || (length + offset) >= destination.Length)
+				return 0;
+			pointer.WriteTo(destination.pointer + offset, length);
 			return length;
 		}
+
+		public int WriteTo(in UnmanagedArray<T> destination) => WriteTo(destination, 0, destination.Length);
+
+		public long WriteTo(T[] destination, long offset, long length)
+			=> pointer.WriteTo(destination, offset, Math.Min(length, Length));
 
 		public long WriteTo(T[] destination) => WriteTo(destination, 0, destination.LongLength);
 
 		ulong IUnmanagedMemory<T>.WriteTo(byte[] destination, long offset, long length)
-		{
-			if (IsInvalid)
-				throw new NullPointerException();
-			else if (destination is null)
-				throw new ArgumentNullException(nameof(destination));
-			else if (destination.LongLength == 0L)
-				return 0UL;
-			else if (length < 0 || length > destination.LongLength)
-				throw new IndexOutOfRangeException("Destination length is invalid");
-			length = Math.Min(length, Size);
-			fixed (byte* dest = &destination[offset])
-				Memory.Copy(pointer, dest, length);
-			return (ulong)length;
-		}
+			=> (ulong)pointer.As<byte>().WriteTo(destination, offset, Math.Min(Size, length));
 
 		public void WriteTo(Stream destination)
-		{
-			if (IsInvalid)
-				throw new NullPointerException();
-			else if (destination is null)
-				throw new ArgumentNullException(nameof(destination));
-			else
-				Memory.WriteToSteam(pointer, Size, destination);
-		}
+			=> pointer.WriteTo(destination, Length);
 
 		public Task WriteToAsync(Stream destination)
-		{
-			if (IsInvalid)
-				throw new NullPointerException();
-			else if (destination is null)
-				throw new ArgumentNullException(nameof(destination));
-			else
-				return Memory.WriteToSteamAsync(pointer, Size, destination);
-		}
+			=> pointer.WriteToAsync(destination, Length);
 
 		public long ReadFrom(T[] source, long offset, long length)
-		{
-			if (IsInvalid)
-				throw new NullPointerException();
-			else if (source is null)
-				throw new ArgumentNullException(nameof(source));
-			else if (source.LongLength == 0L)
-				return 0L;
-			else if (length < 0L || length > source.LongLength)
-				throw new IndexOutOfRangeException("Source length is invalid");
-			length = Math.Min(length, Length);
-			fixed (T* src = &source[offset])
-				Memory.Copy(src, pointer, length * ElementSize);
-			return length;
-		}
+			=> pointer.ReadFrom(source, offset, Math.Min(length, Length));
 
 		public long ReadFrom(T[] source) => ReadFrom(source, 0L, source.LongLength);
 
+		public int ReadFrom(in UnmanagedArray<T> source, int offset, int length)
+			=> source.WriteTo(this, offset, length);
+
+		public int ReadFrom(in UnmanagedArray<T> source) => ReadFrom(source, 0, source.Length);
+
 		ulong IUnmanagedMemory<T>.ReadFrom(byte[] source, long offset, long length)
-		{
-			if (IsInvalid)
-				throw new NullPointerException();
-			else if (source is null)
-				throw new ArgumentNullException(nameof(source));
-			else if (source.LongLength == 0L)
-				return 0UL;
-			else if (length < 0 || length > source.LongLength)
-				throw new IndexOutOfRangeException("Source length is invalid");
-			length = Math.Min(length, Size);
-			fixed (byte* src = &source[offset])
-				Memory.Copy(src, pointer, length);
-			return (ulong)length;
-		}
+			=> (ulong)pointer.As<byte>().ReadFrom(source, offset, Math.Min(Size, length));
 
 		public long ReadFrom(Stream source)
-		{
-			if (IsInvalid)
-				throw new NullPointerException();
-			else if (source is null)
-				throw new ArgumentNullException(nameof(source));
-			else
-				return Memory.ReadFromStream(source, pointer, Size);
-		}
+			=> pointer.ReadFrom(source, Length);
 
 		public Task<long> ReadFromAsync(Stream source)
-		{
-			if (IsInvalid)
-				throw new NullPointerException();
-			else if (source is null)
-				throw new ArgumentNullException(nameof(source));
-			else
-				return Memory.ReadFromStreamAsync(source, pointer, Size);
-		}
+			=> pointer.ReadFromAsync(source, Length);
 
 		ulong IUnmanagedMemory<T>.ReadFrom(Stream source) => (ulong)ReadFrom(source);
 
@@ -316,23 +228,18 @@ namespace Cheats.Runtime.InteropServices
 		/// <typeparam name="U">New element type.</typeparam>
 		/// <returns>Reinterpreted unmanaged array which points to the same memory as original array.</returns>
 		/// <exception cref="GenericArgumentException{U}">Invalid size of target element type.</exception>
-		public UnmanagedArray<U> ReinterpretCast<U>()
+		public UnmanagedArray<U> As<U>()
 			where U : unmanaged
-		{
-			if (UnmanagedArray<U>.ElementSize > ElementSize)
-				throw new GenericArgumentException<U>("Target element type size should be less than or equal to the original element type");
-			else if (ElementSize % UnmanagedArray<U>.ElementSize != 0)
+			=> Pointer<T>.Size % Pointer<U>.Size == 0 ?
+				new UnmanagedArray<U>(pointer.As<U>(), Length * (Pointer<T>.Size / Pointer<U>.Size)):
 				throw new GenericArgumentException<U>("Target element size must be a multiple of the original element size.");
-			else
-				return new UnmanagedArray<U>((U*)pointer, Length * (ElementSize / UnmanagedArray<U>.ElementSize));
-		}
 
 		/// <summary>
 		/// Represents unmanaged array as stream.
 		/// </summary>
 		/// <returns>A stream to unmanaged array.</returns>
 		public UnmanagedMemoryStream AsStream()
-			=> new UnmanagedMemoryStream((byte*)pointer, Size);
+			=> pointer.AsStream(Length);
 
 		/// <summary>
 		/// Converts this unmanaged array into managed array.
@@ -340,11 +247,10 @@ namespace Cheats.Runtime.InteropServices
 		/// <returns>Managed copy of unmanaged array.</returns>
 		public T[] CopyToManagedHeap()
 		{
-			if (IsInvalid)
+			if (pointer.IsNull)
 				return Array.Empty<T>();
 			var result = new T[Length];
-			fixed (T* destination = result)
-				Memory.Copy(pointer, destination, Size);
+			WriteTo(result);
 			return result;
 		}
 
@@ -353,14 +259,7 @@ namespace Cheats.Runtime.InteropServices
 		/// </summary>
 		/// <returns>Managed array of bytes as bitwise copy of unmanaged array.</returns>
 		public byte[] ToByteArray()
-		{
-			if (IsInvalid)
-				return Array.Empty<byte>();
-			var result = new byte[Size];
-			fixed (byte* destination = result)
-				Memory.Copy(pointer, destination, Size);
-			return result;
-		}
+			=> pointer.ToByteArray(Length);
 
 		/// <summary>
 		/// Creates bitwise copy of unmanaged array.
@@ -368,10 +267,10 @@ namespace Cheats.Runtime.InteropServices
 		/// <returns>Bitwise copy of unmanaged array.</returns>
 		public UnmanagedArray<T> Copy()
 		{
-			if (IsInvalid)
+			if (pointer.IsNull)
 				return this;
 			var result = new UnmanagedArray<T>(Length);
-			Memory.Copy(pointer, result.pointer, Size);
+			WriteTo(result);
 			return result;
 		}
 
@@ -379,41 +278,26 @@ namespace Cheats.Runtime.InteropServices
 
 		ReadOnlySpan<T> IUnmanagedMemory<T>.Span => this;
 
-		[CLSCompliant(false)]
-		public bool BitwiseEquals(T* other)
-		{
-			if (pointer == other)
-				return true;
-			else if (pointer == Memory.NullPtr || other == Memory.NullPtr)
-				return false;
-			else
-				return Memory.Equals(pointer, other, checked((int)Size));
-		}
+		public bool BitwiseEquals(Pointer<T> other)
+			=> pointer.BitwiseEquals(other, Length);
 
 		public bool BitwiseEquals(in UnmanagedArray<T> other) => BitwiseEquals(other.pointer);
 
 		public bool BitwiseEquals(T[] other)
 		{
 			if (other.IsNullOrEmpty())
-				return IsInvalid;
-			else
+				return pointer.IsNull;
+			else if(Length == other.Length)
 				fixed (T* ptr = other)
 					return BitwiseEquals(ptr);
-		}
-
-		public int BitwiseHashCode()
-			=> IsInvalid ? 0 : Memory.GetHashCode(pointer, Size);
-
-		[CLSCompliant(false)]
-		public int BitwiseCompare(T* other)
-		{
-			if (IsInvalid)
-				throw new NullPointerException();
-			else if (other == Memory.NullPtr)
-				throw new ArgumentNullException(nameof(other));
 			else
-				return Memory.Compare(pointer, other, checked((int)Size));
+				return false;
 		}
+
+		public int BitwiseHashCode(bool salted)
+			=> pointer.BitwiseHashCode(Length, salted);
+
+		public int BitwiseCompare(Pointer<T> other) => pointer.BitwiseCompare(other, Length);
 
 		public int BitwiseCompare(in UnmanagedArray<T> other) => BitwiseCompare(other.pointer);
 
@@ -421,21 +305,27 @@ namespace Cheats.Runtime.InteropServices
 		{
 			if (other is null)
 				throw new ArgumentNullException(nameof(other));
-			else if (other.LongLength == 0)
-				return IsInvalid ? 0 : 1;
-			else
+			else if (other.LongLength == 0L)
+				return pointer.IsNull ? 0 : 1;
+			else if(Length == other.Length)
 				fixed (T* ptr = other)
 					return BitwiseCompare(ptr);
+			else
+				return Length.CompareTo(other.Length);
 		}
 
-		public bool Equals(UnmanagedArray<T> other) => pointer == other.pointer;
+		public bool Equals<U>(UnmanagedArray<U> other) 
+			where U: unmanaged
+			=> pointer.Equals(other.pointer);
+
+		bool IEquatable<UnmanagedArray<T>>.Equals(UnmanagedArray<T> other) => Equals(other);
 
 		public override bool Equals(object other)
 		{
 			switch(other)
 			{
 				case IntPtr pointer:
-					return new IntPtr(this.pointer) == pointer;
+					return this.pointer.Address == pointer;
 				case UIntPtr pointer:
 					return new UIntPtr(this.pointer) == pointer;
 				case UnmanagedArray<T> array:
@@ -445,20 +335,71 @@ namespace Cheats.Runtime.InteropServices
 			}
 		}
 
+		public bool Equals(T[] other, IEqualityComparer<T> comparer)
+		{
+			if (other is null)
+				return pointer.IsNull;
+			else if(Length == other.Length)
+			{
+				for(int i = 0; i < Length; i++)
+					if(!comparer.Equals(this[i], other[i]))
+						return false;
+				return true;
+			}
+			else
+				return false;
+		}
+
+		public bool Equals(in UnmanagedArray<T> other, IEqualityComparer<T> comparer)
+		{
+			if(Length == other.Length)
+			{
+				for(int i = 0; i < Length; i++)
+					if(!comparer.Equals(this[i], other[i]))
+						return false;
+				return true;
+			}
+			else
+				return false;
+		}
+
+		public int Compare(T[] other, IComparer<T> comparer)
+		{
+			if (other is null)
+				throw new ArgumentNullException(nameof(other));
+			else if(Length == other.Length)
+			{
+				var cmp = 0;
+				for(int i = 0; i < Length; i++)
+					cmp += comparer.Compare(this[i], other[i]);
+				return cmp;
+			}
+			else
+				return Length.CompareTo(other.Length);
+		}
+
+		public int Compare(in UnmanagedArray<T> other, IComparer<T> comparer)
+		{
+			if(Length == other.Length)
+			{
+				var cmp = 0;
+				for(int i = 0; i < Length; i++)
+					cmp += comparer.Compare(this[i], other[i]);
+				return cmp;
+			}
+			else
+				return Length.CompareTo(other.Length);
+		}
+
 		public override int GetHashCode() => new IntPtr(pointer).ToInt32();
+
 
 		public override string ToString() => new IntPtr(pointer).ToString("X");
 
-		[CLSCompliant(false)]
-		public static implicit operator T*(in UnmanagedArray<T> array) => array.pointer;
+		public static implicit operator Pointer<T>(in UnmanagedArray<T> array) => array.pointer;
 
 		public static implicit operator ReadOnlySpan<T>(in UnmanagedArray<T> array)
 			=> array.pointer == Memory.NullPtr ? new ReadOnlySpan<T>() : new ReadOnlySpan<T>(array.pointer, array.Length);
-
-		public static implicit operator IntPtr(in UnmanagedArray<T> array) => new IntPtr(array.pointer);
-
-		[CLSCompliant(false)]
-		public static implicit operator UIntPtr(in UnmanagedArray<T> array) => new UIntPtr(array.pointer);
 
 		public static bool operator ==(in UnmanagedArray<T> first, in UnmanagedArray<T> second)
 			=> first.pointer == second.pointer;
@@ -485,6 +426,6 @@ namespace Cheats.Runtime.InteropServices
 		/// <summary>
 		/// Releases unmanaged memory associated with the array.
 		/// </summary>
-		public void Dispose() => FreeMem(new IntPtr(pointer));
+		public void Dispose() => FreeMem(pointer.Address);
 	}
 }

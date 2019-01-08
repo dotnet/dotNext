@@ -38,7 +38,7 @@ namespace Cheats.Runtime.InteropServices
 
         Task<ulong> ReadFromAsync(Stream source);
 
-        void ZeroMem();
+        void Clear();
 
         ReadOnlySpan<T> Span { get; }
     }
