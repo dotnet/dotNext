@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Cheats
@@ -51,10 +50,5 @@ namespace Cheats
 
         public static bool IsNullOrEmpty<T>(this ICollection<T> collection)
             => collection is null || collection.Count == 0;
-
-        public static C IfNullOrEmpty<C, T>(this C collection, C value)
-            where C:ICollection<T>
-            => IsNullOrEmpty(collection) ? value : collection;
-
     }
 }
