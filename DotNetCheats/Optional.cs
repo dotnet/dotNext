@@ -171,7 +171,7 @@ namespace Cheats
 		/// <summary>
 		/// Represents optional container without value.
 		/// </summary>
-		public static Optional<T> Empty = default;
+		public static Optional<T> Empty => default;
 
 		/// <summary>
 		/// Indicates whether the value is present.

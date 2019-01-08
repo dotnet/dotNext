@@ -66,8 +66,8 @@ namespace Cheats
 		/// <typeparam name="T">Value type.</typeparam>
 		/// <returns>Boxed representation of value type.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static Box<T> Box<T>(this T value)
+		public static StrongBox<T> Box<T>(this T value)
 			where T: struct
-			=> new Box<T>(value);
+			=> new StrongBox<T>(value);
     }
 }

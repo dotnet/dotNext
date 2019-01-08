@@ -17,7 +17,7 @@ namespace Cheats.Runtime.InteropServices
 	/// Therefore, it's developer responsibility to release unmanaged memory using <see cref="IDisposable.Dispose"/> call.
     /// </remarks>
     /// <typeparam name="T">Type to be allocated in the unmanaged heap.</typeparam>
-    public unsafe readonly struct UnmanagedMemory<T>: IUnmanagedMemory<T>, IBox<T>, IEquatable<UnmanagedMemory<T>>
+    public unsafe readonly struct UnmanagedMemory<T>: IUnmanagedMemory<T>, IStrongBox, IEquatable<UnmanagedMemory<T>>
         where T: unmanaged
     {
 		/// <summary>
@@ -99,6 +99,35 @@ namespace Cheats.Runtime.InteropServices
             : this((T*)pointer)
         {
         }
+
+		/// <summary>
+		/// Gets or sets value stored in unmanaged memory.
+		/// </summary>
+		public T Value
+		{
+			get => IsInvalid ? throw new NullPointerException() : *pointer;
+			set
+			{
+				if (IsInvalid)
+					throw new NullPointerException();
+				else
+					*pointer = value;
+			}
+		}
+
+		object IStrongBox.Value
+		{
+			get => IsInvalid ? null : (object)*pointer;
+			set
+			{
+				if (IsInvalid)
+					throw new NullPointerException();
+				else if (value is T typedVal)
+					*pointer = typedVal;
+				else
+					throw new ArgumentException($"Value must be of type {typeof(T)}", nameof(value));
+			}
+		}
 
         private bool IsInvalid => pointer == Memory.NullPtr;
 
@@ -274,17 +303,10 @@ namespace Cheats.Runtime.InteropServices
         }
 
         /// <summary>
-        /// Unboxes structure from unmanaged heap.
-        /// </summary>
-        /// <returns>Unboxed type.</returns>
-        /// <exception cref="NullReferenceException">Attempt to dereference null pointer.</exception>
-        public T Unbox() => pointer == Memory.NullPtr ? throw new NullPointerException() : *pointer;
-
-        /// <summary>
         /// Creates a copy of value in the managed heap.
         /// </summary>
         /// <returns>A boxed copy in the managed heap.</returns>
-        public Box<T> CopyToManagedHeap() => new Box<T>(Unbox());
+        public StrongBox<T> CopyToManagedHeap() => new StrongBox<T>(Value);
 
 		/// <summary>
 		/// Creates bitwise copy of unmanaged buffer.
@@ -382,7 +404,7 @@ namespace Cheats.Runtime.InteropServices
         public static implicit operator ReadOnlySpan<T>(UnmanagedMemory<T> buffer)
             => buffer.IsInvalid? throw new NullPointerException() : new ReadOnlySpan<T>(buffer.pointer, 1);
 
-        public static implicit operator T(UnmanagedMemory<T> heap) => heap.Unbox();
+        public static implicit operator T(UnmanagedMemory<T> heap) => heap.Value;
 
         /// <summary>
         /// Gets unmanaged memory buffer as stream.
