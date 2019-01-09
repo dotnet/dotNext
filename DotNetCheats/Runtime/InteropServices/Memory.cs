@@ -104,7 +104,7 @@ namespace Cheats.Runtime.InteropServices
 				var b = source.ReadByte();
 				if(b >=0)
 				{
-					WriteUnaligned<byte>(ref destination, (byte)b);
+					Write<byte>(ref destination, (byte)b);
 					length -= sizeof(byte);
 					total += sizeof(byte);
 				}
@@ -138,7 +138,7 @@ namespace Cheats.Runtime.InteropServices
 				var b = source.ReadByte();
 				if(b >=0)
 				{
-					WriteUnaligned<byte>(ref destination, (byte)b);
+					Write<byte>(ref destination, (byte)b);
 					length -= sizeof(byte);
 					total += sizeof(byte);
 				}
@@ -164,7 +164,7 @@ namespace Cheats.Runtime.InteropServices
 			}
 			while(length > 0)
 			{
-				destination.WriteByte(ReadUnaligned<byte>(ref source));
+				destination.WriteByte(Read<byte>(ref source));
 				length -= sizeof(byte);
 			}
 		}
@@ -185,7 +185,7 @@ namespace Cheats.Runtime.InteropServices
 			}
 			while(length > 0)
 			{
-				destination.WriteByte(ReadUnaligned<byte>(ref source));
+				destination.WriteByte(Read<byte>(ref source));
 				length -= sizeof(byte);
 			}
 		}
@@ -212,7 +212,7 @@ namespace Cheats.Runtime.InteropServices
 			switch(length)
 			{
 				case sizeof(byte):
-					hash = hashFunction(hash, ReadUnaligned<byte>(ref source));
+					hash = hashFunction(hash, Read<byte>(ref source));
 					break;
 				case sizeof(short):
 					hash = hashFunction(hash, ReadUnaligned<short>(ref source));
@@ -225,7 +225,7 @@ namespace Cheats.Runtime.InteropServices
 					}
 					while(length > 0)
 					{
-						hash = hashFunction(hash, ReadUnaligned<byte>(ref source));
+						hash = hashFunction(hash, Read<byte>(ref source));
 						length -= sizeof(byte);
 					}
 					break;
@@ -281,7 +281,7 @@ namespace Cheats.Runtime.InteropServices
 					}
 					while(length > 0)
 					{
-						hash = hashFunction(hash, ReadUnaligned<byte>(ref source));
+						hash = hashFunction(hash, Read<byte>(ref source));
 						length -= sizeof(byte);
 					}
 					break;
@@ -335,7 +335,7 @@ namespace Cheats.Runtime.InteropServices
 					}
 					while(length > 0)
 					{
-						hash = FNV1a.HashRound(hash, ReadUnaligned<byte>(ref source));
+						hash = FNV1a.HashRound(hash, Read<byte>(ref source));
 						length -= sizeof(byte);
 					}
 					break;
@@ -370,7 +370,7 @@ namespace Cheats.Runtime.InteropServices
 			switch(length)
 			{
 				case sizeof(byte):
-					return Unsafe.ReadUnaligned<byte>(first) == Unsafe.ReadUnaligned<byte>(second);
+					return Unsafe.Read<byte>(first) == Unsafe.ReadUnaligned<byte>(second);
 				case sizeof(ushort):
 					return Unsafe.ReadUnaligned<ushort>(first) == Unsafe.ReadUnaligned<ushort>(second);
 				case sizeof(uint):
@@ -398,7 +398,7 @@ namespace Cheats.Runtime.InteropServices
 			switch(length)
 			{
 				case sizeof(byte):
-					return Unsafe.ReadUnaligned<byte>(first).CompareTo(Unsafe.ReadUnaligned<byte>(second));
+					return Unsafe.Read<byte>(first).CompareTo(Unsafe.Read<byte>(second));
 				case sizeof(ushort):
 					return Unsafe.ReadUnaligned<ushort>(first).CompareTo(Unsafe.ReadUnaligned<ushort>(second));
 				case sizeof(uint):
