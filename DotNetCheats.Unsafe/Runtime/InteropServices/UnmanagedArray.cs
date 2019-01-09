@@ -158,8 +158,8 @@ namespace Cheats.Runtime.InteropServices
 		/// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
 		public T this[long index]
 		{
-			get => this[checked((uint)index)].ReadUnaligned();
-			set => this[checked((uint)index)].WriteUnaligned(value);
+			get => this[checked((uint)index)].Read(MemoryAccess.Aligned);
+			set => this[checked((uint)index)].Write(MemoryAccess.Aligned, value);
 		}
 		
 		byte* IUnmanagedMemory<T>.this[ulong offset] => offset >= 0 && offset < (ulong)Pointer<T>.Size ? 

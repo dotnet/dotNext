@@ -62,7 +62,7 @@ namespace Cheats.Runtime.InteropServices
             if(IsNull)
                 throw new NullPointerException();
             else
-                Unsafe.InitBlock(value, 0, length * (uint)Size);
+                Unsafe.InitBlockUnaligned(value, 0, length * (uint)Size);
         }
 
         /// <summary>
@@ -218,51 +218,51 @@ namespace Cheats.Runtime.InteropServices
             else
                 return ref Unsafe.AsRef<T>(value);
         }
-
-        /// <summary>
-        /// Reads a value of type <typeparamref name="T"/> from the current location 
-        /// without assuming architecture dependent alignment of the addresses.
-        /// </summary>
-        /// <returns>Dereferenced value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T ReadUnaligned()
-            => IsNull ? throw new NullPointerException() : Unsafe.ReadUnaligned<T>(value);
         
         /// <summary>
-        /// Reads a value of type <typeparamref name="T"/> from the current location 
-        /// assuming architecture dependent alignment of the addresses.
+        /// Reads a value of type <typeparamref name="T"/> from the current location.
         /// </summary>
+        /// <param name="access">Memory access mode.</param>
         /// <returns>Dereferenced value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T Read()
-            => IsNull ? throw new NullPointerException() : Unsafe.Read<T>(value);
-        
-        /// <summary>
-        /// Writes a value of type <typeparamref name="T"/> to the current location
-        /// without assuming architecture dependent alignment of the addresses.
-        /// </summary>
-        /// <param name="value">A value to be placed to the current location.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUnaligned(T value)
+        public T Read(MemoryAccess access)
         {
             if(IsNull)
-                throw new NullPointerException();
-            else 
-                Unsafe.WriteUnaligned<T>(this.value, value);
+                 throw new NullPointerException();
+            switch(access)
+            {
+                case MemoryAccess.Aligned:
+                    return Unsafe.Read<T>(value);
+                case MemoryAccess.Unaligned:
+                    return Unsafe.ReadUnaligned<T>(value);
+                default:
+                    return *value;
+            }
         }
         
         /// <summary>
         /// Writes a value of type <typeparamref name="T"/> to the current location
         /// assuming architecture dependent alignment of the addresses.
         /// </summary>
+        /// <param name="access">Memory access mode.</param>
         /// <param name="value">A value to be placed to the current location.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Write(T value)
+        public void Write(MemoryAccess access, T value)
         {
             if(IsNull)
                 throw new NullPointerException();
-            else 
-                Unsafe.Write<T>(this.value, value);
+            switch(access)
+            {
+                case MemoryAccess.Aligned:
+                    Unsafe.Write(this.value, value);
+                    return;
+                case MemoryAccess.Unaligned:
+                    Unsafe.WriteUnaligned(this.value, value);
+                    return;
+                default:
+                    *this.value = value;
+                    return;
+            }
         }
 
         public bool BitwiseEquals(Pointer<T> other, int length)

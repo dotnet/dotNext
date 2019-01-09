@@ -100,8 +100,8 @@ namespace Cheats.Runtime.InteropServices
 		/// </summary>
 		public T Value
 		{
-			get => pointer.ReadUnaligned();
-			set => pointer.WriteUnaligned(value);
+			get => pointer.Read(MemoryAccess.Aligned);
+			set => pointer.Write(MemoryAccess.Aligned, value);
 		}
 
 		object IStrongBox.Value
