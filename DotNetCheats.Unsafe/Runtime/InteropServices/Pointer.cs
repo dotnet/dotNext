@@ -340,6 +340,10 @@ namespace Cheats.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator T*(Pointer<T> ptr) => ptr.value;
 
+		public static bool operator true(Pointer<T> ptr) => !ptr.IsNull;
+
+		public static bool operator false(Pointer<T> ptr) => ptr.IsNull;
+
         bool IEquatable<Pointer<T>>.Equals(Pointer<T> other) => Equals(other);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

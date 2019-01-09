@@ -6,7 +6,14 @@
     <RootNamespace>Cheats</RootNamespace>
     <Authors>Roman Sakno</Authors>
     <Company />
-    <Product>DotNetCheats Library</Product>
+    <Product>.NET Cheats</Product>
+    <Version>0.1.0</Version>
+    <PackageLicenseUrl>https://github.com/sakno/DotNetCheats/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/sakno/DotNetCheats</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sakno/DotNetCheats.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>extensions;.netstandard</PackageTags>
+    <Copyright>Roman Sakno</Copyright>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
