@@ -236,14 +236,14 @@ namespace Cheats
 		/// <summary>
 		/// If a value is present, returns the value, otherwise return default value.
 		/// </summary>
-		/// <returns>The value, if present, otherwise default<</returns>
+		/// <returns>The value, if present, otherwise default</returns>
 		public T OrDefault() => Or(default);
 
 		/// <summary>
 		/// If a value is present, returns the value, otherwise throw exception.
 		/// </summary>
 		/// <exception cref="InvalidOperationException">No value is present.</exception>
-		public T Value => IsPresent ? value : throw new InvalidOperationException("Container has no value");
+		public T Value => IsPresent ? value : throw new InvalidOperationException(ExceptionMessages.OptionalNoValue);
 
 		/// <summary>
 		/// If a value is present, apply the provided mapping function to it, and if the result is 

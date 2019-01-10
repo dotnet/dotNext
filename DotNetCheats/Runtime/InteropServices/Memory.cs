@@ -87,7 +87,7 @@ namespace Cheats.Runtime.InteropServices
 		public static async Task<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length)
 		{
 			if(!source.CanRead)
-				throw new ArgumentException("Stream is not readable", nameof(source));
+				throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
 			
 			var total = 0L;
 			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
@@ -121,7 +121,7 @@ namespace Cheats.Runtime.InteropServices
 		public static long ReadFromStream(Stream source, IntPtr destination, long length)
 		{
 			if(!source.CanRead)
-				throw new ArgumentException("Stream is not readable", nameof(source));
+				throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
 			
 			var total = 0L;
 			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
@@ -155,7 +155,7 @@ namespace Cheats.Runtime.InteropServices
 		public static void WriteToSteam(IntPtr source, long length, Stream destination)
 		{
 			if(!destination.CanWrite)
-				throw new ArgumentException("Stream is not writable", nameof(destination));
+				throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
 
 			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
 			{
@@ -176,7 +176,7 @@ namespace Cheats.Runtime.InteropServices
 		public static async Task WriteToSteamAsync(IntPtr source, long length, Stream destination)
 		{
 			if(!destination.CanWrite)
-				throw new ArgumentException("Stream is not writable", nameof(destination));
+				throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
 
 			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
 			{

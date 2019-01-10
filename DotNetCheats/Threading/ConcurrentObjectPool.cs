@@ -39,7 +39,7 @@ namespace Cheats.Threading
 			public void Release()
 			{
 				if (lockedObject is null)
-					throw new ObjectDisposedException("This lock is released");
+					throw new ObjectDisposedException(ExceptionMessages.ReleasedLock);
 				Monitor.Exit(lockedObject);
 				lockedObject = null;
 			}
