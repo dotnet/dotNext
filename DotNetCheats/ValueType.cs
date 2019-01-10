@@ -9,7 +9,7 @@ namespace Cheats
     /// <summary>
     /// Provides fast memory operations to work with value type.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Value type.</typeparam>
     public static class ValueType<T>
         where T: struct
     {
@@ -36,6 +36,9 @@ namespace Cheats
         /// </summary>
         public static T Default => default;
 
+		/// <summary>
+		/// Indicates that value type is primitive type.
+		/// </summary>
         public static readonly bool IsPrimitive = typeof(T).IsPrimitive;
 
         /// <summary>
@@ -82,7 +85,7 @@ namespace Cheats
 		/// <summary>
 		/// Computes hash code for the structure content.
 		/// </summary>
-		/// <param name="value"></param>
+		/// <param name="value">Value to be hashed.</param>
 		/// <returns>Content hash code.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]      
 		public static unsafe int GetHashCode(T value, bool salted = true)
@@ -90,15 +93,20 @@ namespace Cheats
         
         internal unsafe static ReadOnlySpan<byte> RawBits(ref T value)
             => new ReadOnlySpan<byte>(Unsafe.AsPointer(ref value), Size);
-        
-        /// <summary>
-        /// Indicates that specified value type is the default value.
-        /// </summary>
-        /// <param name="value">Value to check.</param>
-        /// <returns></returns>
-        public static bool IsDefault(T value)
-            => Equals(value, default(T));
 
+		/// <summary>
+		/// Indicates that specified value type is the default value.
+		/// </summary>
+		/// <param name="value">Value to check.</param>
+		/// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
+		public static bool IsDefault(T value)
+            => Equals(value, default);
+
+		/// <summary>
+		/// Convert value type content into array of bytes.
+		/// </summary>
+		/// <param name="value">A value to convert.</param>
+		/// <returns>An array of bytes representing binary content of value type.</returns>
         public static byte[] AsBinary(T value)
             => RawBits(ref value).ToArray();
 
