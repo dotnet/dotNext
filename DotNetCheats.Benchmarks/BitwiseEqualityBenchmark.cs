@@ -41,6 +41,19 @@ namespace Cheats
 					A == other.A &&
 					B == other.B &&
 					F == other.F;
+			
+			public override int GetHashCode()
+            {
+                var hash = unchecked((int)2166136261);
+                hash = (hash ^ X.GetHashCode()) * 16777619;
+                hash = (hash ^ Y.GetHashCode()) * 16777619;
+                hash = (hash ^ Z.GetHashCode()) * 16777619;
+                hash = (hash ^ C.GetHashCode()) * 16777619;
+                hash = (hash ^ A.GetHashCode()) * 16777619;
+                hash = (hash ^ B.GetHashCode()) * 16777619;
+                hash = (hash ^ F) * 16777619;
+                return hash;
+            }
 		}
 
 		private static readonly Guid NonEmptyGuid = Guid.NewGuid();

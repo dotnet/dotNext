@@ -130,21 +130,22 @@ namespace Cheats
 		/// <remarks>
 		/// This method performs bitwise equality between each pair of elements.
 		/// </remarks>
-		/// <typeparam name="T">Type of array elements.</typeparam>
+		/// <typeparam name="T">Type of array elements. Should be unmanaged value type.</typeparam>
 		/// <param name="first">First array for equality check.</param>
 		/// <param name="second">Second array of equality check.</param>
 		/// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
-		public static bool BitwiseEquals<T>(this T[] first, T[] second)
-			where T: struct
+		public static unsafe bool BitwiseEquals<T>(this T[] first, T[] second)
+			where T: unmanaged
 		{
-			if (first is null)
+			if(first is null)
 				return second is null;
-			else if (first.LongLength == 0L)
-				return second.LongLength == 0L;
-			else if (first.LongLength != second.LongLength)
+			else if(first.LongLength != second.LongLength)
 				return false;
+			else if(first.LongLength == 0)
+				return true;
 			else
-				return Memory.Equals(new ReadOnlyMemory<T>(first), new ReadOnlyMemory<T>(second));
+				fixed(T* firstPtr = first, secondPtr = second)
+					return Memory.Equals(firstPtr, secondPtr, first.Length * ValueType<T>.Size);
 		}
 	}
 }

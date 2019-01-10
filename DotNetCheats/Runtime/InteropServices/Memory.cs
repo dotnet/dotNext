@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Threading.Tasks;
-using System.Buffers;
 
 namespace Cheats.Runtime.InteropServices
 {
@@ -392,17 +391,6 @@ namespace Cheats.Runtime.InteropServices
 		/// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
 		public static unsafe bool Equals(IntPtr first, IntPtr second, int length)
 			=> Equals(first.ToPointer(), second.ToPointer(), length);
-
-		public static unsafe bool Equals<T>(ReadOnlyMemory<T> first, ReadOnlyMemory<T> second)
-			where T: struct
-		{
-			if(first.Length == second.Length)
-				using (MemoryHandle firstHandle = first.Pin(), secondHandle = second.Pin())
-				{
-					return Equals(firstHandle.Pointer, secondHandle.Pointer, first.Length * Unsafe.SizeOf<T>());
-				}
-			return false;
-		}
 		
 		[CLSCompliant(false)]
 		public static unsafe int Compare(void* first, void* second, int length)

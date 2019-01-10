@@ -10,34 +10,7 @@ namespace Cheats.Benchmarks
     public class BitwiseHashCodeBenchmark
     {
         private static readonly Guid NonEmptyGuid = Guid.NewGuid();
-        private static readonly BigStructure NonEmptyBigStruct = new BigStructure{X = 10M, C=42M};
-        public struct BigStructure
-		{
-			public decimal X, Y, Z, C, A, B;
-			public short F;
-
-			public bool Equals(BigStructure other)
-				=> X == other.X &&
-					Y == other.Y &&
-					Z == other.Z &&
-					C == other.C &&
-					A == other.A &&
-					B == other.B &&
-					F == other.F;
-            
-            public override int GetHashCode()
-            {
-                var hash = unchecked((int)2166136261);
-                hash = (hash ^ X.GetHashCode()) * 16777619;
-                hash = (hash ^ Y.GetHashCode()) * 16777619;
-                hash = (hash ^ Z.GetHashCode()) * 16777619;
-                hash = (hash ^ C.GetHashCode()) * 16777619;
-                hash = (hash ^ A.GetHashCode()) * 16777619;
-                hash = (hash ^ B.GetHashCode()) * 16777619;
-                hash = (hash ^ F) * 16777619;
-                return hash;
-            }
-		}
+        private static readonly BitwiseEqualityBenchmark.BigStructure NonEmptyBigStruct = new BitwiseEqualityBenchmark.BigStructure{X = 10M, C=42M};
 
         [Benchmark]
         public void GuidHashCode()
@@ -60,7 +33,7 @@ namespace Cheats.Benchmarks
         [Benchmark]
         public void BigStructureBitwiseHashCode()
         {
-            ValueType<BigStructure>.GetHashCode(NonEmptyBigStruct, false);
+            ValueType<BitwiseEqualityBenchmark.BigStructure>.GetHashCode(NonEmptyBigStruct, false);
         }
     }
 }
