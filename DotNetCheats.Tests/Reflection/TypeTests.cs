@@ -250,5 +250,14 @@ namespace Cheats.Reflection
 			Equal(42, obj.ReadOnlyProp);
 			Equal(42, classField[obj]);
 		}
+
+		[Fact]
+		public void InvalidConversionTest()
+		{
+			False(Type<string>.TryConvert(23, out _));
+			False(Type<string>.TryConvert(new object(), out _));
+			False(Type<int>.TryConvert(new object(), out _));
+			True(Type<IConvertible>.TryConvert(42, out _));
+		}
 	}
 }

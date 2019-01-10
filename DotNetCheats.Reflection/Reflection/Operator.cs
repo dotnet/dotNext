@@ -85,6 +85,21 @@ namespace Cheats.Reflection
 				return true;
 			}
 		}
+
+		internal static bool NormalizePrimitive(this ref Operand operand)
+			{
+				switch(operand.Argument.Type.GetTypeCode())
+				{
+					case TypeCode.Byte:
+					case TypeCode.UInt16:
+					case TypeCode.SByte:
+					case TypeCode.Int16:
+						operand = new Operand(operand.Source, typeof(int));
+						return true;
+					default:
+						return false;
+				}
+			}
 	}
 
 	/// <summary>

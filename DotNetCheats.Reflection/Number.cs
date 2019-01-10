@@ -19,6 +19,8 @@ namespace Cheats
         
         private static readonly Operator<T, T, T> BinaryPlus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Add, OperatorLookup.Predefined);
 
+        private static readonly Operator<T, T, T> BinaryMinus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Subtract, OperatorLookup.Predefined);
+
         private static readonly Operator<T, T, bool> Equality = Type<T>.Operator<T>.Require<bool>(BinaryOperator.Equal, OperatorLookup.Predefined);
 
         private static readonly Function<(string text, Ref<T> result), bool> TryParseMethod = Type<T>.RequireStaticMethod<(string, Ref<T>), bool>(nameof(int.TryParse));
@@ -48,6 +50,9 @@ namespace Cheats
 
         public static Number<T> operator+(Number<T> left, T right)
             => new Number<T>(BinaryPlus(in left.number, in right));
+        
+        public static Number<T> operator-(Number<T> left, T right)
+            => new Number<T>(BinaryMinus(in left.number, in right));
         
         public static bool TryParse(string text, out Number<T> value)
         {

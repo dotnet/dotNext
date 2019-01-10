@@ -135,13 +135,18 @@ namespace Cheats.Reflection
 
 		private static Expression<Operator<T, OP, R>> MakeBinary(Operator.Kind @operator, Operator.Operand first, Operator.Operand second, out MethodInfo overloaded)
 		{
+			var resultType = typeof(R);
+			//perform automatic cast from byte/short/ushort/sbyte so binary operators become available for these types
+			var usePrimitiveCast = resultType.IsPrimitive && first.NormalizePrimitive() && second.NormalizePrimitive();
 			tail_call:	//C# doesn't support tail calls so replace it with label/goto
 			overloaded = null;
 			try
 			{
 				var body =  @operator.MakeBinary(first, second);
 				overloaded = body.Method;
-				return Expression.Lambda<Operator<T, OP, R>>(body, first.Source, second.Source);
+				return overloaded is null && usePrimitiveCast ?
+					Expression.Lambda<Operator<T, OP, R>>(Expression.Convert(body, resultType), first.Source, second.Source) :
+					Expression.Lambda<Operator<T, OP, R>>(body, first.Source, second.Source);
 			} 
 			catch(ArgumentException e)
 			{

@@ -105,12 +105,27 @@ namespace Cheats.Reflection
 
 		private static Expression<Operator<T, R>> MakeUnary(Operator.Kind @operator, Operator.Operand operand, out MethodInfo overloaded)
 		{
+			var resultType = typeof(R);
+			bool usePrimitiveCast;
+			//perform automatic cast from byte/short/ushort/sbyte so unary operators become available for these types
+			switch((ExpressionType)@operator)
+			{
+				case ExpressionType.Convert:
+				case ExpressionType.ConvertChecked:
+					usePrimitiveCast = false;
+					break;
+				default:
+					usePrimitiveCast = resultType.IsPrimitive && operand.NormalizePrimitive();
+					break;
+			}
 			tail_call: //C# doesn't support tail calls so replace it with label/goto
 			overloaded = null;
 			try
 			{
 				var body = @operator.MakeUnary<R>(operand);
 				overloaded = body.Method;
+				if(overloaded is null && usePrimitiveCast)
+					body = Expression.Convert(body, resultType);
 				return Expression.Lambda<Operator<T, R>>(body, operand.Source);
 			}
 			catch(ArgumentException e)
@@ -133,7 +148,13 @@ namespace Cheats.Reflection
 		{
 			var parameter = Expression.Parameter(typeof(T).MakeByRefType(), "operand");
 			var result = MakeUnary(op, parameter, out var overloaded);
-            return result is null ? null : new UnaryOperator<T, R>(result, op, overloaded);
+			if(result is null)
+				return null;
+			//handle situation when trying to cast two incompatible reference types
+			else if(overloaded is null && (op == ExpressionType.Convert || op == ExpressionType.ConvertChecked) && !parameter.Type.IsValueType && !typeof(R).IsAssignableFrom(parameter.Type))
+				return null;
+			else 
+            	return new UnaryOperator<T, R>(result, op, overloaded);
 		}
     }
 }
