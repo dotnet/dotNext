@@ -8,20 +8,24 @@
     <Company />
     <Product>.NET Cheats</Product>
     <Version>0.1.0</Version>
+	<AssemblyName>DotNetCheats</AssemblyName>
     <PackageLicenseUrl>https://github.com/sakno/DotNetCheats/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/sakno/DotNetCheats</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/DotNetCheats.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>extensions;.netstandard</PackageTags>
     <Copyright>Roman Sakno</Copyright>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
