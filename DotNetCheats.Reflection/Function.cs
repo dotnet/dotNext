@@ -22,4 +22,15 @@ namespace Cheats
     /// <typeparam name="R">Type of function return value.</typeparam>
     /// <returns>Function return value.</returns>
     public delegate R Function<T, A, R>(in T @this, in A arguments);
+
+    public static class Function
+    {
+        public static A ArgList<A, R>(this Function<A, R> function)
+            where A: struct
+            => new A();
+        
+        public static A ArgList<T, A, R>(this Function<T, A, R> function)
+            where A: struct
+            => new A();
+    }
 }

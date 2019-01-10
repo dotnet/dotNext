@@ -18,4 +18,15 @@
 	/// <typeparam name="T">Type of instance to be passed into underlying method.</typeparam>
 	/// <typeparam name="A">Type of structure with procedure arguments allocated on the stack.</typeparam>
 	public delegate void Procedure<T, A>(in T @this, in A arguments);
+
+	public static class Procedure
+	{
+		public static A ArgList<A>(this Procedure<A> procedure)
+            where A: struct
+            => new A();
+        
+        public static A ArgList<T, A>(this Procedure<T, A> procedure)
+            where A: struct
+            => new A();
+	}
 }

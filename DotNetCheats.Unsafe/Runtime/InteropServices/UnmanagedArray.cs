@@ -123,16 +123,15 @@ namespace Cheats.Runtime.InteropServices
 		/// </summary>
 		/// <exception cref="NullPointerException">Array is not allocated.</exception>
 		public void Clear() => pointer.Clear(Length);
-
+		
 		/// <summary>
-		/// Gets or sets array element.
+		/// Gets pointer to array element.
 		/// </summary>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		/// <exception cref="NullPointerException">This array is not allocated.</exception>
-		/// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
+		/// <param name="index">Index of the element.</param>
+		/// <returns>Pointer to array element.</returns>
 		[CLSCompliant(false)]
-		public Pointer<T> this[uint index] => index >= 0 && index < Length ?
+		public Pointer<T> ElementAt(uint index)
+			=> index >= 0 && index < Length ?
 			pointer + index :
 			throw new IndexOutOfRangeException($"Index should be in range [0, {Length})");
 
@@ -158,8 +157,8 @@ namespace Cheats.Runtime.InteropServices
 		/// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
 		public T this[long index]
 		{
-			get => this[checked((uint)index)].Read(MemoryAccess.Aligned);
-			set => this[checked((uint)index)].Write(MemoryAccess.Aligned, value);
+			get => ElementAt(checked((uint)index)).Read(MemoryAccess.Aligned);
+			set => ElementAt(checked((uint)index)).Write(MemoryAccess.Aligned, value);
 		}
 		
 		byte* IUnmanagedMemory<T>.this[ulong offset] => offset >= 0 && offset < (ulong)Pointer<T>.Size ? 
@@ -414,6 +413,12 @@ namespace Cheats.Runtime.InteropServices
 		[CLSCompliant(false)]
 		public static bool operator !=(in UnmanagedArray<T> first, T* second)
 			=> first.pointer != second;
+
+		public static Pointer<T> operator+(in UnmanagedArray<T> array, int elementIndex)
+			=> array.ElementAt(checked((uint)elementIndex));
+
+		public static Pointer<T> operator+(in UnmanagedArray<T> array, long elementIndex)
+			=> array.ElementAt(checked((uint)elementIndex));
 
 		private static bool FreeMem(IntPtr memory)
 		{

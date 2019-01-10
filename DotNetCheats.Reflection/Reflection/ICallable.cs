@@ -41,7 +41,7 @@ namespace Cheats.Reflection
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static A ArgList<T, A, R>(this ICallable<Function<T, A, R>> member)
 			where A : struct
-			=> new A();
+			=> member.Invoker.ArgList();
 
 		/// <summary>
 		/// Allocates arguments list on the stack.
@@ -53,7 +53,17 @@ namespace Cheats.Reflection
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static A ArgList<A, R>(this ICallable<Function<A, R>> member)
 			where A : struct
-			=> new A();
+			=> member.Invoker.ArgList();
+
+		public static A ArgList<T, A>(this ICallable<Procedure<T, A>> member)
+			where A : struct
+			=> member.Invoker.ArgList();
+
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static A ArgList<A>(this ICallable<Procedure<A>> member)
+			where A : struct
+			=> member.Invoker.ArgList();
 
 		#region Functions
 

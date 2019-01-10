@@ -34,14 +34,14 @@ namespace Cheats.Reflection
 			var result = indexOf("aba", 'b');
 			Equal(1, result);
 
-			ByRefFunc<string, char, int> indexOf2 = Type<string>.Method.Custom<ByRefFunc<string, char, int>>(nameof(string.IndexOf));
+			ByRefFunc<string, char, int> indexOf2 = Type<string>.Method.Get<ByRefFunc<string, char, int>>(nameof(string.IndexOf), MemberLookup.Instance);
 			NotNull(indexOf2);
 			Equal(2, indexOf("abca", 'c'));
 
 			Func<string, char, int, int> indexOf3 = Type<string>.Method<char, int>.Require<int>(nameof(string.IndexOf));
 			Equal(1, indexOf3("aba", 'b', 1));
 
-			ByRefAction<Point> zero = Type<Point>.Method.Custom<ByRefAction<Point>>(nameof(Point.Zero));
+			ByRefAction<Point> zero = Type<Point>.Method.Get<ByRefAction<Point>>(nameof(Point.Zero), MemberLookup.Instance);
 			NotNull(zero);
 			var point = new Point() { X = 10, Y = 20 };
 			zero(point);

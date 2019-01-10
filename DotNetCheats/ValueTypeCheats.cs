@@ -50,6 +50,12 @@ namespace Cheats
 			return output;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static unsafe void BitCast<I, O>(this I input, out O output)
+			where I: unmanaged
+			where O: unmanaged
+			=> output = BitCast<I, O>(input);
+
         public static bool OneOf<T>(this T value, params T[] values)
 			where T: struct, IEquatable<T>
 		{

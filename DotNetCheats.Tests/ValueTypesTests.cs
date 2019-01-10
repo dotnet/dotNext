@@ -5,18 +5,19 @@ namespace Cheats
 {
 	public sealed class MemoryTests: Assert
 	{
-		public struct MyStruct
+		private struct Point
 		{
-			public Guid guid;
-			public decimal money;
+			public long X, Y;
 		}
 
 		[Fact]
 		public void BitcastTest()
 		{
-			var s = new MyStruct() { guid = Guid.NewGuid() };
-			var guid = s.BitCast<MyStruct, Guid>();
-			Equal(s.guid, guid);
+			var point = new Point{X = 40, Y = 100};
+			point.BitCast(out decimal dec);
+			dec.BitCast(out point);
+			Equal(40, point.X);
+			Equal(100, point.Y);
 		}
 
 		[Fact]
