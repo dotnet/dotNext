@@ -142,7 +142,7 @@ namespace Cheats.Reflection
             else if(thisParam.IsByRef ^ thisParam.IsValueType)
             {
                 var thisParamDeclaration = Expression.Parameter(thisParam);
-                var parametersDeclaration = parameters.Map(Expression.Parameter);
+                var parametersDeclaration = parameters.Convert(Expression.Parameter);
                 return new Method<D>(targetMethod, thisParamDeclaration, parametersDeclaration, parametersDeclaration);
             }
             else

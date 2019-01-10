@@ -173,7 +173,7 @@ namespace Cheats.Runtime.InteropServices
 
         ulong IUnmanagedMemory<T>.ReadFrom(Stream source) => (ulong)ReadFrom(source);
 
-		Task<ulong> IUnmanagedMemory<T>.ReadFromAsync(Stream source) => ReadFromAsync(source).Map(Convert.ToUInt64);
+		Task<ulong> IUnmanagedMemory<T>.ReadFromAsync(Stream source) => ReadFromAsync(source).Convert(Convert.ToUInt64);
 
         public void WriteTo<U>(Pointer<U> destination)
             where U: unmanaged

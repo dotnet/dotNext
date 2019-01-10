@@ -5,8 +5,20 @@ using System.Threading.Tasks;
 
 namespace Cheats
 {
+	/// <summary>
+	/// Represents various extensions of delegates.
+	/// </summary>
 	public static class DelegateCheats
 	{
+		/// <summary>
+		/// Invokes event handlers asynchronously.
+		/// </summary>
+		/// <typeparam name="E">Type of event object.</typeparam>
+		/// <param name="handler">A set event handlers combined as single delegate.</param>
+		/// <param name="sender">Event sender.</param>
+		/// <param name="args">Event arguments.</param>
+		/// <param name="parallel"><see langword="true"/> to invoke each handler in parallel; otherwise, invoke all handlers in the separated task synchronously.</param>
+		/// <returns>An object representing state of the asynchronous invocation.</returns>
 		public static Task InvokeAsync<E>(this EventHandler<E> handler, object sender, E args, bool parallel = true)
 		{
 			if (handler == null)
@@ -31,6 +43,14 @@ namespace Cheats
 				return Task.Factory.StartNew(() => handler(sender, args));
 		}
 
+		/// <summary>
+		/// Invokes event handlers asynchronously.
+		/// </summary>
+		/// <param name="handler">A set event handlers combined as single delegate.</param>
+		/// <param name="sender">Event sender.</param>
+		/// <param name="args">Event arguments.</param>
+		/// <param name="parallel"><see langword="true"/> to invoke each handler in parallel; otherwise, invoke all handlers in the separated task synchronously.</param>
+		/// <returns>An object representing state of the asynchronous invocation.</returns>
 		public static Task InvokeAsync(this EventHandler handler, object sender, EventArgs args, bool parallel = true)
 		{
 			if (handler == null)

@@ -129,11 +129,11 @@ namespace Cheats.Reflection
         {
             ;
             if (declaringType.IsValueType)
-                return new Constructor<D>(declaringType, parameters.Map(Expression.Parameter));
+                return new Constructor<D>(declaringType, parameters.Convert(Expression.Parameter));
             else
             {
                 var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
-                return ctor is null ? null : new Constructor<D>(ctor, parameters.Map(Expression.Parameter));
+                return ctor is null ? null : new Constructor<D>(ctor, parameters.Convert(Expression.Parameter));
             }
         }
 
@@ -142,7 +142,7 @@ namespace Cheats.Reflection
             var (parameters, arglist, input) = Signature.Reflect(argumentsType);
             //handle value type
             if(declaringType.IsValueType)
-                return new Constructor<D>(declaringType, parameters.Map(Expression.Parameter));
+                return new Constructor<D>(declaringType, parameters.Convert(Expression.Parameter));
 
             var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
             return ctor is null ? null : new Constructor<D>(ctor, arglist, new[]{ input });
@@ -180,7 +180,7 @@ namespace Cheats.Reflection
 			{
 				var invokeMethod = DelegateCheats.GetInvokeMethod<D>();
 				return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
-					new Constructor<D>(ctor, ctor.GetParameterTypes().Map(Expression.Parameter)) :
+					new Constructor<D>(ctor, ctor.GetParameterTypes().Convert(Expression.Parameter)) :
 					null;
 			}
         }

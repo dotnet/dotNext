@@ -13,7 +13,7 @@ namespace Cheats.Collections.Generic
 				{"a", 1 },
 				{"b", 2 }
 			};
-			var view = dict.Map(i => i + 10);
+			var view = dict.Convert(i => i + 10);
 			Equal(11, view["a"]);
 			Equal(12, view["b"]);
 		}

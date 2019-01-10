@@ -4,35 +4,144 @@ using System.Linq;
 
 namespace Cheats
 {
+	/// <summary>
+	/// Various extension methods for <see cref="IEnumerable{T}"/> implementing classes.
+	/// </summary>
     public static class CollectionCheats
     {
+		/// <summary>
+		/// Apply specified action to each collection element.
+		/// </summary>
+		/// <typeparam name="T">Type of elements in the collection.</typeparam>
+		/// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
+		/// <param name="action">An action to applied for each element.</param>
 		public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
 		{
 			foreach (var item in collection)
 				action(item);
 		}
 
-        public static T? FirstOrNull<T>(this IEnumerable<T> collection)
-            where T: struct
-        {
-            using(var enumerator = collection.GetEnumerator())
-                return enumerator.MoveNext() ? enumerator.Current : new T?();
-        }
+		/// <summary>
+		/// Obtains first value type in the collection; or <see langword="null"/>
+		/// if collection is empty.
+		/// </summary>
+		/// <typeparam name="T">Type of elements in the collection.</typeparam>
+		/// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
+		/// <returns>First element in the collection; or <see langword="null"/> if collection is empty. </returns>
+		public static T? FirstOrNull<T>(this IEnumerable<T> collection)
+			where T : struct
+		{
+			using (var enumerator = collection.GetEnumerator())
+				return enumerator.MoveNext() ? enumerator.Current : new T?();
+		}
 
-        public static Optional<T> TryGetFirst<T>(this IEnumerable<T> collection)
-        {
-            using(var enumerator = collection.GetEnumerator())
-                return enumerator.MoveNext() ? enumerator.Current : Optional<T>.Empty;
-        }
+		/// <summary>
+		/// Bypasses a specified number of elements in a sequence.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
+		/// <param name="count">The number of elements to skip.</param>
+		/// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
+		public static bool Skip<T>(this IEnumerator<T> enumerator, int count)
+		{
+			while (count > 0)
+				if (enumerator.MoveNext())
+					count--;
+				else
+					return false;
+			return true;
+		}
 
-        public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T> collection)
+		private static bool ElementAt<T>(this IList<T> list, int index, out T element)
+		{
+			if(index >= 0 && index < list.Count)
+			{
+				element = list[index];
+				return true;
+			}
+			else
+			{
+				element = default;
+				return false;
+			}
+		}
+
+		private static bool ElementAt<T>(this IReadOnlyList<T> list, int index, out T element)
+		{
+			if (index >= 0 && index < list.Count)
+			{
+				element = list[index];
+				return true;
+			}
+			else
+			{
+				element = default;
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="collection"></param>
+		/// <param name="index"></param>
+		/// <param name="element"></param>
+		/// <returns></returns>
+		public static bool ElementAt<T>(this IEnumerable<T> collection, int index, out T element)
+		{
+			if (collection is IList<T> list)
+				return ElementAt(list, index, out element);
+			else if (collection is IReadOnlyList<T> readOnlyList)
+				return ElementAt(readOnlyList, index, out element);
+			else
+				using (var enumerator = collection.GetEnumerator())
+				{
+					enumerator.Skip(index);
+					if (enumerator.MoveNext())
+					{
+						element = enumerator.Current;
+						return true;
+					}
+					else
+					{
+						element = default;
+						return false;
+					}
+				}
+		}
+
+		/// <summary>
+		/// Skip <see langword="null"/> values in the collection.
+		/// </summary>
+		/// <typeparam name="T">Type of elements in the collection.</typeparam>
+		/// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
+		/// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
+		public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T> collection)
             where T: class
             => collection.Where(value => !(value is null));
 
-        public static string ToString<T>(this IEnumerable<T> collection, string delimiter, string ifEmpty = "")
+		/// <summary>
+		/// Concatenates each element from the collection into single string.
+		/// </summary>
+		/// <typeparam name="T">Type of array elements.</typeparam>
+		/// <param name="collection">Collection to convert. Cannot be <see langword="null"/>.</param>
+		/// <param name="delimiter">Delimiter between elements in the final string.</param>
+		/// <param name="ifEmpty">A string to be returned if collection has no elements.</param>
+		/// <returns>Converted collection into string.</returns>
+		public static string ToString<T>(this IEnumerable<T> collection, string delimiter, string ifEmpty = "")
             => string.Join(delimiter, collection).IfNullOrEmpty(ifEmpty);
 
-        public static O[] MapToArray<I, O>(this IList<I> input, Func<I, O> mapper)
+		/// <summary>
+		/// Converts list into array and perform mapping for each
+		/// element.
+		/// </summary>
+		/// <typeparam name="I">Type of elements in the list.</typeparam>
+		/// <typeparam name="O">Type of elements in the output array.</typeparam>
+		/// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
+		/// <param name="mapper">Element mapping function.</param>
+		/// <returns>An array representing converted list.</returns>
+		public static O[] ToArray<I, O>(this IList<I> input, Func<I, O> mapper)
         {
             var output = ArrayCheats.New<O>(input.Count);
             for(var i = 0; i < input.Count; i++)
@@ -40,7 +149,16 @@ namespace Cheats
             return output;
         }
 
-        public static O[] MapToArray<I, O>(this IList<I> input, Func<int, I, O> mapper)
+		/// <summary>
+		/// Converts list into array and perform mapping for each
+		/// element.
+		/// </summary>
+		/// <typeparam name="I">Type of elements in the list.</typeparam>
+		/// <typeparam name="O">Type of elements in the output array.</typeparam>
+		/// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
+		/// <param name="mapper">Index-aware element mapping function.</param>
+		/// <returns>An array representing converted list.</returns>
+		public static O[] ToArray<I, O>(this IList<I> input, Func<int, I, O> mapper)
         {
             var output = ArrayCheats.New<O>(input.Count);
             for(var i = 0; i < input.Count; i++)
@@ -48,7 +166,13 @@ namespace Cheats
             return output;
         }
 
-        public static bool IsNullOrEmpty<T>(this ICollection<T> collection)
+		/// <summary>
+		/// Indicates that collection is <see langword="null"/> or empty.
+		/// </summary>
+		/// <typeparam name="T">Type of elements in the collection.</typeparam>
+		/// <param name="collection">A collection to check.</param>
+		/// <returns><see langword="true"/>, if collection is <see langword="null"/> or empty.</returns>
+		public static bool IsNullOrEmpty<T>(this ICollection<T> collection)
             => collection is null || collection.Count == 0;
     }
 }

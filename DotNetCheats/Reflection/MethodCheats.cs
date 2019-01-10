@@ -9,7 +9,7 @@ namespace Cheats.Reflection
 	public static class MethodCheats
 	{
 		public static Type[] GetParameterTypes(this MethodBase method)
-            => method?.GetParameters().Map(p => p.ParameterType);
+            => method?.GetParameters().Convert(p => p.ParameterType);
 
 		public static bool SignatureEquals(this MethodBase method, Type[] parameters)
 		{

@@ -83,16 +83,16 @@ namespace Cheats.Collections.Generic
 		public static V GetOrInvoke<K, V>(this IDictionary<K, V> dictionary, K key, Func<V> defaultValue)
 			=> dictionary.TryGetValue(key, out var value) ? value : defaultValue();
 
-		public static Optional<T> MapKey<K, V, T>(this IDictionary<K, V> dictionary, K key, Converter<V, T> mapper)
+		public static Optional<T> ConvertValue<K, V, T>(this IDictionary<K, V> dictionary, K key, Converter<V, T> mapper)
 			=> dictionary.TryGetValue(key, out var value) ? mapper(value) : Optional<T>.Empty;
 
-		public static bool MapKey<K, V, T>(this IDictionary<K, V> dictionary, K key, Converter<V, T> mapper, out T value)
-			=> dictionary.MapKey(key, mapper).TryGet(out value);
+		public static bool ConvertValue<K, V, T>(this IDictionary<K, V> dictionary, K key, Converter<V, T> mapper, out T value)
+			=> dictionary.ConvertValue(key, mapper).TryGet(out value);
 
 		public static ReadOnlyDictionaryView<K, V> AsReadOnlyView<K, V>(this IDictionary<K, V> dictionary)
 			=> new ReadOnlyDictionaryView<K, V>(dictionary);
 
-		public static ReadOnlyDictionaryView<K, V, T> Map<K, V, T>(this IReadOnlyDictionary<K, V> dictionary, Converter<V, T> mapper)
+		public static ReadOnlyDictionaryView<K, V, T> Convert<K, V, T>(this IReadOnlyDictionary<K, V> dictionary, Converter<V, T> mapper)
 			=> new ReadOnlyDictionaryView<K, V, T>(dictionary, mapper);
 	}
 }

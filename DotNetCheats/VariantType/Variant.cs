@@ -40,7 +40,7 @@ namespace Cheats.VariantType
 		/// </summary>
         public Optional<T2> Second => (Value as T2).EmptyIfNull();
 
-        public Optional<R> Map<R>(Func<T1, R> mapper1, Func<T2, R> mapper2)
+        public Optional<R> Convert<R>(Func<T1, R> mapper1, Func<T2, R> mapper2)
         {
             switch(Value)
             {
@@ -50,7 +50,7 @@ namespace Cheats.VariantType
             }
         }
 
-        public Variant<U1, U2> Map<U1, U2>(Func<T1, U1> mapper1, Func<T2, U2> mapper2)
+        public Variant<U1, U2> Convert<U1, U2>(Func<T1, U1> mapper1, Func<T2, U2> mapper2)
             where U1: class
             where U2: class
         {
