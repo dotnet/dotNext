@@ -1,4 +1,4 @@
-namespace DotNetCheats.Reflection
+namespace Cheats.Reflection
 {
     /// <summary>
     /// Describes concept of the captured generic parameter.

@@ -4,8 +4,6 @@ using System.Security;
 
 namespace Cheats.Reflection
 {
-    using static Reflection.TypeCheats;
-
     internal static class Ref
     {
         private static bool Is(Type type) => type.IsGenericInstanceOf(typeof(Ref<>));

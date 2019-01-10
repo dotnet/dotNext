@@ -65,17 +65,23 @@ namespace Cheats.Reflection
                 return null;
         }
 
-        /// <summary>
-        /// Binds constructor to its typed representation.
-        /// </summary>
-        /// <param name="ctor">Constructor to reflect.</param>
-        /// <typeparam name="D">A delegate representing signature of constructor.</typeparam>
-        /// <returns></returns>
-        public static Constructor<D> Unreflect<D>(this ConstructorInfo ctor)
+		/// <summary>
+		/// Unreflects constructor to its typed and callable representation.
+		/// </summary>
+		/// <typeparam name="D">A delegate representing signature of constructor.</typeparam>
+		/// <param name="ctor">Constructor to unreflect.</param>
+		/// <returns>Unreflected constructor.</returns>
+		public static Constructor<D> Unreflect<D>(this ConstructorInfo ctor)
             where D: MulticastDelegate
             => ConstructorCache<D>.GetOrCreate(ctor);
-        
-        public static Method<D> Unreflect<D>(this MethodInfo method)
+
+		/// <summary>
+		/// Unreflects method to its typed and callable representation.
+		/// </summary>
+		/// <typeparam name="D">A delegate representing signature of method.</typeparam>
+		/// <param name="method">A method to unreflect.</param>
+		/// <returns>Unreflected method.</returns>
+		public static Method<D> Unreflect<D>(this MethodInfo method)
             where D: MulticastDelegate
             => MethodCache<D>.GetOrCreate(method);
     }
