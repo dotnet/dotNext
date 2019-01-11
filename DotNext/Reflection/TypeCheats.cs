@@ -6,7 +6,7 @@ namespace DotNext.Reflection
 	/// <summary>
 	/// Various extension methods for type reflection.
 	/// </summary>
-	public static class TypeCheats
+	public static class Types
 	{
 		public static bool IsGenericInstanceOf(this Type type, Type genericDefinition)
 			=> type.IsGenericType &&

@@ -6,7 +6,7 @@ namespace DotNext.Reflection
 	/// <summary>
 	/// Various extension methods for method reflection.
 	/// </summary>
-	public static class MethodCheats
+	public static class Methods
 	{
 		public static Type[] GetParameterTypes(this MethodBase method)
             => method?.GetParameters().Convert(p => p.ParameterType);

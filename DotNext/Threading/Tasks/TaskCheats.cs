@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Threading.Tasks
 {
-	public static class TaskCheats
+	public static class Tasks
 	{
 		public static async Task<O> Convert<I, O>(this Task<I> task, Converter<I, O> converter)
 			=> converter(await task);

@@ -7,7 +7,7 @@ namespace DotNext
 	/// <summary>
 	/// Various extensions for arrays.
 	/// </summary>
-	public static class ArrayCheats
+	public static class Arrays
 	{
 		/// <summary>
 		/// Insert a new element into array and return modified array.

@@ -34,7 +34,7 @@ namespace DotNext.Reflection
         /// <remarks>
         /// For reference types, this delegate always calls <see cref="object.GetHashCode"/> virtual method.
         /// For value type, it calls <see cref="object.GetHashCode"/> if it is overridden by the value type; otherwise,
-        /// it calls <see cref="ValueTypeCheats.BitwiseHashCode{T}(T)"/>.
+        /// it calls <see cref="ValueTypes.BitwiseHashCode{T}(T)"/>.
         /// </remarks>
         public new static readonly Operator<T, int> GetHashCode;
 
@@ -45,7 +45,7 @@ namespace DotNext.Reflection
         /// If type <typeparamref name="T"/> has equality operator then use it.
         /// Otherwise, for reference types, this delegate always calls <see cref="object.Equals(object, object)"/> method.
         /// For value type, it calls equality operator or <see cref="IEquatable{T}.Equals(T)"/> if it is implemented by the value type; else,
-        /// it calls <see cref="ValueTypeCheats.BitwiseEquals{T}(T, T)"/>.
+        /// it calls <see cref="ValueTypes.BitwiseEquals{T}(T, T)"/>.
         /// </remarks>
         public new static readonly Operator<T, T, bool> Equals;
 
@@ -64,8 +64,8 @@ namespace DotNext.Reflection
                 method = RuntimeType.GetHashCodeMethod();
                 if(method is null)
                 {
-                    method = typeof(ValueTypeCheats)
-                                .GetMethod(nameof(ValueTypeCheats.BitwiseHashCode), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly)
+                    method = typeof(ValueTypes)
+                                .GetMethod(nameof(ValueTypes.BitwiseHashCode), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly)
                                 .MakeGenericMethod(RuntimeType);
                     GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam), inputParam).Compile();
                 }
@@ -82,7 +82,7 @@ namespace DotNext.Reflection
                     //3. Use bitwise equality
                     else
                     {
-                        method = typeof(ValueTypeCheats).GetMethod(nameof(ValueTypeCheats.BitwiseEquals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
+                        method = typeof(ValueTypes).GetMethod(nameof(ValueTypes.BitwiseEquals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
                             .MakeGenericMethod(RuntimeType);
                         Equals = Lambda<Operator<T, T, bool>>(Call(null, method, inputParam, secondParam), inputParam, secondParam).Compile();
                     }

@@ -157,7 +157,7 @@ namespace DotNext.Reflection
 				throw new AbstractDelegateException<D>();
 			else
 			{
-				var (parameters, returnType) = DelegateCheats.GetInvokeMethod<D>().Decompose(MethodCheats.GetParameterTypes, method => method.ReturnType);
+				var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType);
 				return Reflect(returnType, parameters, nonPublic);
 			}            
         }
@@ -178,7 +178,7 @@ namespace DotNext.Reflection
 			}
 			else
 			{
-				var invokeMethod = DelegateCheats.GetInvokeMethod<D>();
+				var invokeMethod = Delegates.GetInvokeMethod<D>();
 				return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
 					new Constructor<D>(ctor, ctor.GetParameterTypes().Convert(Expression.Parameter)) :
 					null;

@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace DotNext.Reflection
 {
-    internal static class TypeCheats
+    internal static class Types
     {
         private const BindingFlags PublicInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 

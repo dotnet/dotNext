@@ -37,7 +37,7 @@ namespace DotNext.Reflection
         private Method(MethodInfo method)
         {
             this.method = method;
-            this.invoker = DelegateCheats.CreateDelegate<D>(method);
+            this.invoker = Delegates.CreateDelegate<D>(method);
         }
 
         internal Method<D> OfType<T>() => method.DeclaringType.IsAssignableFrom(typeof(T)) ? this : null;
@@ -178,7 +178,7 @@ namespace DotNext.Reflection
                 return ReflectInstance(thisParam, argumentsType, typeof(void), methodName, nonPublic);
 			else
 			{
-				DelegateCheats.GetInvokeMethod<D>().Decompose(MethodCheats.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
+				Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
 				thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException("Delegate type should have THIS parameter");
 				return ReflectInstance(thisParam, parameters.RemoveFirst(1), returnType, methodName, nonPublic);
 			}
@@ -202,7 +202,7 @@ namespace DotNext.Reflection
                 return ReflectStatic(typeof(T), delegateType.GetGenericArguments()[0], typeof(void), methodName, nonPublic);
 			else
 			{
-				DelegateCheats.GetInvokeMethod<D>().Decompose(MethodCheats.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
+				Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
 				return ReflectStatic(typeof(T), parameters, returnType, methodName, nonPublic);
 			}
         }
@@ -221,7 +221,7 @@ namespace DotNext.Reflection
                 var (parameters, arglist, input) = Signature.Reflect(argumentsType);
                 return typeof(void) == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, arglist, new[]{ input }) : null; 
             }
-			else if(DelegateCheats.GetInvokeMethod<D>().SignatureEquals(method))
+			else if(Delegates.GetInvokeMethod<D>().SignatureEquals(method))
                 return new Method<D>(method);
             else
                 return null;
@@ -253,7 +253,7 @@ namespace DotNext.Reflection
 			}
             else
             {
-                DelegateCheats.GetInvokeMethod<D>().Decompose(MethodCheats.GetParameterTypes, m => m.ReturnType, out var parameters, out returnType);
+                Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, m => m.ReturnType, out var parameters, out returnType);
                 thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException("Delegate type should have THIS parameter");
                 parameters = parameters.RemoveFirst(1);
                 return method.SignatureEquals(parameters) && method.ReturnType == returnType && method.DeclaringType.IsAssignableFrom(thisParam) ?

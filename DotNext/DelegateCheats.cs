@@ -8,7 +8,7 @@ namespace DotNext
 	/// <summary>
 	/// Represents various extensions of delegates.
 	/// </summary>
-	public static class DelegateCheats
+	public static class Delegates
 	{
 		/// <summary>
 		/// Invokes event handlers asynchronously.
@@ -95,7 +95,7 @@ namespace DotNext
 		/// <returns>An object representing reflected method Invoke.</returns>
 		public static MethodInfo GetInvokeMethod<D>()
 			where D: Delegate
-			=> Reflection.TypeCheats.GetInvokeMethod(typeof(D));
+			=> Reflection.Types.GetInvokeMethod(typeof(D));
 
 		/// <summary>
 		/// Returns a new delegate of different type which

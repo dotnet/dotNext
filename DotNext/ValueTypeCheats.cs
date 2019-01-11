@@ -8,7 +8,7 @@ namespace DotNext
 	/// <summary>
 	/// Various extensions for value types.
 	/// </summary>
-    public static class ValueTypeCheats
+    public static class ValueTypes
     {
 		/// <summary>
 		/// Applies specific action to each array element.

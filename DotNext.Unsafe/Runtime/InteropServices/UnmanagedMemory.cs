@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Runtime.InteropServices
 {
-    using static Threading.Tasks.TaskCheats;
+    using static Threading.Tasks.Tasks;
 
     /// <summary>
     /// Represents unmanaged structured memory located outside of managed heap.

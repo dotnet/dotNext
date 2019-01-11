@@ -19,7 +19,7 @@ namespace DotNext.Reflection
 		internal static MissingConstructorException Create<D>()
 			where D: Delegate
 		{
-			var (parameters, target) = DelegateCheats.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
+			var (parameters, target) = Delegates.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
 			return new MissingConstructorException(target, parameters);
 		}
 

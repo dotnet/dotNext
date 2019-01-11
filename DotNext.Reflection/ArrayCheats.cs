@@ -1,6 +1,6 @@
 ﻿namespace DotNext
 {
-	internal static class ArrayCheats
+	internal static class Arrays
 	{
 		internal static long Take<T>(this T[] array, out T first, out T second, int startIndex = 0)
 		{
