@@ -1,17 +1,17 @@
 namespace Cheats.Reflection
 {
     /// <summary>
-    /// Represents member declaration type.
+    /// Represents method declaration type.
     /// </summary>
-    public enum MemberLookup
+    public enum MethodLookup
     {
         /// <summary>
-		/// Represents static member.
+		/// Represents static method.
 		/// </summary>
         Static = 0,
 
         /// <summary>
-		/// Represents instance member.
+		/// Represents instance method.
 		/// </summary>
         Instance = 1
     }

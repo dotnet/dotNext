@@ -9,8 +9,4 @@
   <ItemGroup>
     <ProjectReference Include="..\DotNetCheats\DotNetCheats.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Reflection\" />
-  </ItemGroup>
 </Project>

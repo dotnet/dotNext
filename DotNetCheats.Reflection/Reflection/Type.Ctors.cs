@@ -13,7 +13,7 @@ namespace Cheats.Reflection
         /// <returns>Constructor for type <typeparamref name="T"/>; or null, if it doesn't exist.</returns>
         public static Reflection.Constructor<Function<A, T>> GetConstructor<A>(bool nonPublic = false)
             where A: struct
-            => Constructor.Custom<Function<A, T>>(nonPublic);
+            => Constructor.Get<Function<A, T>>(nonPublic);
 
         /// <summary>
         /// Reflects constructor as function.
@@ -51,18 +51,29 @@ namespace Cheats.Reflection
             /// <param name="nonPublic">True to reflect non-public constructor.</param>
             /// <typeparam name="D">Type of delegate describing constructor signature.</typeparam>
             /// <returns>Reflected constructor; or null, if constructor doesn't exist.</returns>
-            public static Reflection.Constructor<D> Custom<D>(bool nonPublic = false)
+            public static Reflection.Constructor<D> Get<D>(bool nonPublic = false)
                 where D : MulticastDelegate
                 => nonPublic ? NonPublic<D>.Value : Public<D>.Value;
 
+			/// <summary>
+			/// Reflects constructor of type <typeparamref name="T"/> which signature
+			/// is specified by delegate type.
+			/// </summary>
+			/// <param name="nonPublic">True to reflect non-public constructor.</param>
+			/// <typeparam name="D">Type of delegate describing constructor signature.</typeparam>
+			/// <returns>Reflected constructor.</returns>
+			/// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+			public static Reflection.Constructor<D> Require<D>(bool nonPublic = false)
+				where D : MulticastDelegate
+				=> Get<D>(nonPublic) ?? throw MissingConstructorException.Create<D>();
 
-            /// <summary>
-            /// Returns public constructor of type <typeparamref name="T"/> without parameters.
-            /// </summary>
-            /// <param name="nonPublic">True to reflect non-public constructor.</param>
-            /// <returns>Reflected constructor without parameters; or null, if it doesn't exist.</returns>
-            public static Reflection.Constructor<Func<T>> Get(bool nonPublic = false)
-                => Custom<Func<T>>(nonPublic);
+			/// <summary>
+			/// Returns public constructor of type <typeparamref name="T"/> without parameters.
+			/// </summary>
+			/// <param name="nonPublic">True to reflect non-public constructor.</param>
+			/// <returns>Reflected constructor without parameters; or null, if it doesn't exist.</returns>
+			public static Reflection.Constructor<Func<T>> Get(bool nonPublic = false)
+                => Get<Func<T>>(nonPublic);
 
             /// <summary>
             /// Returns public constructor of type <typeparamref name="T"/> without parameters.
@@ -106,7 +117,7 @@ namespace Cheats.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with single parameter; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P, T>> Get(bool nonPublic = false)
-                => Constructor.Custom<Func<P, T>>(nonPublic);
+                => Constructor.Get<Func<P, T>>(nonPublic);
 
             /// <summary>
             /// Returns constructor <typeparamref name="T"/> with single parameter of type <typeparamref name="P"/>.
@@ -154,7 +165,7 @@ namespace Cheats.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with two parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, T>> Get(bool nonPublic = false)
-				=> Constructor.Custom<Func<P1, P2, T>>(nonPublic);
+				=> Constructor.Get<Func<P1, P2, T>>(nonPublic);
 
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with two 
@@ -206,7 +217,7 @@ namespace Cheats.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with three parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, T>> Get(bool nonPublic = false)
-				=> Constructor.Custom<Func<P1, P2, P3, T>>(nonPublic);
+				=> Constructor.Get<Func<P1, P2, P3, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with three 
@@ -261,7 +272,7 @@ namespace Cheats.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with four parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, T>> Get(bool nonPublic = false)
-				=> Constructor.Custom<Func<P1, P2, P3, P4, T>>(nonPublic);
+				=> Constructor.Get<Func<P1, P2, P3, P4, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with four 
@@ -320,7 +331,7 @@ namespace Cheats.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with five parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, T>> Get(bool nonPublic = false)
-				=> Constructor.Custom<Func<P1, P2, P3, P4, P5, T>>(nonPublic);
+				=> Constructor.Get<Func<P1, P2, P3, P4, P5, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with five 
@@ -382,7 +393,7 @@ namespace Cheats.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with six parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, T>> Get(bool nonPublic = false)
-				=> Constructor.Custom<Func<P1, P2, P3, P4, P5, P6, T>>(nonPublic);
+				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with six parameters.
@@ -445,7 +456,7 @@ namespace Cheats.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with seven parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, T>> Get(bool nonPublic = false)
-				=> Constructor.Custom<Func<P1, P2, P3, P4, P5, P6, P7, T>>(nonPublic);
+				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with seven parameters.
@@ -511,7 +522,7 @@ namespace Cheats.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with eight parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>> Get(bool nonPublic = false)
-				=> Constructor.Custom<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>>(nonPublic);
+				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, P8, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with eight parameters.
@@ -580,7 +591,7 @@ namespace Cheats.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with nine parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>> Get(bool nonPublic = false)
-				=> Constructor.Custom<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>>(nonPublic);
+				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with nine parameters.
@@ -652,7 +663,7 @@ namespace Cheats.Reflection
 			/// <param name="nonPublic">True to reflect non-public constructor.</param>
 			/// <returns>Reflected constructor with ten parameters; or null, if it doesn't exist.</returns>
 			public static Reflection.Constructor<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>> Get(bool nonPublic = false)
-				=> Constructor.Custom<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>>(nonPublic);
+				=> Constructor.Get<Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, T>>(nonPublic);
 			
 			/// <summary>
 			/// Returns constructor <typeparamref name="T"/> with ten parameters.
