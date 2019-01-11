@@ -11,6 +11,22 @@ namespace Cheats
     public static class ValueTypeCheats
     {
 		/// <summary>
+		/// Applies specific action to each array element.
+		/// </summary>
+		/// <remarks>
+		/// This method support modification of array elements
+		/// because each array element is passed by reference into action.
+		/// </remarks>
+		/// <typeparam name="T">Type of array elements.</typeparam>
+		/// <param name="array">An array to iterate.</param>
+		/// <param name="action">An action to be applied for each element.</param>
+		public static void ForEach<T>(this T[] array, ArrayIndexer<T> action)
+		{
+			for (var i = 0L; i < array.LongLength; i++)
+				action(i, ref array[i]);
+		}
+
+		/// <summary>
 		/// Computes hash code for the structure content.
 		/// </summary>
 		/// <typeparam name="T">Stucture type.</typeparam>
