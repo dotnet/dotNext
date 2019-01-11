@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Cheats</RootNamespace>
+    <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNetCheats\DotNetCheats.csproj" />
+    <ProjectReference Include="..\DotNext\DotNext.csproj" />
   </ItemGroup>
 </Project>

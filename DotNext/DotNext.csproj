@@ -3,15 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <RootNamespace>Cheats</RootNamespace>
+    <RootNamespace>DotNext</RootNamespace>
     <Authors>Roman Sakno</Authors>
     <Company />
-    <Product>.NET Cheats</Product>
+    <Product>.NEXT Family of Libraries</Product>
     <Version>0.1.0</Version>
-	<AssemblyName>DotNetCheats</AssemblyName>
-    <PackageLicenseUrl>https://github.com/sakno/DotNetCheats/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/sakno/DotNetCheats</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/sakno/DotNetCheats.git</RepositoryUrl>
+	<AssemblyName>DotNext</AssemblyName>
+    <PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/sakno/DotNext</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>extensions;.netstandard</PackageTags>
     <Copyright>Roman Sakno</Copyright>

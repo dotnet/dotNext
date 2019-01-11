@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 	  <TargetFramework>netcoreapp2.1</TargetFramework>
-    <RootNamespace>Cheats</RootNamespace>
+    <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -15,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNetCheats.Reflection\DotNetCheats.Reflection.csproj" />
-    <ProjectReference Include="..\DotNetCheats\DotNetCheats.csproj" />
+    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" />
+    <ProjectReference Include="..\DotNext\DotNext.csproj" />
   </ItemGroup>
 
 </Project>
