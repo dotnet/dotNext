@@ -38,6 +38,15 @@ namespace DotNext
 			where T : IComparable<T>
 			=> value.CompareTo(max) > 0 ? value : max;
 
+		/// <summary>
+		/// Checks whether specified value is in range.
+		/// </summary>
+		/// <typeparam name="T">Type of value to check.</typeparam>
+		/// <param name="value">Value to check.</param>
+		/// <param name="left">Range left bound.</param>
+		/// <param name="right">Range right bound.</param>
+		/// <param name="boundType">Range endpoints bound type.</param>
+		/// <returns><see langword="true"/>, if <paramref name="value"/> is in its bounds.</returns>
         public static bool Between<T>(this T value, T left, T right, BoundType boundType = BoundType.Open)
             where T: IComparable<T>
         {

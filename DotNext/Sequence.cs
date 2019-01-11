@@ -81,13 +81,17 @@ namespace DotNext
 		}
 
 		/// <summary>
-		/// Obtains el
+		/// Obtains elements at the specified index in the sequence.
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="collection"></param>
-		/// <param name="index"></param>
-		/// <param name="element"></param>
-		/// <returns></returns>
+		/// <remarks>
+		/// This method is optimized for types <see cref="IList{T}"/>
+		/// and <see cref="IReadOnlyList{T}"/>.
+		/// </remarks>
+		/// <typeparam name="T">Type of elements in the sequence.</typeparam>
+		/// <param name="collection">Source collection.</param>
+		/// <param name="index">Index of the element to read.</param>
+		/// <param name="element">Obtained element.</param>
+		/// <returns><see langword="true"/>, if element is available in the collection and obtained successfully; otherwise, <see langword="false"/>.</returns>
 		public static bool ElementAt<T>(this IEnumerable<T> collection, int index, out T element)
 		{
 			if (collection is IList<T> list)
@@ -131,8 +135,6 @@ namespace DotNext
 		/// <returns>Converted collection into string.</returns>
 		public static string ToString<T>(this IEnumerable<T> collection, string delimiter, string ifEmpty = "")
             => string.Join(delimiter, collection).IfNullOrEmpty(ifEmpty);
-
-		
 
 		/// <summary>
 		/// Indicates that collection is <see langword="null"/> or empty.

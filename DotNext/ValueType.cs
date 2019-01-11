@@ -69,25 +69,58 @@ namespace DotNext
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		/// Checks bitwise equality between two values of different value types.
+		/// </summary>
+		/// <remarks>
+		/// This method doesn't use <see cref="object.Equals(object)"/>
+		/// even if it is overridden by value type.
+		/// </remarks>
+		/// <typeparam name="U">Type of second value.</typeparam>
+		/// <param name="first">The first value to check.</param>
+		/// <param name="second">The second value to check.</param>
+		/// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool Equals<U>(T first, U second)
 			where U: struct
             => Size == ValueType<U>.Size && Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
-                
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		/// <summary>
+		/// Checks bitwise equality between two values of the same value type.
+		/// </summary>
+		/// <remarks>
+		/// This method doesn't use <see cref="object.Equals(object)"/>
+		/// even if it is overridden by value type.
+		/// </remarks>
+		/// <param name="first">The first value to check.</param>
+		/// <param name="second">The second value to check.</param>
+		/// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool Equals(T first, T second)
             => Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
-        
-        public static unsafe int GetHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
+
+		/// <summary>
+		/// Computes bitwise hash code for the specified value.
+		/// </summary>
+		/// <remarks>
+		/// This method doesn't use <see cref="object.GetHashCode"/>
+		/// even if it is overridden by value type.
+		/// </remarks>
+		/// <param name="value">A value to be hashed.</param>
+		/// <param name="hash">Initial value of the hash.</param>
+		/// <param name="hashFunction">Hashing function.</param>
+		/// <param name="salted">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <returns>Bitwise hash code.</returns>
+		public static unsafe int GetHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
 			=> Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, hash, hashFunction, salted);
 
 		/// <summary>
 		/// Computes hash code for the structure content.
 		/// </summary>
 		/// <param name="value">Value to be hashed.</param>
+		/// <param name="salted">True to include randomized salt data into hashing; false to use data from memory only.</param>
 		/// <returns>Content hash code.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]      
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]      
 		public static unsafe int GetHashCode(T value, bool salted = true)
             => Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, salted);
         
@@ -110,10 +143,23 @@ namespace DotNext
         public static byte[] AsBinary(T value)
             => RawBits(ref value).ToArray();
 
-        public static unsafe int Compare(T first, T second)
+		/// <summary>
+		/// Compares bits of two values of the same type.
+		/// </summary>
+		/// <param name="first">The first value to compare.</param>
+		/// <param name="second">The second value to compare.</param>
+		/// <returns>A value that indicates the relative order of the objects being compared.</returns>
+		public static unsafe int Compare(T first, T second)
             => Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
-        
-        public static unsafe int Compare<U>(T first, U second)
+
+		/// <summary>
+		/// Compares bits of two values of the different type.
+		/// </summary>
+		/// <typeparam name="U">Type of the second value.</typeparam>
+		/// <param name="first">The first value to compare.</param>
+		/// <param name="second">The second value to compare.</param>
+		/// <returns>A value that indicates the relative order of the objects being compared.</returns>
+		public static unsafe int Compare<U>(T first, U second)
             where U: struct
             => Size == ValueType<U>.Size ? 
 					Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size) :
