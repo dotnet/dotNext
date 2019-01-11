@@ -7,7 +7,7 @@ namespace DotNext
 	/// <summary>
 	/// Various extension methods for <see cref="IEnumerable{T}"/> implementing classes.
 	/// </summary>
-    public static class Collections
+    public static class Iterable
     {
 		/// <summary>
 		/// Apply specified action to each collection element.
@@ -132,39 +132,7 @@ namespace DotNext
 		public static string ToString<T>(this IEnumerable<T> collection, string delimiter, string ifEmpty = "")
             => string.Join(delimiter, collection).IfNullOrEmpty(ifEmpty);
 
-		/// <summary>
-		/// Converts list into array and perform mapping for each
-		/// element.
-		/// </summary>
-		/// <typeparam name="I">Type of elements in the list.</typeparam>
-		/// <typeparam name="O">Type of elements in the output array.</typeparam>
-		/// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
-		/// <param name="mapper">Element mapping function.</param>
-		/// <returns>An array representing converted list.</returns>
-		public static O[] ToArray<I, O>(this IList<I> input, Func<I, O> mapper)
-        {
-            var output = Arrays.New<O>(input.Count);
-            for(var i = 0; i < input.Count; i++)
-                output[i] = mapper(input[i]);
-            return output;
-        }
-
-		/// <summary>
-		/// Converts list into array and perform mapping for each
-		/// element.
-		/// </summary>
-		/// <typeparam name="I">Type of elements in the list.</typeparam>
-		/// <typeparam name="O">Type of elements in the output array.</typeparam>
-		/// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
-		/// <param name="mapper">Index-aware element mapping function.</param>
-		/// <returns>An array representing converted list.</returns>
-		public static O[] ToArray<I, O>(this IList<I> input, Func<int, I, O> mapper)
-        {
-            var output = Arrays.New<O>(input.Count);
-            for(var i = 0; i < input.Count; i++)
-                output[i] = mapper(i, input[i]);
-            return output;
-        }
+		
 
 		/// <summary>
 		/// Indicates that collection is <see langword="null"/> or empty.

@@ -5,6 +5,8 @@ using Xunit;
 
 namespace DotNext
 {
+	using Collections.Generic;
+
 	public sealed class CollectionsTest : Assert
 	{
 		public sealed class Counter<T>

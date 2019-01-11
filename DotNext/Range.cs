@@ -14,7 +14,7 @@ namespace DotNext
         /// <param name="value">Value.</param>
         /// <param name="min">Minimal range value.</param>
         /// <param name="max">Maximum range value.</param>
-        public static T Clamp<T> (this T value, T min, T max, BoundType boundType = BoundType.Open) 
+        public static T Clamp<T> (this T value, T min, T max) 
             where T : IComparable<T>
             => value.Max(min).Min(max);
 
@@ -25,18 +25,18 @@ namespace DotNext
         /// <param name="value">Value.</param>
         /// <param name="min">Minimal value.</param>
         public static T Min<T> (this T value, T min) where T : IComparable<T>
-            => value.CompareTo (min) < 0 ? min : value;
+            => value.CompareTo (min) < 0 ? value : min;
 
 
-        /// <summary>
-        /// Restricts a <paramref name="value" /> maximum value.
-        /// </summary>
-        /// <typeparam name="T">Type of the values.</typeparam>
-        /// <param name="value">Value.</param>
-        /// <param name="max">Maximum value.</param>
-        public static T Max<T> (this T value, T max) 
-            where T : IComparable<T>
-            => value.CompareTo (max) > 0 ? max : value;
+		/// <summary>
+		/// Restricts a <paramref name="value" /> maximum value.
+		/// </summary>
+		/// <typeparam name="T">Type of the values.</typeparam>
+		/// <param name="value">Value.</param>
+		/// <param name="max">Maximum value.</param>
+		public static T Max<T>(this T value, T max)
+			where T : IComparable<T>
+			=> value.CompareTo(max) > 0 ? value : max;
 
         public static bool Between<T>(this T value, T left, T right, BoundType boundType = BoundType.Open)
             where T: IComparable<T>
