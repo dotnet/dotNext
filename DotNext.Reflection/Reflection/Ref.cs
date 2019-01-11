@@ -1,9 +1,11 @@
 using System;
 using System.Reflection;
 using System.Security;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Reflection
 {
+    using static Runtime.InteropServices.Memory;
     internal static class Ref
     {
         private static bool Is(Type type) => type.IsGenericInstanceOf(typeof(Ref<>));
@@ -35,11 +37,61 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets or sets value.
         /// </summary>
-        [SecuritySafeCritical]
         internal T Value;
 
-        public static implicit operator T(Ref<T> reference) => reference.Value;
+        /// <summary>
+        /// Extracts actual value from the reference.
+        /// </summary>
+        /// <param name="reference">Typed reference</param>
+        /// <returns>Dereferenced value.</returns>
+        public static implicit operator T(in Ref<T> reference) => reference.Value;
 
+        /// <summary>
+        /// Obtains a reference to the value.
+        /// </summary>
+        /// <param name="value">A value.</param>
+        /// <returns>A reference to a value.</returns>
         public static implicit operator Ref<T>(T value) => new Ref<T> { Value = value };
+
+        /// <summary>
+        /// Identifies that two references point to the same location.
+        /// </summary>
+        /// <param name="first">The first reference.</param>
+        /// <param name="second">The second reference.</param>
+        /// <returns>True, if both references are equal.</returns>
+        public static bool operator==(in Ref<T> first, in Ref<T> second)
+            => AreSame(in first.Value, in second.Value);
+        
+        /// <summary>
+        /// Identifies that two references point to different locations.
+        /// </summary>
+        /// <param name="first">The first reference.</param>
+        /// <param name="second">The second reference.</param>
+        /// <returns>True, if both references are not equal.</returns>
+        public static bool operator!=(in Ref<T> first, in Ref<T> second)
+            => !AreSame(in first.Value, in second.Value);
+        
+        /// <summary>
+        /// Converts this reference into unmanaged address.
+        /// </summary>
+        [CLSCompliant(false)]
+        public IntPtr Address => AddressOf(in Value);
+
+        /// <summary>
+        /// Gets hash code of this reference based on its address.
+        /// </summary>
+        /// <returns>Hash code of the reference.</returns>
+        public override int GetHashCode() => AddressOf(in Value).ToInt32();
+
+        /// <summary>
+        /// Always returns <see langword="false"/> because two boxed references
+        /// have different address.
+        /// </summary>
+        /// <remarks>
+        /// Use equality operator instead.
+        /// </remarks>
+        /// <param name="other">Other object to compare.</param>
+        /// <returns>Always <see langword="false"/>.</returns>
+        public override bool Equals(object other) => false;
     }
 }

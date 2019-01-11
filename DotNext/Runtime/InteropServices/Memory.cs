@@ -412,5 +412,11 @@ namespace DotNext.Runtime.InteropServices
 
 		public static unsafe int Compare(IntPtr first, IntPtr second, int length)
 			=> Compare(first.ToPointer(), second.ToPointer(), length);
+		
+		public static bool AreSame<T>(in T first, in T second)
+			=> Unsafe.AreSame(ref Unsafe.AsRef(in first), ref Unsafe.AsRef(in second));
+		
+		public static unsafe IntPtr AddressOf<T>(in T value)
+			=> new IntPtr(Unsafe.AsPointer(ref Unsafe.AsRef(in value)));
 	}
 }
