@@ -90,6 +90,9 @@ namespace DotNext
 		public static void Dispose(params IDisposable[] objects)
 			=> Dispose(objects.Upcast<IEnumerable<IDisposable>, IDisposable[]>());
 
+		/// <summary>
+		/// Finalizes this object.
+		/// </summary>
 		~Disposable() => DisposeCore(false);
 	}
 }
