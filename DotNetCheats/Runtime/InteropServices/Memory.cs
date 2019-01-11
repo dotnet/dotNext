@@ -315,7 +315,7 @@ namespace Cheats.Runtime.InteropServices
 		/// <typeparam name="T">Stucture type.</typeparam>
 		/// <param name="value"></param>
 		/// <returns>Content hash code.</returns>
-		/// <see cref="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</see>
+		/// <see href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</see>
 		public static unsafe int GetHashCode(IntPtr source, long length, bool salted = true)
 		{
 			var hash = FNV1a.Offset;
@@ -352,7 +352,7 @@ namespace Cheats.Runtime.InteropServices
 		/// <typeparam name="T">Stucture type.</typeparam>
 		/// <param name="value"></param>
 		/// <returns>Content hash code.</returns>
-		/// <see cref="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</see>
+		/// <see href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</see>
 		[CLSCompliant(false)]
 		public static unsafe int GetHashCode(void* source, long length, bool salted = true)
 			=> GetHashCode(new IntPtr(source), length, salted);

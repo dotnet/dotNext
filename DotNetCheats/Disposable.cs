@@ -9,7 +9,7 @@ namespace Cheats
 	/// Provides implementation of dispose pattern.
 	/// </summary>
 	/// <see cref="IDisposable"/>
-	/// <seealso cref="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose"/>
+	/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose"/>
 	public abstract class Disposable : IDisposable
 	{
 		private AtomicBoolean disposed = new AtomicBoolean(false);
