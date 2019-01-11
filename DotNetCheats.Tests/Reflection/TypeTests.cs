@@ -10,11 +10,14 @@ namespace Cheats.Reflection
 		internal static event EventHandler StaticEvent;
 		private event EventHandler InstanceEvent;
 
-		private struct Point
+		private struct Point: IEquatable<Point>
 		{
 			public int X, Y;
 
 			public void Zero() => X = Y = 0;
+
+			bool IEquatable<Point>.Equals(Point other)
+				=> X == other.X && Y == other.Y;
 		}
 
 		private delegate void ByRefAction<T>(in T value);
@@ -258,6 +261,32 @@ namespace Cheats.Reflection
 			False(Type<string>.TryConvert(new object(), out _));
 			False(Type<int>.TryConvert(new object(), out _));
 			True(Type<IConvertible>.TryConvert(42, out _));
+		}
+
+		[Fact]
+		public void GetHashCodeTest()
+		{
+			Equal("Hello".GetHashCode(), Type<string>.GetHashCode("Hello"));
+			NotEqual(new object().GetHashCode(), Type<object>.GetHashCode(new object()));
+			var guid = Guid.NewGuid();
+			Equal(guid.GetHashCode(), Type<Guid>.GetHashCode(guid));
+			NotEqual(guid.BitwiseHashCode(), Type<Guid>.GetHashCode(guid));
+			var point = new Point { X = 10, Y = 20 };
+			NotEqual(point.GetHashCode(), Type<Point>.GetHashCode(point));
+			Equal(point.BitwiseHashCode(), Type<Point>.GetHashCode(point));
+		}
+		
+		[Fact]
+		public void BitwiseEqualityTest()
+		{
+			var guid = Guid.NewGuid();
+			True(Type<Guid>.Equals(in guid, in guid));
+			var point = new Point { X = 10, Y = 20 };
+			True(Type<Point>.Equals(point, point));
+			True(Type<string>.Equals(new string("Hello"), "Hello"));
+			False(Type<object>.Equals(new object(), new object()));
+			True(Type<StructWithProperties>.Equals(new StructWithProperties(){WriteOnlyProp = 20}, new StructWithProperties{WriteOnlyProp = 20}));
+			False(Type<StructWithProperties>.Equals(new StructWithProperties(){WriteOnlyProp = 10}, new StructWithProperties{WriteOnlyProp = 20}));
 		}
 	}
 }
