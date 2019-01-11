@@ -33,9 +33,9 @@ namespace DotNext
 		{
 			var value1 = Guid.NewGuid();
 			var value2 = value1;
-			True(value1.BitwiseEquals(value2));
+			True(ValueType<Guid>.BitwiseEquals(value1, value2));
 			value2 = default;
-			False(value1.BitwiseEquals(value2));
+			False(ValueType<Guid>.BitwiseEquals(value1, value2));
 		}
 
 		[Fact]
@@ -43,9 +43,9 @@ namespace DotNext
 		{
 			var value1 = 40M;
 			var value2 = 50M;
-			Equal(value1.CompareTo(value2) < 0, value1.BitwiseCompare(value2) < 0);
+			Equal(value1.CompareTo(value2) < 0, ValueType<decimal>.BitwiseCompare(value1, value2) < 0);
 			value2 = default;
-			Equal(value1.CompareTo(value2) > 0, value1.BitwiseCompare(value2) > 0);
+			Equal(value1.CompareTo(value2) > 0, ValueType<decimal>.BitwiseCompare(value1, value2) > 0);
 		}
 
 		[Fact]

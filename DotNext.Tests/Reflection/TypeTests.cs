@@ -270,10 +270,10 @@ namespace DotNext.Reflection
 			NotEqual(new object().GetHashCode(), Type<object>.GetHashCode(new object()));
 			var guid = Guid.NewGuid();
 			Equal(guid.GetHashCode(), Type<Guid>.GetHashCode(guid));
-			NotEqual(guid.BitwiseHashCode(), Type<Guid>.GetHashCode(guid));
+			NotEqual(ValueType<Guid>.BitwiseHashCode(guid), Type<Guid>.GetHashCode(guid));
 			var point = new Point { X = 10, Y = 20 };
 			NotEqual(point.GetHashCode(), Type<Point>.GetHashCode(point));
-			Equal(point.BitwiseHashCode(), Type<Point>.GetHashCode(point));
+			Equal(ValueType<Point>.BitwiseHashCode(point), Type<Point>.GetHashCode(point));
 		}
 		
 		[Fact]

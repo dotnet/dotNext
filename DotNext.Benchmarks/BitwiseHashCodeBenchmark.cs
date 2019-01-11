@@ -21,7 +21,7 @@ namespace DotNext.Benchmarks
         [Benchmark]
         public void GuidBitwiseHashCode()
         {
-            ValueType<Guid>.GetHashCode(NonEmptyGuid);
+            ValueType<Guid>.BitwiseHashCode(NonEmptyGuid);
         }
 
         [Benchmark]
@@ -33,7 +33,7 @@ namespace DotNext.Benchmarks
         [Benchmark]
         public void BigStructureBitwiseHashCode()
         {
-            ValueType<BitwiseEqualityBenchmark.BigStructure>.GetHashCode(NonEmptyBigStruct, false);
+            ValueType<BitwiseEqualityBenchmark.BigStructure>.BitwiseHashCode(NonEmptyBigStruct, false);
         }
     }
 }

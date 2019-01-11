@@ -10,6 +10,22 @@ namespace DotNext
 	public static class Arrays
 	{
 		/// <summary>
+		/// Applies specific action to each array element.
+		/// </summary>
+		/// <remarks>
+		/// This method support modification of array elements
+		/// because each array element is passed by reference into action.
+		/// </remarks>
+		/// <typeparam name="T">Type of array elements.</typeparam>
+		/// <param name="array">An array to iterate.</param>
+		/// <param name="action">An action to be applied for each element.</param>
+		public static void ForEach<T>(this T[] array, ArrayIndexer<T> action)
+		{
+			for (var i = 0L; i < array.LongLength; i++)
+				action(i, ref array[i]);
+		}
+
+		/// <summary>
 		/// Insert a new element into array and return modified array.
 		/// </summary>
 		/// <typeparam name="T">Type of array element.</typeparam>

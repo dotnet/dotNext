@@ -8,6 +8,10 @@ namespace DotNext.Reflection
 	/// </summary>
 	public static class Types
 	{
+		public static MethodInfo GetMethod<D>(this Type type, string name, BindingFlags flags)
+			where D: MulticastDelegate
+			=> type.GetMethod(name, flags, Type.DefaultBinder, typeof(D).GetInvokeMethod().GetParameterTypes(), Array.Empty<ParameterModifier>());
+
 		public static bool IsGenericInstanceOf(this Type type, Type genericDefinition)
 			=> type.IsGenericType &&
 				!type.IsGenericTypeDefinition &&

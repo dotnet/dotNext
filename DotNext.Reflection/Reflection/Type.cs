@@ -58,16 +58,16 @@ namespace DotNext.Reflection
             if(RuntimeType.IsValueType)
             {
                 //default checker
-                var method = typeof(ValueType<int>).GetGenericTypeDefinition().MakeGenericType(RuntimeType).GetMethod(nameof(ValueType<int>.IsDefault));
+                var method = typeof(ValueType<>).MakeGenericType(RuntimeType).GetMethod(nameof(ValueType<int>.IsDefault));
                 IsDefault = method.CreateDelegate<Predicate<T>>();
                 //hash code calculator
                 method = RuntimeType.GetHashCodeMethod();
                 if(method is null)
                 {
-                    method = typeof(ValueTypes)
-                                .GetMethod(nameof(ValueTypes.BitwiseHashCode), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly)
-                                .MakeGenericMethod(RuntimeType);
-                    GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam), inputParam).Compile();
+                    method = typeof(ValueType<>)
+                                .MakeGenericType(RuntimeType)
+                                .GetMethod<Func<T, bool, int>>(nameof(ValueType<int>.BitwiseHashCode), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                    GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam, Constant(true)), inputParam).Compile();
                 }
                 else
                     GetHashCode = method.CreateDelegate<Operator<T, int>>();
@@ -82,8 +82,9 @@ namespace DotNext.Reflection
                     //3. Use bitwise equality
                     else
                     {
-                        method = typeof(ValueTypes).GetMethod(nameof(ValueTypes.BitwiseEquals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
-                            .MakeGenericMethod(RuntimeType);
+                        method = typeof(ValueType<>)
+                            .MakeGenericType(RuntimeType)
+                            .GetMethod<Func<T, T, bool>>(nameof(ValueType<int>.BitwiseEquals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public);
                         Equals = Lambda<Operator<T, T, bool>>(Call(null, method, inputParam, secondParam), inputParam, secondParam).Compile();
                     }
             }

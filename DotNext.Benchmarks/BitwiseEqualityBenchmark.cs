@@ -68,7 +68,7 @@ namespace DotNext
 		[Benchmark]
 		public void GuidBitwiseEqualsMethod()
 		{
-			ValueType<Guid>.Equals(NonEmptyGuid, default(Guid));
+			ValueType<Guid>.BitwiseEquals(NonEmptyGuid, default(Guid));
 		}
 
 		[Benchmark]
@@ -80,7 +80,7 @@ namespace DotNext
 		[Benchmark]
 		public void BigStructBitwiseEqualsMethod()
 		{
-			ValueType<BigStructure>.Equals(NonEmptyBigStruct, default(BigStructure));
+			ValueType<BigStructure>.BitwiseEquals(NonEmptyBigStruct, default(BigStructure));
 		}
 	}
 }
