@@ -7,7 +7,7 @@ namespace DotNext
 	/// <summary>
 	/// Various extension methods for <see cref="IEnumerable{T}"/> implementing classes.
 	/// </summary>
-    public static class Iterable
+    public static class Sequence
     {
 		/// <summary>
 		/// Apply specified action to each collection element.
@@ -81,7 +81,7 @@ namespace DotNext
 		}
 
 		/// <summary>
-		/// 
+		/// Obtains el
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="collection"></param>
