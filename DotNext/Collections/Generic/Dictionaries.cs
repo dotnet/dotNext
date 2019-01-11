@@ -3,12 +3,24 @@ using System.Collections.Generic;
 
 namespace DotNext.Collections.Generic
 {
+	/// <summary>
+	/// Represents various extensions for types <see cref="Dictionary{TKey, TValue}"/>
+	/// and <see cref="IDictionary{TKey, TValue}"/>.
+	/// </summary>
 	public static class Dictionaries
 	{
-		public static void Deconstruct<T1, T2>(this KeyValuePair<T1, T2> tuple, out T1 key, out T2 value)
+		/// <summary>
+		/// Deconstruct key/value pair.
+		/// </summary>
+		/// <typeparam name="K">Type of key.</typeparam>
+		/// <typeparam name="V">Type of value.</typeparam>
+		/// <param name="pair">A pair to decompose.</param>
+		/// <param name="key">Deconstructed key.</param>
+		/// <param name="value">Deconstructed value.</param>
+		public static void Deconstruct<K, V>(this KeyValuePair<K, V> pair, out K key, out V value)
 		{
-			key = tuple.Key;
-			value = tuple.Value;
+			key = pair.Key;
+			value = pair.Value;
 		}
 
 		/// <summary>
@@ -89,9 +101,28 @@ namespace DotNext.Collections.Generic
 		public static bool ConvertValue<K, V, T>(this IDictionary<K, V> dictionary, K key, Converter<V, T> mapper, out T value)
 			=> dictionary.ConvertValue(key, mapper).TryGet(out value);
 
+		/// <summary>
+		/// Obtains read-only view of the dictionary.
+		/// </summary>
+		/// <remarks>
+		/// Any changes in the dictionary will be visible from read-only view.
+		/// </remarks>
+		/// <typeparam name="K">Type of keys.</typeparam>
+		/// <typeparam name="V">Type of values.</typeparam>
+		/// <param name="dictionary">A dictionary.</param>
+		/// <returns>Read-only view of the dictionary.</returns>
 		public static ReadOnlyDictionaryView<K, V> AsReadOnlyView<K, V>(this IDictionary<K, V> dictionary)
 			=> new ReadOnlyDictionaryView<K, V>(dictionary);
 
+		/// <summary>
+		/// Applies lazy conversion for each dictionary value.
+		/// </summary>
+		/// <typeparam name="K">Type of keys.</typeparam>
+		/// <typeparam name="V">Type of values.</typeparam>
+		/// <typeparam name="T">Type of mapped values.</typeparam>
+		/// <param name="dictionary">A dictionary to be mapped.</param>
+		/// <param name="mapper">Mapping function.</param>
+		/// <returns>Read-only view of the dictionary where each value is converted in lazy manner.</returns>
 		public static ReadOnlyDictionaryView<K, V, T> Convert<K, V, T>(this IReadOnlyDictionary<K, V> dictionary, Converter<V, T> mapper)
 			=> new ReadOnlyDictionaryView<K, V, T>(dictionary, mapper);
 	}
