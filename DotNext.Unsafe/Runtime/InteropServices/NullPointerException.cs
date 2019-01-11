@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace Cheats.Runtime.InteropServices
+namespace DotNext.Runtime.InteropServices
 {
     /// <summary>
     /// The exception that is thrown when there is an attempt to dereference zero pointer.

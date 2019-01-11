@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Cheats.Collections.Generic
+namespace DotNext.Collections.Generic
 {
 	public static class DictionaryCheats
 	{

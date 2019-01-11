@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Runtime.CompilerServices;
 
-namespace Cheats.Threading
+namespace DotNext.Threading
 {
 	/// <summary>
 	/// Represents atomic boolean.

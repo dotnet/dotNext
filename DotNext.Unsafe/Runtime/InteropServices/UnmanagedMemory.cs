@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Cheats.Runtime.InteropServices
+namespace DotNext.Runtime.InteropServices
 {
     using static Threading.Tasks.TaskCheats;
 

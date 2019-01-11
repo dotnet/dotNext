@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
 	/// <summary>
 	/// Represents typed access to type constructor.

@@ -1,6 +1,6 @@
 using System;
 
-namespace Cheats
+namespace DotNext
 {
     public class GenericArgumentException: ArgumentException
     {

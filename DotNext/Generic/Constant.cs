@@ -1,6 +1,6 @@
 using System;
 
-namespace Cheats.Generic
+namespace DotNext.Generic
 {
     /// <summary>
     /// Allows to use constant values as generic parameters.

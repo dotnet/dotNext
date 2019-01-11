@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
     /// <summary>
     /// Represents reflected method.

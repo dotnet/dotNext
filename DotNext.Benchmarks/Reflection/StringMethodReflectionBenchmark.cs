@@ -4,7 +4,7 @@ using BenchmarkDotNet.Order;
 using System;
 using System.Reflection;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
 	[SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 	[Orderer(SummaryOrderPolicy.Method)]

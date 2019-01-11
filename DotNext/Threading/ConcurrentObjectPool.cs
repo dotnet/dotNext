@@ -5,7 +5,7 @@ using static System.Diagnostics.Contracts.Contract;
 using System.Collections.ObjectModel;
 using Monitor = System.Threading.Monitor;
 
-namespace Cheats.Threading
+namespace DotNext.Threading
 {
 	/// <summary>
 	/// Provides concurrent object pool where

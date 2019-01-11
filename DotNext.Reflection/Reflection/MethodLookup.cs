@@ -1,4 +1,4 @@
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
     /// <summary>
     /// Represents method declaration type.

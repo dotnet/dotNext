@@ -2,7 +2,7 @@
 using System.Dynamic;
 using System.Linq.Expressions;
 
-namespace Cheats.VariantType
+namespace DotNext.VariantType
 {
 	internal abstract class VariantMetaObject : DynamicMetaObject
 	{

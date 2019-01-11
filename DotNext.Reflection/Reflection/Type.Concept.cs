@@ -1,4 +1,4 @@
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
     public static partial class Type<T>
     {

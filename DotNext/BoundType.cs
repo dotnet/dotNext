@@ -1,6 +1,6 @@
 using System;
 
-namespace Cheats
+namespace DotNext
 {
 	/// <summary>
 	/// Indicates whether an endpoint of some range is contained in the range itself ("closed") or not ("open").

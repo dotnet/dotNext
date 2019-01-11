@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Cheats
+namespace DotNext
 {
 	public static class Objects
 	{

@@ -1,4 +1,4 @@
-﻿namespace Cheats.Reflection
+﻿namespace DotNext.Reflection
 {
 	public delegate V MemberGetter<out V>();
 

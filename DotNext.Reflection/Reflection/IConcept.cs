@@ -1,4 +1,4 @@
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
     /// <summary>
     /// Describes concept of the captured generic parameter.

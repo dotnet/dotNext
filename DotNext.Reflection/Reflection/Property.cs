@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
     /// <summary>
     /// Represents property.

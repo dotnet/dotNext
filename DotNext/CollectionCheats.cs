@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Cheats
+namespace DotNext
 {
 	/// <summary>
 	/// Various extension methods for <see cref="IEnumerable{T}"/> implementing classes.

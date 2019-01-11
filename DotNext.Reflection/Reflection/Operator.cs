@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using static System.Diagnostics.Debug;
 using System.Linq.Expressions;
 
-namespace Cheats.Reflection 
+namespace DotNext.Reflection 
 {
 	internal static class Operator 
 	{

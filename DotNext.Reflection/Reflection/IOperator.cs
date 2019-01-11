@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
 	/// <summary>
 	/// Represents operator.

@@ -1,4 +1,4 @@
-﻿namespace Cheats
+﻿namespace DotNext
 {
 	internal static class ArrayCheats
 	{

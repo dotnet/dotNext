@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace Cheats.Runtime.InteropServices
+namespace DotNext.Runtime.InteropServices
 {
     /// <summary>
     /// CLS-compliant typed pointer for .NET languages

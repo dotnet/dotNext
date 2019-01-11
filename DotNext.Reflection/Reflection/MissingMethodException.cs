@@ -1,7 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
     /// <summary>
 	/// Indicates that requested method doesn't exist.

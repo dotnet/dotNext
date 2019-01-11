@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
     /// <summary>
     /// Provides constructor definition based on delegate signature.

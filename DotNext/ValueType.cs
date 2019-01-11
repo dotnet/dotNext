@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Cheats
+namespace DotNext
 {
     using Runtime.InteropServices;
 

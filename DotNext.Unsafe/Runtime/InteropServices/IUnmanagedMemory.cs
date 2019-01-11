@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace Cheats.Runtime.InteropServices
+namespace DotNext.Runtime.InteropServices
 {
 	/// <summary>
 	/// Represents a common interface for unmanaged memory

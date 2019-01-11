@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cheats.Threading.Tasks
+namespace DotNext.Threading.Tasks
 {
 	public static class TaskCheats
 	{

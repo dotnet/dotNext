@@ -1,4 +1,4 @@
-namespace Cheats
+namespace DotNext
 {
     /// <summary>
     /// Represents a static function with arbitrary number of arguments

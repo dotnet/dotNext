@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace Cheats
+namespace DotNext
 {
 	/// <summary>
 	/// Various extension and factory methods for constructing optional value.

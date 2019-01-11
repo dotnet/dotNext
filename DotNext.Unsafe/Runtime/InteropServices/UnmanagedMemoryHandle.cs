@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Cheats.Runtime.InteropServices
+namespace DotNext.Runtime.InteropServices
 {
 	/// <summary>
 	/// Represents handle to unmanaged memory.

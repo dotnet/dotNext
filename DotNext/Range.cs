@@ -1,6 +1,6 @@
 using System;
 
-namespace Cheats
+namespace DotNext
 {
 	/// <summary>
 	/// Range checks.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cheats.Threading
+namespace DotNext.Threading
 {
 	using Generic;
 	internal static class Atomic<T, CAS>

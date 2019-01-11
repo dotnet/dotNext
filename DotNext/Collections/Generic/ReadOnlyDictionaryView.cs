@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace Cheats.Collections.Generic
+namespace DotNext.Collections.Generic
 {
 	public readonly struct ReadOnlyDictionaryView<K, V>: IReadOnlyDictionary<K, V>, IEquatable<ReadOnlyDictionaryView<K, V>>
 	{

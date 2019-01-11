@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
 	/// <summary>
 	/// Indicates that requested attribute doesn't exist.

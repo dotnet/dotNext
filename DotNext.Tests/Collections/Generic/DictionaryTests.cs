@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using System.Collections.Generic;
 
-namespace Cheats.Collections.Generic
+namespace DotNext.Collections.Generic
 {
 	public sealed class DictionaryTests: Assert
 	{

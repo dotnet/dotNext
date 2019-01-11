@@ -1,4 +1,4 @@
-namespace Cheats
+namespace DotNext
 {
 	/// <summary>
 	/// Represents various extension methods for type <see cref="string"/>.

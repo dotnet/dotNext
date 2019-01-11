@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Cheats
+namespace DotNext
 {
 	public sealed class CollectionsTest : Assert
 	{

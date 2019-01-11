@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Cheats
+namespace DotNext
 {
 	/// <summary>
 	/// Represents various extensions of delegates.

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
 	/// <summary>
 	/// Represents reflected field.

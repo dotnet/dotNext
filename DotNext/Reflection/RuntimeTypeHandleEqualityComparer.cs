@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
     internal sealed class RuntimeTypeHandleEqualityComparer: IEqualityComparer<RuntimeTypeHandle>
     {

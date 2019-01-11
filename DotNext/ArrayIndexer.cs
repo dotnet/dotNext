@@ -1,4 +1,4 @@
-﻿namespace Cheats
+﻿namespace DotNext
 {
 	/// <summary>
 	/// Represents array indexer delegate which can be used

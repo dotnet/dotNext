@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Cheats.Runtime.InteropServices
+namespace DotNext.Runtime.InteropServices
 {
 	/// <summary>
 	/// Low-level methods for direct access to memory.

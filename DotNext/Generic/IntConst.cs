@@ -1,4 +1,4 @@
-namespace Cheats.Generic
+namespace DotNext.Generic
 {
     /// <summary>
     /// Represents integer constant as type.

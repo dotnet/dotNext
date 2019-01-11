@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
     public sealed class ReflectorTests: Assert
     {

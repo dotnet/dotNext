@@ -1,4 +1,4 @@
-namespace Cheats.Generic
+namespace DotNext.Generic
 {
     /// <summary>
     /// Represents boolean constant as generic parameter.

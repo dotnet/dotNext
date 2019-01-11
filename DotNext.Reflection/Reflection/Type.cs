@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using static System.Linq.Expressions.Expression;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
     /// <summary>
     /// Provides typed access to class or value type metadata.

@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace Cheats.Tests
+namespace DotNext.Tests
 {
     public sealed class ObjectsTest: Assert
     {

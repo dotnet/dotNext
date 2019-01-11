@@ -1,4 +1,4 @@
-﻿namespace Cheats
+﻿namespace DotNext
 {
 	/// <summary>
 	/// Represents a static procedure with arbitrary number of arguments

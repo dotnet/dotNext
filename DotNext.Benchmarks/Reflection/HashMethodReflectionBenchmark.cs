@@ -3,7 +3,7 @@ using System;
 using System.Reflection;
 using System.Security.Cryptography;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
     public class HashMethodReflectionBenchmark
     {

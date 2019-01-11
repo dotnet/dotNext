@@ -1,6 +1,6 @@
 using System.Dynamic;
 
-namespace Cheats.VariantType
+namespace DotNext.VariantType
 {
 	/// <summary>
 	/// A root interface for all variant data containers.

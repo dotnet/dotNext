@@ -1,4 +1,4 @@
-namespace Cheats.Runtime.InteropServices
+namespace DotNext.Runtime.InteropServices
 {
     /// <summary>
     /// Represents memory access mode.

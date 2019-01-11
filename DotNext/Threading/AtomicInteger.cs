@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace Cheats.Threading
+namespace DotNext.Threading
 {
 	using Generic;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace Cheats
+namespace DotNext
 {
 	public sealed class MemoryTests: Assert
 	{

@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
 	/// <summary>
 	/// Various extension methods for method reflection.

@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace Cheats
+namespace DotNext
 {
 	using Runtime.InteropServices;
 

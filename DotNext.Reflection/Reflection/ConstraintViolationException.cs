@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
 	/// <summary>
 	/// Root type for all exceptions related to generic constraints.

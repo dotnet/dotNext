@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Cheats
+namespace DotNext
 {
 	using Threading;
 

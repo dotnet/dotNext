@@ -1,4 +1,4 @@
-﻿namespace Cheats
+﻿namespace DotNext
 {
 	/// <summary>
 	/// Indicates that content of the implementing class or struct 

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Cheats {
+namespace DotNext {
     using System;
     
     

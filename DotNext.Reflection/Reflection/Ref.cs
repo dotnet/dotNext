@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Security;
 
-namespace Cheats.Reflection
+namespace DotNext.Reflection
 {
     internal static class Ref
     {
