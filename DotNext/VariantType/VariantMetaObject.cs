@@ -13,7 +13,7 @@ namespace DotNext.VariantType
 		}
 
 		protected static DynamicMetaObject CreateActualMetaObject(Expression parameter, IVariant variant)
-			=> Create(variant.Value, Expression.Property(parameter, typeof(IVariant), nameof(IVariant.Value)));
+			=> Create(variant.Value, Expression.Property(Expression.TypeAs(parameter, typeof(IVariant)), typeof(IVariant), nameof(IVariant.Value)));
 
 		public new IVariant Value => (IVariant)base.Value;
 

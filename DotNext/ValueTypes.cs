@@ -13,8 +13,8 @@ namespace DotNext
 		/// <summary>
 		/// Converts one structure into another without changing any bits.
 		/// </summary>
-		/// <param name="input"></param>
-		/// <typeparam name="I"></typeparam>
+		/// <param name="input">A value to convert.</param>
+		/// <typeparam name="I">Type of input struct.</typeparam>
 		/// <typeparam name="O"></typeparam>
 		/// <returns></returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -54,6 +54,5 @@ namespace DotNext
 		public static StrongBox<T> Box<T>(this T value)
 			where T: struct
 			=> new StrongBox<T>(value);
-		
     }
 }

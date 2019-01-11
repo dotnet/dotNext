@@ -13,7 +13,7 @@ namespace DotNext.VariantType
         where T1: class
         where T2: class
     {
-        internal readonly object Value;
+        private readonly object Value;
 
         private Variant(object value) => Value = value;
 
@@ -117,7 +117,7 @@ namespace DotNext.VariantType
 		where T2: class
 		where T3: class
 	{
-		internal readonly object Value;
+		private readonly object Value;
 
 		private Variant(object value)
 			=> Value = value;
@@ -130,6 +130,10 @@ namespace DotNext.VariantType
 
 		public Variant(T3 value)
 			=> Value = value;
+
+		private static Variant<T1, T2, T3> Create<V>(V variant)
+			where V: struct, IVariant
+			=> new Variant<T1, T2, T3>(variant.Value);
 
 		/// <summary>
 		/// Indicates that this container holds null value.
@@ -176,7 +180,7 @@ namespace DotNext.VariantType
 		public static explicit operator T3(Variant<T1, T2, T3> var) => var.Value as T3;
 
 		public static implicit operator Variant<T1, T2, T3>(Variant<T1, T2> variant)
-			=> new Variant<T1, T2, T3>(variant.Value);
+			=> Create(variant);
 
 		public override string ToString() => Value?.ToString() ?? "";
 
