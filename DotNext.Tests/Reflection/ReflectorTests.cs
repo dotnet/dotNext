@@ -40,5 +40,46 @@ namespace DotNext.Reflection
             NotNull(reflected2);
             Equal(1, reflected2.Invoke(("bb", "aa")));
         }
+
+        [Fact]
+        public void IncorrectFastInvokeTest()
+        {
+            var invoker = typeof(long).GetMethod("TryParse", new[]{ typeof(string), typeof(long).MakeByRefType() }).GetFastInvoker<(string, long)>();
+            Null(invoker);
+        }
+
+        [Fact]
+        public void TryParseFastInvokeTest()
+        {
+            var method = typeof(long).GetMethod("TryParse", new[]{ typeof(string), typeof(long).MakeByRefType() });
+            var invoker = method.GetFastInvoker<(string text, long result, bool success)>();
+            var args = invoker.ArgList();
+            args.text = "100500";
+            invoker(args);
+            True(args.success);
+            Equal(100500L, args.result);
+            var weakInvoker = method.GetFastInvoker<(object text, object result, object success)>();
+            var weakArgs = weakInvoker.ArgList();
+            weakArgs.text = "100500";
+            weakInvoker(weakArgs);
+            True((bool)args.success);
+            Equal(100500L, args.result);
+        }
+        
+        [Fact]
+        public void ToInt32FastInvokeTest()
+        {
+            var method = typeof(IntPtr).GetMethod("ToInt32");
+            var invoker = method.GetFastInvoker<(IntPtr value, int result)>();
+            var args = invoker.ArgList();
+            args.value = new IntPtr(10);
+            invoker(args);
+            Equal(10, args.result);
+            var weakInvoker = method.GetFastInvoker<(object value, object result)>();
+            var weakArgs = weakInvoker.ArgList();
+            weakArgs.value = new IntPtr(42);
+            weakInvoker(weakArgs);
+            Equal(42, weakArgs.result);
+        }
     }
 }

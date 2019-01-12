@@ -10,19 +10,13 @@ namespace DotNext.Reflection
     /// </summary>
     public static class Reflector
     {
-        private sealed class RuntimeMethodHandleEqualityComparer: IEqualityComparer<RuntimeMethodHandle>
-        {
-            public int GetHashCode(RuntimeMethodHandle handle) => handle.GetHashCode();
-            public bool Equals(RuntimeMethodHandle first, RuntimeMethodHandle second) => first.Equals(second);
-        }
-
         private sealed class ConstructorCache<D>: Cache<RuntimeMethodHandle, ConstructorInfo, Constructor<D>>
             where D: MulticastDelegate
         {
             private static readonly Cache<RuntimeMethodHandle, ConstructorInfo, Constructor<D>> Instance = new ConstructorCache<D>();
 
             private ConstructorCache()
-                : base(ctor => ctor.MethodHandle, new RuntimeMethodHandleEqualityComparer())
+                : base(ctor => ctor.MethodHandle, EqualityComparer<RuntimeMethodHandle>.Default)
             {
             }
 
@@ -37,7 +31,7 @@ namespace DotNext.Reflection
             private static readonly Cache<RuntimeMethodHandle, MethodInfo, Method<D>> Instance = new MethodCache<D>();
 
             private MethodCache()
-                : base(method => method.MethodHandle, new RuntimeMethodHandleEqualityComparer())
+                : base(method => method.MethodHandle, EqualityComparer<RuntimeMethodHandle>.Default)
             {
             }
 
@@ -84,5 +78,124 @@ namespace DotNext.Reflection
 		public static Method<D> Unreflect<D>(this MethodInfo method)
             where D: MulticastDelegate
             => MethodCache<D>.GetOrCreate(method);
+
+        private static Expression NormalizeParameter(Type actualParameter, Expression expectedParameter, out ParameterExpression localVar, out Expression postExpression)
+        {
+            if(expectedParameter.Type == actualParameter)
+            {
+                postExpression = localVar = null;
+                return expectedParameter;
+            }
+            else if(expectedParameter.Type == typeof(object))
+                if(actualParameter.IsByRef)
+                {
+                    //T local = args.param is null ? default(T) : (T)args;
+                    //...call(ref local)
+                    //args.param = (object)local;
+                    localVar = Expression.Variable(actualParameter.GetElementType());
+                    postExpression = localVar.Type.IsValueType ?
+                        Expression.Assign(expectedParameter, Expression.Convert(localVar, expectedParameter.Type)):
+                        Expression.Assign(expectedParameter, localVar);
+                    postExpression = Expression.Assign(expectedParameter, Expression.Convert(localVar, expectedParameter.Type));
+                    return Expression.Assign(localVar, Expression.Condition(Expression.ReferenceEqual(expectedParameter, Expression.Constant(null, expectedParameter.Type)), 
+                        Expression.Default(actualParameter.GetElementType()),
+                        Expression.Convert(expectedParameter, actualParameter.GetElementType())));
+                }
+                else
+                {
+                    postExpression = localVar = null;
+                    return Expression.Condition(Expression.ReferenceEqual(expectedParameter, Expression.Constant(null, expectedParameter.Type)), 
+                        Expression.Default(actualParameter),
+                        Expression.Convert(expectedParameter, actualParameter));
+                }
+            else if(actualParameter.IsByRef)
+                {
+                    postExpression = localVar = null;
+                    return expectedParameter;
+                }
+            else 
+            {
+                postExpression = localVar = null;
+                return Expression.Convert(expectedParameter, actualParameter);
+            }
+        }
+
+        private static bool NormalizeParameters(Type[] actualParameters, Expression[] expectedParameters, ICollection<ParameterExpression> locals, ICollection<Expression> postExpressions)
+        {
+            for(var i = 0L; i < actualParameters.LongLength; i++)
+                if((expectedParameters[i] = NormalizeParameter(actualParameters[i], expectedParameters[i], out var localVar, out var postExpr)) is null)
+                    return false;
+                else if(!(postExpr is null) && !(localVar is null))
+                {
+                    locals.Add(localVar);
+                    postExpressions.Add(postExpr);
+                }
+            return true;
+        }
+        
+        public static MemberInvoker<A> GetFastInvoker<A>(this MethodInfo method)
+            where A: struct
+        {
+            var methodParams = method.GetParameterTypes();
+            var (_, arglist, input) = Signature.Reflect<A>();
+            var postExpressions = new LinkedList<Expression>();
+            var locals = new LinkedList<ParameterExpression>();
+            Expression returnArg;
+            Expression thisArg;
+            
+            if(method.IsStatic)
+                //all fields of struct are arguments
+                if(method.ReturnType == typeof(void))
+                    if(methodParams.LongLength == arglist.LongLength)
+                    {
+                        thisArg = null;
+                        returnArg = null;
+                    }
+                    else
+                        return null;
+                //last field is a method return type
+                else if(methodParams.LongLength == arglist.LongLength -1)
+                {
+                    thisArg = null;
+                    returnArg = arglist[arglist.LongLength - 1];
+                    arglist = arglist.RemoveLast(1);
+                }
+                else
+                    return null;
+            //first field is an instance, all other - arguments
+            else 
+                if(method.ReturnType == typeof(void))
+                    if(methodParams.LongLength == arglist.LongLength -1)
+                    {
+                        returnArg = null;
+                        thisArg = arglist[0];
+                        arglist = arglist.RemoveFirst(1);
+                    }
+                    else
+                        return null;
+                else 
+                    if(methodParams.LongLength == arglist.LongLength - 2)
+                    {
+                        returnArg = arglist[arglist.LongLength - 1];
+                        thisArg = arglist[0];
+                        arglist = arglist.Slice(1, arglist.LongLength - 1);
+                    }
+                    else
+                        return null;
+            if(!NormalizeParameters(methodParams, arglist, locals, postExpressions))
+                return null;
+            else if(!(thisArg is null))
+                thisArg = NormalizeParameter(method.DeclaringType, thisArg, out _, out _);
+            Expression body = Expression.Call(thisArg, method, arglist);
+            if(!(returnArg is null))
+                body = Expression.Assign(returnArg, Expression.Convert(body, returnArg.Type));
+            postExpressions.AddFirst(body);
+            body = postExpressions.Count == 1 ? postExpressions.First.Value : Expression.Block(locals, postExpressions);
+            return Expression.Lambda<MemberInvoker<A>>(body, input).Compile();
+        }
+
+        public static A ArgList<A>(this MemberInvoker<A> invoker)
+            where A: struct
+            => new A();
     }
 }

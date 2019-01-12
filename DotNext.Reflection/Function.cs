@@ -1,3 +1,5 @@
+using System;
+
 namespace DotNext
 {
     /// <summary>
@@ -15,7 +17,7 @@ namespace DotNext
     /// Represents an instance function with arbitrary number of arguments
     /// allocated on the stack.
     /// </summary>
-    /// <param name="this">Hidden This parameter.</param>
+    /// <param name="this">Hidden <see langword="this"/> parameter.</param>
     /// <param name="arguments">Function arguments in the form of public structure fields.</param>
     /// <typeparam name="T">Type of instance to be passed into underlying method.</typeparam>
     /// <typeparam name="A">Type of structure with function arguments allocated on the stack.</typeparam>
@@ -32,5 +34,12 @@ namespace DotNext
         public static A ArgList<T, A, R>(this Function<T, A, R> function)
             where A: struct
             => new A();
+
+        public static R Invoke<P, R>(this Function<ValueTuple<P>, R> function, P arg)
+            => function(new ValueTuple<P>(arg));
+
+        public static R Invoke<T, P, R>(this Function<T, ValueTuple<P>, R> function, in T instance, P arg)
+            => function(in instance, new ValueTuple<P>(arg));
+        
     }
 }

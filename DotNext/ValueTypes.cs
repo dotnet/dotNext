@@ -51,8 +51,8 @@ namespace DotNext
 		/// <typeparam name="T">Value type.</typeparam>
 		/// <returns>Boxed representation of value type.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static StrongBox<T> Box<T>(this T value)
+		public static ValueType<T> Box<T>(this T value)
 			where T: struct
-			=> new StrongBox<T>(value);
+			=> new ValueType<T>(value);
     }
 }

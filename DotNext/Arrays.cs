@@ -105,6 +105,18 @@ namespace DotNext
 			}
 		}
 
+		public static T[] Slice<T>(this T[] input, long startIndex, long length)
+		{
+			if(startIndex >= input.LongLength || length == 0)
+				return Array.Empty<T>();
+			else if(startIndex == 0 && length == input.Length)
+				return input;
+			length = Math.Min(length - startIndex, input.LongLength);
+			var result = new T[length];
+			Array.Copy(input, startIndex, result, 0, length);
+			return result;
+		}
+
 		/// <summary>
 		/// Removes the specified number of elements from the end of the array.
 		/// </summary>

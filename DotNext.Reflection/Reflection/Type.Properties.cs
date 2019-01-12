@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 
 namespace DotNext.Reflection
@@ -53,6 +54,18 @@ namespace DotNext.Reflection
 			public static Property<T, V> Require(string propertyName, bool nonPublic = false)
 				=> Get(propertyName, nonPublic) ?? throw MissingPropertyException.Create<T, V>(propertyName);
 
+			public static Reflection.Method<MemberGetter<T, V>> GetGetter(string propertyName, bool nonPublic = false)
+				=> Get(propertyName, nonPublic)?.GetMethod;
+
+			public static Reflection.Method<MemberGetter<T, V>> RequireGetter(string propertyName, bool nonPublic = false)
+				=> GetGetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<MemberGetter<T, V>>(propertyName.ToGetterName());
+
+			public static Reflection.Method<MemberSetter<T, V>> GetSetter(string propertyName, bool nonPublic = false)
+				=> Get(propertyName, nonPublic)?.SetMethod;
+			
+			public static Reflection.Method<MemberSetter<T, V>> RequireSetter(string propertyName, bool nonPublic = false)
+				=> GetSetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<MemberSetter<T, V>>(propertyName.ToSetterName());
+
 			/// <summary>
 			/// Gets static property.
 			/// </summary>
@@ -71,6 +84,18 @@ namespace DotNext.Reflection
 			/// <exception cref="MissingPropertyException">Property doesn't exist.</exception>
 			public static Reflection.Property<V> RequireStatic(string propertyName, bool nonPublic = false)
 				=> GetStatic(propertyName, nonPublic) ?? throw MissingFieldException.Create<T, V>(propertyName);
+
+			public static Reflection.Method<MemberGetter<V>> GetStaticGetter(string propertyName, bool nonPublic = false)
+				=> GetStatic(propertyName, nonPublic)?.GetMethod;
+
+			public static Reflection.Method<MemberGetter<V>> RequireStaticGetter(string propertyName, bool nonPublic = false)
+				=> GetStaticGetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<MemberGetter<V>>(propertyName.ToGetterName());
+
+			public static Reflection.Method<MemberSetter<V>> GetStaticSetter(string propertyName, bool nonPublic = false)
+				=> GetStatic(propertyName, nonPublic)?.SetMethod;
+			
+			public static Reflection.Method<MemberSetter<V>> RequireStaticSetter(string propertyName, bool nonPublic = false)
+				=> GetStaticSetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<MemberSetter<V>>(propertyName.ToSetterName());
 		}
 	}
 }

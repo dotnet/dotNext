@@ -15,7 +15,7 @@ namespace DotNext.Reflection
             if(Is(byRefType))
             {
                 underlyingType = byRefType.GetGenericArguments()[0];
-                valueField = byRefType.GetField("Value", BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance);
+                valueField = byRefType.GetField("Value", BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance);
                 return true;
             }
             else
@@ -32,12 +32,18 @@ namespace DotNext.Reflection
     /// </summary>
     /// <typeparam name="T">Referenced type.</typeparam>
     [SecuritySafeCritical]
-    public struct Ref<T>
+    public struct Ref<T>: IStrongBox
     {
         /// <summary>
         /// Gets or sets value.
         /// </summary>
-        internal T Value;
+        public T Value;
+
+        object IStrongBox.Value
+        {
+            get => Value;
+            set => Value = (T)value;
+        }
 
         /// <summary>
         /// Extracts actual value from the reference.

@@ -30,6 +30,11 @@ namespace DotNext.Reflection
 	/// <typeparam name="P">Type of property value.</typeparam>
 	public interface IProperty<T, P>: IProperty
 	{
+		/// <summary>
+		/// Gets or sets property value.
+		/// </summary>
+		/// <param name="instance">The object on which to invoke the property getter or setter.</param>
+		/// <returns>Property value.</returns>
 		P this[in T instance]{ get; set; }
 	}
 }

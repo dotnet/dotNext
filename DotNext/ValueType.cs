@@ -10,7 +10,8 @@ namespace DotNext
     /// Provides fast memory operations to work with value type.
     /// </summary>
     /// <typeparam name="T">Value type.</typeparam>
-    public static class ValueType<T>
+	[Serializable]
+    public sealed class ValueType<T>: StrongBox<T>
         where T: struct
     {
         private sealed class BitwiseComparer: IEqualityComparer<T>, IComparer<T>
@@ -164,5 +165,20 @@ namespace DotNext
             => Size == ValueType<U>.Size ? 
 					Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size) :
 					Size.CompareTo(ValueType<U>.Size);
+
+		/// <summary>
+		/// Initializes a new boxed value type.
+		/// </summary>
+		/// <param name="value">A struct to be placed onto heap.</param>
+		public ValueType(T value)
+			: base(value)
+		{
+		}
+
+		/// <summary>
+		/// Gets pinnable reference to the boxed value.
+		/// </summary>
+		/// <returns>Pinnnable reference.</returns>
+		public ref T GetPinnableReference() => ref Value;
     }
 }

@@ -14,10 +14,7 @@ namespace DotNext.Reflection
     {
         private readonly PropertyInfo property;
 
-        private protected PropertyBase(PropertyInfo property)
-        {
-            this.property = property;
-        }
+        private protected PropertyBase(PropertyInfo property) => this.property = property;
 
 		public abstract bool GetValue(object obj, out V value);
 		public abstract bool SetValue(object obj, V value);
