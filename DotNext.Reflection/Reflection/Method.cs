@@ -100,7 +100,7 @@ namespace DotNext.Reflection
         public static implicit operator D(Method<D> method) => method?.invoker;
 
         MethodInfo IMember<MethodInfo>.RuntimeMember => method;
-        D ICallable<D>.Invoker => invoker;
+        D IMember<MethodInfo, D>.Invoker => invoker;
 
         public override string ToString() => method.ToString();
 

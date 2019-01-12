@@ -45,7 +45,7 @@ namespace DotNext.Reflection
 
         ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctor;
 
-        D ICallable<D>.Invoker => invoker;
+        D IMember<ConstructorInfo, D>.Invoker => invoker;
 
         public override MethodAttributes Attributes => ctor is null ? (MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName) : ctor.Attributes;
 

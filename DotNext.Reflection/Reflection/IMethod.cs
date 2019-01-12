@@ -4,7 +4,7 @@ using System.Reflection;
 namespace DotNext.Reflection
 {
 	
-	public interface IMethod<out M, out D>: IMember<M>, ICallable<D>
+	public interface IMethod<out M, out D>: IMember<M, D>
 		where M: MethodBase
 		where D: Delegate
 	{
