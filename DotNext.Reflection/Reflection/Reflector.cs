@@ -92,7 +92,9 @@ namespace DotNext.Reflection
                     thisArg = NormalizeParameter(method.DeclaringType, thisArg, out _, out _);
                 Expression body = Expression.Call(thisArg, method, arglist);
                 if(!(returnArg is null))
-                    body = Expression.Assign(returnArg, Expression.Convert(body, returnArg.Type));
+                    body = returnArg.Type == body.Type ?
+                        Expression.Assign(returnArg, body) :
+                        Expression.Assign(returnArg, Expression.Convert(body, returnArg.Type));
                 postExpressions.AddFirst(body);
                 body = postExpressions.Count == 1 ? postExpressions.First.Value : Expression.Block(locals, postExpressions);
                 return Expression.Lambda<MemberInvoker<A>>(body, input).Compile();
