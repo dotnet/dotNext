@@ -3,6 +3,7 @@ using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using FastMember;
 using System;
+using System.Reflection;
 
 namespace DotNext.Reflection
 {
@@ -28,27 +29,31 @@ namespace DotNext.Reflection
 
         private static readonly IndexOfCalculator IndexOfCalc = new IndexOfCalculator("Hello, world!", 'd', 0);
         private static readonly ObjectAccessor Accessor = ObjectAccessor.Create(IndexOfCalc);
-        private static readonly MemberInvoker<(IndexOfCalculator instance, int result)> Invoker = IndexOfCalc.GetType().GetProperty(nameof(IndexOfCalculator.IndexOf)).GetMethod.AsInvoker<(IndexOfCalculator, int)>();
-        private static readonly MemberInvoker<(object instance, object result)> UntypedInvoker = IndexOfCalc.GetType().GetProperty(nameof(IndexOfCalculator.IndexOf)).GetMethod.AsInvoker<(object, object)>();
+        private static readonly MethodInfo ReflectedGetter = IndexOfCalc.GetType().GetProperty(nameof(IndexOfCalculator.IndexOf)).GetMethod;
+        private static readonly MemberInvoker<(IndexOfCalculator instance, int result)> Invoker = ReflectedGetter.AsInvoker<(IndexOfCalculator, int)>();
+        private static readonly MemberInvoker<(object instance, object result)> UntypedInvoker = ReflectedGetter.AsInvoker<(object, object)>();
         private static readonly MemberGetter<IndexOfCalculator, int> StaticallyReflected = Type<IndexOfCalculator>.Property<int>.RequireGetter(nameof(IndexOfCalculator.IndexOf));
         private static readonly object ExpectedIndex = 11;
 
-        private static void AssertEquals(object first, object second)
+        private static void DummyReceiver(object first)
         {
-            if (!Equals(first, second))
-                throw new Exception();
+        }
+
+        private static void DummyReceiver(int i)
+        {
+
         }
 
         [Benchmark]
         public void NoReflection()
         {
-            AssertEquals(IndexOfCalc.IndexOf, ExpectedIndex);
+            DummyReceiver(IndexOfCalc.IndexOf);
         }
 
         [Benchmark]
         public void UseObjectAccessor()
         {
-            AssertEquals(Accessor["IndexOf"], ExpectedIndex);
+            DummyReceiver(Accessor["IndexOf"]);
         }
 
         [Benchmark]
@@ -56,7 +61,7 @@ namespace DotNext.Reflection
         {
             (IndexOfCalculator instance, int result) args = (IndexOfCalc, 0);
             Invoker(args);
-            AssertEquals(args.result, ExpectedIndex);
+            DummyReceiver(args.result);
         }
 
         [Benchmark]
@@ -64,13 +69,19 @@ namespace DotNext.Reflection
         {
             (object instance, object result) args = (IndexOfCalc, 0);
             UntypedInvoker(args);
-            AssertEquals(args.result, ExpectedIndex);
+            DummyReceiver(args.result);
         }
 
         [Benchmark]
         public void UseStaticReflection()
         {
-            AssertEquals(StaticallyReflected(IndexOfCalc), ExpectedIndex);
+            DummyReceiver(StaticallyReflected(IndexOfCalc));
+        }
+
+        [Benchmark]
+        public void UseReflection()
+        {
+            DummyReceiver(ReflectedGetter.Invoke(IndexOfCalc, Array.Empty<object>()));
         }
     }
 }
