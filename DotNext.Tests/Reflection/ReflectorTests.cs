@@ -81,5 +81,15 @@ namespace DotNext.Reflection
             weakInvoker(weakArgs);
             Equal(42, weakArgs.result);
         }
+
+        [Fact]
+        public void Test()
+        {
+            System.Reflection.MethodInfo IndexOfReflected = typeof(string).GetMethod(nameof(string.IndexOf), new[] { typeof(char), typeof(int) }, Array.Empty<System.Reflection.ParameterModifier>());
+
+            MemberInvoker<(string instance, char ch, int index, int result)> FastInvoker = IndexOfReflected.AsInvoker<(string instance, char ch, int index, int result)>();
+
+            MemberInvoker<(object instance, object ch, object index, object result)> UntypedFastInvoker = IndexOfReflected.AsInvoker<(object instance, object ch, object index, object result)>();
+        }
     }
 }
