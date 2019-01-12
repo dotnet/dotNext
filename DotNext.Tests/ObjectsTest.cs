@@ -22,5 +22,26 @@ namespace DotNext.Tests
             Equal(5, index);
             Equal('e', ch);
         }
+
+        [Fact]
+        public void UserDataStorageTest()
+        {
+            var slot = UserDataSlot<long>.Allocate();
+            var str = new string('a', 3);
+            str.GetUserData().Set(slot, 42);
+            Equal(42, str.GetUserData().Get(slot));
+            str = null;
+            GC.Collect();
+            GC.WaitForFullGCComplete();
+            str = new string('a', 3);
+            Equal(0, str.GetUserData().Get(slot));
+        }
+
+        [Fact]
+        public void InvalidDataSlotTest()
+        {
+            var str = new string('b', 3);
+            Throws<ArgumentException>(() => str.GetUserData().Set(new UserDataSlot<int>(), 10));
+        }
     }
 }

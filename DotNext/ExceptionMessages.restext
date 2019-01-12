@@ -1,0 +1,5 @@
+OptionalNoValue=Container has no value
+ReleasedLock=The lock is already released
+StreamNotReadable=Stream is not readable
+StreamNotWritable=Stream is not writable
+InvalidUserDataSlot=Slot was not created using Allocate method

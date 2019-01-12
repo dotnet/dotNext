@@ -1,10 +1,14 @@
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Engines;
+using BenchmarkDotNet.Order;
 using System;
 using System.Reflection;
 using System.Security.Cryptography;
 
 namespace DotNext.Reflection
 {
+    [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
+	[Orderer(SummaryOrderPolicy.Method)]
     public class HashMethodReflectionBenchmark
     {
         private static readonly Func<MD5, byte[], int, int, byte[]> ComputeHash = Type<MD5>.Method<byte[], int, int>.Require<byte[]>(nameof(MD5.ComputeHash));
