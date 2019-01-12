@@ -49,20 +49,14 @@ namespace DotNext.Reflection
 		[Benchmark]
 		public void WithFastInvoker()
 		{
-			var args = FastInvoker.ArgList();
-			args.instance = StringValue;
-			args.ch = '7';
-			args.index = 0;
+			var args = (StringValue, '7', 0, -1);
 			FastInvoker(in args);
 		}
 
 		[Benchmark]
 		public void WithUntypedFastInvoker()
 		{
-			var args = UntypedFastInvoker.ArgList();
-			args.instance = StringValue;
-			args.ch = '7';
-			args.index = 0;
+			(object, object, object, object) args = (StringValue, '7', 0, null);
 			UntypedFastInvoker(in args);
 		}
 	}
