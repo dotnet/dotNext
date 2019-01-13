@@ -20,6 +20,10 @@ namespace DotNext.Tests
             Equal(100500L, value);
             Number<long>.TryParse("42", out value);
             Equal(42L, value);
+            value = value * 2L;
+            Equal(84L, value);
+            value = value / 10;
+            Equal(8L, value);
         }
 
         [Fact]
@@ -30,6 +34,8 @@ namespace DotNext.Tests
             Equal(43, value);
             value = value - 1;
             Equal(42, value);
+            value = value * 2;
+            Equal(84, value);
         }
     }
 }

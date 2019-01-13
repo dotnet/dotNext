@@ -7,6 +7,10 @@ namespace DotNext
     /// <summary>
     /// Represents any primitive numeric type.
     /// </summary>
+    /// <remarks>
+    /// This type demonstrates how to build concept type
+    /// using method from type <see cref="Type{T}"/>
+    /// </remarks>
     /// <typeparam name="T">Primitive numeric type.</typeparam>
     [CLSCompliant(false)]
     [Serializable]
@@ -20,6 +24,10 @@ namespace DotNext
         private static readonly Operator<T, T, T> BinaryPlus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Add, OperatorLookup.Predefined);
 
         private static readonly Operator<T, T, T> BinaryMinus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Subtract, OperatorLookup.Predefined);
+
+        private static readonly Operator<T, T, T> Multiply = Type<T>.Operator<T>.Require<T>(BinaryOperator.Multiply, OperatorLookup.Predefined);
+
+        private static readonly Operator<T, T, T> Divide = Type<T>.Operator<T>.Require<T>(BinaryOperator.Divide, OperatorLookup.Predefined);
 
         private static readonly Operator<T, T, bool> Equality = Type<T>.Operator<T>.Require<bool>(BinaryOperator.Equal, OperatorLookup.Predefined);
 		private static readonly Operator<T, T, bool> Inequality = Type<T>.Operator<T>.Require<bool>(BinaryOperator.NotEqual, OperatorLookup.Predefined);
@@ -55,6 +63,12 @@ namespace DotNext
         
         public static Number<T> operator-(Number<T> left, T right)
             => new Number<T>(BinaryMinus(in left.number, in right));
+        
+        public static Number<T> operator *(Number<T> left, T right)
+            => new Number<T>(Multiply(in left.number, in right));
+        
+        public static Number<T> operator /(Number<T> left, T right)
+            => new Number<T>(Divide(in left.number, in right));
 
 		public static bool operator ==(Number<T> left, T right)
 			=> Equality(in left.number, right);
@@ -74,7 +88,7 @@ namespace DotNext
 					return false;
 			}
 		}
-
+        
 		public static bool TryParse(string text, out Number<T> value)
         {
             var args = TryParseMethod.ArgList();
