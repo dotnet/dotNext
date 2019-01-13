@@ -126,8 +126,8 @@ namespace DotNext.Reflection
 		{
 			var getter = property.GetMethod;
 			var setter = property.SetMethod;
-			this.getter = getter is null ? null : Method<MemberGetter<V>>.Unreflect(getter);
-			this.setter = setter is null ? null : Method<MemberSetter<V>>.Unreflect(setter);
+			this.getter = getter is null ? null : getter.Unreflect<MemberGetter<V>>();
+			this.setter = setter is null ? null : setter.Unreflect<MemberSetter<V>>();
 		}
 
 		public static implicit operator MemberGetter<V>(Property<V> property) => property?.getter;
