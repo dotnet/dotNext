@@ -27,5 +27,15 @@ namespace DotNext.Tests
             False(array1.SequenceEqual(array2));
             False(array1.BitwiseEquals(array2));
         }
+
+        [Fact]
+        public void SliceTest()
+        {
+            var array = new int[]{1, 2, 3, 4};
+            array = array.Slice(0, 2);
+            Equal(2, array.LongLength);
+            Equal(1, array[0]);
+            Equal(2, array[1]);
+        }
     }
 }

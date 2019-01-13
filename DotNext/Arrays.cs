@@ -104,7 +104,15 @@ namespace DotNext
 				return result;
 			}
 		}
-
+		
+		/// <summary>
+		/// Returns sub-array.
+		/// </summary>
+		/// <param name="input">Input array. Cannot be <see langword="null"/>.</param>
+		/// <param name="startIndex">The index at which to begin this slice.</param>
+		/// <param name="length">The desired length for the slice.</param>
+		/// <typeparam name="T">Type of array elements.</typeparam>
+		/// <returns>A new sliced array.</returns>
 		public static T[] Slice<T>(this T[] input, long startIndex, long length)
 		{
 			if(startIndex >= input.LongLength || length == 0)
