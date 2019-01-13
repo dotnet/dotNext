@@ -15,9 +15,7 @@ namespace DotNext.Reflection
 
 		private static readonly MethodInfo IndexOfReflected = typeof(string).GetMethod(nameof(string.IndexOf), new[]{ typeof(char), typeof(int) }, Array.Empty<ParameterModifier>());
 
-		private static readonly MemberInvoker<(string instance, char ch, int index, int result)> FastInvoker = IndexOfReflected.AsInvoker<(string instance, char ch, int index, int result)>();
-
-		private static readonly MemberInvoker<(object instance, object ch, object index, object result)> UntypedFastInvoker = IndexOfReflected.AsInvoker<(object instance, object ch, object index, object result)>();
+		private static readonly Function<object, (object, object), object> IndexOfSpecialUntyped = IndexOfReflected.Unreflect<Function<object, (object, object), object>>();
 
 		[Params("", "abccdahehkgbe387jwgr", "wfjwkhwfhwjgfkwjggwhjvfkwhwkgwjgbwjbwjbvbwvjwbvwjbvw")]
 		public string StringValue;
@@ -29,13 +27,19 @@ namespace DotNext.Reflection
 		}
 
 		[Benchmark]
-		public void WithTypedReflection()
+		public void WithTypedFastReflection()
 		{
 			IndexOf(StringValue, '7', 0);
 		}
 
 		[Benchmark]
-		public void WithTypedReflectionSpecial()
+		public void WithTypedFastReflectionSpecial()
+		{
+			IndexOfSpecialUntyped(StringValue, ('7', 0));
+		}
+
+		[Benchmark]
+		public void WithUntypedFastReflectionSpecial()
 		{
 			IndexOfSpecial(StringValue, ('7', 0));
 		}
@@ -44,20 +48,6 @@ namespace DotNext.Reflection
 		public void WithReflection()
 		{
 			IndexOfReflected.Invoke(StringValue, new object[]{ '7', 0 });
-		}
-
-		[Benchmark]
-		public void WithFastInvoker()
-		{
-			var args = (StringValue, '7', 0, -1);
-			FastInvoker(in args);
-		}
-
-		[Benchmark]
-		public void WithUntypedFastInvoker()
-		{
-			(object, object, object, object) args = (StringValue, '7', 0, null);
-			UntypedFastInvoker(in args);
 		}
 	}
 }

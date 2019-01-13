@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using System.Linq.Expressions;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace DotNext.Reflection
 {
@@ -45,5 +46,61 @@ namespace DotNext.Reflection
         internal static (Type[] Parameters, Expression[] ArgList, ParameterExpression ArgListParameter) Reflect<A>()
             where A: struct
             => Reflect(typeof(A));
+
+        private static Expression NormalizeParameter(Type actualParameter, Expression expectedParameter, out ParameterExpression localVar, out Expression postExpression)
+        {
+            if(actualParameter.IsImplicitlyConvertibleFrom(expectedParameter.Type))
+            {
+                postExpression = localVar = null;
+                return expectedParameter;
+            }
+            else if(expectedParameter.Type == typeof(object))
+                if(actualParameter.IsByRef)
+                {
+                    //T local = args.param is null ? default(T) : (T)args;
+                    //...call(ref local)
+                    //args.param = (object)local;
+                    localVar = Expression.Variable(actualParameter.GetElementType());
+                    postExpression = localVar.Type.IsValueType ?
+                        Expression.Assign(expectedParameter, Expression.Convert(localVar, expectedParameter.Type)):
+                        Expression.Assign(expectedParameter, localVar);
+                    postExpression = Expression.Assign(expectedParameter, Expression.Convert(localVar, expectedParameter.Type));
+                    return Expression.Assign(localVar, Expression.Condition(Expression.ReferenceEqual(expectedParameter, Expression.Constant(null, expectedParameter.Type)), 
+                        Expression.Default(actualParameter.GetElementType()),
+                        Expression.Convert(expectedParameter, actualParameter.GetElementType())));
+                }
+                else
+                {
+                    postExpression = localVar = null;
+                    return Expression.Condition(Expression.ReferenceEqual(expectedParameter, Expression.Constant(null, expectedParameter.Type)), 
+                        Expression.Default(actualParameter),
+                        Expression.Convert(expectedParameter, actualParameter));
+                }
+            else if(actualParameter.IsByRef)
+                {
+                    postExpression = localVar = null;
+                    return expectedParameter;
+                }
+            else 
+            {
+                postExpression = localVar = null;
+                return Expression.Convert(expectedParameter, actualParameter);
+            }
+        }
+
+        internal static bool NormalizeParameters(Type[] actualParameters, Expression[] expectedParameters, ICollection<ParameterExpression> locals, ICollection<Expression> postExpressions)
+        {
+            if(actualParameters.LongLength != expectedParameters.LongLength)
+                return false;
+            for(var i = 0L; i < actualParameters.LongLength; i++)
+                if((expectedParameters[i] = NormalizeParameter(actualParameters[i], expectedParameters[i], out var localVar, out var postExpr)) is null)
+                    return false;
+                else if(!(postExpr is null) && !(localVar is null))
+                {
+                    locals.Add(localVar);
+                    postExpressions.Add(postExpr);
+                }
+            return true;
+        }
     }
 }

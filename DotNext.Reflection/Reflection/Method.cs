@@ -22,6 +22,12 @@ namespace DotNext.Reflection
         private readonly MethodInfo method;
         private readonly D invoker;
 
+        private Method(MethodInfo method, Expression<D> lambda)
+        {
+            this.method = method;
+            invoker = lambda.Compile();
+        }
+
         private Method(MethodInfo method, Expression[] args, ParameterExpression[] parameters)
         {
             this.method = method;
@@ -207,20 +213,46 @@ namespace DotNext.Reflection
 			}
         }
 
+        private static Method<D> Unreflect(MethodInfo method, ParameterExpression thisParam, Type argumentsType, Type returnType)
+        {
+            var (_, arglist, input) = Signature.Reflect(argumentsType);
+            var postExpressions = new LinkedList<Expression>();
+            var locals = new LinkedList<ParameterExpression>();
+            //adjust THIS
+            Expression thisArg;
+            if(thisParam is null)
+                thisArg = null;
+            else if(method.DeclaringType.IsImplicitlyConvertibleFrom(method.DeclaringType))
+                thisArg = thisParam;
+            else if(thisParam.Type == typeof(object))
+                thisArg = Expression.Convert(thisParam, method.DeclaringType);
+            else
+                return null;
+            //adjust arguments
+            if(!Signature.NormalizeParameters(method.GetParameterTypes(), arglist, locals, postExpressions))
+                return null;
+            Expression body = Expression.Call(thisArg, method, arglist);
+            postExpressions.AddFirst(body);
+            //adjust return type
+            if(returnType == typeof(void) || returnType.IsImplicitlyConvertibleFrom(method.ReturnType))
+            {
+                //nothing to do
+            }
+            else if(returnType == typeof(object))
+                body = Expression.Convert(body, method.ReturnType);
+            else
+                return null;
+            body = postExpressions.Count == 1 ? postExpressions.First.Value : Expression.Block(locals, postExpressions);
+            return new Method<D>(method, thisParam is null ? Expression.Lambda<D>(body, input) : Expression.Lambda<D>(body, thisParam, input));
+        }
+
         private static Method<D> UnreflectStatic(MethodInfo method)
         {
             var delegateType = typeof(D);
             if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
-            {
-                var (parameters, arglist, input) = Signature.Reflect(argumentsType);
-                return returnType == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, arglist, new[]{ input }) : null;
-            }
+                return Unreflect(method, null, argumentsType, returnType);
             else if(delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
-            {
-                argumentsType = delegateType.GetGenericArguments()[0];
-                var (parameters, arglist, input) = Signature.Reflect(argumentsType);
-                return typeof(void) == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, arglist, new[]{ input }) : null; 
-            }
+                return Unreflect(method, null, delegateType.GetGenericArguments()[0], typeof(void));
 			else if(Delegates.GetInvokeMethod<D>().SignatureEquals(method))
                 return new Method<D>(method);
             else
@@ -231,15 +263,9 @@ namespace DotNext.Reflection
         {
             var delegateType = typeof(D);
             if(delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType) == 3L)
-            {
-                var (parameters, arglist, input) = Signature.Reflect(argumentsType);
-                return thisParam.IsAssignableFrom(method.DeclaringType) && returnType == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, Expression.Parameter(thisParam.MakeByRefType(), "this"), arglist, new[]{ input }) : null;
-            }
+                return Unreflect(method, Expression.Parameter(thisParam.MakeByRefType()), argumentsType, returnType);
             else if(delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
-            {
-                var (parameters, arglist, input) = Signature.Reflect(argumentsType);
-                return thisParam.IsAssignableFrom(method.DeclaringType) && typeof(void) == method.ReturnType && method.SignatureEquals(parameters) ? new Method<D>(method, Expression.Parameter(thisParam.MakeByRefType(), "this"), arglist, new[]{ input }) : null;
-            }
+                return Unreflect(method, Expression.Parameter(thisParam.MakeByRefType()), argumentsType, typeof(void));
 			else if(delegateType.IsGenericInstanceOf(typeof(MemberGetter<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out returnType) == 2L)
 			{
 				var thisParamDecl = Expression.Parameter(thisParam.MakeByRefType(), "this");

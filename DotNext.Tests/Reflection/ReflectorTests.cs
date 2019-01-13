@@ -42,54 +42,27 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        public void IncorrectFastInvokeTest()
-        {
-            var invoker = typeof(long).GetMethod("TryParse", new[]{ typeof(string), typeof(long).MakeByRefType() }).AsInvoker<(string, long)>();
-            Null(invoker);
-        }
-
-        [Fact]
         public void TryParseFastInvokeTest()
         {
             var method = typeof(long).GetMethod("TryParse", new[]{ typeof(string), typeof(long).MakeByRefType() });
-            var invoker = method.AsInvoker<(string text, long result, bool success)>();
+            Function<(string text, long result), bool> invoker = method.Unreflect<Function<(string, long), bool>>();
             var args = invoker.ArgList();
             args.text = "100500";
-            invoker(args);
-            True(args.success);
+            True(invoker(args));
             Equal(100500L, args.result);
-            var weakInvoker = method.AsInvoker<(object text, object result, object success)>();
+            Function<(object text, object result), object> weakInvoker = method.Unreflect<Function<(object, object), object>>();
             var weakArgs = weakInvoker.ArgList();
             weakArgs.text = "100500";
-            weakInvoker(weakArgs);
-            True((bool)args.success);
+            True((bool)weakInvoker(weakArgs));
             Equal(100500L, args.result);
         }
         
         [Fact]
         public void ToInt32FastInvokeTest()
         {
-            var method = typeof(IntPtr).GetMethod("ToInt32");
-            var invoker = method.AsInvoker<(IntPtr value, int result)>();
-            var args = invoker.ArgList();
-            args.value = new IntPtr(10);
-            invoker(args);
-            Equal(10, args.result);
-            var weakInvoker = method.AsInvoker<(object value, object result)>();
-            var weakArgs = weakInvoker.ArgList();
-            weakArgs.value = new IntPtr(42);
-            weakInvoker(weakArgs);
-            Equal(42, weakArgs.result);
-        }
-
-        [Fact]
-        public void Test()
-        {
-            System.Reflection.MethodInfo IndexOfReflected = typeof(string).GetMethod(nameof(string.IndexOf), new[] { typeof(char), typeof(int) }, Array.Empty<System.Reflection.ParameterModifier>());
-
-            MemberInvoker<(string instance, char ch, int index, int result)> FastInvoker = IndexOfReflected.AsInvoker<(string instance, char ch, int index, int result)>();
-
-            MemberInvoker<(object instance, object ch, object index, object result)> UntypedFastInvoker = IndexOfReflected.AsInvoker<(object instance, object ch, object index, object result)>();
+            var method = typeof(IntPtr).GetMethod(nameof(IntPtr.ToInt32));
+            Function<Ref<object>, object> weakInvoker = method.Unreflect<Function<Ref<object>, object>>();
+            Equal(42, weakInvoker(new IntPtr(42)));
         }
     }
 }

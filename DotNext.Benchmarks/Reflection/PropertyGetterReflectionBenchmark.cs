@@ -30,9 +30,10 @@ namespace DotNext.Reflection
         private static readonly IndexOfCalculator IndexOfCalc = new IndexOfCalculator("Hello, world!", 'd', 0);
         private static readonly ObjectAccessor Accessor = ObjectAccessor.Create(IndexOfCalc);
         private static readonly MethodInfo ReflectedGetter = IndexOfCalc.GetType().GetProperty(nameof(IndexOfCalculator.IndexOf)).GetMethod;
-        private static readonly MemberInvoker<(IndexOfCalculator instance, int result)> Invoker = ReflectedGetter.AsInvoker<(IndexOfCalculator, int)>();
-        private static readonly MemberInvoker<(object instance, object result)> UntypedInvoker = ReflectedGetter.AsInvoker<(object, object)>();
         private static readonly MemberGetter<IndexOfCalculator, int> StaticallyReflected = Type<IndexOfCalculator>.Property<int>.RequireGetter(nameof(IndexOfCalculator.IndexOf));
+        
+        private static readonly Function<Ref<object>, object> UntypedReflected = ReflectedGetter.Unreflect<Function<Ref<object>, object>>();
+        
         private static readonly object ExpectedIndex = 11;
 
         private static void DummyReceiver(object first)
@@ -56,26 +57,16 @@ namespace DotNext.Reflection
             DummyReceiver(Accessor["IndexOf"]);
         }
 
-        [Benchmark]
-        public void UseTypedInvoker()
-        {
-            (IndexOfCalculator instance, int result) args = (IndexOfCalc, 0);
-            Invoker(args);
-            DummyReceiver(args.result);
-        }
 
         [Benchmark]
-        public void UseUntypedInvoker()
-        {
-            (object instance, object result) args = (IndexOfCalc, 0);
-            UntypedInvoker(args);
-            DummyReceiver(args.result);
-        }
-
-        [Benchmark]
-        public void UseStaticReflection()
+        public void UseFastTypedReflection()
         {
             DummyReceiver(StaticallyReflected(IndexOfCalc));
+        }
+
+        public void UseFastUntypedReflection()
+        {
+            DummyReceiver(UntypedReflected(IndexOfCalc));
         }
 
         [Benchmark]
