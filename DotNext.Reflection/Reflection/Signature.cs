@@ -47,58 +47,62 @@ namespace DotNext.Reflection
             where A: struct
             => Reflect(typeof(A));
 
-        private static Expression NormalizeParameter(Type actualParameter, Expression expectedParameter, out ParameterExpression localVar, out Expression postExpression)
+        private static Expression NormalizeArgument(Type actualParameter, Expression expectedArgument, out ParameterExpression localVar, out Expression prologue, out Expression epilogue)
         {
-            if(actualParameter.IsImplicitlyConvertibleFrom(expectedParameter.Type))
+            if(actualParameter.IsImplicitlyConvertibleFrom(expectedArgument.Type))
             {
-                postExpression = localVar = null;
-                return expectedParameter;
+                epilogue = prologue = localVar = null;
+                return expectedArgument;
             }
-            else if(expectedParameter.Type == typeof(object))
+            else if(expectedArgument.Type == typeof(object))
                 if(actualParameter.IsByRef)
                 {
                     //T local = args.param is null ? default(T) : (T)args;
                     //...call(ref local)
                     //args.param = (object)local;
                     localVar = Expression.Variable(actualParameter.GetElementType());
-                    postExpression = localVar.Type.IsValueType ?
-                        Expression.Assign(expectedParameter, Expression.Convert(localVar, expectedParameter.Type)):
-                        Expression.Assign(expectedParameter, localVar);
-                    postExpression = Expression.Assign(expectedParameter, Expression.Convert(localVar, expectedParameter.Type));
-                    return Expression.Assign(localVar, Expression.Condition(Expression.ReferenceEqual(expectedParameter, Expression.Constant(null, expectedParameter.Type)), 
+                    prologue = Expression.Assign(localVar, Expression.Condition(Expression.ReferenceEqual(expectedArgument, Expression.Constant(null, expectedArgument.Type)),
                         Expression.Default(actualParameter.GetElementType()),
-                        Expression.Convert(expectedParameter, actualParameter.GetElementType())));
+                        Expression.Convert(expectedArgument, actualParameter.GetElementType())));
+                    epilogue = localVar.Type.IsValueType ?
+                        Expression.Assign(expectedArgument, Expression.Convert(localVar, expectedArgument.Type)) :
+                        Expression.Assign(expectedArgument, localVar); 
+                    return localVar;
                 }
                 else
                 {
-                    postExpression = localVar = null;
-                    return Expression.Condition(Expression.ReferenceEqual(expectedParameter, Expression.Constant(null, expectedParameter.Type)), 
+                    epilogue = prologue = localVar = null;
+                    return Expression.Condition(Expression.ReferenceEqual(expectedArgument, Expression.Constant(null, expectedArgument.Type)), 
                         Expression.Default(actualParameter),
-                        Expression.Convert(expectedParameter, actualParameter));
+                        Expression.Convert(expectedArgument, actualParameter));
                 }
             else if(actualParameter.IsByRef)
                 {
-                    postExpression = localVar = null;
-                    return expectedParameter;
+                    epilogue = prologue = localVar = null;
+                    return expectedArgument;
                 }
             else 
             {
-                postExpression = localVar = null;
-                return Expression.Convert(expectedParameter, actualParameter);
+                epilogue = prologue = localVar = null;
+                return Expression.Convert(expectedArgument, actualParameter);
             }
         }
 
-        internal static bool NormalizeParameters(Type[] actualParameters, Expression[] expectedParameters, ICollection<ParameterExpression> locals, ICollection<Expression> postExpressions)
+        internal static bool NormalizeArguments(Type[] actualParameters, Expression[] expectedArguments, ICollection<ParameterExpression> locals, ICollection<Expression> prologue, ICollection<Expression> epilogue)
         {
-            if(actualParameters.LongLength != expectedParameters.LongLength)
+            if(actualParameters.LongLength != expectedArguments.LongLength)
                 return false;
             for(var i = 0L; i < actualParameters.LongLength; i++)
-                if((expectedParameters[i] = NormalizeParameter(actualParameters[i], expectedParameters[i], out var localVar, out var postExpr)) is null)
+                if((expectedArguments[i] = NormalizeArgument(actualParameters[i], expectedArguments[i], out var localVar, out var pro, out var epi)) is null)
                     return false;
-                else if(!(postExpr is null) && !(localVar is null))
+                else
                 {
-                    locals.Add(localVar);
-                    postExpressions.Add(postExpr);
+                    if (!(localVar is null))
+                        locals.Add(localVar);
+                    if (!(pro is null))
+                        prologue.Add(pro);
+                    if (!(epi is null))
+                        epilogue.Add(epi);
                 }
             return true;
         }

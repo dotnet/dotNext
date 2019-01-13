@@ -56,17 +56,17 @@ namespace DotNext.Reflection
             var weakArgs = weakInvoker.ArgList();
             weakArgs.text = "100500";
             True((bool)weakInvoker(weakArgs));
-            Equal(100500L, args.result);
+            Equal(100500L, weakArgs.result);
             //partially typed
             Function<(object text, object result), bool> weakInvoker2 = method.Unreflect<Function<(object, object), bool>>();
-            weakArgs = weakInvoker2.ArgList();
+            weakArgs = weakInvoker.ArgList();
             weakArgs.text = "100500";
             weakArgs.result = null;
             True(weakInvoker2(weakArgs));
             Equal(100500L, weakArgs.result);
         }
-        
-        
+
+
         [Fact]
         public void ToInt32FastInvokeTest()
         {

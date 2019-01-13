@@ -216,7 +216,8 @@ namespace DotNext.Reflection
         private static Method<D> Unreflect(MethodInfo method, ParameterExpression thisParam, Type argumentsType, Type returnType)
         {
             var (_, arglist, input) = Signature.Reflect(argumentsType);
-            var postExpressions = new LinkedList<Expression>();
+            var prologue = new LinkedList<Expression>();
+            var epilogue = new LinkedList<Expression>();
             var locals = new LinkedList<ParameterExpression>();
             //adjust THIS
             Expression thisArg;
@@ -229,7 +230,7 @@ namespace DotNext.Reflection
             else
                 return null;
             //adjust arguments
-            if(!Signature.NormalizeParameters(method.GetParameterTypes(), arglist, locals, postExpressions))
+            if(!Signature.NormalizeArguments(method.GetParameterTypes(), arglist, locals, prologue, epilogue))
                 return null;
             Expression body;
             //adjust return type
@@ -239,17 +240,17 @@ namespace DotNext.Reflection
                 body = Expression.Convert(Expression.Call(thisArg, method, arglist), returnType);
             else
                 return null;
-            if (postExpressions.Count == 0)
-                postExpressions.AddFirst(body);
+            if (epilogue.Count == 0)
+                epilogue.AddFirst(body);
             else if (method.ReturnType != typeof(void))
             {
                 var returnArg = Expression.Parameter(returnType);
                 locals.AddFirst(returnArg);
                 body = Expression.Assign(returnArg, body);
-                postExpressions.AddFirst(body);
-                postExpressions.AddLast(returnArg);
+                epilogue.AddFirst(body);
+                epilogue.AddLast(returnArg);
             }
-            body = postExpressions.Count == 1 ? postExpressions.First.Value : Expression.Block(locals, postExpressions);
+            body = prologue.Count == 0 && epilogue.Count == 1 ? epilogue.First.Value : Expression.Block(locals, prologue.Concat(epilogue));
             return new Method<D>(method, thisParam is null ? Expression.Lambda<D>(body, input) : Expression.Lambda<D>(body, thisParam, input));
         }
 
