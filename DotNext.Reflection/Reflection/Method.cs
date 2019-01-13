@@ -233,13 +233,22 @@ namespace DotNext.Reflection
                 return null;
             Expression body;
             //adjust return type
-            if(returnType == typeof(void) || returnType.IsImplicitlyConvertibleFrom(method.ReturnType))
+            if (returnType == typeof(void) || returnType.IsImplicitlyConvertibleFrom(method.ReturnType))
                 body = Expression.Call(thisArg, method, arglist);
-            else if(returnType == typeof(object))
-                body = Expression.Convert(Expression.Call(thisArg, method, arglist), method.ReturnType);
+            else if (returnType == typeof(object))
+                body = Expression.Convert(Expression.Call(thisArg, method, arglist), returnType);
             else
                 return null;
-            postExpressions.AddFirst(body);
+            if (postExpressions.Count == 0)
+                postExpressions.AddFirst(body);
+            else if (method.ReturnType != typeof(void))
+            {
+                var returnArg = Expression.Parameter(returnType);
+                locals.AddFirst(returnArg);
+                body = Expression.Assign(returnArg, body);
+                postExpressions.AddFirst(body);
+                postExpressions.AddLast(returnArg);
+            }
             body = postExpressions.Count == 1 ? postExpressions.First.Value : Expression.Block(locals, postExpressions);
             return new Method<D>(method, thisParam is null ? Expression.Lambda<D>(body, input) : Expression.Lambda<D>(body, thisParam, input));
         }
