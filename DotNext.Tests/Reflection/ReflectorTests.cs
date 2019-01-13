@@ -44,18 +44,28 @@ namespace DotNext.Reflection
         [Fact]
         public void TryParseFastInvokeTest()
         {
+            //static
             var method = typeof(long).GetMethod("TryParse", new[]{ typeof(string), typeof(long).MakeByRefType() });
             Function<(string text, long result), bool> invoker = method.Unreflect<Function<(string, long), bool>>();
             var args = invoker.ArgList();
             args.text = "100500";
             True(invoker(args));
             Equal(100500L, args.result);
+            //untyped
             Function<(object text, object result), object> weakInvoker = method.Unreflect<Function<(object, object), object>>();
             var weakArgs = weakInvoker.ArgList();
             weakArgs.text = "100500";
             True((bool)weakInvoker(weakArgs));
             Equal(100500L, args.result);
+            //partially typed
+            Function<(object text, object result), bool> weakInvoker2 = method.Unreflect<Function<(object, object), bool>>();
+            weakArgs = weakInvoker2.ArgList();
+            weakArgs.text = "100500";
+            weakArgs.result = null;
+            True(weakInvoker2(weakArgs));
+            Equal(100500L, weakArgs.result);
         }
+        
         
         [Fact]
         public void ToInt32FastInvokeTest()

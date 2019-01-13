@@ -32,7 +32,7 @@ namespace DotNext.Reflection
         private static readonly MethodInfo ReflectedGetter = IndexOfCalc.GetType().GetProperty(nameof(IndexOfCalculator.IndexOf)).GetMethod;
         private static readonly MemberGetter<IndexOfCalculator, int> StaticallyReflected = Type<IndexOfCalculator>.Property<int>.RequireGetter(nameof(IndexOfCalculator.IndexOf));
         
-        private static readonly Function<Ref<object>, object> UntypedReflected = ReflectedGetter.Unreflect<Function<Ref<object>, object>>();
+        private static readonly Function<object, ValueTuple, object> UntypedReflected = ReflectedGetter.Unreflect<Function<object, ValueTuple, object>>();
         
         private static readonly object ExpectedIndex = 11;
 
@@ -64,9 +64,10 @@ namespace DotNext.Reflection
             DummyReceiver(StaticallyReflected(IndexOfCalc));
         }
 
+        [Benchmark]
         public void UseFastUntypedReflection()
         {
-            DummyReceiver(UntypedReflected(IndexOfCalc));
+            DummyReceiver(UntypedReflected(IndexOfCalc, new ValueTuple()));
         }
 
         [Benchmark]

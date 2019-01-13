@@ -35,13 +35,13 @@ namespace DotNext.Reflection
 		[Benchmark]
 		public void WithTypedFastReflectionSpecial()
 		{
-			IndexOfSpecialUntyped(StringValue, ('7', 0));
+			IndexOfSpecial(StringValue, ('7', 0));
 		}
 
 		[Benchmark]
 		public void WithUntypedFastReflectionSpecial()
 		{
-			IndexOfSpecial(StringValue, ('7', 0));
+			IndexOfSpecialUntyped(StringValue, ('7', 0));
 		}
 
 		[Benchmark]
