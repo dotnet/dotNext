@@ -222,7 +222,7 @@ namespace DotNext.Reflection
             Expression thisArg;
             if(thisParam is null)
                 thisArg = null;
-            else if(method.DeclaringType.IsImplicitlyConvertibleFrom(method.DeclaringType))
+            else if(method.DeclaringType.IsImplicitlyConvertibleFrom(thisParam.Type))
                 thisArg = thisParam;
             else if(thisParam.Type == typeof(object))
                 thisArg = Expression.Convert(thisParam, method.DeclaringType);
@@ -231,17 +231,15 @@ namespace DotNext.Reflection
             //adjust arguments
             if(!Signature.NormalizeParameters(method.GetParameterTypes(), arglist, locals, postExpressions))
                 return null;
-            Expression body = Expression.Call(thisArg, method, arglist);
-            postExpressions.AddFirst(body);
+            Expression body;
             //adjust return type
             if(returnType == typeof(void) || returnType.IsImplicitlyConvertibleFrom(method.ReturnType))
-            {
-                //nothing to do
-            }
+                body = Expression.Call(thisArg, method, arglist);
             else if(returnType == typeof(object))
-                body = Expression.Convert(body, method.ReturnType);
+                body = Expression.Convert(Expression.Call(thisArg, method, arglist), method.ReturnType);
             else
                 return null;
+            postExpressions.AddFirst(body);
             body = postExpressions.Count == 1 ? postExpressions.First.Value : Expression.Block(locals, postExpressions);
             return new Method<D>(method, thisParam is null ? Expression.Lambda<D>(body, input) : Expression.Lambda<D>(body, thisParam, input));
         }

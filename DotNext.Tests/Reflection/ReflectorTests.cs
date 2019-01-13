@@ -61,8 +61,8 @@ namespace DotNext.Reflection
         public void ToInt32FastInvokeTest()
         {
             var method = typeof(IntPtr).GetMethod(nameof(IntPtr.ToInt32));
-            Function<Ref<object>, object> weakInvoker = method.Unreflect<Function<Ref<object>, object>>();
-            Equal(42, weakInvoker(new IntPtr(42)));
+            Function<object, ValueTuple, object> weakInvoker = method.Unreflect<Function<object, ValueTuple, object>>();
+            Equal(42, weakInvoker(new IntPtr(42), new ValueTuple()));
         }
     }
 }
