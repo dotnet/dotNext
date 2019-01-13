@@ -31,6 +31,12 @@ namespace DotNext
             where A: struct
             => new A();
 		
+		public static void Invoke<T>(this Procedure<T, ValueTuple> procedure, in T instance)
+			=> procedure(in instance, in EmptyTuple.Value);
+		
+		public static void Invoke(this Procedure<ValueTuple> procedure)
+			=> procedure(in EmptyTuple.Value);
+		
 		public static void Invoke<T, P>(this Procedure<T, ValueTuple<P>> procedure, in T instance, P arg)
 			=> procedure(in instance, new ValueTuple<P>(arg));
 		

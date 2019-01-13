@@ -39,7 +39,6 @@ namespace DotNext.Reflection
 
 	public static class Member
 	{
-		private static readonly ValueTuple EmptyTuple = new ValueTuple();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static R Invoke<M, A, R>(this IMember<M, Function<A, R>> member, in A arguments)
@@ -56,12 +55,12 @@ namespace DotNext.Reflection
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static R Invoke<M, T, R>(this IMember<M, Function<T, ValueTuple, R>> member, in T @this)
 			where M: MemberInfo
-			=> member.Invoke(in @this, in EmptyTuple);
+			=> member.Invoke(in @this, in EmptyTuple.Value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static R Invoke<M, R>(this IMember<M, Function<ValueTuple, R>> member)
 			where M: MemberInfo
-			=> member.Invoke(in EmptyTuple);
+			=> member.Invoke(in EmptyTuple.Value);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static A ArgList<M, T, A, R>(this IMember<M, Function<T, A, R>> member)

@@ -34,6 +34,12 @@ namespace DotNext
         public static A ArgList<T, A, R>(this Function<T, A, R> function)
             where A: struct
             => new A();
+        
+        public static R Invoke<T, R>(this Function<T, ValueTuple, R> function, in T instance)
+			=> function(in instance, in EmptyTuple.Value);
+		
+		public static R Invoke<R>(this Function<ValueTuple, R> function)
+			=> function(in EmptyTuple.Value);
 
         public static R Invoke<P, R>(this Function<ValueTuple<P>, R> function, P arg)
             => function(new ValueTuple<P>(arg));
