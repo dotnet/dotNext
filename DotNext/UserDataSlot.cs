@@ -9,6 +9,9 @@ namespace DotNext
     /// <summary>
     /// Provides access to user data associated with the object.
     /// </summary>
+	/// <remarks>
+	/// All instance members of this class are thread-safe.
+	/// </remarks>
     public sealed class UserDataStorage
     {
         private readonly ConcurrentDictionary<long, object> storage;
@@ -16,13 +19,39 @@ namespace DotNext
         internal UserDataStorage()
             => storage = new ConcurrentDictionary<long, object>(ValueType<long>.EqualityComparer);
 
+		/// <summary>
+		/// Gets user data.
+		/// </summary>
+		/// <typeparam name="V">Type of data.</typeparam>
+		/// <param name="slot">User data slot.</param>
+		/// <param name="defaultValue">Default value to be returned if no user data contained in this collection.</param>
+		/// <returns>User data.</returns>
         public V Get<V>(UserDataSlot<V> slot, V defaultValue = default) => slot.GetUserData(storage, defaultValue);
 
-        public bool Get<V>(UserDataSlot<V> slot, out V userData) => slot.GetUserData(storage, out userData);
+		/// <summary>
+		/// Tries to get user data.
+		/// </summary>
+		/// <typeparam name="V">Type of data.</typeparam>
+		/// <param name="slot">User data slot.</param>
+		/// <param name="userData">User data.</param>
+		/// <returns><see langword="true"/>, if user data slot exists in this collection.</returns>
+		public bool Get<V>(UserDataSlot<V> slot, out V userData) => slot.GetUserData(storage, out userData);
 
-        public void Set<V>(UserDataSlot<V> slot, V userData) => slot.SetUserData(storage, userData);
+		/// <summary>
+		/// Sets user data.
+		/// </summary>
+		/// <typeparam name="V">Type of data.</typeparam>
+		/// <param name="slot">User data slot.</param>
+		/// <param name="userData">User data to be saved in this collection.</param>
+		public void Set<V>(UserDataSlot<V> slot, V userData) => slot.SetUserData(storage, userData);
 
-        public bool Remove<V>(UserDataSlot<V> slot) => slot.RemoveUserData(storage);
+		/// <summary>
+		/// Removes user data slot.
+		/// </summary>
+		/// <typeparam name="V">Type of data.</typeparam>
+		/// <param name="slot">User data slot to be removed from this collection.</param>
+		/// <returns><see langword="true"/>, if data is removed from this collection.</returns>
+		public bool Remove<V>(UserDataSlot<V> slot) => slot.RemoveUserData(storage);
     }
 
     internal static class UserDataSlot
@@ -44,16 +73,13 @@ namespace DotNext
         /// </summary>
         private readonly long Id;
 
-        private UserDataSlot(long id)
-        {
-            this.Id = id;
-        }
+        private UserDataSlot(long id) => Id = id;
 
-        /// <summary>
-        /// Allocates a new data slot.
-        /// </summary>
-        /// <returns>Allocated data slot.</returns>
-        public static UserDataSlot<V> Allocate() => new UserDataSlot<V>(UserDataSlot.NewId);
+		/// <summary>
+		/// Allocates a new data slot.
+		/// </summary>
+		/// <returns>Allocated data slot.</returns>
+		public static UserDataSlot<V> Allocate() => new UserDataSlot<V>(UserDataSlot.NewId);
 
         internal V GetUserData(IDictionary<long, object> storage, V defaultValue)
             => storage.TryGetValue(Id, out var userData) && userData is V result ? result : defaultValue;
