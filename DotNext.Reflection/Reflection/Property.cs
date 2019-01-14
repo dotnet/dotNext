@@ -118,30 +118,25 @@ namespace DotNext.Reflection
 		private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 		private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
-		private readonly Method<MemberGetter<V>> getter;
-		private readonly Method<MemberSetter<V>> setter;
-
 		private Property(PropertyInfo property)
 			: base(property)
 		{
-			var getter = property.GetMethod;
-			var setter = property.SetMethod;
-			this.getter = getter is null ? null : getter.Unreflect<MemberGetter<V>>();
-			this.setter = setter is null ? null : setter.Unreflect<MemberSetter<V>>();
+			GetMethod = property.GetMethod?.Unreflect<MemberGetter<V>>();
+			SetMethod = property.SetMethod?.Unreflect<MemberSetter<V>>();
 		}
 
-		public static implicit operator MemberGetter<V>(Property<V> property) => property?.getter;
-		public static implicit operator MemberSetter<V>(Property<V> property) => property?.setter;
+		public static implicit operator MemberGetter<V>(Property<V> property) => property?.GetMethod;
+		public static implicit operator MemberSetter<V>(Property<V> property) => property?.SetMethod;
 
 		/// <summary>
 		/// Gets property getter.
 		/// </summary>
-		public new Method<MemberGetter<V>> GetMethod => getter;
+		public new Method<MemberGetter<V>> GetMethod { get; }
 
 		/// <summary>
 		/// Gets property setter.
 		/// </summary>
-		public new Method<MemberSetter<V>> SetMethod => setter;
+		public new Method<MemberSetter<V>> SetMethod { get; }
 
 		/// <summary>
 		/// Gets or sets property value.
@@ -149,38 +144,38 @@ namespace DotNext.Reflection
 		public V Value
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => getter is null ? throw new InvalidOperationException($"Property {Name} has no getter") : getter.Invoke();
+			get => GetMethod is null ? throw new InvalidOperationException($"Property {Name} has no getter") : GetMethod.Invoke();
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
-				if (setter is null)
+				if (SetMethod is null)
 					throw new InvalidOperationException($"Property {Name} has no setter");
 				else
-					setter.Invoke(value);
+					SetMethod.Invoke(value);
 			}
 		}
 
 		public override bool GetValue(object obj, out V value)
 		{
-			if (getter is null || !(obj is null))
+			if (GetMethod is null || !(obj is null))
 			{
 				value = default;
 				return false;
 			}
 			else
 			{
-				value = getter.Invoke();
+				value = GetMethod.Invoke();
 				return true;
 			}
 		}
 
 		public override bool SetValue(object obj, V value)
 		{
-			if (setter is null || !(obj is null))
+			if (SetMethod is null || !(obj is null))
 				return false;
 			else
 			{
-				setter.Invoke(value);
+				SetMethod.Invoke(value);
 				return true;
 			}
 		}
@@ -204,54 +199,50 @@ namespace DotNext.Reflection
 		private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 		private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
-		private readonly Method<MemberGetter<T, V>> getter;
-		private readonly Method<MemberSetter<T, V>> setter;
 
 		private Property(PropertyInfo property)
 			: base(property)
 		{
-			var getter = property.GetMethod;
-			var setter = property.SetMethod;
-			this.getter = getter is null ? null : Method<MemberGetter<T, V>>.Unreflect(getter);
-			this.setter = setter is null ? null : Method<MemberSetter<T, V>>.Unreflect(setter);
-		}
+            GetMethod = property.GetMethod?.Unreflect<MemberGetter<T, V>>();
+            SetMethod = property.SetMethod?.Unreflect<MemberSetter<T, V>>();
+        }
 
 		public static implicit operator MemberGetter<T, V>(Property<T, V> property)
-			=> property?.getter;
+			=> property?.GetMethod;
 		public static implicit operator MemberSetter<T, V>(Property<T, V> property)
-			=> property?.setter;
+			=> property?.SetMethod;
 
 		/// <summary>
 		/// Gets property getter.
 		/// </summary>
-		public new Method<MemberGetter<T, V>> GetMethod => getter;
+		public new Method<MemberGetter<T, V>> GetMethod { get; }
 
 		/// <summary>
 		/// Gets property setter.
 		/// </summary>
-		public new Method<MemberSetter<T, V>> SetMethod => setter;
+		public new Method<MemberSetter<T, V>> SetMethod { get; }
 
 		public override bool GetValue(object obj, out V value)
 		{
-			if(getter is null || !(obj is T))
+			if(GetMethod is null || !(obj is T))
 			{
 				value = default;
 				return false;
 			}
 			else
 			{
-				value = getter.Invoke((T)obj);
+				value = GetMethod.Invoke((T)obj);
 				return true;
 			}
 		}
 
 		public override bool SetValue(object obj, V value)
 		{
-			if (setter is null || !(obj is T))
+			if (SetMethod is null || !(obj is T))
 				return false;
 			else
 			{
-				setter.Invoke((T)obj, value);
+				SetMethod.Invoke((T)obj, value);
 				return true;
 			}
 		}
@@ -264,14 +255,14 @@ namespace DotNext.Reflection
 		public V this[in T owner]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => getter is null ? throw new InvalidOperationException($"Property {Name} has no getter") : getter.Invoke(owner);
+			get => GetMethod is null ? throw new InvalidOperationException($"Property {Name} has no getter") : GetMethod.Invoke(owner);
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
-				if (setter is null)
+				if (SetMethod is null)
 					throw new InvalidOperationException($"Property {Name} has no setter");
 				else
-					setter.Invoke(owner, value);
+                    SetMethod.Invoke(owner, value);
 			}
 		}
 

@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
+    <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />
   </ItemGroup>
 
 </Project>

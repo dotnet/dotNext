@@ -35,7 +35,7 @@ namespace DotNext
 		/// <returns>A modified array with inserted element.</returns>
 		public static T[] Insert<T>(this T[] array, T element, long index)
 		{
-			if (index < 0 || index > array.Length)
+			if (index < 0 || index > array.LongLength)
 				throw new IndexOutOfRangeException(nameof(index));
 			else if (array.LongLength == 0L)
 				return new[] { element };

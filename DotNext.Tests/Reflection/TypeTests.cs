@@ -288,5 +288,35 @@ namespace DotNext.Reflection
 			True(Type<StructWithProperties>.Equals(new StructWithProperties(){WriteOnlyProp = 20}, new StructWithProperties{WriteOnlyProp = 20}));
 			False(Type<StructWithProperties>.Equals(new StructWithProperties(){WriteOnlyProp = 10}, new StructWithProperties{WriteOnlyProp = 20}));
 		}
+
+		public class ClassA
+		{
+			public int PropertyName { get; set; }
+		}
+
+		public class ClassB: ClassA
+		{
+			public new int PropertyName { get; set; }
+		}
+
+		[Fact]
+		public void PropertyOverloadintTest()
+		{
+			MemberGetter<ClassB, int> property = Type<ClassB>.Property<int>.Require(nameof(ClassB.PropertyName));
+			var obj = new ClassB() { PropertyName = 42 };
+			Equal(42, property(obj));
+			Equal(0, obj.Upcast<ClassA, ClassB>().PropertyName);
+		}
+
+        [Fact]
+        public void StaticIndexerTest()
+        {
+            Indexer<Ref<int>, string>.Getter getter = Type<TypeWithStaticIndexer>.Indexer<Ref<int>, string>.GetStatic("MyIndexer");
+            TypeWithStaticIndexer.BackedArray[1] = "Hello, world";
+            Equal(TypeWithStaticIndexer.BackedArray[1], getter(1));
+            Indexer<Ref<int>, string>.Setter setter = Type<TypeWithStaticIndexer>.Indexer<Ref<int>, string>.GetStatic("MyIndexer");
+            setter(1, "Barry Burton");
+            Equal(TypeWithStaticIndexer.BackedArray[1], getter(1));
+        }
 	}
 }

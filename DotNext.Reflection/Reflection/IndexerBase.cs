@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Linq.Expressions;
 
 namespace DotNext.Reflection
 {
@@ -111,14 +112,65 @@ namespace DotNext.Reflection
 	public sealed class Indexer<A, V>: IndexerBase<A, V>
 		where A: struct
 	{
-		private readonly Function<A, V> getter;
-		private readonly Procedure<V, A> setter;
+		private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+		private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
-		private Indexer(PropertyInfo property)
+		public delegate V Getter(in A arguments);
+		public delegate void Setter(in A arguments, V value);
+
+		private Indexer(PropertyInfo property, Method<Getter> getter, Method<Setter> setter)
 			: base(property)
 		{
+            GetMethod = getter;
+            SetMethod = setter;
 		}
 
-		//internal static 
+        /// <summary>
+        /// Gets indexer property getter.
+        /// </summary>
+        public new Method<Getter> GetMethod { get; }
+
+        /// <summary>
+        /// Gets indexer property setter.
+        /// </summary>
+        public new Method<Setter> SetMethod { get; }
+
+        public static implicit operator Getter(Indexer<A, V> indexer) => indexer?.GetMethod;
+
+        public static implicit operator Setter(Indexer<A, V> indexer) => indexer?.SetMethod;
+		
+		internal static Indexer<A, V> Reflect<T>(string propertyName, bool nonPublic)
+		{
+			var property = typeof(T).GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
+			if (property.PropertyType != typeof(V))
+				return null;
+			var (actualParams, arglist, input) = Signature.Reflect<A>();
+			//reflect getter
+			Method<Getter> getter;
+            if (property.CanRead)
+                if (property.GetMethod.SignatureEquals(actualParams))
+                    getter = new Method<Getter>(property.GetMethod, arglist, new[] { input });
+                else
+                    return null;
+            else
+                getter = null;
+            //reflect setter
+            Method<Setter> setter;
+            actualParams = actualParams.Insert(typeof(V), actualParams.LongLength);
+            if (property.CanWrite)
+                if (property.SetMethod.SignatureEquals(actualParams))
+                {
+                    var valueParam = Expression.Parameter(typeof(V), "value");
+                    arglist = arglist.Insert(valueParam, arglist.LongLength);
+                    setter = new Method<Setter>(property.SetMethod, arglist, new[] { input, valueParam });
+                }
+                else
+                    return null;
+            else
+                setter = null;
+            
+            return new Indexer<A, V>(property, getter, setter);
+		}
+		
 	}
 }

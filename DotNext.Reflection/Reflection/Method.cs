@@ -28,22 +28,20 @@ namespace DotNext.Reflection
             invoker = lambda.Compile();
         }
 
-        private Method(MethodInfo method, Expression[] args, ParameterExpression[] parameters)
+        internal Method(MethodInfo method, Expression[] args, ParameterExpression[] parameters)
+			: this(method, Expression.Lambda<D>(Expression.Call(method, args), parameters))
         {
-            this.method = method;
-            invoker = Expression.Lambda<D>(Expression.Call(method, args), parameters).Compile();
         }
 
-        private Method(MethodInfo method, ParameterExpression instance, Expression[] args, ParameterExpression[] parameters)
-        {
-            this.method = method;
-            invoker = Expression.Lambda<D>(Expression.Call(instance, method, args), parameters.Insert(instance, 0)).Compile();
-        }
+		internal Method(MethodInfo method, ParameterExpression instance, Expression[] args, ParameterExpression[] parameters)
+			: this(method, Expression.Lambda<D>(Expression.Call(instance, method, args), parameters.Insert(instance, 0)))
+		{
+		}
 
         private Method(MethodInfo method)
         {
             this.method = method;
-            this.invoker = Delegates.CreateDelegate<D>(method);
+            invoker = Delegates.CreateDelegate<D>(method);
         }
 
         internal Method<D> OfType<T>() => method.DeclaringType.IsAssignableFrom(typeof(T)) ? this : null;
@@ -216,7 +214,7 @@ namespace DotNext.Reflection
         private static Method<D> Unreflect(MethodInfo method, ParameterExpression thisParam, Type argumentsType, Type returnType)
         {
             var (_, arglist, input) = Signature.Reflect(argumentsType);
-            var prologue = new LinkedList<Expression>();
+			var prologue = new LinkedList<Expression>();
             var epilogue = new LinkedList<Expression>();
             var locals = new LinkedList<ParameterExpression>();
             //adjust THIS
@@ -274,25 +272,20 @@ namespace DotNext.Reflection
                 return Unreflect(method, Expression.Parameter(thisParam.MakeByRefType()), argumentsType, returnType);
             else if(delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
                 return Unreflect(method, Expression.Parameter(thisParam.MakeByRefType()), argumentsType, typeof(void));
-			else if(delegateType.IsGenericInstanceOf(typeof(MemberGetter<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out returnType) == 2L)
-			{
-				var thisParamDecl = Expression.Parameter(thisParam.MakeByRefType(), "this");
-				return method.DeclaringType.IsAssignableFrom(thisParam) && returnType == method.ReturnType && method.GetParameters().IsNullOrEmpty() ? new Method<D>(method, thisParamDecl, Array.Empty<Expression>(), Array.Empty<ParameterExpression>()) : null;
-			}
-			else if(delegateType.IsGenericInstanceOf(typeof(MemberSetter<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
-			{
-				var thisParamDecl = Expression.Parameter(thisParam.MakeByRefType(), "this");
-				var argDecl = Expression.Parameter(argumentsType);
-				return thisParam.IsAssignableFrom(method.DeclaringType) && method.GetParameterTypes().FirstOrDefault() == argumentsType && method.ReturnType == typeof(void) ? new Method<D>(method, thisParamDecl, new[] { argDecl }, new[] { argDecl }) : null;
-			}
             else
             {
                 Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, m => m.ReturnType, out var parameters, out returnType);
                 thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException("Delegate type should have THIS parameter");
                 parameters = parameters.RemoveFirst(1);
-                return method.SignatureEquals(parameters) && method.ReturnType == returnType && method.DeclaringType.IsAssignableFrom(thisParam) ?
-                    new Method<D>(method) :
-                    null;
+				if (method.SignatureEquals(parameters) && method.ReturnType == returnType)
+					if (thisParam.IsByRef ^ method.DeclaringType.IsValueType)
+					{
+						var arguments = parameters.Convert(Expression.Parameter);
+						return new Method<D>(method, Expression.Parameter(thisParam), arguments, arguments);
+					}
+					else
+						return new Method<D>(method);
+				return null;
             }
         }
 
