@@ -21,41 +21,42 @@ namespace DotNext.Reflection
 
         private static readonly Function<(object text, object result), object> UntypedSpecialUnreflected = ReflectedMethod.Unreflect<Function<(object, object), object>>();
 
+        private const string StringValue = "748383565500";
 
         [Benchmark]
         public void NoReflection()
         {
-            decimal.TryParse("748383565500", out var result);
+            decimal.TryParse(StringValue, out var result);
         }
 
         [Benchmark]
         public void UseReflection()
         {
-            ReflectedMethod.Invoke(null, new object[]{"748383565500", decimal.Zero});
+            ReflectedMethod.Invoke(null, new object[]{StringValue, decimal.Zero});
         }
 
         [Benchmark]
         public void UseStronglyTypedReflection()
         {
-            StronglyTyped("748383565500", out var result);
+            StronglyTyped(StringValue, out var result);
         }
 
         [Benchmark]
         public void UseStronglyTypedSpecialReflection()
         {
-            StronglyTypedSpecial(("748383565500", decimal.Zero));
+            StronglyTypedSpecial((StringValue, decimal.Zero));
         }
 
         [Benchmark]
         public void UseStronglyTypedSpecialUnreflected()
         {
-            StronglyTypedSpecialUnreflected(("748383565500", decimal.Zero));
+            StronglyTypedSpecialUnreflected((StringValue, decimal.Zero));
         }
 
         [Benchmark]
         public void UseUntypedSpecialReflection()
         {
-            UntypedSpecialUnreflected(("748383565500", decimal.Zero));
+            UntypedSpecialUnreflected((StringValue, decimal.Zero));
         }
     }
 }

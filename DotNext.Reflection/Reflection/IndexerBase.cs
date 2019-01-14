@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Reflection
 {
@@ -134,6 +135,20 @@ namespace DotNext.Reflection
         /// Gets indexer property setter.
         /// </summary>
         public new Method<Setter> SetMethod { get; }
+	
+		public V this[in A arguments]
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => GetMethod is null ? throw new InvalidOperationException($"Property {Name} has no getter") : GetMethod.Upcast<IMember<MethodInfo, Getter>, Method<Getter>>().Invoker(arguments);
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set
+			{
+				if (SetMethod is null)
+					throw new InvalidOperationException($"Property {Name} has no setter");
+				else
+					SetMethod.Upcast<IMember<MethodInfo, Setter>, Method<Setter>>().Invoker(arguments, value);
+			}
+		}
 
         public static implicit operator Getter(Indexer<A, V> indexer) => indexer?.GetMethod;
 
@@ -156,11 +171,11 @@ namespace DotNext.Reflection
                 getter = null;
             //reflect setter
             Method<Setter> setter;
-            actualParams = actualParams.Insert(typeof(V), actualParams.LongLength);
+            actualParams = actualParams.Insert(property.PropertyType, actualParams.LongLength);
             if (property.CanWrite)
                 if (property.SetMethod.SignatureEquals(actualParams))
                 {
-                    var valueParam = Expression.Parameter(typeof(V), "value");
+                    var valueParam = Expression.Parameter(property.PropertyType, "value");
                     arglist = arglist.Insert(valueParam, arglist.LongLength);
                     setter = new Method<Setter>(property.SetMethod, arglist, new[] { input, valueParam });
                 }
@@ -208,5 +223,52 @@ namespace DotNext.Reflection
         /// Gets indexer property setter.
         /// </summary>
         public new Method<Setter> SetMethod { get; }
+
+		public V this[in T instance, in A arguments]
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => GetMethod is null ? throw new InvalidOperationException($"Property {Name} has no getter") : GetMethod.Upcast<IMember<MethodInfo, Getter>, Method<Getter>>().Invoker(instance, arguments);
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set
+			{
+				if (SetMethod is null)
+					throw new InvalidOperationException($"Property {Name} has no setter");
+				else
+					SetMethod.Upcast<IMember<MethodInfo, Setter>, Method<Setter>>().Invoker(instance, arguments, value);
+			}
+		}
+
+		internal static Indexer<T, A, V> Reflect(string propertyName, bool nonPublic)
+		{
+			var property = typeof(T).GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
+			if (property.PropertyType != typeof(V))
+				return null;
+			var (actualParams, arglist, input) = Signature.Reflect<A>();
+			var thisParam = Expression.Parameter(property.DeclaringType.MakeByRefType(), "this");
+			//reflect getter
+			Method<Getter> getter;
+            if (property.CanRead)
+                if (property.GetMethod.SignatureEquals(actualParams))
+                    getter = new Method<Getter>(property.GetMethod, thisParam, arglist, new[] { input });
+                else
+                    return null;
+            else
+                getter = null;
+			//reflect setter
+            Method<Setter> setter;
+            actualParams = actualParams.Insert(property.PropertyType, actualParams.LongLength);
+            if (property.CanWrite)
+                if (property.SetMethod.SignatureEquals(actualParams))
+                {
+                    var valueParam = Expression.Parameter(property.PropertyType, "value");
+                    arglist = arglist.Insert(valueParam, arglist.LongLength);
+                    setter = new Method<Setter>(property.SetMethod, thisParam, arglist, new[] { input, valueParam });
+                }
+                else
+                    return null;
+            else
+                setter = null;
+			return new Indexer<T, A, V>(property, getter, setter);
+		}
     }
 }

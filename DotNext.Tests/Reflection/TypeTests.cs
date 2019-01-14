@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
 using Xunit;
@@ -311,12 +312,29 @@ namespace DotNext.Reflection
         [Fact]
         public void StaticIndexerTest()
         {
-            Indexer<Ref<int>, string>.Getter getter = Type<TypeWithStaticIndexer>.Indexer<Ref<int>, string>.GetStatic("MyIndexer");
+            var property = Type<TypeWithStaticIndexer>.Indexer<Ref<int>, string>.GetStatic("MyIndexer");
+			NotNull(property);
+			True(property.CanRead);
+			True(property.CanWrite);
             TypeWithStaticIndexer.BackedArray[1] = "Hello, world";
-            Equal(TypeWithStaticIndexer.BackedArray[1], getter(1));
-            Indexer<Ref<int>, string>.Setter setter = Type<TypeWithStaticIndexer>.Indexer<Ref<int>, string>.GetStatic("MyIndexer");
-            setter(1, "Barry Burton");
-            Equal(TypeWithStaticIndexer.BackedArray[1], getter(1));
+            Equal("Hello, world", property[1]);
+			property[1] = "Barry Burton";
+            Equal("Barry Burton", property[1]);
         }
+
+		[Fact]
+		public void InstanceIndexerTest()
+		{
+			var list = new List<long>(){10, 40, 100};
+			var property = Type<List<long>>.Indexer<Ref<int>, long>.Get();
+			NotNull(property);
+			True(property.CanRead);
+			True(property.CanWrite);
+			Equal(40, property[list, 1]);
+			Equal(100, property[list, 2]);
+			property[list, 1] = 120;
+			Equal(120, list[1]);
+			Equal(120, property[list, 1]);
+		}
 	}
 }
