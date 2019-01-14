@@ -30,6 +30,16 @@ namespace DotNext.Reflection
     /// <summary>
     /// Wrapper for by-ref argument.
     /// </summary>
+    /// <remarks>
+    /// This type has special semantics when used as argument type
+    /// for delegates <see cref="Function{T, A, R}"/>, <see cref="Function{A, R}"/>,
+    /// <see cref="Procedure{T, A}"/>, <see cref="Procedure{A}"/> when
+    /// using statically typed reflection. Argument of this type
+    /// means that it should be passed into reflected method or constructor
+    /// by reference. In all other scenarios, including <see cref="Reflector.Unreflect{D}(ConstructorInfo)"/>
+    /// or <see cref="Reflector.Unreflect{D}(MethodInfo)"/>, this type treated as regular value type
+    /// without special semantics.
+    /// </remarks>
     /// <typeparam name="T">Referenced type.</typeparam>
     [SecuritySafeCritical]
     public struct Ref<T>: IStrongBox
