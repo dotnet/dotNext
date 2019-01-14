@@ -17,5 +17,7 @@ namespace DotNext
         internal static string StreamNotWritable => resourceManager.GetString("StreamNotWritable");
 
         internal static string InvalidUserDataSlot => resourceManager.GetString("InvalidUserDataSlot");
+
+        internal static string ConcreteDelegateExpected => resourceManager.GetString("ConcreteDelegateExpected");
     }
 }

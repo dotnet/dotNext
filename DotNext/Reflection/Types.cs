@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Reflection;
 
 namespace DotNext.Reflection
@@ -61,5 +62,8 @@ namespace DotNext.Reflection
 			else
 				return TypeCode.Object;
 		}
+
+		public static Type MakeTaskType(this Type returnType)
+			=> returnType == typeof(void) ? typeof(Task) : typeof(Task<>).MakeGenericType(returnType);
 	}
 }

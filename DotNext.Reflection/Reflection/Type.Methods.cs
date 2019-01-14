@@ -71,7 +71,7 @@ namespace DotNext.Reflection
 
             public static Reflection.Method<D> Require<D>(string methodName, MethodLookup methodType, bool nonPublic = false)
                 where D: MulticastDelegate
-                => Get<D>(methodName, methodType, nonPublic) ?? throw MissingMethodException.Create<D>(methodName);
+                => Get<D>(methodName, methodType, nonPublic) ?? throw MissingMethodException.Create<T, D>(methodName);
             
             public static Reflection.Method<Action<T>> Get(string methodName, bool nonPublic = false)
                 => Get<Action<T>>(methodName, MethodLookup.Instance, nonPublic);

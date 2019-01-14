@@ -25,7 +25,7 @@ namespace DotNext
 				return Task.CompletedTask;
 			else if (parallel)
 			{
-				var handlers = handler?.GetInvocationList() ?? Array.Empty<EventHandler<E>>();
+				var handlers = handler.GetInvocationList() ?? Array.Empty<EventHandler<E>>();
 				switch (handlers.LongLength)
 				{
 					case 0:

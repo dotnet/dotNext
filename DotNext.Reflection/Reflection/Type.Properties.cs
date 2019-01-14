@@ -58,13 +58,13 @@ namespace DotNext.Reflection
 				=> Get(propertyName, nonPublic)?.GetMethod;
 
 			public static Reflection.Method<MemberGetter<T, V>> RequireGetter(string propertyName, bool nonPublic = false)
-				=> GetGetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<MemberGetter<T, V>>(propertyName.ToGetterName());
+				=> GetGetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<T, MemberGetter<T, V>>(propertyName.ToGetterName());
 
 			public static Reflection.Method<MemberSetter<T, V>> GetSetter(string propertyName, bool nonPublic = false)
 				=> Get(propertyName, nonPublic)?.SetMethod;
 			
 			public static Reflection.Method<MemberSetter<T, V>> RequireSetter(string propertyName, bool nonPublic = false)
-				=> GetSetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<MemberSetter<T, V>>(propertyName.ToSetterName());
+				=> GetSetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<T, MemberSetter<T, V>>(propertyName.ToSetterName());
 
 			/// <summary>
 			/// Reflects static property.
@@ -89,13 +89,13 @@ namespace DotNext.Reflection
 				=> GetStatic(propertyName, nonPublic)?.GetMethod;
 
 			public static Reflection.Method<MemberGetter<V>> RequireStaticGetter(string propertyName, bool nonPublic = false)
-				=> GetStaticGetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<MemberGetter<V>>(propertyName.ToGetterName());
+				=> GetStaticGetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<T, MemberGetter<V>>(propertyName.ToGetterName());
 
 			public static Reflection.Method<MemberSetter<V>> GetStaticSetter(string propertyName, bool nonPublic = false)
 				=> GetStatic(propertyName, nonPublic)?.SetMethod;
 			
 			public static Reflection.Method<MemberSetter<V>> RequireStaticSetter(string propertyName, bool nonPublic = false)
-				=> GetStaticSetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<MemberSetter<V>>(propertyName.ToSetterName());
+				=> GetStaticSetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<T, MemberSetter<V>>(propertyName.ToSetterName());
 		}
 	}
 }
