@@ -171,6 +171,42 @@ namespace DotNext.Reflection
             
             return new Indexer<A, V>(property, getter, setter);
 		}
-		
 	}
+
+    /// <summary>
+	/// Represents statix indexer property.
+	/// </summary>
+    /// <typeparam name="T">Type of instance with indexer property.</typeparam>
+	/// <typeparam name="A">A structure representing parameters of indexer.</typeparam>
+	/// <typeparam name="V">Property value.</typeparam>
+    public sealed class Indexer<T, A, V>: IndexerBase<A, V>
+        where A: struct
+    {
+        private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+
+        public delegate V Getter(in T instance, in A arguments);
+        public delegate void Setter(in T instance, in A arguments, V value);
+
+        private Indexer(PropertyInfo property, Method<Getter> getter, Method<Setter> setter)
+            : base(property)
+        {
+            GetMethod = getter;
+            SetMethod = setter;
+        }
+
+        public static implicit operator Getter(Indexer<T, A, V> indexer) => indexer?.GetMethod;
+
+        public static implicit operator Setter(Indexer<T, A, V> indexer) => indexer?.SetMethod;
+
+        /// <summary>
+        /// Gets indexer property getter.
+        /// </summary>
+        public new Method<Getter> GetMethod { get; }
+
+        /// <summary>
+        /// Gets indexer property setter.
+        /// </summary>
+        public new Method<Setter> SetMethod { get; }
+    }
 }
