@@ -74,5 +74,22 @@ namespace DotNext.Reflection
             Function<object, ValueTuple, object> weakInvoker = method.Unreflect<Function<object, ValueTuple, object>>();
             Equal(42, weakInvoker(new IntPtr(42), new ValueTuple()));
         }
-    }
+
+		[Fact]
+		public void NewIntPtrTest()
+		{
+			var ctor = typeof(IntPtr).GetConstructor(new[] { typeof(int) });
+			Function<ValueTuple<int>, IntPtr> factory = ctor.Unreflect<Function<ValueTuple<int>, IntPtr>>();
+			var value = factory(new ValueTuple<int>(10));
+			Equal(new IntPtr(10), value);
+
+			Function<ValueTuple<object>, IntPtr> ctor2 = ctor.Unreflect<Function<ValueTuple<object>, IntPtr>>();
+			value = ctor2(new ValueTuple<object>(42));
+			Equal(new IntPtr(42), value);
+
+			Function<ValueTuple<object>, object> ctor3 = ctor.Unreflect<Function<ValueTuple<object>, object>>();
+			value = (IntPtr)ctor3(new ValueTuple<object>(50));
+			Equal(new IntPtr(50), value);
+		}
+	}
 }

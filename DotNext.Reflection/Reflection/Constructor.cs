@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Linq;
 
 namespace DotNext.Reflection
 {
@@ -18,6 +19,12 @@ namespace DotNext.Reflection
 
         private readonly D invoker;
         private readonly ConstructorInfo ctor;
+
+		private Constructor(ConstructorInfo ctor, Expression<D> invoker)
+		{
+			this.ctor = ctor;
+			this.invoker = invoker.Compile();
+		}
 
         private Constructor(ConstructorInfo ctor, Expression[] args, ParameterExpression[] parameters)
         {
@@ -127,7 +134,6 @@ namespace DotNext.Reflection
 
         private static Constructor<D> Reflect(Type declaringType, Type[] parameters, bool nonPublic)
         {
-            ;
             if (declaringType.IsValueType)
                 return new Constructor<D>(declaringType, parameters.Convert(Expression.Parameter));
             else
@@ -162,7 +168,38 @@ namespace DotNext.Reflection
 			}            
         }
 
-        internal static Constructor<D> Unreflect(ConstructorInfo ctor)
+		private static Constructor<D> Unreflect(ConstructorInfo ctor, Type argumentsType, Type returnType)
+		{
+			var (_, arglist, input) = Signature.Reflect(argumentsType);
+			var prologue = new LinkedList<Expression>();
+			var epilogue = new LinkedList<Expression>();
+			var locals = new LinkedList<ParameterExpression>();
+			//adjust arguments
+			if (!Signature.NormalizeArguments(ctor.GetParameterTypes(), arglist, locals, prologue, epilogue))
+				return null;
+			Expression body;
+			//adjust return type
+			if (returnType == typeof(void) || returnType.IsImplicitlyConvertibleFrom(ctor.DeclaringType))
+				body = Expression.New(ctor, arglist);
+			else if (returnType == typeof(object))
+				body = Expression.Convert(Expression.New(ctor, arglist), returnType);
+			else
+				return null;
+			if (epilogue.Count == 0)
+				epilogue.AddFirst(body);
+			else
+			{
+				var returnArg = Expression.Parameter(returnType);
+				locals.AddFirst(returnArg);
+				body = Expression.Assign(returnArg, body);
+				epilogue.AddFirst(body);
+				epilogue.AddLast(returnArg);
+			}
+			body = prologue.Count == 0 && epilogue.Count == 1 ? epilogue.First.Value : Expression.Block(locals, prologue.Concat(epilogue));
+			return new Constructor<D>(ctor, Expression.Lambda<D>(body, input));
+		}
+
+		internal static Constructor<D> Unreflect(ConstructorInfo ctor)
         {
             var delegateType = typeof(D);
 			if (delegateType.IsAbstract)
@@ -172,10 +209,7 @@ namespace DotNext.Reflection
 			else if (ctor.IsGenericMethodDefinition || ctor.IsAbstract)
 				return null;
 			else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
-			{
-				var (parameters, arglist, input) = Signature.Reflect(argumentsType);
-				return returnType.IsAssignableFrom(ctor.DeclaringType) && ctor.SignatureEquals(parameters) ? new Constructor<D>(ctor, arglist, new[] { input }) : null;
-			}
+				return Unreflect(ctor, argumentsType, returnType);
 			else
 			{
 				var invokeMethod = Delegates.GetInvokeMethod<D>();
