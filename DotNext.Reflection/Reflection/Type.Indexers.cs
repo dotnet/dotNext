@@ -12,6 +12,8 @@ namespace DotNext.Reflection
         public static class Indexer<A, V>
             where A: struct
         {
+            private const string DefaultIndexerName = "Item";
+
             private sealed class InstanceProperties : MemberCache<PropertyInfo, Indexer<T, A, V>>
 			{
 				internal static readonly InstanceProperties Public = new InstanceProperties(false);
@@ -36,11 +38,23 @@ namespace DotNext.Reflection
 					=> Reflection.Indexer<A, V>.Reflect<T>(propertyName, nonPublic);
 			}
 
+            /// <summary>
+            /// Reflects static indexer property.
+            /// </summary>
+            /// <param name="propertyName">Property name.</param>
+            /// <param name="nonPublic">True to reflect non-public property.</param>
+			/// <returns>Property field; or null, if property doesn't exist.</returns>
             public static Reflection.Indexer<A, V> GetStatic(string propertyName, bool nonPublic = false)
                 => (nonPublic ? StaticProperties.NonPublic : StaticProperties.Public).GetOrCreate(propertyName);
             
-            public static Indexer<T, A, V> Get(string propertyName = "Item", bool nonPublic = false)
+            public static Reflection.Indexer<A, V> RequireStatic(string propertyName, bool nonPublic = false)
+                => GetStatic(propertyName, nonPublic) ?? throw MissingPropertyException.Create<T, V>(propertyName);
+            
+            public static Indexer<T, A, V> Get(string propertyName = DefaultIndexerName, bool nonPublic = false)
                 => (nonPublic ? InstanceProperties.NonPublic : InstanceProperties.Public).GetOrCreate(propertyName);
+            
+            public static Indexer<T, A, V> Require(string propertyName = DefaultIndexerName, bool nonPublic = false)
+                => Get(propertyName, nonPublic) ?? throw MissingPropertyException.Create<T, V>(propertyName);
         }
     }
 }

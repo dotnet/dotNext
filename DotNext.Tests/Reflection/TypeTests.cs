@@ -312,8 +312,7 @@ namespace DotNext.Reflection
         [Fact]
         public void StaticIndexerTest()
         {
-            var property = Type<TypeWithStaticIndexer>.Indexer<Ref<int>, string>.GetStatic("MyIndexer");
-			NotNull(property);
+            var property = Type<TypeWithStaticIndexer>.Indexer<Ref<int>, string>.RequireStatic("MyIndexer");
 			True(property.CanRead);
 			True(property.CanWrite);
             TypeWithStaticIndexer.BackedArray[1] = "Hello, world";
@@ -326,8 +325,7 @@ namespace DotNext.Reflection
 		public void InstanceIndexerTest()
 		{
 			var list = new List<long>(){10, 40, 100};
-			var property = Type<List<long>>.Indexer<Ref<int>, long>.Get();
-			NotNull(property);
+			var property = Type<List<long>>.Indexer<Ref<int>, long>.Require();
 			True(property.CanRead);
 			True(property.CanWrite);
 			Equal(40, property[list, 1]);

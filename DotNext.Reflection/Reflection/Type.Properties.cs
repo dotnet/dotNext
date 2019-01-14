@@ -36,7 +36,7 @@ namespace DotNext.Reflection
 			}
 
 			/// <summary>
-			/// Gets instance property.
+			/// Reflects instance property.
 			/// </summary>
 			/// <param name="propertyName">Name of property.</param>
 			/// <param name="nonPublic">True to reflect non-public property.</param>
@@ -45,7 +45,7 @@ namespace DotNext.Reflection
 				=> (nonPublic ? InstanceProperties.NonPublic : InstanceProperties.Public).GetOrCreate(propertyName);
 
 			/// <summary>
-			/// Gets instance property.
+			/// Reflects instance property.
 			/// </summary>
 			/// <param name="propertyName">Name of property.</param>
 			/// <param name="nonPublic">True to reflect non-public property.</param>
@@ -67,7 +67,7 @@ namespace DotNext.Reflection
 				=> GetSetter(propertyName, nonPublic) ?? throw MissingMethodException.Create<MemberSetter<T, V>>(propertyName.ToSetterName());
 
 			/// <summary>
-			/// Gets static property.
+			/// Reflects static property.
 			/// </summary>
 			/// <param name="propertyName">Name of property.</param>
 			/// <param name="nonPublic">True to reflect non-public property.</param>
@@ -76,7 +76,7 @@ namespace DotNext.Reflection
 				=> (nonPublic ? StaticProperties.NonPublic : StaticProperties.Public).GetOrCreate(propertyName);
 
 			/// <summary>
-			/// Gets static property.
+			/// Reflects static property.
 			/// </summary>
 			/// <param name="propertyName">Name of property.</param>
 			/// <param name="nonPublic">True to reflect non-public property.</param>
