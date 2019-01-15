@@ -264,13 +264,9 @@ namespace DotNext
 			where O : class, I
 			=> handler.ConvertDelegate<EventHandler<O>>();
 
-		public static D CreateDelegate<D>(this MethodInfo method, object target)
+		public static D CreateDelegate<D>(this MethodInfo method, object target = null)
 			where D : Delegate
 			=> (D)method.CreateDelegate(typeof(D), target);
-
-		public static D CreateDelegate<D>(this MethodInfo method)
-			where D : Delegate
-			=> method.CreateDelegate<D>(null);
 
 		/// <summary>
 		/// Returns special Invoke method generate for each delegate type.
