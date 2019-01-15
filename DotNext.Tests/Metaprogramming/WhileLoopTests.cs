@@ -11,7 +11,7 @@ namespace DotNext.Metaprogramming
             var factorial = LambdaBuilder<Func<long, long>>.Build(fun => 
             {
                 ExpressionView input = fun.Parameters[0];
-                ExpressionView result = fun.DeclareVariable<long>("result", 1L);
+                ExpressionView result = fun.DeclareVariable("result", 1L);
                 fun.While(input > 1L, loop =>
                 {
                     loop.AssignStatement(result, result * input);
