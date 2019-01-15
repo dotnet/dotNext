@@ -73,12 +73,16 @@ namespace DotNext.Metaprogramming
         public MethodCallExpression CallStatement(MethodInfo method, params Expression[] arguments)
             => CallStatement(null, method, arguments);
         
-        public LabelTarget Label(Type type, string name = "")
+        public LabelTarget Label(Type type, string name = null)
         {
             var target = Expression.Label(type, name);
             LabelStatement(target);
             return target;
         }
+
+        public LabelTarget Label<T>(string name = null) => Label(typeof(T), name);
+
+        public LabelTarget Label() => Label(typeof(void));
 
         public LabelExpression LabelStatement(LabelTarget target)
             => AddStatement(Expression.Label(target));
@@ -94,9 +98,16 @@ namespace DotNext.Metaprogramming
             => variables.TryGetValue(localVariableName, out var variable) ? variable : Parent?[localVariableName];
 
         public ParameterExpression DeclareVariable<T>(string name, bool byRef = false)
-            => DeclareVariable(name, byRef ? typeof(T).MakeByRefType() : typeof(T));
+            => DeclareVariable(byRef ? typeof(T).MakeByRefType() : typeof(T), name);
 
-        public ParameterExpression DeclareVariable(string name, Type variableType)
+        public ParameterExpression DeclareVariable<T>(string name, T initialValue)
+        {
+            var variable = DeclareVariable(typeof(T), name);
+            AssignStatement(variable, Expression.Constant(initialValue, typeof(T)));
+            return variable;
+        }
+
+        public ParameterExpression DeclareVariable(Type variableType, string name)
         {
             var variable = Expression.Variable(variableType, name);
             variables.Add(name, variable);
@@ -108,6 +119,11 @@ namespace DotNext.Metaprogramming
         
         public ConditionalBuilder If(Expression test)
             => new ConditionalBuilder(test, this, false);
+        
+        public LoopExpression While(Expression test, Action<WhileLoopBuider> loop)
+        {
+            
+        }
 
         internal Expression BuildExpression()
         {

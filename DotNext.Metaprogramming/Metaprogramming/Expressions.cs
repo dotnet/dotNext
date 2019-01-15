@@ -16,5 +16,17 @@ namespace DotNext.Metaprogramming
 
         public static BinaryExpression Subtract(this Expression left, Expression right)
             => Expression.Subtract(left, right);
+
+        public static BinaryExpression Multiply(this Expression left, Expression right)
+            => Expression.Multiply(left, right);
+
+        public static BinaryExpression GreaterThan(this Expression left, Expression right)
+            => Expression.GreaterThan(left, right);
+        
+        public static BinaryExpression LessThan(this Expression left, Expression right)
+            => Expression.LessThan(left, right);
+
+        public static UnaryExpression PreDecrementAssign(this Expression left)
+            => Expression.PreDecrementAssign(left);
     }
 }
