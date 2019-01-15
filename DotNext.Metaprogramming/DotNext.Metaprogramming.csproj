@@ -3,6 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
-
+  
+<ItemGroup>
+    <ProjectReference Include="..\DotNext\DotNext.csproj" />
+  </ItemGroup>
 </Project>

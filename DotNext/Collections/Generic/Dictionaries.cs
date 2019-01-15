@@ -89,9 +89,6 @@ namespace DotNext.Collections.Generic
 				action(key, value);
 		}
 
-		public static V GetOrDefault<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue = default)
-			=> dictionary.TryGetValue(key, out var value) ? value : defaultValue;
-
 		public static V GetOrInvoke<K, V>(this IDictionary<K, V> dictionary, K key, Func<V> defaultValue)
 			=> dictionary.TryGetValue(key, out var value) ? value : defaultValue();
 

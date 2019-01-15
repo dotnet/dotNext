@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Linq.Expressions;
 
 namespace DotNext.Reflection
 {
@@ -27,5 +29,11 @@ namespace DotNext.Reflection
 
 		public static bool SignatureEquals(this MethodInfo method, MethodInfo other)
 			=> SignatureEquals(method.Upcast<MethodBase, MethodInfo>(), other) && method.ReturnType == other.ReturnType;
+		
+		public static MethodCallExpression AsExpression(this MethodInfo method, Expression instance, IEnumerable<Expression> arguments)
+			=> Expression.Call(instance, method, arguments);
+		
+		public static MethodCallExpression AsExpression(this MethodInfo method, IEnumerable<Expression> arguments)
+			=> method.AsExpression(null, arguments);
 	}
 }
