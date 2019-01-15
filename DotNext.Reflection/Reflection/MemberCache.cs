@@ -5,104 +5,54 @@ using System.Threading;
 
 namespace DotNext.Reflection
 {
-	internal abstract class Cache<K, T, V>
+	internal abstract class Cache<K, V>
 		where V: class
 	{
-		private readonly Dictionary<K, V> elements;
-		private readonly ReaderWriterLockSlim syncObject;
-		private readonly Func<T, K> keyResolver;
+        private readonly Dictionary<K, V> elements;
+        private readonly ReaderWriterLockSlim syncObject;
 
-		private protected Cache(Func<T, K> keyResolver, IEqualityComparer<K> comparer)
-		{
-			elements = new Dictionary<K, V>(comparer);
-			syncObject = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-			this.keyResolver = keyResolver;
-		}
+        private protected Cache(IEqualityComparer<K> comparer)
+        {
+            elements = new Dictionary<K, V>(comparer);
+            syncObject = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+        }
 
-		private protected Cache(Func<T, K> keyResolver)
-			: this(keyResolver, EqualityComparer<K>.Default)
-		{
-		}
+        private protected Cache()
+            : this(EqualityComparer<K>.Default)
+        {
+        }
 
-		private protected abstract V Create(T input);
+        private protected abstract V Create(K cacheKey);
 
-		private V GetOrCreate(T input, K cacheKey)
-		{
-			syncObject.EnterReadLock();
-			var exists = elements.TryGetValue(cacheKey, out var item);
-			syncObject.ExitReadLock();
-			if (exists) return item;
-			//non-fast path, discover item
-			syncObject.EnterUpgradeableReadLock();
-			exists = elements.TryGetValue(cacheKey, out item);
-			if (exists)
-			{
-				syncObject.ExitUpgradeableReadLock();
-				return item;
-			}
-			else
-			{
-				syncObject.EnterWriteLock();
-				try
-				{
-					elements[cacheKey] = item = Create(input);
-				}
-				finally
-				{
-					syncObject.ExitWriteLock();
-					syncObject.ExitUpgradeableReadLock();
-				}
-				return item;
-			}
-		}
-
-		internal V GetOrCreate(T cacheKey)
-		{
-			syncObject.EnterReadLock();
-			var exists = elements.TryGetValue(keyResolver(cacheKey), out var item);
-			syncObject.ExitReadLock();
-			if (exists) return item;
-			//non-fast path, discover item
-			syncObject.EnterUpgradeableReadLock();
-			exists = elements.TryGetValue(keyResolver(cacheKey), out item);
-			if (exists)
-			{
-				syncObject.ExitUpgradeableReadLock();
-				return item;
-			}
-			else
-			{
-				syncObject.EnterWriteLock();
-				try
-				{
-					elements[keyResolver(cacheKey)] = item = Create(cacheKey);
-				}
-				finally
-				{
-					syncObject.ExitWriteLock();
-					syncObject.ExitUpgradeableReadLock();
-				}
-				return item;
-			}
-		}
-	}
-
-	internal abstract class Cache<K, V>: Cache<K, K, V>
-		where V: class
-	{
-
-		private protected Cache(IEqualityComparer<K> comparer)
-			: base(Identity, comparer)
-		{
-		}
-
-		private protected Cache()
-			: base(Identity)
-		{
-		}
-
-		private static K Identity(K key) => key;
-	}
+        internal V GetOrCreate(K cacheKey)
+        {
+            syncObject.EnterReadLock();
+            var exists = elements.TryGetValue(cacheKey, out var item);
+            syncObject.ExitReadLock();
+            if (exists) return item;
+            //non-fast path, discover item
+            syncObject.EnterUpgradeableReadLock();
+            exists = elements.TryGetValue(cacheKey, out item);
+            if (exists)
+            {
+                syncObject.ExitUpgradeableReadLock();
+                return item;
+            }
+            else
+            {
+                syncObject.EnterWriteLock();
+                try
+                {
+                    return elements[cacheKey] = item = Create(cacheKey);
+                }
+                finally
+                {
+                    syncObject.ExitWriteLock();
+                    syncObject.ExitUpgradeableReadLock();
+                }
+            }
+        }
+    }
 
 	internal abstract class MemberCache<M, E>: Cache<string, E>
 		where M: MemberInfo
