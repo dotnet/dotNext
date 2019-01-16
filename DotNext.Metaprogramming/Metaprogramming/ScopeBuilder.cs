@@ -43,40 +43,40 @@ namespace DotNext.Metaprogramming
             return expression;
         }
 
-        public BinaryExpression AssignStatement(ParameterExpression variable, Expression value)
+        public BinaryExpression Assign(ParameterExpression variable, Expression value)
             => AddStatement(Expression.Assign(variable, value));
 
-        public void AssignStatement(string variableName, Expression value)
-            => AssignStatement(this[variableName], value);
+        public void Assign(string variableName, Expression value)
+            => Assign(this[variableName], value);
         
-        public void AssignStatement(Expression instance, PropertyInfo instanceProperty, Expression value)
+        public void Assign(Expression instance, PropertyInfo instanceProperty, Expression value)
             => AddStatement(Expression.Assign(Expression.Property(instance, instanceProperty), value));
         
-        public void AssignStatement(PropertyInfo staticProperty, Expression value)
-            => AssignStatement(null, staticProperty, value);
+        public void Assign(PropertyInfo staticProperty, Expression value)
+            => Assign(null, staticProperty, value);
         
-        public void AssignStatement(Expression instance, FieldInfo instanceField, Expression value)
+        public void Assign(Expression instance, FieldInfo instanceField, Expression value)
             => AddStatement(Expression.Assign(Expression.Field(instance, instanceField), value));
 
         public void AssignStatement(FieldInfo instanceField, Expression value)
-            => AssignStatement(null, instanceField, value);
+            => Assign(null, instanceField, value);
         
-        public MethodCallExpression CallStatement(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
+        public MethodCallExpression Call(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
             => AddStatement(Expression.Call(instance, method, arguments));
         
-        public MethodCallExpression CallStatement(Expression instance, MethodInfo method, params Expression[] arguments)
-            => CallStatement(instance, method, arguments.Upcast<IEnumerable<Expression>, Expression[]>());
+        public MethodCallExpression Call(Expression instance, MethodInfo method, params Expression[] arguments)
+            => Call(instance, method, arguments.Upcast<IEnumerable<Expression>, Expression[]>());
 
-        public MethodCallExpression CallStatement(MethodInfo method, IEnumerable<Expression> arguments)
-            => CallStatement(null, method, arguments);
+        public MethodCallExpression Call(MethodInfo method, IEnumerable<Expression> arguments)
+            => Call(null, method, arguments);
         
-        public MethodCallExpression CallStatement(MethodInfo method, params Expression[] arguments)
-            => CallStatement(null, method, arguments);
+        public MethodCallExpression Call(MethodInfo method, params Expression[] arguments)
+            => Call(null, method, arguments);
         
         public LabelTarget Label(Type type, string name = null)
         {
             var target = Expression.Label(type, name);
-            LabelStatement(target);
+            Label(target);
             return target;
         }
 
@@ -84,13 +84,13 @@ namespace DotNext.Metaprogramming
 
         public LabelTarget Label() => Label(typeof(void));
 
-        public LabelExpression LabelStatement(LabelTarget target)
+        public LabelExpression Label(LabelTarget target)
             => AddStatement(Expression.Label(target));
 
-        public GotoExpression GotoStatement(LabelTarget target, Expression value)
+        public GotoExpression Goto(LabelTarget target, Expression value)
             => AddStatement(Expression.Goto(target, value));
         
-        public GotoExpression GotoStatement(LabelTarget target) => GotoStatement(target, null);
+        public GotoExpression Goto(LabelTarget target) => Goto(target, null);
 
         private bool HasVariable(string name) => variables.ContainsKey(name) || Parent != null && Parent.HasVariable(name);
         
@@ -102,35 +102,71 @@ namespace DotNext.Metaprogramming
 
         public ParameterExpression DeclareVariable<T>(string name, T initialValue)
         {
-            var variable = DeclareVariable(typeof(T), name);
-            AssignStatement(variable, Expression.Constant(initialValue, typeof(T)));
+            var variable = DeclareVariable<T>(name);
+            Assign(variable, Expression.Constant(initialValue, typeof(T)));
             return variable;
         }
 
-        public ParameterExpression DeclareVariable(Type variableType, string name)
+        public ParameterExpression DeclareVariable(Type variableType, string name, bool initialize = false)
         {
             var variable = Expression.Variable(variableType, name);
             variables.Add(name, variable);
+            if (initialize)
+                Assign(variable, Expression.Default(variableType));
             return variable;
         }
 
-        public ConditionalBuilder IfStatement(Expression test)
-            => new ConditionalBuilder(test, this, true);
-        
         public ConditionalBuilder If(Expression test)
-            => new ConditionalBuilder(test, this, false);
+            => new ConditionalBuilder(test, this, true);
+
+        public ConditionalExpression IfThen(Expression test, Action<ScopeBuilder> ifTrue)
+            => If(test).Then(ifTrue).EndIf();
+
+        public ConditionalExpression IfThenElse(Expression test, Action<ScopeBuilder> ifTrue, Action<ScopeBuilder> ifFalse)
+            => If(test).Then(ifTrue).Else(ifFalse).EndIf();
         
-        public LoopExpression While(Expression test, Action<WhileLoopBuider> loop)
+        public ConditionalBuilder Conditional(Expression test)
+            => new ConditionalBuilder(test, this, false);
+
+        public ConditionalExpression Conditional(Expression test, Type type, Action<ScopeBuilder> ifTrue, Action<ScopeBuilder> ifFalse)
+            => Conditional(test).Then(ifTrue).Else(ifFalse).EndIf(type);
+
+        private LoopExpression WhileLoop(Expression test, Action<WhileLoopBuider> loop, bool conditionFirst)
         {
-            
+            var builder = new WhileLoopBuider(test, this, conditionFirst);
+            loop(builder);
+            var expr =  builder.BuildExpression();
+            AddStatement(expr);
+            return expr;
         }
+
+        public LoopExpression While(Expression test, Action<WhileLoopBuider> loop)
+            => WhileLoop(test, loop, true);
+
+        public LoopExpression DoWhile(Expression test, Action<WhileLoopBuider> loop)
+            => WhileLoop(test, loop, false);
+
+        public LoopExpression Loop(Action<LoopBuilder> loop)
+        {
+            var builder = new LoopBuilder(this);
+            loop(builder);
+            var expr = builder.BuildExpression();
+            AddStatement(expr);
+            return expr;
+        }
+
+        public GotoExpression Continue(LoopBuilder loop)
+            => AddStatement(loop.Continue());
+
+        public GotoExpression Break(LoopBuilder loop)
+            => AddStatement(loop.Break());
 
         internal Expression BuildExpression()
         {
             switch(statements.Count)
             {
                 case 0:
-                    return null;
+                    return Expression.Default(typeof(void));
                 case 1:
                     if(variables.Count == 0 && statements.Count == 1)
                         return statements.First();

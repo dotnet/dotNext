@@ -2,44 +2,35 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    public sealed class WhileLoopBuider: ScopeBuilder
+    using Threading;
+
+    public sealed class WhileLoopBuider: LoopBuilder
     {
-        private readonly ScopeBuilder parentScope;
         private readonly Expression test;
         private readonly bool conditionFirst;
-        private readonly LabelTarget breakLabel;
-        private readonly LabelTarget continueLabel;
 
         internal WhileLoopBuider(Expression test, ScopeBuilder parent, bool checkConditionFirst)
+            : base(parent)
         {
             this.test = test;
-            this.parentScope = parent;
             conditionFirst = checkConditionFirst;
-            breakLabel = Expression.Label();
-            continueLabel = Expression.Label();
-            if(checkConditionFirst)
-                LabelStatement(continueLabel);
         }
-
-        public LabelExpression Continue() => LabelStatement(continueLabel);
-
-        public LabelExpression Break() => LabelStatement(breakLabel);
 
         internal new LoopExpression BuildExpression()
         {
+            Expression loopBody;
             LoopExpression loopExpr;
             if(conditionFirst)
             {
-                loopExpr = Expression.Loop(Expression.Condition(test, base.BuildExpression(), Expression.Goto(breakLabel)));
+                loopBody = Expression.Condition(test, this.Upcast<ScopeBuilder, WhileLoopBuider>().BuildExpression(), Expression.Goto(breakLabel), typeof(void));
+                loopExpr = Expression.Loop(loopBody, breakLabel, continueLabel);
             }
             else
             {
-                LabelStatement(continueLabel);
-                AddStatement(Expression.Condition(test, null, Expression.Goto(breakLabel)));
-                loopExpr = Expression.Loop(base.BuildExpression(), breakLabel, continueLabel);
+                var condition = Expression.Condition(test, Expression.Default(typeof(void)), Expression.Goto(breakLabel), typeof(void));
+                loopBody = Expression.Block(typeof(void), this.Upcast<ScopeBuilder, WhileLoopBuider>().BuildExpression(), Expression.Label(continueLabel), condition);
+                loopExpr = Expression.Loop(loopBody, breakLabel);
             }
-            parentScope.AddStatement(loopExpr);
-            parentScope.LabelStatement(breakLabel);
             return loopExpr;
         }
     }

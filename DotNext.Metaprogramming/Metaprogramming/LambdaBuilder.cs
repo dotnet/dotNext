@@ -48,7 +48,7 @@ namespace DotNext.Metaprogramming
         public void Return()
         {
             if(returnLabel is null)
-                returnLabel = Expression.Label(ReturnType, "leave");
+                returnLabel = Expression.Label("leave");
             AddStatement(Expression.Return(returnLabel));
         }
 
@@ -56,8 +56,8 @@ namespace DotNext.Metaprogramming
 
         private Expression<D> Build()
         {
-            if(!(returnLabel is null))
-                AddStatement(Expression.Label(returnLabel));
+            if (!(returnLabel is null))
+                AddStatement(Expression.Label(returnLabel, Expression.Default(ReturnType)));
             return Expression.Lambda<D>(BuildExpression(), TailCall, Parameters);
         }
 
