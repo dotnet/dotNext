@@ -22,14 +22,14 @@ namespace DotNext.Metaprogramming
             LoopExpression loopExpr;
             if(conditionFirst)
             {
-                loopBody = Expression.Condition(test, this.Upcast<ScopeBuilder, WhileLoopBuider>().BuildExpression(), Expression.Goto(breakLabel), typeof(void));
-                loopExpr = Expression.Loop(loopBody, breakLabel, continueLabel);
+                loopBody = test.Condition(this.Upcast<ScopeBuilder, WhileLoopBuider>().BuildExpression(), breakLabel.Goto());
+                loopExpr = loopBody.Loop(breakLabel, continueLabel);
             }
             else
             {
-                var condition = Expression.Condition(test, Expression.Empty(), Expression.Goto(breakLabel), typeof(void));
-                loopBody = Expression.Block(typeof(void), this.Upcast<ScopeBuilder, WhileLoopBuider>().BuildExpression(), Expression.Label(continueLabel), condition);
-                loopExpr = Expression.Loop(loopBody, breakLabel);
+                var condition = test.Condition(ifFalse: Expression.Goto(breakLabel));
+                loopBody = Expression.Block(typeof(void), this.Upcast<ScopeBuilder, WhileLoopBuider>().BuildExpression(), continueLabel.LandingSite(), condition);
+                loopExpr = loopBody.Loop(breakLabel);
             }
             return loopExpr;
         }

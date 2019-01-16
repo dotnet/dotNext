@@ -128,11 +128,11 @@ namespace DotNext.Metaprogramming
         public ConditionalExpression IfThenElse(Expression test, Action<ScopeBuilder> ifTrue, Action<ScopeBuilder> ifFalse)
             => If(test).Then(ifTrue).Else(ifFalse).EndIf();
         
-        public ConditionalBuilder Conditional(Expression test)
+        public ConditionalBuilder Condition(Expression test)
             => new ConditionalBuilder(test, this, false);
 
-        public ConditionalExpression Conditional(Expression test, Type type, Action<ScopeBuilder> ifTrue, Action<ScopeBuilder> ifFalse)
-            => Conditional(test).Then(ifTrue).Else(ifFalse).EndIf(type);
+        public ConditionalExpression Condition(Expression test, Type type, Action<ScopeBuilder> ifTrue, Action<ScopeBuilder> ifFalse)
+            => Condition(test).Then(ifTrue).Else(ifFalse).EndIf(type);
 
         private LoopExpression WhileLoop(Expression test, Action<WhileLoopBuider> loop, bool conditionFirst)
         {

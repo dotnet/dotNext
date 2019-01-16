@@ -26,6 +26,6 @@ namespace DotNext.Metaprogramming
         internal GotoExpression Break() => Expression.Break(breakLabel);
 
         internal new LoopExpression BuildExpression()
-            => Expression.Loop(base.BuildExpression(), breakLabel, continueLabel);
+            => base.BuildExpression().Loop(breakLabel, continueLabel);
     }
 }

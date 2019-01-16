@@ -1,4 +1,7 @@
 using System;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
@@ -104,5 +107,70 @@ namespace DotNext.Metaprogramming
         public static UnaryExpression Unbox<T>(this Expression expression)
             where T: struct
             => expression.Unbox(typeof(T));
+
+        public static MethodCallExpression Call(this Expression instance, MethodInfo method, params Expression[] arguments)
+            => Expression.Call(instance, method, arguments);
+
+        public static MethodCallExpression Call(this Expression instance, string methodName, params Expression[] arguments)
+            => instance.Call(instance.Type, methodName, arguments);
+
+        public static MethodCallExpression Call(this Expression instance, Type interfaceType, string methodName, params Expression[] arguments)
+        {
+            if(!interfaceType.IsAssignableFrom(instance.Type))
+                throw new ArgumentException($"Type {instance.Type} doesn't implement interface {interfaceType.FullName}");
+            var method = interfaceType.GetMethod(methodName, arguments.Convert(arg => arg.Type));
+            return method is null ?
+                throw new MissingMethodException($"Method {methodName} doesn't exist in type {interfaceType.FullName}"):
+                instance.Call(method, arguments);
+        }
+
+        public static Expression Property(this Expression instance, PropertyInfo property, params Expression[] indicies)
+            => indicies.LongLength == 0 ? Expression.Property(instance, property).Upcast<Expression, MemberExpression>() : Expression.Property(instance, property, indicies);
+
+        public static Expression Property(this Expression instance, Type interfaceType, string propertyName, params Expression[] indicies)
+        {
+            var property = interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            return property is null ?
+                throw new MissingMemberException($"Property {propertyName} doesn't exist in type {interfaceType.FullName}") :
+                instance.Property(property, indicies);
+        }
+
+        public static Expression Property(this Expression instance, string propertyName, params Expression[] indicies)
+            => instance.Property(instance.Type, propertyName, indicies);
+
+        public static LoopExpression Loop(this Expression body, LabelTarget @break, LabelTarget @continue)
+            => Expression.Loop(body, @break, @continue);
+        
+        public static LoopExpression Loop(this Expression body, LabelTarget @break) => Expression.Loop(body, @break);
+        
+        public static LoopExpression Loop(this Expression body) => Expression.Loop(body);
+        
+        public static GotoExpression Goto(this LabelTarget label) => Expression.Goto(label);
+
+        public static GotoExpression Goto(this LabelTarget label, Expression value) => Expression.Goto(label, value);
+
+        public static GotoExpression Return(this LabelTarget label) => Expression.Return(label);
+
+        public static GotoExpression Return(this LabelTarget label, Expression value) => Expression.Return(label, value);
+
+        public static GotoExpression Break(this LabelTarget label) => Expression.Break(label);
+
+        public static GotoExpression Break(this LabelTarget label, Expression value) => Expression.Break(label, value);
+
+        public static GotoExpression Continue(this LabelTarget label) => Expression.Continue(label);
+
+        public static GotoExpression Continue(this LabelTarget label, Expression value) => Expression.Continue(label, value);
+
+        public static LabelExpression LandingSite(this LabelTarget label) => Expression.Label(label);
+
+        public static LabelExpression LandingSite(this LabelTarget label, Expression @default) => Expression.Label(label, @default);
+
+        public static ConditionalExpression Condition(this Expression expression, Expression ifTrue = null, Expression ifFalse = null, Type type = null) 
+            => Expression.Condition(expression, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), type ?? typeof(void));
+        
+        public static ConditionalExpression Condition<R>(this Expression expression, Expression ifTrue, Expression ifFalse)
+            => expression.Condition(ifTrue, ifFalse, typeof(R));
+
+        public static TryExpression Finally(this Expression @try, Expression @finally) => Expression.TryFinally(@try, @finally);
     }
 }

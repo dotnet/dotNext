@@ -20,26 +20,26 @@ namespace DotNext.Metaprogramming
             collection.Type.GetCollectionElementType(out var enumerable);
             var counter = ForEachLoopBuilder.counter.IncrementAndGet();
             const string GetEnumeratorMethod = nameof(IEnumerable.GetEnumerator);
+            MethodCallExpression getEnumerator;
             if (enumerable is null)
             {
-                var getEnumerator = collection.Type.GetMethod(GetEnumeratorMethod, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
+                getEnumerator = collection.Call(GetEnumeratorMethod);
                 if (getEnumerator is null)
                     throw new ArgumentException("Collection expression doesn't implement IEnumerable interface or GetEnumerator method");
-                enumerator = parentScope.DeclareVariable(getEnumerator.ReturnType, "enumerator_" + counter);
-                //enumerator = enumerable.GetEnumerator();
-                parentScope.Assign(enumerator, Expression.Call(collection, getEnumerator));
-                Element = Expression.Property(enumerator, enumerator.Type.GetProperty(nameof(IEnumerator.Current)));
-                moveNextCall = Expression.Call(enumerator, enumerator.Type.GetMethod(nameof(IEnumerator.MoveNext), Array.Empty<Type>()));
+                enumerator = parentScope.DeclareVariable(getEnumerator.Method.ReturnType, "enumerator_" + counter);
+                moveNextCall = enumerator.Call(nameof(IEnumerator.MoveNext));
             }
             else
             {
-                var getEnumerator = enumerable.GetMethod(GetEnumeratorMethod, Array.Empty<Type>());
-                enumerator = parentScope.DeclareVariable(getEnumerator.ReturnType, "enumerator_" + counter);
-                //enumerator = enumerable.GetEnumerator();
-                parentScope.Assign(enumerator, Expression.Call(collection, getEnumerator));
-                Element = Expression.Property(enumerator, enumerator.Type.GetProperty(nameof(IEnumerator.Current)));
-                moveNextCall = Expression.Call(enumerator, typeof(IEnumerator).GetMethod(nameof(IEnumerator.MoveNext)));
+                getEnumerator = collection.Call(enumerable, GetEnumeratorMethod);
+                enumerator = parentScope.DeclareVariable(getEnumerator.Method.ReturnType, "enumerator_" + counter);
+                //enumerator.MoveNext()
+                moveNextCall = enumerator.Call(typeof(IEnumerator), nameof(IEnumerator.MoveNext));
             }
+            //enumerator = enumerable.GetEnumerator();
+            parentScope.Assign(enumerator, getEnumerator);
+            //enumerator.Current
+            Element = enumerator.Property(nameof(IEnumerator.Current));
         }
 
         /// <summary>
@@ -49,10 +49,7 @@ namespace DotNext.Metaprogramming
 
         internal new Expression BuildExpression()
         {
-            Expression loopBody = Expression.Condition(moveNextCall,
-                this.Upcast<ScopeBuilder, ForEachLoopBuilder>().BuildExpression(),
-                Expression.Goto(breakLabel),
-                typeof(void));
+            Expression loopBody = moveNextCall.Condition(this.Upcast<ScopeBuilder, ForEachLoopBuilder>().BuildExpression(), breakLabel.Goto());
 
             const string DisposeMethodName = nameof(IDisposable.Dispose);
             var disposeMethod = typeof(IDisposable).IsAssignableFrom(enumerator.Type) ?
@@ -60,8 +57,8 @@ namespace DotNext.Metaprogramming
                 enumerator.Type.GetMethod(DisposeMethodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
 
             
-            loopBody = Expression.Loop(loopBody, breakLabel, continueLabel);
-            return disposeMethod is null ? loopBody : Expression.TryFinally(loopBody, Expression.Call(enumerator, disposeMethod));
+            loopBody = loopBody.Loop(breakLabel, continueLabel);
+            return disposeMethod is null ? loopBody : loopBody.Finally(enumerator.Call(disposeMethod));
         }
     }
 }

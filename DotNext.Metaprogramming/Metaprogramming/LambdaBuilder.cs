@@ -42,14 +42,14 @@ namespace DotNext.Metaprogramming
         {
             if(returnLabel is null)
                 returnLabel = Expression.Label(ReturnType, "leave");
-            AddStatement(Expression.Return(returnLabel, result));
+            AddStatement(returnLabel.Return(result));
         }
 
         public void Return()
         {
             if(returnLabel is null)
                 returnLabel = Expression.Label("leave");
-            AddStatement(Expression.Return(returnLabel));
+            AddStatement(returnLabel.Return());
         }
 
         public bool TailCall { private get; set; }
@@ -57,7 +57,7 @@ namespace DotNext.Metaprogramming
         private Expression<D> Build()
         {
             if (!(returnLabel is null))
-                AddStatement(Expression.Label(returnLabel, Expression.Default(ReturnType)));
+                AddStatement(returnLabel.LandingSite(Expression.Default(ReturnType)));
             return Expression.Lambda<D>(BuildExpression(), TailCall, Parameters);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
 
@@ -126,6 +127,24 @@ namespace DotNext.Metaprogramming
         public ExpressionView Unbox<T>()
             where T : struct
             => expression.Unbox<T>();
+
+        public MethodCallExpression Call(MethodInfo method, params Expression[] arguments) => expression.Call(method, arguments);
+
+        public MethodCallExpression Call(string methodName, params Expression[] arguments) => expression.Call(methodName, arguments);
+
+        public MethodCallExpression Call(Type interfaceType, string methodName, params Expression[] arguments) => expression.Call(interfaceType, methodName, arguments);
+
+        public Expression Property(PropertyInfo property, params Expression[] indicies) => expression.Property(property, indicies);
+
+        public Expression Property(Type interfaceType, string propertyName, params Expression[] indicies) => expression.Property(interfaceType, propertyName, indicies);
+
+        public Expression Property(string propertyName, params Expression[] indicies) => expression.Property(propertyName, indicies);
+        
+        public LoopExpression Loop(LabelTarget @break, LabelTarget @continue) => expression.Loop(@break, @continue);
+        
+        public LoopExpression Loop(LabelTarget @break) => expression.Loop(@break);
+        
+        public LoopExpression Loop() => expression.Loop();
 
         public override int GetHashCode() => expression.GetHashCode();
 
