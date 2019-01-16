@@ -159,8 +159,6 @@ namespace DotNext.Metaprogramming
 
         public static GotoExpression Continue(this LabelTarget label) => Expression.Continue(label);
 
-        public static GotoExpression Continue(this LabelTarget label, Expression value) => Expression.Continue(label, value);
-
         public static LabelExpression LandingSite(this LabelTarget label) => Expression.Label(label);
 
         public static LabelExpression LandingSite(this LabelTarget label, Expression @default) => Expression.Label(label, @default);

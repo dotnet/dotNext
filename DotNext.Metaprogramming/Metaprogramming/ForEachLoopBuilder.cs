@@ -8,13 +8,13 @@ namespace DotNext.Metaprogramming
     using Reflection;
     using Threading;
 
-    public sealed class ForEachLoopBuilder: LoopBuilder
+    public sealed class ForEachLoopBuilder: LoopBuilderBase, IExpressionBuilder<Expression>
     {
         private static long counter = 0L;
         private readonly ParameterExpression enumerator;
         private readonly MethodCallExpression moveNextCall;
 
-        internal ForEachLoopBuilder(Expression collection, ScopeBuilder parent)
+        internal ForEachLoopBuilder(Expression collection, ExpressionBuilder parent)
             : base(parent)
         {
             collection.Type.GetCollectionElementType(out var enumerable);
@@ -26,18 +26,18 @@ namespace DotNext.Metaprogramming
                 getEnumerator = collection.Call(GetEnumeratorMethod);
                 if (getEnumerator is null)
                     throw new ArgumentException("Collection expression doesn't implement IEnumerable interface or GetEnumerator method");
-                enumerator = parentScope.DeclareVariable(getEnumerator.Method.ReturnType, "enumerator_" + counter);
+                enumerator = Parent.DeclareVariable(getEnumerator.Method.ReturnType, "enumerator_" + counter);
                 moveNextCall = enumerator.Call(nameof(IEnumerator.MoveNext));
             }
             else
             {
                 getEnumerator = collection.Call(enumerable, GetEnumeratorMethod);
-                enumerator = parentScope.DeclareVariable(getEnumerator.Method.ReturnType, "enumerator_" + counter);
+                enumerator = Parent.DeclareVariable(getEnumerator.Method.ReturnType, "enumerator_" + counter);
                 //enumerator.MoveNext()
                 moveNextCall = enumerator.Call(typeof(IEnumerator), nameof(IEnumerator.MoveNext));
             }
             //enumerator = enumerable.GetEnumerator();
-            parentScope.Assign(enumerator, getEnumerator);
+            Parent.Assign(enumerator, getEnumerator);
             //enumerator.Current
             Element = enumerator.Property(nameof(IEnumerator.Current));
         }
@@ -47,9 +47,9 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public Expression Element { get; }
 
-        internal new Expression BuildExpression()
+        internal override Expression Build()
         {
-            Expression loopBody = moveNextCall.Condition(this.Upcast<ScopeBuilder, ForEachLoopBuilder>().BuildExpression(), breakLabel.Goto());
+            Expression loopBody = moveNextCall.Condition(base.Build(), breakLabel.Goto());
 
             const string DisposeMethodName = nameof(IDisposable.Dispose);
             var disposeMethod = typeof(IDisposable).IsAssignableFrom(enumerator.Type) ?
@@ -60,5 +60,7 @@ namespace DotNext.Metaprogramming
             loopBody = loopBody.Loop(breakLabel, continueLabel);
             return disposeMethod is null ? loopBody : loopBody.Finally(enumerator.Call(disposeMethod));
         }
+
+        Expression IExpressionBuilder<Expression>.Build() => Build();
     }
 }

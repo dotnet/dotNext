@@ -29,11 +29,9 @@ namespace DotNext.Collections.Generic
 		public bool TryGetValue(K key, out V value)
 			=> source.TryGetValue(key, out value);
 
-		IEnumerator IEnumerable.GetEnumerator()
-			=> GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		public bool Equals(ReadOnlyDictionaryView<K, V> other)
-			=> ReferenceEquals(source, other.source);
+		public bool Equals(ReadOnlyDictionaryView<K, V> other) => ReferenceEquals(source, other.source);
 
 		public override int GetHashCode() => RuntimeHelpers.GetHashCode(source);
 

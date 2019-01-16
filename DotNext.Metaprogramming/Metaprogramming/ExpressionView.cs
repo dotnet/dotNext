@@ -18,9 +18,16 @@ namespace DotNext.Metaprogramming
 
         public ExpressionView(Expression expr) => expression = expr ?? throw new ArgumentNullException(nameof(expr));
 
+        public static ExpressionView Const<T>(T value) => Expression.Constant(value, typeof(T));
+
+        public static ExpressionView Default(Type type) => Expression.Default(type);
+
+        public static ExpressionView Default<T>() => Default(typeof(T));
+
         public static implicit operator Expression(ExpressionView view) => view.expression;
 
-        public static implicit operator ParameterExpression(ExpressionView view) => view.expression as ParameterExpression;
+        public static implicit operator ParameterExpression(ExpressionView view) 
+            => view.expression is ParameterExpression parameter ? parameter : throw new InvalidCastException("Parameter expression expected");
 
         public static implicit operator ExpressionView(Expression expr) => new ExpressionView(expr);
 
@@ -145,6 +152,12 @@ namespace DotNext.Metaprogramming
         public LoopExpression Loop(LabelTarget @break) => expression.Loop(@break);
         
         public LoopExpression Loop() => expression.Loop();
+
+        public ConditionalExpression Condition(Expression ifTrue = null, Expression ifFalse = null, Type type = null) 
+            => expression.Condition(ifTrue, ifFalse, type);
+        
+        public ConditionalExpression Condition<R>(Expression ifTrue, Expression ifFalse)
+            => expression.Condition<R>(ifTrue, ifFalse);
 
         public override int GetHashCode() => expression.GetHashCode();
 

@@ -4,31 +4,33 @@ namespace DotNext.Metaprogramming
 {
     using Threading;
 
-    public sealed class WhileLoopBuider: LoopBuilder
+    public sealed class WhileLoopBuider: LoopBuilderBase, IExpressionBuilder<LoopExpression>
     {
         private readonly Expression test;
         private readonly bool conditionFirst;
 
-        internal WhileLoopBuider(Expression test, ScopeBuilder parent, bool checkConditionFirst)
+        internal WhileLoopBuider(Expression test, ExpressionBuilder parent, bool checkConditionFirst)
             : base(parent)
         {
             this.test = test;
             conditionFirst = checkConditionFirst;
         }
 
-        internal new LoopExpression BuildExpression()
+        internal override Expression Build() => this.Upcast<IExpressionBuilder<LoopExpression>, WhileLoopBuider>().Build();
+
+        LoopExpression IExpressionBuilder<LoopExpression>.Build()
         {
             Expression loopBody;
             LoopExpression loopExpr;
             if(conditionFirst)
             {
-                loopBody = test.Condition(this.Upcast<ScopeBuilder, WhileLoopBuider>().BuildExpression(), breakLabel.Goto());
+                loopBody = test.Condition(base.Build(), breakLabel.Goto());
                 loopExpr = loopBody.Loop(breakLabel, continueLabel);
             }
             else
             {
                 var condition = test.Condition(ifFalse: Expression.Goto(breakLabel));
-                loopBody = Expression.Block(typeof(void), this.Upcast<ScopeBuilder, WhileLoopBuider>().BuildExpression(), continueLabel.LandingSite(), condition);
+                loopBody = Expression.Block(typeof(void), base.Build(), continueLabel.LandingSite(), condition);
                 loopExpr = loopBody.Loop(breakLabel);
             }
             return loopExpr;

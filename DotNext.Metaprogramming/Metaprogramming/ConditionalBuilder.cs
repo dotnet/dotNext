@@ -9,12 +9,12 @@ namespace DotNext.Metaprogramming
     public sealed class ConditionalBuilder
     {
         private readonly Expression test;
-        private readonly ScopeBuilder parentScope;
+        private readonly ExpressionBuilder parentScope;
         private readonly bool treatAsStatement;
         private Expression ifTrue;
         private Expression ifFalse;
 
-        internal ConditionalBuilder(Expression test, ScopeBuilder parent, bool treatAsStatement)
+        internal ConditionalBuilder(Expression test, ExpressionBuilder parent, bool treatAsStatement)
         {
             this.treatAsStatement = treatAsStatement;
             parentScope = parent;
@@ -22,11 +22,11 @@ namespace DotNext.Metaprogramming
             ifTrue = ifFalse = Expression.Empty();
         }
 
-        private Expression Branch(Action<ScopeBuilder> branch)
+        private Expression Branch(Action<ExpressionBuilder> branch)
         {
-            var branchScope = new ScopeBuilder(parentScope);
+            var branchScope = new ExpressionBuilder(parentScope);
             branch(branchScope);
-            return branchScope.BuildExpression();
+            return branchScope.Build();
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="branch">Branch builder.</param>
         /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Then(Action<ScopeBuilder> branch)
+        public ConditionalBuilder Then(Action<ExpressionBuilder> branch)
         {
             ifTrue = Branch(branch);
             return this;
@@ -45,7 +45,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="branch">Branch builder.</param>
         /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Else(Action<ScopeBuilder> branch)
+        public ConditionalBuilder Else(Action<ExpressionBuilder> branch)
         {
             ifFalse = Branch(branch);
             return this;

@@ -6,12 +6,14 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    public class ScopeBuilder
+    using Collections.Generic;
+
+    public class ExpressionBuilder
     {
         private protected readonly IDictionary<string, ParameterExpression> variables;
         private readonly ICollection<Expression> statements;
 
-        internal ScopeBuilder(ScopeBuilder parent = null)
+        internal ExpressionBuilder(ExpressionBuilder parent = null)
         {
             Parent = parent;
             variables = new Dictionary<string, ParameterExpression>();
@@ -34,13 +36,21 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Represents parent scope.
         /// </summary>
-        public ScopeBuilder Parent{ get; }
+        public ExpressionBuilder Parent{ get; }
 
         internal E AddStatement<E>(E expression)
             where E: Expression
         {
             statements.Add(expression);
             return expression;
+        }
+
+        private E AddStatement<E, B>(B builder, Action<B> body)
+            where E: Expression
+            where B: IExpressionBuilder<E>
+        {
+            body(builder);
+            return AddStatement(builder.Build());
         }
 
         public BinaryExpression Assign(ParameterExpression variable, Expression value)
@@ -122,58 +132,46 @@ namespace DotNext.Metaprogramming
         public ConditionalBuilder If(Expression test)
             => new ConditionalBuilder(test, this, true);
 
-        public ConditionalExpression IfThen(Expression test, Action<ScopeBuilder> ifTrue)
+        public ConditionalExpression IfThen(Expression test, Action<ExpressionBuilder> ifTrue)
             => If(test).Then(ifTrue).EndIf();
 
-        public ConditionalExpression IfThenElse(Expression test, Action<ScopeBuilder> ifTrue, Action<ScopeBuilder> ifFalse)
+        public ConditionalExpression IfThenElse(Expression test, Action<ExpressionBuilder> ifTrue, Action<ExpressionBuilder> ifFalse)
             => If(test).Then(ifTrue).Else(ifFalse).EndIf();
         
         public ConditionalBuilder Condition(Expression test)
             => new ConditionalBuilder(test, this, false);
 
-        public ConditionalExpression Condition(Expression test, Type type, Action<ScopeBuilder> ifTrue, Action<ScopeBuilder> ifFalse)
+        public ConditionalExpression Condition(Expression test, Type type, Action<ExpressionBuilder> ifTrue, Action<ExpressionBuilder> ifFalse)
             => Condition(test).Then(ifTrue).Else(ifFalse).EndIf(type);
 
-        private LoopExpression WhileLoop(Expression test, Action<WhileLoopBuider> loop, bool conditionFirst)
-        {
-            var builder = new WhileLoopBuider(test, this, conditionFirst);
-            loop(builder);
-            var expr =  builder.BuildExpression();
-            AddStatement(expr);
-            return expr;
-        }
-
         public LoopExpression While(Expression test, Action<WhileLoopBuider> loop)
-            => WhileLoop(test, loop, true);
+            => AddStatement<LoopExpression, WhileLoopBuider>(new WhileLoopBuider(test, this, true), loop);
 
         public LoopExpression DoWhile(Expression test, Action<WhileLoopBuider> loop)
-            => WhileLoop(test, loop, false);
+            => AddStatement<LoopExpression, WhileLoopBuider>(new WhileLoopBuider(test, this, false), loop);
 
         public Expression ForEach(Expression collection, Action<ForEachLoopBuilder> loop)
-        {
-            var builder = new ForEachLoopBuilder(collection, this);
-            loop(builder);
-            var expr = builder.BuildExpression();
-            AddStatement(expr);
-            return expr;
-        }
+            => AddStatement<Expression, ForEachLoopBuilder>(new ForEachLoopBuilder(collection, this), loop);
 
         public LoopExpression Loop(Action<LoopBuilder> loop)
-        {
-            var builder = new LoopBuilder(this);
-            loop(builder);
-            var expr = builder.BuildExpression();
-            AddStatement(expr);
-            return expr;
-        }
+            => AddStatement<LoopExpression, LoopBuilder>(new LoopBuilder(this), loop);
 
         public GotoExpression Continue(LoopBuilder loop)
             => AddStatement(loop.Continue());
 
+        /// <summary>
+        /// Stops the specified loop.
+        /// </summary>
+        /// <param name="loop">Loop identifier.</param>
+        /// <returns>An expression representing jumping outside of the loop.</returns>
         public GotoExpression Break(LoopBuilder loop)
             => AddStatement(loop.Break());
+        
+        public Expression<D> Lambda<D>(Action<LambdaBuilder<D>> lambda)
+            where D: Delegate
+            => AddStatement<Expression<D>, LambdaBuilder<D>>(new LambdaBuilder<D>(this), lambda);
 
-        internal Expression BuildExpression()
+        internal virtual Expression Build()
         {
             switch(statements.Count)
             {

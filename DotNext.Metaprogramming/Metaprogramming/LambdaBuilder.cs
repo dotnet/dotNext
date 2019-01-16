@@ -5,19 +5,20 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    public sealed class LambdaBuilder<D>: ScopeBuilder
+    public sealed class LambdaBuilder<D>: ExpressionBuilder, IExpressionBuilder<Expression<D>>
         where D: Delegate
     {
         private LabelTarget returnLabel;
 
-        private LambdaBuilder()
+        internal LambdaBuilder(ExpressionBuilder parent = null)
+            : base(parent)
         {
             if(typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>("Delegate type should not be abstract", nameof(D));
             var invokeMethod = Delegates.GetInvokeMethod<D>();
             Parameters = new ReadOnlyCollection<ParameterExpression>((from parameter in invokeMethod.GetParameters() select Expression.Parameter(parameter.ParameterType, parameter.Name)).ToList());
             ReturnType = invokeMethod.ReturnType;
-        }
+        } 
 
         /// <summary>
         /// Gets lambda parameters.
@@ -54,18 +55,20 @@ namespace DotNext.Metaprogramming
 
         public bool TailCall { private get; set; }
 
-        private Expression<D> Build()
+        internal override Expression Build() => this.Upcast<IExpressionBuilder<Expression<D>>, LambdaBuilder<D>>().Build();    
+
+        Expression<D> IExpressionBuilder<Expression<D>>.Build()
         {
             if (!(returnLabel is null))
                 AddStatement(returnLabel.LandingSite(Expression.Default(ReturnType)));
-            return Expression.Lambda<D>(BuildExpression(), TailCall, Parameters);
+            return Expression.Lambda<D>(base.Build(), TailCall, Parameters);
         }
 
         public static Expression<D> Build(Action<LambdaBuilder<D>> lambdaBody)
         {
             var builder = new LambdaBuilder<D>();
             lambdaBody(builder);
-            return builder.Build(); 
-        } 
+            return builder.Upcast<IExpressionBuilder<Expression<D>>, LambdaBuilder<D>>().Build();
+        }
     }
 }
