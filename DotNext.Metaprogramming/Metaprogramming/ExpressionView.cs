@@ -18,12 +18,6 @@ namespace DotNext.Metaprogramming
 
         public ExpressionView(Expression expr) => expression = expr ?? throw new ArgumentNullException(nameof(expr));
 
-        public static ExpressionView Const<T>(T value) => Expression.Constant(value, typeof(T));
-
-        public static ExpressionView Default(Type type) => Expression.Default(type);
-
-        public static ExpressionView Default<T>() => Default(typeof(T));
-
         public static implicit operator Expression(ExpressionView view) => view.expression;
 
         public static implicit operator ParameterExpression(ExpressionView view) 
@@ -31,31 +25,35 @@ namespace DotNext.Metaprogramming
 
         public static implicit operator ExpressionView(Expression expr) => new ExpressionView(expr);
 
-        public static implicit operator ExpressionView(long value) => Expression.Constant(value, typeof(long));
+        public static implicit operator ExpressionView(long value) => value.AsConst();
         [CLSCompliant(false)]
-        public static implicit operator ExpressionView(ulong value) => Expression.Constant(value, typeof(ulong));
+        public static implicit operator ExpressionView(ulong value) => value.AsConst();
 
-        public static implicit operator ExpressionView(int value) => Expression.Constant(value, typeof(int));
+        public static implicit operator ExpressionView(int value) => value.AsConst();
         [CLSCompliant(false)]
-        public static implicit operator ExpressionView(uint value) => Expression.Constant(value, typeof(uint));
+        public static implicit operator ExpressionView(uint value) => value.AsConst();
 
-        public static implicit operator ExpressionView(short value) => Expression.Constant(value, typeof(short));
-
-        [CLSCompliant(false)]
-        public static implicit operator ExpressionView(ushort value) => Expression.Constant(value, typeof(ushort));
-
-        public static implicit operator ExpressionView(byte value) => Expression.Constant(value, typeof(byte));
+        public static implicit operator ExpressionView(short value) => value.AsConst();
 
         [CLSCompliant(false)]
-        public static implicit operator ExpressionView(sbyte value) => Expression.Constant(value, typeof(sbyte));
+        public static implicit operator ExpressionView(ushort value) => value.AsConst();
 
-        public static implicit operator ExpressionView(bool value) => Expression.Constant(value, typeof(bool));
+        public static implicit operator ExpressionView(byte value) => value.AsConst();
 
-        public static implicit operator ExpressionView(string value) => Expression.Constant(value, typeof(string));
+        [CLSCompliant(false)]
+        public static implicit operator ExpressionView(sbyte value) => value.AsConst();
 
-        public static implicit operator ExpressionView(decimal value) => Expression.Constant(value, typeof(decimal));
+        public static implicit operator ExpressionView(bool value) => value.AsConst();
 
-        public static implicit operator ExpressionView(DateTime value) => Expression.Constant(value, typeof(DateTime));
+        public static implicit operator ExpressionView(string value) => value.AsConst();
+
+        public static implicit operator ExpressionView(decimal value) => value.AsConst();
+
+        public static implicit operator ExpressionView(float value) => value.AsConst();
+
+        public static implicit operator ExpressionView(double value) => value.AsConst();
+
+        public static implicit operator ExpressionView(DateTime value) => value.AsConst();
 
         public static ExpressionView operator !(ExpressionView expr) => expr.expression.Not();
 
@@ -158,6 +156,8 @@ namespace DotNext.Metaprogramming
         
         public ConditionalExpression Condition<R>(Expression ifTrue, Expression ifFalse)
             => expression.Condition<R>(ifTrue, ifFalse);
+
+        public UnaryExpression Throw() => expression.Throw();
 
         public override int GetHashCode() => expression.GetHashCode();
 

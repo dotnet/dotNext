@@ -170,5 +170,11 @@ namespace DotNext.Metaprogramming
             => expression.Condition(ifTrue, ifFalse, typeof(R));
 
         public static TryExpression Finally(this Expression @try, Expression @finally) => Expression.TryFinally(@try, @finally);
+
+        public static UnaryExpression Throw(this Expression exception) => Expression.Throw(exception);
+
+        public static ConstantExpression AsConst<T>(this T value) => Expression.Constant(value, typeof(T));
+
+        public static DefaultExpression Default(this Type type) => Expression.Default(type);
     }
 }

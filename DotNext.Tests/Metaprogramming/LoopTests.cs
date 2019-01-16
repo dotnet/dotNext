@@ -71,7 +71,7 @@ namespace DotNext.Metaprogramming
                 fun.DoWhile(arg > 0L, loop =>
                 {
                     loop.Assign(result, result + arg);
-                    loop.Assign(arg, arg - 1L);
+                    loop.Assign(arg, arg - 1L.AsConst());
                 });
                 fun.Return(result);
             })
@@ -113,7 +113,7 @@ namespace DotNext.Metaprogramming
                             then.Assign(arg, arg - 1L);
                         })
                         .Else(@else => @else.Break(loop))
-                        .EndIf();
+                        .End();
                 });
                 fun.Return(result);
             })

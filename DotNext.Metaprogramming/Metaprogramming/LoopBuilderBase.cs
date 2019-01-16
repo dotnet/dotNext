@@ -19,8 +19,20 @@ namespace DotNext.Metaprogramming
             continueLabel = Expression.Label("continue" + loopCount);
         }
 
-        internal GotoExpression Continue() => Expression.Continue(continueLabel);
+        public GotoExpression Continue() => Continue(true);
 
-        internal GotoExpression Break() => Expression.Break(breakLabel);
+        public GotoExpression Break() => Break(true);
+
+        internal GotoExpression Continue(bool addAsStatement)
+        {
+            var expr = Expression.Continue(continueLabel);
+            return addAsStatement ? AddStatement(expr) : expr;
+        }
+
+        internal GotoExpression Break(bool addAsStatement)
+        {
+            var expr = Expression.Break(breakLabel);
+            return addAsStatement ? AddStatement(expr) : expr;
+        }
     }
 }

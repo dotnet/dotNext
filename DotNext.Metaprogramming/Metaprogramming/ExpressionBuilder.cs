@@ -45,13 +45,24 @@ namespace DotNext.Metaprogramming
             return expression;
         }
 
-        private E AddStatement<E, B>(B builder, Action<B> body)
+        internal static E Build<E, B>(B builder, Action<B> body)
             where E: Expression
             where B: IExpressionBuilder<E>
         {
             body(builder);
-            return AddStatement(builder.Build());
+            return builder.Build();
         }
+
+        internal Expression Build(Action<ExpressionBuilder> body)
+        {
+            body(this);
+            return Build();
+        }
+
+        private E AddStatement<E, B>(B builder, Action<B> body)
+            where E: Expression
+            where B: IExpressionBuilder<E>
+            => AddStatement(Build<E, B>(builder, body));
 
         public BinaryExpression Assign(ParameterExpression variable, Expression value)
             => AddStatement(Expression.Assign(variable, value));
@@ -133,16 +144,16 @@ namespace DotNext.Metaprogramming
             => new ConditionalBuilder(test, this, true);
 
         public ConditionalExpression IfThen(Expression test, Action<ExpressionBuilder> ifTrue)
-            => If(test).Then(ifTrue).EndIf();
+            => If(test).Then(ifTrue).End();
 
         public ConditionalExpression IfThenElse(Expression test, Action<ExpressionBuilder> ifTrue, Action<ExpressionBuilder> ifFalse)
-            => If(test).Then(ifTrue).Else(ifFalse).EndIf();
+            => If(test).Then(ifTrue).Else(ifFalse).End();
         
         public ConditionalBuilder Condition(Expression test)
             => new ConditionalBuilder(test, this, false);
 
         public ConditionalExpression Condition(Expression test, Type type, Action<ExpressionBuilder> ifTrue, Action<ExpressionBuilder> ifFalse)
-            => Condition(test).Then(ifTrue).Else(ifFalse).EndIf(type);
+            => Condition(test).Then(ifTrue).Else(ifFalse).OfType(type).End();
 
         public LoopExpression While(Expression test, Action<WhileLoopBuider> loop)
             => AddStatement<LoopExpression, WhileLoopBuider>(new WhileLoopBuider(test, this, true), loop);
@@ -156,20 +167,28 @@ namespace DotNext.Metaprogramming
         public LoopExpression Loop(Action<LoopBuilder> loop)
             => AddStatement<LoopExpression, LoopBuilder>(new LoopBuilder(this), loop);
 
-        public GotoExpression Continue(LoopBuilder loop)
-            => AddStatement(loop.Continue());
+        public GotoExpression Continue(LoopBuilderBase loop)
+            => AddStatement(loop.Continue(false));
 
         /// <summary>
         /// Stops the specified loop.
         /// </summary>
         /// <param name="loop">Loop identifier.</param>
         /// <returns>An expression representing jumping outside of the loop.</returns>
-        public GotoExpression Break(LoopBuilder loop)
-            => AddStatement(loop.Break());
+        public GotoExpression Break(LoopBuilderBase loop)
+            => AddStatement(loop.Break(false));
         
-        public Expression<D> Lambda<D>(Action<LambdaBuilder<D>> lambda)
+        public GotoExpression Return(LambdaBuilder lambda) => AddStatement(lambda.Return(false));
+
+        public GotoExpression Return(LambdaBuilder lambda, Expression result) => AddStatement(lambda.Return(result, false));
+
+        public GotoExpression Return(LambdaBuilder lambda, object result) => Return(lambda, Expression.Constant(result, lambda.ReturnType));
+        
+        public LambdaExpression Lambda<D>(Action<LambdaBuilder> lambda)
             where D: Delegate
-            => AddStatement<Expression<D>, LambdaBuilder<D>>(new LambdaBuilder<D>(this), lambda);
+            => AddStatement<LambdaExpression, LambdaBuilder<D>>(new LambdaBuilder<D>(this), lambda);
+
+        public TryBuilder Try(Expression body) => new TryBuilder(body, this, true);
 
         internal virtual Expression Build()
         {
