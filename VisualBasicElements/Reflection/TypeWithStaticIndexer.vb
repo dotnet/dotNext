@@ -14,6 +14,10 @@ Namespace Reflection
             End Set
         End Property
 
+        Public Shared Operator ^(ByVal left As TypeWithStaticIndexer, ByVal right As Integer) As Integer
+            Return right
+        End Operator
+
     End Class
 End Namespace
 
