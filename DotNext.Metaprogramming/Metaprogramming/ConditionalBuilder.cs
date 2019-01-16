@@ -19,7 +19,7 @@ namespace DotNext.Metaprogramming
             this.treatAsStatement = treatAsStatement;
             parentScope = parent;
             this.test = test;
-            ifTrue = ifFalse = Expression.Default(typeof(void));
+            ifTrue = ifFalse = Expression.Empty();
         }
 
         private Expression Branch(Action<ScopeBuilder> branch)

@@ -97,6 +97,9 @@ namespace DotNext.Metaprogramming
         public ParameterExpression this[string localVariableName]
             => variables.TryGetValue(localVariableName, out var variable) ? variable : Parent?[localVariableName];
 
+        private protected void DeclareVariable(ParameterExpression variable)
+            => variables.Add(variable.Name, variable);
+
         public ParameterExpression DeclareVariable<T>(string name, bool byRef = false)
             => DeclareVariable(byRef ? typeof(T).MakeByRefType() : typeof(T), name);
 
@@ -146,6 +149,15 @@ namespace DotNext.Metaprogramming
         public LoopExpression DoWhile(Expression test, Action<WhileLoopBuider> loop)
             => WhileLoop(test, loop, false);
 
+        public Expression ForEach(Expression collection, Action<ForEachLoopBuilder> loop)
+        {
+            var builder = new ForEachLoopBuilder(collection, this);
+            loop(builder);
+            var expr = builder.BuildExpression();
+            AddStatement(expr);
+            return expr;
+        }
+
         public LoopExpression Loop(Action<LoopBuilder> loop)
         {
             var builder = new LoopBuilder(this);
@@ -166,7 +178,7 @@ namespace DotNext.Metaprogramming
             switch(statements.Count)
             {
                 case 0:
-                    return Expression.Default(typeof(void));
+                    return Expression.Empty();
                 case 1:
                     if(variables.Count == 0 && statements.Count == 1)
                         return statements.First();

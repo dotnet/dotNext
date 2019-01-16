@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Reflection;
 
@@ -65,5 +67,28 @@ namespace DotNext.Reflection
 
 		public static Type MakeTaskType(this Type returnType)
 			=> returnType == typeof(void) ? typeof(Task) : typeof(Task<>).MakeGenericType(returnType);
-	}
+
+        public static Type GetCollectionElementType(this Type collectionType, out Type enumerableInterface)
+        {
+            foreach(var iface in collectionType.GetInterfaces())
+                if(iface.IsGenericInstanceOf(typeof(IEnumerable<>)))
+                {
+                    enumerableInterface = iface;
+                    return enumerableInterface.GetGenericArguments()[0];
+                }
+            if(typeof(IEnumerable).IsAssignableFrom(collectionType))
+            {
+                enumerableInterface = typeof(IEnumerable);
+                return typeof(object);
+            }
+            else
+            {
+                enumerableInterface = null;
+                return null;
+            }
+        }
+
+        public static Type GetCollectionElementType(this Type collectionType)
+            => collectionType.GetCollectionElementType(out _);
+    }
 }

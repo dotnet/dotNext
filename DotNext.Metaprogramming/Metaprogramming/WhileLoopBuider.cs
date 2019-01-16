@@ -27,7 +27,7 @@ namespace DotNext.Metaprogramming
             }
             else
             {
-                var condition = Expression.Condition(test, Expression.Default(typeof(void)), Expression.Goto(breakLabel), typeof(void));
+                var condition = Expression.Condition(test, Expression.Empty(), Expression.Goto(breakLabel), typeof(void));
                 loopBody = Expression.Block(typeof(void), this.Upcast<ScopeBuilder, WhileLoopBuider>().BuildExpression(), Expression.Label(continueLabel), condition);
                 loopExpr = Expression.Loop(loopBody, breakLabel);
             }

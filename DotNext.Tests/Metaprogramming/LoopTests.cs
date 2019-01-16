@@ -5,6 +5,40 @@ namespace DotNext.Metaprogramming
 {
     public sealed class LoopTests: Assert
     {
+        public delegate long SpanDelegate(ReadOnlySpan<long> values);
+
+        [Fact]
+        public void ForEachSpanTest()
+        {
+            var sum = LambdaBuilder<SpanDelegate>.Build(fun =>
+            {
+                ExpressionView result = fun.DeclareVariable("result", 0L);
+                fun.ForEach(fun.Parameters[0], loop =>
+                {
+                    loop.Assign(result, result + loop.Element);
+                });
+                fun.Return(result);
+            })
+            .Compile();
+            Equal(10L, sum(new[] { 1L, 5L, 4L }));
+        }
+
+        [Fact]
+        public void ForEachTest()
+        {
+            var sum = LambdaBuilder<Func<long[], long>>.Build(fun =>
+            {
+                ExpressionView result = fun.DeclareVariable("result", 0L);
+                fun.ForEach(fun.Parameters[0], loop =>
+                {
+                    loop.Assign(result, result + loop.Element);
+                });
+                fun.Return(result);
+            })
+            .Compile();
+            Equal(10L, sum(new[] { 1L, 5L, 4L }));
+        }
+
         [Fact]
         public void SumTest()
         {
