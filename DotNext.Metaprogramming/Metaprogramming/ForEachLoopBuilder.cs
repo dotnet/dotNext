@@ -17,10 +17,10 @@ namespace DotNext.Metaprogramming
         internal ForEachLoopBuilder(Expression collection, ScopeBuilder parent)
             : base(parent)
         {
-            var elementType = collection.Type.GetCollectionElementType(out var enumerable);
+            collection.Type.GetCollectionElementType(out var enumerable);
             var counter = ForEachLoopBuilder.counter.IncrementAndGet();
             const string GetEnumeratorMethod = nameof(IEnumerable.GetEnumerator);
-            if (elementType is null || enumerable is null)
+            if (enumerable is null)
             {
                 var getEnumerator = collection.Type.GetMethod(GetEnumeratorMethod, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
                 if (getEnumerator is null)
@@ -37,7 +37,7 @@ namespace DotNext.Metaprogramming
                 enumerator = parentScope.DeclareVariable(getEnumerator.ReturnType, "enumerator_" + counter);
                 //enumerator = enumerable.GetEnumerator();
                 parentScope.Assign(enumerator, Expression.Call(collection, getEnumerator));
-                Element = Expression.Property(enumerator, enumerator.Type.GetProperty(nameof(IEnumerator.Current), elementType));
+                Element = Expression.Property(enumerator, enumerator.Type.GetProperty(nameof(IEnumerator.Current)));
                 moveNextCall = Expression.Call(enumerator, typeof(IEnumerator).GetMethod(nameof(IEnumerator.MoveNext)));
             }
         }

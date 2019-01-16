@@ -1,18 +1,40 @@
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace DotNext.Metaprogramming
 {
     public sealed class LoopTests: Assert
     {
-        public delegate long SpanDelegate(ReadOnlySpan<long> values);
+        public struct CustomEnumerator
+        {
+            private int counter;
+
+            public bool MoveNext()
+            {
+                if(counter < 4)
+                {
+                    counter += 1;
+                    return true;
+                }
+                else
+                    return false;
+            }
+
+            public int Current => counter;
+        }
+
+        public sealed class CustomEnumerable
+        {
+            public CustomEnumerator GetEnumerator() => new CustomEnumerator();
+        }
 
         [Fact]
-        public void ForEachSpanTest()
+        public void CustomForEachTest()
         {
-            var sum = LambdaBuilder<SpanDelegate>.Build(fun =>
+            var sum = LambdaBuilder<Func<CustomEnumerable, int>>.Build(fun =>
             {
-                ExpressionView result = fun.DeclareVariable("result", 0L);
+                ExpressionView result = fun.DeclareVariable("result", 0);
                 fun.ForEach(fun.Parameters[0], loop =>
                 {
                     loop.Assign(result, result + loop.Element);
@@ -20,11 +42,11 @@ namespace DotNext.Metaprogramming
                 fun.Return(result);
             })
             .Compile();
-            Equal(10L, sum(new[] { 1L, 5L, 4L }));
+            Equal(10, sum(new CustomEnumerable()));
         }
 
         [Fact]
-        public void ForEachTest()
+        public void ArrayForEachTest()
         {
             var sum = LambdaBuilder<Func<long[], long>>.Build(fun =>
             {
@@ -46,7 +68,7 @@ namespace DotNext.Metaprogramming
             {
                 ExpressionView arg = fun.Parameters[0];
                 ExpressionView result = fun.DeclareVariable("result", 0L);
-                fun.DoWhile(arg > 0, loop =>
+                fun.DoWhile(arg > 0L, loop =>
                 {
                     loop.Assign(result, result + arg);
                     loop.Assign(arg, arg - 1L);
