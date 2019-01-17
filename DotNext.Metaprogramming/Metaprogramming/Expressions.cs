@@ -176,5 +176,8 @@ namespace DotNext.Metaprogramming
         public static ConstantExpression AsConst<T>(this T value) => Expression.Constant(value, typeof(T));
 
         public static DefaultExpression Default(this Type type) => Expression.Default(type);
+
+        public static Expression With(this Expression expression, ExpressionBuilder parent, Action<WithBlockBuilder> scope)
+            => ExpressionBuilder.Build<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, parent), scope);
     }
 }

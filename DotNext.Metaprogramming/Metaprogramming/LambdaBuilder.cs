@@ -54,7 +54,7 @@ namespace DotNext.Metaprogramming
             get
             {
                 if (lambdaResult is null)
-                    lambdaResult = DeclareVariable(ReturnType, "lambdaResult");
+                    lambdaResult = DeclareVariable(ReturnType, NextName("lambdaResult_"));
                 return lambdaResult;
             }
         }

@@ -45,36 +45,36 @@ namespace DotNext.Collections.Generic
 			=> !first.Equals(second);
 	}
 
-	public readonly struct ReadOnlyDictionaryView<K, V, T> : IReadOnlyDictionary<K, T>, IEquatable<ReadOnlyDictionaryView<K, V, T>>
+	public readonly struct ReadOnlyDictionaryView<K, I, O> : IReadOnlyDictionary<K, O>, IEquatable<ReadOnlyDictionaryView<K, I, O>>
 	{
-		private readonly IReadOnlyDictionary<K, V> source;
-		private readonly Converter<V, T> mapper;
+		private readonly IReadOnlyDictionary<K, I> source;
+		private readonly Converter<I, O> mapper;
 
-		public ReadOnlyDictionaryView(IReadOnlyDictionary<K, V> dictionary, Converter<V, T> mapper)
+		public ReadOnlyDictionaryView(IReadOnlyDictionary<K, I> dictionary, Converter<I, O> mapper)
 		{
-			source = dictionary is null ? throw new ArgumentNullException(nameof(dictionary)) : dictionary;
-			this.mapper = mapper is null ? throw new ArgumentNullException(nameof(mapper)) : mapper;
+			source = dictionary ?? throw new ArgumentNullException(nameof(dictionary));
+			this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 		}
 
-		public T this[K key] => mapper(source[key]);
+		public O this[K key] => mapper(source[key]);
 
 		public IEnumerable<K> Keys => source.Keys;
 
-		public IEnumerable<T> Values => source.Values.Select(mapper.ConvertDelegate<Func<V, T>>());
+		public IEnumerable<O> Values => source.Values.Select(mapper.ConvertDelegate<Func<I, O>>());
 
 		public int Count => source.Count;
 
 		public bool ContainsKey(K key) => source.ContainsKey(key);
 
-		public IEnumerator<KeyValuePair<K, T>> GetEnumerator()
+		public IEnumerator<KeyValuePair<K, O>> GetEnumerator()
 		{
 			var mapper = this.mapper;
 			return source
-				.Select(entry => new KeyValuePair<K, T>(entry.Key, mapper(entry.Value)))
+				.Select(entry => new KeyValuePair<K, O>(entry.Key, mapper(entry.Value)))
 				.GetEnumerator();
 		}
 
-		public bool TryGetValue(K key, out T value)
+		public bool TryGetValue(K key, out O value)
 		{
 			if (source.TryGetValue(key, out var sourceVal))
 			{
@@ -91,13 +91,13 @@ namespace DotNext.Collections.Generic
 		IEnumerator IEnumerable.GetEnumerator()
 			=> GetEnumerator();
 
-		public bool Equals(ReadOnlyDictionaryView<K, V, T> other)
+		public bool Equals(ReadOnlyDictionaryView<K, I, O> other)
 			=> ReferenceEquals(source, other.source) && Equals(mapper, other.mapper);
 
 		public override int GetHashCode()
 			=> source is null || mapper is null ? 0 : RuntimeHelpers.GetHashCode(source) ^ mapper.GetHashCode();
 
 		public override bool Equals(object other)
-			=> other is ReadOnlyDictionaryView<K, V, T> view ? Equals(view) : Equals(source, other);
+			=> other is ReadOnlyDictionaryView<K, I, O> view ? Equals(view) : Equals(source, other);
 	}
 }

@@ -5,12 +5,10 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using Reflection;
-    using Threading;
+    using static Reflection.Types;
 
     public sealed class ForEachLoopBuilder: LoopBuilderBase, IExpressionBuilder<Expression>
     {
-        private static long counter = 0L;
         private readonly ParameterExpression enumerator;
         private readonly MethodCallExpression moveNextCall;
         private readonly Expression element;
@@ -19,7 +17,6 @@ namespace DotNext.Metaprogramming
             : base(parent)
         {
             collection.Type.GetCollectionElementType(out var enumerable);
-            var counter = ForEachLoopBuilder.counter.IncrementAndGet();
             const string GetEnumeratorMethod = nameof(IEnumerable.GetEnumerator);
             MethodCallExpression getEnumerator;
             if (enumerable is null)
@@ -27,13 +24,13 @@ namespace DotNext.Metaprogramming
                 getEnumerator = collection.Call(GetEnumeratorMethod);
                 if (getEnumerator is null)
                     throw new ArgumentException("Collection expression doesn't implement IEnumerable interface or GetEnumerator method");
-                enumerator = Parent.DeclareVariable(getEnumerator.Method.ReturnType, "enumerator_" + counter);
+                enumerator = Parent.DeclareVariable(getEnumerator.Method.ReturnType, NextName("enumerator_"));
                 moveNextCall = enumerator.Call(nameof(IEnumerator.MoveNext));
             }
             else
             {
                 getEnumerator = collection.Call(enumerable, GetEnumeratorMethod);
-                enumerator = Parent.DeclareVariable(getEnumerator.Method.ReturnType, "enumerator_" + counter);
+                enumerator = Parent.DeclareVariable(getEnumerator.Method.ReturnType, NextName("enumerator_"));
                 //enumerator.MoveNext()
                 moveNextCall = enumerator.Call(typeof(IEnumerator), nameof(IEnumerator.MoveNext));
             }

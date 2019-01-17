@@ -6,6 +6,8 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    using static Threading.AtomicLong;
+
     /// <summary>
     /// Represents lexical scope and methods for adding expressions
     /// and statements to it.
@@ -14,6 +16,7 @@ namespace DotNext.Metaprogramming
     {
         private protected readonly IDictionary<string, ParameterExpression> variables;
         private readonly ICollection<Expression> statements;
+        private long nameGenerator;
 
         internal ExpressionBuilder(ExpressionBuilder parent = null)
         {
@@ -21,6 +24,8 @@ namespace DotNext.Metaprogramming
             variables = new Dictionary<string, ParameterExpression>();
             statements = new LinkedList<Expression>();
         }
+
+        internal string NextName(string prefix) => Parent is null ? prefix + nameGenerator.IncrementAndGet() : Parent.NextName(prefix);
 
         /// <summary>
         /// Sets body of this scope as single expression.
@@ -125,8 +130,8 @@ namespace DotNext.Metaprogramming
         private protected void DeclareVariable(ParameterExpression variable)
             => variables.Add(variable.Name, variable);
 
-        public ParameterExpression DeclareVariable<T>(string name, bool byRef = false)
-            => DeclareVariable(byRef ? typeof(T).MakeByRefType() : typeof(T), name);
+        public ParameterExpression DeclareVariable<T>(string name)
+            => DeclareVariable(typeof(T), name);
 
         public ParameterExpression DeclareVariable<T>(string name, T initialValue)
         {
@@ -197,6 +202,9 @@ namespace DotNext.Metaprogramming
 
         public Expression Scope(Action<ExpressionBuilder> scope)
             => new ExpressionBuilder(this).Build(scope);
+        
+        public Expression With(Expression expression, Action<WithBlockBuilder> scope)
+            => AddStatement(expression.With(this, scope));
 
         internal virtual Expression Build()
         {

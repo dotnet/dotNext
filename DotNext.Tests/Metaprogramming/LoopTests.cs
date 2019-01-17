@@ -65,7 +65,7 @@ namespace DotNext.Metaprogramming
                 fun.DoWhile(arg > 0L, loop =>
                 {
                     loop.Assign(fun.Result, fun.Result + arg);
-                    loop.Assign(arg, arg - 1L.AsConst());
+                    loop.Assign(arg, arg - 1L);
                 });
             })
             .Compile();

@@ -41,40 +41,40 @@ namespace DotNext
         private static readonly Operator<T, int> GetHashCodeMethod = Type<T>.Method.Require<Operator<T, int>>(nameof(int.GetHashCode), MethodLookup.Instance);
 		#endregion
 
-		private readonly T number;
+		private readonly T value;
 
         public Number(T value)
-            => number = value;
+            => this.value = value;
 
-        public bool Equals(T other) => Equality(in number, in other);
+        public bool Equals(T other) => Equality(in value, in other);
         
-        public override string ToString() => ToStringMethod(in number);
+        public override string ToString() => ToStringMethod(in value);
 
-        public override int GetHashCode() => GetHashCodeMethod(in number);
+        public override int GetHashCode() => GetHashCodeMethod(in value);
 
         public static implicit operator T(Number<T> value)
-            => value.number;
+            => value.value;
 
         public static Number<T> operator +(Number<T> other)
             => new Number<T>(UnaryPlus(other));
 
         public static Number<T> operator+(Number<T> left, T right)
-            => new Number<T>(BinaryPlus(in left.number, in right));
+            => new Number<T>(BinaryPlus(in left.value, in right));
         
         public static Number<T> operator-(Number<T> left, T right)
-            => new Number<T>(BinaryMinus(in left.number, in right));
+            => new Number<T>(BinaryMinus(in left.value, in right));
         
         public static Number<T> operator *(Number<T> left, T right)
-            => new Number<T>(Multiply(in left.number, in right));
+            => new Number<T>(Multiply(in left.value, in right));
         
         public static Number<T> operator /(Number<T> left, T right)
-            => new Number<T>(Divide(in left.number, in right));
+            => new Number<T>(Divide(in left.value, in right));
 
 		public static bool operator ==(Number<T> left, T right)
-			=> Equality(in left.number, right);
+			=> Equality(in left.value, right);
 
 		public static bool operator !=(Number<T> left, T right)
-			=> Inequality(in left.number, right);
+			=> Inequality(in left.value, right);
 
 		public override bool Equals(object other)
 		{

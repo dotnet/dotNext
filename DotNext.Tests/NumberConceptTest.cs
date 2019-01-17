@@ -24,6 +24,7 @@ namespace DotNext.Tests
             Equal(84L, value);
             value = value / 10;
             Equal(8L, value);
+            Equal(8, (byte)value);
         }
 
         [Fact]

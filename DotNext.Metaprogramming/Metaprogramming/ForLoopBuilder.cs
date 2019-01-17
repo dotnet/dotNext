@@ -3,19 +3,15 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using Threading;
-
     public sealed class ForLoopBuilder: LoopBuilderBase, IExpressionBuilder<LoopExpression>
     {
-        private static long counter;
-
         private readonly Expression condition;
         private bool continueLabelInstalled;
         
         internal ForLoopBuilder(Expression initialization, Func<ExpressionView, Expression> condition, ExpressionBuilder parent)
             : base(parent)
         {
-            LoopVar = parent.DeclareVariable(initialization.Type, "for_loop_var" + counter.IncrementAndGet());
+            LoopVar = parent.DeclareVariable(initialization.Type, NextName("loop_var"));
             parent.Assign(LoopVar, initialization);
             this.condition = condition(LoopVar);
         }

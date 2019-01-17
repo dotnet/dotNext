@@ -41,5 +41,9 @@ namespace DotNext.Collections.Generic
 				output[i] = mapper(i, input[i]);
 			return output;
 		}
+
+		public static ReadOnlyListView<T> AsReadOnly<T>(this IList<T> list) => new ReadOnlyListView<T>(list);
+
+		public static ReadOnlyListView<I, O> Convert<I, O>(this IReadOnlyList<I> list, Converter<I, O> converter) => new ReadOnlyListView<I, O>(list, converter);
 	}
 }
