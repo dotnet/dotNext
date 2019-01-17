@@ -13,6 +13,7 @@ namespace DotNext.Metaprogramming
         private static long counter = 0L;
         private readonly ParameterExpression enumerator;
         private readonly MethodCallExpression moveNextCall;
+        private readonly Expression element;
 
         internal ForEachLoopBuilder(Expression collection, ExpressionBuilder parent)
             : base(parent)
@@ -39,13 +40,13 @@ namespace DotNext.Metaprogramming
             //enumerator = enumerable.GetEnumerator();
             Parent.Assign(enumerator, getEnumerator);
             //enumerator.Current
-            Element = enumerator.Property(nameof(IEnumerator.Current));
+            element = enumerator.Property(nameof(IEnumerator.Current));
         }
 
         /// <summary>
         /// Gets collection element.
         /// </summary>
-        public Expression Element { get; }
+        public ExpressionView Element => element;
 
         internal override Expression Build()
         {

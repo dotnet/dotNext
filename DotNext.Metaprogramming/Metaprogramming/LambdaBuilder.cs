@@ -69,9 +69,7 @@ namespace DotNext.Metaprogramming
 
         internal Expression Return(bool addAsStatement) => Return(ReturnType.Default(), addAsStatement);
 
-        public Expression Return(Expression result) => Return(result, true);
-
-        public Expression Return(object result) => Return(Expression.Constant(result, ReturnType));
+        public Expression Return(ExpressionView result) => Return(result, true);
 
         public Expression Return() => Return(true);
 

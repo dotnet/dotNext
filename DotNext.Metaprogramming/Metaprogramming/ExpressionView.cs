@@ -18,7 +18,7 @@ namespace DotNext.Metaprogramming
 
         public ExpressionView(Expression expr) => expression = expr ?? throw new ArgumentNullException(nameof(expr));
 
-        public static implicit operator Expression(ExpressionView view) => view.expression;
+        public static implicit operator Expression(ExpressionView view) => view.expression ?? Expression.Empty();
 
         public static implicit operator ParameterExpression(ExpressionView view) 
             => view.expression is ParameterExpression parameter ? parameter : throw new InvalidCastException("Parameter expression expected");
