@@ -6,8 +6,10 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using Collections.Generic;
-
+    /// <summary>
+    /// Represents lexical scope and methods for adding expressions
+    /// and statements to it.
+    /// </summary>
     public class ExpressionBuilder
     {
         private protected readonly IDictionary<string, ParameterExpression> variables;
@@ -21,7 +23,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Sets body of lambda expression as single expression.
+        /// Sets body of this scope as single expression.
         /// </summary>
         public virtual Expression Body
         {
@@ -166,6 +168,9 @@ namespace DotNext.Metaprogramming
         public Expression ForEach(Expression collection, Action<ForEachLoopBuilder> loop)
             => AddStatement<Expression, ForEachLoopBuilder>(new ForEachLoopBuilder(collection, this), loop);
 
+        public LoopExpression For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ForLoopBuilder> loop)
+            => AddStatement<LoopExpression, ForLoopBuilder>(new ForLoopBuilder(initializer, condition, this), loop);
+
         public LoopExpression Loop(Action<LoopBuilder> loop)
             => AddStatement<LoopExpression, LoopBuilder>(new LoopBuilder(this), loop);
 
@@ -185,10 +190,6 @@ namespace DotNext.Metaprogramming
         public Expression Return(LambdaBuilder lambda, Expression result) => AddStatement(lambda.Return(result, false));
 
         public Expression Return(LambdaBuilder lambda, object result) => Return(lambda, Expression.Constant(result, lambda.ReturnType));
-
-        public BinaryExpression Result(LambdaBuilder lambda, Expression result) => AddStatement(lambda.Result(result, false));
-
-        public BinaryExpression Result(LambdaBuilder lambda, object result) => Result(lambda, Expression.Constant(result, lambda.ReturnType));
 
         public LambdaExpression Lambda<D>(Action<LambdaBuilder> lambda)
             where D: Delegate
@@ -214,5 +215,48 @@ namespace DotNext.Metaprogramming
                     return Expression.Block(variables.Values, statements);
             }
         }
+    }
+
+    public abstract class ExpressionBuilder<E> : IExpressionBuilder<E>
+        where E : Expression
+    {
+        private readonly ExpressionBuilder parent;
+        private readonly bool treatAsStatement;
+        private Type expressionType;
+
+        private protected ExpressionBuilder(ExpressionBuilder parent, bool treatAsStatement)
+        {
+            this.parent = parent;
+            this.treatAsStatement = treatAsStatement;
+        }
+
+        private protected ExpressionBuilder NewScope() => new ExpressionBuilder(parent);
+
+        private protected B NewScope<B>(Func<ExpressionBuilder, B> factory) => factory(parent);
+
+        private protected Type ExpressionType
+        {
+            get => expressionType ?? typeof(void);
+        }
+
+        public ExpressionBuilder<E> OfType(Type expressionType)
+        {
+            this.expressionType = expressionType;
+            return this;
+        }
+
+        public ExpressionBuilder<E> OfType<T>() => OfType(typeof(T));
+
+        public E End()
+        {
+            var expr = Build();
+            if (treatAsStatement)
+                parent.AddStatement(expr);
+            return expr;
+        }
+
+        private protected abstract E Build();
+
+        E IExpressionBuilder<E>.Build() => Build();
     }
 }

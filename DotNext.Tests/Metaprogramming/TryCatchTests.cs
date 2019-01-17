@@ -12,9 +12,9 @@ namespace DotNext.Metaprogramming
             var lambda = LambdaBuilder<Func<long, long, bool>>.Build(fun =>
             {
                 ExpressionView param1 = fun.Parameters[0], param2 = fun.Parameters[1];
-                fun.Result(true);
+                fun.Assign(fun.Result, true.AsConst());
                 fun.Try(param1 / param2)
-                    .Fault(fault => fault.Result(fun, false))
+                    .Fault(fault => fault.Assign(fun.Result, false.AsConst()))
                     .End();
             })
             .Compile();
@@ -28,9 +28,9 @@ namespace DotNext.Metaprogramming
             var lambda = LambdaBuilder<Func<long, long, bool>>.Build(fun =>
             {
                 ExpressionView param1 = fun.Parameters[0], param2 = fun.Parameters[1];
-                fun.Result(true);
+                fun.Assign(fun.Result, true.AsConst());
                 fun.Try(param1 / param2)
-                    .Catch<DivideByZeroException>(@catch => @catch.Result(fun, false))
+                    .Catch<DivideByZeroException>(@catch => @catch.Assign(fun.Result, false.AsConst()))
                     .End();
             })
             .Compile();

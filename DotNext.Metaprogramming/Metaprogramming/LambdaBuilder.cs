@@ -46,22 +46,24 @@ namespace DotNext.Metaprogramming
             return Build(base.Build(), TailCall);
         }
 
-        internal BinaryExpression Result(Expression result, bool addAsStatement)
+        /// <summary>
+        /// Gets lambda function result holder;
+        /// </summary>
+        public ParameterExpression Result
         {
-            if (lambdaResult is null)
-                lambdaResult = DeclareVariable(ReturnType, "lambdaResult");
-            return addAsStatement ? Assign(lambdaResult, result) : Expression.Assign(lambdaResult, result);
+            get
+            {
+                if (lambdaResult is null)
+                    lambdaResult = DeclareVariable(ReturnType, "lambdaResult");
+                return lambdaResult;
+            }
         }
-
-        public BinaryExpression Result(Expression result) => Result(result, true);
-      
-        public BinaryExpression Result(object result) => Result(Expression.Constant(result, ReturnType));
 
         internal Expression Return(Expression result, bool addAsStatement)
         {
             if (returnLabel is null)
                 returnLabel = Expression.Label("leave");
-            result = ReturnType == typeof(void) ? returnLabel.Return().Upcast<Expression, GotoExpression>() : Expression.Block(Result(result, false), returnLabel.Return());
+            result = ReturnType == typeof(void) ? returnLabel.Return().Upcast<Expression, GotoExpression>() : Expression.Block(Expression.Assign(Result, result), returnLabel.Return());
             return addAsStatement ? AddStatement(result) : result;
         }
 

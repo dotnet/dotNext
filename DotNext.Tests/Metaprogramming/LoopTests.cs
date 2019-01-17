@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace DotNext.Metaprogramming
@@ -67,16 +66,31 @@ namespace DotNext.Metaprogramming
             var sum = LambdaBuilder<Func<long, long>>.Build(fun =>
             {
                 ExpressionView arg = fun.Parameters[0];
-                ExpressionView result = fun.DeclareVariable("result", 0L);
                 fun.DoWhile(arg > 0L, loop =>
                 {
-                    loop.Assign(result, result + arg);
+                    loop.Assign(fun.Result, fun.Result + arg);
                     loop.Assign(arg, arg - 1L.AsConst());
                 });
-                fun.Return(result);
             })
             .Compile();
             Equal(6, sum(3));
+        }
+
+        [Fact]
+        public void Sum2Test()
+        {
+            var sum = LambdaBuilder<Func<long, long>>.Build(fun =>
+            {
+                ExpressionView arg = fun.Parameters[0];
+                fun.For(0L.AsConst(), i => i < arg, loop =>
+                {
+                    loop.Assign(fun.Result, fun.Result + (ExpressionView)loop.LoopVar);
+                    loop.StartIteratorBlock();
+                    loop.Assign(loop.LoopVar, loop.LoopVar + (ExpressionView)1L);
+                });
+            })
+            .Compile();
+            Equal(6, sum(4));
         }
 
         [Fact]
@@ -85,13 +99,12 @@ namespace DotNext.Metaprogramming
             var factorial = LambdaBuilder<Func<long, long>>.Build(fun => 
             {
                 ExpressionView arg = fun.Parameters[0];
-                ExpressionView result = fun.DeclareVariable("result", 1L);
+                fun.Assign(fun.Result, 1L.AsConst());
                 fun.While(arg > 1L, loop =>
                 {
-                    loop.Assign(result, result * arg);
+                    loop.Assign(fun.Result, fun.Result * arg);
                     loop.Assign(arg, arg - 1L);
                 });
-                fun.Return(result);
             })
             .Compile();
             Equal(6, factorial(3));
@@ -103,19 +116,18 @@ namespace DotNext.Metaprogramming
             var factorial = LambdaBuilder<Func<long, long>>.Build(fun =>
             {
                 ExpressionView arg = fun.Parameters[0];
-                ExpressionView result = fun.DeclareVariable("result", 1L);
+                fun.Assign(fun.Result, 1L.AsConst());
                 fun.Loop(loop =>
                 {
                     loop.If(arg > 1L)
                         .Then(then =>
                         {
-                            then.Assign(result, result * arg);
+                            then.Assign(fun.Result, fun.Result * arg);
                             then.Assign(arg, arg - 1L);
                         })
                         .Else(@else => @else.Break(loop))
                         .End();
                 });
-                fun.Return(result);
             })
             .Compile();
             Equal(6, factorial(3));

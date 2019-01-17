@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    public sealed class TryBuilder: ExpressionOrStatementBuilder<TryExpression>
+    public sealed class TryBuilder: ExpressionBuilder<TryExpression>
     {
         private readonly Expression tryBlock;
         private Expression faultBlock;
