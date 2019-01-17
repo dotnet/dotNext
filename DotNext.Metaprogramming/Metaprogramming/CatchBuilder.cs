@@ -6,10 +6,11 @@ namespace DotNext.Metaprogramming
     public sealed class CatchBuilder: ExpressionBuilder
     {
         private Expression filter;
+
         internal CatchBuilder(Type exceptionType, ExpressionBuilder parent)
             : base(parent)
         {
-            Exception = Expression.Variable(exceptionType);
+            Exception = Expression.Variable(exceptionType, "e");
         }
 
         /// <summary>
@@ -20,10 +21,10 @@ namespace DotNext.Metaprogramming
         public void Filter(Action<ExpressionBuilder> filter)
             => this.filter = new ExpressionBuilder(Parent).Build(filter);
 
-        internal CatchBlock Build(Type expressionType, Action<CatchBuilder> body)
+        internal CatchBlock Build(Action<CatchBuilder> body)
         {
             body(this);
-            return Expression.MakeCatchBlock(expressionType, Exception, base.Build(), filter ?? true.AsConst());
+            return Expression.MakeCatchBlock(Exception.Type, Exception, Build(), filter);
         }
     }
 }

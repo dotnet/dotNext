@@ -7,6 +7,7 @@ namespace DotNext.Metaprogramming
 {
     public abstract class LambdaBuilder: ExpressionBuilder
     {
+        private ParameterExpression lambdaResult;
         private LabelTarget returnLabel;
 
         private protected LambdaBuilder(ExpressionBuilder parent = null)
@@ -38,25 +39,39 @@ namespace DotNext.Metaprogramming
         internal sealed override Expression Build()
         {
             if (!(returnLabel is null))
-                AddStatement(returnLabel.LandingSite(Expression.Default(ReturnType)));
+                AddStatement(returnLabel.LandingSite());
+            //last instruction should be always a result of a function
+            if (!(lambdaResult is null))
+                AddStatement(lambdaResult);
             return Build(base.Build(), TailCall);
         }
 
-        internal GotoExpression Return(Expression result, bool addAsStatement)
+        internal BinaryExpression Result(Expression result, bool addAsStatement)
         {
-            if(returnLabel is null)
-                returnLabel = Expression.Label(ReturnType, "leave");
-            var expr = returnLabel.Return(result);
-            return addAsStatement ? AddStatement(expr) : expr;
+            if (lambdaResult is null)
+                lambdaResult = DeclareVariable(ReturnType, "lambdaResult");
+            return addAsStatement ? Assign(lambdaResult, result) : Expression.Assign(lambdaResult, result);
         }
 
-        internal GotoExpression Return(bool addAsStatement) => Return(ReturnType.Default(), addAsStatement);
+        public BinaryExpression Result(Expression result) => Result(result, true);
+      
+        public BinaryExpression Result(object result) => Result(Expression.Constant(result, ReturnType));
 
-        public GotoExpression Return(Expression result) => Return(result, true);
+        internal Expression Return(Expression result, bool addAsStatement)
+        {
+            if (returnLabel is null)
+                returnLabel = Expression.Label("leave");
+            result = ReturnType == typeof(void) ? returnLabel.Return().Upcast<Expression, GotoExpression>() : Expression.Block(Result(result, false), returnLabel.Return());
+            return addAsStatement ? AddStatement(result) : result;
+        }
 
-        public GotoExpression Return(object result) => Return(Expression.Constant(result, ReturnType));
+        internal Expression Return(bool addAsStatement) => Return(ReturnType.Default(), addAsStatement);
 
-        public GotoExpression Return() => Return(true);
+        public Expression Return(Expression result) => Return(result, true);
+
+        public Expression Return(object result) => Return(Expression.Constant(result, ReturnType));
+
+        public Expression Return() => Return(true);
 
         public bool TailCall { private get; set; }
     }

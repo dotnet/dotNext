@@ -64,6 +64,8 @@ namespace DotNext.Metaprogramming
             where B: IExpressionBuilder<E>
             => AddStatement(Build<E, B>(builder, body));
 
+        public ConstantExpression Constant<T>(T value) => AddStatement(Expression.Constant(value, typeof(T)));
+
         public BinaryExpression Assign(ParameterExpression variable, Expression value)
             => AddStatement(Expression.Assign(variable, value));
 
@@ -178,17 +180,24 @@ namespace DotNext.Metaprogramming
         public GotoExpression Break(LoopBuilderBase loop)
             => AddStatement(loop.Break(false));
         
-        public GotoExpression Return(LambdaBuilder lambda) => AddStatement(lambda.Return(false));
+        public Expression Return(LambdaBuilder lambda) => AddStatement(lambda.Return(false));
 
-        public GotoExpression Return(LambdaBuilder lambda, Expression result) => AddStatement(lambda.Return(result, false));
+        public Expression Return(LambdaBuilder lambda, Expression result) => AddStatement(lambda.Return(result, false));
 
-        public GotoExpression Return(LambdaBuilder lambda, object result) => Return(lambda, Expression.Constant(result, lambda.ReturnType));
-        
+        public Expression Return(LambdaBuilder lambda, object result) => Return(lambda, Expression.Constant(result, lambda.ReturnType));
+
+        public BinaryExpression Result(LambdaBuilder lambda, Expression result) => AddStatement(lambda.Result(result, false));
+
+        public BinaryExpression Result(LambdaBuilder lambda, object result) => Result(lambda, Expression.Constant(result, lambda.ReturnType));
+
         public LambdaExpression Lambda<D>(Action<LambdaBuilder> lambda)
             where D: Delegate
             => AddStatement<LambdaExpression, LambdaBuilder<D>>(new LambdaBuilder<D>(this), lambda);
 
         public TryBuilder Try(Expression body) => new TryBuilder(body, this, true);
+
+        public Expression Scope(Action<ExpressionBuilder> scope)
+            => new ExpressionBuilder(this).Build(scope);
 
         internal virtual Expression Build()
         {

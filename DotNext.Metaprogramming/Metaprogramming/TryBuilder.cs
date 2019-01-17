@@ -21,7 +21,7 @@ namespace DotNext.Metaprogramming
 
         public TryBuilder Catch(Type exceptionType, Action<CatchBuilder> @catch)
         {
-            var catchBlock = NewScope(parent => new CatchBuilder(exceptionType, parent)).Build(ExpressionType, @catch);
+            var catchBlock = NewScope(parent => new CatchBuilder(exceptionType, parent)).Build(@catch);
             handlers.Add(catchBlock);
             return this;
         }
