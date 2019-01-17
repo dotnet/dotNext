@@ -9,7 +9,7 @@ namespace DotNext.Runtime.CompilerServices
     /// </summary>
     /// <remarks>
     /// This type allows to implement custom async/await flow
-    /// and indended for expert-level developers.
+    /// and intended for expert-level developers.
     /// </remarks>
     public struct AsyncStateMachine<STATE>: IAsyncStateMachine
     {
