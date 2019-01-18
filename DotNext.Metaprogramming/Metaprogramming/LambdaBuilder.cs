@@ -1,19 +1,58 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    using VariantType;
+
     public abstract class LambdaBuilder: ExpressionBuilder
     {
+        private sealed class RecursionExpression: Expression
+        {
+            internal RecursionExpression(Type lambdaType)
+            {
+                Type = lambdaType;
+            }
+
+            /// <summary>
+            /// Recursive reference to the underlying lambda expression.
+            /// </summary>
+            internal LambdaExpression Reference
+            {
+                set;
+                private get;
+            }
+
+            public override Type Type { get; }
+
+            public override bool CanReduce => true;
+
+            public override ExpressionType NodeType => ExpressionType.Extension;
+
+            public override Expression Reduce() => Reference;
+        }
         private ParameterExpression lambdaResult;
         private LabelTarget returnLabel;
+        private Variant<Type, RecursionExpression> recursion;
 
-        private protected LambdaBuilder(ExpressionBuilder parent = null)
+        private protected LambdaBuilder(Type delegateType, ExpressionBuilder parent = null)
             : base(parent)
         {
+            recursion = delegateType;
         }
+
+        public InvocationExpression Recursion(IEnumerable<Expression> args)
+        {
+            if(recursion.First.IsPresent)
+                recursion = new RecursionExpression((Type)recursion);
+            return Expression.Invoke((RecursionExpression)recursion, args);
+        }
+
+        public InvocationExpression Recursion(params UniversalExpression[] arguments)
+            => Recursion(arguments.AsExpressions());
 
         public sealed override Expression Body
         {
@@ -43,7 +82,10 @@ namespace DotNext.Metaprogramming
             //last instruction should be always a result of a function
             if (!(lambdaResult is null))
                 AddStatement(lambdaResult);
-            return Build(base.Build(), TailCall);
+            var lambda = Build(base.Build(), TailCall);
+            if(this.recursion.Second.TryGet(out var recursion))
+                recursion.Reference = lambda;
+            return lambda;
         }
 
         /// <summary>
@@ -74,13 +116,24 @@ namespace DotNext.Metaprogramming
         public Expression Return() => Return(true);
 
         public bool TailCall { private get; set; }
+
+        protected override void Dispose(bool disposing)
+        {
+            if(disposing)
+            {
+                lambdaResult = null;
+                returnLabel = null;
+                recursion = default;
+            }
+            base.Dispose(disposing);
+        }
     }
 
     public sealed class LambdaBuilder<D>: LambdaBuilder, IExpressionBuilder<Expression<D>>
         where D: Delegate
     {
         internal LambdaBuilder(ExpressionBuilder parent = null)
-            : base(parent)
+            : base(typeof(D), parent)
         {
             if(typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>("Delegate type should not be abstract", nameof(D));

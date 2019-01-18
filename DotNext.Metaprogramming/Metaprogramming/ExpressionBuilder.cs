@@ -12,9 +12,9 @@ namespace DotNext.Metaprogramming
     /// Represents lexical scope and methods for adding expressions
     /// and statements to it.
     /// </summary>
-    public class ExpressionBuilder
+    public class ExpressionBuilder: Disposable
     {
-        private protected readonly IDictionary<string, ParameterExpression> variables;
+        private readonly IDictionary<string, ParameterExpression> variables;
         private readonly ICollection<Expression> statements;
         private long nameGenerator;
 
@@ -219,6 +219,15 @@ namespace DotNext.Metaprogramming
                         goto default;
                 default:
                     return Expression.Block(variables.Values, statements);
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if(disposing)
+            {
+                variables.Clear();
+                statements.Clear();
             }
         }
     }
