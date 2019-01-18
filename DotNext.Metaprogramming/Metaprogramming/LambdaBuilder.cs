@@ -6,53 +6,15 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using VariantType;
-
     public abstract class LambdaBuilder: ExpressionBuilder
     {
-        private sealed class RecursionExpression: Expression
-        {
-            internal RecursionExpression(Type lambdaType)
-            {
-                Type = lambdaType;
-            }
-
-            /// <summary>
-            /// Recursive reference to the underlying lambda expression.
-            /// </summary>
-            internal LambdaExpression Reference
-            {
-                set;
-                private get;
-            }
-
-            public override Type Type { get; }
-
-            public override bool CanReduce => true;
-
-            public override ExpressionType NodeType => ExpressionType.Extension;
-
-            public override Expression Reduce() => Reference;
-        }
         private ParameterExpression lambdaResult;
         private LabelTarget returnLabel;
-        private Variant<Type, RecursionExpression> recursion;
 
-        private protected LambdaBuilder(Type delegateType, ExpressionBuilder parent = null)
+        private protected LambdaBuilder(ExpressionBuilder parent = null)
             : base(parent)
         {
-            recursion = delegateType;
         }
-
-        public InvocationExpression Recursion(IEnumerable<Expression> args)
-        {
-            if(recursion.First.IsPresent)
-                recursion = new RecursionExpression((Type)recursion);
-            return Expression.Invoke((RecursionExpression)recursion, args);
-        }
-
-        public InvocationExpression Recursion(params UniversalExpression[] arguments)
-            => Recursion(arguments.AsExpressions());
 
         public sealed override Expression Body
         {
@@ -82,10 +44,7 @@ namespace DotNext.Metaprogramming
             //last instruction should be always a result of a function
             if (!(lambdaResult is null))
                 AddStatement(lambdaResult);
-            var lambda = Build(base.Build(), TailCall);
-            if(this.recursion.Second.TryGet(out var recursion))
-                recursion.Reference = lambda;
-            return lambda;
+            return Build(base.Build(), TailCall);
         }
 
         /// <summary>
@@ -123,7 +82,6 @@ namespace DotNext.Metaprogramming
             {
                 lambdaResult = null;
                 returnLabel = null;
-                recursion = default;
             }
             base.Dispose(disposing);
         }
@@ -132,15 +90,27 @@ namespace DotNext.Metaprogramming
     public sealed class LambdaBuilder<D>: LambdaBuilder, IExpressionBuilder<Expression<D>>
         where D: Delegate
     {
+        private ParameterExpression recursion;
+
         internal LambdaBuilder(ExpressionBuilder parent = null)
-            : base(typeof(D), parent)
+            : base(parent)
         {
             if(typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>("Delegate type should not be abstract", nameof(D));
             var invokeMethod = Delegates.GetInvokeMethod<D>();
             Parameters = new ReadOnlyCollection<ParameterExpression>((from parameter in invokeMethod.GetParameters() select Expression.Parameter(parameter.ParameterType, parameter.Name)).ToList());
             ReturnType = invokeMethod.ReturnType;
-        } 
+        }
+
+        public InvocationExpression Recursion(IEnumerable<Expression> args)
+        {
+            if(recursion is null)
+                recursion = Expression.Variable(typeof(D));
+            return Expression.Invoke(recursion, args);
+        }
+
+        public InvocationExpression Recursion(params UniversalExpression[] arguments)
+            => Recursion(arguments.AsExpressions());
 
         /// <summary>
         /// Gets lambda parameters.
@@ -153,7 +123,15 @@ namespace DotNext.Metaprogramming
         public override Type ReturnType { get; }
 
         private protected override LambdaExpression Build(Expression body, bool tailCall)
-            => Expression.Lambda<D>(body, tailCall, Parameters);
+        {
+            if(!(recursion is null))
+            {
+                body = Expression.Block(Sequence.Single(recursion), 
+                    Expression.Assign(recursion, Expression.Lambda<D>(body, true, Parameters)), 
+                    Expression.Invoke(recursion, Parameters));
+            }
+            return Expression.Lambda<D>(body, tailCall, Parameters);
+        }
 
         Expression<D> IExpressionBuilder<Expression<D>>.Build() => (Expression<D>)base.Build();
 
