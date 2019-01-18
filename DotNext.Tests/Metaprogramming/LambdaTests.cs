@@ -15,7 +15,6 @@ namespace DotNext.Metaprogramming
         {
             var fact = LambdaBuilder<Func<long, long>>.Build(fun => 
             {
-                fun.TailCall = true;
                 UniversalExpression arg = fun.Parameters[0];
                 fun.If(arg > 1L).Then(arg * fun.Self.Invoke(arg - 1L)).Else(arg).OfType<long>().End();
             })

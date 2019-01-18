@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Reflection;
+using MethodInfo = System.Reflection.MethodInfo;
+using static System.Linq.Expressions.Expression;
 
 namespace DotNext.Reflection
 {
@@ -11,53 +12,24 @@ namespace DotNext.Reflection
     /// <typeparam name="O"></typeparam>
     public static class Conversion<I, O>
     {
-        private static readonly bool @implicit;
+        /// <summary>
+        /// Represents implicit or explicit cast operator
+        /// wrapped into delegate.
+        /// </summary>
         public static readonly Converter<I, O> Converter;
 
         static Conversion()
         {
-            const string ImplicitOperator = "op_Implicit";
-            const string ExplicitOperator = "op_Explicit";
-
-            Type inputType = typeof(I), outputType = typeof(O);
-            if (TryCreate(inputType, ImplicitOperator, out var converter) ||
-                TryCreate(outputType, ImplicitOperator, out converter))
+            MethodInfo converter;
+            try
             {
-                Converter = converter;
-                @implicit = true;
+                converter = Convert(Default(typeof(I)), typeof(O)).Method;
             }
-            else if (TryCreate(inputType, ExplicitOperator, out converter) ||
-                TryCreate(outputType, ExplicitOperator, out converter))
+            catch (InvalidOperationException)
             {
-                Converter = converter;
-                @implicit = false;
+                converter = null;
             }
-            else
-                Converter = null;
+            Converter = converter?.CreateDelegate<Converter<I, O>>();
         }
-
-        private static bool TryCreate(Type t, string operatorName, out Converter<I, O> output)
-        {
-            const BindingFlags Flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
-            return TryCreate(t.GetMethod(operatorName, Flags, Type.DefaultBinder, new[] { typeof(I) }, Array.Empty<ParameterModifier>()), out output);
-        }
-
-        private static bool TryCreate(MethodInfo converter, out Converter<I, O> output)
-        {
-            if(!(converter is null) && typeof(O).IsAssignableFromWithoutBoxing(converter.ReturnType))
-            {
-                output = converter.CreateDelegate<Converter<I, O>>();
-                return true;
-            }
-            else
-            {
-                output = null;
-                return false;
-            }
-        }
-
-        public static bool IsImplicit => Converter is null ?
-            throw new InvalidOperationException(string.Format(ExceptionMessages.NoConversionBetweenTypes, typeof(I), typeof(O))) :
-            @implicit;
     }
 }

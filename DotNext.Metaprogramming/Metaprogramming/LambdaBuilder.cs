@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
@@ -82,7 +81,7 @@ namespace DotNext.Metaprogramming
 
         public Expression Return() => Return(true);
 
-        public bool TailCall { private get; set; }
+        private protected bool TailCall { private get; set; }
 
         protected override void Dispose(bool disposing)
         {
@@ -141,11 +140,14 @@ namespace DotNext.Metaprogramming
 
         Expression<D> IExpressionBuilder<Expression<D>>.Build() => (Expression<D>)base.Build();
 
-        public static Expression<D> Build(Action<LambdaBuilder<D>> lambdaBody)
+        public static Expression<D> Build(bool tailCall, Action<LambdaBuilder<D>> lambdaBody)
         {
-            var builder = new LambdaBuilder<D>();
+            var builder = new LambdaBuilder<D>() { TailCall = tailCall };
             lambdaBody(builder);
             return builder.Upcast<IExpressionBuilder<Expression<D>>, LambdaBuilder<D>>().Build();
         }
+
+        public static Expression<D> Build(Action<LambdaBuilder<D>> lambdaBody)
+            => Build(false, lambdaBody);
     }
 }

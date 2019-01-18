@@ -177,7 +177,8 @@ namespace DotNext.Metaprogramming
 
         public static UnaryExpression Throw(this Expression exception) => Expression.Throw(exception);
 
-        public static ConstantExpression AsConst<T>(this T value) => Expression.Constant(value, typeof(T));
+        public static Expression AsConst<T>(this T value)
+            => value is Expression expr ? Expression.Quote(expr).Upcast<Expression, UnaryExpression>() : Expression.Constant(value, typeof(T));
 
         public static DefaultExpression Default(this Type type) => Expression.Default(type);
 
