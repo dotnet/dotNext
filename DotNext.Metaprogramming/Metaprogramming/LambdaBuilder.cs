@@ -16,6 +16,14 @@ namespace DotNext.Metaprogramming
         {
         }
 
+        /// <summary>
+        /// Gets recursive reference to the lambda.
+        /// </summary>
+        /// <remarks>
+        /// This property can be used to make recursive calls.
+        /// </remarks>
+        public abstract Expression Self { get; }
+
         public sealed override Expression Body
         {
             set
@@ -102,15 +110,15 @@ namespace DotNext.Metaprogramming
             ReturnType = invokeMethod.ReturnType;
         }
 
-        public InvocationExpression Recursion(IEnumerable<Expression> args)
+        public override Expression Self
         {
-            if(recursion is null)
-                recursion = Expression.Variable(typeof(D));
-            return Expression.Invoke(recursion, args);
+            get
+            {
+                if (recursion is null)
+                    recursion = Expression.Variable(typeof(D), "self");
+                return recursion;
+            }
         }
-
-        public InvocationExpression Recursion(params UniversalExpression[] arguments)
-            => Recursion(arguments.AsExpressions());
 
         /// <summary>
         /// Gets lambda parameters.
@@ -125,11 +133,9 @@ namespace DotNext.Metaprogramming
         private protected override LambdaExpression Build(Expression body, bool tailCall)
         {
             if(!(recursion is null))
-            {
                 body = Expression.Block(Sequence.Single(recursion), 
-                    Expression.Assign(recursion, Expression.Lambda<D>(body, true, Parameters)), 
+                    Expression.Assign(recursion, Expression.Lambda<D>(body, tailCall, Parameters)), 
                     Expression.Invoke(recursion, Parameters));
-            }
             return Expression.Lambda<D>(body, tailCall, Parameters);
         }
 

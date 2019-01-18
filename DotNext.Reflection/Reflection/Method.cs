@@ -221,7 +221,7 @@ namespace DotNext.Reflection
             Expression thisArg;
             if(thisParam is null)
                 thisArg = null;
-            else if(method.DeclaringType.IsImplicitlyConvertibleFrom(thisParam.Type))
+            else if(method.DeclaringType.IsAssignableFromWithoutBoxing(thisParam.Type))
                 thisArg = thisParam;
             else if(thisParam.Type == typeof(object))
                 thisArg = Expression.Convert(thisParam, method.DeclaringType);
@@ -232,7 +232,7 @@ namespace DotNext.Reflection
                 return null;
             Expression body;
             //adjust return type
-            if (returnType == typeof(void) || returnType.IsImplicitlyConvertibleFrom(method.ReturnType))
+            if (returnType == typeof(void) || returnType.IsAssignableFromWithoutBoxing(method.ReturnType))
                 body = Expression.Call(thisArg, method, arglist);
             else if (returnType == typeof(object))
                 body = Expression.Convert(Expression.Call(thisArg, method, arglist), returnType);

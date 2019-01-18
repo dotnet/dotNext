@@ -179,7 +179,7 @@ namespace DotNext.Reflection
 				return null;
 			Expression body;
 			//adjust return type
-			if (returnType == typeof(void) || returnType.IsImplicitlyConvertibleFrom(ctor.DeclaringType))
+			if (returnType == typeof(void) || returnType.IsAssignableFromWithoutBoxing(ctor.DeclaringType))
 				body = Expression.New(ctor, arglist);
 			else if (returnType == typeof(object))
 				body = Expression.Convert(Expression.New(ctor, arglist), returnType);

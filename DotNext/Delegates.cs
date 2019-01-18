@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Linq;
 
 namespace DotNext
 {
-	/// <summary>
-	/// Represents various extensions of delegates.
-	/// </summary>
-	public static class Delegates
-	{
+    /// <summary>
+    /// Represents various extensions of delegates.
+    /// </summary>
+    public static class Delegates
+    {
         /// <summary>
         /// Invokes event handlers asynchronously.
         /// </summary>
@@ -36,16 +37,16 @@ namespace DotNext
             }
         }
 
-		/// <summary>
-		/// Invokes event handlers asynchronously.
-		/// </summary>
-		/// <param name="handler">A set event handlers combined as single delegate.</param>
-		/// <param name="sender">Event sender.</param>
-		/// <param name="args">Event arguments.</param>
-		/// <param name="parallel"><see langword="true"/> to invoke each handler in parallel; otherwise, invoke all handlers in the separated task synchronously.</param>
-		/// <returns>An object representing state of the asynchronous invocation.</returns>
-		public static Task InvokeAsync(this EventHandler handler, object sender, EventArgs args, bool parallel = true)
-		{
+        /// <summary>
+        /// Invokes event handlers asynchronously.
+        /// </summary>
+        /// <param name="handler">A set event handlers combined as single delegate.</param>
+        /// <param name="sender">Event sender.</param>
+        /// <param name="args">Event arguments.</param>
+        /// <param name="parallel"><see langword="true"/> to invoke each handler in parallel; otherwise, invoke all handlers in the separated task synchronously.</param>
+        /// <returns>An object representing state of the asynchronous invocation.</returns>
+        public static Task InvokeAsync(this EventHandler handler, object sender, EventArgs args, bool parallel = true)
+        {
             Task StartNew(EventHandler singleHandler) => Task.Factory.StartNew(() => singleHandler(sender, args));
 
             if (handler is null)
@@ -259,33 +260,45 @@ namespace DotNext
         }
 
         public static EventHandler<O> Contravariant<I, O>(this EventHandler<I> handler)
-			where I : class
-			where O : class, I
-			=> handler.ConvertDelegate<EventHandler<O>>();
+            where I : class
+            where O : class, I
+            => handler.ChangeType<EventHandler<O>>();
 
-		public static D CreateDelegate<D>(this MethodInfo method, object target = null)
-			where D : Delegate
-			=> (D)method.CreateDelegate(typeof(D), target);
+        public static D CreateDelegate<D>(this MethodInfo method, object target = null)
+            where D : Delegate
+            => (D)method.CreateDelegate(typeof(D), target);
 
-		/// <summary>
-		/// Returns special Invoke method generate for each delegate type.
-		/// </summary>
-		/// <typeparam name="D">Type of delegate.</typeparam>
-		/// <returns>An object representing reflected method Invoke.</returns>
-		public static MethodInfo GetInvokeMethod<D>()
-			where D: Delegate
-			=> Reflection.Types.GetInvokeMethod(typeof(D));
+        /// <summary>
+        /// Returns special Invoke method generate for each delegate type.
+        /// </summary>
+        /// <typeparam name="D">Type of delegate.</typeparam>
+        /// <returns>An object representing reflected method Invoke.</returns>
+        public static MethodInfo GetInvokeMethod<D>()
+            where D : Delegate
+            => Reflection.Types.GetInvokeMethod(typeof(D));
 
-		/// <summary>
-		/// Returns a new delegate of different type which
-		/// points to the same method as original delegate.
-		/// </summary>
-		/// <param name="d">Delegate to convert.</param>
-		/// <typeparam name="D">A new delegate type.</typeparam>
-		/// <returns>A method wrapped into new delegate type.</returns>
-		/// <exception cref="ArgumentException">Cannot convert delegate type.</exception>
-		public static D ConvertDelegate<D>(this Delegate d)
-			where D : Delegate
-			=> d.Method.CreateDelegate<D>(d.Target);
-	}
+        /// <summary>
+        /// Returns a new delegate of different type which
+        /// points to the same method as original delegate.
+        /// </summary>
+        /// <param name="d">Delegate to convert.</param>
+        /// <typeparam name="D">A new delegate type.</typeparam>
+        /// <returns>A method wrapped into new delegate type.</returns>
+        /// <exception cref="ArgumentException">Cannot convert delegate type.</exception>
+        public static D ChangeType<D>(this Delegate d)
+            where D : Delegate
+            => d.Method.CreateDelegate<D>(d.Target);
+
+        public static Func<I, O> AsFunc<I, O>(this Converter<I, O> converter)
+            => converter.ChangeType<Func<I, O>>();
+
+        public static Converter<I, O> AsConverter<I, O>(this Func<I, O> function)
+            => function.ChangeType<Converter<I, O>>();
+
+        public static Func<T, bool> AsFunc<T>(this Predicate<T> predicate)
+            => predicate.ChangeType<Func<T, bool>>();
+
+        public static Predicate<T> AsPredicate<T>(this Func<T, bool> predicate)
+            => predicate.ChangeType<Predicate<T>>();
+    }
 }

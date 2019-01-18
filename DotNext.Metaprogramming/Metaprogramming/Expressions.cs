@@ -1,16 +1,11 @@
 using System;
 using System.Reflection;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
     public static class Expressions
     {
-        internal static IEnumerable<Expression> AsExpressions(this IEnumerable<UniversalExpression> expressions)
-            => expressions.Select<UniversalExpression, Expression>(u => u);
-
         public static UnaryExpression UnaryPlus(this Expression expression)
             => Expression.UnaryPlus(expression);
 
@@ -110,6 +105,9 @@ namespace DotNext.Metaprogramming
         public static UnaryExpression Unbox<T>(this Expression expression)
             where T : struct
             => expression.Unbox(typeof(T));
+
+        public static InvocationExpression Invoke(this Expression @delegate, params Expression[] arguments)
+            => Expression.Invoke(@delegate, arguments);
 
         public static MethodCallExpression Call(this Expression instance, MethodInfo method, params Expression[] arguments)
             => Expression.Call(instance, method, arguments);

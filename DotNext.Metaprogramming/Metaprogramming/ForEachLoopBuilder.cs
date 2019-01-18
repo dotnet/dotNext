@@ -47,8 +47,6 @@ namespace DotNext.Metaprogramming
         internal override Expression Build()
         {
             Expression loopBody = moveNextCall.Condition(base.Build(), breakLabel.Goto());
-
-            const string DisposeMethodName = nameof(IDisposable.Dispose);
             var disposeMethod = enumerator.Type.GetDisposeMethod();
             loopBody = loopBody.Loop(breakLabel, continueLabel);
             return disposeMethod is null ? loopBody : loopBody.Finally(enumerator.Call(disposeMethod));

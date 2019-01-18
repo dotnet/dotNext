@@ -49,7 +49,7 @@ namespace DotNext.Reflection
 
         private static Expression NormalizeArgument(Type actualParameter, Expression expectedArgument, out ParameterExpression localVar, out Expression prologue, out Expression epilogue)
         {
-            if(actualParameter.IsImplicitlyConvertibleFrom(expectedArgument.Type))
+            if(actualParameter.IsAssignableFromWithoutBoxing(expectedArgument.Type))
             {
                 epilogue = prologue = localVar = null;
                 return expectedArgument;

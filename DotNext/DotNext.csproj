@@ -34,7 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Reflection\" />
     <Folder Include="VariantType\" />
 	<Folder Include="Generic\" />
 	<Folder Include="Threading\" />

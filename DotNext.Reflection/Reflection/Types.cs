@@ -15,9 +15,6 @@ namespace DotNext.Reflection
 
         internal static string ToSetterName(this string propertyName) => "set_" + propertyName;
 
-        internal static bool IsImplicitlyConvertibleFrom(this Type type, Type target)
-            => type == target || !target.IsValueType && type.IsAssignableFrom(target);
-
 		internal static bool Equals(this Type type, ParameterExpression expression)
 			=> type.IsByRef ? (type.GetElementType() == expression.Type && expression.IsByRef) : (type == expression.Type && !expression.IsByRef);
     }

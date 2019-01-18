@@ -90,18 +90,24 @@ namespace DotNext.Metaprogramming
 
         public void Assign(FieldInfo instanceField, UniversalExpression value)
             => Assign(null, instanceField, value);
+
+        public InvocationExpression Invoke(UniversalExpression @delegate, IEnumerable<Expression> arguments)
+            => AddStatement(Expression.Invoke(@delegate, arguments));
+
+        public InvocationExpression Invoke(UniversalExpression @delegate, params UniversalExpression[] arguments)
+            => AddStatement(@delegate.Invoke(arguments));
         
-        public MethodCallExpression Call(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
+        public MethodCallExpression Call(UniversalExpression instance, MethodInfo method, IEnumerable<Expression> arguments)
             => AddStatement(Expression.Call(instance, method, arguments));
-        
-        public MethodCallExpression Call(Expression instance, MethodInfo method, params UniversalExpression[] arguments)
-            => Call(instance, method, arguments.AsExpressions());
+
+        public MethodCallExpression Call(UniversalExpression instance, MethodInfo method, params UniversalExpression[] arguments)
+            => Call(instance, method, UniversalExpression.AsExpressions(arguments.Upcast<IEnumerable<UniversalExpression>, UniversalExpression[]>()));
 
         public MethodCallExpression Call(MethodInfo method, IEnumerable<Expression> arguments)
-            => Call(null, method, arguments);
+            => AddStatement(Expression.Call(null, method, arguments));
 
         public MethodCallExpression Call(MethodInfo method, params UniversalExpression[] arguments)
-            => Call(null, method, arguments.AsExpressions());
+            => Call(method, UniversalExpression.AsExpressions(arguments.Upcast<IEnumerable<UniversalExpression>, UniversalExpression[]>()));
         
         public LabelTarget Label(Type type, string name = null)
         {

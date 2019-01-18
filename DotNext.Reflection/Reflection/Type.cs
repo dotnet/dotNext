@@ -91,7 +91,7 @@ namespace DotNext.Reflection
             else
             {
                 //default checker
-                IsDefault = new Predicate<object>(input => input is null).ConvertDelegate<Predicate<T>>();
+                IsDefault = new Predicate<object>(input => input is null).ChangeType<Predicate<T>>();
                 //hash code calculator
                 GetHashCode = Lambda<Operator<T, int>>(Call(inputParam, typeof(object).GetHashCodeMethod()), inputParam).Compile();
                 //equality checker

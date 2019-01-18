@@ -60,7 +60,7 @@ namespace DotNext.Collections.Generic
 
 		public IEnumerable<K> Keys => source.Keys;
 
-		public IEnumerable<O> Values => source.Values.Select(mapper.ConvertDelegate<Func<I, O>>());
+        public IEnumerable<O> Values => source.Values.Select(mapper.AsFunc());
 
 		public int Count => source.Count;
 

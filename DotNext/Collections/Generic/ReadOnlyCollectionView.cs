@@ -46,7 +46,7 @@ namespace DotNext.Collections.Generic
 
         public int Count => source.Count;
 
-        public IEnumerator<O> GetEnumerator() => source.Select(mapper.ConvertDelegate<Func<I, O>>()).GetEnumerator();
+        public IEnumerator<O> GetEnumerator() => source.Select(mapper.AsFunc()).GetEnumerator();
         
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 

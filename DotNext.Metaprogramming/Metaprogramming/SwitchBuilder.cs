@@ -26,12 +26,12 @@ namespace DotNext.Metaprogramming
 
         public SwitchBuilder Case(IEnumerable<UniversalExpression> testValues, UniversalExpression body)
         {
-            cases.Add(Expression.SwitchCase(body, testValues.AsExpressions()));
+            cases.Add(Expression.SwitchCase(body, UniversalExpression.AsExpressions(testValues)));
             return this;
         }
 
         public SwitchBuilder Case(IEnumerable<UniversalExpression> testValues, Action<ExpressionBuilder> body)
-            => Case(testValues.AsExpressions(), body);
+            => Case(UniversalExpression.AsExpressions(testValues), body);
 
         public SwitchBuilder Case(UniversalExpression test, Action<ExpressionBuilder> body)
             => Case(Sequence.Single((Expression)test), body);

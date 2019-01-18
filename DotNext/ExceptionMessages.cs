@@ -21,5 +21,7 @@ namespace DotNext
         internal static string ConcreteDelegateExpected => resourceManager.GetString("ConcreteDelegateExpected");
 
         internal static string IndexShouldBeZero => resourceManager.GetString("IndexShouldBeZero");
+
+        internal static string NoConversionBetweenTypes => resourceManager.GetString("NoConversionBetweenTypes");
     }
 }

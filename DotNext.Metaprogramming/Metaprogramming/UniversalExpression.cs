@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    using Reflection;
     /// <summary>
     /// Represents any expression with full support
     /// of overloaded operators and conversion from
@@ -20,6 +21,12 @@ namespace DotNext.Metaprogramming
         private readonly Expression expression;
 
         public UniversalExpression(Expression expr) => expression = expr;
+
+        internal static IEnumerable<Expression> AsExpressions(IEnumerable<UniversalExpression> expressions)
+            => expressions.Select(Conversion<UniversalExpression, Expression>.Converter.AsFunc());
+
+        internal static Expression[] AsExpressions(UniversalExpression[] expressions)
+            => expressions.Convert(Conversion<UniversalExpression, Expression>.Converter);
 
         public static implicit operator Expression(UniversalExpression view) => view.expression ?? Expression.Empty();
 
@@ -136,17 +143,20 @@ namespace DotNext.Metaprogramming
             where T : struct
             => expression.Unbox<T>();
 
-        public UniversalExpression Call(MethodInfo method, params Expression[] arguments) => expression.Call(method, arguments);
+        public InvocationExpression Invoke(params UniversalExpression[] arguments)
+            => expression.Invoke(AsExpressions(arguments));
 
-        public UniversalExpression Call(string methodName, params Expression[] arguments) => expression.Call(methodName, arguments);
+        public UniversalExpression Call(MethodInfo method, params UniversalExpression[] arguments) => expression.Call(method, AsExpressions(arguments));
 
-        public UniversalExpression Call(Type interfaceType, string methodName, params Expression[] arguments) => expression.Call(interfaceType, methodName, arguments);
+        public UniversalExpression Call(string methodName, params UniversalExpression[] arguments) => expression.Call(methodName, AsExpressions(arguments));
 
-        public UniversalExpression Property(PropertyInfo property, params Expression[] indicies) => expression.Property(property, indicies);
+        public UniversalExpression Call(Type interfaceType, string methodName, params UniversalExpression[] arguments) => expression.Call(interfaceType, methodName, AsExpressions(arguments));
 
-        public UniversalExpression Property(Type interfaceType, string propertyName, params Expression[] indicies) => expression.Property(interfaceType, propertyName, indicies);
+        public UniversalExpression Property(PropertyInfo property, params UniversalExpression[] indicies) => expression.Property(property, AsExpressions(indicies));
 
-        public UniversalExpression Property(string propertyName, params Expression[] indicies) => expression.Property(propertyName, indicies);
+        public UniversalExpression Property(Type interfaceType, string propertyName, params UniversalExpression[] indicies) => expression.Property(interfaceType, propertyName, AsExpressions(indicies));
+
+        public UniversalExpression Property(string propertyName, params UniversalExpression[] indicies) => expression.Property(propertyName, AsExpressions(indicies));
         
         public UniversalExpression Loop(LabelTarget @break, LabelTarget @continue) => expression.Loop(@break, @continue);
         

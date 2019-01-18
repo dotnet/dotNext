@@ -128,5 +128,8 @@ namespace DotNext.Reflection
                 typeof(IDisposable).GetMethod(DisposeMethodName) :
                 type.GetMethod(DisposeMethodName, PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
         }
+
+        public static bool IsAssignableFromWithoutBoxing(this Type to, Type from)
+            => to == from || !from.IsValueType && to.IsAssignableFrom(from);
     }
 }
