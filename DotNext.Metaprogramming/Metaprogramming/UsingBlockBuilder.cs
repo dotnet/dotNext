@@ -26,7 +26,7 @@ namespace DotNext.Metaprogramming
             }
         }
 
-        public ExpressionView DisposableVar { get; }
+        public UniversalExpression DisposableVar { get; }
 
         internal override Expression Build()
             => this.Upcast<IExpressionBuilder<TryExpression>, UsingBlockBuilder>().Build();

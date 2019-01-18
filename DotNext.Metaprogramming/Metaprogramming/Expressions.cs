@@ -8,6 +8,9 @@ namespace DotNext.Metaprogramming
 {
     public static class Expressions
     {
+        internal static IEnumerable<Expression> AsExpressions(this IEnumerable<UniversalExpression> expressions)
+            => expressions.Select<UniversalExpression, Expression>(u => u);
+
         public static UnaryExpression UnaryPlus(this Expression expression)
             => Expression.UnaryPlus(expression);
 
@@ -105,7 +108,7 @@ namespace DotNext.Metaprogramming
             => Expression.Unbox(expression, type);
 
         public static UnaryExpression Unbox<T>(this Expression expression)
-            where T: struct
+            where T : struct
             => expression.Unbox(typeof(T));
 
         public static MethodCallExpression Call(this Expression instance, MethodInfo method, params Expression[] arguments)
@@ -116,11 +119,11 @@ namespace DotNext.Metaprogramming
 
         public static MethodCallExpression Call(this Expression instance, Type interfaceType, string methodName, params Expression[] arguments)
         {
-            if(!interfaceType.IsAssignableFrom(instance.Type))
+            if (!interfaceType.IsAssignableFrom(instance.Type))
                 throw new ArgumentException($"Type {instance.Type} doesn't implement interface {interfaceType.FullName}");
             var method = interfaceType.GetMethod(methodName, arguments.Convert(arg => arg.Type));
             return method is null ?
-                throw new MissingMethodException($"Method {methodName} doesn't exist in type {interfaceType.FullName}"):
+                throw new MissingMethodException($"Method {methodName} doesn't exist in type {interfaceType.FullName}") :
                 instance.Call(method, arguments);
         }
 
@@ -140,11 +143,11 @@ namespace DotNext.Metaprogramming
 
         public static LoopExpression Loop(this Expression body, LabelTarget @break, LabelTarget @continue)
             => Expression.Loop(body, @break, @continue);
-        
+
         public static LoopExpression Loop(this Expression body, LabelTarget @break) => Expression.Loop(body, @break);
-        
+
         public static LoopExpression Loop(this Expression body) => Expression.Loop(body);
-        
+
         public static GotoExpression Goto(this LabelTarget label) => Expression.Goto(label);
 
         public static GotoExpression Goto(this LabelTarget label, Expression value) => Expression.Goto(label, value);
@@ -163,9 +166,9 @@ namespace DotNext.Metaprogramming
 
         public static LabelExpression LandingSite(this LabelTarget label, Expression @default) => Expression.Label(label, @default);
 
-        public static ConditionalExpression Condition(this Expression expression, Expression ifTrue = null, Expression ifFalse = null, Type type = null) 
+        public static ConditionalExpression Condition(this Expression expression, Expression ifTrue = null, Expression ifFalse = null, Type type = null)
             => Expression.Condition(expression, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), type ?? typeof(void));
-        
+
         public static ConditionalExpression Condition<R>(this Expression expression, Expression ifTrue, Expression ifFalse)
             => expression.Condition(ifTrue, ifFalse, typeof(R));
 
@@ -191,5 +194,8 @@ namespace DotNext.Metaprogramming
 
         public static TryExpression Using(this ParameterExpression expression, Action<UsingBlockBuilder> scope, ExpressionBuilder parent = null)
             => expression.Upcast<Expression, ParameterExpression>().Using(scope, parent);
+
+        public static SwitchBuilder Switch(this Expression switchValue, ExpressionBuilder parent = null)
+            => new SwitchBuilder(switchValue, parent, false);
     }
 }

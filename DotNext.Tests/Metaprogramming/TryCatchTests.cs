@@ -11,7 +11,7 @@ namespace DotNext.Metaprogramming
         {
             var lambda = LambdaBuilder<Func<long, long, bool>>.Build(fun =>
             {
-                ExpressionView param1 = fun.Parameters[0], param2 = fun.Parameters[1];
+                UniversalExpression param1 = fun.Parameters[0], param2 = fun.Parameters[1];
                 fun.Assign(fun.Result, true);
                 fun.Try(param1 / param2)
                     .Fault(fault => fault.Assign(fun.Result, false))
@@ -27,7 +27,7 @@ namespace DotNext.Metaprogramming
         {
             var lambda = LambdaBuilder<Func<long, long, bool>>.Build(fun =>
             {
-                ExpressionView param1 = fun.Parameters[0], param2 = fun.Parameters[1];
+                UniversalExpression param1 = fun.Parameters[0], param2 = fun.Parameters[1];
                 fun.Assign(fun.Result, true);
                 fun.Try(param1 / param2)
                     .Catch<DivideByZeroException>(@catch => @catch.Assign(fun.Result, false))
@@ -44,7 +44,7 @@ namespace DotNext.Metaprogramming
         {
             var lambda = LambdaBuilder<Func<long, long, bool>>.Build(fun =>
             {
-                ExpressionView param1 = fun.Parameters[0], param2 = fun.Parameters[1];
+                UniversalExpression param1 = fun.Parameters[0], param2 = fun.Parameters[1];
                 fun.Try(param1 / param2)
                     .Catch<DivideByZeroException>(@catch => @catch.Return(fun, false))
                     .End();
@@ -61,9 +61,9 @@ namespace DotNext.Metaprogramming
         {
             var lambda = LambdaBuilder<Func<long, long, bool>>.Build(fun =>
             {
-                ExpressionView param1 = fun.Parameters[0], param2 = fun.Parameters[1];
+                UniversalExpression param1 = fun.Parameters[0], param2 = fun.Parameters[1];
                 fun.Try(Expression.Block(param1 / param2, true.AsConst()))
-                    .Catch<DivideByZeroException>(@catch => @catch.Constant(false))
+                    .Catch(typeof(Exception), e => e.InstanceOf<DivideByZeroException>(), e => false)
                     .OfType<bool>()
                     .End();
             })

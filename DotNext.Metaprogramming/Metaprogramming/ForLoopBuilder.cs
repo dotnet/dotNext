@@ -8,7 +8,7 @@ namespace DotNext.Metaprogramming
         private readonly Expression condition;
         private bool continueLabelInstalled;
         
-        internal ForLoopBuilder(Expression initialization, Func<ExpressionView, Expression> condition, ExpressionBuilder parent)
+        internal ForLoopBuilder(Expression initialization, Func<UniversalExpression, Expression> condition, ExpressionBuilder parent)
             : base(parent)
         {
             LoopVar = parent.DeclareVariable(initialization.Type, NextName("loop_var"));

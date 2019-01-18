@@ -57,7 +57,7 @@ namespace DotNext.Metaprogramming
         {
             var lambda = LambdaBuilder<Func<int, int>>.Build(fun =>
             {
-                ExpressionView arg = fun.Parameters[0];
+                UniversalExpression arg = fun.Parameters[0];
                 fun.With(arg + 10, scope => scope.Assign(scope.ScopeVar, scope.ScopeVar * 2));
             })
             .Compile();

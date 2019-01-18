@@ -4,3 +4,4 @@ StreamNotReadable=Stream is not readable
 StreamNotWritable=Stream is not writable
 InvalidUserDataSlot=Slot was not created using Allocate method
 ConcreteDelegateExpected=Delegate type cannot be abstract
+IndexShouldBeZero=List index should be equal to 0

@@ -42,7 +42,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Gets collection element.
         /// </summary>
-        public ExpressionView Element => element;
+        public UniversalExpression Element => element;
 
         internal override Expression Build()
         {

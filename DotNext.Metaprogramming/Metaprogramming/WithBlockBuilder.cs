@@ -17,7 +17,7 @@ namespace DotNext.Metaprogramming
             }
         }
 
-        public ExpressionView ScopeVar { get; }
+        public UniversalExpression ScopeVar { get; }
 
         Expression IExpressionBuilder<Expression>.Build() => Build();
     }

@@ -73,35 +73,35 @@ namespace DotNext.Metaprogramming
 
         public ConstantExpression Constant<T>(T value) => AddStatement(Expression.Constant(value, typeof(T)));
 
-        public BinaryExpression Assign(ParameterExpression variable, ExpressionView value)
+        public BinaryExpression Assign(ParameterExpression variable, UniversalExpression value)
             => AddStatement(Expression.Assign(variable, value));
 
-        public void Assign(string variableName, ExpressionView value)
+        public void Assign(string variableName, UniversalExpression value)
             => Assign(this[variableName], value);
         
-        public void Assign(Expression instance, PropertyInfo instanceProperty, ExpressionView value)
+        public void Assign(Expression instance, PropertyInfo instanceProperty, UniversalExpression value)
             => AddStatement(Expression.Assign(Expression.Property(instance, instanceProperty), value));
         
-        public void Assign(PropertyInfo staticProperty, ExpressionView value)
+        public void Assign(PropertyInfo staticProperty, UniversalExpression value)
             => Assign(null, staticProperty, value);
         
-        public void Assign(Expression instance, FieldInfo instanceField, ExpressionView value)
+        public void Assign(Expression instance, FieldInfo instanceField, UniversalExpression value)
             => AddStatement(Expression.Assign(Expression.Field(instance, instanceField), value));
 
-        public void Assign(FieldInfo instanceField, ExpressionView value)
+        public void Assign(FieldInfo instanceField, UniversalExpression value)
             => Assign(null, instanceField, value);
         
         public MethodCallExpression Call(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
             => AddStatement(Expression.Call(instance, method, arguments));
         
-        public MethodCallExpression Call(Expression instance, MethodInfo method, params ExpressionView[] arguments)
-            => Call(instance, method, arguments.Select<ExpressionView, Expression>(a => a));
+        public MethodCallExpression Call(Expression instance, MethodInfo method, params UniversalExpression[] arguments)
+            => Call(instance, method, arguments.AsExpressions());
 
         public MethodCallExpression Call(MethodInfo method, IEnumerable<Expression> arguments)
             => Call(null, method, arguments);
-        
-        public MethodCallExpression Call(MethodInfo method, params ExpressionView[] arguments)
-            => Call(null, method, arguments.Select<ExpressionView, Expression>(a => a));
+
+        public MethodCallExpression Call(MethodInfo method, params UniversalExpression[] arguments)
+            => Call(null, method, arguments.AsExpressions());
         
         public LabelTarget Label(Type type, string name = null)
         {
@@ -117,7 +117,7 @@ namespace DotNext.Metaprogramming
         public LabelExpression Label(LabelTarget target)
             => AddStatement(Expression.Label(target));
 
-        public GotoExpression Goto(LabelTarget target, ExpressionView value)
+        public GotoExpression Goto(LabelTarget target, UniversalExpression value)
             => AddStatement(Expression.Goto(target, value));
 
         public GotoExpression Goto(LabelTarget target) => Goto(target, default);
@@ -149,25 +149,25 @@ namespace DotNext.Metaprogramming
             return variable;
         }
 
-        public ConditionalBuilder If(ExpressionView test)
+        public ConditionalBuilder If(UniversalExpression test)
             => new ConditionalBuilder(test, this, true);
 
-        public ConditionalExpression IfThen(ExpressionView test, Action<ExpressionBuilder> ifTrue)
+        public ConditionalExpression IfThen(UniversalExpression test, Action<ExpressionBuilder> ifTrue)
             => If(test).Then(ifTrue).End();
 
-        public ConditionalExpression IfThenElse(ExpressionView test, Action<ExpressionBuilder> ifTrue, Action<ExpressionBuilder> ifFalse)
+        public ConditionalExpression IfThenElse(UniversalExpression test, Action<ExpressionBuilder> ifTrue, Action<ExpressionBuilder> ifFalse)
             => If(test).Then(ifTrue).Else(ifFalse).End();
 
-        public LoopExpression While(ExpressionView test, Action<WhileLoopBuider> loop)
+        public LoopExpression While(UniversalExpression test, Action<WhileLoopBuider> loop)
             => AddStatement<LoopExpression, WhileLoopBuider>(new WhileLoopBuider(test, this, true), loop);
 
-        public LoopExpression DoWhile(ExpressionView test, Action<WhileLoopBuider> loop)
+        public LoopExpression DoWhile(UniversalExpression test, Action<WhileLoopBuider> loop)
             => AddStatement<LoopExpression, WhileLoopBuider>(new WhileLoopBuider(test, this, false), loop);
 
-        public Expression ForEach(ExpressionView collection, Action<ForEachLoopBuilder> loop)
+        public Expression ForEach(UniversalExpression collection, Action<ForEachLoopBuilder> loop)
             => AddStatement<Expression, ForEachLoopBuilder>(new ForEachLoopBuilder(collection, this), loop);
 
-        public LoopExpression For(ExpressionView initializer, Func<ExpressionView, Expression> condition, Action<ForLoopBuilder> loop)
+        public LoopExpression For(UniversalExpression initializer, Func<UniversalExpression, Expression> condition, Action<ForLoopBuilder> loop)
             => AddStatement<LoopExpression, ForLoopBuilder>(new ForLoopBuilder(initializer, condition, this), loop);
 
         public LoopExpression Loop(Action<LoopBuilder> loop)
@@ -186,22 +186,25 @@ namespace DotNext.Metaprogramming
         
         public Expression Return(LambdaBuilder lambda) => AddStatement(lambda.Return(false));
 
-        public Expression Return(LambdaBuilder lambda, ExpressionView result) => AddStatement(lambda.Return(result, false));
+        public Expression Return(LambdaBuilder lambda, UniversalExpression result) => AddStatement(lambda.Return(result, false));
 
         public LambdaExpression Lambda<D>(Action<LambdaBuilder> lambda)
             where D: Delegate
             => AddStatement<LambdaExpression, LambdaBuilder<D>>(new LambdaBuilder<D>(this), lambda);
 
-        public TryBuilder Try(ExpressionView body) => new TryBuilder(body, this, true);
+        public TryBuilder Try(UniversalExpression body) => new TryBuilder(body, this, true);
 
         public Expression Scope(Action<ExpressionBuilder> scope)
             => new ExpressionBuilder(this).Build(scope);
 
-        public Expression With(ExpressionView expression, Action<WithBlockBuilder> scope)
+        public Expression With(UniversalExpression expression, Action<WithBlockBuilder> scope)
             => AddStatement<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, this), scope);
 
-        public TryExpression Using(ExpressionView expression, Action<UsingBlockBuilder> scope)
+        public TryExpression Using(UniversalExpression expression, Action<UsingBlockBuilder> scope)
             => AddStatement<TryExpression, UsingBlockBuilder>(new UsingBlockBuilder(expression, this), scope);
+
+        public SwitchBuilder Switch(UniversalExpression switchValue)
+            => new SwitchBuilder(switchValue, this, true);
 
         internal virtual Expression Build()
         {

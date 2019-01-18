@@ -26,19 +26,32 @@ namespace DotNext.Metaprogramming
             return this;
         }
 
+        public TryBuilder Catch(Type exceptionType, Func<ParameterExpression, UniversalExpression> filter, Func<ParameterExpression, UniversalExpression> body)
+        {
+            var exception = Expression.Variable(exceptionType, "e");
+            handlers.Add(Expression.MakeCatchBlock(exceptionType, exception, body(exception), filter(exception)));
+            return this;
+        }
+
         public TryBuilder Catch<E>(Action<CatchBuilder> @catch)
             where E: Exception
             => Catch(typeof(E), @catch);
 
         public TryBuilder Fault(Action<ExpressionBuilder> fault)
+            => Fault(NewScope().Build(fault));
+
+        public TryBuilder Fault(UniversalExpression fault)
         {
-            faultBlock = NewScope().Build(fault);
+            faultBlock = fault;
             return this;
         }
 
         public TryBuilder Finally(Action<ExpressionBuilder> @finally)
+            => Finally(NewScope().Build(@finally));
+
+        public TryBuilder Finally(UniversalExpression @finally)
         {
-            finallyBlock = NewScope().Build(@finally);
+            finallyBlock = @finally;
             return this;
         }
 

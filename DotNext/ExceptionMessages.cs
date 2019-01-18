@@ -19,5 +19,7 @@ namespace DotNext
         internal static string InvalidUserDataSlot => resourceManager.GetString("InvalidUserDataSlot");
 
         internal static string ConcreteDelegateExpected => resourceManager.GetString("ConcreteDelegateExpected");
+
+        internal static string IndexShouldBeZero => resourceManager.GetString("IndexShouldBeZero");
     }
 }

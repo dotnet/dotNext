@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -144,5 +145,14 @@ namespace DotNext
 		/// <returns><see langword="true"/>, if collection is <see langword="null"/> or empty.</returns>
 		public static bool IsNullOrEmpty<T>(this ICollection<T> collection)
             => collection is null || collection.Count == 0;
+
+        /// <summary>
+        /// Constructs a sequence from the single element.
+        /// </summary>
+        /// <typeparam name="T">Type of element.</typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> Single<T>(T value)
+            => new Collections.Generic.SingleList<T>(value);
     }
 }

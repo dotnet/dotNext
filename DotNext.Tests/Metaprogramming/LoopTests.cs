@@ -61,7 +61,7 @@ namespace DotNext.Metaprogramming
         {
             var sum = LambdaBuilder<Func<long, long>>.Build(fun =>
             {
-                ExpressionView arg = fun.Parameters[0];
+                UniversalExpression arg = fun.Parameters[0];
                 fun.DoWhile(arg > 0L, loop =>
                 {
                     loop.Assign(fun.Result, fun.Result + arg);
@@ -77,12 +77,12 @@ namespace DotNext.Metaprogramming
         {
             var sum = LambdaBuilder<Func<long, long>>.Build(fun =>
             {
-                ExpressionView arg = fun.Parameters[0];
+                UniversalExpression arg = fun.Parameters[0];
                 fun.For(0L, i => i < arg, loop =>
                 {
-                    loop.Assign(fun.Result, fun.Result + (ExpressionView)loop.LoopVar);
+                    loop.Assign(fun.Result, fun.Result + (UniversalExpression)loop.LoopVar);
                     loop.StartIteratorBlock();
-                    loop.Assign(loop.LoopVar, loop.LoopVar + (ExpressionView)1L);
+                    loop.Assign(loop.LoopVar, loop.LoopVar + (UniversalExpression)1L);
                 });
             })
             .Compile();
@@ -94,7 +94,7 @@ namespace DotNext.Metaprogramming
         {
             var factorial = LambdaBuilder<Func<long, long>>.Build(fun => 
             {
-                ExpressionView arg = fun.Parameters[0];
+                UniversalExpression arg = fun.Parameters[0];
                 fun.Assign(fun.Result, 1L);
                 fun.While(arg > 1L, loop =>
                 {
@@ -111,7 +111,7 @@ namespace DotNext.Metaprogramming
         {
             var factorial = LambdaBuilder<Func<long, long>>.Build(fun =>
             {
-                ExpressionView arg = fun.Parameters[0];
+                UniversalExpression arg = fun.Parameters[0];
                 fun.Assign(fun.Result, 1L);
                 fun.Loop(loop =>
                 {
