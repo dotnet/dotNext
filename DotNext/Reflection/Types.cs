@@ -15,10 +15,31 @@ namespace DotNext.Reflection
 			where D: MulticastDelegate
 			=> type.GetMethod(name, flags, Type.DefaultBinder, typeof(D).GetInvokeMethod().GetParameterTypes(), Array.Empty<ParameterModifier>());
 
+		private static Type FindGenericInstance(this Type type, Type genericDefinition)
+		{
+			bool IsGenericInstanceOf(Type candidate)
+				=> candidate.IsGenericType && !candidate.IsGenericTypeDefinition && candidate.GetGenericTypeDefinition() == genericDefinition;
+
+			if(genericDefinition.IsInterface)
+			{
+				foreach(var iface in type.GetInterfaces())
+					if(IsGenericInstanceOf(iface))
+						return iface;
+			}
+			else
+				while(!(type is null))
+					if(IsGenericInstanceOf(type))
+						return type;
+					else
+						type = type.BaseType;
+			return null;
+		}
+
 		public static bool IsGenericInstanceOf(this Type type, Type genericDefinition)
-			=> type.IsGenericType &&
-				!type.IsGenericTypeDefinition &&
-				type.GetGenericTypeDefinition() == genericDefinition;
+			=> !(FindGenericInstance(type, genericDefinition) is null);
+
+		public static Type[] GetGenericArguments(this Type type, Type genericDefinition)
+			=> FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? Array.Empty<Type>();
 				
 		internal static MethodInfo GetInvokeMethod(this Type delegateType)
 			=> !(delegateType is null) && typeof(Delegate).IsAssignableFrom(delegateType) ?
@@ -68,15 +89,23 @@ namespace DotNext.Reflection
 		public static Type MakeTaskType(this Type returnType)
 			=> returnType == typeof(void) ? typeof(Task) : typeof(Task<>).MakeGenericType(returnType);
 
+		public static Type GetTaskType(this Type taskType)
+		{
+			var result = FindGenericInstance(taskType, typeof(Task<>));
+			if(!(result is null))
+				return result.GetGenericArguments()[0];
+			else if(typeof(Task).IsAssignableFrom(taskType))
+				return typeof(void);
+			else
+				return null;
+		}
+
         public static Type GetCollectionElementType(this Type collectionType, out Type enumerableInterface)
         {
-            foreach(var iface in collectionType.GetInterfaces())
-                if(iface.IsGenericInstanceOf(typeof(IEnumerable<>)))
-                {
-                    enumerableInterface = iface;
-                    return enumerableInterface.GetGenericArguments()[0];
-                }
-            if(typeof(IEnumerable).IsAssignableFrom(collectionType))
+			enumerableInterface = FindGenericInstance(collectionType, typeof(IEnumerable<>));
+            if(!(enumerableInterface is null))
+				return enumerableInterface.GetGenericArguments()[0];
+            else if(typeof(IEnumerable).IsAssignableFrom(collectionType))
             {
                 enumerableInterface = typeof(IEnumerable);
                 return typeof(object);
@@ -86,7 +115,7 @@ namespace DotNext.Reflection
                 enumerableInterface = null;
                 return null;
             }
-        }
+		}
 
         public static Type GetCollectionElementType(this Type collectionType)
             => collectionType.GetCollectionElementType(out _);
