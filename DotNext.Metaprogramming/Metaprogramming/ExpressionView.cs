@@ -156,8 +156,16 @@ namespace DotNext.Metaprogramming
         
         public ExpressionView Condition<R>(Expression ifTrue, Expression ifFalse)
             => expression.Condition<R>(ifTrue, ifFalse);
-        
-        public ExpressionView With(ExpressionBuilder parent, Action<WithBlockBuilder> scope) => expression.With(parent, scope);
+
+        public ConditionalBuilder Condition(ExpressionBuilder parent = null)
+            => expression.Condition(parent);
+
+        public ExpressionView With(Action<WithBlockBuilder> scope, ExpressionBuilder parent = null) => expression.With(scope, parent);
+
+        public ExpressionView Using(Action<UsingBlockBuilder> scope, ExpressionBuilder parent)
+            => expression.Using(scope, parent);
+
+        public TryBuilder Try(ExpressionBuilder parent = null) => expression.Try(parent);
 
         public UnaryExpression Throw() => expression.Throw();
 

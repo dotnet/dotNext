@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Collections;
 using System.Linq.Expressions;
 
@@ -50,11 +49,7 @@ namespace DotNext.Metaprogramming
             Expression loopBody = moveNextCall.Condition(base.Build(), breakLabel.Goto());
 
             const string DisposeMethodName = nameof(IDisposable.Dispose);
-            var disposeMethod = typeof(IDisposable).IsAssignableFrom(enumerator.Type) ?
-                typeof(IDisposable).GetMethod(DisposeMethodName) :
-                enumerator.Type.GetMethod(DisposeMethodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
-
-            
+            var disposeMethod = enumerator.Type.GetDisposeMethod();
             loopBody = loopBody.Loop(breakLabel, continueLabel);
             return disposeMethod is null ? loopBody : loopBody.Finally(enumerator.Call(disposeMethod));
         }

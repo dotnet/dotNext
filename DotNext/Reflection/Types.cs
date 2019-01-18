@@ -90,5 +90,14 @@ namespace DotNext.Reflection
 
         public static Type GetCollectionElementType(this Type collectionType)
             => collectionType.GetCollectionElementType(out _);
+
+        public static MethodInfo GetDisposeMethod(this Type type)
+        {
+            const string DisposeMethodName = nameof(IDisposable.Dispose);
+            const BindingFlags PublicInstanceMethod = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
+            return typeof(IDisposable).IsAssignableFrom(type) ?
+                typeof(IDisposable).GetMethod(DisposeMethodName) :
+                type.GetMethod(DisposeMethodName, PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
+        }
     }
 }

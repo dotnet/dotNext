@@ -169,6 +169,9 @@ namespace DotNext.Metaprogramming
         public static ConditionalExpression Condition<R>(this Expression expression, Expression ifTrue, Expression ifFalse)
             => expression.Condition(ifTrue, ifFalse, typeof(R));
 
+        public static ConditionalBuilder Condition(this Expression test, ExpressionBuilder parent = null)
+            => new ConditionalBuilder(test, parent, false);
+
         public static TryExpression Finally(this Expression @try, Expression @finally) => Expression.TryFinally(@try, @finally);
 
         public static UnaryExpression Throw(this Expression exception) => Expression.Throw(exception);
@@ -177,7 +180,16 @@ namespace DotNext.Metaprogramming
 
         public static DefaultExpression Default(this Type type) => Expression.Default(type);
 
-        public static Expression With(this Expression expression, ExpressionBuilder parent, Action<WithBlockBuilder> scope)
+        public static TryBuilder Try(this Expression expression, ExpressionBuilder parent = null)
+            => new TryBuilder(expression, parent, false);
+
+        public static Expression With(this Expression expression, Action<WithBlockBuilder> scope, ExpressionBuilder parent = null)
             => ExpressionBuilder.Build<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, parent), scope);
+
+        public static TryExpression Using(this Expression expression, Action<UsingBlockBuilder> scope, ExpressionBuilder parent)
+            => ExpressionBuilder.Build<TryExpression, UsingBlockBuilder>(new UsingBlockBuilder(expression, parent), scope);
+
+        public static TryExpression Using(this ParameterExpression expression, Action<UsingBlockBuilder> scope, ExpressionBuilder parent = null)
+            => expression.Upcast<Expression, ParameterExpression>().Using(scope, parent);
     }
 }

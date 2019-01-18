@@ -157,12 +157,6 @@ namespace DotNext.Metaprogramming
 
         public ConditionalExpression IfThenElse(ExpressionView test, Action<ExpressionBuilder> ifTrue, Action<ExpressionBuilder> ifFalse)
             => If(test).Then(ifTrue).Else(ifFalse).End();
-        
-        public ConditionalBuilder Condition(ExpressionView test)
-            => new ConditionalBuilder(test, this, false);
-
-        public ConditionalExpression Condition(ExpressionView test, Type type, Action<ExpressionBuilder> ifTrue, Action<ExpressionBuilder> ifFalse)
-            => Condition(test).Then(ifTrue).Else(ifFalse).OfType(type).End();
 
         public LoopExpression While(ExpressionView test, Action<WhileLoopBuider> loop)
             => AddStatement<LoopExpression, WhileLoopBuider>(new WhileLoopBuider(test, this, true), loop);
@@ -202,9 +196,12 @@ namespace DotNext.Metaprogramming
 
         public Expression Scope(Action<ExpressionBuilder> scope)
             => new ExpressionBuilder(this).Build(scope);
-        
-        public Expression With(Expression expression, Action<WithBlockBuilder> scope)
-            => AddStatement(expression.With(this, scope));
+
+        public Expression With(ExpressionView expression, Action<WithBlockBuilder> scope)
+            => AddStatement<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, this), scope);
+
+        public TryExpression Using(ExpressionView expression, Action<UsingBlockBuilder> scope)
+            => AddStatement<TryExpression, UsingBlockBuilder>(new UsingBlockBuilder(expression, this), scope);
 
         internal virtual Expression Build()
         {
