@@ -152,6 +152,11 @@ namespace DotNext.Metaprogramming
             return builder.Upcast<IExpressionBuilder<Expression<D>>, LambdaBuilder<D>>().Build();
         }
 
+        /// <summary>
+        /// Constructs lambda expression from expression tree.
+        /// </summary>
+        /// <param name="lambdaBody">Lambda expression builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
         public static Expression<D> Build(Action<LambdaBuilder<D>> lambdaBody)
             => Build(false, lambdaBody);
     }

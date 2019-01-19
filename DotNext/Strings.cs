@@ -33,9 +33,8 @@ namespace DotNext
 		private static string RandomString(Random random, ReadOnlySpan<char> allowedChars, int length)
 		{
 			var result = new char[length];
-			var maxValue = allowedChars.Length - 1;
 			foreach(ref char element in result.AsSpan())
-				element = allowedChars[random.Next(0, maxValue)];
+				element = allowedChars[random.Next(0, allowedChars.Length)];
 			return new string(result);
 		}
 
@@ -46,7 +45,7 @@ namespace DotNext
 			foreach(ref char element in result.AsSpan())
 			{
 				random.GetBytes(buffer);
-				var randomNumber = BitConverter.ToInt32(buffer, 0) % allowedChars.Length;
+				var randomNumber = Math.Abs(BitConverter.ToInt32(buffer, 0)) % allowedChars.Length;
 				element = allowedChars[randomNumber];
 			}
 			return new string(result);
