@@ -23,6 +23,9 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         public abstract Expression Self { get; }
 
+        /// <summary>
+        /// Sets body of lambda expression as single expression.
+        /// </summary>
         public sealed override Expression Body
         {
             set
@@ -61,7 +64,9 @@ namespace DotNext.Metaprogramming
         {
             get
             {
-                if (lambdaResult is null)
+                if(ReturnType == typeof(void))
+                    return null;
+                else if (lambdaResult is null)
                     lambdaResult = DeclareVariable(ReturnType, NextName("lambdaResult_"));
                 return lambdaResult;
             }
