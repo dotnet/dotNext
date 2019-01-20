@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Collections.Generic;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 using static System.Linq.Expressions.Expression;
 
 namespace DotNext.Reflection
@@ -34,7 +35,7 @@ namespace DotNext.Reflection
         /// <remarks>
         /// For reference types, this delegate always calls <see cref="object.GetHashCode"/> virtual method.
         /// For value type, it calls <see cref="object.GetHashCode"/> if it is overridden by the value type; otherwise,
-        /// it calls <see cref="ValueTypes.BitwiseHashCode{T}(T)"/>.
+        /// it calls <see cref="ValueType{T}.BitwiseHashCode(T, bool)"/>.
         /// </remarks>
         public new static readonly Operator<T, int> GetHashCode;
 
@@ -45,7 +46,7 @@ namespace DotNext.Reflection
         /// If type <typeparamref name="T"/> has equality operator then use it.
         /// Otherwise, for reference types, this delegate always calls <see cref="object.Equals(object, object)"/> method.
         /// For value type, it calls equality operator or <see cref="IEquatable{T}.Equals(T)"/> if it is implemented by the value type; else,
-        /// it calls <see cref="ValueTypes.BitwiseEquals{T}(T, T)"/>.
+        /// it calls <see cref="ValueType{T}.BitwiseEquals(T, T)"/>.
         /// </remarks>
         public new static readonly Operator<T, T, bool> Equals;
 
@@ -99,6 +100,14 @@ namespace DotNext.Reflection
                     Equals = Lambda<Operator<T, T, bool>>(Call(null, typeof(object).GetMethod(nameof(object.Equals), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly), inputParam, secondParam), inputParam, secondParam).Compile();
             }
         }
+
+        /// <summary>
+        /// Calls static constructor of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't call static constructor if type is already initialized.
+        /// </remarks>
+        public static void Initialize() => RunClassConstructor(RuntimeType.TypeHandle);
 
         /// <summary>
         /// Determines whether an instance of a specified type can be assigned to an instance of the current type.

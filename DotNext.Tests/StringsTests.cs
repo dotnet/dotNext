@@ -21,12 +21,11 @@ namespace DotNext
 			var rnd = new Random();
 			var str = rnd.RandomString(AllowedChars, 6);
 			Equal(6, str.Length);
-			Console.WriteLine(str);
 			using(var generator = new RNGCryptoServiceProvider())
 			{
 				str = generator.RandomString(AllowedChars, 7);
 			}
-			Console.WriteLine(str);
+			Equal(7, str.Length);
 		}
 	}
 }

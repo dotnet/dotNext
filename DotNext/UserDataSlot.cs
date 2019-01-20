@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Threading;
 
 namespace DotNext
 {
@@ -14,10 +15,14 @@ namespace DotNext
 	/// </remarks>
     public sealed class UserDataStorage
     {
-        private readonly ConcurrentDictionary<long, object> storage;
+        private readonly Dictionary<long, object> storage;
+        private readonly ReaderWriterLockSlim storageLock;
 
         internal UserDataStorage()
-            => storage = new ConcurrentDictionary<long, object>(ValueType<long>.EqualityComparer);
+        {
+            storage = new Dictionary<long, object>(ValueType<long>.EqualityComparer);
+            storageLock = new ReaderWriterLockSlim();
+        }
 
 		/// <summary>
 		/// Gets user data.
@@ -26,7 +31,41 @@ namespace DotNext
 		/// <param name="slot">User data slot.</param>
 		/// <param name="defaultValue">Default value to be returned if no user data contained in this collection.</param>
 		/// <returns>User data.</returns>
-        public V Get<V>(UserDataSlot<V> slot, V defaultValue = default) => slot.GetUserData(storage, defaultValue);
+        public V Get<V>(UserDataSlot<V> slot, V defaultValue = default)
+        {
+            V result;
+            storageLock.EnterReadLock();
+            result = slot.GetUserData(storage, defaultValue);
+            storageLock.ExitReadLock();
+            return result;
+        }
+
+        public V GetOrSet<V>(UserDataSlot<V> slot, Func<V> valueFactory)
+        {
+            V userData;
+            //fast path - read user data if it is already exists
+            //do not use UpgradableReadLock due to performance reasons
+            storageLock.EnterReadLock();
+            if(slot.GetUserData(storage, out userData))
+            {
+                storageLock.ExitReadLock();
+                return userData;
+            }
+            else
+                storageLock.ExitReadLock();
+            //non-fast path, no user data presented
+            storageLock.EnterWriteLock();
+            try
+            {
+                if(!slot.GetUserData(storage, out userData))
+                    slot.SetUserData(storage, userData = valueFactory());
+                return userData;
+            }
+            finally
+            {
+                storageLock.ExitWriteLock();
+            }
+        }
 
 		/// <summary>
 		/// Tries to get user data.
@@ -35,7 +74,14 @@ namespace DotNext
 		/// <param name="slot">User data slot.</param>
 		/// <param name="userData">User data.</param>
 		/// <returns><see langword="true"/>, if user data slot exists in this collection.</returns>
-		public bool Get<V>(UserDataSlot<V> slot, out V userData) => slot.GetUserData(storage, out userData);
+		public bool Get<V>(UserDataSlot<V> slot, out V userData)
+        {
+            bool success;
+            storageLock.EnterReadLock();
+            success = slot.GetUserData(storage, out userData);
+            storageLock.ExitReadLock();
+            return success;
+        }
 
 		/// <summary>
 		/// Sets user data.
@@ -43,7 +89,12 @@ namespace DotNext
 		/// <typeparam name="V">Type of data.</typeparam>
 		/// <param name="slot">User data slot.</param>
 		/// <param name="userData">User data to be saved in this collection.</param>
-		public void Set<V>(UserDataSlot<V> slot, V userData) => slot.SetUserData(storage, userData);
+		public void Set<V>(UserDataSlot<V> slot, V userData)
+        {
+            storageLock.EnterReadLock();
+            slot.SetUserData(storage, userData);
+            storageLock.ExitReadLock();
+        }
 
 		/// <summary>
 		/// Removes user data slot.
@@ -51,7 +102,14 @@ namespace DotNext
 		/// <typeparam name="V">Type of data.</typeparam>
 		/// <param name="slot">User data slot to be removed from this collection.</param>
 		/// <returns><see langword="true"/>, if data is removed from this collection.</returns>
-		public bool Remove<V>(UserDataSlot<V> slot) => slot.RemoveUserData(storage);
+		public bool Remove<V>(UserDataSlot<V> slot)
+        {
+            bool removed;
+            storageLock.EnterWriteLock();
+            removed = slot.RemoveUserData(storage);
+            storageLock.ExitWriteLock();
+            return removed;
+        }
     }
 
     internal static class UserDataSlot

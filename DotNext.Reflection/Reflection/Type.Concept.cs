@@ -1,3 +1,7 @@
+using System;
+using static System.Runtime.ExceptionServices.ExceptionDispatchInfo;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
+
 namespace DotNext.Reflection
 {
     public static partial class Type<T>
@@ -9,12 +13,35 @@ namespace DotNext.Reflection
         }
 
         /// <summary>
+        /// Applies a concept represented by static class to type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="conceptType">A static type describing concept.</param>
+        /// <exception cref="ConstraintViolationException">Type <typeparamref name="T"/> violates one of constraints specified by concept.</exception>
+        public static void Concept(Type conceptType)
+        {
+            try
+            {
+                RunClassConstructor(conceptType.TypeHandle);
+            } 
+            catch(TypeInitializationException e)
+            {
+                if(e.InnerException is ConstraintViolationException constraintViolation)
+                    Capture(constraintViolation).Throw();
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Applies a concept to type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="C">Type of concept.</typeparam>
         /// <returns>Concept instance.</returns>
+        /// <exception cref="ConstraintViolationException">Type <typeparamref name="T"/> violates one of constraints specified by concept.</exception>
         public static C Concept<C>()
             where C: IConcept<T>, new()
-            => ConceptHolder<C>.Value;
+        {
+            Concept(typeof(C));
+            return ConceptHolder<C>.Value;
+        }
     }
 }

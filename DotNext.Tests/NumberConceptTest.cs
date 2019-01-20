@@ -38,5 +38,16 @@ namespace DotNext.Tests
             value = value * 2;
             Equal(84, value);
         }
+
+        private readonly struct InvalidNumber
+        {
+
+        }
+
+        [Fact]
+        public void InvalidActualTypeTest()
+        {
+            ThrowsAny<Reflection.ConstraintViolationException>(() => Reflection.Type<DateTime>.Concept<Number<DateTime>>());
+        }
     }
 }

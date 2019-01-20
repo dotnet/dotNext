@@ -14,7 +14,7 @@ namespace DotNext
     /// <typeparam name="T">Primitive numeric type.</typeparam>
     [CLSCompliant(false)]
     [Serializable]
-    public readonly struct Number<T>: IEquatable<T>
+    public readonly struct Number<T>: IEquatable<T>, IConcept<T>
         where T: struct, IConvertible, IComparable, IFormattable
     {
 		#region Concept Definition

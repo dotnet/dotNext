@@ -123,7 +123,7 @@ namespace DotNext.Reflection
         public static MethodInfo GetDisposeMethod(this Type type)
         {
             const string DisposeMethodName = nameof(IDisposable.Dispose);
-            const BindingFlags PublicInstanceMethod = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
+            const BindingFlags PublicInstanceMethod = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
             return typeof(IDisposable).IsAssignableFrom(type) ?
                 typeof(IDisposable).GetMethod(DisposeMethodName) :
                 type.GetMethod(DisposeMethodName, PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
