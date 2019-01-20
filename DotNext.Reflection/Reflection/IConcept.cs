@@ -8,10 +8,4 @@ namespace DotNext.Reflection
     {
          
     }
-
-    public static class Concept
-    {
-
-        
-    }
 }

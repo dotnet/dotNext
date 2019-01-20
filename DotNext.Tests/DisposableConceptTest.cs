@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Xunit;
 
-namespace DotNext.Tests
+namespace DotNext
 {
     public sealed class DisposableConceptTest: Assert
     {

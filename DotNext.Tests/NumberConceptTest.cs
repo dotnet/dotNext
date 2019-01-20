@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace DotNext.Tests
+namespace DotNext
 {
     public sealed class NumberConceptTest: Assert
     { 

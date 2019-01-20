@@ -21,7 +21,12 @@ namespace DotNext.Reflection
         {
             try
             {
-                RunClassConstructor(conceptType.TypeHandle);
+                //run class constructor for concept type and its parents
+                while(!(conceptType is null))
+                {
+                    RunClassConstructor(conceptType.TypeHandle);
+                    conceptType = conceptType.BaseType;
+                }
             } 
             catch(TypeInitializationException e)
             {
