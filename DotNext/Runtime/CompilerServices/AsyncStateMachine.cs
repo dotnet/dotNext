@@ -25,7 +25,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <summary>
         /// Runtime state associated with this state machine.
         /// </summary>
-        public STATE state;
+        public STATE State;
 
         private AsyncTaskMethodBuilder builder;
         private readonly Transition transition;
@@ -34,7 +34,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             builder = AsyncTaskMethodBuilder.Create();
             this.transition = transition;
-            this.state = state;
+            this.State = state;
             StateId = INITIAL_STATE;
         }
 
@@ -77,7 +77,7 @@ namespace DotNext.Runtime.CompilerServices
         public void MoveNext<TAwaiter>(ref TAwaiter awaiter, int stateId)
             where TAwaiter: ICriticalNotifyCompletion
         {
-            this.StateId = stateId;
+            StateId = stateId;
             builder.AwaitUnsafeOnCompleted(ref awaiter, ref this);
         }
 
@@ -103,7 +103,7 @@ namespace DotNext.Runtime.CompilerServices
     {
         public delegate void Transition(ref AsyncStateMachine<STATE, R> stateMachine);
 
-        public STATE state;
+        public STATE State;
         private AsyncTaskMethodBuilder<R> builder;
         private readonly Transition transition;
 
@@ -111,7 +111,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             builder = AsyncTaskMethodBuilder<R>.Create();
             StateId = AsyncStateMachine<STATE>.INITIAL_STATE;
-            this.state = state;
+            State = state;
             this.transition = transition;
         }
 
@@ -148,7 +148,7 @@ namespace DotNext.Runtime.CompilerServices
         public void MoveNext<TAwaiter>(ref TAwaiter awaiter, int stateId)
             where TAwaiter: ICriticalNotifyCompletion
         {
-            this.StateId = stateId;
+            StateId = stateId;
             builder.AwaitUnsafeOnCompleted(ref awaiter, ref this);
         }
 

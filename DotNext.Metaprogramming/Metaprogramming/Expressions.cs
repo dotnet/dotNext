@@ -205,6 +205,6 @@ namespace DotNext.Metaprogramming
 
         public static Expression<D> ToAsyncLambda<D>(this Expression<D> lambda)
             where D : Delegate
-            => AsyncLambdaRewriter<D>.Rewrite(lambda);
+            => Runtime.CompilerServices.AsyncStateMachineBuilder<D>.Build(lambda);
     }
 }

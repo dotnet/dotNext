@@ -10,7 +10,31 @@ namespace DotNext.Reflection
 	/// Various extension methods for type reflection.
 	/// </summary>
 	public static class Types
-	{
+    {
+        public static MethodInfo GetMethod(this Type type, string methodName, BindingFlags flags, long genericParamCount, params Type[] parameters)
+        {
+            foreach(var method in type.GetMethods(flags))
+                if(method.Name == methodName && method.GetGenericArguments().LongLength == genericParamCount)
+                {
+                    var success = false;
+                    //check signature
+                    var actualParams = method.GetParameterTypes();
+                    if (success = (actualParams.LongLength == parameters.LongLength))
+                        for (var i = 0L; i < actualParams.LongLength; i++)
+                        {
+                            var actual = actualParams[i];
+                            var expected = parameters[i];
+                            if (success = ((actual.IsGenericParameter && expected is null) || actual == expected))
+                                continue;
+                            else
+                                break;
+                        }
+                    if (success)
+                        return method;
+                }
+            return null;
+        }
+
 		public static MethodInfo GetMethod<D>(this Type type, string name, BindingFlags flags)
 			where D: MulticastDelegate
 			=> type.GetMethod(name, flags, Type.DefaultBinder, typeof(D).GetInvokeMethod().GetParameterTypes(), Array.Empty<ParameterModifier>());

@@ -25,7 +25,7 @@ namespace DotNext.Runtime.CompilerServices
         /// Constructs value tuple.
         /// </summary>
         /// <returns>Value tuple.</returns>
-        public Type BuildType()
+        public Type Build()
         {
             switch (Count)
             {
@@ -34,39 +34,39 @@ namespace DotNext.Runtime.CompilerServices
                 case 1:
                     return typeof(ValueTuple<>).MakeGenericType(items[0]);
                 case 2:
-                    return typeof(ValueTuple<,>).MakeGenericType(items[1], items[2]);
+                    return typeof(ValueTuple<,>).MakeGenericType(items[0], items[1]);
                 case 3:
-                    return typeof(ValueTuple<,,>).MakeGenericType(items[1], items[2], items[3]);
+                    return typeof(ValueTuple<,,>).MakeGenericType(items[0], items[1], items[2]);
                 case 4:
-                    return typeof(ValueTuple<,,,>).MakeGenericType(items[1], items[2], items[3], items[4]);
+                    return typeof(ValueTuple<,,,>).MakeGenericType(items[0], items[1], items[2], items[3]);
                 case 5:
-                    return typeof(ValueTuple<,,,,>).MakeGenericType(items[1], items[2], items[3], items[4], items[5]);
+                    return typeof(ValueTuple<,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4]);
                 case 6:
-                    return typeof(ValueTuple<,,,,,>).MakeGenericType(items[1], items[2], items[3], items[4], items[5], items[6]);
+                    return typeof(ValueTuple<,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5]);
                 case 7:
-                    return typeof(ValueTuple<,,,,,,>).MakeGenericType(items[1], items[2], items[3], items[4], items[5], items[6], items[7]);
+                    return typeof(ValueTuple<,,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5], items[6]);
                 default:
-                    return typeof(ValueTuple<,,,,,,,>).MakeGenericType(items[1], items[2], items[3], items[4], items[5], items[6], items[7], Rest.BuildType());
+                    return typeof(ValueTuple<,,,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5], items[6], Rest.Build());
             }
         }
 
-        private void BuildFields(Expression instance, Span<MemberExpression> output)
+        private void Build(Expression instance, Span<MemberExpression> output)
         {
             for (var i = 0; i < items.Count; i++)
-                output[i] = Expression.Field(instance, "Item" + i);
+                output[i] = Expression.Field(instance, "Item" + (i + 1));
             if (!(Rest is null))
             {
                 instance = Expression.Field(instance, "Rest");
-                BuildFields(instance, output.Slice(8));
+                Build(instance, output.Slice(8));
             }
         }
 
-        public MemberExpression[] BuildFields<E>(Func<Type, E> expressionFactory, out E expression)
+        public MemberExpression[] Build<E>(Func<Type, E> expressionFactory, out E expression)
             where E : Expression
         {
-            expression = expressionFactory(BuildType());
+            expression = expressionFactory(Build());
             var fieldAccessExpression = new MemberExpression[Count];
-            BuildFields(expression, fieldAccessExpression.AsSpan());
+            Build(expression, fieldAccessExpression.AsSpan());
             return fieldAccessExpression;
         }
 

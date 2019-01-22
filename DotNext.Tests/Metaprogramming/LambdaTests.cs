@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace DotNext.Metaprogramming
@@ -24,19 +26,24 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void AsyncTest()
+        public void SimpleAsyncTest()
         {
-            var lambda = LambdaBuilder<Func<long, long, long>>.Build(fun =>
+            var lambda = LambdaBuilder<Func<int, int, Task<int>>>.Build(fun =>
             {
                 UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
-                fun.If(arg0 > arg1)
-                    .Then(then =>
-                    {
-                        var localVar = fun.DeclareVariable<string>("local");
-                        then.Assign(localVar, arg1.Call(nameof(long.ToString)));
-                    })
-                    .End();
-                fun.Assign(fun.Result, arg0 + arg1);
+                fun.Assign(fun.Result, new TaskExpression(arg0 + arg1));
+            })
+            .Compile();
+            Equal(42, lambda(40, 2).Result);
+        }
+
+        [Fact]
+        public void AsyncTest()
+        {
+            var lambda = LambdaBuilder<Func<long, long, Task<long>>>.Build(fun =>
+            {
+                UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
+                fun.Assign(fun.Result, new AwaitExpression(new TaskExpression(arg0 + arg1)));
             });
             lambda.ToAsyncLambda();
         }

@@ -11,7 +11,7 @@ namespace DotNext.Metaprogramming
     /// </summary>
     public sealed class AwaitExpression : Expression
     {
-        internal AwaitExpression(Expression expression)
+        public AwaitExpression(Expression expression)
         {
             //expression type must have type with GetAwaiter() method
             const BindingFlags PublicInstanceMethod = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
@@ -34,7 +34,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Gets result type of asynchronous operation.
         /// </summary>
-        public override Type Type => GetResultMethod.ReturnType;
+        public override Type Type => GetAwaiter.Object.Type;
 
         /// <summary>
         /// Always return <see langword="true"/>.
@@ -52,7 +52,7 @@ namespace DotNext.Metaprogramming
         /// result in synchronous manner.
         /// </summary>
         /// <returns>Method call expression.</returns>
-        public override Expression Reduce() => GetAwaiter.Call(GetResultMethod);
+        public override Expression Reduce() => GetAwaiter.Object;
 
         protected override Expression VisitChildren(ExpressionVisitor visitor)
             => visitor.Visit(Reduce());

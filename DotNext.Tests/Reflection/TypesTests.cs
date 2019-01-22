@@ -1,4 +1,6 @@
 using System;
+using System.Reflection;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Xunit;
 
@@ -35,5 +37,21 @@ namespace DotNext.Reflection
             Equal(typeof(string), typeof(MyList).GetCollectionElementType(out var enumerable));
             Equal(typeof(IEnumerable<string>), enumerable);
         }
-	}
+
+        private static void GenericMethod<T>(T arg, int i)
+        {
+
+        }
+
+        [Fact]
+        public void GetGenericMethodTest()
+        {
+            var method = typeof(Task).GetMethod(nameof(Task.FromException), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 0, typeof(Exception));
+            NotNull(method);
+            method = typeof(Task).GetMethod(nameof(Task.FromException), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, typeof(Exception));
+            NotNull(method);
+            method = typeof(TypesTest).GetMethod(nameof(GenericMethod), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, typeof(int));
+            NotNull(method);
+        }
+    }
 }
