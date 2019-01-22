@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    using Runtime.CompilerServices;
     using static Collections.Generic.Collections;
 
     internal sealed class StateFieldAllocator: ExpressionVisitor
@@ -104,33 +105,17 @@ namespace DotNext.Metaprogramming
             tupleType.GetField("Item1" + fieldNumber)
         }
 
-        private static Type AllocateStateStruct<S>(MemberExpression parentTuple, S[] slots, IDictionary<S, MemberExpression> output)
+        private static ParameterExpression AllocateStateStruct<S>(S[] slots, IDictionary<S, MemberExpression> output)
             where S: ISlot
         {
-            Type result;
-            switch(slots.LongLength)
-            {
-                case 0:
-                    return typeof(ValueTuple);
-                case 1:
-                    result = typeof(ValueTuple<>).MakeGenericType(slots[0].Type);
-                    output[slots[0]] = GetTupleField(parentTuple, result, 1);
-                    break;
-                case 2:
-                    result = typeof(ValueTuple<,>).MakeGenericType(slots[0].Type, slots[1].Type);
-                    output[slots[0]] = GetTupleField(parentTuple, result, 1);
-                    output[slots[1]] = GetTupleField(parentTuple, result, 2);
-                    break;
-                /*case 3:
-                    return typeof(ValueTuple<,,>).MakeGenericType(awaiters[0], awaiters[1], awaiters[2]);
-                case 4:
-                    return typeof(ValueTuple<,,,>).MakeGenericType(awaiters[0], awaiters[1], awaiters[2], awaiters[3]);
-                case 5:
-                    return typeof(ValueTuple<,,,,>).MakeGenericType(awaiters[0], awaiters[1], awaiters[2], awaiters[3], awaiters[5]);
-                    */
-                default:
-                    result = typeof(ValueTu)
-            }
+            //construct value type
+            var builder = new ValueTupleBuilder();
+            slots.ForEach(slot => builder.Add(slot.Type));
+            //discover slots
+            var fields = builder.BuildFields(Expression.Parameter, out var stateHolder);
+            for (var i = 0L; i < fields.LongLength; i++)
+                output[slots[i]] = fields[i];
+            return stateHolder;
         }
 
         internal bool Allocate(Expression root)

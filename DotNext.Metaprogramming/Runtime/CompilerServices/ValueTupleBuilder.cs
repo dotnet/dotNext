@@ -4,15 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace DotNext
+namespace DotNext.Runtime.CompilerServices
 {
+    /// <summary>
+    /// Represents value tuple builder with arbitrary number of tuple
+    /// items.
+    /// </summary>
+    /// <see cref="ValueTuple"/>
     public sealed class ValueTupleBuilder: Disposable, IEnumerable<Type>
     {
         private readonly IList<Type> items = new List<Type>(7);//no more than 7 items
         private ValueTupleBuilder Rest;
 
+        /// <summary>
+        /// Number of elements in the tuple.
+        /// </summary>
         public int Count => items.Count + (Rest is null ? 0 : Rest.Count);
 
+        /// <summary>
+        /// Constructs value tuple.
+        /// </summary>
+        /// <returns>Value tuple.</returns>
         public Type BuildType()
         {
             switch (Count)
@@ -38,14 +50,14 @@ namespace DotNext
             }
         }
 
-        private void FillFields(Expression instance, Span<MemberExpression> output)
+        private void BuildFields(Expression instance, Span<MemberExpression> output)
         {
             for (var i = 0; i < items.Count; i++)
                 output[i] = Expression.Field(instance, "Item" + i);
             if (!(Rest is null))
             {
                 instance = Expression.Field(instance, "Rest");
-                FillFields(instance, output.Slice(8));
+                BuildFields(instance, output.Slice(8));
             }
         }
 
@@ -54,10 +66,14 @@ namespace DotNext
         {
             expression = expressionFactory(BuildType());
             var fieldAccessExpression = new MemberExpression[Count];
-            FillFields(expression, fieldAccessExpression.AsSpan());
+            BuildFields(expression, fieldAccessExpression.AsSpan());
             return fieldAccessExpression;
         }
 
+        /// <summary>
+        /// Adds new item into tuple.
+        /// </summary>
+        /// <param name="itemType">Type of item.</param>
         public void Add(Type itemType)
         {
             if (Count < 7)
