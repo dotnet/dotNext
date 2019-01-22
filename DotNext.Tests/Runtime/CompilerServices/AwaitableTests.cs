@@ -12,8 +12,8 @@ namespace DotNext.Runtime.CompilerServices
             var task = Task<long>.Factory.StartNew(() => 42);
             task.Wait();
             var awaiter = task.GetAwaiter();
-            True(Awaitable<TaskAwaiter<long>, long>.IsCompleted(awaiter));
-            Equal(42, Awaitable<TaskAwaiter<long>, long>.GetResult(awaiter));
+            True(Awaiter<TaskAwaiter<long>, long>.IsCompleted(awaiter));
+            Equal(42, Awaiter<TaskAwaiter<long>, long>.GetResult(awaiter));
         }
 
         public sealed class ValueHolder
@@ -30,8 +30,8 @@ namespace DotNext.Runtime.CompilerServices
             var task = Task.Factory.StartNew(holder.ChangeValue);
             task.Wait();
             var awaiter = task.GetAwaiter();
-            True(Awaitable<TaskAwaiter>.IsCompleted(awaiter));
-            Awaitable<TaskAwaiter>.GetResult(awaiter);
+            True(Awaiter<TaskAwaiter>.IsCompleted(awaiter));
+            Awaiter<TaskAwaiter>.GetResult(awaiter);
             Equal(42, holder.Value);
         }
     }

@@ -139,6 +139,17 @@ namespace DotNext.Metaprogramming
         public static Expression Property(this Expression instance, string propertyName, params Expression[] indicies)
             => instance.Property(instance.Type, propertyName, indicies);
 
+        public static MemberExpression Field(this Expression instance, FieldInfo field)
+            => Expression.Field(instance, field);
+
+        public static MemberExpression Field(this Expression instance, string fieldName)
+        {
+            var field = instance.GetType().GetField(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            return field is null ?
+                throw new MissingFieldException($"Field {fieldName} doesn't exist in type {instance.Type.FullName}") :
+                instance.Field(field);
+        }
+
         public static LoopExpression Loop(this Expression body, LabelTarget @break, LabelTarget @continue)
             => Expression.Loop(body, @break, @continue);
 
@@ -196,5 +207,9 @@ namespace DotNext.Metaprogramming
 
         public static SwitchBuilder Switch(this Expression switchValue, ExpressionBuilder parent = null)
             => new SwitchBuilder(switchValue, parent, false);
+
+        public static Expression<D> ToAsyncLambda<D>(this Expression<D> lambda)
+            where D : Delegate
+            => AsyncLambdaRewriter<D>.Rewrite(lambda);
     }
 }

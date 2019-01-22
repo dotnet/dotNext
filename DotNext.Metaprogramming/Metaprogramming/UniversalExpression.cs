@@ -11,7 +11,7 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents any expression with full support
     /// of overloaded operators and conversion from
-    /// regular data types.
+    /// primitive data types.
     /// </summary>
     /// <remarks>
     /// This class is intended for expression building purposes only.
@@ -157,7 +157,11 @@ namespace DotNext.Metaprogramming
         public UniversalExpression Property(Type interfaceType, string propertyName, params UniversalExpression[] indicies) => expression.Property(interfaceType, propertyName, AsExpressions(indicies));
 
         public UniversalExpression Property(string propertyName, params UniversalExpression[] indicies) => expression.Property(propertyName, AsExpressions(indicies));
-        
+
+        public UniversalExpression Field(FieldInfo field) => expression.Field(field);
+
+        public UniversalExpression Field(string fieldName) => expression.Field(fieldName);
+
         public UniversalExpression Loop(LabelTarget @break, LabelTarget @continue) => expression.Loop(@break, @continue);
         
         public UniversalExpression Loop(LabelTarget @break) => expression.Loop(@break);

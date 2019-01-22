@@ -1,6 +1,6 @@
 using System;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -13,12 +13,12 @@ namespace DotNext.Runtime.CompilerServices
     /// This concept doesn't provide methods to obtain task result.
     /// </remarks>
     /// <typeparam name="TAwaiter">Any type implementing awaiter pattern</typeparam>
-    public abstract class AwaitableBase<TAwaiter>: IConcept<TAwaiter>
+    public abstract class AwaiterBase<TAwaiter>: IConcept<TAwaiter>
         where TAwaiter: ICriticalNotifyCompletion
     {
         private static readonly MemberGetter<TAwaiter, bool> isCompleted = Type<TAwaiter>.Property<bool>.GetGetter(nameof(TaskAwaiter.IsCompleted));
 
-        private protected AwaitableBase() => throw new NotSupportedException();
+        private protected AwaiterBase() => throw new NotSupportedException();
 
         /// <summary>
         /// Gets a value that indicates whether the asynchronous task has completed.
@@ -55,10 +55,10 @@ namespace DotNext.Runtime.CompilerServices
     /// <typeparam name="R">Type of asynchronous result</typeparam>
     /// <see cref="Task{TResult}"/>
     /// <seealso cref="TaskAwaiter{TResult}"/>
-    public sealed class Awaitable<TAwaiter, R>: AwaitableBase<TAwaiter>
+    public sealed class Awaiter<TAwaiter, R>: AwaiterBase<TAwaiter>
         where TAwaiter: ICriticalNotifyCompletion
     {
-        private Awaitable() => throw new NotSupportedException();
+        private Awaiter() => throw new NotSupportedException();
 
         private static readonly MemberGetter<TAwaiter, R> getResult = Type<TAwaiter>.Method.Get<MemberGetter<TAwaiter, R>>(nameof(TaskAwaiter<R>.GetResult), MethodLookup.Instance);
 
@@ -80,12 +80,12 @@ namespace DotNext.Runtime.CompilerServices
     /// <typeparam name="TAwaiter">Any type implementing awaiter pattern</typeparam>
     /// <seealso cref="TaskAwaiter"/>
     /// <seealso cref="Task"/>
-    public sealed class Awaitable<TAwaiter>: AwaitableBase<TAwaiter>
+    public sealed class Awaiter<TAwaiter>: AwaiterBase<TAwaiter>
         where TAwaiter: ICriticalNotifyCompletion
     {
         private delegate void GetResultMethod(in TAwaiter awaiter);
 
-        private Awaitable() => throw new NotSupportedException();
+        private Awaiter() => throw new NotSupportedException();
 
         private static readonly GetResultMethod getResult = Type<TAwaiter>.Method.Get<GetResultMethod>(nameof(TaskAwaiter.GetResult), MethodLookup.Instance);
 

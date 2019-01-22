@@ -120,6 +120,16 @@ namespace DotNext.Reflection
         public static Type GetCollectionElementType(this Type collectionType)
             => collectionType.GetCollectionElementType(out _);
 
+        /// <summary>
+        /// Gets Dispose method which implements dispose pattern.
+        /// </summary>
+        /// <remarks>
+        /// This method checks whether the type implements <see cref="IDisposable"/>.
+        /// If it is then return <see cref="IDisposable.Dispose"/> method. Otherwise,
+        /// return public instance method with name Dispose.
+        /// </remarks>
+        /// <param name="type">The type to inspect.</param>
+        /// <returns>Dispose method; or <see langword="null"/>, if this method doesn't exist.</returns>
         public static MethodInfo GetDisposeMethod(this Type type)
         {
             const string DisposeMethodName = nameof(IDisposable.Dispose);
