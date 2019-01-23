@@ -34,7 +34,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             builder = AsyncTaskMethodBuilder.Create();
             this.transition = transition;
-            this.State = state;
+            State = state;
             StateId = INITIAL_STATE;
         }
 

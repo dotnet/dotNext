@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Runtime.ExceptionServices;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
@@ -9,7 +9,7 @@ namespace DotNext.Runtime.CompilerServices
     using Reflection;
     using static Collections.Generic.Collections;
 
-    internal sealed class AsyncStateMachineBuilder : ExpressionVisitor
+    internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     {
         private sealed class AsyncStateMachineType
         {
@@ -115,21 +115,40 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
-        private readonly Type asyncReturnType;
+        internal readonly Type AsyncReturnType;
+        //stored captured exception to re-throw
+        private readonly ParameterExpression capturedException;
         private readonly IDictionary<ISlot, MemberExpression> variables;
+        //a set of variables which are not propagated as state slots
+        private readonly ISet<ParameterExpression> ignoredVariables;
         //indicates that lambda body has at least one async call
         private bool hasNestedAsyncCalls = false;
 
         internal AsyncStateMachineBuilder(Type returnType)
         {
+            if(returnType is null)
+                throw new ArgumentException("Invalid return type of async method");
             variables = new Dictionary<ISlot, MemberExpression>();
-            asyncReturnType = returnType;
+            ignoredVariables = new HashSet<ParameterExpression>();
+            AsyncReturnType = returnType;
+            capturedException = Expression.Variable(typeof(ExceptionDispatchInfo));
+            variables.Add((VariableSlot)capturedException, null);
         }
 
         protected override Expression VisitParameter(ParameterExpression variable)
         {
-            variables[(VariableSlot)variable] = null; //field is uknown at this moment
-            return variable;
+            if (!ignoredVariables.Contains(variable))
+                variables[(VariableSlot)variable] = null; //field is uknown at this moment
+            return base.VisitParameter(variable);
+        }
+
+        protected override Expression VisitTry(TryExpression node)
+        {
+            //exception variables should not be placed as state slots
+            foreach (var @catch in node.Handlers)
+                if (!(@catch.Variable is null))
+                    ignoredVariables.Add(@catch.Variable);
+            return base.VisitTry(node);
         }
 
         public override Expression Visit(Expression node)
@@ -156,7 +175,7 @@ namespace DotNext.Runtime.CompilerServices
                 {
                     variables.ForEach(slot => builder.Add(slot.Type));
                     //discover slots and build state machine type
-                    var type = new AsyncStateMachineType(asyncReturnType);
+                    var type = new AsyncStateMachineType(AsyncReturnType);
                     fields = builder.Build(type.MakeStateHolder, out _);
                     for (var i = 0L; i < fields.LongLength; i++)
                         this.variables[variables[i]] = fields[i];
@@ -167,6 +186,11 @@ namespace DotNext.Runtime.CompilerServices
             else
                 return null;
         }
+
+        /// <summary>
+        /// Gets state storage slot for the captured exception.
+        /// </summary>
+        internal MemberExpression CapturedException => this[capturedException];
 
         /// <summary>
         /// Returns state storage slot for the specified local variable.
@@ -183,38 +207,130 @@ namespace DotNext.Runtime.CompilerServices
         /// <returns></returns>
         internal MemberExpression this[AwaitExpression awaiterType]
             => variables[(AwaiterSlot)awaiterType];
+
+        public void Dispose()
+        {
+            variables.Clear();
+            ignoredVariables.Clear();
+        }
     }
 
-    internal sealed class AsyncStateMachineBuilder<D>: ExpressionVisitor
+    internal sealed class AsyncStateMachineBuilder<D>: ExpressionVisitor, IDisposable
         where D: Delegate
     {
-        private readonly Type returnType;
+        /*
+         Try-catch-finally transformation:
+            try
+            {
+                await A;
+                B;
+            }
+            catch(Exception e)
+            {
+                await C;
+                D;
+            }
+            finally
+            {
+                F;
+            }
 
-        private AsyncStateMachineBuilder(Type asyncReturnType)
+            transformed into
+            begin:
+            try
+            {
+                switch(state)
+                {
+                    case 1: goto state_1;
+                    case 2: goto state_2;
+                    case 3: goto catch_block;
+                    case 4: goto exit_try;
+                }
+                awaiter1 = A;
+                state = 1;
+                return;
+                state_1:
+                awaiter1.GetResult();
+                B;
+                goto exit_try;
+                //catch block
+                catch_block:
+                awaiter2 = C;
+                state = 2;
+                return;
+                state_2:
+                awaiter2.GetResult();
+                D;
+                exit_try:
+                //finally block
+                F;
+                if(rethrowException != null)
+                    rethrowException.Throw();
+            }
+            catch(Exception e)
+            {
+                switch(state)
+                {
+                    case 0: 
+                    case 1: state = 3; goto begin;
+                    case 2: state = 4; goto begin;
+                }
+                builder.SetException(e);
+            }
+            builder.SetResult(default(R));
+            end:
+         */
+        private readonly AsyncStateMachineBuilder methodBuilder;
+        private readonly ParameterExpression stateMachine;
+        //this label indicates beginning of async method
+        //should be placed before try
+        private readonly LabelTarget asyncMethodBegin;
+        //this label indicates end of async method
+        private readonly LabelTarget asyncMethodEnd;
+        //body of async method inside of try section
+        private readonly ICollection<Expression> tryBlock;
+        //a table with labels and how to handle exceptions
+        private readonly IDictionary<int, LabelTarget> exceptionSwitchTable;
+        //a table with labels in the beginning of async state machine
+        private readonly IDictionary<int, LabelTarget> stateSwitchTable;
+        private int stateId;
+
+        private AsyncStateMachineBuilder(Expression<D> source)
         {
-            if (asyncReturnType is null)
-                throw new ArgumentException("Invalid return type of async method");
-            returnType = asyncReturnType;
+            methodBuilder = new AsyncStateMachineBuilder(source.ReturnType.GetTaskType());
+            stateMachine = methodBuilder.Initialize(source.Body);
+            asyncMethodBegin = Expression.Label("begin_async_method");
+            asyncMethodEnd = Expression.Label("end_async_method");
+            tryBlock = new LinkedList<Expression>();
+            exceptionSwitchTable = new Dictionary<int, LabelTarget>();
+            stateSwitchTable = new Dictionary<int, LabelTarget>();
+            stateId = AsyncStateMachine<ValueTuple>.INITIAL_STATE;
         }
 
-        private static BlockExpression BuildSynchronousVoidLambda(Expression body)
-        {
-            return null;
-        }
+        private int NextState() => ++stateId;
 
         private Expression<D> Build(Expression body, IReadOnlyCollection<ParameterExpression> parameters)
         {
-            var builder = new AsyncStateMachineBuilder(returnType);
-            var stateMachine = builder.Initialize(body);
             if (stateMachine is null)
                 return null;
+            
             return null;
         }
 
         internal static Expression<D> Build(Expression<D> source)
         {
-            var builder = new AsyncStateMachineBuilder<D>(source.ReturnType.GetTaskType());
-            return builder.Build(source.Body, source.Parameters) ?? source;
+            using (var builder = new AsyncStateMachineBuilder<D>(source))
+            {
+                return builder.Build(source.Body, source.Parameters) ?? source;
+            }
+        }
+
+        public void Dispose()
+        {
+            methodBuilder.Dispose();
+            tryBlock.Clear();
+            exceptionSwitchTable.Clear();
+            stateSwitchTable.Clear();
         }
     }
 }
