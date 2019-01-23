@@ -75,6 +75,15 @@ namespace DotNext.Metaprogramming
         public static UnaryExpression PostDecrementAssign(this Expression left)
             => Expression.PostDecrementAssign(left);
 
+        public static BinaryExpression Assign(this ParameterExpression left, Expression value)
+            => Expression.Assign(left, value);
+
+        public static BinaryExpression Assign(this MemberExpression left, Expression value)
+            => Expression.Assign(left, value);
+
+        public static BinaryExpression Assign(this IndexExpression left, Expression value)
+            => Expression.Assign(left, value);
+
         public static UnaryExpression Convert(this Expression expression, Type targetType)
             => Expression.Convert(expression, targetType);
 

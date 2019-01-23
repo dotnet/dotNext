@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
+    using static Collections.Generic.Dictionaries;
     using Metaprogramming;
     using Reflection;
     using static Collections.Generic.Collections;
@@ -24,9 +25,11 @@ namespace DotNext.Runtime.CompilerServices
 
             internal MemberExpression MakeStateHolder(Type stateType)
             {
-                stateMachine = Expression.Parameter(returnType == typeof(void) ?
+                var stateMachineType = returnType == typeof(void) ?
                     typeof(AsyncStateMachine<>).MakeGenericType(stateType) :
-                    typeof(AsyncStateMachine<,>).MakeGenericType(stateType, returnType));
+                    typeof(AsyncStateMachine<,>).MakeGenericType(stateType, returnType);
+                stateMachineType = stateMachineType.MakeByRefType();
+                stateMachine = Expression.Parameter(stateMachineType);
                 return stateMachine.Field(nameof(AsyncStateMachine<int>.State));
             }
         }
@@ -198,7 +201,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="variable">Local variable.</param>
         /// <returns>A field access expression.</returns>
         internal MemberExpression this[ParameterExpression variable]
-            => variables[(VariableSlot)variable];
+            => variables.TryGetValue((VariableSlot)variable, out var result) ? result : null;
 
         /// <summary>
         /// Returns state storage slot for the async result. 
@@ -206,7 +209,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="awaiterType">Awaiter type.</param>
         /// <returns></returns>
         internal MemberExpression this[AwaitExpression awaiterType]
-            => variables[(AwaiterSlot)awaiterType];
+            => variables.TryGetValue((AwaiterSlot)awaiterType, out var result) ? result : null;
 
         public void Dispose()
         {
@@ -276,6 +279,7 @@ namespace DotNext.Runtime.CompilerServices
                     case 2: state = 4; goto begin;
                 }
                 builder.SetException(e);
+                goto end;
             }
             builder.SetResult(default(R));
             end:
@@ -285,7 +289,7 @@ namespace DotNext.Runtime.CompilerServices
         //this label indicates beginning of async method
         //should be placed before try
         private readonly LabelTarget asyncMethodBegin;
-        //this label indicates end of async method
+        //this label indicates end of async method when successful result should be returned
         private readonly LabelTarget asyncMethodEnd;
         //body of async method inside of try section
         private readonly ICollection<Expression> tryBlock;
@@ -303,18 +307,76 @@ namespace DotNext.Runtime.CompilerServices
             asyncMethodEnd = Expression.Label("end_async_method");
             tryBlock = new LinkedList<Expression>();
             exceptionSwitchTable = new Dictionary<int, LabelTarget>();
-            stateSwitchTable = new Dictionary<int, LabelTarget>();
+            stateSwitchTable = new Dictionary<int, LabelTarget>();           
             stateId = AsyncStateMachine<ValueTuple>.INITIAL_STATE;
         }
 
         private int NextState() => ++stateId;
 
+        //replace every local variable with appropriate state slot
+        protected override Expression VisitParameter(ParameterExpression node)
+        {
+            var slot = methodBuilder[node];
+            return slot is null ? base.VisitParameter(node) : VisitMember(slot);
+        }
+
+        public override Expression Visit(Expression node)
+        {
+            if (node is AsyncResultExpression result)
+                node = result.Reduce(stateMachine, asyncMethodEnd);
+            else if (node is AwaitExpression await)
+            {
+                var state = NextState();
+                var stateLabel = Expression.Label("state_" + state);
+                stateSwitchTable[state] = stateLabel;
+                node = await.Reduce(stateMachine, methodBuilder[await], state, stateLabel, asyncMethodEnd);
+            }
+            return base.Visit(node);
+        }
+
+        private static Expression CreateFallbackResult(ParameterExpression stateMachine)
+        {
+            var resultProperty = stateMachine.Type.GetProperty(nameof(AsyncStateMachine<ValueTuple, int>.Result));
+            if (!(resultProperty is null))
+                return Expression.Property(stateMachine, resultProperty).Assign(resultProperty.PropertyType.Default());
+            //else, just call Complete method
+            return stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Complete));
+        }
+
         private Expression<D> Build(Expression body, IReadOnlyCollection<ParameterExpression> parameters)
         {
             if (stateMachine is null)
                 return null;
-            
-            return null;
+            body = Visit(body);
+            //build switch table
+            ICollection<SwitchCase> stateSwitchTable = new LinkedList<SwitchCase>();
+            foreach (var (state, label) in this.stateSwitchTable)
+                stateSwitchTable.Add(Expression.SwitchCase(label.Goto(), state.AsConst()));
+            //build exception handling table
+            ICollection<SwitchCase> exceptionSwitchTable = new LinkedList<SwitchCase>();
+            foreach (var (state, label) in this.exceptionSwitchTable)
+                exceptionSwitchTable.Add(Expression.SwitchCase(label.Goto(), state.AsConst()));
+            //build result fallback
+            var fallback = CreateFallbackResult(stateMachine);
+            //set exception
+            var stateMachineException = Expression.Variable(typeof(Exception), "e");
+            var setException = Expression.Assign(stateMachine.Property(nameof(IAsyncStateMachine<ValueTuple>.Exception)), stateMachineException);
+            //state field
+            var stateId = stateMachine.Property(nameof(IAsyncStateMachine<ValueTuple>.StateId));
+            //construct body inside of try block
+            body = Expression.Block(Expression.Switch(stateId, Expression.Empty(), null, stateSwitchTable), body);
+            //construct body inside of catch block
+            var stateMachineCatch = Expression.Catch(stateMachineException,
+                Expression.Block(Expression.Switch(stateId, Expression.Empty(), null, exceptionSwitchTable), setException)
+                );
+            //all together
+            body = Expression.Block(
+                asyncMethodBegin.LandingSite(),
+                Expression.TryCatch(body, stateMachineCatch),
+                fallback,
+                asyncMethodEnd.LandingSite());
+            //now we have state machine method, wrap it into lambda
+            var stateMachineMethod = Expression.Lambda()
         }
 
         internal static Expression<D> Build(Expression<D> source)

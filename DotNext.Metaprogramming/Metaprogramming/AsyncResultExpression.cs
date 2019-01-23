@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    using Runtime.CompilerServices;
     using Reflection;
 
     public sealed class AsyncResultExpression: Expression
@@ -40,5 +41,18 @@ namespace DotNext.Metaprogramming
                 completedTask :
                 TryCatch(completedTask, Catch(catchedException, failedTask));
         }
+
+        internal Expression Reduce(ParameterExpression stateMachine, LabelTarget endOfAsyncMethod)
+        {
+            //if state machine is non-void then use Result property
+            var resultProperty = stateMachine.Type.GetProperty(nameof(AsyncStateMachine<ValueTuple, int>.Result));
+            if (!(resultProperty is null))
+                return Block(Property(stateMachine, resultProperty).Assign(AsyncResult), endOfAsyncMethod.Goto());
+            //else, just call Complete method
+            return Block(AsyncResult, stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Complete)), endOfAsyncMethod.Goto());
+        }
+
+        protected override Expression VisitChildren(ExpressionVisitor visitor)
+            => visitor.Visit(AsyncResult);
     }
 }

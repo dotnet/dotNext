@@ -6,6 +6,9 @@ using TaskAwaiter = System.Runtime.CompilerServices.TaskAwaiter;
 
 namespace DotNext.Metaprogramming
 {
+    using static Reflection.Types;
+    using Runtime.CompilerServices;
+
     /// <summary>
     /// Represents <see langword="await"/> expression.
     /// </summary>
@@ -56,5 +59,15 @@ namespace DotNext.Metaprogramming
 
         protected override Expression VisitChildren(ExpressionVisitor visitor)
             => visitor.Visit(Reduce());
+
+        internal BlockExpression Reduce(ParameterExpression stateMachine, MemberExpression awaiterHolder, int state, LabelTarget stateLabel, LabelTarget returnLabel)
+        {
+            //save holder into slot
+            var saveAwaiter = Assign(awaiterHolder, GetAwaiter);
+            //move to the next state
+            const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+            var moveNext = stateMachine.Call(stateMachine.Type.GetMethod(nameof(IAsyncStateMachine<ValueTuple>.MoveNext), PublicInstance, 1, null, typeof(int)), awaiterHolder, state.AsConst());
+            return Block(saveAwaiter, moveNext, Return(returnLabel), stateLabel.LandingSite(), awaiterHolder.Call(GetResultMethod));
+        }
     }
 }

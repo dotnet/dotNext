@@ -11,7 +11,7 @@ namespace DotNext.Runtime.CompilerServices
     /// This type allows to implement custom async/await flow
     /// and intended for expert-level developers.
     /// </remarks>
-    public struct AsyncStateMachine<STATE>: IAsyncStateMachine
+    public struct AsyncStateMachine<STATE>: IAsyncStateMachine<STATE>
     {
         /// <summary>
         /// State machine transition.
@@ -37,6 +37,8 @@ namespace DotNext.Runtime.CompilerServices
             State = state;
             StateId = INITIAL_STATE;
         }
+
+        STATE IAsyncStateMachine<STATE>.State => State;
 
         public int StateId
         {
@@ -98,7 +100,7 @@ namespace DotNext.Runtime.CompilerServices
         void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
     }
 
-    public struct AsyncStateMachine<STATE, R>: IAsyncStateMachine
+    public struct AsyncStateMachine<STATE, R>: IAsyncStateMachine<STATE>
         where STATE: struct
     {
         public delegate void Transition(ref AsyncStateMachine<STATE, R> stateMachine);
@@ -114,6 +116,8 @@ namespace DotNext.Runtime.CompilerServices
             State = state;
             this.transition = transition;
         }
+
+        STATE IAsyncStateMachine<STATE>.State => State;
 
         public int StateId
         {
