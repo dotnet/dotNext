@@ -31,7 +31,7 @@ namespace DotNext.Metaprogramming
             var lambda = LambdaBuilder<Func<int, int, Task<int>>>.Build(fun =>
             {
                 UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
-                fun.Assign(fun.Result, new TaskExpression(arg0 + arg1));
+                fun.Assign(fun.Result, new AsyncResultExpression(arg0 + arg1));
             })
             .Compile();
             Equal(42, lambda(40, 2).Result);
@@ -43,7 +43,7 @@ namespace DotNext.Metaprogramming
             var lambda = LambdaBuilder<Func<long, long, Task<long>>>.Build(fun =>
             {
                 UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
-                fun.Assign(fun.Result, new AwaitExpression(new TaskExpression(arg0 + arg1)));
+                fun.Assign(fun.Result, new AwaitExpression(new AsyncResultExpression(arg0 + arg1)));
             });
             lambda.ToAsyncLambda();
         }

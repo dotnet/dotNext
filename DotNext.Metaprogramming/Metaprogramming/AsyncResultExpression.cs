@@ -7,12 +7,12 @@ namespace DotNext.Metaprogramming
 {
     using Reflection;
 
-    public sealed class TaskExpression: Expression
+    public sealed class AsyncResultExpression: Expression
     {
-        public TaskExpression(Expression result)
+        public AsyncResultExpression(Expression result)
             => AsyncResult = result;
 
-        public TaskExpression()
+        public AsyncResultExpression()
             : this(Empty())
         {
         }
