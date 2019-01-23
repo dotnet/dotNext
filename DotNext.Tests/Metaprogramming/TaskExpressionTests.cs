@@ -12,7 +12,7 @@ namespace DotNext.Metaprogramming
             Expression ret = new AsyncResultExpression(90.AsConst());
             Equal(typeof(Task<int>), ret.Type);
             ret = ret.Reduce();
-            IsType<TryExpression>(ret);
+            IsAssignableFrom<MethodCallExpression>(ret);
             Equal(typeof(Task<int>), ret.Type);
         }
 
@@ -22,7 +22,7 @@ namespace DotNext.Metaprogramming
             Expression ret = new AsyncResultExpression(Expression.Block(typeof(void), 42.AsConst()));
             Equal(typeof(Task), ret.Type);
             ret = ret.Reduce();
-            IsType<TryExpression>(ret);
+            IsAssignableFrom<TryExpression>(ret);
             Equal(typeof(Task), ret.Type);
         }
     }

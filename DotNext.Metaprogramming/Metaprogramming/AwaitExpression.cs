@@ -34,7 +34,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Gets result type of asynchronous operation.
         /// </summary>
-        public override Type Type => GetAwaiter.Object.Type;
+        public override Type Type => GetResultMethod.ReturnType;
 
         /// <summary>
         /// Always return <see langword="true"/>.
@@ -52,7 +52,7 @@ namespace DotNext.Metaprogramming
         /// result in synchronous manner.
         /// </summary>
         /// <returns>Method call expression.</returns>
-        public override Expression Reduce() => GetAwaiter.Object;
+        public override Expression Reduce() => GetAwaiter.Call(GetResultMethod);
 
         protected override Expression VisitChildren(ExpressionVisitor visitor)
             => visitor.Visit(Reduce());
