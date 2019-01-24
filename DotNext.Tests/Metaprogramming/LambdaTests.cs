@@ -54,7 +54,7 @@ namespace DotNext.Metaprogramming
             });
             lambda = lambda.ToAsyncLambda();
             var fn = lambda.Compile();
-            Equal(35L, fn(5L, 15L).Result);
+            Equal(35L, fn(5L, 10L).Result);
         }
     }
 }

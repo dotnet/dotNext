@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.ExceptionServices;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
@@ -306,25 +307,7 @@ namespace DotNext.Runtime.CompilerServices
             builder.SetResult(default(R));
             end:
          */
-        private sealed class Replacement : Expression
-        {
-            private readonly Expression expression;
-
-            internal Replacement(Expression expression)
-            {
-
-            }
-
-            public override Type Type => expression.Type;
-            public override bool CanReduce => true;
-            public override Expression Reduce() => expression;
-            public override ExpressionType NodeType => ExpressionType.Extension;
-            protected override Expression VisitChildren(ExpressionVisitor visitor)
-            {
-                var expression = visitor.Visit(this.expression);
-                return ReferenceEquals(this.expression, expression) ? this : new Replacement(expression);
-            }
-        }
+        
         private readonly AsyncStateMachineBuilder methodBuilder;
         private ParameterExpression stateMachine;
         //this label indicates beginning of async method
@@ -339,8 +322,6 @@ namespace DotNext.Runtime.CompilerServices
         //a table with labels in the beginning of async state machine
         private readonly IDictionary<int, LabelTarget> stateSwitchTable;
         private int stateId;
-        //lexical scope stack
-        private readonly Stack<Expression> walkingStack;
 
         private AsyncStateMachineBuilder(Expression<D> source)
         {
@@ -351,42 +332,17 @@ namespace DotNext.Runtime.CompilerServices
             exceptionSwitchTable = new Dictionary<int, LabelTarget>();
             stateSwitchTable = new Dictionary<int, LabelTarget>();           
             stateId = AsyncStateMachine<ValueTuple>.INITIAL_STATE;
-            walkingStack = new Stack<Expression>();
         }
+
+        
 
         private int NextState() => ++stateId;
-
-        private Expression Visit<E>(E expression, Func<E, Expression> visitor)
-            where E: Expression
-        {
-            walkingStack.Push(expression);
-            try
-            {
-                return visitor(expression);
-            }
-            finally
-            {
-                walkingStack.Pop();
-            }
-        }
 
         //replace every local variable with appropriate state slot
         protected override Expression VisitParameter(ParameterExpression node)
         {
             var slot = methodBuilder[node];
-            return slot is null ? Visit(node, base.VisitParameter) : Visit(slot, VisitMember);
-        }
-
-        protected override Expression VisitBlock(BlockExpression node)
-        {
-            var parent = walkingStack.Count > 0 ? walkingStack.Peek() : null;
-            //flatten block expression
-            if (parent is null || parent is BlockExpression || node.Expressions.Count < 2)
-                return Visit(node, base.VisitBlock);
-            else
-            {
-                node.Expressions.Last
-            }
+            return slot is null ? base.VisitParameter(node) : VisitMember(slot);
         }
 
         protected override Expression VisitExtension(Expression node)
@@ -401,8 +357,8 @@ namespace DotNext.Runtime.CompilerServices
                 node = await.Reduce(stateMachine, methodBuilder[await], state, stateLabel, asyncMethodEnd);
             }
             else
-                return Visit(node, base.VisitExtension);
-            return Visit(node, Visit);
+                return Visit(node.Reduce());
+            return Visit(node);
         }
 
         private static Expression CreateFallbackResult(ParameterExpression stateMachine)
@@ -435,24 +391,23 @@ namespace DotNext.Runtime.CompilerServices
             return Expression.Lambda<D>(Expression.Block(new[] { stateMachine }, newBody), parameters);
         }
 
+        private static SwitchExpression MakeSwitch(Expression stateId, IDictionary<int, LabelTarget> switchTable)
+        {
+            ICollection<SwitchCase> cases = new LinkedList<SwitchCase>();
+            foreach (var (state, label) in switchTable)
+                cases.Add(Expression.SwitchCase(label.Goto(), state.AsConst()));
+            return Expression.Switch(stateId, Expression.Empty(), null, cases);
+        }
+
         private Expression<D> Build(Expression body, IReadOnlyCollection<ParameterExpression> parameters)
         {
             //transformation stage #1 - replace all local variables
             stateMachine = methodBuilder.Initialize(parameters, ref body);
             if (stateMachine is null)
                 return null;
-            //transformation stage #2 - transform block expressions into statements and replace 
-            //await /async expression into well-known alternatives
+            //transformation stage #2 - replace await/async expression with well-known alternatives
             body = Visit(body);
             //transformation stage #3 - construct state machine method
-            //build switch table
-            ICollection<SwitchCase> stateSwitchTable = new LinkedList<SwitchCase>();
-            foreach (var (state, label) in this.stateSwitchTable)
-                stateSwitchTable.Add(Expression.SwitchCase(label.Goto(), state.AsConst()));
-            //build exception handling table
-            ICollection<SwitchCase> exceptionSwitchTable = new LinkedList<SwitchCase>();
-            foreach (var (state, label) in this.exceptionSwitchTable)
-                exceptionSwitchTable.Add(Expression.SwitchCase(label.Goto(), state.AsConst()));
             //build result fallback
             var fallback = CreateFallbackResult(stateMachine);
             //set exception
@@ -461,12 +416,20 @@ namespace DotNext.Runtime.CompilerServices
             //state field
             var stateId = stateMachine.Property(nameof(IAsyncStateMachine<ValueTuple>.StateId));
             //construct body inside of try block
-            body = Expression.Block(typeof(void), Expression.Switch(stateId, Expression.Empty(), null, stateSwitchTable), body);
+            if (body is BlockExpression block)
+            {
+                body = MakeSwitch(stateId, stateSwitchTable);
+                body = Expression.Block(typeof(void), block.Variables, Sequence.Single(body).Concat(block.Expressions));
+            }
+            else
+                body = Expression.Block(typeof(void), MakeSwitch(stateId, stateSwitchTable), body);
+            //stage 4 - replace block expressions with statements
+            body = BlockSimplifier.Simplify((BlockExpression)body);
             //construct body inside of catch block
             var stateMachineCatch = Expression.Catch(stateMachineException,
                         exceptionSwitchTable.Count == 0 ?
                             Expression.Block(typeof(void), setException) :
-                            Expression.Block(typeof(void), Expression.Switch(stateId, Expression.Empty(), null, exceptionSwitchTable), setException)
+                            Expression.Block(typeof(void), MakeSwitch(stateId, exceptionSwitchTable), setException)
                         );
             //all together
             body = Expression.Block(
