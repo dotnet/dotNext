@@ -47,12 +47,15 @@ namespace DotNext.Metaprogramming
             //if state machine is non-void then use Result property
             var resultProperty = stateMachine.Type.GetProperty(nameof(AsyncStateMachine<ValueTuple, int>.Result));
             if (!(resultProperty is null))
-                return Block(Property(stateMachine, resultProperty).Assign(AsyncResult), endOfAsyncMethod.Goto());
+                return Block(Property(stateMachine, resultProperty).Assign(AsyncResult), endOfAsyncMethod.Return());
             //else, just call Complete method
-            return Block(AsyncResult, stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Complete)), endOfAsyncMethod.Goto());
+            return Block(AsyncResult, stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Complete)), endOfAsyncMethod.Return());
         }
 
         protected override Expression VisitChildren(ExpressionVisitor visitor)
-            => visitor.Visit(AsyncResult);
+        {
+            var expression = visitor.Visit(AsyncResult);
+            return ReferenceEquals(expression, AsyncResult) ? this : new AsyncResultExpression(expression);
+        }
     }
 }

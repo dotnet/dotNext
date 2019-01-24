@@ -1,6 +1,7 @@
 using System;
-using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
+using System.Reflection;
 using Xunit;
 
 namespace DotNext.Metaprogramming
@@ -37,15 +38,23 @@ namespace DotNext.Metaprogramming
             Equal(42, lambda(40, 2).Result);
         }
 
+        private static Task<long> Sum(long x, long y)
+            => Task.FromResult(x + y);
+
         [Fact]
         public void AsyncTest()
         {
+            var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
             var lambda = LambdaBuilder<Func<long, long, Task<long>>>.Build(fun =>
             {
                 UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
-                fun.Assign(fun.Result, new AsyncResultExpression(new AwaitExpression(new AsyncResultExpression(arg0 + arg1))));
+                var temp = fun.DeclareVariable<long>("tmp");
+                fun.Assign(temp, new AwaitExpression(Expression.Call(null, sumMethod, arg0, arg1)));
+                fun.AddStatement(new AsyncResultExpression(new UniversalExpression(temp) + 20L.AsConst()));
             });
-            lambda.ToAsyncLambda();
+            lambda = lambda.ToAsyncLambda();
+            var fn = lambda.Compile();
+            Equal(35L, fn(5L, 15L).Result);
         }
     }
 }

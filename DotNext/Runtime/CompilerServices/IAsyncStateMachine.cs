@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.CompilerServices
@@ -10,5 +11,6 @@ namespace DotNext.Runtime.CompilerServices
         Exception Exception { set; }
         void MoveNext<TAwaiter>(ref TAwaiter awaiter, int stateId)
             where TAwaiter : ICriticalNotifyCompletion;
+        Task Start();
     }
 }

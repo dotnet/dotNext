@@ -58,7 +58,10 @@ namespace DotNext.Metaprogramming
         public override Expression Reduce() => GetAwaiter.Call(GetResultMethod);
 
         protected override Expression VisitChildren(ExpressionVisitor visitor)
-            => visitor.Visit(Reduce());
+        {
+            var expression = visitor.Visit(GetAwaiter.Object);
+            return ReferenceEquals(expression, GetAwaiter.Object) ? this : new AwaitExpression(expression);
+        }
 
         internal BlockExpression Reduce(ParameterExpression stateMachine, MemberExpression awaiterHolder, int state, LabelTarget stateLabel, LabelTarget returnLabel)
         {
@@ -66,7 +69,7 @@ namespace DotNext.Metaprogramming
             var saveAwaiter = Assign(awaiterHolder, GetAwaiter);
             //move to the next state
             const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
-            var moveNext = stateMachine.Call(stateMachine.Type.GetMethod(nameof(IAsyncStateMachine<ValueTuple>.MoveNext), PublicInstance, 1, null, typeof(int)), awaiterHolder, state.AsConst());
+            var moveNext = stateMachine.Call(stateMachine.Type.GetMethod(nameof(IAsyncStateMachine<ValueTuple>.MoveNext), PublicInstance, 1, null, typeof(int)).MakeGenericMethod(awaiterHolder.Type), awaiterHolder, state.AsConst());
             return Block(saveAwaiter, moveNext, Return(returnLabel), stateLabel.LandingSite(), awaiterHolder.Call(GetResultMethod));
         }
     }

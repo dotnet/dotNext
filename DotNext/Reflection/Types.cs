@@ -11,6 +11,13 @@ namespace DotNext.Reflection
 	/// </summary>
 	public static class Types
     {
+        private static bool IsGenericParameter(Type type)
+        {
+            if (type.IsByRef)
+                type = type.GetElementType();
+            return type.IsGenericParameter;
+        }
+
         public static MethodInfo GetMethod(this Type type, string methodName, BindingFlags flags, long genericParamCount, params Type[] parameters)
         {
             foreach(var method in type.GetMethods(flags))
@@ -24,7 +31,7 @@ namespace DotNext.Reflection
                         {
                             var actual = actualParams[i];
                             var expected = parameters[i];
-                            if (success = ((actual.IsGenericParameter && expected is null) || actual == expected))
+                            if (success = ((IsGenericParameter(actual) && expected is null) || actual == expected))
                                 continue;
                             else
                                 break;

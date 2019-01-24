@@ -38,6 +38,11 @@ namespace DotNext.Runtime.CompilerServices
             StateId = INITIAL_STATE;
         }
 
+        public AsyncStateMachine(Transition transition)
+            : this(transition, default)
+        {
+        }
+
         STATE IAsyncStateMachine<STATE>.State => State;
 
         public int StateId
@@ -89,10 +94,11 @@ namespace DotNext.Runtime.CompilerServices
             builder.SetResult();
         }
         
-        public void Start()
+        public Task Start()
         {
             StateId = INITIAL_STATE;
             builder.Start(ref this);
+            return builder.Task;
         }
 
         public static implicit operator Task(in AsyncStateMachine<STATE> machine) => machine.builder.Task;
@@ -100,8 +106,8 @@ namespace DotNext.Runtime.CompilerServices
         void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
     }
 
-    public struct AsyncStateMachine<STATE, R>: IAsyncStateMachine<STATE>
-        where STATE: struct
+    public struct AsyncStateMachine<STATE, R> : IAsyncStateMachine<STATE>
+        where STATE : struct
     {
         public delegate void Transition(ref AsyncStateMachine<STATE, R> stateMachine);
 
@@ -117,6 +123,11 @@ namespace DotNext.Runtime.CompilerServices
             this.transition = transition;
         }
 
+        public AsyncStateMachine(Transition transition)
+            : this(transition, default)
+        {
+        }
+
         STATE IAsyncStateMachine<STATE>.State => State;
 
         public int StateId
@@ -125,11 +136,14 @@ namespace DotNext.Runtime.CompilerServices
             private set;
         }
 
-        public void Start()
+        public Task<R> Start()
         {
             StateId = AsyncStateMachine<STATE>.INITIAL_STATE;
             builder.Start(ref this);
+            return builder.Task;
         }
+
+        Task IAsyncStateMachine<STATE>.Start() => Start();
 
         public Exception Exception
         {
@@ -150,7 +164,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         public void MoveNext<TAwaiter>(ref TAwaiter awaiter, int stateId)
-            where TAwaiter: ICriticalNotifyCompletion
+            where TAwaiter : ICriticalNotifyCompletion
         {
             StateId = stateId;
             builder.AwaitUnsafeOnCompleted(ref awaiter, ref this);
@@ -162,7 +176,7 @@ namespace DotNext.Runtime.CompilerServices
             {
                 transition(ref this);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Exception = e;
             }

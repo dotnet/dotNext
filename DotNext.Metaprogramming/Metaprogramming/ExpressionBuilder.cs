@@ -45,7 +45,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public ExpressionBuilder Parent{ get; }
 
-        internal E AddStatement<E>(E expression)
+        public E AddStatement<E>(E expression)
             where E: Expression
         {
             statements.Add(expression);

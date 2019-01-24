@@ -10,6 +10,15 @@ namespace DotNext.Runtime.CompilerServices
     using Reflection;
     using static Collections.Generic.Collections;
 
+    /// <summary>
+    /// Provides initial transformation of async method.
+    /// </summary>
+    /// <remarks>
+    /// Transformation steps:
+    /// 1. Identify all local variables
+    /// 2. Construct state holder type
+    /// 3. Replace all local variables with fields from state holder type
+    /// </remarks>
     internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     {
         private sealed class AsyncStateMachineType
@@ -30,7 +39,7 @@ namespace DotNext.Runtime.CompilerServices
                     typeof(AsyncStateMachine<,>).MakeGenericType(stateType, returnType);
                 stateMachineType = stateMachineType.MakeByRefType();
                 stateMachine = Expression.Parameter(stateMachineType);
-                return stateMachine.Field(nameof(AsyncStateMachine<int>.State));
+                return GetStateField(stateMachine);
             }
         }
 
@@ -122,8 +131,6 @@ namespace DotNext.Runtime.CompilerServices
         //stored captured exception to re-throw
         private readonly ParameterExpression capturedException;
         private readonly IDictionary<ISlot, MemberExpression> variables;
-        //a set of variables which are not propagated as state slots
-        private readonly ISet<ParameterExpression> ignoredVariables;
         //indicates that lambda body has at least one async call
         private bool hasNestedAsyncCalls = false;
 
@@ -132,26 +139,33 @@ namespace DotNext.Runtime.CompilerServices
             if(returnType is null)
                 throw new ArgumentException("Invalid return type of async method");
             variables = new Dictionary<ISlot, MemberExpression>();
-            ignoredVariables = new HashSet<ParameterExpression>();
             AsyncReturnType = returnType;
             capturedException = Expression.Variable(typeof(ExceptionDispatchInfo));
             variables.Add((VariableSlot)capturedException, null);
         }
 
-        protected override Expression VisitParameter(ParameterExpression variable)
+        protected override Expression VisitBlock(BlockExpression node)
         {
-            if (!ignoredVariables.Contains(variable))
+            if (node.Variables.Count == 0)
+                return base.VisitBlock(node);
+            //replace every local variable with state slot
+            foreach (var variable in node.Variables)
                 variables[(VariableSlot)variable] = null; //field is uknown at this moment
-            return base.VisitParameter(variable);
-        }
-
-        protected override Expression VisitTry(TryExpression node)
-        {
-            //exception variables should not be placed as state slots
-            foreach (var @catch in node.Handlers)
-                if (!(@catch.Variable is null))
-                    ignoredVariables.Add(@catch.Variable);
-            return base.VisitTry(node);
+            //now block can be replaced with its empty body
+            Expression result;
+            switch (node.Expressions.Count)
+            {
+                case 0:
+                    result = Expression.Empty();
+                    break;
+                case 1:
+                    result = node.Result;
+                    break;
+                default:
+                    result = Expression.Block(node.Type, node.Expressions);
+                    break;
+            }
+            return base.Visit(result);
         }
 
         public override Expression Visit(Expression node)
@@ -165,9 +179,12 @@ namespace DotNext.Runtime.CompilerServices
             return base.Visit(node);
         }
 
-        internal ParameterExpression Initialize(Expression root)
+        internal ParameterExpression Initialize(IEnumerable<ParameterExpression> parameters, ref Expression root)
         {
-            Visit(root);
+            foreach (var parameter in parameters)
+                variables[(VariableSlot)parameter] = null;
+
+            root = Visit(root);
             if (hasNestedAsyncCalls)
             {
                 var variables = this.variables.Keys.ToArray();
@@ -195,13 +212,16 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         internal MemberExpression CapturedException => this[capturedException];
 
+        internal MemberExpression ParameterToMember(ParameterExpression variable)
+            => variables.TryGetValue((VariableSlot)variable, out var result) ? result : null;
+
         /// <summary>
         /// Returns state storage slot for the specified local variable.
         /// </summary>
         /// <param name="variable">Local variable.</param>
         /// <returns>A field access expression.</returns>
         internal MemberExpression this[ParameterExpression variable]
-            => variables.TryGetValue((VariableSlot)variable, out var result) ? result : null;
+            => ParameterToMember(variable);
 
         /// <summary>
         /// Returns state storage slot for the async result. 
@@ -211,10 +231,12 @@ namespace DotNext.Runtime.CompilerServices
         internal MemberExpression this[AwaitExpression awaiterType]
             => variables.TryGetValue((AwaiterSlot)awaiterType, out var result) ? result : null;
 
+        internal static MemberExpression GetStateField(ParameterExpression stateMachine)
+            => stateMachine.Field(nameof(AsyncStateMachine<int>.State));
+
         public void Dispose()
         {
             variables.Clear();
-            ignoredVariables.Clear();
         }
     }
 
@@ -284,8 +306,27 @@ namespace DotNext.Runtime.CompilerServices
             builder.SetResult(default(R));
             end:
          */
+        private sealed class Replacement : Expression
+        {
+            private readonly Expression expression;
+
+            internal Replacement(Expression expression)
+            {
+
+            }
+
+            public override Type Type => expression.Type;
+            public override bool CanReduce => true;
+            public override Expression Reduce() => expression;
+            public override ExpressionType NodeType => ExpressionType.Extension;
+            protected override Expression VisitChildren(ExpressionVisitor visitor)
+            {
+                var expression = visitor.Visit(this.expression);
+                return ReferenceEquals(this.expression, expression) ? this : new Replacement(expression);
+            }
+        }
         private readonly AsyncStateMachineBuilder methodBuilder;
-        private readonly ParameterExpression stateMachine;
+        private ParameterExpression stateMachine;
         //this label indicates beginning of async method
         //should be placed before try
         private readonly LabelTarget asyncMethodBegin;
@@ -298,29 +339,57 @@ namespace DotNext.Runtime.CompilerServices
         //a table with labels in the beginning of async state machine
         private readonly IDictionary<int, LabelTarget> stateSwitchTable;
         private int stateId;
+        //lexical scope stack
+        private readonly Stack<Expression> walkingStack;
 
         private AsyncStateMachineBuilder(Expression<D> source)
         {
             methodBuilder = new AsyncStateMachineBuilder(source.ReturnType.GetTaskType());
-            stateMachine = methodBuilder.Initialize(source.Body);
             asyncMethodBegin = Expression.Label("begin_async_method");
             asyncMethodEnd = Expression.Label("end_async_method");
             tryBlock = new LinkedList<Expression>();
             exceptionSwitchTable = new Dictionary<int, LabelTarget>();
             stateSwitchTable = new Dictionary<int, LabelTarget>();           
             stateId = AsyncStateMachine<ValueTuple>.INITIAL_STATE;
+            walkingStack = new Stack<Expression>();
         }
 
         private int NextState() => ++stateId;
+
+        private Expression Visit<E>(E expression, Func<E, Expression> visitor)
+            where E: Expression
+        {
+            walkingStack.Push(expression);
+            try
+            {
+                return visitor(expression);
+            }
+            finally
+            {
+                walkingStack.Pop();
+            }
+        }
 
         //replace every local variable with appropriate state slot
         protected override Expression VisitParameter(ParameterExpression node)
         {
             var slot = methodBuilder[node];
-            return slot is null ? base.VisitParameter(node) : VisitMember(slot);
+            return slot is null ? Visit(node, base.VisitParameter) : Visit(slot, VisitMember);
         }
 
-        public override Expression Visit(Expression node)
+        protected override Expression VisitBlock(BlockExpression node)
+        {
+            var parent = walkingStack.Count > 0 ? walkingStack.Peek() : null;
+            //flatten block expression
+            if (parent is null || parent is BlockExpression || node.Expressions.Count < 2)
+                return Visit(node, base.VisitBlock);
+            else
+            {
+                node.Expressions.Last
+            }
+        }
+
+        protected override Expression VisitExtension(Expression node)
         {
             if (node is AsyncResultExpression result)
                 node = result.Reduce(stateMachine, asyncMethodEnd);
@@ -331,7 +400,9 @@ namespace DotNext.Runtime.CompilerServices
                 stateSwitchTable[state] = stateLabel;
                 node = await.Reduce(stateMachine, methodBuilder[await], state, stateLabel, asyncMethodEnd);
             }
-            return base.Visit(node);
+            else
+                return Visit(node, base.VisitExtension);
+            return Visit(node, Visit);
         }
 
         private static Expression CreateFallbackResult(ParameterExpression stateMachine)
@@ -339,15 +410,41 @@ namespace DotNext.Runtime.CompilerServices
             var resultProperty = stateMachine.Type.GetProperty(nameof(AsyncStateMachine<ValueTuple, int>.Result));
             if (!(resultProperty is null))
                 return Expression.Property(stateMachine, resultProperty).Assign(resultProperty.PropertyType.Default());
-            //else, just call Complete method
+            //just call Complete method, async method doesn't have return type
             return stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Complete));
+        }
+
+        private static LambdaExpression BuildStateMachine(Expression body, ParameterExpression stateMachine)
+        {
+            var delegateType = stateMachine.Type.GetNestedType(nameof(AsyncStateMachine<ValueTuple>.Transition));
+            delegateType = delegateType.MakeGenericType(stateMachine.Type.GetGenericArguments());
+            return Expression.Lambda(delegateType, body, stateMachine);
+        }
+
+        private static Expression<D> Build(LambdaExpression stateMachineMethod, Type stateMachineType, IReadOnlyCollection<ParameterExpression> parameters, Func<ParameterExpression, MemberExpression> parameterMapper)
+        {
+            var stateMachine = Expression.Variable(stateMachineType, "stateMachine");
+            //save all parameters into fields
+            ICollection<Expression> newBody = new LinkedList<Expression>();
+            //create new state machine (new AsyncStateMachine<InferredStateType, ResultType>)
+            var newStateMachine = Expression.New(stateMachineType.GetConstructor(new[] { stateMachineMethod.Type }), stateMachineMethod);
+            newBody.Add(Expression.Assign(stateMachine, newStateMachine));
+            foreach (var parameter in parameters)
+                newBody.Add(parameterMapper(parameter).Update(AsyncStateMachineBuilder.GetStateField(stateMachine)).Assign(parameter));
+            newBody.Add(stateMachine.Call(nameof(IAsyncStateMachine<ValueTuple>.Start)));
+            return Expression.Lambda<D>(Expression.Block(new[] { stateMachine }, newBody), parameters);
         }
 
         private Expression<D> Build(Expression body, IReadOnlyCollection<ParameterExpression> parameters)
         {
+            //transformation stage #1 - replace all local variables
+            stateMachine = methodBuilder.Initialize(parameters, ref body);
             if (stateMachine is null)
                 return null;
+            //transformation stage #2 - transform block expressions into statements and replace 
+            //await /async expression into well-known alternatives
             body = Visit(body);
+            //transformation stage #3 - construct state machine method
             //build switch table
             ICollection<SwitchCase> stateSwitchTable = new LinkedList<SwitchCase>();
             foreach (var (state, label) in this.stateSwitchTable)
@@ -364,11 +461,13 @@ namespace DotNext.Runtime.CompilerServices
             //state field
             var stateId = stateMachine.Property(nameof(IAsyncStateMachine<ValueTuple>.StateId));
             //construct body inside of try block
-            body = Expression.Block(Expression.Switch(stateId, Expression.Empty(), null, stateSwitchTable), body);
+            body = Expression.Block(typeof(void), Expression.Switch(stateId, Expression.Empty(), null, stateSwitchTable), body);
             //construct body inside of catch block
             var stateMachineCatch = Expression.Catch(stateMachineException,
-                Expression.Block(Expression.Switch(stateId, Expression.Empty(), null, exceptionSwitchTable), setException)
-                );
+                        exceptionSwitchTable.Count == 0 ?
+                            Expression.Block(typeof(void), setException) :
+                            Expression.Block(typeof(void), Expression.Switch(stateId, Expression.Empty(), null, exceptionSwitchTable), setException)
+                        );
             //all together
             body = Expression.Block(
                 asyncMethodBegin.LandingSite(),
@@ -376,7 +475,7 @@ namespace DotNext.Runtime.CompilerServices
                 fallback,
                 asyncMethodEnd.LandingSite());
             //now we have state machine method, wrap it into lambda
-            var stateMachineMethod = Expression.Lambda()
+            return Build(BuildStateMachine(body, stateMachine), stateMachine.Type, parameters, methodBuilder.ParameterToMember);
         }
 
         internal static Expression<D> Build(Expression<D> source)
@@ -393,6 +492,7 @@ namespace DotNext.Runtime.CompilerServices
             tryBlock.Clear();
             exceptionSwitchTable.Clear();
             stateSwitchTable.Clear();
+            stateMachine = null;
         }
     }
 }
