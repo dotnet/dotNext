@@ -9,7 +9,7 @@ namespace DotNext.Threading
     /// </summary>
     public readonly struct Lock : IDisposable
     {
-        private enum LockType: byte
+        private enum LockType : byte
         {
             None = 0,
             Monitor,
@@ -29,6 +29,8 @@ namespace DotNext.Threading
 
         public static Lock Monitor(object obj)
             => new Lock(obj ?? throw new ArgumentNullException(nameof(obj)), LockType.Monitor);
+
+        public static Lock Monitor() => Monitor(new object());
 
         public static Lock ReadLock(ReaderWriterLockSlim rwLock)
             => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), LockType.ReadLock);
@@ -60,7 +62,7 @@ namespace DotNext.Threading
 
         public bool TryAcquire()
         {
-            switch(type)
+            switch (type)
             {
                 case LockType.Monitor:
                     return System.Threading.Monitor.TryEnter(lockedObject);
@@ -77,7 +79,7 @@ namespace DotNext.Threading
 
         public bool TryAcquire(TimeSpan timeout)
         {
-            switch(type)
+            switch (type)
             {
                 case LockType.Monitor:
                     return System.Threading.Monitor.TryEnter(lockedObject, timeout);
@@ -92,7 +94,7 @@ namespace DotNext.Threading
             }
         }
 
-        public void Release()
+        public void Dispose()
         {
             switch (type)
             {
@@ -110,7 +112,5 @@ namespace DotNext.Threading
                     return;
             }
         }
-
-        void IDisposable.Dispose() => Release();
     }
 }

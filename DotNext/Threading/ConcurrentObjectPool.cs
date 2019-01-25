@@ -19,8 +19,8 @@ namespace DotNext.Threading
 		/// Represents locked object.
 		/// </summary>
 		/// <remarks>
-		/// Object lock should be lightweight
-		/// therefore it is struct.
+		/// Object lock cannot be stored in fields
+        /// or escape call stack, therefore, it is ref-struct.
 		/// </remarks>
 		public ref struct Rental
 		{
@@ -35,7 +35,7 @@ namespace DotNext.Threading
 			/// <summary>
 			/// Releases object lock and return it into pool.
 			/// </summary>
-			public void Release()
+			public void Dispose()
 			{
 				if (lockedObject is null)
 					throw new ObjectDisposedException(ExceptionMessages.ReleasedLock);
