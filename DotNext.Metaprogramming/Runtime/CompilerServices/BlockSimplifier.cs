@@ -4,16 +4,27 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
+    using static Metaprogramming.Expressions;
+
     /// <summary>
     /// Converts block expressions located at the right side of expressions
     /// with statements.
     /// </summary>
     /// <remarks>
-    /// Example:
-    /// a = { c; d;}
+    /// Block expression:
+    /// x = { a; b;}
     /// will be replaced with
-    /// c;
-    /// a = d;
+    /// a;
+    /// x = b;
+    /// Conditional expression:
+    /// x = a ? b : c;
+    /// into
+    /// var temp;
+    /// if(a)
+    ///   temp = b;
+    /// else
+    ///   temp = c;
+    /// 
     /// This transformation is required for state machine method body
     /// because we can't jump inside of block expressions using labels.
     /// </remarks>
@@ -67,11 +78,16 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         private void Push(Expression expr)
-            => current = current?.Expr is BlockExpression block && block.Type == typeof(void) ?
+            => current = (current?.Expr is BlockExpression || current?.Expr is ConditionalExpression) && expr.Type == typeof(void) ?
                     new StatementLookup(expr, current) :
                     new ExpressionLookup(expr, current);
 
         private void Pop() => current = current.Parent;
+
+        private Expression Visit<E>(E expression, Func<E, Expression> visitor)
+        {
+
+        }
 
         public override Expression Visit(Expression node)
         {
@@ -101,6 +117,15 @@ namespace DotNext.Runtime.CompilerServices
             return current.IsRoot || (statement = FindStatement()) is null || ReferenceEquals(node, statement.Expr) ?
                 base.VisitBlock(node) :
                 Visit(statement.Relocate(node));
+        }
+
+        protected override Expression VisitConditional(ConditionalExpression node)
+        {
+            if(node.IsSimpleExpression())
+            {
+
+                //declare new variable in the statement
+            }
         }
 
         internal static Expression Simplify(BlockExpression block)
