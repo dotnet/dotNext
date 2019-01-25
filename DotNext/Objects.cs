@@ -9,24 +9,22 @@ namespace DotNext
 	/// </summary>
 	public static class Objects
 	{
-		private static readonly ConditionalWeakTable<object, UserDataStorage> userData = new ConditionalWeakTable<object, UserDataStorage>();
-
-		/// <summary>
-		/// Provides ad-hoc approach to associate some data with the object
-		/// without modification of it.
-		/// </summary>
-		/// <remarks>
-		/// This method allows to associate arbitrary user data with any object.
-		/// User data storage is not a part of object type declaration.
-		/// Modification of user data doesn't cause modification of internal state of the object.
-		/// The storage is associated with the object reference.
-		/// Any user data are transient and can't be passed across process boundaries (i.e. serialization is not supported)
-		/// </remarks>
-		/// <param name="obj">Target object.</param>
-		/// <returns>User data storage.</returns>
-		public static UserDataStorage GetUserData<T>(this T obj)
-			where T: class
-			=> userData.GetValue(obj, key => new UserDataStorage());
+        /// <summary>
+        /// Provides ad-hoc approach to associate some data with the object
+        /// without modification of it.
+        /// </summary>
+        /// <remarks>
+        /// This method allows to associate arbitrary user data with any object.
+        /// User data storage is not a part of object type declaration.
+        /// Modification of user data doesn't cause modification of internal state of the object.
+        /// The storage is associated with the object reference.
+        /// Any user data are transient and can't be passed across process boundaries (i.e. serialization is not supported)
+        /// </remarks>
+        /// <param name="obj">Target object.</param>
+        /// <returns>User data storage.</returns>
+        public static UserDataStorage GetUserData<T>(this T obj)
+            where T : class
+            => new UserDataStorage(obj);
 
 		/// <summary>
 		/// Type-safe upcast operation.

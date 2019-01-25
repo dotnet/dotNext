@@ -36,7 +36,6 @@
   <ItemGroup>
     <Folder Include="VariantType\" />
 	<Folder Include="Generic\" />
-	<Folder Include="Threading\" />
   </ItemGroup>
 
   <ItemGroup>

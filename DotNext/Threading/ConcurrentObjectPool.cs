@@ -28,8 +28,7 @@ namespace DotNext.Threading
 
 			internal Rental(T obj, out bool lockTaken)
 			{
-				lockTaken = false;
-				Monitor.TryEnter(obj, ref lockTaken);
+				lockTaken = Monitor.TryEnter(obj);
 				lockedObject = lockTaken ? obj : null;
 			}
 
