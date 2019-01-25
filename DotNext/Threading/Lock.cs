@@ -27,6 +27,11 @@ namespace DotNext.Threading
             this.type = type;
         }
 
+        /// <summary>
+        /// Creates monitor lock control object but doesn't acquire lock.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public static Lock Monitor(object obj)
             => new Lock(obj ?? throw new ArgumentNullException(nameof(obj)), LockType.Monitor);
 
@@ -41,6 +46,9 @@ namespace DotNext.Threading
         public static Lock UpgradableReadLock(ReaderWriterLockSlim rwLock)
             => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), LockType.UpgradableReadLock);
 
+        /// <summary>
+        /// Acquires lock.
+        /// </summary>
         public void Acquire()
         {
             switch (type)
@@ -60,6 +68,10 @@ namespace DotNext.Threading
             }
         }
 
+        /// <summary>
+        /// Attempts to acquire lock.
+        /// </summary>
+        /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/></returns>
         public bool TryAcquire()
         {
             switch (type)
@@ -94,6 +106,9 @@ namespace DotNext.Threading
             }
         }
 
+        /// <summary>
+        /// Releases acquired lock.
+        /// </summary>
         public void Dispose()
         {
             switch (type)

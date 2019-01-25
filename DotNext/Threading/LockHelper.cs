@@ -20,30 +20,39 @@ namespace DotNext.Threading
             return result.TryAcquire(timeout) ? result : throw new TimeoutException();
         }
 
-        public static Lock WriteLock<T>(this T obj)
+        /// <summary>
+        /// Acquires exclusive lock for the specified object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj">An object to be locked.</param>
+        /// <returns>Lock control object.</returns>
+        /// <remarks>
+        /// This methods acquires monitor lock.
+        /// </remarks>
+        public static Lock Lock<T>(this T obj)
             where T : class
-            => Acquire(obj, Lock.Monitor);
+            => Acquire(obj, Threading.Lock.Monitor);
 
-        public static Lock MonitorEnter<T>(this T obj, TimeSpan timeout)
+        public static Lock Lock<T>(this T obj, TimeSpan timeout)
             where T : class
-            => Acquire(obj, Lock.Monitor, timeout);
+            => Acquire(obj, Threading.Lock.Monitor, timeout);
 
         public static Lock ReadLock(this ReaderWriterLockSlim rwLock)
-            => Acquire(rwLock, Lock.ReadLock);
+            => Acquire(rwLock, Threading.Lock.ReadLock);
 
         public static Lock ReadLock(this ReaderWriterLockSlim rwLock, TimeSpan timeout)
-            => Acquire(rwLock, Lock.ReadLock, timeout);
+            => Acquire(rwLock, Threading.Lock.ReadLock, timeout);
 
         public static Lock WriteLock(this ReaderWriterLockSlim rwLock)
-            => Acquire(rwLock, Lock.WriteLock);
+            => Acquire(rwLock, Threading.Lock.WriteLock);
 
         public static Lock WriteLock(this ReaderWriterLockSlim rwLock, TimeSpan timeout)
-            => Acquire(rwLock, Lock.WriteLock, timeout);
+            => Acquire(rwLock, Threading.Lock.WriteLock, timeout);
 
         public static Lock UpgradableReadLock(this ReaderWriterLockSlim rwLock)
-            => Acquire(rwLock, Lock.UpgradableReadLock);
+            => Acquire(rwLock, Threading.Lock.UpgradableReadLock);
 
         public static Lock UpgradableReadLock(this ReaderWriterLockSlim rwLock, TimeSpan timeout)
-            => Acquire(rwLock, Lock.UpgradableReadLock, timeout);
+            => Acquire(rwLock, Threading.Lock.UpgradableReadLock, timeout);
     }
 }
