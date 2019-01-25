@@ -9,7 +9,7 @@ namespace DotNext.Threading
 {
 	/// <summary>
 	/// Provides concurrent object pool where
-	/// object selection is thread-safe but selected object is not.
+	/// object selection is thread-safe but not selected object.
 	/// </summary>
 	/// <typeparam name="T">Type of objects in the pool.</typeparam>
 	public class ConcurrentObjectPool<T>
@@ -72,7 +72,7 @@ namespace DotNext.Threading
 		/// <returns>First unbusy object locked for the caller thread.</returns>
 		public Rental Rent()
 		{
-			Requires(objects.Count > 0, "This pool has no channels");
+            Requires(objects.Count > 0, "This pool us empty");
 			//each thread must have its own spin awaiter
 			for (SpinWait spinner; ; spinner.SpinOnce())
 			{
