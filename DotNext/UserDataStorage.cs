@@ -70,6 +70,25 @@ namespace DotNext
                     return slot.RemoveUserData(this);
                 }
             }
+
+            internal bool Remove<V>(UserDataSlot<V> slot, out V userData)
+            {
+                //fast path if user data doesn't exist
+                using(synchronizer.ReadLock())
+                {
+                    if(!slot.Contains(this))
+                    {
+                        userData = default;
+                        return false;
+                    }
+                }
+                //non-fast path, user data exists, so remove it
+                using(synchronizer.WriteLock())
+                {
+                    userData = slot.GetUserData(this, default);
+                    return slot.RemoveUserData(this);
+                }
+            }
         }
 
         private static readonly ConditionalWeakTable<object, BackingStorage> userData = new ConditionalWeakTable<object, BackingStorage>();
@@ -143,6 +162,18 @@ namespace DotNext
         {
             var storage = GetStorage(false);
             return storage is null ? false : storage.Remove(slot);
+        }
+
+        public bool Remove<V>(UserDataSlot<V> slot, out V userData)
+        {
+            var storage = GetStorage(false);
+            if(storage is null)
+            {
+                userData = default;
+                return false;
+            }
+            else
+                return storage.Remove(slot, out userData);
         }
 
         public override int GetHashCode() => RuntimeHelpers.GetHashCode(owner);

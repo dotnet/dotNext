@@ -311,5 +311,8 @@ namespace DotNext
 
 		public static Optional<T> operator |(in Optional<T> first, in Optional<T> second)
 			=> first.IsPresent ? first : second;
+		
+		public static bool operator true(in Optional<T> optional) => optional.IsPresent;
+		public static bool operator false(in Optional<T> optional) => !optional.IsPresent;
 	}
 }

@@ -215,19 +215,5 @@ namespace DotNext.Metaprogramming
         public static Expression<D> ToAsyncLambda<D>(this Expression<D> lambda)
             where D : Delegate
             => Runtime.CompilerServices.AsyncStateMachineBuilder<D>.Build(lambda);
-
-        public static bool IsSimpleExpression(this Expression expr)
-        {
-            switch(expr.NodeType)
-            {
-                case ExpressionType.Extension:
-                case ExpressionType.Block:
-                case ExpressionType.Try:
-                    return false;
-                default:
-                    return expr is ConditionalExpression conditional ?
-                        IsSimpleExpression(conditional.IfTrue) && IsSimpleExpression(conditional.IfFalse) : true;
-            }
-        }
     }
 }

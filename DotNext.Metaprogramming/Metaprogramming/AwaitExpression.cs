@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -14,6 +15,22 @@ namespace DotNext.Metaprogramming
     /// </summary>
     public sealed class AwaitExpression : Expression
     {
+        private sealed class AwaitChecker: ExpressionVisitor
+        {
+            internal bool ContainsAwait
+            {
+                get;
+                private set;
+            }
+
+            protected override Expression VisitExtension(Expression node)
+            {
+                if(node is AwaitExpression)
+                    ContainsAwait = true;
+                return base.VisitExtension(node);
+            }
+        }
+
         public AwaitExpression(Expression expression)
         {
             //expression type must have type with GetAwaiter() method
@@ -26,6 +43,13 @@ namespace DotNext.Metaprogramming
             GetResultMethod = GetAwaiter.Type.GetMethod(nameof(TaskAwaiter.GetResult), PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
             if (GetResultMethod is null)
                 throw new ArgumentException($"Method {getAwaiter.DeclaringType.FullName + ':' + getAwaiter.Name} returns invalid awaiter pattern");
+        }
+
+        internal static bool ContainsAwait(Expression node)
+        {
+            var checker = new AwaitChecker();
+            checker.Visit(node);
+            return checker.ContainsAwait;
         }
 
         internal MethodCallExpression GetAwaiter { get; }
@@ -63,14 +87,13 @@ namespace DotNext.Metaprogramming
             return ReferenceEquals(expression, GetAwaiter.Object) ? this : new AwaitExpression(expression);
         }
 
-        internal BlockExpression Reduce(ParameterExpression stateMachine, MemberExpression awaiterHolder, int state, LabelTarget stateLabel, LabelTarget returnLabel)
+        internal MethodCallExpression Reduce(ParameterExpression awaiterHolder, int state, LabelTarget stateLabel, LabelTarget returnLabel, CodeInsertionPoint inserter)
         {
-            //save holder into slot
-            var saveAwaiter = Assign(awaiterHolder, GetAwaiter);
-            //move to the next state
-            const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
-            var moveNext = stateMachine.Call(stateMachine.Type.GetMethod(nameof(IAsyncStateMachine<ValueTuple>.MoveNext), PublicInstance, 1, null, typeof(int)).MakeGenericMethod(awaiterHolder.Type), awaiterHolder, state.AsConst());
-            return Block(saveAwaiter, moveNext, Return(returnLabel), stateLabel.LandingSite(), awaiterHolder.Call(GetResultMethod));
+            inserter(Assign(awaiterHolder, GetAwaiter));
+            inserter(new TransitionExpression(awaiterHolder, state));
+            inserter(Return(returnLabel));
+            inserter(stateLabel.LandingSite());
+            return awaiterHolder.Call(GetResultMethod);
         }
     }
 }

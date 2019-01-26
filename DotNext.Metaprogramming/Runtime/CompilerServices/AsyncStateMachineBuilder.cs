@@ -3,6 +3,7 @@ using System.Runtime.ExceptionServices;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using MethodInfo = System.Reflection.MethodInfo;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -10,6 +11,7 @@ namespace DotNext.Runtime.CompilerServices
     using Metaprogramming;
     using Reflection;
     using static Collections.Generic.Collections;
+    using VariantType;
 
     /// <summary>
     /// Provides initial transformation of async method.
@@ -22,141 +24,159 @@ namespace DotNext.Runtime.CompilerServices
     /// </remarks>
     internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     {
-        private sealed class Replacement
-        {
-            private readonly ICollection<Expression> expressions;
-            private readonly ICollection<ParameterExpression> variables;
-
-            internal Replacement()
-            {
-                expressions = new LinkedList<Expression>();
-                variables = new LinkedList<ParameterExpression>();
-            }
-
-            internal Expression Rewrite(Expression expression)
-                => variables.Count == 0 && expressions.Count == 0 ? expression : Expression.Block(typeof(void), variables, expressions.Concat(Sequence.Single(expression)));
-        }
-
-        private static readonly UserDataSlot<Replacement> StatementSlot = UserDataSlot<Replacement>.Allocate();
         internal readonly Type AsyncReturnType;
         //stored captured exception to re-throw
-        private readonly ParameterExpression capturedException;
+        internal readonly ParameterExpression CapturedException;
         private readonly ISet<ParameterExpression> variables;
         private int stateId;
-        private readonly Stack<Expression> walkingStack;
+        private readonly VisitorContext context;
+        //this label indicates beginning of async method
+        //should be placed before try
+        private readonly LabelTarget asyncMethodBegin;
+        //this label indicates end of async method when successful result should be returned
+        private readonly LabelTarget asyncMethodEnd;
+         //a table with labels and how to handle exceptions
+        private readonly IDictionary<int, LabelTarget> exceptionSwitchTable;
+        //a table with labels in the beginning of async state machine
+        private readonly IDictionary<int, LabelTarget> stateSwitchTable;
 
         internal AsyncStateMachineBuilder(Type returnType)
         {
             if (returnType is null)
                 throw new ArgumentException("Invalid return type of async method");
             AsyncReturnType = returnType;
-            capturedException = Expression.Variable(typeof(ExceptionDispatchInfo));
-            variables = new HashSet<ParameterExpression>() { capturedException };
+            CapturedException = Expression.Variable(typeof(ExceptionDispatchInfo));
+            variables = new HashSet<ParameterExpression>() { CapturedException };
             stateId = AsyncStateMachine<ValueTuple>.INITIAL_STATE;
-            walkingStack = new Stack<Expression>();
-        }
-
-        private Replacement FindReplacement()
-        {
-            foreach (var lookup in walkingStack)
-            {
-                if (lookup.GetUserData().Get(StatementSlot))
-                    }
+            context = new VisitorContext();
+            asyncMethodBegin = Expression.Label("begin_async_method");
+            asyncMethodEnd = Expression.Label("end_async_method");
         }
 
         private int NextState() => ++stateId;
+        
 
         //async method cannot have block expression with type not equal to void
         protected override Expression VisitBlock(BlockExpression node)
-        {
-            return node.Type == typeof(void) ? base.VisitBlock(node) : throw new NotSupportedException("Async lambda cannot have block expression of type not equal to void");
-        }
+            => node.Type == typeof(void) ? 
+                context.Rewrite(node, base.VisitBlock) : 
+                throw new NotSupportedException("Async lambda cannot have block expression of type not equal to void");
 
         protected override Expression VisitConditional(ConditionalExpression node)
         {
-            if (node.Type != typeof(void) && (node.IfTrue is BlockExpression || node.IfFalse is BlockExpression))
+            if(node.Type == typeof(void))   //if statement
+            {
+                VisitorContext.MarkAsRewritePoint(node.IfTrue);
+                VisitorContext.MarkAsRewritePoint(node.IfFalse);
+            }
+            else if (node.IfTrue is BlockExpression || node.IfFalse is BlockExpression)
                 throw new NotSupportedException("A branch of conditional expression is invalid");
-            return base.VisitConditional(node);
+            return context.Rewrite(node, base.VisitConditional);
         }
 
         protected override LabelTarget VisitLabelTarget(LabelTarget node)
             => node.Type == typeof(void) ? base.VisitLabelTarget(node) : throw new NotSupportedException("Label should be of type Void");
 
         protected override Expression VisitTry(TryExpression node)
-            => node.Type == typeof(void) ? base.VisitTry(node) : throw new NotSupportedException("Try-Catch statement should be of type Void");
+        {
+            if(node.Type == typeof(void))
+                return context.Rewrite(node, base.VisitTry);
+            throw new NotSupportedException("Try-Catch statement should be of type Void");
+        }
 
         //detect local variable which will be replaced with state slot
         protected override Expression VisitParameter(ParameterExpression node)
         {
             variables.Add(node);
-            return base.VisitParameter(node);
+            return node;
         }
 
         private Expression VisitAwait(AwaitExpression node)
         {
+            node = (AwaitExpression)base.VisitExtension(node);
             //allocate slot for awaiter
             var awaiterSlot = Expression.Variable(node.AwaiterType);
             variables.Add(awaiterSlot);
+            //generate new state and label for it
+            var state = NextState();
+            var stateLabel = Expression.Label("state_" + state);
+            stateSwitchTable[state] = stateLabel;
+            //convert await expression into TAwaiter.GetResult() expression
+            return node.Reduce(awaiterSlot, state, stateLabel, asyncMethodEnd, context.GetCodeInsertionPoint());
         }
 
         protected override Expression VisitExtension(Expression node)
         {
             if (node is AwaitExpression await)
-                return VisitAwait(await);
-            return Visit(node.Reduce());
-        }
-
-        internal ParameterExpression Initialize(IEnumerable<ParameterExpression> parameters, ref Expression root)
-        {
-            foreach (var parameter in parameters)
-                variables[(VariableSlot)parameter] = null;
-
-            root = Visit(root);
-            if (hasNestedAsyncCalls)
             {
-                var variables = this.variables.Keys.ToArray();
-                //construct value type
-                MemberExpression[] fields;
-                ParameterExpression stateMachine;
-                using (var builder = new ValueTupleBuilder())
-                {
-                    variables.ForEach(slot => builder.Add(slot.Type));
-                    //discover slots and build state machine type
-                    var type = new AsyncStateMachineType(AsyncReturnType);
-                    fields = builder.Build(type.MakeStateHolder, out _);
-                    for (var i = 0L; i < fields.LongLength; i++)
-                        this.variables[variables[i]] = fields[i];
-                    stateMachine = type;
-                }
-                return stateMachine;
+                var result = context.Rewrite(await, VisitAwait);
+                context.ContainsAwait();
+                return result;
             }
-            else
-                return null;
+            return context.Rewrite(node, base.VisitExtension);
         }
 
-        /// <summary>
-        /// Gets state storage slot for the captured exception.
-        /// </summary>
-        internal MemberExpression CapturedException => this[capturedException];
+        private static bool IsAssignment(BinaryExpression binary)
+        {
+            switch(binary.NodeType)
+            {
+                case ExpressionType.Assign:
+                case ExpressionType.AddAssign:
+                case ExpressionType.AddAssignChecked:
+                case ExpressionType.SubtractAssign:
+                case ExpressionType.SubtractAssignChecked:
+                case ExpressionType.OrAssign:
+                case ExpressionType.AndAssign:
+                case ExpressionType.ExclusiveOrAssign:
+                case ExpressionType.DivideAssign:
+                case ExpressionType.LeftShiftAssign:
+                case ExpressionType.RightShiftAssign:
+                case ExpressionType.MultiplyAssign:
+                case ExpressionType.MultiplyAssignChecked:
+                case ExpressionType.ModuloAssign:
+                case ExpressionType.PostDecrementAssign:
+                case ExpressionType.PreDecrementAssign:
+                case ExpressionType.PostIncrementAssign:
+                case ExpressionType.PreIncrementAssign:
+                case ExpressionType.PowerAssign:
+                    return true;
+                default:
+                    return false;
+            }
+        }
 
-        internal MemberExpression ParameterToMember(ParameterExpression variable)
-            => variables.TryGetValue((VariableSlot)variable, out var result) ? result : null;
-
-        /// <summary>
-        /// Returns state storage slot for the specified local variable.
-        /// </summary>
-        /// <param name="variable">Local variable.</param>
-        /// <returns>A field access expression.</returns>
-        internal MemberExpression this[ParameterExpression variable]
-            => ParameterToMember(variable);
-
-        /// <summary>
-        /// Returns state storage slot for the async result. 
-        /// </summary>
-        /// <param name="awaiterType">Awaiter type.</param>
-        /// <returns></returns>
-        internal MemberExpression this[AwaitExpression awaiterType]
-            => variables.TryGetValue((AwaiterSlot)awaiterType, out var result) ? result : null;
+        protected override Expression VisitBinary(BinaryExpression node)
+        {
+            var codeInsertionPoint = context.GetCodeInsertionPoint();
+            var newNode = context.Rewrite(node, base.VisitBinary);
+            if(newNode is BinaryExpression)
+                node = (BinaryExpression)newNode;
+            else
+                return newNode;
+            //do not place left operand at statement level because it has no side effects
+            if(node.Left is ParameterExpression || node.Left is ConstantExpression || IsAssignment(node))
+                return node;
+            var leftIsAsync = VisitorContext.ContainsAwait(node.Left);
+            var rightIsAsync = VisitorContext.ContainsAwait(node.Right);
+            //left operand should be computed before right, so bump it before await expression
+            if(rightIsAsync && !leftIsAsync)
+            {
+                /*
+                    Method() + await a;
+                    --transformed into--
+                    state.field = Method();
+                    state.awaitor = a.GetAwaitor();
+                    MoveNext(state.awaitor, newState);
+                    return;
+                    newState: state.field + state.awaitor.GetResult();
+                 */
+                var leftTemp = Expression.Variable(node.Left.Type);
+                variables.Add(leftTemp);
+                codeInsertionPoint(Expression.Assign(leftTemp, node.Left));
+                node = node.Update(leftTemp, node.Conversion, node.Right);
+            }
+            return node;
+        }
 
         internal static MemberExpression GetStateField(ParameterExpression stateMachine)
             => stateMachine.Field(nameof(AsyncStateMachine<int>.State));
@@ -164,6 +184,9 @@ namespace DotNext.Runtime.CompilerServices
         public void Dispose()
         {
             variables.Clear();
+            exceptionSwitchTable.Clear();
+            stateSwitchTable.Clear();
+            context.Clear();
         }
     }
 
