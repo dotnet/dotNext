@@ -11,7 +11,6 @@ namespace DotNext.Runtime.CompilerServices
     using Metaprogramming;
     using Reflection;
     using static Collections.Generic.Collections;
-    using VariantType;
 
     /// <summary>
     /// Provides initial transformation of async method.
@@ -71,7 +70,30 @@ namespace DotNext.Runtime.CompilerServices
             }
             else if (node.IfTrue is BlockExpression || node.IfFalse is BlockExpression)
                 throw new NotSupportedException("A branch of conditional expression is invalid");
-            return context.Rewrite(node, base.VisitConditional);
+            var result = context.Rewrite(node, base.VisitConditional);
+            if(result is ConditionalExpression)
+                node = (ConditionalExpression)result;
+            else
+                return result;
+            /*
+                x = a ? await b() : c();
+                --transformed into--
+                var temp;
+                if(a)
+                    temp = await b();
+                else
+                    temp = c();
+                x = temp;
+             */
+            if(VisitorContext.ContainsAwait(node.IfTrue) || VisitorContext.ContainsAwait(node.IfFalse))
+            {
+                var tempVar = Expression.Variable(node.Type);
+                variables.Add(tempVar);
+                context.GetCodeInsertionPoint().Invoke(Expression.Condition(node.Test, Expression.Assign(tempVar, node.IfTrue), Expression.Assign(tempVar, node.IfFalse), typeof(void)));
+                return tempVar;
+            }
+            else
+                return node;
         }
 
         protected override LabelTarget VisitLabelTarget(LabelTarget node)
@@ -94,6 +116,7 @@ namespace DotNext.Runtime.CompilerServices
         private Expression VisitAwait(AwaitExpression node)
         {
             node = (AwaitExpression)base.VisitExtension(node);
+            context.ContainsAwait();
             //allocate slot for awaiter
             var awaiterSlot = Expression.Variable(node.AwaiterType);
             variables.Add(awaiterSlot);
@@ -106,15 +129,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         protected override Expression VisitExtension(Expression node)
-        {
-            if (node is AwaitExpression await)
-            {
-                var result = context.Rewrite(await, VisitAwait);
-                context.ContainsAwait();
-                return result;
-            }
-            return context.Rewrite(node, base.VisitExtension);
-        }
+            => node is AwaitExpression await ? context.Rewrite(await, VisitAwait) : context.Rewrite(node, base.VisitExtension);
 
         private static bool IsAssignment(BinaryExpression binary)
         {
@@ -177,6 +192,61 @@ namespace DotNext.Runtime.CompilerServices
             }
             return node;
         }
+
+        private Expression VisitCallable<E>(E node, Expression[] arguments, Converter<E, Expression> visitor, Func<E, Expression[], E> updater)
+            where E: Expression
+        {
+            var codeInsertionPoint = context.GetCodeInsertionPoint();
+            var newNode = context.Rewrite(node, visitor);
+            if(newNode is E)
+                node = (E)newNode;
+            else
+                return newNode;
+            var hasAwait = false;
+            for(var i = arguments.LongLength - 1L; i >= 0L; i--)
+            {
+                ref Expression arg = ref arguments[i];
+                if(VisitorContext.ContainsAwait(arg))
+                    hasAwait = true;
+                else if(hasAwait)
+                {
+                    var tempVar = Expression.Variable(arg.Type);
+                    codeInsertionPoint(Expression.Assign(tempVar, arg));
+                    arg = tempVar;
+                }
+            }
+            return updater(node, arguments);
+        }
+
+        private static MethodCallExpression UpdateArguments(MethodCallExpression node, IReadOnlyCollection<Expression> arguments)
+            => node.Update(node.Object, arguments);
+
+        protected override Expression VisitMethodCall(MethodCallExpression node)
+            => VisitCallable(node, node.Arguments.ToArray(), base.VisitMethodCall, UpdateArguments);
+
+        private static InvocationExpression UpdateArguments(InvocationExpression node, IReadOnlyCollection<Expression> arguments)
+            => node.Update(node.Expression, arguments);
+
+        protected override Expression VisitInvocation(InvocationExpression node)
+            => VisitCallable(node, node.Arguments.ToArray(), base.VisitInvocation, UpdateArguments);
+        
+        private static IndexExpression UpdateArguments(IndexExpression node, IReadOnlyCollection<Expression> arguments)
+            => node.Update(node.Object, arguments);
+
+        protected override Expression VisitIndex(IndexExpression node)
+            => VisitCallable(node, node.Arguments.ToArray(), base.VisitIndex, UpdateArguments);
+        
+        private static NewExpression UpdateArguments(NewExpression node, IReadOnlyCollection<Expression> arguments)
+            => node.Update(arguments);
+
+        protected override Expression VisitNew(NewExpression node)
+            => VisitCallable(node, node.Arguments.ToArray(), base.VisitNew, UpdateArguments);
+        
+        private static NewArrayExpression UpdateArguments(NewArrayExpression node, IReadOnlyCollection<Expression> arguments)
+            => node.Update(arguments);
+
+        protected override Expression VisitNewArray(NewArrayExpression node)
+            => VisitCallable(node, node.Expressions.ToArray(), base.VisitNewArray, UpdateArguments);
 
         internal static MemberExpression GetStateField(ParameterExpression stateMachine)
             => stateMachine.Field(nameof(AsyncStateMachine<int>.State));
