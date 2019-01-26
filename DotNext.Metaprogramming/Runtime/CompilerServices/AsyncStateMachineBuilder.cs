@@ -22,162 +22,88 @@ namespace DotNext.Runtime.CompilerServices
     /// </remarks>
     internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     {
-        private sealed class AsyncStateMachineType
+        private sealed class Replacement
         {
-            private ParameterExpression stateMachine;
-            private readonly Type returnType;
+            private readonly ICollection<Expression> expressions;
+            private readonly ICollection<ParameterExpression> variables;
 
-            internal AsyncStateMachineType(Type returnType)
-                => this.returnType = returnType;
-
-            public static implicit operator ParameterExpression(AsyncStateMachineType type)
-                => type?.stateMachine;
-
-            internal MemberExpression MakeStateHolder(Type stateType)
+            internal Replacement()
             {
-                var stateMachineType = returnType == typeof(void) ?
-                    typeof(AsyncStateMachine<>).MakeGenericType(stateType) :
-                    typeof(AsyncStateMachine<,>).MakeGenericType(stateType, returnType);
-                stateMachineType = stateMachineType.MakeByRefType();
-                stateMachine = Expression.Parameter(stateMachineType);
-                return GetStateField(stateMachine);
+                expressions = new LinkedList<Expression>();
+                variables = new LinkedList<ParameterExpression>();
             }
+
+            internal Expression Rewrite(Expression expression)
+                => variables.Count == 0 && expressions.Count == 0 ? expression : Expression.Block(typeof(void), variables, expressions.Concat(Sequence.Single(expression)));
         }
 
-        /// <summary>
-        /// Represents state slot of state machine.
-        /// </summary>
-        /// <remarks>
-        /// Slot is a representation of local variable declared
-        /// in async method which value persists between
-        /// different states.
-        /// </remarks>
-        private interface ISlot
-        {
-            /// <summary>
-            /// Type of slot.
-            /// </summary>
-            Type Type { get; }
-        }
-
-        /// <summary>
-        /// Represents local variable converted into state machine slot.
-        /// </summary>
-        private readonly struct VariableSlot : ISlot, IEquatable<VariableSlot>
-        {
-            private readonly ParameterExpression variable;
-
-            private VariableSlot(ParameterExpression variable)
-                => this.variable = variable;
-
-            public static implicit operator VariableSlot(ParameterExpression variable)
-                => new VariableSlot(variable);
-
-            Type ISlot.Type => variable.Type;
-
-            public bool Equals(VariableSlot other) => Equals(variable, other.variable);
-            public override int GetHashCode() => variable.GetHashCode();
-            public override bool Equals(object other)
-            {
-                switch (other)
-                {
-                    case ParameterExpression variable:
-                        return Equals(variable, this.variable);
-                    case VariableSlot slot:
-                        return Equals(slot);
-                    default:
-                        return false;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Represents awaiter object holder.
-        /// </summary>
-        /// <remarks>
-        /// This slot used to save awaiters from other asynchronous methods
-        /// (returned by GetAwaiter method). If two different async method
-        /// calls return the same type of awaiter, then slot will be reused
-        /// to keep state small as possible.
-        /// </remarks>
-        private readonly struct AwaiterSlot : ISlot, IEquatable<AwaiterSlot>
-        {
-            private readonly Type awaiterType;
-
-            private AwaiterSlot(AwaitExpression expression)
-                => awaiterType = expression.AwaiterType;
-
-            public static implicit operator AwaiterSlot(AwaitExpression variable)
-                => new AwaiterSlot(variable);
-
-            Type ISlot.Type => awaiterType;
-
-            public bool Equals(AwaiterSlot other) => Equals(awaiterType, other.awaiterType);
-            public override int GetHashCode() => awaiterType.GetHashCode();
-            public override bool Equals(object other)
-            {
-                switch (other)
-                {
-                    case Type awaiterType:
-                        return Equals(awaiterType, this.awaiterType);
-                    case AwaiterSlot slot:
-                        return Equals(slot);
-                    default:
-                        return false;
-                }
-            }
-        }
-
+        private static readonly UserDataSlot<Replacement> StatementSlot = UserDataSlot<Replacement>.Allocate();
         internal readonly Type AsyncReturnType;
         //stored captured exception to re-throw
         private readonly ParameterExpression capturedException;
-        private readonly IDictionary<ISlot, MemberExpression> variables;
-        //indicates that lambda body has at least one async call
-        private bool hasNestedAsyncCalls = false;
+        private readonly ISet<ParameterExpression> variables;
+        private int stateId;
+        private readonly Stack<Expression> walkingStack;
 
         internal AsyncStateMachineBuilder(Type returnType)
         {
-            if(returnType is null)
+            if (returnType is null)
                 throw new ArgumentException("Invalid return type of async method");
-            variables = new Dictionary<ISlot, MemberExpression>();
             AsyncReturnType = returnType;
             capturedException = Expression.Variable(typeof(ExceptionDispatchInfo));
-            variables.Add((VariableSlot)capturedException, null);
+            variables = new HashSet<ParameterExpression>() { capturedException };
+            stateId = AsyncStateMachine<ValueTuple>.INITIAL_STATE;
+            walkingStack = new Stack<Expression>();
         }
 
+        private Replacement FindReplacement()
+        {
+            foreach (var lookup in walkingStack)
+            {
+                if (lookup.GetUserData().Get(StatementSlot))
+                    }
+        }
+
+        private int NextState() => ++stateId;
+
+        //async method cannot have block expression with type not equal to void
         protected override Expression VisitBlock(BlockExpression node)
         {
-            if (node.Variables.Count == 0)
-                return base.VisitBlock(node);
-            //replace every local variable with state slot
-            foreach (var variable in node.Variables)
-                variables[(VariableSlot)variable] = null; //field is uknown at this moment
-            //now block can be replaced with its empty body
-            Expression result;
-            switch (node.Expressions.Count)
-            {
-                case 0:
-                    result = Expression.Empty();
-                    break;
-                case 1:
-                    result = node.Result;
-                    break;
-                default:
-                    result = Expression.Block(node.Type, node.Expressions);
-                    break;
-            }
-            return base.Visit(result);
+            return node.Type == typeof(void) ? base.VisitBlock(node) : throw new NotSupportedException("Async lambda cannot have block expression of type not equal to void");
         }
 
-        public override Expression Visit(Expression node)
+        protected override Expression VisitConditional(ConditionalExpression node)
         {
-            //allocate field to store awaitor only if it returns non-void value
+            if (node.Type != typeof(void) && (node.IfTrue is BlockExpression || node.IfFalse is BlockExpression))
+                throw new NotSupportedException("A branch of conditional expression is invalid");
+            return base.VisitConditional(node);
+        }
+
+        protected override LabelTarget VisitLabelTarget(LabelTarget node)
+            => node.Type == typeof(void) ? base.VisitLabelTarget(node) : throw new NotSupportedException("Label should be of type Void");
+
+        protected override Expression VisitTry(TryExpression node)
+            => node.Type == typeof(void) ? base.VisitTry(node) : throw new NotSupportedException("Try-Catch statement should be of type Void");
+
+        //detect local variable which will be replaced with state slot
+        protected override Expression VisitParameter(ParameterExpression node)
+        {
+            variables.Add(node);
+            return base.VisitParameter(node);
+        }
+
+        private Expression VisitAwait(AwaitExpression node)
+        {
+            //allocate slot for awaiter
+            var awaiterSlot = Expression.Variable(node.AwaiterType);
+            variables.Add(awaiterSlot);
+        }
+
+        protected override Expression VisitExtension(Expression node)
+        {
             if (node is AwaitExpression await)
-            {
-                hasNestedAsyncCalls = true;
-                variables[(AwaiterSlot)await] = null; //field is unknown at this moment
-            }
-            return base.Visit(node);
+                return VisitAwait(await);
+            return Visit(node.Reduce());
         }
 
         internal ParameterExpression Initialize(IEnumerable<ParameterExpression> parameters, ref Expression root)
@@ -335,15 +261,31 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         
-
-        private int NextState() => ++stateId;
-
         //replace every local variable with appropriate state slot
         protected override Expression VisitParameter(ParameterExpression node)
         {
             var slot = methodBuilder[node];
             return slot is null ? base.VisitParameter(node) : VisitMember(slot);
         }
+
+        //async method cannot have block expression with type not equal to void
+        protected override Expression VisitBlock(BlockExpression node)
+        {
+            return node.Type == typeof(void) ? base.VisitBlock(node) : throw new NotSupportedException("Async lambda cannot have block expression of type not equal to void");
+        }
+
+        protected override Expression VisitConditional(ConditionalExpression node)
+        {
+            if (node.Type != typeof(void) && (node.IfTrue is BlockExpression || node.IfFalse is BlockExpression))
+                throw new NotSupportedException("A branch of conditional expression is invalid");
+            return base.VisitConditional(node);
+        }
+
+        protected override LabelTarget VisitLabelTarget(LabelTarget node)
+            => node.Type == typeof(void) ? base.VisitLabelTarget(node) : throw new NotSupportedException("Label should be of type Void");
+
+        protected override Expression VisitTry(TryExpression node)
+            => node.Type == typeof(void) ? base.VisitTry(node) : throw new NotSupportedException("Try-Catch statement should be of type Void");
 
         protected override Expression VisitExtension(Expression node)
         {
