@@ -41,7 +41,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             var current = Count == 0 ? null : Peek ();
             //block cannot be treated as statement
-            if (!(node is BlockExpression) && (current is null || current is BlockExpression || current is TryExpression))
+            if (!(node is BlockExpression || node is TryExpression) && (current is null || current is BlockExpression || current is TryExpression))
                 MarkAsRewritePoint (node);
             base.Push (node);
         }

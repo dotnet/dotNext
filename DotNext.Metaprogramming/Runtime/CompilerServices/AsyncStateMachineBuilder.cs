@@ -211,6 +211,7 @@ namespace DotNext.Runtime.CompilerServices
                 else if(hasAwait)
                 {
                     var tempVar = Expression.Variable(arg.Type);
+                    variables.Add(tempVar);
                     codeInsertionPoint(Expression.Assign(tempVar, arg));
                     arg = tempVar;
                 }
