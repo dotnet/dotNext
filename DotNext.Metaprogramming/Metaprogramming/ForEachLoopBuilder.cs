@@ -49,7 +49,10 @@ namespace DotNext.Metaprogramming
             Expression loopBody = moveNextCall.Condition(base.Build(), breakLabel.Goto());
             var disposeMethod = enumerator.Type.GetDisposeMethod();
             loopBody = loopBody.Loop(breakLabel, continueLabel);
-            return disposeMethod is null ? loopBody : loopBody.Finally(enumerator.Call(disposeMethod));
+            var @finally = disposeMethod is null ?
+                    enumerator.Assign(enumerator.Type.Default()).Upcast<Expression, BinaryExpression>() :
+                    Expression.Block(enumerator.Call(disposeMethod), enumerator.Assign(enumerator.Type.Default()));
+            return loopBody.Finally(@finally);
         }
 
         Expression IExpressionBuilder<Expression>.Build() => Build();

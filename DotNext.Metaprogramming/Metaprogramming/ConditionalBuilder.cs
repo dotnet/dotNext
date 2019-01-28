@@ -24,7 +24,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="branch">Branch builder.</param>
         /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Then(Action<ExpressionBuilder> branch)
+        public ConditionalBuilder Then(Action<ScopeBuilder> branch)
             => Then(NewScope().Build(branch));
 
         public ConditionalBuilder Then(UniversalExpression branch)
@@ -38,7 +38,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="branch">Branch builder.</param>
         /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Else(Action<ExpressionBuilder> branch)
+        public ConditionalBuilder Else(Action<ScopeBuilder> branch)
             => Else(NewScope().Build(branch));
 
         public ConditionalBuilder Else(UniversalExpression branch)

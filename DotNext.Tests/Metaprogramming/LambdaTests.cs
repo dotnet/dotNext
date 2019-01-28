@@ -33,9 +33,8 @@ namespace DotNext.Metaprogramming
             {
                 UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
                 fun.Assign(fun.Result, new AsyncResultExpression(arg0 + arg1));
-            })
-            .Compile();
-            Equal(42, lambda(40, 2).Result);
+            });
+            Equal(42, lambda.Compile().Invoke(40, 2).Result);
         }
 
         private static Task<long> Sum(long x, long y)
@@ -45,14 +44,13 @@ namespace DotNext.Metaprogramming
         public void AsyncTest()
         {
             var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-            var lambda = LambdaBuilder<Func<long, long, Task<long>>>.Build(fun =>
+            var lambda = AsyncLambdaBuilder<Func<long, long, Task<long>>>.Build(fun =>
             {
                 UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
-                var temp = fun.DeclareVariable<long>("tmp");
+                UniversalExpression temp = fun.DeclareVariable<long>("tmp");
                 fun.Assign(temp, new AwaitExpression(Expression.Call(null, sumMethod, arg0, arg1)));
-                fun.AddStatement(new AsyncResultExpression(new UniversalExpression(temp) + 20L.AsConst()));
+                fun.Return(temp + 20L.AsConst());
             });
-            lambda = lambda.ToAsyncLambda();
             var fn = lambda.Compile();
             Equal(35L, fn(5L, 10L).Result);
         }

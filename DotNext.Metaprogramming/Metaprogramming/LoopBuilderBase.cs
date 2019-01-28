@@ -5,7 +5,7 @@ namespace DotNext.Metaprogramming
 {
     using Threading;
 
-    public abstract class LoopBuilderBase : ExpressionBuilder
+    public abstract class LoopBuilderBase : ScopeBuilder
     {
         private static long loopCount = 0L;
         private protected readonly LabelTarget breakLabel;

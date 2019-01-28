@@ -6,9 +6,10 @@ namespace DotNext.Metaprogramming
 {
     using static Reflection.Types;
 
-    public sealed class UsingBlockBuilder: ExpressionBuilder, IExpressionBuilder<TryExpression>
+    public sealed class UsingBlockBuilder: ScopeBuilder, IExpressionBuilder<TryExpression>
     {
         private readonly MethodInfo disposeMethod;
+        private readonly ParameterExpression disposableVar;
 
         internal UsingBlockBuilder(Expression expression, ExpressionBuilder parent)
             : base(parent)
@@ -17,21 +18,24 @@ namespace DotNext.Metaprogramming
             if (disposeMethod is null)
                 throw new ArgumentNullException($"Type {expression.Type.FullName} doesn't implement Dispose pattern");
             else if (expression is ParameterExpression variable)
-                DisposableVar = variable;
+                disposableVar = variable;
             else
             {
-                variable = DeclareVariable(expression.Type, NextName("disposable_"));
-                parent.Assign(variable, expression);
-                DisposableVar = variable;
+                disposableVar = DeclareVariable(expression.Type, NextName("disposable_"));
+                Assign(disposableVar, expression);
             }
         }
 
-        public UniversalExpression DisposableVar { get; }
+        public UniversalExpression DisposableVar => disposableVar;
 
         internal override Expression Build()
             => this.Upcast<IExpressionBuilder<TryExpression>, UsingBlockBuilder>().Build();
-          
+
         TryExpression IExpressionBuilder<TryExpression>.Build()
-            => Expression.TryFinally(base.Build(), DisposableVar.Call(disposeMethod));
+        {
+            Expression @finally = disposableVar.Call(disposeMethod);
+            @finally = Expression.Block(@finally, disposableVar.Assign(disposableVar.Type.Default()));
+            return base.Build().Finally(@finally);
+        }
     }
 }

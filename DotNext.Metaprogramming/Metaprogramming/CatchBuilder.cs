@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    public sealed class CatchBuilder: ExpressionBuilder
+    public sealed class CatchBuilder: ScopeBuilder
     {
         private Expression filter;
 
@@ -19,7 +19,7 @@ namespace DotNext.Metaprogramming
         public ParameterExpression Exception { get; }
 
         public void Filter(Action<ExpressionBuilder> filter)
-            => this.filter = new ExpressionBuilder(Parent).Build(filter);
+            => this.filter = new ScopeBuilder(Parent).Build(filter);
 
         internal CatchBlock Build(Action<CatchBuilder> body)
         {

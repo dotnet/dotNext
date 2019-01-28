@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Collections.Generic
 {
-    public readonly struct ReadOnlyListView<T>: IReadOnlyList<T>
+    public readonly struct ReadOnlyListView<T>: IReadOnlyList<T>, IEquatable<ReadOnlyListView<T>>
     {
         private readonly IList<T> source;
 
@@ -35,7 +35,7 @@ namespace DotNext.Collections.Generic
 			=> !first.Equals(second);
     }
 
-    public readonly struct ReadOnlyListView<I, O>: IReadOnlyCollection<O>, IEquatable<ReadOnlyListView<I, O>>
+    public readonly struct ReadOnlyListView<I, O>: IReadOnlyList<O>, IEquatable<ReadOnlyListView<I, O>>
     {
         private readonly IReadOnlyList<I> source;
         private readonly Converter<I, O> mapper;

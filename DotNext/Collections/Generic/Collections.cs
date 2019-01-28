@@ -19,5 +19,8 @@ namespace DotNext.Collections.Generic
                 result[index++] = item;
             return result;
         }
+
+        public static void AddAll<T>(this ICollection<T> collection, IEnumerable<T> items)
+            => items.ForEach(collection.Add);
     }
 }

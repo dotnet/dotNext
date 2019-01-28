@@ -1,18 +1,19 @@
-using System;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    public sealed class WithBlockBuilder: ExpressionBuilder, IExpressionBuilder<Expression>
+    public sealed class WithBlockBuilder: ScopeBuilder, IExpressionBuilder<Expression>
     {
+        private readonly ParameterExpression scopeVar;
+
         internal WithBlockBuilder(Expression expression, ExpressionBuilder parent)
             : base(parent)
         {
             if(expression is ParameterExpression variable)
-                ScopeVar = variable;
+                scopeVar = variable;
             else
             {
-                ScopeVar = DeclareVariable(expression.Type, NextName("block_var_"));
+                scopeVar = DeclareVariable(expression.Type, NextName("block_var_"));
                 Assign(ScopeVar, expression);
             }
         }

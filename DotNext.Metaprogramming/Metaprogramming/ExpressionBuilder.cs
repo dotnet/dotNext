@@ -9,8 +9,7 @@ namespace DotNext.Metaprogramming
     using static Threading.AtomicLong;
 
     /// <summary>
-    /// Represents lexical scope and methods for adding expressions
-    /// and statements to it.
+    /// Represents basic lexical scope support.
     /// </summary>
     public class ExpressionBuilder: Disposable
     {
@@ -18,7 +17,7 @@ namespace DotNext.Metaprogramming
         private readonly ICollection<Expression> statements;
         private long nameGenerator;
 
-        internal ExpressionBuilder(ExpressionBuilder parent = null)
+        private protected ExpressionBuilder(ExpressionBuilder parent = null)
         {
             Parent = parent;
             variables = new Dictionary<string, ParameterExpression>();
@@ -45,7 +44,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public ExpressionBuilder Parent{ get; }
 
-        public E AddStatement<E>(E expression)
+        internal E AddStatement<E>(E expression)
             where E: Expression
         {
             statements.Add(expression);
@@ -60,19 +59,12 @@ namespace DotNext.Metaprogramming
             return builder.Build();
         }
 
-        internal Expression Build(Action<ExpressionBuilder> body)
-        {
-            body(this);
-            return Build();
-        }
-
         private E AddStatement<E, B>(B builder, Action<B> body)
             where E: Expression
             where B: IExpressionBuilder<E>
             => AddStatement(Build<E, B>(builder, body));
 
-        public ConstantExpression Constant<T>(T value) => AddStatement(Expression.Constant(value, typeof(T)));
-
+        
         public BinaryExpression Assign(ParameterExpression variable, UniversalExpression value)
             => AddStatement(Expression.Assign(variable, value));
 
@@ -179,29 +171,19 @@ namespace DotNext.Metaprogramming
         public LoopExpression Loop(Action<LoopBuilder> loop)
             => AddStatement<LoopExpression, LoopBuilder>(new LoopBuilder(this), loop);
 
-        public GotoExpression Continue(LoopBuilderBase loop)
-            => AddStatement(loop.Continue(false));
-
-        /// <summary>
-        /// Stops the specified loop.
-        /// </summary>
-        /// <param name="loop">Loop identifier.</param>
-        /// <returns>An expression representing jumping outside of the loop.</returns>
-        public GotoExpression Break(LoopBuilderBase loop)
-            => AddStatement(loop.Break(false));
         
-        public Expression Return(LambdaBuilder lambda) => AddStatement(lambda.Return(false));
-
-        public Expression Return(LambdaBuilder lambda, UniversalExpression result) => AddStatement(lambda.Return(result, false));
-
-        public LambdaExpression Lambda<D>(Action<LambdaBuilder> lambda)
+        public LambdaExpression Lambda<D>(Action<LambdaBuilder<D>> lambda)
             where D: Delegate
             => AddStatement<LambdaExpression, LambdaBuilder<D>>(new LambdaBuilder<D>(this), lambda);
 
+        public LambdaExpression AsyncLambda<D>(Action<AsyncLambdaBuilder<D>> lambda)
+            where D : Delegate
+            => AddStatement<LambdaExpression, AsyncLambdaBuilder<D>>(new AsyncLambdaBuilder<D>(this), lambda);
+
         public TryBuilder Try(UniversalExpression body) => new TryBuilder(body, this, true);
 
-        public Expression Scope(Action<ExpressionBuilder> scope)
-            => new ExpressionBuilder(this).Build(scope);
+        public Expression Scope(Action<ScopeBuilder> scope)
+            => new ScopeBuilder(this).Build(scope);
 
         public Expression With(UniversalExpression expression, Action<WithBlockBuilder> scope)
             => AddStatement<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, this), scope);
@@ -251,9 +233,11 @@ namespace DotNext.Metaprogramming
             this.treatAsStatement = treatAsStatement;
         }
 
-        private protected ExpressionBuilder NewScope() => new ExpressionBuilder(parent);
+        private protected ScopeBuilder NewScope() => new ScopeBuilder(parent);
 
-        private protected B NewScope<B>(Func<ExpressionBuilder, B> factory) => factory(parent);
+        private protected B NewScope<B>(Func<ExpressionBuilder, B> factory) 
+            where B: ScopeBuilder
+            => factory(parent);
 
         private protected Type ExpressionType
         {
