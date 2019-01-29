@@ -32,9 +32,15 @@ namespace DotNext.Metaprogramming
         public GotoExpression Break(LoopBuilderBase loop)
             => AddStatement(loop.Break(false));
 
-        public Expression Return(LambdaBuilder lambda) => AddStatement(lambda.Return(false));
+        private LambdaBuilder FindLambda() => FindScope<LambdaBuilder>() ?? throw new InvalidOperationException("Method can be called from lambda expression only");
 
-        public Expression Return(LambdaBuilder lambda, UniversalExpression result) => AddStatement(lambda.Return(result, false));
+        /// <summary>
+        /// Returns from underlying lambda expression.
+        /// </summary>
+        /// <param name="lambda"></param>
+        /// <returns></returns>
+        public sealed override Expression Return() => AddStatement(FindLambda().Return(false));
 
+        public sealed override Expression Return(UniversalExpression result) => AddStatement(FindLambda().Return(result, false));
     }
 }

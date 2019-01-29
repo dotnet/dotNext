@@ -87,12 +87,12 @@ namespace DotNext.Metaprogramming
             return ReferenceEquals(expression, GetAwaiter.Object) ? this : new AwaitExpression(expression);
         }
 
-        internal MethodCallExpression Reduce(ParameterExpression awaiterHolder, int state, LabelTarget stateLabel, LabelTarget returnLabel, CodeInsertionPoint inserter)
+        internal MethodCallExpression Reduce(ParameterExpression awaiterHolder, int state, LabelTarget stateLabel, LabelTarget returnLabel, CodeInsertionPoint prologue)
         {
-            inserter(Assign(awaiterHolder, GetAwaiter));
-            inserter(new TransitionExpression(awaiterHolder, state));
-            inserter(Return(returnLabel));
-            inserter(stateLabel.LandingSite());
+            prologue(Assign(awaiterHolder, GetAwaiter));
+            prologue(new TransitionExpression(awaiterHolder, state));
+            prologue(Return(returnLabel));
+            prologue(stateLabel.LandingSite());
             return awaiterHolder.Call(GetResultMethod);
         }
     }

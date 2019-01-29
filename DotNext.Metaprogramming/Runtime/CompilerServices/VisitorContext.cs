@@ -9,12 +9,12 @@ namespace DotNext.Runtime.CompilerServices
 
     internal sealed class VisitorContext : Stack<Expression>
     {
-        private sealed class StatementRewritePoint
+        private sealed class CodeInsertionPoint
         {
             private Variant<LinkedList<Expression>, LinkedListNode<Expression>> nodeOrList;
 
-            internal StatementRewritePoint(LinkedList<Expression> list) => nodeOrList = list;
-            internal StatementRewritePoint(LinkedListNode<Expression> node) => nodeOrList = node;
+            internal CodeInsertionPoint(LinkedList<Expression> list) => nodeOrList = list;
+            internal CodeInsertionPoint(LinkedListNode<Expression> node) => nodeOrList = node;
 
             internal void Insert(Expression expr)
             {
@@ -25,13 +25,33 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
-        private sealed class RewritePoint : LinkedList<Expression>
+        private sealed class RewritePoint : Disposable
         {
-            internal StatementRewritePoint CaptureInsertionPoint() => First is null ? new StatementRewritePoint(this) : new StatementRewritePoint(Last);
+            private readonly LinkedList<Expression> prologue = new LinkedList<Expression>();
+            private readonly LinkedList<Expression> epilogue = new LinkedList<Expression>();
+
+            private static CodeInsertionPoint CaptureRewritePoint(LinkedList<Expression> codeBlock)
+                => codeBlock.First is null ? new CodeInsertionPoint(codeBlock) : new CodeInsertionPoint(codeBlock.Last);
+
+            internal CodeInsertionPoint CapturePrologueWriter() => CaptureRewritePoint(prologue);
+
+            internal CodeInsertionPoint CaptureEpilogueWriter() => CaptureRewritePoint(epilogue);
 
             internal Expression Rewrite(Expression expression)
-                => First is null ? expression : Expression.Block(typeof(void), this.Concat(Sequence.Single(expression)));
+                => prologue.Count == 0 && epilogue.Count == 0 ?
+                        expression :
+                        Expression.Block(typeof(void), prologue.Concat(Sequence.Single(expression)).Concat(epilogue));
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    prologue.Clear();
+                    epilogue.Clear();
+                }
+            }
         }
+
         private static readonly UserDataSlot<RewritePoint> StatementSlot = UserDataSlot<RewritePoint>.Allocate();
         private static readonly UserDataSlot<bool> ContainsAwaitSlot = UserDataSlot<bool>.Allocate();
 
@@ -60,21 +80,30 @@ namespace DotNext.Runtime.CompilerServices
         internal Expression Pop(Expression node)
         {
             var current = Pop();
-            return current.GetUserData().Remove(StatementSlot, out var replacement) ? replacement.Rewrite(node) : node;
+            if (current.GetUserData().Remove(StatementSlot, out var replacement))
+                using (replacement)
+                {
+                    node = replacement.Rewrite(node);
+                }
+            return node;
         }
 
-        internal Metaprogramming.CodeInsertionPoint GetStatementRewritePoint()
+        private RewritePoint FindRewritePoint()
         {
             foreach (var lookup in this)
             {
                 var statement = lookup.GetUserData().Get(StatementSlot);
                 if (!(statement is null))
-                    return statement.CaptureInsertionPoint().Insert;
+                    return statement;
             }
             //should never be happened
             //this exception indicates that caller code tries to get code insertion point on empty expression tree
             throw new InvalidOperationException();
         }
+
+        internal Metaprogramming.CodeInsertionPoint GetStatementPrologueWriter() => FindRewritePoint().CapturePrologueWriter().Insert;
+
+        internal Metaprogramming.CodeInsertionPoint GetStatementEpilogueWriter() => FindRewritePoint().CaptureEpilogueWriter().Insert;
 
         internal Expression Rewrite<E>(E expression, Converter<E, Expression> rewriter)
             where E : Expression

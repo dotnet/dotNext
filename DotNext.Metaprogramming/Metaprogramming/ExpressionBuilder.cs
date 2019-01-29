@@ -11,7 +11,7 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents basic lexical scope support.
     /// </summary>
-    public class ExpressionBuilder: Disposable
+    public abstract class ExpressionBuilder: Disposable
     {
         private readonly IDictionary<string, ParameterExpression> variables;
         private readonly ICollection<Expression> statements;
@@ -22,6 +22,15 @@ namespace DotNext.Metaprogramming
             Parent = parent;
             variables = new Dictionary<string, ParameterExpression>();
             statements = new LinkedList<Expression>();
+        }
+
+        private protected B FindScope<B>()
+            where B: ExpressionBuilder
+        {
+            for (var current = this; !(current is null); current = current.Parent)
+                if (current is B scope)
+                    return scope;
+            return null;
         }
 
         internal string NextName(string prefix) => Parent is null ? prefix + nameGenerator.IncrementAndGet() : Parent.NextName(prefix);
@@ -193,6 +202,10 @@ namespace DotNext.Metaprogramming
 
         public SwitchBuilder Switch(UniversalExpression switchValue)
             => new SwitchBuilder(switchValue, this, true);
+
+        public abstract Expression Return();
+
+        public abstract Expression Return(UniversalExpression result);
 
         internal virtual Expression Build()
         {

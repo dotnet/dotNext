@@ -46,7 +46,7 @@ namespace DotNext.Metaprogramming
             {
                 UniversalExpression param1 = fun.Parameters[0], param2 = fun.Parameters[1];
                 fun.Try(param1 / param2)
-                    .Catch<DivideByZeroException>(@catch => @catch.Return(fun, false))
+                    .Catch<DivideByZeroException>(@catch => @catch.Return(false))
                     .End();
                 fun.Return(true);
             })

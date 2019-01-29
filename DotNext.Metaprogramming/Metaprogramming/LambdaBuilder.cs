@@ -48,9 +48,9 @@ namespace DotNext.Metaprogramming
 
         internal Expression Return(bool addAsStatement) => Return(ReturnType.Default(), addAsStatement);
 
-        public Expression Return(UniversalExpression result) => Return(result, true);
+        public sealed override Expression Return(UniversalExpression result) => Return(result, true);
 
-        public Expression Return() => Return(true);
+        public sealed override Expression Return() => Return(true);
 
         private protected bool TailCall { private get; set; }
        

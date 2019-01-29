@@ -28,7 +28,7 @@ namespace DotNext.Metaprogramming
         internal MethodCallExpression Reduce(ParameterExpression stateMachine)
         {
             const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
-            var moveNext = stateMachine.Type.GetMethod(nameof(IAsyncStateMachine<ValueTuple>.MoveNext), PublicInstance, 1, null, typeof(int)).MakeGenericMethod(Awaiter.Type);
+            var moveNext = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.MoveNext), PublicInstance, 1, null, typeof(int)).MakeGenericMethod(Awaiter.Type);
             return stateMachine.Call(moveNext, Awaiter, StateId.AsConst());
         }
     }

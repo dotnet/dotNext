@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
+using System.Runtime.ConstrainedExecution;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -14,13 +16,12 @@ namespace DotNext.Runtime.CompilerServices
     public struct AsyncStateMachine<STATE>: IAsyncStateMachine<STATE>
     {
         /// <summary>
-        /// State machine transition.
+        /// Represents state-transition function.
         /// </summary>
-        /// <param name="stateMachine">State machine to modify during transition.</param>
+        /// <param name="stateMachine">A state to modify during transition.</param>
         public delegate void Transition(ref AsyncStateMachine<STATE> stateMachine);
 
-        internal const int FINAL_STATE = int.MinValue;
-        public const int INITIAL_STATE = 0;
+        public const int FINAL_STATE = 0;
 
         /// <summary>
         /// Runtime state associated with this state machine.
@@ -29,49 +30,78 @@ namespace DotNext.Runtime.CompilerServices
 
         private AsyncTaskMethodBuilder builder;
         private readonly Transition transition;
+        private ExceptionDispatchInfo exception;
+        private ushort guardedRegionCounter;    //number of entries into try-clause
 
-        public AsyncStateMachine(Transition transition, STATE state)
+        private AsyncStateMachine(Transition transition, STATE state)
         {
             builder = AsyncTaskMethodBuilder.Create();
             this.transition = transition;
             State = state;
-            StateId = INITIAL_STATE;
-        }
-
-        public AsyncStateMachine(Transition transition)
-            : this(transition, default)
-        {
+            StateId = FINAL_STATE;
+            exception = null;
+            guardedRegionCounter = 0;
         }
 
         STATE IAsyncStateMachine<STATE>.State => State;
 
+        /// <summary>
+        /// Gets state identifier.
+        /// </summary>
         public int StateId
         {
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             get;
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             private set;
         }
 
-        /// <summary>
-        /// Transition into final state with exception.
-        /// </summary>
-        public Exception Exception
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public void EnterGuardedCode(int newState)
         {
-            set
-            {
-                StateId = FINAL_STATE;
-                builder.SetException(value);
-            }
+            StateId = newState;
+            guardedRegionCounter += 1;
         }
+
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public void ExitGuardedCode() => guardedRegionCounter -= 1;
+
+        /// <summary>
+        /// Gets captured exception.
+        /// </summary>
+        public Exception CapturedException => exception?.SourceException;
+
+        /// <summary>
+        /// Re-throws capture exception.
+        /// </summary>
+        public void Rethrow() => exception?.Throw();
 
         void IAsyncStateMachine.MoveNext()
         {
+        begin:
             try
             {
                 transition(ref this);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Exception = e;
+                exception = ExceptionDispatchInfo.Capture(e);
+                //try to recover from exception and re-enter into state machine
+                if (guardedRegionCounter > 0)
+                {
+                    guardedRegionCounter -= 1;
+                    goto begin;
+                }
+            }
+            //finalize state machine
+            if (StateId == FINAL_STATE)
+            {
+                if (exception is null)
+                    builder.SetResult();
+                else
+                    builder.SetException(exception.SourceException);
+                builder = default;
+                exception = null;
             }
         }
 
@@ -81,6 +111,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <typeparam name="TAwaiter">Type of asynchronous control flow object.</typeparam>
         /// <param name="awaiter">Asynchronous result obtained from another method to await.</param>
         /// <param name="stateId">A new state identifier.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void MoveNext<TAwaiter>(ref TAwaiter awaiter, int stateId)
             where TAwaiter: ICriticalNotifyCompletion
         {
@@ -88,20 +119,15 @@ namespace DotNext.Runtime.CompilerServices
             builder.AwaitUnsafeOnCompleted(ref awaiter, ref this);
         }
 
-        public void Complete()
-        {
-            StateId = FINAL_STATE;
-            builder.SetResult();
-        }
-        
-        public Task Start()
-        {
-            StateId = INITIAL_STATE;
-            builder.Start(ref this);
-            return builder.Task;
-        }
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public void Complete() => StateId = FINAL_STATE;
 
-        public static implicit operator Task(in AsyncStateMachine<STATE> machine) => machine.builder.Task;
+        public static Task Start(Transition transition, STATE initialState = default)
+        {
+            var stateMachine = new AsyncStateMachine<STATE>(transition, initialState);
+            stateMachine.builder.Start(ref stateMachine);
+            return stateMachine.builder.Task;
+        }
 
         void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
     }
@@ -109,57 +135,80 @@ namespace DotNext.Runtime.CompilerServices
     public struct AsyncStateMachine<STATE, R> : IAsyncStateMachine<STATE>
         where STATE : struct
     {
+        /// <summary>
+        /// Represents state-transition function.
+        /// </summary>
+        /// <param name="stateMachine"></param>
         public delegate void Transition(ref AsyncStateMachine<STATE, R> stateMachine);
 
+        /// <summary>
+        /// Represents internal state.
+        /// </summary>
         public STATE State;
         private AsyncTaskMethodBuilder<R> builder;
         private readonly Transition transition;
+        private ExceptionDispatchInfo exception;
+        private ushort guardedRegionCounter;    //number of entries into try-clause
+        private R result;
 
-        public AsyncStateMachine(Transition transition, STATE state)
+        private AsyncStateMachine(Transition transition, STATE state)
         {
             builder = AsyncTaskMethodBuilder<R>.Create();
-            StateId = AsyncStateMachine<STATE>.INITIAL_STATE;
+            StateId = AsyncStateMachine<STATE>.FINAL_STATE;
             State = state;
             this.transition = transition;
-        }
-
-        public AsyncStateMachine(Transition transition)
-            : this(transition, default)
-        {
+            guardedRegionCounter = 0;
+            exception = null;
+            result = default;
         }
 
         STATE IAsyncStateMachine<STATE>.State => State;
 
         public int StateId
         {
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             get;
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             private set;
         }
 
-        public Task<R> Start()
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public void EnterGuardedCode(int newState)
         {
-            StateId = AsyncStateMachine<STATE>.INITIAL_STATE;
-            builder.Start(ref this);
-            return builder.Task;
+            StateId = newState;
+            guardedRegionCounter += 1;
         }
 
-        Task IAsyncStateMachine<STATE>.Start() => Start();
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public void ExitGuardedCode() => guardedRegionCounter -= 1;
 
-        public Exception Exception
+        /// <summary>
+        /// Gets captured exception.
+        /// </summary>
+        public Exception CapturedException => exception?.SourceException;
+
+        /// <summary>
+        /// Re-throws capture exception.
+        /// </summary>
+        public void Rethrow() => exception?.Throw();
+
+        public static Task<R> Start(Transition transition, STATE initialState = default)
         {
-            set
-            {
-                StateId = AsyncStateMachine<STATE>.FINAL_STATE;
-                builder.SetException(value);
-            }
+            var stateMachine = new AsyncStateMachine<STATE, R>(transition, initialState);
+            stateMachine.builder.Start(ref stateMachine);
+            return stateMachine.builder.Task;
         }
-
+        
+        /// <summary>
+        /// Sets result of async state machine and marks current state as final state.
+        /// </summary>
         public R Result
         {
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             set
             {
                 StateId = AsyncStateMachine<STATE>.FINAL_STATE;
-                builder.SetResult(value);
+                result = value;
             }
         }
 
@@ -172,17 +221,32 @@ namespace DotNext.Runtime.CompilerServices
 
         void IAsyncStateMachine.MoveNext()
         {
+        begin:
             try
             {
                 transition(ref this);
             }
             catch (Exception e)
             {
-                Exception = e;
+                exception = ExceptionDispatchInfo.Capture(e);
+                //try to recover from exception and re-enter into state machine
+                if (guardedRegionCounter > 0)
+                {
+                    guardedRegionCounter -= 1;
+                    goto begin;
+                }
+            }
+            //finalize state machine
+            if (StateId == AsyncStateMachine<STATE>.FINAL_STATE)
+            {
+                if (exception is null)
+                    builder.SetResult(result);
+                else
+                    builder.SetException(exception.SourceException);
+                builder = default;
+                exception = null;
             }
         }
-
-        public static implicit operator Task<R>(in AsyncStateMachine<STATE, R> machine) => machine.builder.Task;
 
         void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
     }
