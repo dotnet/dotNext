@@ -92,7 +92,7 @@ namespace DotNext.Threading
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static long SetAndGet(ref this long value, long update)
 		{
-			Volatile.Write(ref value, update);
+			VolatileSet(ref value, update);
 			return update;
 		}
 
@@ -143,5 +143,56 @@ namespace DotNext.Threading
 		/// <returns>The original value.</returns>
 		public static long GetAndUpdate(ref this long value, Func<long, long> updater)
 			=> Atomic<long, CASProvider>.Update(ref value, updater).OldValue;
-	}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long VolatileGet(this long[] array, long index)
+            => VolatileGet(ref array[index]);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileSet(this long[] array, long index, long value)
+            => VolatileSet(ref array[index], value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long IncrementAndGet(this long[] array, long index)
+            => IncrementAndGet(ref array[index]);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long DecrementAndGet(this long[] array, long index)
+            => DecrementAndGet(ref array[index]);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long CompareExchange(this long[] array, long index, long value, long comparand)
+            => Interlocked.CompareExchange(ref array[index], value, comparand);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool CompareAndSet(this long[] array, long index, long expected, long update)
+            => CompareAndSet(ref array[index], expected, update);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long Add(this long[] array, long index, long operand)
+            => Add(ref array[index], operand);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long GetAndSet(this long[] array, long index, long update)
+            => GetAndSet(ref array[index], update);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long SetAndGet(this long[] array, long index, long update)
+        {
+            VolatileSet(array, index, update);
+            return update;
+        }
+
+        public static long AccumulateAndGet(this long[] array, long index, long x, Func<long, long, long> accumulator)
+            => AccumulateAndGet(ref array[index], x, accumulator);
+
+        public static long GetAndAccumulate(this long[] array, long index, long x, Func<long, long, long> accumulator)
+            => GetAndAccumulate(ref array[index], x, accumulator);
+
+        public static long UpdateAndGet(this long[] array, long index, Func<long, long> updater)
+            => UpdateAndGet(ref array[index], updater);
+
+        public static long GetAndUpdate(this long[] array, long index, Func<long, long> updater)
+            => GetAndUpdate(ref array[index], updater);
+    }
 }

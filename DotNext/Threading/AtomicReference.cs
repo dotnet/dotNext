@@ -90,7 +90,55 @@ namespace DotNext.Threading
 		public static T GetAndUpdate<T>(ref T value, Func<T, T> updater)
 			where T : class
 			=> Atomic<T, CASProvider<T>>.Update(ref value, updater).OldValue;
-	}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T VolatileGet<T>(this T[] array, long index)
+            where T : class
+            => Volatile.Read(ref array[index]);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileSet<T>(this T[] array, long index, T element)
+            where T : class
+            => Volatile.Write(ref array[index], element);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool CompareAndSet<T>(this T[] array, long index, T expected, T update)
+            where T : class
+            => CompareAndSet(ref array[index], expected, update);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T CompareExchange<T>(this T[] array, long index, T value, T comparand)
+            where T: class
+            => Interlocked.CompareExchange(ref array[index], value, comparand);
+
+        public static T GetAndSet<T>(this T[] array, long index, T value)
+            where T : class
+            => Interlocked.Exchange(ref array[index], value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T SetAndGet<T>(this T[] array, long index, T value)
+            where T : class
+        {
+            VolatileSet(array, index, value);
+            return value;
+        }
+
+        public static T AccumulateAndGet<T>(this T[] array, long index, T x, Func<T, T, T> accumulator)
+            where T : class
+            => AccumulateAndGet(ref array[index], x, accumulator);
+
+        public static T GetAndAccumulate<T>(this T[] array, long index, T x, Func<T, T, T> accumulator)
+            where T : class
+            => GetAndAccumulate(ref array[index], x, accumulator);
+
+        public static T UpdateAndGet<T>(this T[] array, long index, Func<T, T> updater)
+            where T : class
+            => UpdateAndGet(ref array[index], updater);
+
+        public static T GetAndUpdate<T>(this T[] array, long index, Func<T, T> updater)
+            where T : class
+            => GetAndUpdate(ref array[index], updater);
+    }
 
 	/// <summary>
 	/// Provides container with atomic operations
