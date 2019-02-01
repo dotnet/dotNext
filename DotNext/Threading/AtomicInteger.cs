@@ -143,5 +143,56 @@ namespace DotNext.Threading
 		/// <returns>The original value.</returns>
 		public static int GetAndUpdate(ref this int value, Func<int, int> updater)
 			=> Atomic<int, CASProvider>.Update(ref value, updater).OldValue;
-	}
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int VolatileGet(this int[] array, long index)
+            => VolatileGet(ref array[index]);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileSet(this int[] array, long index, int value)
+            => VolatileSet(ref array[index], value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int IncrementAndGet(this int[] array, long index)
+            => IncrementAndGet(ref array[index]);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int DecrementAndGet(this int[] array, long index)
+            => DecrementAndGet(ref array[index]);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int CompareExchange(this int[] array, long index, int value, int comparand)
+            => Interlocked.CompareExchange(ref array[index], value, comparand);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool CompareAndSet(this int[] array, long index, int expected, int update)
+            => CompareAndSet(ref array[index], expected, update);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Add(this int[] array, long index, int operand)
+            => Add(ref array[index], operand);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int GetAndSet(this int[] array, long index, int update)
+            => GetAndSet(ref array[index], update);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int SetAndGet(this int[] array, long index, int update)
+        {
+            VolatileSet(array, index, update);
+            return update;
+        }
+
+        public static int AccumulateAndGet(this int[] array, long index, int x, Func<int, int, int> accumulator)
+            => AccumulateAndGet(ref array[index], x, accumulator);
+
+        public static int GetAndAccumulate(this int[] array, long index, int x, Func<int, int, int> accumulator)
+            => GetAndAccumulate(ref array[index], x, accumulator);
+
+        public static int UpdateAndGet(this int[] array, long index, Func<int, int> updater)
+            => UpdateAndGet(ref array[index], updater);
+
+        public static int GetAndUpdate(this int[] array, long index, Func<int, int> updater)
+            => GetAndUpdate(ref array[index], updater);
+    }
 }

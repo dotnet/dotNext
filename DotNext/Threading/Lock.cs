@@ -7,7 +7,7 @@ namespace DotNext.Threading
     /// Represents unified representation monitor lock, read lock,
     /// write lock or upgradable read lock.
     /// </summary>
-    public readonly struct Lock : IDisposable
+    public readonly struct Lock : IDisposable, IEquatable<Lock>
     {
         private enum LockType : byte
         {
@@ -127,5 +127,22 @@ namespace DotNext.Threading
                     return;
             }
         }
+
+        public bool Equals(in Lock other) => type == other.type && Equals(lockedObject, other.lockedObject);
+        bool IEquatable<Lock>.Equals(Lock other) => Equals(in other);
+        public override bool Equals(object other) => other is Lock @lock && Equals(@lock);
+
+        public override int GetHashCode()
+        {
+            if (lockedObject is null)
+                return 0;
+            var hashCode = -549183179;
+            hashCode = hashCode * -1521134295 + lockedObject.GetHashCode();
+            hashCode = hashCode * -1521134295 + type.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(in Lock first, in Lock second) => first.Equals(second);
+        public static bool operator !=(in Lock first, in Lock second) => !first.Equals(second);
     }
 }
