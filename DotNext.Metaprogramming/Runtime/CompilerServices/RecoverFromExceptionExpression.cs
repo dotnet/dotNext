@@ -9,8 +9,8 @@ namespace DotNext.Runtime.CompilerServices
     {
         private readonly Expression receiver;
 
-        internal RecoverFromExceptionExpression(EnterGuardedCodeExpression enterCall, ParameterExpression receiver)
-            : base(enterCall.StateId - 1)
+        internal RecoverFromExceptionExpression(ExitGuardedCodeExpression exitCall, ParameterExpression receiver)
+            : base(exitCall.StateId)
         {
             this.receiver = receiver;
         }

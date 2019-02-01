@@ -7,8 +7,8 @@ namespace DotNext.Runtime.CompilerServices
 
     internal sealed class ExitGuardedCodeExpression: TransitionExpression
     {
-        internal ExitGuardedCodeExpression(EnterGuardedCodeExpression enterCall)
-            : base(enterCall.StateId - 1)
+        internal ExitGuardedCodeExpression(uint parentState)
+            : base(parentState)
         {
         }
 

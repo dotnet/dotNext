@@ -76,5 +76,22 @@ namespace DotNext.Metaprogramming
             Equal(25L, fn(15L).Result);
             Equal(99L, fn(9L).Result);
         }
+
+        [Fact]
+        public void TryFinallyAsyncTest()
+        {
+            var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            var lambda = AsyncLambdaBuilder<Func<long[], Task<long>>>.Build(fun =>
+            {
+                var result = fun.DeclareVariable<long>("accumulator");
+                fun.ForEach(fun.Parameters[0], loop =>
+                {
+                    loop.Assign(result, Expression.Call(null, sumMethod, result, loop.Element).Await());
+                });
+                fun.Return(result);
+            });
+            var fn = lambda.Compile();
+            Equal(15L, fn(new[] { 3L, 2L, 10L }).Result);
+        }
     }
 }

@@ -157,6 +157,9 @@ namespace DotNext.Metaprogramming
         public static MemberExpression Field(this Expression instance, string fieldName)
             => Expression.Field(instance, fieldName);
 
+        public static IndexExpression ElementAt(this Expression array, params Expression[] indexes)
+            => Expression.ArrayAccess(array, indexes);
+
         public static LoopExpression Loop(this Expression body, LabelTarget @break, LabelTarget @continue)
             => Expression.Loop(body, @break, @continue);
 

@@ -148,6 +148,8 @@ namespace DotNext.Metaprogramming
         public InvocationExpression Invoke(params UniversalExpression[] arguments)
             => expression.Invoke(AsExpressions(arguments));
 
+        public UniversalExpression ElementAt(params UniversalExpression[] indexes) => expression.ElementAt(AsExpressions(indexes));
+
         public UniversalExpression Call(MethodInfo method, params UniversalExpression[] arguments) => expression.Call(method, AsExpressions(arguments));
 
         public UniversalExpression Call(string methodName, params UniversalExpression[] arguments) => expression.Call(methodName, AsExpressions(arguments));

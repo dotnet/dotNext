@@ -6,7 +6,7 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents lexical scope builder.
     /// </summary>
-    public class ScopeBuilder: ExpressionBuilder
+    public class ScopeBuilder : ExpressionBuilder
     {
         internal ScopeBuilder(ExpressionBuilder parent)
             : base(parent)
@@ -32,7 +32,7 @@ namespace DotNext.Metaprogramming
         public GotoExpression Break(LoopBuilderBase loop)
             => AddStatement(loop.Break(false));
 
-        private LambdaBuilder FindLambda() => FindScope<LambdaBuilder>() ?? throw new InvalidOperationException("Method can be called from lambda expression only");
+        private LambdaBuilder FindLambda() => FindScope<LambdaBuilder>() ?? throw new InvalidOperationException("Method can be called from within lambda expression only");
 
         /// <summary>
         /// Returns from underlying lambda expression.
@@ -42,5 +42,7 @@ namespace DotNext.Metaprogramming
         public sealed override Expression Return() => AddStatement(FindLambda().Return(false));
 
         public sealed override Expression Return(UniversalExpression result) => AddStatement(FindLambda().Return(result, false));
+
+        public Expression Rethrow() => AddStatement(Expression.Rethrow());
     }
 }

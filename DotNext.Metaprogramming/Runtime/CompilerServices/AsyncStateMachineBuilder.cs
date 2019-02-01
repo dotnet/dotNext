@@ -68,15 +68,7 @@ namespace DotNext.Runtime.CompilerServices
                where position >= 0
                orderby position ascending
                select candidate;
-
-        private static SwitchExpression MakeSwitch(Expression stateId, IDictionary<uint, StateTransition> switchTable)
-        {
-            ICollection<SwitchCase> cases = new LinkedList<SwitchCase>();
-            foreach (var (state, label) in switchTable)
-                cases.Add(Expression.SwitchCase(label.MakeGoto(), state.AsConst()));
-            return Expression.Switch(stateId, Expression.Empty(), null, cases);
-        }
-
+        
         private ParameterExpression NewStateSlot(Type type)
             => NewStateSlot(() => Expression.Variable(type));
 
@@ -193,8 +185,7 @@ namespace DotNext.Runtime.CompilerServices
                  */
                 var tryBody = this.context.Rewrite(node, VisitTryOnly);
                 var context = VisitorContext.RemoveGuardedCodeRewriteContext(node);
-                var finallyBody = Visit(SemanticCopyRewriter.Rewrite(node.Finally));
-                tryBody = context.MakeTryBody(tryBody, finallyBody, this);
+                tryBody = context.MakeTryBody(tryBody, node.Finally, this);
                 //try-catch OR try-catch-finally
                 if (node.Handlers.Count > 0)
                 {
@@ -202,14 +193,13 @@ namespace DotNext.Runtime.CompilerServices
                     foreach (var catchBlock in node.Handlers)
                         handlers.AddLast(VisitCatchBlock(catchBlock, node.Finally));
                     handlers.AddLast(Expression.Rethrow());
-                    finallyBody = context.MakeFaultBody(node.Finally, this);
                     return Expression.Block(new[] { tryBody, context.FailureLabel.LandingSite() }.Concat(handlers).Concat(new Expression[] { Expression.Rethrow(), context.ExitLabel.LandingSite() }));
                 }
                 //try-finally or try-fault
                 else
                 {
-                    finallyBody = context.MakeFaultBody(node.Finally ?? node.Fault, this);
-                    return Expression.Block(tryBody, finallyBody, context.ExitLabel.LandingSite());
+                    var @finally = context.MakeFaultBody(node.Finally ?? node.Fault, this);
+                    return Expression.Block(typeof(void), tryBody, @finally, context.ExitLabel.LandingSite());
                 }
             }
             else
@@ -360,22 +350,34 @@ namespace DotNext.Runtime.CompilerServices
         protected override Expression VisitNewArray(NewArrayExpression node)
             => context.Rewrite(node, n => RewriteCallable(n, n.Expressions.ToArray(), base.VisitNewArray, UpdateArguments));
 
-        internal BlockExpression BeginRewrite(Expression body)
+        protected override Expression VisitLoop(LoopExpression node)
+            => node.Type == typeof(void) ? context.Rewrite(node, base.VisitLoop) : throw new NotSupportedException("Loop expression should be of type Void");
+
+        protected override Expression VisitDynamic(DynamicExpression node)
+            => context.Rewrite(node, base.VisitDynamic);
+
+        protected override Expression VisitMember(MemberExpression node)
+            => context.Rewrite(node, base.VisitMember);
+
+        protected override Expression VisitMemberInit(MemberInitExpression node)
+            => context.Rewrite(node, base.VisitMemberInit);
+
+        private SwitchExpression MakeSwitch()
+        {
+            ICollection<SwitchCase> cases = new LinkedList<SwitchCase>();
+            foreach (var (state, label) in stateSwitchTable)
+                cases.Add(Expression.SwitchCase(label.MakeGoto(), state.AsConst()));
+            return Expression.Switch(new StateIdExpression(), Expression.Empty(), null, cases);
+        }
+
+        internal BlockExpression Rewrite(Expression body)
         {
             body = body is BlockExpression block ?
                 Expression.Block(typeof(void), block.Variables, block.Expressions) :
                 Expression.Block(typeof(void), body);
-            return (BlockExpression)Visit(body);
-        }
-
-        private static Expression GetStateId(ParameterExpression stateMachine)
-            => stateMachine.Property(nameof(AsyncStateMachine<ValueTuple>.StateId));
-
-        internal BlockExpression EndRewrite(ParameterExpression stateMachine, BlockExpression body)
-        {
-            var stateSwitch = MakeSwitch(GetStateId(stateMachine), stateSwitchTable);
-            return Expression.Block(body.Type, body.Variables, 
-                Sequence.Single(stateSwitch).Concat(body.Expressions).Concat(Sequence.Single(AsyncMethodEnd.LandingSite())));
+            body = Visit(body);
+            return Expression.Block(body.Type, Array.Empty<ParameterExpression>(),
+                Sequence.Single(MakeSwitch()).Concat(((BlockExpression)body).Expressions).Concat(Sequence.Single(AsyncMethodEnd.LandingSite())));
         }
 
         public void Dispose()
@@ -489,22 +491,15 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
-        private Expression<D> Build(BlockExpression body, bool tailCall)
-        {
-            //add state switch
-            body = methodBuilder.EndRewrite(stateMachine, body);
-            //now we have state machine method, wrap it into lambda
-            return Build(BuildStateMachine(body, stateMachine, tailCall));
-        }
-
         private Expression<D> Build(Expression body, bool tailCall)
         {
-            body = methodBuilder.BeginRewrite(body);
+            body = methodBuilder.Rewrite(body);
             //build state machine type
             stateMachine = CreateStateHolderType(methodBuilder.AsyncReturnType, methodBuilder.Variables);
-            //replace all transitions and async returns
+            //replace all special expressions
             body = Visit(body);
-            return Build((BlockExpression)body, tailCall);
+            //now we have state machine method, wrap it into lambda
+            return Build(BuildStateMachine(body, stateMachine, tailCall));
         }
 
         internal static Expression<D> Build(Expression<D> source)
