@@ -117,6 +117,8 @@ namespace DotNext.Metaprogramming
         public static UniversalExpression op_RightShift(UniversalExpression left, UniversalExpression right)
             => left.expression.RightShift(right);
 
+        public UniversalExpression Await() => expression.Await();
+
         public UniversalExpression Convert(Type type) => expression.Convert(type);
 
         public UniversalExpression Convert<T>() => expression.Convert<T>();

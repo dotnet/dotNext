@@ -108,6 +108,9 @@ namespace DotNext.Metaprogramming
         public static BinaryExpression OrElse(this Expression left, Expression right)
             => Expression.OrElse(left, right);
 
+        public static AwaitExpression Await(this Expression expression)
+            => new AwaitExpression(expression);
+
         public static UnaryExpression Unbox(this Expression expression, Type type)
             => Expression.Unbox(expression, type);
 

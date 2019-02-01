@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,7 +6,6 @@ using TaskAwaiter = System.Runtime.CompilerServices.TaskAwaiter;
 
 namespace DotNext.Metaprogramming
 {
-    using static Reflection.Types;
     using Runtime.CompilerServices;
 
     /// <summary>
@@ -15,21 +13,7 @@ namespace DotNext.Metaprogramming
     /// </summary>
     public sealed class AwaitExpression : Expression
     {
-        private sealed class AwaitChecker: ExpressionVisitor
-        {
-            internal bool ContainsAwait
-            {
-                get;
-                private set;
-            }
-
-            protected override Expression VisitExtension(Expression node)
-            {
-                if(node is AwaitExpression)
-                    ContainsAwait = true;
-                return base.VisitExtension(node);
-            }
-        }
+        private static readonly UserDataSlot<bool> IsAwaiterVarSlot = UserDataSlot<bool>.Allocate();
 
         public AwaitExpression(Expression expression)
         {
@@ -45,12 +29,15 @@ namespace DotNext.Metaprogramming
                 throw new ArgumentException($"Method {getAwaiter.DeclaringType.FullName + ':' + getAwaiter.Name} returns invalid awaiter pattern");
         }
 
-        internal static bool ContainsAwait(Expression node)
+        internal ParameterExpression NewAwaiterHolder()
         {
-            var checker = new AwaitChecker();
-            checker.Visit(node);
-            return checker.ContainsAwait;
+            var result = Variable(AwaiterType);
+            result.GetUserData().Set(IsAwaiterVarSlot, true);
+            return result;
         }
+
+        internal static bool IsAwaiterHolder(ParameterExpression variable)
+            => variable.GetUserData().Get(IsAwaiterVarSlot);
 
         internal MethodCallExpression GetAwaiter { get; }
 
@@ -87,10 +74,10 @@ namespace DotNext.Metaprogramming
             return ReferenceEquals(expression, GetAwaiter.Object) ? this : new AwaitExpression(expression);
         }
 
-        internal MethodCallExpression Reduce(ParameterExpression awaiterHolder, int state, LabelTarget stateLabel, LabelTarget returnLabel, CodeInsertionPoint prologue)
+        internal MethodCallExpression Reduce(ParameterExpression awaiterHolder, uint state, LabelTarget stateLabel, LabelTarget returnLabel, CodeInsertionPoint prologue)
         {
             prologue(Assign(awaiterHolder, GetAwaiter));
-            prologue(new TransitionExpression(awaiterHolder, state));
+            prologue(new MoveNextExpression(awaiterHolder, state));
             prologue(Return(returnLabel));
             prologue(stateLabel.LandingSite());
             return awaiterHolder.Call(GetResultMethod);

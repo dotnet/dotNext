@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
@@ -20,6 +21,7 @@ namespace DotNext.Metaprogramming
         where D: Delegate
     {
         private ParameterExpression recursion;
+        private readonly Type taskType;
 
         internal AsyncLambdaBuilder(ExpressionBuilder parent = null)
             : base(parent)
@@ -27,9 +29,7 @@ namespace DotNext.Metaprogramming
             if (typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>("Delegate type should not be abstract", nameof(D));
             var invokeMethod = Delegates.GetInvokeMethod<D>();
-            ReturnType = invokeMethod.ReturnType.GetTaskType();
-            if (ReturnType is null)
-                throw new GenericArgumentException<D>("Delegate should return Task or Task<R>", nameof(D));
+            taskType = invokeMethod.ReturnType;
             Parameters = GetParameters(invokeMethod.GetParameters());
         }
 
@@ -45,7 +45,7 @@ namespace DotNext.Metaprogramming
             }
         }
 
-        public override Type ReturnType { get; }
+        public override Type ReturnType => taskType.GetTaskType() ?? throw new GenericArgumentException<D>("Delegate should return Task or Task<R>", nameof(D));
 
         public override IReadOnlyList<ParameterExpression> Parameters { get; }
 
@@ -57,6 +57,13 @@ namespace DotNext.Metaprogramming
 
         private protected override LambdaExpression Build(Expression body, bool tailCall)
         {
+            if (body.Type != taskType)
+            {
+                var defaultResult = taskType == typeof(Task) ? new AsyncResultExpression() : new AsyncResultExpression(ReturnType.Default());
+                body = body is BlockExpression block ?
+                    Expression.Block(defaultResult.Type, block.Variables, block.Expressions.Concat(Sequence.Single(defaultResult))) :
+                    Expression.Block(defaultResult.Type, body, defaultResult);
+            }
             var lambda = Expression.Lambda<D>(body, tailCall, Parameters).ToAsyncLambda();
             //build lambda expression
             if (!(recursion is null))
