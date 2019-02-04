@@ -125,9 +125,6 @@ namespace DotNext
 		public static unsafe int BitwiseHashCode(T value, bool salted = true)
             => Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, salted);
         
-        internal unsafe static ReadOnlySpan<byte> RawBits(ref T value)
-            => new ReadOnlySpan<byte>(Unsafe.AsPointer(ref value), Size);
-
 		/// <summary>
 		/// Indicates that specified value type is the default value.
 		/// </summary>
@@ -136,21 +133,21 @@ namespace DotNext
 		public static bool IsDefault(T value)
             => BitwiseEquals(value, default);
 
-		/// <summary>
-		/// Convert value type content into array of bytes.
-		/// </summary>
-		/// <param name="value">A value to convert.</param>
-		/// <returns>An array of bytes representing binary content of value type.</returns>
-        public static byte[] AsBinary(T value)
-            => RawBits(ref value).ToArray();
+        /// <summary>
+        /// Convert value type content into array of bytes.
+        /// </summary>
+        /// <param name="value">A value to convert.</param>
+        /// <returns>An array of bytes representing binary content of value type.</returns>
+        public static unsafe byte[] AsBinary(T value)
+            => new ReadOnlySpan<byte>(Unsafe.AsPointer(ref value), Size).ToArray();
 
-		/// <summary>
-		/// Compares bits of two values of the same type.
-		/// </summary>
-		/// <param name="first">The first value to compare.</param>
-		/// <param name="second">The second value to compare.</param>
-		/// <returns>A value that indicates the relative order of the objects being compared.</returns>
-		public static unsafe int BitwiseCompare(T first, T second)
+        /// <summary>
+        /// Compares bits of two values of the same type.
+        /// </summary>
+        /// <param name="first">The first value to compare.</param>
+        /// <param name="second">The second value to compare.</param>
+        /// <returns>A value that indicates the relative order of the objects being compared.</returns>
+        public static unsafe int BitwiseCompare(T first, T second)
             => Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
 
 		/// <summary>

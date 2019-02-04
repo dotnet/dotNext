@@ -144,10 +144,7 @@ namespace DotNext.Runtime.CompilerServices
 
         protected override Expression VisitTypeBinary(TypeBinaryExpression node)
             => context.Rewrite(node, base.VisitTypeBinary);
-
-        protected override Expression VisitUnary(UnaryExpression node)
-            => context.Rewrite(node, base.VisitUnary);
-
+        
         protected override Expression VisitSwitch(SwitchExpression node)
             => node.Type == typeof(void) ?
                 context.Rewrite(node, base.VisitSwitch) :
@@ -157,22 +154,22 @@ namespace DotNext.Runtime.CompilerServices
             => node.Type == typeof(void) ?
                 context.Rewrite(node, base.VisitGoto) :
                 throw new NotSupportedException("Goto expression should of type Void");
-        
+
         protected override CatchBlock VisitCatchBlock(CatchBlock node)
             => throw new NotSupportedException();
 
-        private Expression VisitCatchBlock(CatchBlock node, Expression @finally)
+        private static void Prepare(ref TryExpression node)
         {
-            if (node.Filter is null)
-                node = node.Update(node.Variable, true.AsConst(), node.Body);
-            if (node.Variable is null)
-                node = node.Update(Expression.Variable(node.Test, "e"), node.Filter, node.Body);
-            var context = VisitorContext.RemoveGuardedCodeRewriteContext(node);
-            Variables.Add(node.Variable, null);
-            return context.MakeCatchBlock(node, @finally, this);
+            ICollection<CatchBlock> handlers = new LinkedList<CatchBlock>();
+            foreach (var handler in node.Handlers)
+                if (handler.Variable is null)
+                    handlers.Add(handler.Update(Expression.Variable(handler.Test, "e"), handler.Filter, handler.Body));
+                else
+                    handlers.Add(handler);
+            node = node.Update(node.Body, handlers, node.Finally, node.Fault);
         }
 
-        private Expression VisitTryOnly(TryExpression node) => Visit(node.Body);
+        private Expression VisitTryOnly(TryExpression expression) => Visit(expression.Body);
 
         //try-catch will be completely replaced with flat code and set of switch-case-goto statements
         protected override Expression VisitTry(TryExpression node)
@@ -183,24 +180,25 @@ namespace DotNext.Runtime.CompilerServices
                  * Code in FINALLY clause will be inserted into each escape point
                  * inside of try clause
                  */
+                Prepare(ref node);
                 var tryBody = this.context.Rewrite(node, VisitTryOnly);
-                var context = VisitorContext.RemoveGuardedCodeRewriteContext(node);
-                tryBody = context.MakeTryBody(tryBody, node.Finally, this);
+                var context = VisitorContext.RemoveTryCatchContext(node);
+                tryBody = context.MakeTryBody(tryBody);
                 //try-catch OR try-catch-finally
                 if (node.Handlers.Count > 0)
                 {
-                    var handlers = new LinkedList<Expression>();
+                    var handlers = new LinkedList<ConditionalExpression>();
                     foreach (var catchBlock in node.Handlers)
-                        handlers.AddLast(VisitCatchBlock(catchBlock, node.Finally));
-                    handlers.AddLast(Expression.Rethrow());
-                    return Expression.Block(new[] { tryBody, context.FailureLabel.LandingSite() }.Concat(handlers).Concat(new Expression[] { Expression.Rethrow(), context.ExitLabel.LandingSite() }));
+                    {
+                        Variables.Add(catchBlock.Variable, null);
+                        handlers.AddLast(context.RecoveryContext.MakeCatchBlock(catchBlock, stateSwitchTable, this));
+                    }
+                    tryBody = tryBody.AddEpilogue(false, handlers);
                 }
+                //insert recovery state if needed
                 //try-finally or try-fault
-                else
-                {
-                    var @finally = context.MakeFaultBody(node.Finally ?? node.Fault, this);
-                    return Expression.Block(typeof(void), tryBody, @finally, context.ExitLabel.LandingSite());
-                }
+                var @finally = context.MakeFaultBody(node.Finally ?? node.Fault, stateSwitchTable, this);
+                return tryBody.AddEpilogue(false, @finally);
             }
             else
                 throw new NotSupportedException("Try-Catch statement should be of type Void");
@@ -362,6 +360,26 @@ namespace DotNext.Runtime.CompilerServices
         protected override Expression VisitMemberInit(MemberInitExpression node)
             => context.Rewrite(node, base.VisitMemberInit);
 
+        private Expression Rethrow(UnaryExpression node)
+        {
+            var holder = context.ExceptionHolder;
+            return holder is null ? new RethrowExpression() : RethrowExpression.Dispatch(holder);
+        }
+
+        protected override Expression VisitUnary(UnaryExpression node)
+        {
+            switch(node.NodeType)
+            {
+                case ExpressionType.Throw:
+                    if (node.Operand is null)
+                        return context.Rewrite(node, Rethrow);
+                    else
+                        goto default;
+                default:
+                    return context.Rewrite(node, base.VisitUnary);
+            }
+        }
+
         private SwitchExpression MakeSwitch()
         {
             ICollection<SwitchCase> cases = new LinkedList<SwitchCase>();
@@ -394,9 +412,10 @@ namespace DotNext.Runtime.CompilerServices
         private readonly AsyncStateMachineBuilder methodBuilder;
         private ParameterExpression stateMachine;
 
-        private AsyncStateMachineBuilder(Expression<D> source)
+        internal AsyncStateMachineBuilder(IReadOnlyList<ParameterExpression> parameters)
         {
-            methodBuilder = new AsyncStateMachineBuilder(source.ReturnType.GetTaskType(), source.Parameters);
+            var invokeMethod = Delegates.GetInvokeMethod<D>();
+            methodBuilder = new AsyncStateMachineBuilder(invokeMethod?.ReturnType?.GetTaskType(), parameters);
         }
 
         private static LambdaExpression BuildStateMachine(Expression body, ParameterExpression stateMachine, bool tailCall)
@@ -461,23 +480,6 @@ namespace DotNext.Runtime.CompilerServices
                 return node;
         }
 
-        private MethodCallExpression Rethrow()
-            => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Rethrow));
-
-        protected override Expression VisitUnary(UnaryExpression node)
-        {
-            switch (node.NodeType)
-            {
-                case ExpressionType.Throw:
-                    if (node.Operand is null)
-                        return Rethrow();
-                    else
-                        goto default;
-                default:
-                    return base.VisitUnary(node);
-            }
-        }
-
         protected override Expression VisitExtension(Expression node)
         {
             switch (node)
@@ -491,7 +493,7 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
-        private Expression<D> Build(Expression body, bool tailCall)
+        internal Expression<D> Build(Expression body, bool tailCall)
         {
             body = methodBuilder.Rewrite(body);
             //build state machine type
@@ -500,14 +502,6 @@ namespace DotNext.Runtime.CompilerServices
             body = Visit(body);
             //now we have state machine method, wrap it into lambda
             return Build(BuildStateMachine(body, stateMachine, tailCall));
-        }
-
-        internal static Expression<D> Build(Expression<D> source)
-        {
-            using (var builder = new AsyncStateMachineBuilder<D>(source))
-            {
-                return builder.Build(source.Body, source.TailCall) ?? source;
-            }
         }
 
         public void Dispose()

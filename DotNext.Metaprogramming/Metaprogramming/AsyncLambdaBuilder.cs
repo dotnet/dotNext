@@ -60,11 +60,13 @@ namespace DotNext.Metaprogramming
             if (body.Type != taskType)
             {
                 var defaultResult = taskType == typeof(Task) ? new AsyncResultExpression() : new AsyncResultExpression(ReturnType.Default());
-                body = body is BlockExpression block ?
-                    Expression.Block(defaultResult.Type, block.Variables, block.Expressions.Concat(Sequence.Single(defaultResult))) :
-                    Expression.Block(defaultResult.Type, body, defaultResult);
+                body = body.AddEpilogue(true, defaultResult);
             }
-            var lambda = Expression.Lambda<D>(body, tailCall, Parameters).ToAsyncLambda();
+            Expression<D> lambda;
+            using(var builder = new Runtime.CompilerServices.AsyncStateMachineBuilder<D>(Parameters))
+            {
+                lambda = builder.Build(body, tailCall);
+            }
             //build lambda expression
             if (!(recursion is null))
                 lambda = Expression.Lambda<D>(Expression.Block(Sequence.Single(recursion),

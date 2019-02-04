@@ -34,7 +34,7 @@ namespace DotNext.Metaprogramming
         TryExpression IExpressionBuilder<TryExpression>.Build()
         {
             Expression @finally = disposableVar.Call(disposeMethod);
-            @finally = Expression.Block(@finally, disposableVar.Assign(disposableVar.Type.Default()));
+            @finally = Expression.Block(@finally, disposableVar.AssignDefault());
             return base.Build().Finally(@finally);
         }
     }

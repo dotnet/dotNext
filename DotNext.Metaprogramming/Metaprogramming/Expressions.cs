@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
@@ -77,6 +79,9 @@ namespace DotNext.Metaprogramming
 
         public static BinaryExpression Assign(this ParameterExpression left, Expression value)
             => Expression.Assign(left, value);
+
+        public static BinaryExpression AssignDefault(this ParameterExpression left)
+            => left.Assign(left.Type.Default());
 
         public static BinaryExpression Assign(this MemberExpression left, Expression value)
             => Expression.Assign(left, value);
@@ -220,6 +225,27 @@ namespace DotNext.Metaprogramming
 
         public static Expression<D> ToAsyncLambda<D>(this Expression<D> lambda)
             where D : Delegate
-            => Runtime.CompilerServices.AsyncStateMachineBuilder<D>.Build(lambda);
+        {
+            using (var builder = new Runtime.CompilerServices.AsyncStateMachineBuilder<D>(lambda.Parameters))
+            {
+                return builder.Build(lambda.Body, lambda.TailCall);
+            }
+        }
+
+        internal static BlockExpression AddPrologue(this Expression expression, bool inferType, IEnumerable<Expression> instructions)
+            => expression is BlockExpression block ?
+            Expression.Block(inferType ? block.Type : typeof(void), block.Variables, instructions.Concat(block.Expressions)) :
+            Expression.Block(inferType ? expression.Type : typeof(void), instructions.Concat(Sequence.Single(expression)));
+
+        internal static BlockExpression AddEpilogue(this Expression expression, bool inferType, IEnumerable<Expression> instructions)
+            => expression is BlockExpression block ?
+            Expression.Block(inferType ? block.Type : typeof(void), block.Variables, block.Expressions.Concat(instructions)) :
+            Expression.Block(inferType ? instructions.Last().Type : typeof(void), Sequence.Single(expression).Concat(instructions));
+
+        internal static BlockExpression AddPrologue(this Expression expression, bool inferType, params Expression[] instructions)
+            => AddPrologue(expression, inferType, instructions.Upcast<IEnumerable<Expression>, Expression[]>());
+
+        internal static BlockExpression AddEpilogue(this Expression expression, bool inferType, params Expression[] instructions)
+            => AddEpilogue(expression, inferType, instructions.Upcast<IEnumerable<Expression>, Expression[]>());
     }
 }

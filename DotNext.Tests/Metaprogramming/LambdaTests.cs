@@ -93,5 +93,28 @@ namespace DotNext.Metaprogramming
             var fn = lambda.Compile();
             Equal(15L, fn(new[] { 3L, 2L, 10L }).Result);
         }
+
+        [Fact]
+        public void TryCatchAsyncLambdaTest()
+        {
+            var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            var lambda = AsyncLambdaBuilder<Func<long, Task<long>>>.Build(fun =>
+            {
+                UniversalExpression arg = fun.Parameters[0];
+                fun.Try(block =>
+                {
+                    block.If(arg < 0L).Then(then => then.Throw<InvalidOperationException>()).End();
+                    block.If(arg > 10L).Then(then => then.Throw<ArgumentException>()).Else(@else => @else.Return(arg)).End();
+                })
+                .Catch<ArgumentException>(@catch => @catch.Return(-42L))
+                .Catch<InvalidOperationException>(@catch => @catch.Rethrow())
+                .End();
+            });
+            var fn = lambda.Compile();
+            Equal(5L, fn(5L).Result);
+            Equal(-42L, fn(80L).Result);
+            var exception = Throws<AggregateException>(() => fn(-10L).Result);
+            IsType<InvalidOperationException>(exception.InnerException);
+        }
     }
 }

@@ -69,13 +69,12 @@ namespace DotNext.Runtime.CompilerServices
             
         }
 
-        public bool TryRecover<E>(uint previousState, out E restoredException)
+        public bool TryRecover<E>(out E restoredException)
             where E : Exception
         {
             var exception = this.exception?.SourceException;
             if (exception is E typed)
             {
-                StateId = previousState;
                 this.exception = null;
                 restoredException = typed;
                 return true;
@@ -120,6 +119,7 @@ namespace DotNext.Runtime.CompilerServices
                 else
                     builder.SetException(exception.SourceException);
                 builder = default;
+                guardedRegionsCounter = 0;
                 exception = null;
             }
         }
@@ -139,14 +139,21 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Complete() => StateId = FINAL_STATE;
+        public void Complete()
+        {
+            StateId = FINAL_STATE;
+            exception = null;
+        }
+
+        private Task Start()
+        {
+            var result = builder.Task;
+            builder.Start(ref this);
+            return result;
+        }
 
         public static Task Start(Transition transition, STATE initialState = default)
-        {
-            var stateMachine = new AsyncStateMachine<STATE>(transition, initialState);
-            stateMachine.builder.Start(ref stateMachine);
-            return stateMachine.builder.Task;
-        }
+            => new AsyncStateMachine<STATE>(transition, initialState).Start();
 
         void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
     }
@@ -204,13 +211,12 @@ namespace DotNext.Runtime.CompilerServices
             guardedRegionsCounter -= 1;
         }
 
-        public bool TryRecover<E>(uint previousState, out E restoredException)
+        public bool TryRecover<E>(out E restoredException)
             where E : Exception
         {
             var exception = this.exception?.SourceException;
             if (exception is E typed)
             {
-                StateId = previousState;
                 this.exception = null;
                 restoredException = typed;
                 return true;
@@ -232,14 +238,17 @@ namespace DotNext.Runtime.CompilerServices
         /// Re-throws capture exception.
         /// </summary>
         public void Rethrow() => exception?.Throw();
+        
+        private Task<R> Start()
+        {
+            var result = builder.Task;
+            builder.Start(ref this);
+            return result;
+        }
 
         public static Task<R> Start(Transition transition, STATE initialState = default)
-        {
-            var stateMachine = new AsyncStateMachine<STATE, R>(transition, initialState);
-            stateMachine.builder.Start(ref stateMachine);
-            return stateMachine.builder.Task;
-        }
-        
+            => new AsyncStateMachine<STATE, R>(transition, initialState).Start();
+
         /// <summary>
         /// Sets result of async state machine and marks current state as final state.
         /// </summary>
@@ -249,6 +258,7 @@ namespace DotNext.Runtime.CompilerServices
             set
             {
                 StateId = AsyncStateMachine<STATE>.FINAL_STATE;
+                exception = null;
                 result = value;
             }
         }
@@ -282,6 +292,7 @@ namespace DotNext.Runtime.CompilerServices
                     builder.SetResult(result);
                 else
                     builder.SetException(exception.SourceException);
+                guardedRegionsCounter = 0;
                 builder = default;
                 exception = null;
             }

@@ -55,8 +55,9 @@ namespace DotNext.Runtime.CompilerServices
         private static readonly UserDataSlot<RewritePoint> StatementSlot = UserDataSlot<RewritePoint>.Allocate();
         private static readonly UserDataSlot<bool> ContainsAwaitSlot = UserDataSlot<bool>.Allocate();
         private static readonly UserDataSlot<bool> CompilerGeneratedLabelTargetSlot = UserDataSlot<bool>.Allocate();
-        private static readonly UserDataSlot<GuardedCodeRewriteContext> GuardedCodeRewriteContextSlot = UserDataSlot<GuardedCodeRewriteContext>.Allocate();
+        private static readonly UserDataSlot<IGuardedCodeContext> GuardedCodeScope = UserDataSlot<IGuardedCodeContext>.Allocate();
         private static readonly UserDataSlot<uint> ExpressionStateSlot = UserDataSlot<uint>.Allocate();
+        private static readonly UserDataSlot<ParameterExpression> ExceptionHolderSlot = UserDataSlot<ParameterExpression>.Allocate();
 
         private static void MarkAsCompilerGenerated(LabelTarget target)
             => target.GetUserData().Set(CompilerGeneratedLabelTargetSlot, true);
@@ -78,7 +79,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         private static void MarkAsRewritePoint(Expression node) => node.GetUserData().Set(StatementSlot, new RewritePoint());
-
+        
         private uint stateId = AsyncStateMachine<ValueTuple>.FINAL_STATE;
         private uint previousStateId = AsyncStateMachine<ValueTuple>.FINAL_STATE;
 
@@ -99,14 +100,16 @@ namespace DotNext.Runtime.CompilerServices
             }
             else if (node is TryExpression tryCatch)
             {
-                stateId += 1;
-                //create context
-                var context = new GuardedCodeRewriteContext(previousStateId, stateId,
-                    CompilerGeneratedLabelTarget("exit_try_" + stateId),
-                    CompilerGeneratedLabelTarget("fault_" + stateId));
-                tryCatch.GetUserData().Set(GuardedCodeRewriteContextSlot, context);
+                var context = tryCatch.Handlers.Count > 0 ?
+                    new TryCatchCodeContext(previousStateId, ++stateId, CompilerGeneratedLabelTarget("fault_" + stateId), ++stateId, CompilerGeneratedLabelTarget("finally_" + stateId)) :
+                    new TryCatchCodeContext(previousStateId, ++stateId, CompilerGeneratedLabelTarget("finally_" + stateId));
+                tryCatch.GetUserData().Set(GuardedCodeScope, context);
+                //create context for catch-block
                 foreach (var handler in tryCatch.Handlers)
-                    handler.GetUserData().Set(GuardedCodeRewriteContextSlot, context);
+                {
+                    handler.Body.GetUserData().Set(ExceptionHolderSlot, handler.Variable);
+                    handler.Body.GetUserData().Set(GuardedCodeScope, context.RecoveryContext);
+                }
             }
             else if (current is null || current is BlockExpression || current is TryExpression || current is LoopExpression)
                 MarkAsRewritePoint(node);
@@ -138,36 +141,34 @@ namespace DotNext.Runtime.CompilerServices
 
         internal KeyValuePair<uint, StateTransition> NewTransition(IDictionary<uint, StateTransition> table)
         {
-            StackWalk<TryExpression, GuardedCodeRewriteContext>(GuardedCodeRewriteContextSlot, out var context);
+            StackWalk(GuardedCodeScope, out var context);
             stateId += 1;
-            var transition = new StateTransition(CompilerGeneratedLabelTarget("state_" + stateId), context?.FailureLabel);
+            var transition = new StateTransition(CompilerGeneratedLabelTarget("state_" + stateId), context?.FaultLabel);
             var pair = new KeyValuePair<uint, StateTransition>(stateId, transition);
             table.Add(pair);
             return pair;
         }
 
-        internal static GuardedCodeRewriteContext RemoveGuardedCodeRewriteContext(TryExpression node)
-            => node.GetUserData().Remove(GuardedCodeRewriteContextSlot, out var context) ? context : null;
-
-        internal static GuardedCodeRewriteContext RemoveGuardedCodeRewriteContext(CatchBlock node)
-            => node.GetUserData().Remove(GuardedCodeRewriteContextSlot, out var context) ? context : null;
-
-        private E StackWalk<E, V>(UserDataSlot<V> slot, out V data)
-            where E: Expression
+        internal static TryCatchCodeContext RemoveTryCatchContext(TryExpression node)
+            => (node.GetUserData().Remove(GuardedCodeScope, out var context) ? context : null) as TryCatchCodeContext ?? throw new InvalidOperationException();
+        
+        private bool StackWalk<V>(UserDataSlot<V> slot, out V data)
         {
             foreach (var lookup in this)
-                if (lookup is E typedExpr && lookup.GetUserData().Get(slot, out data))
-                    return typedExpr;
+                if (lookup.GetUserData().Get(slot, out data))
+                    return true;
             data = default;
-            return null;
+            return false;
         }
 
         private RewritePoint FindRewritePoint()
-            => StackWalk<Expression, RewritePoint>(StatementSlot, out var point) is null ? throw new InvalidOperationException() : point;
+            => StackWalk(StatementSlot, out var point) ? point : throw new InvalidOperationException();
 
         internal Metaprogramming.CodeInsertionPoint GetStatementPrologueWriter() => FindRewritePoint().CapturePrologueWriter().Insert;
 
         internal Metaprogramming.CodeInsertionPoint GetStatementEpilogueWriter() => FindRewritePoint().CaptureEpilogueWriter().Insert;
+
+        internal ParameterExpression ExceptionHolder => StackWalk(ExceptionHolderSlot, out var holder) ? holder : null;
 
         internal Expression Rewrite<E>(E expression, Converter<E, Expression> rewriter)
             where E : Expression

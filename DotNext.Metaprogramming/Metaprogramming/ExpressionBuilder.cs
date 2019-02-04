@@ -191,6 +191,15 @@ namespace DotNext.Metaprogramming
 
         public TryBuilder Try(UniversalExpression body) => new TryBuilder(body, this, true);
 
+        public TryBuilder Try(Action<ScopeBuilder> scope) => Try(Scope(scope));
+
+        public UnaryExpression Throw(UniversalExpression exception)
+            => AddStatement(Expression.Throw(exception));
+
+        public UnaryExpression Throw<E>()
+            where E : Exception, new()
+            => Throw(Expression.New(typeof(E).GetConstructor(Array.Empty<Type>())));
+
         public Expression Scope(Action<ScopeBuilder> scope)
             => new ScopeBuilder(this).Build(scope);
 

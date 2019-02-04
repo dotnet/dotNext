@@ -98,25 +98,26 @@ namespace DotNext
 			return property is null ? null : Expression.Property(input, property);
 		}
 
-		private static bool IsNothing(Type target)
-			=> target == typeof(void) || target == typeof(ValueTuple);
+        private static bool IsNothing(Type target)
+            => target.OneOf(typeof(void), typeof(ValueTuple));
 
-		internal static Expression CheckerBodyForValueType(Expression input)
-		{
-			if (input.Type.OneOf(typeof(void), typeof(ValueTuple)))
-				return Expression.Constant(false);
-			var nullableType = Nullable.GetUnderlyingType(input.Type);
-			if (nullableType is null)   //handle regular struct
-				return HasContentPropertyExpression(input) ?? Expression.Constant(true);
-			//handle nullable type
-			var hasValuePropertyExpr = Expression.Property(input,
-				input.Type.GetProperty(nameof(Nullable<int>.HasValue), typeof(bool)));
-			var valuePropertyExpr = Expression.Property(input,
-				input.Type.GetProperty(nameof(Nullable<int>.Value), nullableType));
-			//recursive call to unwind nullable chain
-			//input.HasValue && input.Value.HasContent -or- input.HasValue
-			return Expression.AndAlso(hasValuePropertyExpr, CheckerBodyForValueType(valuePropertyExpr));
-		}
+
+        internal static Expression CheckerBodyForValueType(Expression input)
+        {
+            if (IsNothing(input.Type))
+                return Expression.Constant(false);
+            var nullableType = Nullable.GetUnderlyingType(input.Type);
+            if (nullableType is null)   //handle regular struct
+                return HasContentPropertyExpression(input) ?? Expression.Constant(true);
+            //handle nullable type
+            var hasValuePropertyExpr = Expression.Property(input,
+                input.Type.GetProperty(nameof(Nullable<int>.HasValue), typeof(bool)));
+            var valuePropertyExpr = Expression.Property(input,
+                input.Type.GetProperty(nameof(Nullable<int>.Value), nullableType));
+            //recursive call to unwind nullable chain
+            //input.HasValue && input.Value.HasContent -or- input.HasValue
+            return Expression.AndAlso(hasValuePropertyExpr, CheckerBodyForValueType(valuePropertyExpr));
+        }
 
 		internal static Expression CheckerBodyForReferenceType(ParameterExpression input)
 		{
@@ -311,6 +312,16 @@ namespace DotNext
 
 		public static Optional<T> operator |(in Optional<T> first, in Optional<T> second)
 			=> first.IsPresent ? first : second;
+
+        public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second)
+        {
+            if (first.IsPresent == second.IsPresent)
+                return Empty;
+            else if (first.IsPresent)
+                return first;
+            else
+                return second;
+        }
 		
 		public static bool operator true(in Optional<T> optional) => optional.IsPresent;
 		public static bool operator false(in Optional<T> optional) => !optional.IsPresent;

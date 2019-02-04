@@ -177,7 +177,7 @@ namespace DotNext
         }
 
         public override int GetHashCode() => RuntimeHelpers.GetHashCode(owner);
-        public override bool Equals(object obj) => ReferenceEquals(owner, obj);
+        public override bool Equals(object other) => ReferenceEquals(owner, other);
         public override string ToString() => owner.ToString();
 
         public static bool operator ==(UserDataStorage first, UserDataStorage second)
