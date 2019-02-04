@@ -5,12 +5,15 @@ namespace DotNext.Runtime.CompilerServices
 {
     using static Metaprogramming.Expressions;
 
-    internal sealed class RecoverFromExceptionExpression : StateMachineExpression
+    internal sealed class RecoverFromExceptionExpression : TransitionExpression
     {
         internal readonly ParameterExpression Receiver;
 
-        internal RecoverFromExceptionExpression(ParameterExpression receiver)
-            => this.Receiver = receiver;
+        internal RecoverFromExceptionExpression(uint recoveryState, ParameterExpression receiver)
+            : base(recoveryState)
+        {
+            Receiver = receiver;
+        }
         
         public override Expression Reduce() => true.AsConst();
         public override Type Type => typeof(bool);
@@ -19,7 +22,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             var tryRecover = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.TryRecover));
             tryRecover = tryRecover.MakeGenericMethod(Receiver.Type);
-            return stateMachine.Call(tryRecover, Receiver);
+            return stateMachine.Call(tryRecover, StateId.AsConst(), Receiver);
         }
     }
 }

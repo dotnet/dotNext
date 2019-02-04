@@ -101,8 +101,8 @@ namespace DotNext.Runtime.CompilerServices
             else if (node is TryExpression tryCatch)
             {
                 var context = tryCatch.Handlers.Count > 0 ?
-                    new TryCatchCodeContext(previousStateId, ++stateId, CompilerGeneratedLabelTarget("fault_" + stateId), ++stateId, CompilerGeneratedLabelTarget("finally_" + stateId)) :
-                    new TryCatchCodeContext(previousStateId, ++stateId, CompilerGeneratedLabelTarget("finally_" + stateId));
+                    new GuardedCodeContext(previousStateId, ++stateId, CompilerGeneratedLabelTarget("fault_" + stateId), ++stateId, CompilerGeneratedLabelTarget("finally_" + stateId)) :
+                    new GuardedCodeContext(previousStateId, ++stateId, CompilerGeneratedLabelTarget("finally_" + stateId));
                 tryCatch.GetUserData().Set(GuardedCodeScope, context);
                 //create context for catch-block
                 foreach (var handler in tryCatch.Handlers)
@@ -149,8 +149,8 @@ namespace DotNext.Runtime.CompilerServices
             return pair;
         }
 
-        internal static TryCatchCodeContext RemoveTryCatchContext(TryExpression node)
-            => (node.GetUserData().Remove(GuardedCodeScope, out var context) ? context : null) as TryCatchCodeContext ?? throw new InvalidOperationException();
+        internal static GuardedCodeContext RemoveTryCatchContext(TryExpression node)
+            => (node.GetUserData().Remove(GuardedCodeScope, out var context) ? context : null) as GuardedCodeContext ?? throw new InvalidOperationException();
         
         private bool StackWalk<V>(UserDataSlot<V> slot, out V data)
         {

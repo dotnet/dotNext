@@ -1,27 +1,49 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    internal class GuardedCodeContext: IGuardedCodeContext
+    using static Metaprogramming.Expressions;
+
+    internal sealed class GuardedCodeContext: IGuardedCodeContext
     {
-        private protected readonly EnterGuardedCodeExpression enterGuardedCode;
-        private protected readonly ExitGuardedCodeExpression exitGuardedCode;
+        internal readonly RecoveryCodeContext RecoveryContext;
+        private readonly EnterGuardedCodeExpression enterGuardedCode;
+        private readonly ExitGuardedCodeExpression exitGuardedCode;
         internal readonly LabelTarget FaultLabel;
-        
-        private protected GuardedCodeContext(uint previousState, uint guardedState, LabelTarget faultLabel)
+
+        internal GuardedCodeContext(uint previousStateId, uint tryStateId, LabelTarget faultLabel)
         {
-            enterGuardedCode = new EnterGuardedCodeExpression(guardedState);
-            exitGuardedCode = new ExitGuardedCodeExpression(previousState);
+            enterGuardedCode = new EnterGuardedCodeExpression(tryStateId);
+            exitGuardedCode = new ExitGuardedCodeExpression(previousStateId);
             FaultLabel = faultLabel;
         }
 
-        private protected void RegisterFaultTransition(IDictionary<uint, StateTransition> stateSwitchTable)
+        internal GuardedCodeContext(uint previousStateId, uint tryStateId, LabelTarget faultLabel, uint catchStateId, LabelTarget finallyLabel)
         {
-            if (!stateSwitchTable.ContainsKey(enterGuardedCode.StateId))
-                stateSwitchTable.Add(enterGuardedCode.StateId, new StateTransition(null, FaultLabel));
+            enterGuardedCode = new EnterGuardedCodeExpression(tryStateId);
+            exitGuardedCode = new ExitGuardedCodeExpression(previousStateId);
+            FaultLabel = faultLabel;
+            RecoveryContext = new RecoveryCodeContext(catchStateId, finallyLabel);
         }
 
         LabelTarget IGuardedCodeContext.FaultLabel => FaultLabel;
+
+        internal BlockExpression MakeTryBody(Expression @try)
+            => RecoveryContext is null ?
+                @try.AddPrologue(false, enterGuardedCode) :
+                @try.AddPrologue(false, enterGuardedCode).AddEpilogue(false, RecoveryContext.FaultLabel.Goto(), FaultLabel.LandingSite());
+
+        private LabelTarget FinallyLabel => RecoveryContext is null ? FaultLabel : RecoveryContext.FaultLabel;
+
+        internal BlockExpression MakeFaultBody(Expression fault, StateTransitionTable stateSwitchTable, ExpressionVisitor visitor)
+        {
+            fault = visitor.Visit(fault);
+            stateSwitchTable.RegisterFaultTransition(enterGuardedCode, this);
+            return fault is null ?
+                Expression.Block(typeof(void), FinallyLabel.LandingSite(), exitGuardedCode, new RethrowExpression()) :
+                fault.AddPrologue(false, FinallyLabel.LandingSite(), exitGuardedCode).AddEpilogue(false, new RethrowExpression());
+        }
     }
 }

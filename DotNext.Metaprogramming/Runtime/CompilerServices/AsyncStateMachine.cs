@@ -69,7 +69,7 @@ namespace DotNext.Runtime.CompilerServices
             
         }
 
-        public bool TryRecover<E>(out E restoredException)
+        public bool TryRecover<E>(uint recoveryState, out E restoredException)
             where E : Exception
         {
             var exception = this.exception?.SourceException;
@@ -77,6 +77,7 @@ namespace DotNext.Runtime.CompilerServices
             {
                 this.exception = null;
                 restoredException = typed;
+                StateId = recoveryState;
                 return true;
             }
             else
@@ -211,7 +212,7 @@ namespace DotNext.Runtime.CompilerServices
             guardedRegionsCounter -= 1;
         }
 
-        public bool TryRecover<E>(out E restoredException)
+        public bool TryRecover<E>(uint recoveryState, out E restoredException)
             where E : Exception
         {
             var exception = this.exception?.SourceException;
@@ -219,6 +220,7 @@ namespace DotNext.Runtime.CompilerServices
             {
                 this.exception = null;
                 restoredException = typed;
+                StateId = recoveryState;
                 return true;
             }
             else
