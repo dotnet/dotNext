@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
+using System.Runtime.ConstrainedExecution;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -50,11 +51,13 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         public uint StateId
         {
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             get;
             private set;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void EnterGuardedCode(uint newState)
         {
             StateId = newState;
@@ -62,6 +65,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void ExitGuardedCode(uint previousState)
         {
             StateId = previousState;
@@ -69,7 +73,8 @@ namespace DotNext.Runtime.CompilerServices
             
         }
 
-        public bool TryRecover<E>(uint recoveryState, out E restoredException)
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public bool TryRecover<E>(out E restoredException)
             where E : Exception
         {
             var exception = this.exception?.SourceException;
@@ -77,7 +82,6 @@ namespace DotNext.Runtime.CompilerServices
             {
                 this.exception = null;
                 restoredException = typed;
-                StateId = recoveryState;
                 return true;
             }
             else
@@ -90,12 +94,14 @@ namespace DotNext.Runtime.CompilerServices
         public bool HasNoException
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             get => exception is null;
         }
 
         /// <summary>
         /// Re-throws capture exception.
         /// </summary>
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public void Rethrow() => exception?.Throw();
 
         void IAsyncStateMachine.MoveNext()
@@ -119,7 +125,6 @@ namespace DotNext.Runtime.CompilerServices
                     builder.SetResult();
                 else
                     builder.SetException(exception.SourceException);
-                builder = default;
                 guardedRegionsCounter = 0;
                 exception = null;
             }
@@ -140,6 +145,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void Complete()
         {
             StateId = FINAL_STATE;
@@ -148,9 +154,8 @@ namespace DotNext.Runtime.CompilerServices
 
         private Task Start()
         {
-            var result = builder.Task;
             builder.Start(ref this);
-            return result;
+            return builder.Task;
         }
 
         public static Task Start(Transition transition, STATE initialState = default)
@@ -194,11 +199,13 @@ namespace DotNext.Runtime.CompilerServices
 
         public uint StateId
         {
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             get;
             private set;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void EnterGuardedCode(uint newState)
         {
             StateId = newState;
@@ -206,13 +213,15 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void ExitGuardedCode(uint previousState)
         {
             StateId = previousState;
             guardedRegionsCounter -= 1;
         }
 
-        public bool TryRecover<E>(uint recoveryState, out E restoredException)
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public bool TryRecover<E>(out E restoredException)
             where E : Exception
         {
             var exception = this.exception?.SourceException;
@@ -220,7 +229,6 @@ namespace DotNext.Runtime.CompilerServices
             {
                 this.exception = null;
                 restoredException = typed;
-                StateId = recoveryState;
                 return true;
             }
             else
@@ -233,19 +241,20 @@ namespace DotNext.Runtime.CompilerServices
         public bool HasNoException
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             get => exception is null;
         }
 
         /// <summary>
         /// Re-throws capture exception.
         /// </summary>
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public void Rethrow() => exception?.Throw();
         
         private Task<R> Start()
         {
-            var result = builder.Task;
             builder.Start(ref this);
-            return result;
+            return builder.Task;
         }
 
         public static Task<R> Start(Transition transition, STATE initialState = default)
@@ -257,6 +266,7 @@ namespace DotNext.Runtime.CompilerServices
         public R Result
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             set
             {
                 StateId = AsyncStateMachine<STATE>.FINAL_STATE;
@@ -295,7 +305,6 @@ namespace DotNext.Runtime.CompilerServices
                 else
                     builder.SetException(exception.SourceException);
                 guardedRegionsCounter = 0;
-                builder = default;
                 exception = null;
             }
         }

@@ -55,7 +55,7 @@ namespace DotNext.Runtime.CompilerServices
                 Variables.Add(parameter, null);
             }
             context = new VisitorContext();
-            AsyncMethodEnd = VisitorContext.CompilerGeneratedLabelTarget("end_async_method");
+            AsyncMethodEnd = Expression.Label("end_async_method");
             stateSwitchTable = new StateTransitionTable();
         }
 
@@ -84,57 +84,57 @@ namespace DotNext.Runtime.CompilerServices
         {
             if (node.Type == typeof(void))
             {
+                Statement.Rewrite(ref node);
                 node.Variables.ForEach(variable => Variables.Add(variable, null));
-                switch (node.Expressions.Count)
-                {
-                    case 0:
-                        return Expression.Empty();
-                    case 1:
-                        return context.Rewrite(node.Expressions[0], Visit);
-                    default:
-                        node = node.Update(Array.Empty<ParameterExpression>(), node.Expressions);
-                        return context.Rewrite(node, base.VisitBlock);
-                }
+                node = node.Update(Empty<ParameterExpression>(), node.Expressions);
+                return context.Rewrite(node, base.VisitBlock);
             }
             else
                 return VisitBlock(Expression.Block(typeof(void), node.Variables, node.Expressions));
         }
 
-        private Expression RewriteConditional(ConditionalExpression node)
+        protected override Expression VisitConditional(ConditionalExpression node)
         {
-
-            var result = base.VisitConditional(node);
-            if (result is ConditionalExpression)
-                node = (ConditionalExpression)result;
-            else
-                return result;
-            /*
-                x = a ? await b() : c();
-                --transformed into--
-                var temp;
-                if(a)
-                    temp = await b();
-                else
-                    temp = c();
-                x = temp;
-             */
-            if (VisitorContext.ContainsAwait(node.IfTrue) || VisitorContext.ContainsAwait(node.IfFalse))
+            if (node.Type == typeof(void))
             {
-                var tempVar = NewStateSlot(node.Type);
-                context.GetStatementPrologueWriter().Invoke(Expression.Condition(node.Test, Expression.Assign(tempVar, node.IfTrue), Expression.Assign(tempVar, node.IfFalse), typeof(void)));
-                return tempVar;
+                node = node.Update(node.Test, Statement.Wrap(node.IfTrue), Statement.Wrap(node.IfFalse));
+                return context.Rewrite(node, base.VisitConditional);
             }
+            else if (node.IfTrue is BlockExpression && node.IfFalse is BlockExpression)
+                throw new NotSupportedException("A branch of conditional expression is invalid");
             else
-                return node;
+            {
+                /*
+                    x = a ? await b() : c();
+                    --transformed into--
+                    var temp;
+                    if(a)
+                        temp = await b();
+                    else
+                        temp = c();
+                    x = temp;
+                 */
+                var prologue = context.CurrentStatement.CapturePrologueWriter();
+                {
+                    var result = context.Rewrite(node, base.VisitConditional);
+                    if (result is ConditionalExpression)
+                        node = (ConditionalExpression)result;
+                    else
+                        return result;
+                }
+                if (ExpressionAttributes.Get(node.IfTrue).ContainsAwait || ExpressionAttributes.Get(node.IfFalse).ContainsAwait)
+                {
+                    var tempVar = NewStateSlot(node.Type);
+                    prologue(Expression.Condition(node.Test, Expression.Assign(tempVar, node.IfTrue), Expression.Assign(tempVar, node.IfFalse), typeof(void)));
+                    return tempVar;
+                }
+                else
+                    return node;
+            }
         }
 
-        protected override Expression VisitConditional(ConditionalExpression node)
-            => node.Type != typeof(void) && (node.IfTrue is BlockExpression || node.IfFalse is BlockExpression) ?
-                throw new NotSupportedException("A branch of conditional expression is invalid") :
-                context.Rewrite(node, RewriteConditional);
-
-        protected override LabelTarget VisitLabelTarget(LabelTarget node)
-            => node.Type == typeof(void) ? base.VisitLabelTarget(node) : throw new NotSupportedException("Label should be of type Void");
+        protected override Expression VisitLabel(LabelExpression node)
+            => node.Type == typeof(void) ? new Statement(node) : throw new NotSupportedException("Label should be of type Void");
 
         protected override Expression VisitLambda<T>(Expression<T> node)
             => context.Rewrite(node, base.VisitLambda);
@@ -144,76 +144,66 @@ namespace DotNext.Runtime.CompilerServices
 
         protected override Expression VisitTypeBinary(TypeBinaryExpression node)
             => context.Rewrite(node, base.VisitTypeBinary);
-        
+
         protected override Expression VisitSwitch(SwitchExpression node)
-            => node.Type == typeof(void) ?
-                context.Rewrite(node, base.VisitSwitch) :
+        {
+            if (node.Type == typeof(void))
+            {
+                Statement.Rewrite(ref node);
+                return context.Rewrite(node, base.VisitSwitch);
+            }
+            else
                 throw new NotSupportedException("Switch-case expression must of type Void");
+        }
 
         protected override Expression VisitGoto(GotoExpression node)
-            => node.Type == typeof(void) ?
-                context.Rewrite(node, base.VisitGoto) :
-                throw new NotSupportedException("Goto expression should of type Void");
+            => node.Type == typeof(void) ? new Statement(node) : throw new NotSupportedException("Goto expression should of type Void");
+
+        protected override Expression VisitDebugInfo(DebugInfoExpression node)
+            => context.Rewrite(node, base.VisitDebugInfo);
+
+        protected override Expression VisitDefault(DefaultExpression node)
+            => context.Rewrite(node, base.VisitDefault);
+
+        protected override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
+            => context.Rewrite(node, base.VisitRuntimeVariables);
+
+        protected override SwitchCase VisitSwitchCase(SwitchCase node)
+        {
+            var testValues = Visit(node.TestValues, tst => context.Rewrite(tst, Visit));
+            var body = context.Rewrite(node.Body, Visit);
+            return node.Update(testValues, body);
+        }
+
+        protected override ElementInit VisitElementInit(ElementInit node)
+        {
+            var arguments = Visit(node.Arguments, arg => context.Rewrite(arg, Visit));
+            return node.Update(arguments);
+        }
+
+        protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
+        {
+            var expression = context.Rewrite(node.Expression, Visit);
+            return ReferenceEquals(expression, node.Expression) ? node : node.Update(expression);
+        }
 
         protected override CatchBlock VisitCatchBlock(CatchBlock node)
             => throw new NotSupportedException();
 
-        private static void Prepare(ref TryExpression node)
-        {
-            ICollection<CatchBlock> handlers = new LinkedList<CatchBlock>();
-            foreach (var handler in node.Handlers)
-                if (handler.Variable is null)
-                    handlers.Add(handler.Update(Expression.Variable(handler.Test, "e"), handler.Filter, handler.Body));
-                else
-                    handlers.Add(handler);
-            node = node.Update(node.Body, handlers, node.Finally, node.Fault);
-        }
-
-        private Expression VisitTryOnly(TryExpression expression) => Visit(expression.Body);
-
         //try-catch will be completely replaced with flat code and set of switch-case-goto statements
         protected override Expression VisitTry(TryExpression node)
-        {
-            if (node.Type == typeof(void))
-            {
-                /*
-                 * Code in FINALLY clause will be inserted into each escape point
-                 * inside of try clause
-                 */
-                Prepare(ref node);
-                var tryBody = this.context.Rewrite(node, VisitTryOnly);
-                var context = VisitorContext.RemoveTryCatchContext(node);
-                tryBody = context.MakeTryBody(tryBody);
-                //try-catch OR try-catch-finally
-                if (node.Handlers.Count > 0)
-                {
-                    var handlers = new LinkedList<ConditionalExpression>();
-                    foreach (var catchBlock in node.Handlers)
-                    {
-                        Variables.Add(catchBlock.Variable, null);
-                        handlers.AddLast(context.RecoveryContext.MakeCatchBlock(catchBlock, stateSwitchTable, this));
-                    }
-                    tryBody = tryBody.AddEpilogue(false, handlers);
-                }
-                //insert recovery state if needed
-                //try-finally or try-fault
-                var @finally = context.MakeFaultBody(node.Finally ?? node.Fault, stateSwitchTable, this);
-                return tryBody.AddEpilogue(false, @finally);
-            }
-            else
-                throw new NotSupportedException("Try-Catch statement should be of type Void");
-        }
+            => context.Rewrite(node, stateSwitchTable, Visit);
 
         private Expression VisitAwait(AwaitExpression node)
         {
+            var prologue = context.CurrentStatement.CapturePrologueWriter();
             node = (AwaitExpression)base.VisitExtension(node);
-            context.ContainsAwait();
             //allocate slot for awaiter
             var awaiterSlot = NewStateSlot(node.NewAwaiterHolder);
             //generate new state and label for it
             var (stateId, transition) = context.NewTransition(stateSwitchTable);
             //convert await expression into TAwaiter.GetResult() expression
-            return node.Reduce(awaiterSlot, stateId, transition.Successful, AsyncMethodEnd, context.GetStatementPrologueWriter());
+            return node.Reduce(awaiterSlot, stateId, transition.Successful, AsyncMethodEnd, prologue);
         }
 
         protected override Expression VisitExtension(Expression node)
@@ -222,6 +212,9 @@ namespace DotNext.Runtime.CompilerServices
             {
                 case AwaitExpression await:
                     return context.Rewrite(await, VisitAwait);
+                case RecoverFromExceptionExpression recovery:
+                    Variables.Add(recovery.Receiver, null);
+                    return recovery;
                 case StateMachineExpression sme:
                     return sme;
                 default:
@@ -260,7 +253,7 @@ namespace DotNext.Runtime.CompilerServices
 
         private Expression RewriteBinary(BinaryExpression node)
         {
-            var codeInsertionPoint = context.GetStatementPrologueWriter();
+            var codeInsertionPoint = context.CurrentStatement.CapturePrologueWriter();
             var newNode = base.VisitBinary(node);
             if (newNode is BinaryExpression)
                 node = (BinaryExpression)newNode;
@@ -269,8 +262,8 @@ namespace DotNext.Runtime.CompilerServices
             //do not place left operand at statement level because it has no side effects
             if (node.Left is ParameterExpression || node.Left is ConstantExpression || IsAssignment(node))
                 return node;
-            var leftIsAsync = VisitorContext.ContainsAwait(node.Left);
-            var rightIsAsync = VisitorContext.ContainsAwait(node.Right);
+            var leftIsAsync = ExpressionAttributes.Get(node.Left).ContainsAwait;
+            var rightIsAsync = ExpressionAttributes.Get(node.Right).ContainsAwait;
             //left operand should be computed before right, so bump it before await expression
             if (rightIsAsync && !leftIsAsync)
             {
@@ -293,10 +286,16 @@ namespace DotNext.Runtime.CompilerServices
         protected override Expression VisitBinary(BinaryExpression node)
             => context.Rewrite(node, RewriteBinary);
 
+        protected override Expression VisitParameter(ParameterExpression node)
+            => context.Rewrite(node, base.VisitParameter);
+
+        protected override Expression VisitConstant(ConstantExpression node)
+            => context.Rewrite(node, base.VisitConstant);
+
         private Expression RewriteCallable<E>(E node, Expression[] arguments, Converter<E, Expression> visitor, Func<E, Expression[], E> updater)
             where E: Expression
         {
-            var codeInsertionPoint = context.GetStatementPrologueWriter();
+            var codeInsertionPoint = context.CurrentStatement.CapturePrologueWriter();
             var newNode = visitor(node);
             if(newNode is E)
                 node = (E)newNode;
@@ -306,7 +305,7 @@ namespace DotNext.Runtime.CompilerServices
             for(var i = arguments.LongLength - 1L; i >= 0L; i--)
             {
                 ref Expression arg = ref arguments[i];
-                if(VisitorContext.ContainsAwait(arg))
+                if(ExpressionAttributes.Get(arg).ContainsAwait)
                     hasAwait = true;
                 else if(hasAwait)
                 {
@@ -349,7 +348,15 @@ namespace DotNext.Runtime.CompilerServices
             => context.Rewrite(node, n => RewriteCallable(n, n.Expressions.ToArray(), base.VisitNewArray, UpdateArguments));
 
         protected override Expression VisitLoop(LoopExpression node)
-            => node.Type == typeof(void) ? context.Rewrite(node, base.VisitLoop) : throw new NotSupportedException("Loop expression should be of type Void");
+        {
+            if (node.Type == typeof(void))
+            {
+                Statement.Rewrite(ref node);
+                return context.Rewrite(node, base.VisitLoop);
+            }
+            else
+                throw new NotSupportedException("Loop expression should be of type Void");
+        }
 
         protected override Expression VisitDynamic(DynamicExpression node)
             => context.Rewrite(node, base.VisitDynamic);
@@ -402,7 +409,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             Variables.Clear();
             stateSwitchTable.Clear();
-            context.Clear();
+            context.Dispose();
         }
     }
 
@@ -488,6 +495,8 @@ namespace DotNext.Runtime.CompilerServices
                     return Visit(result.Reduce(stateMachine, methodBuilder.AsyncMethodEnd));
                 case StateMachineExpression sme:
                     return Visit(sme.Reduce(stateMachine));
+                case Statement statement:
+                    return Visit(statement.Reduce());
                 default:
                     return base.VisitExtension(node);
             }

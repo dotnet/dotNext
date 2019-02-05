@@ -18,7 +18,7 @@ namespace DotNext.Runtime.CompilerServices
         bool HasNoException { get; }
         void EnterGuardedCode(uint newState);
         void ExitGuardedCode(uint previousState);
-        bool TryRecover<E>(uint recoveryState, out E exception)
+        bool TryRecover<E>(out E exception)
             where E : Exception;
     }
 }
