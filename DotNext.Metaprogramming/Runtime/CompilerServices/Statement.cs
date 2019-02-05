@@ -41,7 +41,7 @@ namespace DotNext.Runtime.CompilerServices
 
         private Statement(Expression expression, IEnumerable<Expression> prologue, IEnumerable<Expression> epilogue)
         {
-            Content = expression;
+            Content = expression ?? Empty();
             if (expression is Statement stmt)
             {
                 InsertIntoHead(prologue, this.prologue = stmt.prologue);
@@ -70,6 +70,8 @@ namespace DotNext.Runtime.CompilerServices
         {
             switch(expr)
             {
+                case TryExpression seh:
+                    return seh;
                 case BlockExpression block:
                     Rewrite(ref block);
                     return block;

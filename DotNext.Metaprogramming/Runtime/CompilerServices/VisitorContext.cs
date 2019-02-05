@@ -34,6 +34,8 @@ namespace DotNext.Runtime.CompilerServices
             return null;
         }
 
+        internal bool IsInFinally => !(FindStatement<FinallyStatement>() is null);
+
         internal ParameterExpression ExceptionHolder => FindStatement<CatchStatement>()?.ExceptionVar;
 
         private void ContainsAwait()
@@ -85,6 +87,16 @@ namespace DotNext.Runtime.CompilerServices
         {
             var statement = new TryCatchFinallyStatement(expression, transitionTable, previousStateId, ref stateId);
             return Rewrite(statement, rewriter);
+        }
+
+        internal IEnumerable<Expression> FinalizationCode(ExpressionVisitor visitor)
+        {
+            //iterate through snapshot of statements because collection can be modified
+            var statements = new Stack<Statement>(this.statements);
+            foreach (var lookup in statements)
+                if (lookup is TryCatchFinallyStatement statement)
+                    yield return statement.InlineFinally(visitor, 0);
+            statements.Clear();
         }
 
         protected override void Dispose(bool disposing)

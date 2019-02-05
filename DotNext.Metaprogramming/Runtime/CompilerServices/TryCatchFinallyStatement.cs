@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
@@ -16,7 +15,6 @@ namespace DotNext.Runtime.CompilerServices
             : base(expression, Label("fault_" + (++stateId)))
         {
             prologue.AddFirst(new EnterGuardedCodeExpression(stateId));
-            epilogue.AddFirst(new RethrowExpression());
             this.previousState = previousState;
             transitionTable[stateId] = new StateTransition(null, FaultLabel);
             if (expression.Handlers.Count > 0)
@@ -28,6 +26,17 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         internal new TryExpression Content => (TryExpression)base.Content;
+
+        internal Expression InlineFinally(ExpressionVisitor visitor, uint leavingState)
+        {
+            var finallyCode = Content.Finally;
+            finallyCode = finallyCode is null ?
+                new ExitGuardedCodeExpression(leavingState) :
+                finallyCode.AddEpilogue(false, new ExitGuardedCodeExpression(leavingState));
+            finallyCode = finallyCode.AddEpilogue(false, epilogue);
+            finallyCode = Inliner.Rewrite(finallyCode);
+            return visitor.Visit(finallyCode);
+        }
 
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
@@ -46,11 +55,8 @@ namespace DotNext.Runtime.CompilerServices
                     handlers.AddLast(visitor.Visit(new CatchStatement(handler, finallyLabel)));
             }
             //generate finally block
-            var fault = visitor.Visit(Content.Finally ?? Content.Fault);
-            fault = fault is null ?
-                Block(typeof(void), (finallyLabel ?? FaultLabel).LandingSite(), new ExitGuardedCodeExpression(previousState)) :
-                fault.AddPrologue(false, (finallyLabel ?? FaultLabel).LandingSite(), new ExitGuardedCodeExpression(previousState));
-            fault = fault.AddEpilogue(false, epilogue);
+            Expression fault = new FinallyStatement(Content.Finally ?? Content.Fault, previousState, finallyLabel ?? FaultLabel);
+            fault = visitor.Visit(fault);
             return tryBody.AddEpilogue(false, handlers).AddEpilogue(false, fault);
         }
     }

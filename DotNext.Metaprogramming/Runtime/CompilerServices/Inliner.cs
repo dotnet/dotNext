@@ -4,11 +4,11 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    internal sealed class SemanticCopyRewriter: ExpressionVisitor, IDisposable
+    internal sealed class Inliner: ExpressionVisitor, IDisposable
     {
         private readonly IDictionary<LabelTarget, LabelTarget> labelReplacement;
 
-        private SemanticCopyRewriter()
+        private Inliner()
         {
             labelReplacement = new Dictionary<LabelTarget, LabelTarget>();
         }
@@ -27,7 +27,7 @@ namespace DotNext.Runtime.CompilerServices
 
         internal static Expression Rewrite(Expression node)
         {
-            using (var rewriter = new SemanticCopyRewriter())
+            using (var rewriter = new Inliner())
                 return rewriter.Visit(node);
         }
     }

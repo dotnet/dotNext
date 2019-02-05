@@ -192,7 +192,7 @@ namespace DotNext.Runtime.CompilerServices
 
         //try-catch will be completely replaced with flat code and set of switch-case-goto statements
         protected override Expression VisitTry(TryExpression node)
-            => context.Rewrite(node, stateSwitchTable, Visit);
+            => context.Rewrite(node, stateSwitchTable, base.VisitExtension);
 
         private Expression VisitAwait(AwaitExpression node)
         {
@@ -206,10 +206,23 @@ namespace DotNext.Runtime.CompilerServices
             return node.Reduce(awaiterSlot, stateId, transition.Successful, AsyncMethodEnd, prologue);
         }
 
+        private Expression VisitAsyncResult(AsyncResultExpression expr)
+        {
+            if (context.IsInFinally)
+                throw new InvalidOperationException("Control cannot leave the body of a finally clause");
+            //attach all available finalization code
+            var prologue = context.CurrentStatement.CapturePrologueWriter();
+            foreach (var finalization in context.FinalizationCode(this))
+                prologue(finalization);
+            return expr;
+        }
+
         protected override Expression VisitExtension(Expression node)
         {
             switch (node)
             {
+                case AsyncResultExpression result:
+                    return VisitAsyncResult(result);
                 case AwaitExpression await:
                     return context.Rewrite(await, VisitAwait);
                 case RecoverFromExceptionExpression recovery:
@@ -513,9 +526,6 @@ namespace DotNext.Runtime.CompilerServices
             return Build(BuildStateMachine(body, stateMachine, tailCall));
         }
 
-        public void Dispose()
-        {
-            methodBuilder.Dispose();
-        }
+        public void Dispose() => methodBuilder.Dispose();
     }
 }
