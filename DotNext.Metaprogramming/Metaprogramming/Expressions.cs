@@ -232,20 +232,30 @@ namespace DotNext.Metaprogramming
             }
         }
 
-        internal static BlockExpression AddPrologue(this Expression expression, bool inferType, IEnumerable<Expression> instructions)
-            => expression is BlockExpression block ?
-            Expression.Block(inferType ? block.Type : typeof(void), block.Variables, instructions.Concat(block.Expressions)) :
-            Expression.Block(inferType ? expression.Type : typeof(void), instructions.Concat(Sequence.Single(expression)));
+        internal static Expression AddPrologue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)
+        {
+            if (instructions.Count == 0)
+                return expression;
+            else if (expression is BlockExpression block)
+                return Expression.Block(inferType ? block.Type : typeof(void), block.Variables, instructions.Concat(block.Expressions));
+            else
+                return Expression.Block(inferType ? expression.Type : typeof(void), instructions.Concat(Sequence.Single(expression)));
+        }
 
-        internal static BlockExpression AddEpilogue(this Expression expression, bool inferType, IEnumerable<Expression> instructions)
-            => expression is BlockExpression block ?
-            Expression.Block(inferType ? block.Type : typeof(void), block.Variables, block.Expressions.Concat(instructions)) :
-            Expression.Block(inferType ? instructions.Last().Type : typeof(void), Sequence.Single(expression).Concat(instructions));
+        internal static Expression AddEpilogue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)
+        {
+            if (instructions.Count == 0)
+                return expression;
+            else if (expression is BlockExpression block)
+                return Expression.Block(inferType ? block.Type : typeof(void), block.Variables, block.Expressions.Concat(instructions));
+            else
+                return Expression.Block(inferType ? instructions.Last().Type : typeof(void), Sequence.Single(expression).Concat(instructions));
+        }
 
-        internal static BlockExpression AddPrologue(this Expression expression, bool inferType, params Expression[] instructions)
-            => AddPrologue(expression, inferType, instructions.Upcast<IEnumerable<Expression>, Expression[]>());
+        internal static Expression AddPrologue(this Expression expression, bool inferType, params Expression[] instructions)
+            => AddPrologue(expression, inferType, instructions.Upcast<IReadOnlyCollection<Expression>, Expression[]>());
 
-        internal static BlockExpression AddEpilogue(this Expression expression, bool inferType, params Expression[] instructions)
-            => AddEpilogue(expression, inferType, instructions.Upcast<IEnumerable<Expression>, Expression[]>());
+        internal static Expression AddEpilogue(this Expression expression, bool inferType, params Expression[] instructions)
+            => AddEpilogue(expression, inferType, instructions.Upcast<IReadOnlyCollection<Expression>, Expression[]>());
     }
 }

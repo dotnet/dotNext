@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
@@ -25,7 +26,8 @@ namespace DotNext.Runtime.CompilerServices
                 throw new NotSupportedException("Filter of catch block cannot contain await expressions");
             var handler = visitor.Visit(Content);
             handler = handler.AddEpilogue(false, FaultLabel.Goto());
-            return IfThen(filter, handler);
+            handler = IfThen(filter, handler);
+            return handler.AddPrologue(false, prologue).AddEpilogue(false, epilogue);
         }
     }
 }

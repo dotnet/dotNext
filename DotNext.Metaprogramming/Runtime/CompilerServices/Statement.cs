@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
+    using static Metaprogramming.Expressions;
     using VariantType;
     using static Collections.Generic.Collections;
 
@@ -29,8 +30,8 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
-        private readonly LinkedList<Expression> prologue;
-        private readonly LinkedList<Expression> epilogue;
+        private protected readonly LinkedList<Expression> prologue;
+        private protected readonly LinkedList<Expression> epilogue;
         internal readonly Expression Content;
 
         internal Statement(Expression expression)
@@ -104,9 +105,7 @@ namespace DotNext.Runtime.CompilerServices
         public sealed override Type Type => Content.Type;
         public sealed override ExpressionType NodeType => ExpressionType.Extension;
         public sealed override Expression Reduce() =>
-            prologue.Count == 0 && epilogue.Count == 0 ?
-                        Content :
-                        Block(typeof(void), prologue.Concat(Sequence.Single(Content)).Concat(epilogue));
+            Content.AddPrologue(false, prologue).AddEpilogue(false, epilogue);
 
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
