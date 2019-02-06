@@ -62,6 +62,10 @@ namespace DotNext.Runtime.InteropServices
             Equal(30, array[2]);
             var managedArray = System.Linq.Enumerable.ToArray(array);
             Equal(new ushort[] { 10, 20, 30 }, managedArray);
+            array.Clear();
+            Equal(0, array[0]);
+            Equal(0, array[1]);
+            Equal(0, array[2]);
             array.Dispose();
         }
     }
