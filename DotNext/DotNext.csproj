@@ -14,8 +14,9 @@
     <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>extensions;.netstandard</PackageTags>
-    <Copyright>Roman Sakno</Copyright>
+    <Copyright>2018-2019</Copyright>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<Description>Provides various extensions of .NET Base Class Library</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

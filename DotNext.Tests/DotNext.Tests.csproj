@@ -4,6 +4,15 @@
 	  <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
+    <Version>0.1.0</Version>
+    <Authors>Roman Sakno</Authors>
+    <Product>.NEXT Family of Libraries</Product>
+    <Description>Unit tests for .NEXT Familiy of Libraries</Description>
+    <Copyright>2018-2019</Copyright>
+    <PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/sakno/DotNext</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

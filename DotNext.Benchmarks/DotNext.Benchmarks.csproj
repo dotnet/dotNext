@@ -6,6 +6,16 @@
     <RootNamespace>DotNext</RootNamespace>
     <StartupObject>DotNext.Program</StartupObject>
     <LangVersion>latest</LangVersion>
+    <Version>0.1.0</Version>
+    <Authors>Roman Sakno</Authors>
+    <Product>.NEXT Family of Libraries</Product>
+    <Description>Various benchmarks demonstrating performance aspects of .NEXT extensions</Description>
+    <Copyright>2018-2019</Copyright>
+    <PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/sakno/DotNext</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>benchmarks</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

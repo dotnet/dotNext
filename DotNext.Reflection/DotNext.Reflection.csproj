@@ -5,6 +5,16 @@
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<Version>0.1.0</Version>
+	<Authors>Roman Sakno</Authors>
+	<Product>.NEXT Family of Libraries</Product>
+	<Description>Statically-typed reflection and support of conceptual types (shapes)</Description>
+	<Copyright>2018-2019</Copyright>
+	<PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
+	<PackageProjectUrl>https://github.com/sakno/DotNext</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
+	<PackageTags>shapes;concept;reflection</PackageTags>
   </PropertyGroup>
 
 
