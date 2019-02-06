@@ -11,7 +11,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             var task = Task<long>.Factory.StartNew(() => 42);
             task.Wait();
-            var awaiter = task.GetAwaiter();
+            var awaiter = Awaitable<Task<long>, TaskAwaiter<long>, long>.GetAwaiter(task);
             True(Awaiter<TaskAwaiter<long>, long>.IsCompleted(awaiter));
             Equal(42, Awaiter<TaskAwaiter<long>, long>.GetResult(awaiter));
         }
@@ -29,7 +29,7 @@ namespace DotNext.Runtime.CompilerServices
             var holder = new ValueHolder();
             var task = Task.Factory.StartNew(holder.ChangeValue);
             task.Wait();
-            var awaiter = task.GetAwaiter();
+            var awaiter = Awaitable<Task, TaskAwaiter>.GetAwaiter(task);
             True(Awaiter<TaskAwaiter>.IsCompleted(awaiter));
             Awaiter<TaskAwaiter>.GetResult(awaiter);
             Equal(42, holder.Value);
