@@ -2,4 +2,5 @@
 obj/
 .vs/
 .vscode/
+.nuget/
 BenchmarkDotNet.Artifacts/
