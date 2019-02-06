@@ -2,6 +2,9 @@
 
 namespace DotNext
 {
+    /// <summary>
+    /// Provides various extensions for functional delegates.
+    /// </summary>
     public static class Func
     {
         private static class Id<I, O>
