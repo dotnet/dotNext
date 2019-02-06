@@ -79,7 +79,7 @@ namespace DotNext.Runtime.InteropServices
 				if (handle is null)
 					return default;
 				else if (handle.IsClosed)
-					throw new ObjectDisposedException(handle.GetType().Name, "Handle is closed");
+					throw new ObjectDisposedException(handle.GetType().Name, ExceptionMessages.HandleClosed);
 				else
 					return new UnmanagedMemory<T>(handle.handle);
 			}
@@ -112,7 +112,7 @@ namespace DotNext.Runtime.InteropServices
 				if (value is T typedVal)
 					Value = typedVal;
 				else
-					throw new ArgumentException($"Value must be of type {typeof(T)}", nameof(value));
+					throw new ArgumentException(ExceptionMessages.ExpectedType(typeof(T)), nameof(value));
 			}
 		}
 
@@ -243,7 +243,7 @@ namespace DotNext.Runtime.InteropServices
         [CLSCompliant(false)]      
 		public Pointer<byte> this[ulong offset] => offset >= 0 && offset < (ulong)Pointer<T>.Size ? 
                 pointer.As<byte>() + offset : 
-                throw new IndexOutOfRangeException($"Offset should be in range [0, {Pointer<T>.Size})");
+                throw new IndexOutOfRangeException(ExceptionMessages.InvalidOffsetValue(Pointer<T>.Size));
 
         byte* IUnmanagedMemory<T>.this[ulong offset] => this[offset];
 

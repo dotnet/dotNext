@@ -18,7 +18,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         public NullPointerException()
-            : this("Zero pointer detected")
+            : this(ExceptionMessages.NullPtr)
         {
         }
     }

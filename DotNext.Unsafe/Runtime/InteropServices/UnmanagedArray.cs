@@ -66,7 +66,7 @@ namespace DotNext.Runtime.InteropServices
 				if (handle is null)
 					return default;
 				else if (handle.IsClosed)
-					throw new ObjectDisposedException(handle.GetType().Name, "Handle is closed");
+					throw new ObjectDisposedException(handle.GetType().Name, ExceptionMessages.HandleClosed);
 				else
 					return new UnmanagedArray<T>(handle.handle, handle.length);
 			}
@@ -82,7 +82,7 @@ namespace DotNext.Runtime.InteropServices
 		public UnmanagedArray(int length)
 		{
 			if (length < 0)
-				throw new ArgumentOutOfRangeException("Length of the array should not be less than zero");
+				throw new ArgumentOutOfRangeException(ExceptionMessages.ArrayNegativeLength);
 			else if ((Length = length) > 0L)
 			{
 				var size = length * Pointer<T>.Size;
@@ -123,17 +123,17 @@ namespace DotNext.Runtime.InteropServices
 		/// </summary>
 		/// <exception cref="NullPointerException">Array is not allocated.</exception>
 		public void Clear() => pointer.Clear(Length);
-		
-		/// <summary>
-		/// Gets pointer to array element.
-		/// </summary>
-		/// <param name="index">Index of the element.</param>
-		/// <returns>Pointer to array element.</returns>
-		[CLSCompliant(false)]
-		public Pointer<T> ElementAt(uint index)
-			=> index >= 0 && index < Length ?
-			pointer + index :
-			throw new IndexOutOfRangeException($"Index should be in range [0, {Length})");
+
+        /// <summary>
+        /// Gets pointer to array element.
+        /// </summary>
+        /// <param name="index">Index of the element.</param>
+        /// <returns>Pointer to array element.</returns>
+        [CLSCompliant(false)]
+        public Pointer<T> ElementAt(uint index)
+            => index >= 0 && index < Length ?
+            pointer + index :
+            throw new IndexOutOfRangeException(ExceptionMessages.InvalidIndexValue(Length));
 
 		/// <summary>
 		/// Gets or sets array element.
@@ -163,7 +163,7 @@ namespace DotNext.Runtime.InteropServices
 		
 		byte* IUnmanagedMemory<T>.this[ulong offset] => offset >= 0 && offset < (ulong)Pointer<T>.Size ? 
                 pointer.As<byte>() + offset : 
-                throw new IndexOutOfRangeException($"Offset should be in range [0, {Pointer<T>.Size})");
+                throw new IndexOutOfRangeException(ExceptionMessages.InvalidOffsetValue(Pointer<T>.Size));
 
 		public int WriteTo(in UnmanagedArray<T> destination, int offset, int length)
 		{
@@ -172,7 +172,7 @@ namespace DotNext.Runtime.InteropServices
 			else if (destination.pointer.IsNull)
 				throw new ArgumentNullException(nameof(destination));
 			else if (length < 0)
-				throw new IndexOutOfRangeException("Destination length is invalid");
+				throw new IndexOutOfRangeException();
 			else if (destination.Length == 0 || (length + offset) >= destination.Length)
 				return 0;
 			pointer.WriteTo(destination.pointer + offset, length);
@@ -218,20 +218,20 @@ namespace DotNext.Runtime.InteropServices
 
 		Task<ulong> IUnmanagedMemory<T>.ReadFromAsync(Stream source) => ReadFromAsync(source).Convert(Convert.ToUInt64);
 
-		/// <summary>
-		/// Reinterprets reference to the unmanaged array.
-		/// </summary>
-		/// <remarks>
-		/// Size of <typeparamref name="U"/> must be a multiple of the size <typeparamref name="T"/>.
-		/// </remarks>
-		/// <typeparam name="U">New element type.</typeparam>
-		/// <returns>Reinterpreted unmanaged array which points to the same memory as original array.</returns>
-		/// <exception cref="GenericArgumentException{U}">Invalid size of target element type.</exception>
-		public UnmanagedArray<U> As<U>()
-			where U : unmanaged
-			=> Pointer<T>.Size % Pointer<U>.Size == 0 ?
-				new UnmanagedArray<U>(pointer.As<U>(), Length * (Pointer<T>.Size / Pointer<U>.Size)):
-				throw new GenericArgumentException<U>("Target element size must be a multiple of the original element size.");
+        /// <summary>
+        /// Reinterprets reference to the unmanaged array.
+        /// </summary>
+        /// <remarks>
+        /// Size of <typeparamref name="U"/> must be a multiple of the size <typeparamref name="T"/>.
+        /// </remarks>
+        /// <typeparam name="U">New element type.</typeparam>
+        /// <returns>Reinterpreted unmanaged array which points to the same memory as original array.</returns>
+        /// <exception cref="GenericArgumentException{U}">Invalid size of target element type.</exception>
+        public UnmanagedArray<U> As<U>()
+            where U : unmanaged
+            => Pointer<T>.Size % Pointer<U>.Size == 0 ?
+                new UnmanagedArray<U>(pointer.As<U>(), Length * (Pointer<T>.Size / Pointer<U>.Size)) :
+                throw new GenericArgumentException<U>(ExceptionMessages.TargetSizeMustBeMultipleOf);
 
 		/// <summary>
 		/// Represents unmanaged array as stream.

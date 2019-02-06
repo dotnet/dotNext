@@ -87,9 +87,9 @@ namespace DotNext.Runtime.InteropServices
         public void WriteTo(Pointer<T> destination, long length)
         {
             if(IsNull)
-                throw new NullPointerException("Source pointer is null");
+                throw new NullPointerException(ExceptionMessages.NullSource);
             else if(destination.IsNull)
-                throw new ArgumentNullException(nameof(destination), "Destination pointer is null");
+                throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
             else
                 Memory.Copy(value, destination.value, length * Size);
         }
@@ -101,7 +101,7 @@ namespace DotNext.Runtime.InteropServices
 			else if (destination is null)
 				throw new ArgumentNullException(nameof(destination));
             else if (length < 0)
-				throw new IndexOutOfRangeException("Destination length is invalid");
+				throw new IndexOutOfRangeException();
 			else if (destination.LongLength == 0L || (offset + length) >= destination.LongLength)
 				return 0L;
 			fixed (T* dest = &destination[offset])
@@ -136,7 +136,7 @@ namespace DotNext.Runtime.InteropServices
 			else if (source is null)
 				throw new ArgumentNullException(nameof(source));
             else if (length < 0L)
-				throw new IndexOutOfRangeException("Source length is invalid");
+				throw new IndexOutOfRangeException();
 			else if (source.LongLength == 0L || (length + offset) >= source.LongLength)
 				return 0L;
 			fixed (T* src = &source[offset])
@@ -202,8 +202,8 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="GenericArgumentException{U}">Type <typeparamref name="U"/> should be the same size or less than type <typeparamref name="T"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Pointer<U> As<U>()
-            where U: unmanaged
-            => Size <= Pointer<U>.Size ? new Pointer<U>(value) : throw new GenericArgumentException<U>("Target type should be the same size or less than original type");
+            where U : unmanaged
+            => Size <= Pointer<U>.Size ? new Pointer<U>(value) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize);
         
         /// <summary>
         /// Converts unmanaged pointer into managed pointer.
