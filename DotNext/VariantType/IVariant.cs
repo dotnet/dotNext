@@ -11,5 +11,8 @@ namespace DotNext.VariantType
 		/// Gets value stored in the container.
 		/// </summary>
         object Value { get; }
+
+        bool Equals<V>(V other)
+            where V : IVariant;
     }
 }

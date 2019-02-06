@@ -20,13 +20,8 @@ namespace DotNext.VariantType
 		public Variant(T1 value) => Value = value;
 
 		public Variant(T2 value) => Value = value;
-
-		/// <summary>
-		/// Indicates that this container holds null value.
-		/// </summary>
-		public bool IsNull => Value is null;
-
-		bool IOptional.IsPresent => !(Value is null);
+        
+		public bool IsPresent => !(Value is null);
 
 		object IVariant.Value => Value;
 
@@ -74,7 +69,11 @@ namespace DotNext.VariantType
         public static implicit operator Variant<T1, T2>(T2 value) => new Variant<T1, T2>(value);
         public static explicit operator T2(Variant<T1, T2> var) => var.Value as T2;
 
-		public bool Equals(Variant<T1, T2> other) => Equals(Value, other.Value);
+        public bool Equals<V>(V other)
+            where V : IVariant
+            => Equals(Value, other.Value);
+
+        bool IEquatable<Variant<T1, T2>>.Equals(Variant<T1, T2> other) => Equals(other);
 
         public bool Equals(T1 other) => Equals(Value, other);
 
@@ -88,6 +87,10 @@ namespace DotNext.VariantType
 
         public static bool operator==(Variant<T1, T2> first, Variant<T1, T2> second) => first.Equals(second);
         public static bool operator!=(Variant<T1, T2> first, Variant<T1, T2> second) => !first.Equals(second);
+
+        public static bool operator true(Variant<T1, T2> variant) => variant.IsPresent;
+
+        public static bool operator false(Variant<T1, T2> variant) => !variant.IsPresent;
 
         public override string ToString() => Value?.ToString() ?? "";
 
@@ -119,28 +122,19 @@ namespace DotNext.VariantType
 	{
 		private readonly object Value;
 
-		private Variant(object value)
-			=> Value = value;
+		private Variant(object value) => Value = value;
 
-		public Variant(T1 value)
-			=> Value = value;
+		public Variant(T1 value) => Value = value;
 
-		public Variant(T2 value)
-			=> Value = value;
+		public Variant(T2 value) => Value = value;
 
-		public Variant(T3 value)
-			=> Value = value;
+		public Variant(T3 value) => Value = value;
 
 		private static Variant<T1, T2, T3> Create<V>(V variant)
 			where V: struct, IVariant
 			=> new Variant<T1, T2, T3>(variant.Value);
-
-		/// <summary>
-		/// Indicates that this container holds null value.
-		/// </summary>
-		public bool IsNull => Value is null;
-
-		bool IOptional.IsPresent => !(Value is null);
+        
+		public bool IsPresent => !(Value is null);
 
 		/// <summary>
 		/// Change order of type parameters.
@@ -150,7 +144,11 @@ namespace DotNext.VariantType
 
 		object IVariant.Value => Value;
 
-		public bool Equals(Variant<T1, T2, T3> other) => Equals(Value, other.Value);
+        public bool Equals<V>(V other)
+            where V : IVariant
+            => Equals(Value, other.Value);
+
+        bool IEquatable<Variant<T1, T2, T3>>.Equals(Variant<T1, T2, T3> other) => Equals(other);
 
 		public bool Equals(T1 other) => Equals(Value, other);
 
@@ -179,7 +177,11 @@ namespace DotNext.VariantType
 		public static implicit operator Variant<T1, T2, T3>(T3 value) => new Variant<T1, T2, T3>(value);
 		public static explicit operator T3(Variant<T1, T2, T3> var) => var.Value as T3;
 
-		public static implicit operator Variant<T1, T2, T3>(Variant<T1, T2> variant)
+        public static bool operator true(Variant<T1, T2, T3> variant) => variant.IsPresent;
+
+        public static bool operator false(Variant<T1, T2, T3> variant) => !variant.IsPresent;
+
+        public static implicit operator Variant<T1, T2, T3>(Variant<T1, T2> variant)
 			=> Create(variant);
 
 		public override string ToString() => Value?.ToString() ?? "";
@@ -198,4 +200,112 @@ namespace DotNext.VariantType
 		DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
 			=> new VariantImmutableMetaObject(parameter, this);
 	}
+
+    /// <summary>
+	/// Represents value that can be one of three possible types.
+	/// </summary>
+	/// <typeparam name="T1">First possible type.</typeparam>
+	/// <typeparam name="T2">Second possible type.</typeparam>
+	/// <typeparam name="T3">Third possible type.</typeparam>
+    /// <typeparam name="T4">Fourth possible type.</typeparam>
+	public readonly struct Variant<T1, T2, T3, T4> : IVariant, IEquatable<Variant<T1, T2, T3, T4>>
+        where T1 : class
+        where T2 : class
+        where T3 : class
+        where T4: class
+    {
+        private readonly object Value;
+
+        private Variant(object value) => Value = value;
+
+        public Variant(T1 value) => Value = value;
+
+        public Variant(T2 value) => Value = value;
+
+        public Variant(T3 value) => Value = value;
+
+        public Variant(T4 value) => Value = value;
+
+        private static Variant<T1, T2, T3, T4> Create<V>(V variant)
+            where V : struct, IVariant
+            => new Variant<T1, T2, T3, T4>(variant.Value);
+        
+
+        public bool IsPresent => !(Value is null);
+
+        /// <summary>
+        /// Change order of type parameters.
+        /// </summary>
+        /// <returns>A copy of variant value with changed order of type parameters.</returns>
+        public Variant<T4, T1, T2, T3> Permute() => new Variant<T4, T1, T2, T3>(Value);
+
+        object IVariant.Value => Value;
+
+        public bool Equals<V>(V other)
+            where V : IVariant
+            => Equals(Value, other.Value);
+
+        bool IEquatable<Variant<T1, T2, T3, T4>>.Equals(Variant<T1, T2, T3, T4> other) => Equals(Value, other.Value);
+
+        public bool Equals(T1 other) => Equals(Value, other);
+
+        public bool Equals(T2 other) => Equals(Value, other);
+
+        public bool Equals(T3 other) => Equals(Value, other);
+
+        public bool Equals(T4 other) => Equals(Value, other);
+
+        public static bool operator ==(Variant<T1, T2, T3, T4> first, T1 second) => first.Equals(second);
+        public static bool operator !=(Variant<T1, T2, T3, T4> first, T1 second) => !first.Equals(second);
+
+        public static bool operator ==(Variant<T1, T2, T3, T4> first, T2 second) => first.Equals(second);
+        public static bool operator !=(Variant<T1, T2, T3, T4> first, T2 second) => !first.Equals(second);
+
+        public static bool operator ==(Variant<T1, T2, T3, T4> first, T3 second) => first.Equals(second);
+        public static bool operator !=(Variant<T1, T2, T3, T4> first, T3 second) => !first.Equals(second);
+
+        public static bool operator ==(Variant<T1, T2, T3, T4> first, T4 second) => first.Equals(second);
+        public static bool operator !=(Variant<T1, T2, T3, T4> first, T4 second) => !first.Equals(second);
+
+        public static bool operator ==(Variant<T1, T2, T3, T4> first, Variant<T1, T2, T3, T4> second) => first.Equals(second);
+        public static bool operator !=(Variant<T1, T2, T3, T4> first, Variant<T1, T2, T3, T4> second) => !first.Equals(second);
+
+        public static implicit operator Variant<T1, T2, T3, T4>(T1 value) => new Variant<T1, T2, T3, T4>(value);
+        public static explicit operator T1(Variant<T1, T2, T3, T4> var) => var.Value as T1;
+
+        public static implicit operator Variant<T1, T2, T3, T4>(T2 value) => new Variant<T1, T2, T3, T4>(value);
+        public static explicit operator T2(Variant<T1, T2, T3, T4> var) => var.Value as T2;
+
+        public static implicit operator Variant<T1, T2, T3, T4>(T3 value) => new Variant<T1, T2, T3, T4>(value);
+        public static explicit operator T3(Variant<T1, T2, T3, T4> var) => var.Value as T3;
+
+        public static implicit operator Variant<T1, T2, T3, T4>(T4 value) => new Variant<T1, T2, T3, T4>(value);
+        public static explicit operator T4(Variant<T1, T2, T3, T4> var) => var.Value as T4;
+
+        public static implicit operator Variant<T1, T2, T3, T4>(Variant<T1, T2, T3> variant)
+            => Create(variant);
+
+        public static implicit operator Variant<T1, T2, T3, T4>(Variant<T1, T2> variant)
+            => Create(variant);
+
+        public static bool operator true(Variant<T1, T2, T3, T4> variant) => variant.IsPresent;
+
+        public static bool operator false(Variant<T1, T2, T3, T4> variant) => !variant.IsPresent;
+
+        public override string ToString() => Value?.ToString() ?? "";
+
+        public override int GetHashCode() => Value is null ? 0 : Value.GetHashCode();
+
+        public override bool Equals(object other)
+        {
+            switch (other)
+            {
+                case IVariant variant: return Equals(Value, variant.Value);
+                default: return Equals(Value, other);
+            }
+        }
+
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+            => new VariantImmutableMetaObject(parameter, this);
+    }
 }
