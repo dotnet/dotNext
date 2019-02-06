@@ -51,7 +51,7 @@ namespace DotNext.Metaprogramming
             loopBody = loopBody.Loop(breakLabel, continueLabel);
             var @finally = disposeMethod is null ?
                     enumerator.AssignDefault().Upcast<Expression, BinaryExpression>() :
-                    Expression.Block(enumerator.Call(disposeMethod), enumerator.Assign(enumerator.Type.Default()));
+                    Expression.Block(enumerator.Call(disposeMethod), enumerator.Assign(enumerator.Type.AsDefault()));
             return loopBody.Finally(@finally);
         }
 

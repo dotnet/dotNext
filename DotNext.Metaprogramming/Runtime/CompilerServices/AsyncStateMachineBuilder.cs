@@ -54,8 +54,7 @@ namespace DotNext.Runtime.CompilerServices
                 MarkAsParameter(parameter, position);
                 Variables.Add(parameter, null);
             }
-            context = new VisitorContext();
-            AsyncMethodEnd = Expression.Label("end_async_method");
+            context = new VisitorContext(out AsyncMethodEnd);
             stateSwitchTable = new StateTransitionTable();
         }
 
@@ -114,7 +113,7 @@ namespace DotNext.Runtime.CompilerServices
                         temp = c();
                     x = temp;
                  */
-                var prologue = context.CurrentStatement.CapturePrologueWriter();
+                var prologue = context.CurrentStatement.PrologueCodeInserter();
                 {
                     var result = context.Rewrite(node, base.VisitConditional);
                     if (result is ConditionalExpression)
@@ -134,7 +133,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         protected override Expression VisitLabel(LabelExpression node)
-            => node.Type == typeof(void) ? new Statement(node) : throw new NotSupportedException("Label should be of type Void");
+            => node.Type == typeof(void) ? context.Rewrite(node, Converter.Identity<LabelExpression>()) : throw new NotSupportedException("Label should be of type Void");
 
         protected override Expression VisitLambda<T>(Expression<T> node)
             => context.Rewrite(node, base.VisitLambda);
@@ -157,7 +156,10 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         protected override Expression VisitGoto(GotoExpression node)
-            => node.Type == typeof(void) ? new Statement(node) : throw new NotSupportedException("Goto expression should of type Void");
+        {
+            node = context.Rewrite(node, Converter.Identity<GotoExpression>());
+            return node.AddPrologue(false, context.CreateJumpPrologue(node, this));
+        }
 
         protected override Expression VisitDebugInfo(DebugInfoExpression node)
             => context.Rewrite(node, base.VisitDebugInfo);
@@ -196,7 +198,7 @@ namespace DotNext.Runtime.CompilerServices
 
         private Expression VisitAwait(AwaitExpression node)
         {
-            var prologue = context.CurrentStatement.CapturePrologueWriter();
+            var prologue = context.CurrentStatement.PrologueCodeInserter();
             node = (AwaitExpression)base.VisitExtension(node);
             //allocate slot for awaiter
             var awaiterSlot = NewStateSlot(node.NewAwaiterHolder);
@@ -211,8 +213,8 @@ namespace DotNext.Runtime.CompilerServices
             if (context.IsInFinally)
                 throw new InvalidOperationException("Control cannot leave the body of a finally clause");
             //attach all available finalization code
-            var prologue = context.CurrentStatement.CapturePrologueWriter();
-            foreach (var finalization in context.FinalizationCode(this))
+            var prologue = context.CurrentStatement.PrologueCodeInserter();
+            foreach (var finalization in context.CreateJumpPrologue(AsyncMethodEnd.Goto(), this))
                 prologue(finalization);
             return expr;
         }
@@ -221,6 +223,8 @@ namespace DotNext.Runtime.CompilerServices
         {
             switch (node)
             {
+                case StatePlaceholderExpression placeholder:
+                    return placeholder;
                 case AsyncResultExpression result:
                     return VisitAsyncResult(result);
                 case AwaitExpression await:
@@ -266,7 +270,7 @@ namespace DotNext.Runtime.CompilerServices
 
         private Expression RewriteBinary(BinaryExpression node)
         {
-            var codeInsertionPoint = context.CurrentStatement.CapturePrologueWriter();
+            var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
             var newNode = base.VisitBinary(node);
             if (newNode is BinaryExpression)
                 node = (BinaryExpression)newNode;
@@ -308,7 +312,7 @@ namespace DotNext.Runtime.CompilerServices
         private Expression RewriteCallable<E>(E node, Expression[] arguments, Converter<E, Expression> visitor, Func<E, Expression[], E> updater)
             where E: Expression
         {
-            var codeInsertionPoint = context.CurrentStatement.CapturePrologueWriter();
+            var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
             var newNode = visitor(node);
             if(newNode is E)
                 node = (E)newNode;
@@ -408,16 +412,17 @@ namespace DotNext.Runtime.CompilerServices
             return Expression.Switch(new StateIdExpression(), Expression.Empty(), null, cases);
         }
 
-        internal BlockExpression Rewrite(Expression body)
+        private Expression Rewrite(Statement body)
         {
-            body = body is BlockExpression block ?
-                Expression.Block(typeof(void), block.Variables, block.Expressions) :
-                Expression.Block(typeof(void), body);
-            body = Visit(body);
-            return Expression.Block(body.Type, Array.Empty<ParameterExpression>(),
-                Sequence.Single(MakeSwitch()).Concat(((BlockExpression)body).Expressions).Concat(Sequence.Single(AsyncMethodEnd.LandingSite())));
+            var result = Visit(body).Reduce();
+            return result.AddPrologue(false, MakeSwitch()).AddEpilogue(false, AsyncMethodEnd.LandingSite());
         }
 
+        internal Expression Rewrite(Expression body)
+            => Rewrite(body is BlockExpression block ?
+                new Statement(Expression.Block(typeof(void), block.Variables, block.Expressions)) :
+                new Statement(body));
+        
         public void Dispose()
         {
             Variables.Clear();
@@ -504,6 +509,8 @@ namespace DotNext.Runtime.CompilerServices
         {
             switch (node)
             {
+                case StatePlaceholderExpression placeholder:
+                    return placeholder.Reduce();
                 case AsyncResultExpression result:
                     return Visit(result.Reduce(stateMachine, methodBuilder.AsyncMethodEnd));
                 case StateMachineExpression sme:

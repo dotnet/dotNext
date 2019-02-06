@@ -1,15 +1,17 @@
 ﻿using System;
 using MethodInfo = System.Reflection.MethodInfo;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
     using static Reflection.Types;
 
-    public sealed class UsingBlockBuilder: ScopeBuilder, IExpressionBuilder<TryExpression>
+    public sealed class UsingBlockBuilder: ScopeBuilder, IExpressionBuilder<Expression>
     {
         private readonly MethodInfo disposeMethod;
         private readonly ParameterExpression disposableVar;
+        private readonly BinaryExpression assignment;
 
         internal UsingBlockBuilder(Expression expression, ExpressionBuilder parent)
             : base(parent)
@@ -21,21 +23,23 @@ namespace DotNext.Metaprogramming
                 disposableVar = variable;
             else
             {
-                disposableVar = DeclareVariable(expression.Type, NextName("disposable_"));
-                Assign(disposableVar, expression);
+                disposableVar = Expression.Variable(expression.Type, NextName("disposable_"));
+                assignment = Expression.Assign(disposableVar, expression);
             }
         }
 
         public UniversalExpression DisposableVar => disposableVar;
 
         internal override Expression Build()
-            => this.Upcast<IExpressionBuilder<TryExpression>, UsingBlockBuilder>().Build();
-
-        TryExpression IExpressionBuilder<TryExpression>.Build()
         {
             Expression @finally = disposableVar.Call(disposeMethod);
-            @finally = Expression.Block(@finally, disposableVar.AssignDefault());
-            return base.Build().Finally(@finally);
+            @finally = Expression.Block(typeof(void), @finally, disposableVar.AssignDefault());
+            @finally = base.Build().Finally(@finally);
+            return assignment is null ?
+                @finally :
+                Expression.Block(typeof(void), Sequence.Single(disposableVar), Sequence.Single(assignment).Concat(Sequence.Single(@finally)));
         }
+
+        Expression IExpressionBuilder<Expression>.Build() => Build();
     }
 }

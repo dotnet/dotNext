@@ -46,7 +46,7 @@ namespace DotNext.Metaprogramming
 
         internal abstract Expression Return(Expression result, bool addAsStatement);
 
-        internal Expression Return(bool addAsStatement) => Return(ReturnType.Default(), addAsStatement);
+        internal Expression Return(bool addAsStatement) => Return(ReturnType.AsDefault(), addAsStatement);
 
         public sealed override Expression Return(UniversalExpression result) => Return(result, true);
 

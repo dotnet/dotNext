@@ -100,9 +100,9 @@ namespace DotNext.Runtime.CompilerServices
         private static CodeInsertionPoint CaptureRewritePoint(LinkedList<Expression> codeBlock)
             => codeBlock.First is null ? new CodeInsertionPoint(codeBlock) : new CodeInsertionPoint(codeBlock.Last);
 
-        internal Metaprogramming.CodeInsertionPoint CapturePrologueWriter() => CaptureRewritePoint(prologue).Insert;
+        internal Metaprogramming.CodeInsertionPoint PrologueCodeInserter() => CaptureRewritePoint(prologue).Insert;
 
-        internal Metaprogramming.CodeInsertionPoint CaptureEpilogueWriter() => CaptureRewritePoint(epilogue).Insert;
+        internal Metaprogramming.CodeInsertionPoint EpilogueCodeInserter() => CaptureRewritePoint(epilogue).Insert;
 
         public sealed override Type Type => Content.Type;
         public sealed override ExpressionType NodeType => ExpressionType.Extension;

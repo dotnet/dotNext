@@ -81,7 +81,7 @@ namespace DotNext.Metaprogramming
             => Expression.Assign(left, value);
 
         public static BinaryExpression AssignDefault(this ParameterExpression left)
-            => left.Assign(left.Type.Default());
+            => left.Assign(left.Type.AsDefault());
 
         public static BinaryExpression Assign(this MemberExpression left, Expression value)
             => Expression.Assign(left, value);
@@ -165,6 +165,9 @@ namespace DotNext.Metaprogramming
         public static IndexExpression ElementAt(this Expression array, params Expression[] indexes)
             => Expression.ArrayAccess(array, indexes);
 
+        public static UnaryExpression ArrayLength(this Expression array)
+            => Expression.ArrayLength(array);
+
         public static LoopExpression Loop(this Expression body, LabelTarget @break, LabelTarget @continue)
             => Expression.Loop(body, @break, @continue);
 
@@ -206,7 +209,18 @@ namespace DotNext.Metaprogramming
         public static Expression AsConst<T>(this T value)
             => value is Expression expr ? Expression.Quote(expr).Upcast<Expression, UnaryExpression>() : Expression.Constant(value, typeof(T));
 
-        public static DefaultExpression Default(this Type type) => Expression.Default(type);
+        public static DefaultExpression AsDefault(this Type type) => Expression.Default(type);
+
+        public static NewExpression New(this Type type, params Expression[] args)
+        {
+            if (args.LongLength == 0L)
+                return Expression.New(type);
+            var ctor = type.GetConstructor(args.Convert(arg => arg.Type));
+            if (ctor is null)
+                throw new MissingMethodException($"Constructor for type {type.FullName} doesn't exist");
+            else
+                return Expression.New(ctor, args);
+        }
 
         public static TryBuilder Try(this Expression expression, ExpressionBuilder parent = null)
             => new TryBuilder(expression, parent, false);
@@ -214,11 +228,8 @@ namespace DotNext.Metaprogramming
         public static Expression With(this Expression expression, Action<WithBlockBuilder> scope, ExpressionBuilder parent = null)
             => ExpressionBuilder.Build<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, parent), scope);
 
-        public static TryExpression Using(this Expression expression, Action<UsingBlockBuilder> scope, ExpressionBuilder parent)
-            => ExpressionBuilder.Build<TryExpression, UsingBlockBuilder>(new UsingBlockBuilder(expression, parent), scope);
-
-        public static TryExpression Using(this ParameterExpression expression, Action<UsingBlockBuilder> scope, ExpressionBuilder parent = null)
-            => expression.Upcast<Expression, ParameterExpression>().Using(scope, parent);
+        public static Expression Using(this Expression expression, Action<UsingBlockBuilder> scope, ExpressionBuilder parent = null)
+            => ExpressionBuilder.Build<Expression, UsingBlockBuilder>(new UsingBlockBuilder(expression, parent), scope);
 
         public static SwitchBuilder Switch(this Expression switchValue, ExpressionBuilder parent = null)
             => new SwitchBuilder(switchValue, parent, false);

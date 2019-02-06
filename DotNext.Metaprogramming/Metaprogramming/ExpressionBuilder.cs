@@ -73,6 +73,7 @@ namespace DotNext.Metaprogramming
             where B: IExpressionBuilder<E>
             => AddStatement(Build<E, B>(builder, body));
 
+        public Expression Nop() => AddStatement(Expression.Empty());
         
         public BinaryExpression Assign(ParameterExpression variable, UniversalExpression value)
             => AddStatement(Expression.Assign(variable, value));
@@ -206,8 +207,8 @@ namespace DotNext.Metaprogramming
         public Expression With(UniversalExpression expression, Action<WithBlockBuilder> scope)
             => AddStatement<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, this), scope);
 
-        public TryExpression Using(UniversalExpression expression, Action<UsingBlockBuilder> scope)
-            => AddStatement<TryExpression, UsingBlockBuilder>(new UsingBlockBuilder(expression, this), scope);
+        public Expression Using(UniversalExpression expression, Action<UsingBlockBuilder> scope)
+            => AddStatement<Expression, UsingBlockBuilder>(new UsingBlockBuilder(expression, this), scope);
 
         public SwitchBuilder Switch(UniversalExpression switchValue)
             => new SwitchBuilder(switchValue, this, true);

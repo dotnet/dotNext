@@ -288,17 +288,10 @@ namespace DotNext
         public static D ChangeType<D>(this Delegate d)
             where D : Delegate
             => d.Method.CreateDelegate<D>(d.Target);
+        
 
-        public static Func<I, O> AsFunc<I, O>(this Converter<I, O> converter)
-            => converter.ChangeType<Func<I, O>>();
-
-        public static Converter<I, O> AsConverter<I, O>(this Func<I, O> function)
-            => function.ChangeType<Converter<I, O>>();
-
-        public static Func<T, bool> AsFunc<T>(this Predicate<T> predicate)
-            => predicate.ChangeType<Func<T, bool>>();
-
-        public static Predicate<T> AsPredicate<T>(this Func<T, bool> predicate)
-            => predicate.ChangeType<Predicate<T>>();
+        internal static O Identity<I, O>(I input)
+            where I : O
+            => input;
     }
 }

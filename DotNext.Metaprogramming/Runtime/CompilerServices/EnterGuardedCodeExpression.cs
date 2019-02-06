@@ -17,6 +17,6 @@ namespace DotNext.Runtime.CompilerServices
         public override Expression Reduce() => Empty();
 
         internal override Expression Reduce(ParameterExpression stateMachine)
-            => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.EnterGuardedCode), StateId.AsConst());
+            => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.EnterGuardedCode), StateId);
     }
 }

@@ -12,9 +12,14 @@ namespace DotNext.Runtime.CompilerServices
         {
         }
 
+        internal ExitGuardedCodeExpression(StatePlaceholderExpression placeholder)
+            : base(placeholder)
+        {
+        }
+
         public override Type Type => typeof(void);
         public override Expression Reduce() => Empty();
         internal override Expression Reduce(ParameterExpression stateMachine)
-            => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.ExitGuardedCode), StateId.AsConst());
+            => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.ExitGuardedCode), StateId);
     }
 }

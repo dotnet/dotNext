@@ -59,7 +59,7 @@ namespace DotNext.Metaprogramming
         {
             if (body.Type != taskType)
             {
-                var defaultResult = taskType == typeof(Task) ? new AsyncResultExpression() : new AsyncResultExpression(ReturnType.Default());
+                var defaultResult = taskType == typeof(Task) ? new AsyncResultExpression() : new AsyncResultExpression(ReturnType.AsDefault());
                 body = body.AddEpilogue(true, defaultResult);
             }
             Expression<D> lambda;

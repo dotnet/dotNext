@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -8,6 +9,13 @@ namespace DotNext.Runtime.CompilerServices
     internal class ExpressionAttributes
     {
         private static readonly UserDataSlot<ExpressionAttributes> AttributesSlot = UserDataSlot<ExpressionAttributes>.Allocate();
+
+        private readonly HashSet<LabelTarget> labels = new HashSet<LabelTarget>();
+
+        /// <summary>
+        /// A set of labels owner by expression.
+        /// </summary>
+        internal ISet<LabelTarget> Labels => labels;
 
         /// <summary>
         /// Indicates that expression contains await expression.
@@ -23,6 +31,6 @@ namespace DotNext.Runtime.CompilerServices
             => node.GetUserData().Set(AttributesSlot, this);
 
         internal static ExpressionAttributes Get(Expression node)
-            => node.GetUserData().Get(AttributesSlot);
+            => node is null ? null : node.GetUserData().Get(AttributesSlot);
     }
 }

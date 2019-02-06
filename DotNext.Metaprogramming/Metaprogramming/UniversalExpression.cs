@@ -150,6 +150,8 @@ namespace DotNext.Metaprogramming
 
         public UniversalExpression ElementAt(params UniversalExpression[] indexes) => expression.ElementAt(AsExpressions(indexes));
 
+        public UniversalExpression ArrayLength() => expression.ArrayLength();
+
         public UniversalExpression Call(MethodInfo method, params UniversalExpression[] arguments) => expression.Call(method, AsExpressions(arguments));
 
         public UniversalExpression Call(string methodName, params UniversalExpression[] arguments) => expression.Call(methodName, AsExpressions(arguments));

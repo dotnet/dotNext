@@ -27,7 +27,7 @@ namespace DotNext.Runtime.CompilerServices
 
         internal new TryExpression Content => (TryExpression)base.Content;
 
-        internal Expression InlineFinally(ExpressionVisitor visitor, uint leavingState)
+        internal Expression InlineFinally(ExpressionVisitor visitor, StatePlaceholderExpression leavingState)
         {
             var finallyCode = Content.Finally;
             finallyCode = finallyCode is null ?

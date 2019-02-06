@@ -7,13 +7,15 @@ namespace DotNext.Runtime.CompilerServices
     using static Reflection.Types;
     using static Metaprogramming.Expressions;
 
-    internal sealed class MoveNextExpression: TransitionExpression
+    internal sealed class MoveNextExpression : TransitionExpression
     {
+        private new readonly uint StateId;
         private readonly Expression awaiter;
 
         internal MoveNextExpression(Expression awaiter, uint stateId)
             : base(stateId)
         {
+            StateId = stateId;
             this.awaiter = awaiter;
         }
 
@@ -29,7 +31,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
             var moveNext = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.MoveNext), PublicInstance, 1, null, typeof(uint)).MakeGenericMethod(awaiter.Type);
-            return stateMachine.Call(moveNext, awaiter, StateId.AsConst());
+            return stateMachine.Call(moveNext, awaiter, base.StateId);
         }
     }
 }

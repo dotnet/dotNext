@@ -121,6 +121,10 @@ namespace DotNext
             return storage is null ? defaultValue : storage.Get(slot, defaultValue);
         }
 
+        public V GetOrSet<V>(UserDataSlot<V> slot)
+            where V : new()
+            => GetOrSet(slot, Activator.CreateInstance<V>);
+
         public V GetOrSet<V>(UserDataSlot<V> slot, Func<V> valueFactory)
             => GetStorage(true).GetOrSet(slot, valueFactory);
 

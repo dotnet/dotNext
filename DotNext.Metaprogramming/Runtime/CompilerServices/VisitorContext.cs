@@ -4,14 +4,24 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
+    using static Collections.Generic.Collections;
     using AwaitExpression = Metaprogramming.AwaitExpression;
 
     internal sealed class VisitorContext : Disposable
     {
-        private readonly Stack<ExpressionAttributes> attributes = new Stack<ExpressionAttributes>();
-        private readonly Stack<Statement> statements = new Stack<Statement>();
-        private uint stateId = AsyncStateMachine<ValueTuple>.FINAL_STATE;
-        private uint previousStateId = AsyncStateMachine<ValueTuple>.FINAL_STATE;
+        private static readonly UserDataSlot<StatePlaceholderExpression> StateIdPlaceholder = UserDataSlot<StatePlaceholderExpression>.Allocate();
+        private readonly Stack<ExpressionAttributes> attributes;
+        private readonly Stack<Statement> statements;
+        private uint stateId;
+        private uint previousStateId;
+
+        internal VisitorContext(out LabelTarget asyncMethodEnd)
+        {
+            asyncMethodEnd = Expression.Label("end_async_method");
+            attributes = new Stack<ExpressionAttributes>();
+            statements = new Stack<Statement>();
+            asyncMethodEnd.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId = previousStateId = AsyncStateMachine<ValueTuple>.FINAL_STATE;
+        }
 
         internal Statement CurrentStatement => statements.Peek();
 
@@ -36,6 +46,19 @@ namespace DotNext.Runtime.CompilerServices
 
         internal bool IsInFinally => !(FindStatement<FinallyStatement>() is null);
 
+        internal bool HasAwait
+        {
+            get
+            {
+                foreach (var attr in attributes)
+                    if (ReferenceEquals(ExpressionAttributes.Get(CurrentStatement), attr))
+                        break;
+                    else if (attr.ContainsAwait)
+                        return true;
+                return false;
+            }
+        }
+
         internal ParameterExpression ExceptionHolder => FindStatement<CatchStatement>()?.ExceptionVar;
 
         private void ContainsAwait()
@@ -45,6 +68,14 @@ namespace DotNext.Runtime.CompilerServices
                     return;
                 else
                     attr.ContainsAwait = true;
+        }
+
+        private void AttachLabel(LabelTarget target)
+        {
+            if (target is null)
+                return;
+            ExpressionAttributes.Get(CurrentStatement).Labels.Add(target);
+            target.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId;
         }
 
         internal O Rewrite<I, O, A>(I expression, Converter<I, O> rewriter, Action<A> initializer = null)
@@ -57,15 +88,26 @@ namespace DotNext.Runtime.CompilerServices
             attr.AttachTo(expression);
 
             var isStatement = false;
-            if (expression is Statement statement)
+            switch (expression)
             {
-                statements.Push(statement);
-                isStatement = true;
-            }
-            else if (expression is AwaitExpression)
-            {
-                attr.ContainsAwait = true;
-                ContainsAwait();
+                case LabelExpression label:
+                    AttachLabel(label.Target);
+                    break;
+                case GotoExpression @goto:
+                    @goto.Target.GetUserData().GetOrSet(StateIdPlaceholder);
+                    break;
+                case LoopExpression loop:
+                    AttachLabel(loop.ContinueLabel);
+                    AttachLabel(loop.BreakLabel);
+                    break;
+                case Statement statement:
+                    statements.Push(statement);
+                    isStatement = true;
+                    break;
+                case AwaitExpression await:
+                    attr.ContainsAwait = true;
+                    ContainsAwait();
+                    break;
             }
             attributes.Push(attr);
             var result = rewriter(expression);
@@ -85,18 +127,24 @@ namespace DotNext.Runtime.CompilerServices
 
         internal Expression Rewrite(TryExpression expression, IDictionary<uint, StateTransition> transitionTable, Converter<TryCatchFinallyStatement, Expression> rewriter)
         {
+            var previousStateId = this.previousStateId;
             var statement = new TryCatchFinallyStatement(expression, transitionTable, previousStateId, ref stateId);
-            return Rewrite(statement, rewriter);
+            return Rewrite<TryCatchFinallyStatement, Expression, ExpressionAttributes>(statement, rewriter, attributes => attributes.StateId = previousStateId);
         }
 
-        internal IEnumerable<Expression> FinalizationCode(ExpressionVisitor visitor)
+        internal IReadOnlyCollection<Expression> CreateJumpPrologue(GotoExpression @goto, ExpressionVisitor visitor)
         {
+            var state = @goto.Target.GetUserData().GetOrSet(StateIdPlaceholder);
+            var result = new LinkedList<Expression>();
             //iterate through snapshot of statements because collection can be modified
-            var statements = new Stack<Statement>(this.statements);
+            var statements = this.statements.Clone();
             foreach (var lookup in statements)
-                if (lookup is TryCatchFinallyStatement statement)
-                    yield return statement.InlineFinally(visitor, 0);
+                if (ExpressionAttributes.Get(lookup).Labels.Contains(@goto.Target))
+                    break;
+                else if (lookup is TryCatchFinallyStatement statement)
+                    result.AddLast(statement.InlineFinally(visitor, state));
             statements.Clear();
+            return result;
         }
 
         protected override void Dispose(bool disposing)

@@ -22,5 +22,13 @@ namespace DotNext.Collections.Generic
 
         public static void AddAll<T>(this ICollection<T> collection, IEnumerable<T> items)
             => items.ForEach(collection.Add);
+
+        public static Stack<T> Clone<T>(this Stack<T> original)
+        {
+            var arr = new T[original.Count];
+            original.CopyTo(arr, 0);
+            Array.Reverse(arr);
+            return new Stack<T>(arr);
+        }
     }
 }
