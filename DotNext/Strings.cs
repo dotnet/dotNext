@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 
 namespace DotNext
@@ -9,11 +8,6 @@ namespace DotNext
 	/// </summary>
 	public static class Strings
     {
-		private sealed class RNGNextInt
-		{
-
-		}
-
 		/// <summary>
 		/// Returns alternative string if first string argument 
 		/// is <see langword="null"/> or empty.
