@@ -144,14 +144,14 @@ namespace DotNext.Reflection
 		public V Value
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => GetMethod is null ? throw new InvalidOperationException($"Property {Name} has no getter") : GetMethod.Invoke();
+			get => GetMethod is null ? throw new InvalidOperationException(ExceptionMessages.PropertyWithoutGetter(Name)) : GetMethod.Invoke();
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
-				if (SetMethod is null)
-					throw new InvalidOperationException($"Property {Name} has no setter");
-				else
-					SetMethod.Invoke(value);
+                if (SetMethod is null)
+                    throw new InvalidOperationException(ExceptionMessages.PropertyWithoutSetter(Name));
+                else
+                    SetMethod.Invoke(value);
 			}
 		}
 
@@ -255,12 +255,12 @@ namespace DotNext.Reflection
 		public V this[in T owner]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => GetMethod is null ? throw new InvalidOperationException($"Property {Name} has no getter") : GetMethod.Invoke(owner);
+			get => GetMethod is null ? throw new InvalidOperationException(ExceptionMessages.PropertyWithoutGetter(Name)) : GetMethod.Invoke(owner);
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
 				if (SetMethod is null)
-					throw new InvalidOperationException($"Property {Name} has no setter");
+					throw new InvalidOperationException(ExceptionMessages.PropertyWithoutSetter(Name));
 				else
                     SetMethod.Invoke(owner, value);
 			}

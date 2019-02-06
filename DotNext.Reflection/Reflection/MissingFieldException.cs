@@ -8,7 +8,7 @@ namespace DotNext.Reflection
 	public sealed class MissingFieldException : ConstraintViolationException
 	{
 		private MissingFieldException(Type declaringType, string fieldName, Type fieldType)
-			: base(declaringType, $"Field {fieldName} of type {fieldType.FullName} doesn't exist in type {declaringType.FullName}")
+			: base(declaringType, ExceptionMessages.MissingField(fieldName, fieldType, declaringType))
 		{
 			FieldType = fieldType;
 			FieldName = fieldName;

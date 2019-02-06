@@ -9,7 +9,7 @@ namespace DotNext.Reflection
     public sealed class MissingMethodException: ConstraintViolationException
     {
         public MissingMethodException(Type declaringType, string methodName, Type returnType, params Type[] parameters)
-            : base(declaringType, $"Method {methodName} with parameters [{parameters.ToString(",")}] and return type {returnType} doesn't exist in type {declaringType}")
+            : base(declaringType, ExceptionMessages.MissingMethod(methodName, parameters, returnType, declaringType))
         {
             MethodName = methodName;
             ReturnType = returnType;

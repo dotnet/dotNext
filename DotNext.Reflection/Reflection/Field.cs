@@ -157,18 +157,18 @@ namespace DotNext.Reflection
         }
 
         public override object GetValue(object obj)
-            => obj is T instance ? this[instance]: throw new ArgumentException($"Object {obj} must be of type {typeof(T)}");
+            => obj is T instance ? this[instance] : throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(obj, typeof(T)));
 
         public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
         {
-            if(IsInitOnly)
-                new InvalidOperationException($"Field {Name} is read-only");
-            else if(!(obj is T))
-                throw new ArgumentException($"Object {obj} must be of type {typeof(T)}");
-            else if(value is null)
-                this[(T)obj] = FieldType.IsValueType ? throw new ArgumentException("Field value cannot be null") : default(V);
-            else if(!(value is V))
-                throw new ArgumentException($"Value {value} must be of type {typeof(V)}");
+            if (IsInitOnly)
+                new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
+            else if (!(obj is T))
+                throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(obj, typeof(T)));
+            else if (value is null)
+                this[(T)obj] = FieldType.IsValueType ? throw new ArgumentException(ExceptionMessages.NullFieldValue) : default(V);
+            else if (!(value is V))
+                throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(value, typeof(V)));
             else
                 this[(T)obj] = (V)value;
         }
@@ -184,8 +184,8 @@ namespace DotNext.Reflection
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
-                if(setter is null)
-                    new InvalidOperationException($"Field {Name} is read-only");
+                if (setter is null)
+                    new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
                 else
                     setter(@this, value);
             }
@@ -251,12 +251,12 @@ namespace DotNext.Reflection
 
         public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
         {
-            if(IsInitOnly)
-                throw new InvalidOperationException($"Field {Name} is read-only");
-            else if(value is null)
-                Value = FieldType.IsValueType ? throw new ArgumentException("Field value cannot be null") : default(V);
-            else if(!(value is V))
-                throw new ArgumentException($"Value {value} must be of type {typeof(V)}");
+            if (IsInitOnly)
+                throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
+            else if (value is null)
+                Value = FieldType.IsValueType ? throw new ArgumentException(ExceptionMessages.NullFieldValue) : default(V);
+            else if (!(value is V))
+                throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(value, typeof(V)));
             else
                 Value = (V)value;
         }
@@ -272,7 +272,7 @@ namespace DotNext.Reflection
             set
             {
                 if(setter is null)
-                    throw new InvalidOperationException($"Field {Name} is read-only");
+                    throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
                 else
                     setter(value);
             }

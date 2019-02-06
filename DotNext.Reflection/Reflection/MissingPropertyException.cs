@@ -8,7 +8,7 @@ namespace DotNext.Reflection
 	public sealed class MissingPropertyException : ConstraintViolationException
 	{
 		private MissingPropertyException(Type declaringType, string propertyName, Type propertyType)
-			: base(declaringType, $"Property {propertyName} of type {propertyType.FullName} doesn't exist in type {declaringType.FullName}")
+			: base(declaringType, ExceptionMessages.MissingProperty(propertyName, propertyType, declaringType))
 		{
 			PropertyType = propertyType;
 			PropertyName = propertyName;

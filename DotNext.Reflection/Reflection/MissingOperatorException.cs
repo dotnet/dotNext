@@ -9,7 +9,7 @@ namespace DotNext.Reflection
     public sealed class MissingOperatorException: ConstraintViolationException
     {
         public MissingOperatorException(Type target, ExpressionType @operator)
-            : base(target, $"Operator {@operator} doesn't exist in type {target}")
+            : base(target, ExceptionMessages.MissingOperator(@operator))
         {
         }
 

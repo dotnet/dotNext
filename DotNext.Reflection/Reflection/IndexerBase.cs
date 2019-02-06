@@ -139,14 +139,14 @@ namespace DotNext.Reflection
 		public V this[in A arguments]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => GetMethod is null ? throw new InvalidOperationException($"Property {Name} has no getter") : GetMethod.Upcast<IMember<MethodInfo, Getter>, Method<Getter>>().Invoker(arguments);
+			get => GetMethod is null ? throw new InvalidOperationException(ExceptionMessages.PropertyWithoutGetter(Name)) : GetMethod.Upcast<IMember<MethodInfo, Getter>, Method<Getter>>().Invoker(arguments);
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
-				if (SetMethod is null)
-					throw new InvalidOperationException($"Property {Name} has no setter");
-				else
-					SetMethod.Upcast<IMember<MethodInfo, Setter>, Method<Setter>>().Invoker(arguments, value);
+                if (SetMethod is null)
+                    throw new InvalidOperationException(ExceptionMessages.PropertyWithoutSetter(Name));
+                else
+                    SetMethod.Upcast<IMember<MethodInfo, Setter>, Method<Setter>>().Invoker(arguments, value);
 			}
 		}
 
@@ -227,12 +227,12 @@ namespace DotNext.Reflection
 		public V this[in T instance, in A arguments]
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => GetMethod is null ? throw new InvalidOperationException($"Property {Name} has no getter") : GetMethod.Upcast<IMember<MethodInfo, Getter>, Method<Getter>>().Invoker(instance, arguments);
+			get => GetMethod is null ? throw new InvalidOperationException(ExceptionMessages.PropertyWithoutGetter(Name)) : GetMethod.Upcast<IMember<MethodInfo, Getter>, Method<Getter>>().Invoker(instance, arguments);
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
 				if (SetMethod is null)
-					throw new InvalidOperationException($"Property {Name} has no setter");
+					throw new InvalidOperationException(ExceptionMessages.PropertyWithoutSetter(Name));
 				else
 					SetMethod.Upcast<IMember<MethodInfo, Setter>, Method<Setter>>().Invoker(instance, arguments, value);
 			}

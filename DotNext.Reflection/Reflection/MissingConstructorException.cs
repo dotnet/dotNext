@@ -9,7 +9,7 @@ namespace DotNext.Reflection
 	public sealed class MissingConstructorException: ConstraintViolationException
 	{
 		public MissingConstructorException(Type target, params Type[] parameters)
-			: base(target, $"Type {target.FullName} doesn't have constructor with parameters ({parameters.ToString(",")})")
+			: base(target, ExceptionMessages.MissingCtor(target, parameters))
 		{
 			Parameters = Array.AsReadOnly(parameters);
 		}

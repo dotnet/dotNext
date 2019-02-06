@@ -6,7 +6,7 @@ namespace DotNext.Reflection
 		where D: Delegate
 	{
 		internal AbstractDelegateException()
-			: base("Delegate type should not be abstract")
+			: base(ExceptionMessages.AbstractDelegate)
 		{
 		}
 	}

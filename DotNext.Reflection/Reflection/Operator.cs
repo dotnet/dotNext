@@ -46,8 +46,8 @@ namespace DotNext.Reflection
 				=> other is Kind key && Equals(key);
 			public override int GetHashCode() => overloaded ? (int)operatorType + 100: (int)operatorType;
 
-			private InvalidOperationException OperatorNotExists()
-				=> new InvalidOperationException($"Operator {operatorType} doesn't exist");
+            private InvalidOperationException OperatorNotExists()
+                => new InvalidOperationException(ExceptionMessages.MissingOperator(operatorType));
 
 			internal UnaryExpression MakeUnary<R>(in Operand operand)
 			{

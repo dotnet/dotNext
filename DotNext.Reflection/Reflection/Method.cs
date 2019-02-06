@@ -183,7 +183,7 @@ namespace DotNext.Reflection
 			else
 			{
 				Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
-				thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException("Delegate type should have THIS parameter");
+                thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
 				return ReflectInstance(thisParam, parameters.RemoveFirst(1), returnType, methodName, nonPublic);
 			}
         }
@@ -275,7 +275,7 @@ namespace DotNext.Reflection
             else
             {
                 Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, m => m.ReturnType, out var parameters, out returnType);
-                thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException("Delegate type should have THIS parameter");
+                thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
                 parameters = parameters.RemoveFirst(1);
 				if (method.SignatureEquals(parameters) && method.ReturnType == returnType)
 					if (thisParam.IsByRef ^ method.DeclaringType.IsValueType)

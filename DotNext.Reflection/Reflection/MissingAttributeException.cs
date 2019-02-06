@@ -8,7 +8,7 @@ namespace DotNext.Reflection
 	public sealed class MissingAttributeException : ConstraintViolationException
 	{
 		public MissingAttributeException(Type target, Type attributeType)
-			: base(target, $"Attribute {attributeType.FullName} is not defined for type {target.FullName}")
+			: base(target, ExceptionMessages.MissingAttribute(attributeType, target))
 		{
 			AttributeType = attributeType;
 		}

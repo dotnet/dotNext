@@ -137,6 +137,6 @@ namespace DotNext.Reflection
         /// <typeparam name="U">Type of value to convert.</typeparam>
         /// <returns>Converted value.</returns>
         /// <exception cref="InvalidCastException">Cannot convert values.</exception>
-        public static T Convert<U>(U value) => TryConvert<U>(value).OrThrow<InvalidCastException>();
+        public static T Convert<U>(U value) => TryConvert(value).OrThrow<InvalidCastException>();
     }
 }
