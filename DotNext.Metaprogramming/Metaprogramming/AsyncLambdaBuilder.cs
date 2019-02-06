@@ -27,7 +27,7 @@ namespace DotNext.Metaprogramming
             : base(parent)
         {
             if (typeof(D).IsAbstract)
-                throw new GenericArgumentException<D>("Delegate type should not be abstract", nameof(D));
+                throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
             var invokeMethod = Delegates.GetInvokeMethod<D>();
             taskType = invokeMethod.ReturnType;
             Parameters = GetParameters(invokeMethod.GetParameters());
@@ -45,7 +45,7 @@ namespace DotNext.Metaprogramming
             }
         }
 
-        public override Type ReturnType => taskType.GetTaskType() ?? throw new GenericArgumentException<D>("Delegate should return Task or Task<R>", nameof(D));
+        public override Type ReturnType => taskType.GetTaskType() ?? throw new GenericArgumentException<D>(ExceptionMessages.TaskTypeExpected, nameof(D));
 
         public override IReadOnlyList<ParameterExpression> Parameters { get; }
 

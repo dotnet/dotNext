@@ -20,13 +20,10 @@ namespace DotNext.Metaprogramming
             //expression type must have type with GetAwaiter() method
             const BindingFlags PublicInstanceMethod = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
             var getAwaiter = expression.Type.GetMethod(nameof(Task.GetAwaiter), PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
-            if (getAwaiter is null)
-                throw new ArgumentException($"Type {expression.Type.FullName} should have GetAwaiter() instance public method");
-            else
-                GetAwaiter = expression.Call(getAwaiter);
+            GetAwaiter = expression.Call(getAwaiter ?? throw new ArgumentException(ExceptionMessages.MissingGetAwaiterMethod(expression.Type)));
             GetResultMethod = GetAwaiter.Type.GetMethod(nameof(TaskAwaiter.GetResult), PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
             if (GetResultMethod is null)
-                throw new ArgumentException($"Method {getAwaiter.DeclaringType.FullName + ':' + getAwaiter.Name} returns invalid awaiter pattern");
+                throw new ArgumentException(ExceptionMessages.MissingGetResultMethod(GetAwaiter.Type));
         }
 
         internal ParameterExpression NewAwaiterHolder()

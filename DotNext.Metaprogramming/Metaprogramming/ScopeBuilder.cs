@@ -32,7 +32,7 @@ namespace DotNext.Metaprogramming
         public GotoExpression Break(LoopBuilderBase loop)
             => AddStatement(loop.Break(false));
 
-        private LambdaBuilder FindLambda() => FindScope<LambdaBuilder>() ?? throw new InvalidOperationException("Method can be called from within lambda expression only");
+        private LambdaBuilder FindLambda() => FindScope<LambdaBuilder>() ?? throw new InvalidOperationException(ExceptionMessages.CallFromLambdaExpected);
 
         /// <summary>
         /// Returns from underlying lambda expression.

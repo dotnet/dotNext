@@ -22,7 +22,7 @@ namespace DotNext.Metaprogramming
             {
                 getEnumerator = collection.Call(GetEnumeratorMethod);
                 if (getEnumerator is null)
-                    throw new ArgumentException("Collection expression doesn't implement IEnumerable interface or GetEnumerator method");
+                    throw new ArgumentException(ExceptionMessages.EnumerablePatternExpected);
                 enumerator = Parent.DeclareVariable(getEnumerator.Method.ReturnType, NextName("enumerator_"));
                 moveNextCall = enumerator.Call(nameof(IEnumerator.MoveNext));
             }

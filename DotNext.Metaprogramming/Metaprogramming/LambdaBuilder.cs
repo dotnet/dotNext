@@ -67,7 +67,7 @@ namespace DotNext.Metaprogramming
             : base(parent)
         {
             if (typeof(D).IsAbstract)
-                throw new GenericArgumentException<D>("Delegate type should not be abstract", nameof(D));
+                throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
             var invokeMethod = Delegates.GetInvokeMethod<D>();
             Parameters = GetParameters(invokeMethod.GetParameters());
             ReturnType = invokeMethod.ReturnType;

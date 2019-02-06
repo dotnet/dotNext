@@ -18,7 +18,7 @@ namespace DotNext.Metaprogramming
         {
             disposeMethod = expression.Type.GetDisposeMethod();
             if (disposeMethod is null)
-                throw new ArgumentNullException($"Type {expression.Type.FullName} doesn't implement Dispose pattern");
+                throw new ArgumentNullException(ExceptionMessages.DisposePatternExpected(expression.Type));
             else if (expression is ParameterExpression variable)
                 disposableVar = variable;
             else

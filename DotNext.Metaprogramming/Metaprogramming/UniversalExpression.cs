@@ -31,7 +31,7 @@ namespace DotNext.Metaprogramming
         public static implicit operator Expression(UniversalExpression view) => view.expression ?? Expression.Empty();
 
         public static implicit operator ParameterExpression(UniversalExpression view) 
-            => view.expression is ParameterExpression parameter ? parameter : throw new InvalidCastException("Parameter expression expected");
+            => view.expression is ParameterExpression parameter ? parameter : throw new InvalidCastException(ExceptionMessages.ParameterExpected);
 
         public static implicit operator UniversalExpression(Expression expr) => new UniversalExpression(expr);
 

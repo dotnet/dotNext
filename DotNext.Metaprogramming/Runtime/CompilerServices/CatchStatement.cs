@@ -22,7 +22,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             var filter = visitor.Visit(this.filter);
             if (ExpressionAttributes.Get(filter)?.ContainsAwait ?? false)
-                throw new NotSupportedException("Filter of catch block cannot contain await expressions");
+                throw new NotSupportedException(ExceptionMessages.FilterHasAwait);
             var handler = visitor.Visit(Content);
             handler = handler.AddPrologue(false, prologue).AddEpilogue(false, epilogue).AddEpilogue(false, FaultLabel.Goto());
             return IfThen(filter, handler);

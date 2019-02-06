@@ -96,7 +96,7 @@ namespace DotNext
         private readonly object owner;
 
         internal UserDataStorage(object owner)
-            => this.owner = owner;
+            => this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
         private BackingStorage GetStorage(bool createIfNeeded)
         {

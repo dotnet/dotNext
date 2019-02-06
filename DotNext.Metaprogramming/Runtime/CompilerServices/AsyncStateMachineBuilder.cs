@@ -45,7 +45,7 @@ namespace DotNext.Runtime.CompilerServices
         internal AsyncStateMachineBuilder(Type returnType, IReadOnlyList<ParameterExpression> parameters)
         {
             if (returnType is null)
-                throw new ArgumentException("Invalid return type of async method");
+                throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
             AsyncReturnType = returnType;
             Variables = new Dictionary<ParameterExpression, MemberExpression>(new VariableEqualityComparer());
             for (var position = 0; position < parameters.Count; position++)
@@ -100,7 +100,7 @@ namespace DotNext.Runtime.CompilerServices
                 return context.Rewrite(node, base.VisitConditional);
             }
             else if (node.IfTrue is BlockExpression && node.IfFalse is BlockExpression)
-                throw new NotSupportedException("A branch of conditional expression is invalid");
+                throw new NotSupportedException(ExceptionMessages.UnsupportedConditionalExpr);
             else
             {
                 /*
@@ -133,7 +133,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         protected override Expression VisitLabel(LabelExpression node)
-            => node.Type == typeof(void) ? context.Rewrite(node, Converter.Identity<LabelExpression>()) : throw new NotSupportedException("Label should be of type Void");
+            => node.Type == typeof(void) ? context.Rewrite(node, Converter.Identity<LabelExpression>()) : throw new NotSupportedException(ExceptionMessages.VoidLabelExpected);
 
         protected override Expression VisitLambda<T>(Expression<T> node)
             => context.Rewrite(node, base.VisitLambda);
@@ -152,7 +152,7 @@ namespace DotNext.Runtime.CompilerServices
                 return context.Rewrite(node, base.VisitSwitch);
             }
             else
-                throw new NotSupportedException("Switch-case expression must of type Void");
+                throw new NotSupportedException(ExceptionMessages.VoidSwitchExpected);
         }
 
         protected override Expression VisitGoto(GotoExpression node)
@@ -211,7 +211,7 @@ namespace DotNext.Runtime.CompilerServices
         private Expression VisitAsyncResult(AsyncResultExpression expr)
         {
             if (context.IsInFinally)
-                throw new InvalidOperationException("Control cannot leave the body of a finally clause");
+                throw new InvalidOperationException(ExceptionMessages.LeavingFinallyClause);
             //attach all available finalization code
             var prologue = context.CurrentStatement.PrologueCodeInserter();
             foreach (var finalization in context.CreateJumpPrologue(AsyncMethodEnd.Goto(), this))
@@ -372,7 +372,7 @@ namespace DotNext.Runtime.CompilerServices
                 return context.Rewrite(node, base.VisitLoop);
             }
             else
-                throw new NotSupportedException("Loop expression should be of type Void");
+                throw new NotSupportedException(ExceptionMessages.VoidLoopExpected);
         }
 
         protected override Expression VisitDynamic(DynamicExpression node)
