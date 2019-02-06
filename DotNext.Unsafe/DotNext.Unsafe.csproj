@@ -17,10 +17,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Runtime\InteropServices\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
   </ItemGroup>
 

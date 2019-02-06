@@ -1,6 +1,6 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Threading.Tasks;
@@ -17,7 +17,7 @@ namespace DotNext.Runtime.InteropServices
 	/// Therefore, it's developer responsibility to release unmanaged memory using <see cref="IDisposable.Dispose"/> call.
     /// </remarks>
 	/// <typeparam name="T">Array element type.</typeparam>
-	public unsafe struct UnmanagedArray<T> : IUnmanagedMemory<T>, IEquatable<UnmanagedArray<T>>
+	public unsafe struct UnmanagedArray<T> : IUnmanagedMemory<T>, IEquatable<UnmanagedArray<T>>, IEnumerable<T>
 		where T : unmanaged
 	{
 		/// <summary>
@@ -280,7 +280,7 @@ namespace DotNext.Runtime.InteropServices
 		public bool BitwiseEquals(Pointer<T> other)
 			=> pointer.BitwiseEquals(other, Length);
 
-		public bool BitwiseEquals(in UnmanagedArray<T> other) => BitwiseEquals(other.pointer);
+		public bool BitwiseEquals(in UnmanagedArray<T> other) => Length == other.Length && BitwiseEquals(other.pointer);
 
 		public bool BitwiseEquals(T[] other)
 		{
@@ -298,7 +298,11 @@ namespace DotNext.Runtime.InteropServices
 
 		public int BitwiseCompare(Pointer<T> other) => pointer.BitwiseCompare(other, Length);
 
-		public int BitwiseCompare(in UnmanagedArray<T> other) => BitwiseCompare(other.pointer);
+		public int BitwiseCompare(in UnmanagedArray<T> other)
+        {
+            var cmp = Length.CompareTo(other.Length);
+            return cmp == 0 ? BitwiseCompare(other.pointer) : cmp;
+        }
 
 		public int BitwiseCompare(T[] other)
 		{
@@ -389,6 +393,12 @@ namespace DotNext.Runtime.InteropServices
 			else
 				return Length.CompareTo(other.Length);
 		}
+
+        public Pointer<T>.Enumerator GetEnumerator() => pointer.GetEnumerator(Length);
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 		public override int GetHashCode() => new IntPtr(pointer).ToInt32();
 

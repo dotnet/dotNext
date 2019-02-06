@@ -6,6 +6,14 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
@@ -17,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" />
     <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" />
+    <ProjectReference Include="..\DotNext.Unsafe\DotNext.Unsafe.csproj" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
     <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />
   </ItemGroup>

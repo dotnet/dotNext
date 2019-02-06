@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.IO;
+using System.Collections;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -19,6 +20,51 @@ namespace DotNext.Runtime.InteropServices
         where T: unmanaged
     {
         /// <summary>
+        /// Represents enumerator over raw memory.
+        /// </summary>
+        public struct Enumerator: IEnumerator<T>
+        {
+            private readonly long count;
+            private long index;
+            private readonly Pointer<T> ptr;
+            
+            object IEnumerator.Current => Current;
+
+            internal Enumerator(Pointer<T> ptr, long count)
+            {
+                this.count = count;
+                this.ptr = ptr;
+                index = -1L;
+            }
+
+            /// <summary>
+            /// Pointer to the currently enumerating element.
+            /// </summary>
+            public Pointer<T> Pointer => ptr + index; 
+
+            /// <summary>
+            /// Current element.
+            /// </summary>
+            public T Current => Pointer.Read(MemoryAccess.Default);
+            
+            /// <summary>
+            /// Adjust pointer.
+            /// </summary>
+            /// <returns><see langword="true"/>, if next element is available; <see langword="false"/>, if end of sequence reached.</returns>
+            public bool MoveNext()
+            {
+                index += 1L;
+                return index < count;
+            }
+
+            public void Reset() => index = -1L;
+
+            void IDisposable.Dispose()
+            {
+            }
+        }
+
+        /// <summary>
         /// Represents zero pointer.
         /// </summary>
         public static Pointer<T> Null => new Pointer<T>(IntPtr.Zero);
@@ -31,10 +77,10 @@ namespace DotNext.Runtime.InteropServices
         private readonly T* value;
 
         [CLSCompliant(false)]
-        public Pointer(T* ptr) => this.value = ptr;
+        public Pointer(T* ptr) => value = ptr;
 
         [CLSCompliant(false)]
-        public Pointer(void* ptr) => this.value = (T*)ptr;
+        public Pointer(void* ptr) => value = (T*)ptr;
 
         public Pointer(IntPtr ptr)
             : this(ptr.ToPointer())
@@ -48,7 +94,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         public Pointer(ref T value)
-            : this(Unsafe.AsPointer<T>(ref value))
+            : this(Unsafe.AsPointer(ref value))
         {
         }
 
@@ -102,7 +148,7 @@ namespace DotNext.Runtime.InteropServices
 				throw new ArgumentNullException(nameof(destination));
             else if (length < 0)
 				throw new IndexOutOfRangeException();
-			else if (destination.LongLength == 0L || (offset + length) >= destination.LongLength)
+			else if (destination.LongLength == 0L || (offset + length) > destination.LongLength)
 				return 0L;
 			fixed (T* dest = &destination[offset])
 				Memory.Copy(value, dest, length * Size);
@@ -137,7 +183,7 @@ namespace DotNext.Runtime.InteropServices
 				throw new ArgumentNullException(nameof(source));
             else if (length < 0L)
 				throw new IndexOutOfRangeException();
-			else if (source.LongLength == 0L || (length + offset) >= source.LongLength)
+			else if (source.LongLength == 0L || (length + offset) > source.LongLength)
 				return 0L;
 			fixed (T* src = &source[offset])
 				Memory.Copy(src, value, length * Size);
@@ -264,6 +310,13 @@ namespace DotNext.Runtime.InteropServices
                     return;
             }
         }
+
+        /// <summary>
+        /// Gets enumerator over raw memory.
+        /// </summary>
+        /// <param name="length">A number of elements to iterate.</param>
+        /// <returns>Iterator object.</returns>
+        public Enumerator GetEnumerator(long length) => new Enumerator(this, length);
 
         public bool BitwiseEquals(Pointer<T> other, int length)
         {
