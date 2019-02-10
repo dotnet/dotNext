@@ -250,7 +250,7 @@ namespace DotNext.Metaprogramming
             else if (expression is BlockExpression block)
                 return Expression.Block(inferType ? block.Type : typeof(void), block.Variables, instructions.Concat(block.Expressions));
             else
-                return Expression.Block(inferType ? expression.Type : typeof(void), instructions.Concat(Sequence.Single(expression)));
+                return Expression.Block(inferType ? expression.Type : typeof(void), instructions.Concat(Sequence.Singleton(expression)));
         }
 
         internal static Expression AddEpilogue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)
@@ -260,7 +260,7 @@ namespace DotNext.Metaprogramming
             else if (expression is BlockExpression block)
                 return Expression.Block(inferType ? block.Type : typeof(void), block.Variables, block.Expressions.Concat(instructions));
             else
-                return Expression.Block(inferType ? instructions.Last().Type : typeof(void), Sequence.Single(expression).Concat(instructions));
+                return Expression.Block(inferType ? instructions.Last().Type : typeof(void), Sequence.Singleton(expression).Concat(instructions));
         }
 
         internal static Expression AddPrologue(this Expression expression, bool inferType, params Expression[] instructions)

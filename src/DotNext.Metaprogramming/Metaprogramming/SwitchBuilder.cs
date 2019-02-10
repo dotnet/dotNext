@@ -34,10 +34,10 @@ namespace DotNext.Metaprogramming
             => Case(UniversalExpression.AsExpressions(testValues), body);
 
         public SwitchBuilder Case(UniversalExpression test, Action<ExpressionBuilder> body)
-            => Case(Sequence.Single((Expression)test), body);
+            => Case(Sequence.Singleton((Expression)test), body);
 
         public SwitchBuilder Case(UniversalExpression test, UniversalExpression body)
-            => Case(Sequence.Single(test), body);
+            => Case(Sequence.Singleton(test), body);
 
         public SwitchBuilder Default(UniversalExpression body)
         {

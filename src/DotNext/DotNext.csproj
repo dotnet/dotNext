@@ -40,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="VariantType\" />
 	<Folder Include="Generic\" />
   </ItemGroup>
 

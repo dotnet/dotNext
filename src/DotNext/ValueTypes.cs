@@ -10,6 +10,25 @@ namespace DotNext
 	/// </summary>
     public static class ValueTypes
     {
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
+        private struct BitCastConverter<I, O>
+            where I: unmanaged
+            where O: unmanaged
+        {
+            [System.Runtime.InteropServices.FieldOffset(0)]
+            internal I Input;
+            [System.Runtime.InteropServices.FieldOffset(0)]
+            internal O Output;
+        }
+
+        public static unsafe O BitCast2<I, O>(I input)
+            where I: unmanaged
+            where O: unmanaged
+        {
+            var converter = new BitCastConverter<I, O> { Input = input };
+            return converter.Output;
+        }
+
 		/// <summary>
 		/// Converts one structure into another without changing any bits.
 		/// </summary>

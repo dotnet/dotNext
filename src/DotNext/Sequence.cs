@@ -151,7 +151,7 @@ namespace DotNext
         /// <typeparam name="T">Type of element.</typeparam>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static IEnumerable<T> Single<T>(T value)
-            => new Collections.Generic.SingleList<T>(value);
+        public static IEnumerable<T> Singleton<T>(T value)
+            => new Collections.Generic.SingletonList<T>(value);
     }
 }

@@ -7,7 +7,7 @@ namespace DotNext.Runtime.CompilerServices
 {
     using static Metaprogramming.Expressions;
     using VariantType;
-    using static Collections.Generic.Collections;
+    using static Collections.Generic.Collection;
 
     /// <summary>
     /// Represents statement.

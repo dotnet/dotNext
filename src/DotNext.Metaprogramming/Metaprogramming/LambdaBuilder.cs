@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using static Collections.Generic.Collections;
+    using static Collections.Generic.Collection;
 
     /// <summary>
     /// Represents lambda expression builder.
@@ -157,7 +157,7 @@ namespace DotNext.Metaprogramming
             body = Expression.Block(locals, instructions);
             //build lambda expression
             if (!(recursion is null))
-                body = Expression.Block(Sequence.Single(recursion), 
+                body = Expression.Block(Sequence.Singleton(recursion), 
                     Expression.Assign(recursion, Expression.Lambda<D>(body, tailCall, Parameters)), 
                     Expression.Invoke(recursion, Parameters));
             return Expression.Lambda<D>(body, tailCall, Parameters);

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DotNext.Collections.Generic
 {
-    public static class Collections
+    public static class Collection
     {
         public static ReadOnlyCollectionView<T> AsReadOnlyView<T>(this ICollection<T> collection)
             => new ReadOnlyCollectionView<T>(collection);
@@ -22,13 +22,5 @@ namespace DotNext.Collections.Generic
 
         public static void AddAll<T>(this ICollection<T> collection, IEnumerable<T> items)
             => items.ForEach(collection.Add);
-
-        public static Stack<T> Clone<T>(this Stack<T> original)
-        {
-            var arr = new T[original.Count];
-            original.CopyTo(arr, 0);
-            Array.Reverse(arr);
-            return new Stack<T>(arr);
-        }
     }
 }

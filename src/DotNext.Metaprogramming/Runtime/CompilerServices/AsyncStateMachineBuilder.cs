@@ -7,8 +7,8 @@ namespace DotNext.Runtime.CompilerServices
 {
     using Metaprogramming;
     using Reflection;
-    using static Collections.Generic.Collections;
-    using static Collections.Generic.Dictionaries;
+    using static Collections.Generic.Collection;
+    using static Collections.Generic.Dictionary;
 
     /// <summary>
     /// Provides initial transformation of async method.

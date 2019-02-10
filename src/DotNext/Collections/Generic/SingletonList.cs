@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace DotNext.Collections.Generic
 {
-    public sealed class SingleList<T>: Tuple<T>, IReadOnlyList<T>
+    internal sealed class SingletonList<T>: Tuple<T>, IReadOnlyList<T>
     {
-        public struct Enumerator : IEnumerator<T>
+        internal struct Enumerator : IEnumerator<T>
         {
             private bool requested;
 
@@ -30,7 +30,7 @@ namespace DotNext.Collections.Generic
             public void Reset() => requested = false;
         }
 
-        public SingleList(T item)
+        public SingletonList(T item)
             : base(item)
         {
         }

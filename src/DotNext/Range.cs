@@ -19,24 +19,29 @@ namespace DotNext
             => value.Max(min).Min(max);
 
         /// <summary>
-        /// Restricts a <paramref name="value" /> minimal value.
+        /// Restricts a <paramref name="first" /> minimal value.
         /// </summary>
         /// <typeparam name="T">Type of the values.</typeparam>
-        /// <param name="value">Value.</param>
-        /// <param name="min">Minimal value.</param>
-        public static T Min<T> (this T value, T min) where T : IComparable<T>
-            => value.CompareTo (min) < 0 ? value : min;
+        /// <param name="first">The first value.</param>
+        /// <param name="second">The second value.</param>
+        public static T Min<T> (this T first, T second) where T : IComparable<T>
+            => first.CompareTo (second) < 0 ? first : second;
 
+        public static T Min<T>(T first, T second, Comparison<T> comparer)
+            => comparer(first, second) < 0 ? first : second;
 
 		/// <summary>
-		/// Restricts a <paramref name="value" /> maximum value.
+		/// Restricts a <paramref name="first" /> maximum value.
 		/// </summary>
 		/// <typeparam name="T">Type of the values.</typeparam>
-		/// <param name="value">Value.</param>
-		/// <param name="max">Maximum value.</param>
-		public static T Max<T>(this T value, T max)
+		/// <param name="first">The first value.</param>
+		/// <param name="second">The second value.</param>
+		public static T Max<T>(this T first, T second)
 			where T : IComparable<T>
-			=> value.CompareTo(max) > 0 ? value : max;
+			=> first.CompareTo(second) > 0 ? first : second;
+
+        public static T Max<T>(T first, T second, Comparison<T> comparer)
+            => comparer(first, second) > 0 ? first : second;
 
 		/// <summary>
 		/// Checks whether specified value is in range.

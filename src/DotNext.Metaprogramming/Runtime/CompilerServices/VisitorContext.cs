@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Collections.Generic.Collections;
+    using static Collections.Generic.Stack;
     using AwaitExpression = Metaprogramming.AwaitExpression;
 
     internal sealed class VisitorContext : Disposable

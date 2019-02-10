@@ -6,7 +6,7 @@ namespace DotNext.Collections.Generic
 	/// <summary>
 	/// Provides various extensions for <see cref="IList{T}"/> interface.
 	/// </summary>
-	public static class Lists
+	public static class List
 	{
 		/// <summary>
 		/// Converts list into array and perform mapping for each
@@ -45,5 +45,7 @@ namespace DotNext.Collections.Generic
 		public static ReadOnlyListView<T> AsReadOnlyView<T>(this IList<T> list) => new ReadOnlyListView<T>(list);
 
 		public static ReadOnlyListView<I, O> Convert<I, O>(this IReadOnlyList<I> list, Converter<I, O> converter) => new ReadOnlyListView<I, O>(list, converter);
-	}
+
+        public static IReadOnlyList<T> Singleton<T>(T item) => new SingletonList<T>(item);
+    }
 }

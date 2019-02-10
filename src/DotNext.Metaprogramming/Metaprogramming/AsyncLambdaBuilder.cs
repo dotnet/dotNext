@@ -69,7 +69,7 @@ namespace DotNext.Metaprogramming
             }
             //build lambda expression
             if (!(recursion is null))
-                lambda = Expression.Lambda<D>(Expression.Block(Sequence.Single(recursion),
+                lambda = Expression.Lambda<D>(Expression.Block(Sequence.Singleton(recursion),
                     Expression.Assign(recursion, lambda),
                     Expression.Invoke(recursion, Parameters)), Parameters);
             return lambda;

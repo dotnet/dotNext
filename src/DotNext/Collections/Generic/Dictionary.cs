@@ -7,7 +7,7 @@ namespace DotNext.Collections.Generic
 	/// Represents various extensions for types <see cref="Dictionary{TKey, TValue}"/>
 	/// and <see cref="IDictionary{TKey, TValue}"/>.
 	/// </summary>
-	public static class Dictionaries
+	public static class Dictionary
 	{
 		/// <summary>
 		/// Deconstruct key/value pair.

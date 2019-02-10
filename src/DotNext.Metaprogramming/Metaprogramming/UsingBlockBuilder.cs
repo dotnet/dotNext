@@ -37,7 +37,7 @@ namespace DotNext.Metaprogramming
             @finally = base.Build().Finally(@finally);
             return assignment is null ?
                 @finally :
-                Expression.Block(typeof(void), Sequence.Single(disposableVar), Sequence.Single(assignment).Concat(Sequence.Single(@finally)));
+                Expression.Block(typeof(void), Sequence.Singleton(disposableVar), Sequence.Singleton(assignment).Concat(Sequence.Singleton(@finally)));
         }
 
         Expression IExpressionBuilder<Expression>.Build() => Build();
