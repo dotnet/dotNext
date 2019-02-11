@@ -17,7 +17,7 @@ namespace DotNext
                 output = Unsafe.As<I, O>(ref input);
             else
             {
-                output = new O();
+                output = default;
                 Unsafe.As<O, I>(ref output) = input;
             }
         }
