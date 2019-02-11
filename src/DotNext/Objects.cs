@@ -9,6 +9,10 @@ namespace DotNext
 	/// </summary>
 	public static class Objects
 	{
+		internal static bool IsNull(object obj) => obj is null;
+
+		internal static bool IsNotNull(object obj) => !IsNull(obj);
+
         /// <summary>
         /// Provides ad-hoc approach to associate some data with the object
         /// without modification of it.

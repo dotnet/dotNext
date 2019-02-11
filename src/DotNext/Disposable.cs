@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 
 namespace DotNext
 {
@@ -77,7 +78,8 @@ namespace DotNext
 					case 0:
 						return;
 					case 1:
-						throw exceptions.First.Value;
+						ExceptionDispatchInfo.Capture(exceptions.First.Value).Throw();
+						return;
 					default:
 						throw new AggregateException(exceptions);
 				}

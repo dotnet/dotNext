@@ -123,7 +123,7 @@ namespace DotNext
 
         public V GetOrSet<V>(UserDataSlot<V> slot)
             where V : new()
-            => GetOrSet(slot, Activator.CreateInstance<V>);
+            => GetOrSet(slot, () => new V());
 
         public V GetOrSet<V>(UserDataSlot<V> slot, Func<V> valueFactory)
             => GetStorage(true).GetOrSet(slot, valueFactory);

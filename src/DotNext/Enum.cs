@@ -141,6 +141,8 @@ namespace DotNext
             mapping = new ValueToNameMapping(out MinValue, out MaxValue);
         }
 
+        public static bool IsDefined(E value) => mapping.ContainsKey(value);
+
         /// <summary>
         /// Gets the underlying type of the specified enumeration.
         /// </summary>
