@@ -34,27 +34,5 @@ namespace DotNext.Threading.Tasks
 
 		public static async Task<Optional<T>> If<T>(this Task<Optional<T>> task, Predicate<T> condition)
 			=> (await task).If(condition);
-
-		public static R GetResult<R>(this Task<R> task, TimeSpan timeout)
-		{
-			if (task.Wait(timeout))
-				return task.Result;
-			else
-				throw new TimeoutException();
-		}
-
-		public static R GetResult<R>(this Task<R> task, CancellationToken token)
-		{
-			task.Wait(token);
-			return task.Result;
-		}
-
-        public static async Task<(T1, T2)> WhenAll<T1, T2>(Task<T1> task1, Task<T2> task2) => (await task1, await task2);
-
-        public static async Task<(T1, T2, T3)> WhenAll<T1, T2, T3>(Task<T1> task1, Task<T2> task2, Task<T3> task3) => (await task1, await task2, await task3);
-
-        public static async Task<(T1, T2, T3, T4)> WhenAll<T1, T2, T3, T4>(Task<T1> task1, Task<T2> task2, Task<T3> task3, Task<T4> task4) => (await task1, await task2, await task3, await task4);
-
-        public static async Task<(T1, T2, T3, T4, T5)> WhenAll<T1, T2, T3, T4, T5>(Task<T1> task1, Task<T2> task2, Task<T3> task3, Task<T4> task4, Task<T5> task5) => (await task1, await task2, await task3, await task4, await task5);
     }
 }
