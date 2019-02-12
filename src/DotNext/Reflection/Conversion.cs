@@ -1,5 +1,4 @@
 ﻿using System;
-using MethodInfo = System.Reflection.MethodInfo;
 using static System.Linq.Expressions.Expression;
 
 namespace DotNext.Reflection
@@ -8,8 +7,8 @@ namespace DotNext.Reflection
     /// Provides access to implicit or explicit type conversion
     /// operator between two types.
     /// </summary>
-    /// <typeparam name="I"></typeparam>
-    /// <typeparam name="O"></typeparam>
+    /// <typeparam name="I">Source type to convert.</typeparam>
+    /// <typeparam name="O">Type of conversion result.</typeparam>
     public static class Conversion<I, O>
     {
         /// <summary>
@@ -20,16 +19,14 @@ namespace DotNext.Reflection
 
         static Conversion()
         {
-            MethodInfo converter;
             try
             {
-                converter = Convert(Default(typeof(I)), typeof(O)).Method;
+                Converter = Convert(Default(typeof(I)), typeof(O)).Method.CreateDelegate<Converter<I, O>>();
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException e)
             {
-                converter = null;
+                Converter = input => throw e;
             }
-            Converter = converter?.CreateDelegate<Converter<I, O>>();
         }
     }
 }

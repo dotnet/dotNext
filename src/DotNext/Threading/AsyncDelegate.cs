@@ -39,7 +39,15 @@ namespace DotNext.Threading
             }
         }
 
-        private static Task InvokeAsync<D>(D @delegate, Action<D> invoker, CancellationToken token)
+        /// <summary>
+        /// Invokes a delegate of arbitrary type asynchronously.
+        /// </summary>
+        /// <param name="delegate">A delegate to be invoked asynchronously.</param>
+        /// <param name="invoker">Synchronous invoker of the delegate from invocation list.</param>
+        /// <param name="token">Cancellation token.</param>
+        /// <typeparam name="D">Type of delegate to invoke.</typeparam>
+        /// <returns>A task allows to control asynchronous invocation of methods attached to the multicast delegate.</returns>
+        public static Task InvokeAsync<D>(this D @delegate, Action<D> invoker, CancellationToken token = default)
             where D: MulticastDelegate
             => InvokeAsync(@delegate, h => StartNew(h, invoker, token));
 

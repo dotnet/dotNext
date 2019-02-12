@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -11,6 +12,26 @@ namespace DotNext
 	/// </summary>
 	public static class Optional
 	{
+		public static async Task<T> Or<T>(this Task<Optional<T>> task, T defaultValue)
+			=> (await task).Or(defaultValue);
+
+		public static async Task<T> OrThrow<T, E>(this Task<Optional<T>> task)
+			where E : Exception, new()
+			=> (await task).OrThrow<E>();
+
+		public static async Task<T> OrThrow<T, E>(this Task<Optional<T>> task, Func<E> exceptionFactory)
+			where E : Exception
+			=> (await task).OrThrow(exceptionFactory);
+
+		public static async Task<T> OrInvoke<T>(this Task<Optional<T>> task, Func<T> defaultFunc)
+			=> (await task).OrInvoke(defaultFunc);
+
+		public static async Task<T> OrDefault<T>(this Task<Optional<T>> task)
+			=> (await task).OrDefault();
+
+		public static async Task<Optional<T>> If<T>(this Task<Optional<T>> task, Predicate<T> condition)
+			=> (await task).If(condition);
+
 		private static bool IsOptional(Type optionalType)
 			=> optionalType != null &&
 				optionalType.IsGenericType &&
@@ -100,7 +121,6 @@ namespace DotNext
 
         private static bool IsNothing(Type target)
             => target.OneOf(typeof(void), typeof(ValueTuple));
-
 
         internal static Expression CheckerBodyForValueType(Expression input)
         {
