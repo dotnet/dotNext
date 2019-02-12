@@ -163,7 +163,7 @@ namespace DotNext.Reflection
 				throw new AbstractDelegateException<D>();
 			else
 			{
-				var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(Methods.GetParameterTypes, method => method.ReturnType);
+				var (parameters, returnType) = Delegates.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType);
 				return Reflect(returnType, parameters, nonPublic);
 			}            
         }
