@@ -42,9 +42,5 @@ namespace DotNext
         public static D ChangeType<D>(this Delegate d)
             where D : Delegate
             => d.Method.CreateDelegate<D>(d.Target);
-
-        internal static O Identity<I, O>(I input)
-            where I : O
-            => input;
     }
 }

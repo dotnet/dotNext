@@ -10,7 +10,7 @@ namespace DotNext
         private static class Id<I, O>
             where I: O
         {
-            internal static readonly Func<I, O> Value = Delegates.Identity<I, O>;
+            internal static readonly Func<I, O> Value = Converter.Identity<I, O>;
         }
 
         public static Func<I, O> Identity<I, O>()

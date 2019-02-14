@@ -5,10 +5,19 @@ namespace DotNext
 	using Runtime.InteropServices;
 
 	/// <summary>
-	/// Various extensions for arrays.
+	/// Provides specialized methods to work with one-dimensional array.
 	/// </summary>
-	public static class Arrays
+	public static class OneDimensionalArray
 	{
+		/// <summary>
+		/// Indicates that array is <see langword="null"/> or empty.
+		/// </summary>
+		/// <typeparam name="T">Type of elements in the array.</typeparam>
+		/// <param name="array">The array to check.</param>
+		/// <returns><see langword="true"/>, if array is <see langword="null"/> or empty.</returns>
+		public static bool IsNullOrEmpty<T>(this T[] array)
+            => array is null || array.LongLength == 0L;
+
 		/// <summary>
 		/// Applies specific action to each array element.
 		/// </summary>
@@ -76,7 +85,7 @@ namespace DotNext
 		}
 
 		/// <summary>
-		/// Allocates a new array, or return cached empty array.
+		/// Allocates a new one-dimensional array, or return cached empty array.
 		/// </summary>
 		/// <typeparam name="T">Type of array elements.</typeparam>
 		/// <param name="length">Length of the array.</param>

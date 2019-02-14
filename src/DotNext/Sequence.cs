@@ -5,7 +5,7 @@ using System.Linq;
 namespace DotNext
 {
 	/// <summary>
-	/// Various extension methods for <see cref="IEnumerable{T}"/> implementing classes.
+	/// Various methods to work with classes implementing <see cref="IEnumerable{T}"/> interface.
 	/// </summary>
     public static class Sequence
     {
@@ -22,17 +22,30 @@ namespace DotNext
 		}
 
 		/// <summary>
-		/// Obtains first value type in the collection; or <see langword="null"/>
-		/// if collection is empty.
+		/// Obtains first value type in the sequence; or <see langword="null"/>
+		/// if sequence is empty.
 		/// </summary>
-		/// <typeparam name="T">Type of elements in the collection.</typeparam>
-		/// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
-		/// <returns>First element in the collection; or <see langword="null"/> if collection is empty. </returns>
-		public static T? FirstOrNull<T>(this IEnumerable<T> collection)
+		/// <typeparam name="T">Type of elements in the sequence.</typeparam>
+		/// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
+		/// <returns>First element in the sequence; or <see langword="null"/> if sequence is empty. </returns>
+		public static T? FirstOrNull<T>(this IEnumerable<T> seq)
 			where T : struct
 		{
-			using (var enumerator = collection.GetEnumerator())
+			using (var enumerator = seq.GetEnumerator())
 				return enumerator.MoveNext() ? enumerator.Current : new T?();
+		}
+
+		/// <summary>
+		/// Obtains first value in the sequence; or <see cref="Optional{T}.Empty"/>
+		/// if sequence is empty.
+		/// </summary>
+		/// <typeparam name="T">Type of elements in the sequence.</typeparam>
+		/// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
+		/// <returns>First element in the sequence; or <see cref="Optional{T}.Empty"/> if sequence is empty. </returns>
+		public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq)
+		{
+			using(var enumerator = seq.GetEnumerator())
+				return enumerator.MoveNext() ? enumerator.Current : Optional<T>.Empty;
 		}
 
 		/// <summary>
@@ -123,7 +136,7 @@ namespace DotNext
 		/// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
 		public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T> collection)
             where T: class
-            => collection.Where(value => !(value is null));
+            => collection.Where(ObjectExtensions.IsNotNull);
 
 		/// <summary>
 		/// Concatenates each element from the collection into single string.
@@ -135,23 +148,14 @@ namespace DotNext
 		/// <returns>Converted collection into string.</returns>
 		public static string ToString<T>(this IEnumerable<T> collection, string delimiter, string ifEmpty = "")
             => string.Join(delimiter, collection).IfNullOrEmpty(ifEmpty);
-
-		/// <summary>
-		/// Indicates that collection is <see langword="null"/> or empty.
-		/// </summary>
-		/// <typeparam name="T">Type of elements in the collection.</typeparam>
-		/// <param name="collection">A collection to check.</param>
-		/// <returns><see langword="true"/>, if collection is <see langword="null"/> or empty.</returns>
-		public static bool IsNullOrEmpty<T>(this ICollection<T> collection)
-            => collection is null || collection.Count == 0;
-
+		
         /// <summary>
         /// Constructs a sequence from the single element.
         /// </summary>
         /// <typeparam name="T">Type of element.</typeparam>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static IEnumerable<T> Singleton<T>(T value)
-            => new Collections.Generic.SingletonList<T>(value);
+        /// <param name="item">An item to be placed into sequence.</param>
+        /// <returns>Sequence of single element.</returns>
+        public static IEnumerable<T> Singleton<T>(T item)
+            => new Collections.Generic.SingletonList<T>(item);
     }
 }

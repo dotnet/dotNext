@@ -30,7 +30,11 @@ namespace DotNext
         /// <summary>
         /// Size of value type, in bytes.
         /// </summary>
-        public static readonly int Size = Unsafe.SizeOf<T>();
+        public static int Size
+		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			get => Unsafe.SizeOf<T>();
+		}
 
         /// <summary>
         /// Default value of type <typeparamref name="T"/>.

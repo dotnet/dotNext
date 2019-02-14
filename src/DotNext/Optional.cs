@@ -7,6 +7,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
+	using static Reflection.TypeExtensions;
+
 	/// <summary>
 	/// Various extension and factory methods for constructing optional value.
 	/// </summary>
@@ -32,28 +34,18 @@ namespace DotNext
 		public static async Task<Optional<T>> If<T>(this Task<Optional<T>> task, Predicate<T> condition)
 			=> (await task).If(condition);
 
-		private static bool IsOptional(Type optionalType)
-			=> optionalType != null &&
-				optionalType.IsGenericType &&
-				!optionalType.IsGenericTypeDefinition &&
-				optionalType.GetGenericTypeDefinition() == typeof(Optional<>);
+		/// <summary>
+		/// Indicates that specified type is optional type.
+		/// </summary>
+		/// <returns><see langword="true"/>, if specified type is optional type; otherwise, <see langword="false"/>.</returns>
+		public static bool IsOptional(Type optionalType) => optionalType.IsGenericInstanceOf(typeof(Optional<>));
 
 		/// <summary>
 		/// Returns the underlying type argument of the specified optional type.
 		/// </summary>
 		/// <param name="optionalType">Optional type.</param>
 		/// <returns>Underlying type argument of optional type; otherwise, null.</returns>
-		public static Type GetUnderlyingType(Type optionalType)
-			=> IsOptional(optionalType) ?
-				optionalType.GetGenericArguments()[0] :
-				null;
-
-		/// <summary>
-		/// Indicates that specified type is optional type.
-		/// </summary>
-		/// <typeparam name="T">Type to check.</typeparam>
-		/// <returns>True, if specified type is optional type; otherwise, false.</returns>
-		public static bool IsOptional<T>() => IsOptional(typeof(T));
+		public static Type GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
 
 		/// <summary>
 		/// Constructs optional value from nullable reference type.
@@ -65,6 +57,12 @@ namespace DotNext
 			where T : struct
 			=> value ?? Optional<T>.Empty;
 
+		/// <summary>
+		/// Converts value of reference type into Optional value.
+		/// </summary>
+		/// <param name="value">The value to convert. May be <see langword="null"/>.</param>
+		/// <typeparam name="T">Type of object to convert.</typeparam>
+		/// <returns>A value converted into Optional container.</returns>
 		public static Optional<T> EmptyIfNull<T>(this T value)
 			where T: class
 			=> value is null ? default : new Optional<T>(value);
@@ -79,30 +77,14 @@ namespace DotNext
 			where T : struct
 			=> value.IsPresent ? new T?(value.Value) : null;
 
-		public static ref readonly Optional<T> Coalesce<T>(this in Optional<T> first, in Optional<T> second)
-			=> ref first.IsPresent ? ref first : ref second;
-
-		public static ref readonly Optional<T> Coalesce<T>(this in Optional<T> first, in Optional<T> second, in Optional<T> third)
-		{
-			if (first.IsPresent)
-				return ref first;
-			else if (second.IsPresent)
-				return ref second;
-			else
-				return ref third;
-		}
-
-		public static ref readonly Optional<T> Coalesce<T>(this in Optional<T> first, in Optional<T> second, in Optional<T> third, in Optional<T> fourth)
-		{
-			if (first.IsPresent)
-				return ref first;
-			else if (second.IsPresent)
-				return ref second;
-			else if (third.IsPresent)
-				return ref third;
-			else
-				return ref fourth;
-		}
+		/// <summary>
+		/// Returns second value if first is empty.
+		/// </summary>
+		/// <param name="first">The first optional value.</param>
+		/// <param name="second">The second optional value.</param>
+		/// <typeparam name="T">Type of value.</typeparam>
+		/// <returns></returns>
+		public static ref readonly Optional<T> Coalesce<T>(this in Optional<T> first, in Optional<T> second) => ref first.IsPresent ? ref first : ref second;
 
 		private static PropertyInfo GetHasContentProperty(Type targetType)
 		{
@@ -119,12 +101,9 @@ namespace DotNext
 			return property is null ? null : Expression.Property(input, property);
 		}
 
-        private static bool IsNothing(Type target)
-            => target.OneOf(typeof(void), typeof(ValueTuple));
-
         internal static Expression CheckerBodyForValueType(Expression input)
         {
-            if (IsNothing(input.Type))
+            if (input.Type.OneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
                 return Expression.Constant(false);
             var nullableType = Nullable.GetUnderlyingType(input.Type);
             if (nullableType is null)   //handle regular struct
@@ -157,6 +136,7 @@ namespace DotNext
 	/// A container object which may or may not contain a value.
 	/// </summary>
 	/// <typeparam name="T">Type of value.</typeparam>
+	[Serializable]
 	public readonly struct Optional<T> : IOptional, IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable
 	{
 		private delegate bool ByRefPredicate(in T value);
@@ -207,6 +187,11 @@ namespace DotNext
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasValue(in T value) => HasValueChecker(in value);
 
+		/// <summary>
+		/// Attempts to extract value from container if it is present.
+		/// </summary>
+		/// <param name="value">Extracted value.</param>
+		/// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
 		public bool TryGet(out T value)
 		{
 			if(IsPresent)
