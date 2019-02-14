@@ -19,11 +19,11 @@ namespace DotNext
 		{
 			const string AllowedChars = "abcd123456789";
 			var rnd = new Random();
-			var str = rnd.RandomString(AllowedChars, 6);
+			var str = rnd.NextString(AllowedChars, 6);
 			Equal(6, str.Length);
 			using(var generator = new RNGCryptoServiceProvider())
 			{
-				str = generator.RandomString(AllowedChars, 7);
+				str = generator.NextString(AllowedChars, 7);
 			}
 			Equal(7, str.Length);
 		}

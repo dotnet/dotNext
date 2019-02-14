@@ -7,7 +7,7 @@ namespace DotNext
 	/// <summary>
 	/// Various extension methods for reference types.
 	/// </summary>
-	public static class Objects
+	public static class ObjectExtensions
 	{
 		internal static bool IsNull(object obj) => obj is null;
 
@@ -115,8 +115,8 @@ namespace DotNext
 		public static (R1, R2) Decompose<T, R1, R2>(this T obj, Func<T, R1> decomposer1, Func<T, R2> decomposer2)
 			where T: class
 		{
-			var tuple = default((R1 resul1, R2 resul2));
-			obj.Decompose(decomposer1, decomposer2, out tuple.resul1, out tuple.resul2);
+			var tuple = default((R1 result1, R2 result2));
+			obj.Decompose(decomposer1, decomposer2, out tuple.result1, out tuple.result2);
 			return tuple;
 		}
 	}

@@ -29,7 +29,7 @@ namespace DotNext
         /// <returns>An object representing reflected method Invoke.</returns>
         public static MethodInfo GetInvokeMethod<D>()
             where D : Delegate
-            => Reflection.Types.GetInvokeMethod(typeof(D));
+            => Reflection.TypeExtensions.GetInvokeMethod(typeof(D));
 
         /// <summary>
         /// Returns a new delegate of different type which

@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using static Reflection.Types;
+    using static Reflection.TypeExtensions;
 
     /// <summary>
     /// Provides asynchronous lambda expression with await support.

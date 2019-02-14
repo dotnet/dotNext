@@ -9,7 +9,7 @@ namespace DotNext.Reflection
 	/// <summary>
 	/// Various extension methods for type reflection.
 	/// </summary>
-	public static class Types
+	public static class TypeExtensions
     {
         private static bool IsGenericParameter(Type type)
         {

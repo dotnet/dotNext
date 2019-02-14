@@ -17,13 +17,13 @@ namespace DotNext
         private static class IsNullPredicate<T>
             where T: class
         {
-            internal static readonly Predicate<T> Value = Objects.IsNull;
+            internal static readonly Predicate<T> Value = ObjectExtensions.IsNull;
         }
 
         private static class IsNotNullPredicate<T>
             where T: class
         {
-            internal static readonly Predicate<T> Value = Objects.IsNotNull;
+            internal static readonly Predicate<T> Value = ObjectExtensions.IsNotNull;
         }
 
         public static Predicate<T> IsNull<T>() 
