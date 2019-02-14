@@ -135,7 +135,7 @@ namespace DotNext
         /// <param name="slot">User data slot.</param>
         /// <param name="userData">User data.</param>
         /// <returns><see langword="true"/>, if user data slot exists in this collection.</returns>
-        public bool Get<V>(UserDataSlot<V> slot, out V userData)
+        public bool TryGet<V>(UserDataSlot<V> slot, out V userData)
         {
             var storage = GetStorage(false);
             if (storage is null)
