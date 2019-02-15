@@ -67,7 +67,7 @@ namespace DotNext.Reflection
                 {
                     method = typeof(ValueType<>)
                                 .MakeGenericType(RuntimeType)
-                                .GetMethod<Func<T, bool, int>>(nameof(ValueType<int>.BitwiseHashCode), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                                .GetMethod(nameof(ValueType<int>.BitwiseHashCode), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, typeof(T), typeof(bool));
                     GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam, Constant(true)), inputParam).Compile();
                 }
                 else
@@ -85,7 +85,7 @@ namespace DotNext.Reflection
                     {
                         method = typeof(ValueType<>)
                             .MakeGenericType(RuntimeType)
-                            .GetMethod<Func<T, T, bool>>(nameof(ValueType<int>.BitwiseEquals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public);
+                            .GetMethod(nameof(ValueType<int>.BitwiseEquals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public, typeof(T), typeof(T));
                         Equals = Lambda<Operator<T, T, bool>>(Call(null, method, inputParam, secondParam), inputParam, secondParam).Compile();
                     }
             }

@@ -2,6 +2,10 @@
 
 namespace DotNext
 {
+    /// <summary>
+    /// Provides extension methods for delegate <see cref="Converter{TInput, TOutput}"/> and
+    /// predefined converters.
+    /// </summary>
     public static class Converter
     {
         private static class Id<I, O>

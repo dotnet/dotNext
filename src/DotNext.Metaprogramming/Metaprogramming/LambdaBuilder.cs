@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
@@ -146,7 +147,7 @@ namespace DotNext.Metaprogramming
             else
             {
                 instructions.AddLast(body);
-                locals = Array.Empty<ParameterExpression>();
+                locals = Enumerable.Empty<ParameterExpression>();
             }
             if (!(returnLabel is null))
                 instructions.AddLast(returnLabel.LandingSite());
