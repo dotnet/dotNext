@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Reflection;
-using System.Linq;
 
 namespace DotNext
 {
     /// <summary>
     /// Represents various extensions of delegates.
     /// </summary>
-    public static class Delegates
+    public static class DelegateHelpers
     {
         public static D[] GetInvocationList<D>(D @delegate)
             where D: MulticastDelegate

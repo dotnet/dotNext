@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
-    using static Delegates;
+    using static DelegateHelpers;
 
     /// <summary>
     /// Provides set of methods for asynchronous invocation of various delegates.

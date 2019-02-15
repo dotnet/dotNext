@@ -16,7 +16,7 @@ namespace DotNext.Reflection
 		[Fact]
 		public void DelegateSignatureTest()
 		{
-			var signature = Delegates.GetInvokeMethod<Func<int, string>>();
+			var signature = DelegateHelpers.GetInvokeMethod<Func<int, string>>();
 			NotNull(signature);
 			Equal(typeof(int), signature.GetParameters()[0].ParameterType);
 			Equal(typeof(string), signature.ReturnParameter.ParameterType);

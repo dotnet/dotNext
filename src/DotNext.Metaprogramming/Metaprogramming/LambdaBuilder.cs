@@ -69,7 +69,7 @@ namespace DotNext.Metaprogramming
         {
             if (typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
-            var invokeMethod = Delegates.GetInvokeMethod<D>();
+            var invokeMethod = DelegateHelpers.GetInvokeMethod<D>();
             Parameters = GetParameters(invokeMethod.GetParameters());
             ReturnType = invokeMethod.ReturnType;
         }
