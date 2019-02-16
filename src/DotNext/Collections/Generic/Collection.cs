@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DotNext.Collections.Generic
 {
+    /// <summary>
+    /// Provides utility methods to work with collections.
+    /// </summary>
     public static class Collection
     {
         public static ReadOnlyCollectionView<T> AsReadOnlyView<T>(this ICollection<T> collection)

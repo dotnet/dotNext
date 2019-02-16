@@ -19,15 +19,21 @@ namespace DotNext.Collections.Generic
 			static Indexer()
 			{
 				foreach(var member in typeof(D).GetDefaultMembers())
-				if(member is PropertyInfo indexer)
-				{
-					Getter = indexer.GetMethod.CreateDelegate<Func<D, K, V>>();
-					Setter = indexer.SetMethod?.CreateDelegate<Action<D, K, V>>();
-				}
+				    if(member is PropertyInfo indexer)
+				    {
+					    Getter = indexer.GetMethod.CreateDelegate<Func<D, K, V>>();
+					    Setter = indexer.SetMethod?.CreateDelegate<Action<D, K, V>>();
+                        return;
+                    }
 				throw new MissingMemberException();
 			}
 		}
 
+        /// <summary>
+        /// Provides access to dictionary indexer.
+        /// </summary>
+        /// <typeparam name="K">Type of keys in the dictionary.</typeparam>
+        /// <typeparam name="V">Type of values in the dictionary.</typeparam>
 		public static class Indexer<K, V>
 		{
 			public static Func<IReadOnlyDictionary<K, V>, K, V> ReadOnly => Indexer<IReadOnlyDictionary<K, V>, K, V>.Getter;
@@ -36,6 +42,15 @@ namespace DotNext.Collections.Generic
 
 			public static Action<IDictionary<K, V>, K, V> Setter => Indexer<IDictionary<K, V>, K, V>.Setter;
 		}
+
+        public static Func<K, V> IndexerGetter<K, V>(this IReadOnlyDictionary<K, V> dictionary)
+            => Indexer<K, V>.ReadOnly.Method.CreateDelegate<Func<K, V>>(dictionary);
+
+        public static Func<K, V> IndexerGetter<K, V>(this IDictionary<K, V> dictionary)
+            => Indexer<K, V>.Getter.Method.CreateDelegate<Func<K, V>>(dictionary);
+
+        public static Action<K, V> IndexerSetter<K, V>(this IDictionary<K, V> dictionary)
+            => Indexer<K, V>.Setter.Method.CreateDelegate<Action<K, V>>(dictionary);
 
 		/// <summary>
 		/// Deconstruct key/value pair.
