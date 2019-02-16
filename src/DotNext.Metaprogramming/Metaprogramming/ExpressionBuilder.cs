@@ -103,13 +103,13 @@ namespace DotNext.Metaprogramming
             => AddStatement(Expression.Call(instance, method, arguments));
 
         public MethodCallExpression Call(UniversalExpression instance, MethodInfo method, params UniversalExpression[] arguments)
-            => Call(instance, method, UniversalExpression.AsExpressions(arguments.Upcast<IEnumerable<UniversalExpression>, UniversalExpression[]>()));
+            => Call(instance, method, UniversalExpression.AsExpressions((IEnumerable<UniversalExpression>)arguments));
 
         public MethodCallExpression Call(MethodInfo method, IEnumerable<Expression> arguments)
             => AddStatement(Expression.Call(null, method, arguments));
 
         public MethodCallExpression Call(MethodInfo method, params UniversalExpression[] arguments)
-            => Call(method, UniversalExpression.AsExpressions(arguments.Upcast<IEnumerable<UniversalExpression>, UniversalExpression[]>()));
+            => Call(method, UniversalExpression.AsExpressions((IEnumerable<UniversalExpression>)arguments));
         
         public LabelTarget Label(Type type, string name = null)
         {

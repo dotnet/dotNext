@@ -24,7 +24,7 @@ namespace DotNext.Metaprogramming
 
         public ParameterExpression LoopVar { get; }
 
-        internal override Expression Build() => this.Upcast<IExpressionBuilder<LoopExpression>, ForLoopBuilder>().Build();
+        internal override Expression Build() => ((IExpressionBuilder<LoopExpression>)this).Build();
 
         LoopExpression IExpressionBuilder<LoopExpression>.Build()
         {

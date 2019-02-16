@@ -28,7 +28,7 @@ namespace DotNext.Reflection
 			=> method.SignatureEquals(other.GetParameterTypes());
 
 		public static bool SignatureEquals(this MethodInfo method, MethodInfo other)
-			=> SignatureEquals(method.Upcast<MethodBase, MethodInfo>(), other) && method.ReturnType == other.ReturnType;
+			=> SignatureEquals((MethodBase)method, other) && method.ReturnType == other.ReturnType;
 		
 		public static MethodCallExpression AsExpression(this MethodInfo method, Expression instance, IEnumerable<Expression> arguments)
 			=> Expression.Call(instance, method, arguments);

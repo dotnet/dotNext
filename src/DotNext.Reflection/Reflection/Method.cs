@@ -20,12 +20,12 @@ namespace DotNext.Reflection
         private const BindingFlags InstanceNonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
         private readonly MethodInfo method;
-        private readonly D invoker;
+        internal readonly D Invoker;
 
         private Method(MethodInfo method, Expression<D> lambda)
         {
             this.method = method;
-            invoker = lambda.Compile();
+            Invoker = lambda.Compile();
         }
 
         internal Method(MethodInfo method, Expression[] args, ParameterExpression[] parameters)
@@ -41,7 +41,7 @@ namespace DotNext.Reflection
         private Method(MethodInfo method)
         {
             this.method = method;
-            invoker = DelegateHelpers.CreateDelegate<D>(method);
+            Invoker = DelegateHelpers.CreateDelegate<D>(method);
         }
 
         internal Method<D> OfType<T>() => method.DeclaringType.IsAssignableFrom(typeof(T)) ? this : null;
@@ -101,10 +101,10 @@ namespace DotNext.Reflection
 
         public override int GetHashCode() => method.GetHashCode();
 
-        public static implicit operator D(Method<D> method) => method?.invoker;
+        public static implicit operator D(Method<D> method) => method?.Invoker;
 
         MethodInfo IMember<MethodInfo>.RuntimeMember => method;
-        D IMember<MethodInfo, D>.Invoker => invoker;
+        D IMember<MethodInfo, D>.Invoker => Invoker;
 
         public override string ToString() => method.ToString();
 
@@ -182,7 +182,7 @@ namespace DotNext.Reflection
                 return ReflectInstance(thisParam, argumentsType, typeof(void), methodName, nonPublic);
 			else
 			{
-				DelegateHelpers.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
+				DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
                 thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
 				return ReflectInstance(thisParam, parameters.RemoveFirst(1), returnType, methodName, nonPublic);
 			}
@@ -206,7 +206,7 @@ namespace DotNext.Reflection
                 return ReflectStatic(typeof(T), delegateType.GetGenericArguments()[0], typeof(void), methodName, nonPublic);
 			else
 			{
-				DelegateHelpers.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
+				DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
 				return ReflectStatic(typeof(T), parameters, returnType, methodName, nonPublic);
 			}
         }
@@ -259,7 +259,7 @@ namespace DotNext.Reflection
                 return Unreflect(method, null, argumentsType, returnType);
             else if(delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
                 return Unreflect(method, null, delegateType.GetGenericArguments()[0], typeof(void));
-			else if(DelegateHelpers.GetInvokeMethod<D>().SignatureEquals(method))
+			else if(DelegateType.GetInvokeMethod<D>().SignatureEquals(method))
                 return new Method<D>(method);
             else
                 return null;
@@ -274,7 +274,7 @@ namespace DotNext.Reflection
                 return Unreflect(method, Expression.Parameter(thisParam.MakeByRefType()), argumentsType, typeof(void));
             else
             {
-                DelegateHelpers.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, m => m.ReturnType, out var parameters, out returnType);
+                DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, m => m.ReturnType, out var parameters, out returnType);
                 thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
                 parameters = parameters.RemoveFirst(1);
 				if (method.SignatureEquals(parameters) && method.ReturnType == returnType)

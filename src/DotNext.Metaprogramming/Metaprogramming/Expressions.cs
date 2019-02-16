@@ -143,7 +143,7 @@ namespace DotNext.Metaprogramming
         }
 
         public static Expression Property(this Expression instance, PropertyInfo property, params Expression[] indicies)
-            => indicies.LongLength == 0 ? Expression.Property(instance, property).Upcast<Expression, MemberExpression>() : Expression.Property(instance, property, indicies);
+            => indicies.LongLength == 0 ? (Expression)Expression.Property(instance, property) : Expression.Property(instance, property, indicies);
 
         public static Expression Property(this Expression instance, Type interfaceType, string propertyName, params Expression[] indicies)
         {
@@ -207,7 +207,7 @@ namespace DotNext.Metaprogramming
         public static UnaryExpression Throw(this Expression exception) => Expression.Throw(exception);
 
         public static Expression AsConst<T>(this T value)
-            => value is Expression expr ? Expression.Quote(expr).Upcast<Expression, UnaryExpression>() : Expression.Constant(value, typeof(T));
+            => value is Expression expr ? (Expression)Expression.Quote(expr) : Expression.Constant(value, typeof(T));
 
         public static DefaultExpression AsDefault(this Type type) => Expression.Default(type);
 
@@ -264,9 +264,9 @@ namespace DotNext.Metaprogramming
         }
 
         internal static Expression AddPrologue(this Expression expression, bool inferType, params Expression[] instructions)
-            => AddPrologue(expression, inferType, instructions.Upcast<IReadOnlyCollection<Expression>, Expression[]>());
+            => AddPrologue(expression, inferType, (IReadOnlyCollection<Expression>)instructions);
 
         internal static Expression AddEpilogue(this Expression expression, bool inferType, params Expression[] instructions)
-            => AddEpilogue(expression, inferType, instructions.Upcast<IReadOnlyCollection<Expression>, Expression[]>());
+            => AddEpilogue(expression, inferType, (IReadOnlyCollection<Expression>)instructions);
     }
 }

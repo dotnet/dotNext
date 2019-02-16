@@ -65,7 +65,7 @@ namespace DotNext.Reflection
 		public static MethodInfo GetMethod(this Type type, string name, BindingFlags flags, params Type[] parameters)
 			=> type.GetMethod(name, flags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
 
-		private static Type FindGenericInstance(this Type type, Type genericDefinition)
+		internal static Type FindGenericInstance(this Type type, Type genericDefinition)
 		{
 			bool IsGenericInstanceOf(Type candidate)
 				=> candidate.IsGenericType && !candidate.IsGenericTypeDefinition && candidate.GetGenericTypeDefinition() == genericDefinition;
@@ -114,11 +114,6 @@ namespace DotNext.Reflection
         /// </example>
 		public static Type[] GetGenericArguments(this Type type, Type genericDefinition)
 			=> FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? Array.Empty<Type>();
-				
-		internal static MethodInfo GetInvokeMethod(this Type delegateType)
-			=> !(delegateType is null) && typeof(Delegate).IsAssignableFrom(delegateType) ?
-			 delegateType.GetMethod("Invoke", BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly):
-			 null;
 
         /// <summary>
         /// Gets type code for the specified type.
@@ -164,82 +159,6 @@ namespace DotNext.Reflection
 			else
 				return TypeCode.Object;
 		}
-
-        /// <summary>
-        /// Returns task type for the specified result type.
-        /// </summary>
-        /// <param name="taskResult">Task result type.</param>
-        /// <returns>Returns <see cref="Task"/> if <paramref name="taskResult"/> is <see cref="Void"/>; or <see cref="Task{TResult}"/> with actual generic argument equals to <paramref name="taskResult"/>.</returns>
-        /// <seealso cref="Task"/>
-        /// <seealso cref="Task{TResult}"/>
-		public static Type MakeTaskType(this Type taskResult)
-			=> taskResult == typeof(void) ? typeof(Task) : typeof(Task<>).MakeGenericType(taskResult);
-
-        /// <summary>
-        /// Obtains result type from task type.
-        /// </summary>
-        /// <param name="taskType">A type of <see cref="Task"/> or <see cref="Task{TResult}"/>.</param>
-        /// <returns>Task result type; or <see langword="null"/> if <paramref name="taskType"/> is not a task type.</returns>
-		public static Type GetTaskType(this Type taskType)
-		{
-			var result = FindGenericInstance(taskType, typeof(Task<>));
-			if(!(result is null))
-				return result.GetGenericArguments()[0];
-			else if(typeof(Task).IsAssignableFrom(taskType))
-				return typeof(void);
-			else
-				return null;
-		}
-
-        /// <summary>
-        /// Obtains type of items in the collection type.
-        /// </summary>
-        /// <param name="collectionType">Any collection type implementing <see cref="IEnumerable{T}"/>.</param>
-        /// <param name="enumerableInterface">The type <see cref="IEnumerable{T}"/> with actual generic argument.</param>
-        /// <returns>Type of items in the collection; or <see langword="null"/> if <paramref name="collectionType"/> is not a generic collection.</returns>
-        public static Type GetCollectionElementType(this Type collectionType, out Type enumerableInterface)
-        {
-			enumerableInterface = FindGenericInstance(collectionType, typeof(IEnumerable<>));
-            if(!(enumerableInterface is null))
-				return enumerableInterface.GetGenericArguments()[0];
-            else if(typeof(IEnumerable).IsAssignableFrom(collectionType))
-            {
-                enumerableInterface = typeof(IEnumerable);
-                return typeof(object);
-            }
-            else
-            {
-                enumerableInterface = null;
-                return null;
-            }
-		}
-
-        /// <summary>
-        /// Obtains type of items in the collection type.
-        /// </summary>
-        /// <param name="collectionType">Any collection type implementing <see cref="IEnumerable{T}"/>.</param>
-        /// <returns>Type of items in the collection; or <see langword="null"/> if <paramref name="collectionType"/> is not a generic collection.</returns>
-        public static Type GetCollectionElementType(this Type collectionType)
-            => collectionType.GetCollectionElementType(out _);
-
-        /// <summary>
-        /// Gets Dispose method which implements dispose pattern.
-        /// </summary>
-        /// <remarks>
-        /// This method checks whether the type implements <see cref="IDisposable"/>.
-        /// If it is then return <see cref="IDisposable.Dispose"/> method. Otherwise,
-        /// return public instance method with name Dispose.
-        /// </remarks>
-        /// <param name="type">The type to inspect.</param>
-        /// <returns>Dispose method; or <see langword="null"/>, if this method doesn't exist.</returns>
-        public static MethodInfo GetDisposeMethod(this Type type)
-        {
-            const string DisposeMethodName = nameof(IDisposable.Dispose);
-            const BindingFlags PublicInstanceMethod = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
-            return typeof(IDisposable).IsAssignableFrom(type) ?
-                typeof(IDisposable).GetMethod(DisposeMethodName) :
-                type.GetMethod(DisposeMethodName, PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
-        }
 
         /// <summary>
         /// Indicates that object of one type can be implicitly converted into another whithout boxing.

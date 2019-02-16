@@ -16,7 +16,7 @@ namespace DotNext.Reflection
 		[Fact]
 		public void DelegateSignatureTest()
 		{
-			var signature = DelegateHelpers.GetInvokeMethod<Func<int, string>>();
+			var signature = DelegateType.GetInvokeMethod<Func<int, string>>();
 			NotNull(signature);
 			Equal(typeof(int), signature.GetParameters()[0].ParameterType);
 			Equal(typeof(string), signature.ReturnParameter.ParameterType);
@@ -34,7 +34,7 @@ namespace DotNext.Reflection
         [Fact]
         public void CollectionElementTest()
         {
-            Equal(typeof(string), typeof(MyList).GetCollectionElementType(out var enumerable));
+            Equal(typeof(string), typeof(MyList).GetItemType(out var enumerable));
             Equal(typeof(IEnumerable<string>), enumerable);
         }
 

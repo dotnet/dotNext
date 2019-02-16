@@ -16,7 +16,7 @@ namespace DotNext.Metaprogramming
             conditionFirst = checkConditionFirst;
         }
 
-        internal override Expression Build() => this.Upcast<IExpressionBuilder<LoopExpression>, WhileLoopBuider>().Build();
+        internal override Expression Build() => ((IExpressionBuilder<LoopExpression>)this).Build();
 
         LoopExpression IExpressionBuilder<LoopExpression>.Build()
         {

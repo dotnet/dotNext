@@ -6,21 +6,50 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Collections.Generic
 {
+    /// <summary>
+    /// Represents read-only view of the mutable list.
+    /// </summary>
+    /// <typeparam name="T">Type of items in the list.</typeparam>
+    /// <remarks>
+    /// Any changes in the original list are visible from the read-only view.
+    /// </remarks>
     public readonly struct ReadOnlyListView<T>: IReadOnlyList<T>, IEquatable<ReadOnlyListView<T>>
     {
         private readonly IList<T> source;
 
+        /// <summary>
+        /// Initializes a new read-only view for the specified mutable list.
+        /// </summary>
+        /// <param name="list"></param>
         public ReadOnlyListView(IList<T> list)
             => source = list ?? throw new ArgumentNullException(nameof(list));
 
+        /// <summary>
+        /// Number of items in the list.
+        /// </summary>
         public int Count => source.Count;
 
+        /// <summary>
+        /// Gets item at the specified position in the list.
+        /// </summary>
+        /// <param name="index">Index of the item.</param>
+        /// <returns>List item at the specified position.</returns>
         public T this[int index] => source[index];
 
+        /// <summary>
+        /// Gets enumerator over items in the list.
+        /// </summary>
+        /// <returns>Enumerator over items in the list.</returns>
         public IEnumerator<T> GetEnumerator() => source.GetEnumerator();
         
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <summary>
+        /// Determines whether the current view and the specified view points
+        /// to the same list.
+        /// </summary>
+        /// <param name="other">Other view to compare.</param>
+        /// <returns><see langword="true"/> if the current view points to the same list as other view; otherwise, <see langword="false"/>.</returns>
         public bool Equals(ReadOnlyListView<T> other) => ReferenceEquals(source, other.source);
 
         public override int GetHashCode() => RuntimeHelpers.GetHashCode(source);

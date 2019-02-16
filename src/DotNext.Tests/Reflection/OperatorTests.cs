@@ -32,6 +32,7 @@ namespace DotNext.Reflection
 			}
 		}
 
+		[Fact]
 		public void BinaryOperatorTest()
 		{
 			var op = Type<int>.Operator<BaseClass>.Require<bool>(BinaryOperator.Equal);

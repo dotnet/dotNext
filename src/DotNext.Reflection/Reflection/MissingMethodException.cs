@@ -23,7 +23,7 @@ namespace DotNext.Reflection
         internal static MissingMethodException Create<T, D>(string methodName)
             where D: Delegate
         {
-            var (parameters, returnType) = DelegateHelpers.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
+            var (parameters, returnType) = DelegateType.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
             return new MissingMethodException(typeof(T), methodName, returnType, parameters);
         }
 

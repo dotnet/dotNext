@@ -31,23 +31,6 @@ namespace DotNext
             => new UserDataStorage(obj);
 
 		/// <summary>
-		/// Type-safe upcast operation.
-		/// </summary>
-		/// <remarks>
-		/// This method is preferred over typical type cast
-		/// operator when derived class should be represented
-		/// as one of its parent classes.
-		/// </remarks>
-		/// <typeparam name="B">Base class.</typeparam>
-		/// <typeparam name="D">Derived class.</typeparam>
-		/// <param name="obj">An object of type <typeparamref name="D"/> to be represented as parent type <typeparamref name="B"/>.</param>
-		/// <returns>An object of type <typeparamref name="D"/> represented as type <typeparamref name="B"/>.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static B Upcast<B, D>(this D obj)
-			where D: class, B
-			=> obj;
-
-		/// <summary>
 		/// Checks whether the specified object is equal to one
 		/// of the specified objects.
 		/// </summary>
@@ -82,7 +65,7 @@ namespace DotNext
 		/// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
 		public static bool OneOf<T>(this T value, params T[] values)
 			where T: class
-			=> value.OneOf(values.Upcast<IEnumerable<T>, T[]>());
+			=> value.OneOf((IEnumerable<T>)values);
 
 		/// <summary>
 		/// Performs decomposition of object into two values.

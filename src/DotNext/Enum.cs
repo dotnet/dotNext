@@ -133,15 +133,21 @@ namespace DotNext
         }
 
         private static readonly ValueToNameMapping mapping;
+
+        /// <summary>
+        /// Maximum enum value.
+        /// </summary>
         public static readonly E MaxValue;
+        
+        /// <summary>
+        /// Minimum enum value.
+        /// </summary>
         public static readonly E MinValue;
 
         static Enum()
         {
             mapping = new ValueToNameMapping(out MinValue, out MaxValue);
         }
-
-        public static bool IsDefined(E value) => mapping.ContainsKey(value);
 
         /// <summary>
         /// Gets the underlying type of the specified enumeration.

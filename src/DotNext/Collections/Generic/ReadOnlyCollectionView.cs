@@ -12,6 +12,8 @@ namespace DotNext.Collections.Generic
 
         public ReadOnlyCollectionView(ICollection<T> collection)
             => source = collection ?? throw new ArgumentNullException(nameof(collection));
+        
+        
 
         public int Count => source.Count;
 

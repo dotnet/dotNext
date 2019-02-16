@@ -90,7 +90,7 @@ namespace DotNext
 		/// </summary>
 		/// <param name="objects">An array of objects to dispose.</param>
 		public static void Dispose(params IDisposable[] objects)
-			=> Dispose(objects.Upcast<IEnumerable<IDisposable>, IDisposable[]>());
+			=> Dispose((IEnumerable<IDisposable>)objects);
 
 		/// <summary>
 		/// Finalizes this object.

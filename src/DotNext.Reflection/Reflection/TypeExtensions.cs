@@ -4,12 +4,12 @@ using System.Linq.Expressions;
 
 namespace DotNext.Reflection
 {
-    internal static class Types
+    internal static class TypeExtensions
     {
         private const BindingFlags PublicInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
         internal static MethodInfo GetHashCodeMethod(this Type type)
-            => type.GetMethod(nameof(object.GetHashCode), PublicInstance);
+            => type.GetMethod(nameof(object.GetHashCode), PublicInstance, Array.Empty<Type>());
 
         internal static string ToGetterName(this string propertyName) => "get_" + propertyName;
 

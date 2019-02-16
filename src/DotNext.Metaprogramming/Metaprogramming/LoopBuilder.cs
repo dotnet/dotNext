@@ -14,6 +14,6 @@ namespace DotNext.Metaprogramming
 
         LoopExpression IExpressionBuilder<LoopExpression>.Build() => base.Build().Loop(breakLabel, continueLabel);
 
-        internal override Expression Build() => this.Upcast<IExpressionBuilder<LoopExpression>, LoopBuilder>().Build();
+        internal override Expression Build() => ((IExpressionBuilder<LoopExpression>)this).Build();
     }
 }

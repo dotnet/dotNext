@@ -156,6 +156,6 @@ namespace DotNext
         /// <param name="item">An item to be placed into sequence.</param>
         /// <returns>Sequence of single element.</returns>
         public static IEnumerable<T> Singleton<T>(T item)
-            => new Collections.Generic.SingletonList<T>(item);
+            => Collections.Generic.List.Singleton(item);
     }
 }

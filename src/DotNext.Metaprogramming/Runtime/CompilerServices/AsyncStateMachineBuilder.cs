@@ -439,7 +439,7 @@ namespace DotNext.Runtime.CompilerServices
 
         internal AsyncStateMachineBuilder(IReadOnlyList<ParameterExpression> parameters)
         {
-            var invokeMethod = DelegateHelpers.GetInvokeMethod<D>();
+            var invokeMethod = DelegateType.GetInvokeMethod<D>();
             methodBuilder = new AsyncStateMachineBuilder(invokeMethod?.ReturnType?.GetTaskType(), parameters);
         }
 

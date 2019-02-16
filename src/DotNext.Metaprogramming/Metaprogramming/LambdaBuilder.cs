@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 namespace DotNext.Metaprogramming
 {
     using static Collections.Generic.Collection;
+    using static Reflection.DelegateType;
 
     /// <summary>
     /// Represents lambda expression builder.
@@ -69,7 +70,7 @@ namespace DotNext.Metaprogramming
         {
             if (typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
-            var invokeMethod = DelegateHelpers.GetInvokeMethod<D>();
+            var invokeMethod = GetInvokeMethod<D>();
             Parameters = GetParameters(invokeMethod.GetParameters());
             ReturnType = invokeMethod.ReturnType;
         }
@@ -131,7 +132,7 @@ namespace DotNext.Metaprogramming
         {
             if (returnLabel is null)
                 returnLabel = Expression.Label("leave");
-            result = ReturnType == typeof(void) ? returnLabel.Return().Upcast<Expression, GotoExpression>() : Expression.Block(Expression.Assign(Result, result), returnLabel.Return());
+            result = ReturnType == typeof(void) ? (Expression)returnLabel.Return() : Expression.Block(Expression.Assign(Result, result), returnLabel.Return());
             return addAsStatement ? AddStatement(result) : result;
         }
 
@@ -181,7 +182,7 @@ namespace DotNext.Metaprogramming
         {
             var builder = new LambdaBuilder<D>() { TailCall = tailCall };
             lambdaBody(builder);
-            return builder.Upcast<IExpressionBuilder<Expression<D>>, LambdaBuilder<D>>().Build();
+            return ((IExpressionBuilder<Expression<D>>)builder).Build();
         }
 
         /// <summary>

@@ -306,7 +306,7 @@ namespace DotNext.Reflection
 			MemberGetter<ClassB, int> property = Type<ClassB>.Property<int>.Require(nameof(ClassB.PropertyName));
 			var obj = new ClassB() { PropertyName = 42 };
 			Equal(42, property(obj));
-			Equal(0, obj.Upcast<ClassA, ClassB>().PropertyName);
+			Equal(0, ((ClassA)obj).PropertyName);
 		}
 
         [Fact]

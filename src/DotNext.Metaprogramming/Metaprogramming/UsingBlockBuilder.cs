@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using static Reflection.TypeExtensions;
+    using static Reflection.DisposableType;
 
     public sealed class UsingBlockBuilder: ScopeBuilder, IExpressionBuilder<Expression>
     {

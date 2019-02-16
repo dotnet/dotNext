@@ -22,15 +22,6 @@ namespace DotNext
             => (D)method.CreateDelegate(typeof(D), target);
 
         /// <summary>
-        /// Returns special Invoke method generate for each delegate type.
-        /// </summary>
-        /// <typeparam name="D">Type of delegate.</typeparam>
-        /// <returns>An object representing reflected method Invoke.</returns>
-        public static MethodInfo GetInvokeMethod<D>()
-            where D : Delegate
-            => Reflection.TypeExtensions.GetInvokeMethod(typeof(D));
-
-        /// <summary>
         /// Returns a new delegate of different type which
         /// points to the same method as original delegate.
         /// </summary>

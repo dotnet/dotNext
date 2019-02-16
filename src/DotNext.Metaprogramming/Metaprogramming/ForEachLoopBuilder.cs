@@ -4,7 +4,8 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using static Reflection.TypeExtensions;
+    using static Reflection.DisposableType;
+    using static Reflection.CollectionType;
 
     public sealed class ForEachLoopBuilder: LoopBuilderBase, IExpressionBuilder<Expression>
     {
@@ -15,7 +16,7 @@ namespace DotNext.Metaprogramming
         internal ForEachLoopBuilder(Expression collection, ExpressionBuilder parent)
             : base(parent)
         {
-            collection.Type.GetCollectionElementType(out var enumerable);
+            collection.Type.GetItemType(out var enumerable);
             const string GetEnumeratorMethod = nameof(IEnumerable.GetEnumerator);
             MethodCallExpression getEnumerator;
             if (enumerable is null)
@@ -50,7 +51,7 @@ namespace DotNext.Metaprogramming
             var disposeMethod = enumerator.Type.GetDisposeMethod();
             loopBody = loopBody.Loop(breakLabel, continueLabel);
             var @finally = disposeMethod is null ?
-                    enumerator.AssignDefault().Upcast<Expression, BinaryExpression>() :
+                    (Expression)enumerator.AssignDefault() :
                     Expression.Block(enumerator.Call(disposeMethod), enumerator.Assign(enumerator.Type.AsDefault()));
             return loopBody.Finally(@finally);
         }

@@ -5,7 +5,8 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using static Reflection.TypeExtensions;
+    using static Reflection.TaskType;
+    using static Reflection.DelegateType;
 
     /// <summary>
     /// Provides asynchronous lambda expression with await support.
@@ -27,7 +28,7 @@ namespace DotNext.Metaprogramming
         {
             if (typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
-            var invokeMethod = DelegateHelpers.GetInvokeMethod<D>();
+            var invokeMethod = GetInvokeMethod<D>();
             taskType = invokeMethod.ReturnType;
             Parameters = GetParameters(invokeMethod.GetParameters());
         }
@@ -89,7 +90,7 @@ namespace DotNext.Metaprogramming
         {
             var builder = new AsyncLambdaBuilder<D>() { TailCall = tailCall };
             lambdaBody(builder);
-            return builder.Upcast<IExpressionBuilder<Expression<D>>, AsyncLambdaBuilder<D>>().Build();
+            return ((IExpressionBuilder<Expression<D>>)builder).Build();
         }
 
         /// <summary>

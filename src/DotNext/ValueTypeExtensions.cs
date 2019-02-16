@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace DotNext
@@ -38,14 +39,18 @@ namespace DotNext
             return output;
         }
 
-        public static bool OneOf<T>(this T value, params T[] values)
-			where T: struct, IEquatable<T>
-		{
-			foreach (var v in values)
+        public static bool OneOf<T>(this T value, IEnumerable<T> values)
+            where T: struct, IEquatable<T>
+        {
+            foreach (var v in values)
 				if (v.Equals(value))
 					return true;
 			return false;
         }
+
+        public static bool OneOf<T>(this T value, params T[] values)
+			where T: struct, IEquatable<T>
+            => value.OneOf((IEnumerable<T>)values);
 
 		/// <summary>
 		/// Create boxed representation of the value type.
