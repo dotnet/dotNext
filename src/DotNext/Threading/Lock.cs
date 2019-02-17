@@ -15,7 +15,9 @@ namespace DotNext.Threading
             Monitor,
             ReadLock,
             UpgradableReadLock,
-            WriteLock
+            WriteLock,
+
+            Semaphore
         }
 
         private readonly object lockedObject;
@@ -28,7 +30,15 @@ namespace DotNext.Threading
         }
 
         /// <summary>
-        /// Creates monitor lock control object but doesn't acquire lock.
+        /// Creates semaphore-based lock but doesn't acquire lock.
+        /// </summary>
+        /// <param name="semaphore">The semaphore to wrap into lock object.</param>
+        /// <returns>The lock representing semaphore.</returns>
+        public static Lock Semaphore(SemaphoreSlim semaphore)
+            => new Lock(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), LockType.Semaphore);
+
+        /// <summary>
+        /// Creates monitor-based lock control object but doesn't acquire lock.
         /// </summary>
         /// <param name="obj">Monitor lock target.</param>
         /// <returns>The lock representing monitor.</returns>
@@ -84,6 +94,9 @@ namespace DotNext.Threading
                 case LockType.UpgradableReadLock:
                     ((ReaderWriterLockSlim)lockedObject).EnterUpgradeableReadLock();
                     return;
+                case LockType.Semaphore:
+                    ((SemaphoreSlim)lockedObject).Wait();
+                    return;
             }
         }
 
@@ -103,6 +116,8 @@ namespace DotNext.Threading
                     return ((ReaderWriterLockSlim)lockedObject).TryEnterWriteLock(0);
                 case LockType.UpgradableReadLock:
                     return ((ReaderWriterLockSlim)lockedObject).TryEnterUpgradeableReadLock(0);
+                case LockType.Semaphore:
+                    return ((SemaphoreSlim)lockedObject).Wait(0);
                 default:
                     return false;
             }
@@ -125,6 +140,8 @@ namespace DotNext.Threading
                     return ((ReaderWriterLockSlim)lockedObject).TryEnterWriteLock(timeout);
                 case LockType.UpgradableReadLock:
                     return ((ReaderWriterLockSlim)lockedObject).TryEnterUpgradeableReadLock(timeout);
+                case LockType.Semaphore:
+                    return ((SemaphoreSlim)lockedObject).Wait(timeout);
                 default:
                     return false;
             }
@@ -148,6 +165,9 @@ namespace DotNext.Threading
                     return;
                 case LockType.UpgradableReadLock:
                     ((ReaderWriterLockSlim)lockedObject).ExitUpgradeableReadLock();
+                    return;
+                case LockType.Semaphore:
+                    ((SemaphoreSlim)lockedObject).Release();
                     return;
             }
         }
