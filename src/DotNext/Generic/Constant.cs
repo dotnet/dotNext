@@ -29,18 +29,31 @@ namespace DotNext.Generic
             Value = constVal;
         }
 
+        /// <summary>
+        /// Returns textual representation of the constant value.
+        /// </summary>
+        /// <returns>The textual representation of the constant value.</returns>
         public sealed override string ToString()
         {
             object boxed = Value;
             return boxed is null ? "NULL" : boxed.ToString();
         }
 
+        /// <summary>
+        /// Computes hash code for the constant.
+        /// </summary>
+        /// <returns>The hash code of the constant.</returns>
         public sealed override int GetHashCode()
         {
             object boxed = Value;
             return boxed is null ? 0 : boxed.GetHashCode();
         }
 
+        /// <summary>
+        /// Determines whether two constant values are equal.
+        /// </summary>
+        /// <param name="other">Other constant value to compare.</param>
+        /// <returns><see langword="true"/>, this object represents the same constant value as other; otherwise, <see langword="false"/>.</returns>
         public sealed override bool Equals(object other)
         {
             switch(other)
@@ -51,7 +64,11 @@ namespace DotNext.Generic
             }
         }
 
-        public static implicit operator T(Constant<T> other) => other.Value;
+        /// <summary>
+        /// Extracts constant value.
+        /// </summary>
+        /// <param name="const">The constant value holder.</param>
+        public static implicit operator T(Constant<T> @const) => @const.Value;
         
         /// <summary>
         /// Extracts constant value from generic parameter.

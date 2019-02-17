@@ -28,7 +28,7 @@ namespace DotNext
 		/// <typeparam name="T">Type of array elements.</typeparam>
 		/// <param name="array">An array to iterate.</param>
 		/// <param name="action">An action to be applied for each element.</param>
-		public static void ForEach<T>(this T[] array, ArrayIndexer<T> action)
+		public static void ForEach<T>(this T[] array, ItemAction<long, T> action)
 		{
 			for (var i = 0L; i < array.LongLength; i++)
 				action(i, ref array[i]);

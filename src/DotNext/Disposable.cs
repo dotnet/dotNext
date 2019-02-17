@@ -30,6 +30,10 @@ namespace DotNext
 				throw new ObjectDisposedException(GetType().Name);
 		}
 
+        /// <summary>
+        /// Releases managed and unmanaged resources associated with this object.
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; otherwise, <see langword="false"/>.</param>
 		protected abstract void Dispose(bool disposing);
 
 		private void DisposeCore(bool disposing)

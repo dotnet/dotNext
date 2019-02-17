@@ -16,12 +16,11 @@ namespace DotNext.Reflection
 
 			public static string operator +(BaseClass bc) => bc?.ToString();
 
-			public override bool Equals(object obj)
-			{
-				return base.Equals(obj);
-			}
+            public override bool Equals(object obj) => obj is BaseClass;
 
-			public static implicit operator string(BaseClass obj) => obj?.ToString();
+            public override int GetHashCode() => GetType().GetHashCode();
+
+            public static implicit operator string(BaseClass obj) => obj?.ToString();
 		}
 
 		public sealed class DerivedClass: BaseClass

@@ -168,13 +168,37 @@ namespace DotNext
 
         private Enum(E value) => this.value = value;
 
+        /// <summary>
+        /// Converts typed enum wrapper into actual enum value.
+        /// </summary>
+        /// <param name="en">Enum wrapper to convert.</param>
         public static implicit operator E(Enum<E> en) => en.value;
+
+        /// <summary>
+        /// Wraps enum value.
+        /// </summary>
+        /// <param name="value">The value to wrap.</param>
         public static implicit operator Enum<E>(E value) => new Enum<E>(value);
 
+        /// <summary>
+        /// Compares this enum value with other.
+        /// </summary>
+        /// <param name="other">Other value to compare.</param>
+        /// <returns>Comparison result.</returns>
         public int CompareTo(E other) => Comparer<E>.Default.Compare(value, other);
 
+        /// <summary>
+        /// Determines whether this value equals to the other enum value.
+        /// </summary>
+        /// <param name="other">Other value to compare.</param>
+        /// <returns>Equality check result.</returns>
         public bool Equals(E other) => EqualityComparer<E>.Default.Equals(value, other);
 
+        /// <summary>
+        /// Determines whether this value equals to the other enum value.
+        /// </summary>
+        /// <param name="other">Other value to compare.</param>
+        /// <returns>Equality check result.</returns>
         public bool Equals(object other)
         {
             switch(other)
@@ -188,8 +212,16 @@ namespace DotNext
             }
         }
 
+        /// <summary>
+        /// Gets hash code of the enum value.
+        /// </summary>
+        /// <returns>The hash code of the enum value.</returns>
         public override int GetHashCode() => EqualityComparer<E>.Default.GetHashCode(value);
 
+        /// <summary>
+        /// Returns textual representation of the enum value.
+        /// </summary>
+        /// <returns>The textual representation of the enum value.</returns>
         public override string ToString() => value.ToString();
 
         string IFormattable.ToString(string format, IFormatProvider provider) => value.ToString();

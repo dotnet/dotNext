@@ -41,9 +41,22 @@ namespace DotNext
         /// </remarks>
         public static Converter<T, T> Identity<T>() => Identity<T, T>();
 
+        /// <summary>
+        /// Converts <see cref="Converter{I, O}"/> into <see cref="Func{I, O}"/>.
+        /// </summary>
+        /// <typeparam name="I">Type of input argument.</typeparam>
+        /// <typeparam name="O">Return type of the function.</typeparam>
+        /// <param name="converter">The converted delegate.</param>
+        /// <returns>A delegate of type <see cref="Func{I, O}"/> referencing the same method as original delegate.</returns>
         public static Func<I, O> AsFunc<I, O>(this Converter<I, O> converter)
             => converter.ChangeType<Func<I, O>>();
 
+        /// <summary>
+        /// Converts <see cref="Converter{T, Boolean}"/> into predicate.
+        /// </summary>
+        /// <typeparam name="T">Type of predicate argument.</typeparam>
+        /// <param name="converter">A delegate to convert.</param>
+        /// <returns>A delegate of type <see cref="Predicate{T}"/> referencing the same method as original delegate.</returns>
         public static Predicate<T> AsPredicate<T>(this Converter<T, bool> converter)
             => converter.ChangeType<Predicate<T>>();
     }

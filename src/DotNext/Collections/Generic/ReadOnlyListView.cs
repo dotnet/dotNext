@@ -20,7 +20,7 @@ namespace DotNext.Collections.Generic
         /// <summary>
         /// Initializes a new read-only view for the specified mutable list.
         /// </summary>
-        /// <param name="list"></param>
+        /// <param name="list">A list to wrap.</param>
         public ReadOnlyListView(IList<T> list)
             => source = list ?? throw new ArgumentNullException(nameof(list));
 
@@ -39,7 +39,7 @@ namespace DotNext.Collections.Generic
         /// <summary>
         /// Gets enumerator over items in the list.
         /// </summary>
-        /// <returns>Enumerator over items in the list.</returns>
+        /// <returns>The enumerator over items in the list.</returns>
         public IEnumerator<T> GetEnumerator() => source.GetEnumerator();
         
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -50,50 +50,124 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="other">Other view to compare.</param>
         /// <returns><see langword="true"/> if the current view points to the same list as other view; otherwise, <see langword="false"/>.</returns>
+        /// <remarks>
+        /// Comparison between two wrapped lists is 
+        /// performed using method <see cref="object.ReferenceEquals(object, object)"/>.
+        /// </remarks>
         public bool Equals(ReadOnlyListView<T> other) => ReferenceEquals(source, other.source);
 
+        /// <summary>
+        /// Returns identity hash code of the wrapped list.
+        /// </summary>
+        /// <returns>Identity hash code of the wrapped list.</returns>
         public override int GetHashCode() => RuntimeHelpers.GetHashCode(source);
 
-		public override bool Equals(object other)
+        /// <summary>
+        /// Determines whether wrapped list and the specified object 
+        /// are equal by reference.
+        /// </summary>
+        /// <param name="other">Other list to compare.</param>
+        /// <returns><see langword="true"/>, if wrapped list and the specified object are equal by reference; otherwise, <see lngword="false"/>.</returns>
+        public override bool Equals(object other)
 			=> other is ReadOnlyCollectionView<T> view ? Equals(view) : Equals(source, other);
 
-		public static bool operator ==(ReadOnlyListView<T> first, ReadOnlyListView<T> second)
+        /// <summary>
+        /// Determines whether two views point to the same list.
+        /// </summary>
+        /// <param name="first">The first view to compare.</param>
+        /// <param name="second">The second view to compare.</param>
+        /// <returns><see langword="true"/> if both views point to the same list; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(ReadOnlyListView<T> first, ReadOnlyListView<T> second)
 			=> first.Equals(second);
 
-		public static bool operator !=(ReadOnlyListView<T> first, ReadOnlyListView<T> second)
+        /// <summary>
+        /// Determines whether two views point to the different lists.
+        /// </summary>
+        /// <param name="first">The first view to compare.</param>
+        /// <param name="second">The second view to compare.</param>
+        /// <returns><see langword="true"/> if both views point to the different lists; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(ReadOnlyListView<T> first, ReadOnlyListView<T> second)
 			=> !first.Equals(second);
     }
 
+    /// <summary>
+    /// Represents lazily converted read-only list.
+    /// </summary>
+    /// <typeparam name="I">Type of items in the source list.</typeparam>
+    /// <typeparam name="O">Type of items in the converted list.</typeparam>
     public readonly struct ReadOnlyListView<I, O>: IReadOnlyList<O>, IEquatable<ReadOnlyListView<I, O>>
     {
         private readonly IReadOnlyList<I> source;
         private readonly Converter<I, O> mapper;
 
+        /// <summary>
+        /// Initializes a new lazily converted view.
+        /// </summary>
+        /// <param name="list">Read-only list to convert.</param>
+        /// <param name="mapper">List items converter.</param>
         public ReadOnlyListView(IReadOnlyList<I> list, Converter<I, O> mapper)
         {
             source = list ?? throw new ArgumentNullException(nameof(list));
 			this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+        /// <summary>
+        /// Gets item at the specified position.
+        /// </summary>
+        /// <param name="index">Zero-based index of the item.</param>
+        /// <returns>Converted item at the specified position.</returns>
         public O this[int index] => mapper(source[index]);
 
+        /// <summary>
+        /// Count of items in the list.
+        /// </summary>
         public int Count => source.Count;
 
+        /// <summary>
+        /// Returns enumerator over converted items.
+        /// </summary>
+        /// <returns>The enumerator over converted items.</returns>
         public IEnumerator<O> GetEnumerator() => source.Select(mapper.AsFunc()).GetEnumerator();
         
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
+        
+        /// <summary>
+        /// Determines whether two converted lists are same.
+        /// </summary>
+        /// <param name="other">Other list to compare.</param>
+        /// <returns><see langword="true"/> if this view wraps the same source list and contains the same converter as other view; otherwise, <see langword="false"/>.</returns>
         public bool Equals(ReadOnlyListView<I, O> other) => ReferenceEquals(source, other.source) && Equals(mapper, other.mapper);
 
+        /// <summary>
+        /// Returns hash code for the this list.
+        /// </summary>
+        /// <returns>The hash code of this list.</returns>
         public override int GetHashCode() => source is null || mapper is null ? 0 : RuntimeHelpers.GetHashCode(source) ^ mapper.GetHashCode();
 
-		public override bool Equals(object other)
+        /// <summary>
+        /// Determines whether two converted lists are same.
+        /// </summary>
+        /// <param name="other">Other list to compare.</param>
+        /// <returns><see langword="true"/> if this collection wraps the same source collection and contains the same converter as other collection; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object other)
 			=> other is ReadOnlyListView<I, O> view ? Equals(view) : Equals(source, other);
 
-		public static bool operator ==(ReadOnlyListView<I, O> first, ReadOnlyListView<I, O> second)
+        /// <summary>
+        /// Determines whether two views are same.
+        /// </summary>
+        /// <param name="first">The first list view to compare.</param>
+        /// <param name="second">The second list view to compare.</param>
+        /// <returns><see langword="true"/> if the first view wraps the same source collection and contains the same converter as the second view; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(ReadOnlyListView<I, O> first, ReadOnlyListView<I, O> second)
 			=> first.Equals(second);
 
-		public static bool operator !=(ReadOnlyListView<I, O> first, ReadOnlyListView<I, O> second)
+        /// <summary>
+        /// Determines whether two views are not same.
+        /// </summary>
+        /// <param name="first">The first list view to compare.</param>
+        /// <param name="second">The second list view to compare.</param>
+        /// <returns><see langword="true"/> if the first view wraps the diferent source collection and contains the different converter as the second view; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(ReadOnlyListView<I, O> first, ReadOnlyListView<I, O> second)
 			=> !first.Equals(second);
     }
 }

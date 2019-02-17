@@ -225,9 +225,11 @@ namespace DotNext.Reflection
 			Null(StaticEvent);
 		}
 
-		private static long Field;
+#pragma warning disable IDE0044 // Add readonly modifier
+        private static long Field;
+#pragma warning restore IDE0044 // Add readonly modifier
 
-		[Fact]
+        [Fact]
 		public void StaticFieldTest()
 		{
 			MemberGetter<Guid> structField = Type<Guid>.Field<Guid>.RequireStatic(nameof(Guid.Empty));

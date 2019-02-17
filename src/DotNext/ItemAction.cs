@@ -1,11 +1,12 @@
 ﻿namespace DotNext
 {
 	/// <summary>
-	/// Represents array indexer delegate which can be used
-	/// to read and modify array element during iteration.
+	/// Represents item indexer delegate which can be used
+	/// to read and modify collection element during iteration.
 	/// </summary>
-	/// <typeparam name="T">Type of array element.</typeparam>
+    /// <typeparam name="I">Type of item index.</typeparam>
+	/// <typeparam name="V">Type of collection element.</typeparam>
 	/// <param name="index">Element index.</param>
 	/// <param name="element">Mutable managed pointer to array element.</param>
-	public delegate void ArrayIndexer<T>(long index, ref T element);
+	public delegate void ItemAction<in I, V>(I index, ref V element);
 }

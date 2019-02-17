@@ -34,7 +34,7 @@ namespace DotNext
         /// Returns predicate implementing nullability check.
         /// </summary>
         /// <typeparam name="T">Type of predicate argument.</typeparam>
-        /// <returns>A predicate.</returns>
+        /// <returns>The predicate instance.</returns>
         /// <remarks>
         /// This method returns the same instance of predicate on every call.
         /// </remarks>
@@ -42,6 +42,15 @@ namespace DotNext
             where T: class
             => IsNullPredicate<T>.Value;
 
+        /// <summary>
+        /// Returns predicate checking that input argument 
+        /// is not <see langword="null"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the predicate argument.</typeparam>
+        /// <returns>The predicate instance.</returns>
+        /// <remarks>
+        /// This method returns the same instance of predicate on every call.
+        /// </remarks>
         public static Predicate<T> IsNotNull<T>()
             where T: class
             => IsNotNullPredicate<T>.Value;

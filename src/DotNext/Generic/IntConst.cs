@@ -19,6 +19,9 @@ namespace DotNext.Generic
         /// </summary>
         public sealed class Zero: IntConst
         {
+            /// <summary>
+            /// Initializes a new constant value.
+            /// </summary>
             public Zero()
                 : base(0)
             {

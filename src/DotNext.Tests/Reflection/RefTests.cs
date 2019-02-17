@@ -9,7 +9,7 @@ namespace DotNext.Reflection
         {
             Ref<int> ref1 = 10;
             Ref<int> ref2 = 20;
-            True(ref1 == ref1);
+            False(ref1 == ref2);
             True(ref1 != ref2);
         }
     }

@@ -50,10 +50,31 @@ namespace DotNext.Collections.Generic
 			public static Action<IList<T>, int, T> Setter => Indexer<IList<T>, T>.Setter;
 		}
 
+        /// <summary>
+        /// Returns <see cref="IReadOnlyList{T}.get_Item"/> as delegate
+        /// attached to the list instance.
+        /// </summary>
+        /// <typeparam name="T">Type of list items.</typeparam>
+        /// <param name="list">Read-only list instance.</param>
+        /// <returns>A delegate representing indexer.</returns>
 		public static Func<int, T> IndexerGetter<T>(this IReadOnlyList<T> list) => Indexer<T>.ReadOnly.Method.CreateDelegate<Func<int, T>>(list);
 
+        /// <summary>
+        /// Returns <see cref="IList{T}.get_Item"/> as delegate
+        /// attached to the list instance. 
+        /// </summary>
+        /// <typeparam name="T">Type of list items.</typeparam>
+        /// <param name="list">Mutable list instance.</param>
+        /// <returns>A delegate representing indexer.</returns>
 		public static Func<int, T> IndexerGetter<T>(this IList<T> list) => Indexer<T>.Getter.Method.CreateDelegate<Func<int, T>>(list);
 
+        /// <summary>
+        /// Returns <see cref="IList{T}.set_Item"/> as delegate
+        /// attached to the list instance.
+        /// </summary>
+        /// <typeparam name="T">Type of list items.</typeparam>
+        /// <param name="list">Mutable list instance.</param>
+        /// <returns>A delegate representing indexer.</returns>
 		public static Action<int, T> IndexerSetter<T>(this IList<T> list) => Indexer<T>.Setter.Method.CreateDelegate<Action<int, T>>(list);
 
 		/// <summary>
@@ -65,7 +86,7 @@ namespace DotNext.Collections.Generic
 		/// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
 		/// <param name="mapper">Element mapping function.</param>
 		/// <returns>An array of list items.</returns>
-		public static O[] ToArray<I, O>(this IList<I> input, Func<I, O> mapper)
+		public static O[] ToArray<I, O>(this IList<I> input, Converter<I, O> mapper)
 		{
 			var output = OneDimensionalArray.New<O>(input.Count);
 			for (var i = 0; i < input.Count; i++)

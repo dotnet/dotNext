@@ -9,7 +9,7 @@ namespace DotNext
     /// <summary>
     /// Provides random data generation.
     /// </summary>
-    public static class Randomization
+    public static class RandomExtensions
     {
         private static readonly ArrayPool<byte> ByteArrayPool = ArrayPool<byte>.Create(16, 50);
 

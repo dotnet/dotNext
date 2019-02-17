@@ -11,10 +11,13 @@ namespace DotNext.Generic
         }
 
         /// <summary>
-        /// Represents TRUE constant value as generic parameter.
+        /// Represents <see langword="true"/> constant value as generic parameter.
         /// </summary>
         public sealed class True: BooleanConst
         {
+            /// <summary>
+            /// Initializes a new constant value.
+            /// </summary>
             public True()
                 : base(true)
             {
@@ -22,10 +25,13 @@ namespace DotNext.Generic
         }
 
         /// <summary>
-        /// Represents FALSE constant value as generic parameter.
+        /// Represents <see langword="false"/> constant value as generic parameter.
         /// </summary>
         public sealed class False: BooleanConst
         {
+            /// <summary>
+            /// Initializes a new constant value.
+            /// </summary>
             public False()
                 : base(false)
             {

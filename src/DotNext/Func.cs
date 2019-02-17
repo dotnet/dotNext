@@ -54,7 +54,7 @@ namespace DotNext
         /// <typeparam name="I">Type of input argument.</typeparam>
         /// <typeparam name="O">Return type of the converter.</typeparam>
         /// <param name="function">The function to convert.</param>
-        /// <returns>A delegate of type <see cref="Predicate{T}"/> referencing the same method as original delegate.</returns>
+        /// <returns>A delegate of type <see cref="Converter{I, O}"/> referencing the same method as original delegate.</returns>
         public static Converter<I, O> AsConverter<I, O>(this Func<I, O> function)
             => function.ChangeType<Converter<I, O>>();
     }

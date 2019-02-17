@@ -128,6 +128,7 @@ namespace DotNext.Threading
             }
         }
 
+        [CLSCompliant(false)]
         public bool Equals(in Lock other) => type == other.type && Equals(lockedObject, other.lockedObject);
         bool IEquatable<Lock>.Equals(Lock other) => Equals(in other);
         public override bool Equals(object other) => other is Lock @lock && Equals(@lock);

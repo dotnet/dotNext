@@ -14,24 +14,67 @@ namespace DotNext
 	/// </summary>
 	public static class Optional
 	{
-		public static async Task<T> Or<T>(this Task<Optional<T>> task, T defaultValue)
+        /// <summary>
+        /// Returns the value if present; otherwise return default value.
+        /// </summary>
+        /// <typeparam name="T">Type of the value.</typeparam>
+        /// <param name="task">The task returning optional value.</param>
+        /// <param name="defaultValue">The value to be returned if there is no value present.</param>
+        /// <returns>The value, if present, otherwise default</returns>
+        public static async Task<T> Or<T>(this Task<Optional<T>> task, T defaultValue)
 			=> (await task).Or(defaultValue);
 
-		public static async Task<T> OrThrow<T, E>(this Task<Optional<T>> task)
+        /// <summary>
+        /// If a value is present, returns the value, otherwise throw exception.
+        /// </summary>
+        /// <param name="task">The task returning optional value.</param>
+        /// <typeparam name="T">Type of the value.</typeparam>
+        /// <typeparam name="E">Type of exception to throw.</typeparam>
+        /// <returns>The value, if present.</returns>
+        public static async Task<T> OrThrow<T, E>(this Task<Optional<T>> task)
 			where E : Exception, new()
 			=> (await task).OrThrow<E>();
 
-		public static async Task<T> OrThrow<T, E>(this Task<Optional<T>> task, Func<E> exceptionFactory)
+        /// <summary>
+        /// If a value is present, returns the value, otherwise throw exception.
+        /// </summary>
+        /// <typeparam name="T">Type of the value.</typeparam>
+        /// <typeparam name="E">Type of exception to throw.</typeparam>
+        /// <param name="task">The task returning optional value.</param>
+        /// <param name="exceptionFactory">Exception factory.</param>
+        /// <returns>The value, if present.</returns>
+        public static async Task<T> OrThrow<T, E>(this Task<Optional<T>> task, Func<E> exceptionFactory)
 			where E : Exception
 			=> (await task).OrThrow(exceptionFactory);
 
-		public static async Task<T> OrInvoke<T>(this Task<Optional<T>> task, Func<T> defaultFunc)
+        /// <summary>
+        /// Returns the value if present; otherwise invoke delegate.
+        /// </summary>
+        /// <typeparam name="T">Type of the value.</typeparam>
+        /// <param name="task">The task returning optional value.</param>
+        /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
+        /// <returns>The value, if present, otherwise returned from delegate.</returns>
+        public static async Task<T> OrInvoke<T>(this Task<Optional<T>> task, Func<T> defaultFunc)
 			=> (await task).OrInvoke(defaultFunc);
 
-		public static async Task<T> OrDefault<T>(this Task<Optional<T>> task)
+        /// <summary>
+        /// If a value is present, returns the value, otherwise return default value.
+        /// </summary>
+        /// <typeparam name="T">Type of the value.</typeparam>
+        /// <param name="task">The task returning optional value.</param>
+        /// <returns>The value, if present, otherwise default</returns>
+        public static async Task<T> OrDefault<T>(this Task<Optional<T>> task)
 			=> (await task).OrDefault();
 
-		public static async Task<Optional<T>> If<T>(this Task<Optional<T>> task, Predicate<T> condition)
+        /// <summary>
+        /// If a value is present, and the value matches the given predicate, 
+        /// return an Optional describing the value, otherwise return an empty Optional.
+        /// </summary>
+        /// <typeparam name="T">Type of the value.</typeparam>
+        /// <param name="task">The task returning optional value.</param>
+        /// <param name="condition">A predicate to apply to the value, if present.</param>
+        /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
+        public static async Task<Optional<T>> If<T>(this Task<Optional<T>> task, Predicate<T> condition)
 			=> (await task).If(condition);
 
 		/// <summary>
@@ -52,7 +95,7 @@ namespace DotNext
 		/// </summary>
 		/// <typeparam name="T">Type of value.</typeparam>
 		/// <param name="value">The value to convert.</param>
-		/// <returns></returns>
+		/// <returns>The value wrapped into Optional container.</returns>
 		public static Optional<T> ToOptional<T>(this in T? value)
 			where T : struct
 			=> value ?? Optional<T>.Empty;
@@ -270,24 +313,54 @@ namespace DotNext
 		/// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
 		public Optional<T> If(Predicate<T> condition) => IsPresent && condition(value) ? this : Empty;
 
+        /// <summary>
+        /// Returns textual representation of this object.
+        /// </summary>
+        /// <returns>The textual representatin of this object.</returns>
 		public override string ToString() => IsPresent ? value.ToString() : "<EMPTY>";
 
+        /// <summary>
+        /// Computes hash code of the stored value.
+        /// </summary>
+        /// <returns>The hash code of the stored value.</returns>
+        /// <remarks>
+        /// This method calls <see cref="object.GetHashCode()"/>
+        /// for the object <see cref="Value"/>.
+        /// </remarks>
 		public override int GetHashCode() => IsPresent ? value.GetHashCode() : 0;
 
+        /// <summary>
+        /// Determines whether this container stored the same
+        /// value as the specified value.
+        /// </summary>
+        /// <param name="other">Other value to compare.</param>
+        /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
 		public bool Equals(T other) => IsPresent && value.Equals(other);
 
 		bool IEquatable<Optional<T>>.Equals(Optional<T> other)
 			=> Equals(in other);
 
-		[CLSCompliant(false)]
-		public bool Equals(in Optional<T> other)
-		{
-			var present1 = IsPresent;
-			var present2 = other.IsPresent;
-			return present1 & present2 ? value.Equals(other.value) : present1 == present2;
-		}
+        /// <summary>
+        /// Determines whether this container stores
+        /// the same value as other.
+        /// </summary>
+        /// <param name="other">Other container to compare.</param>
+        /// <returns><see langword="true"/> if this contauner stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+        [CLSCompliant(false)]
+        public bool Equals(in Optional<T> other)
+        {
+            var present1 = IsPresent;
+            var present2 = other.IsPresent;
+            return present1 & present2 ? value.Equals(other.value) : present1 == present2;
+        }
 
-		public override bool Equals(object other)
+        /// <summary>
+        /// Determines whether this container stores
+        /// the same value as other.
+        /// </summary>
+        /// <param name="other">Other container to compare.</param>
+        /// <returns><see langword="true"/> if this contauner stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object other)
 		{
 			switch (other)
 			{
@@ -300,24 +373,73 @@ namespace DotNext
 			}
 		}
 
+        /// <summary>
+        /// Performs equality check between stored value
+        /// and the specified value using method <see cref="IEqualityComparer.Equals(object, object)"/>.
+        /// </summary>
+        /// <param name="other">Other object to compare with <see cref="Value"/>.</param>
+        /// <param name="comparer">The comparer implementing custom equality check.</param>
+        /// <returns><see langword="true"/> if <paramref name="other"/> is equal to <see cref="Value"/> using custom check; otherwise, <see langword="false"/>.</returns>
 		public bool Equals(object other, IEqualityComparer comparer)
 			=> other is T && IsPresent && comparer.Equals(value, other);
 
+        /// <summary>
+        /// Computes hash code for the stored value 
+        /// using method <see cref="IEqualityComparer.GetHashCode(object)"/>.
+        /// </summary>
+        /// <param name="comparer">The comparer implementing hash code function.</param>
+        /// <returns>The hash code of <see cref="Value"/>.</returns>
 		public int GetHashCode(IEqualityComparer comparer)
 			=> IsPresent ? comparer.GetHashCode(value) : 0;
 
+        /// <summary>
+        /// Wraps value into Optional container.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static implicit operator Optional<T>(T value) => new Optional<T>(value);
 
-		public static explicit operator T(in Optional<T> optional) => optional.Value;
-		public static bool operator ==(in Optional<T> first, in Optional<T> second)
+        /// <summary>
+        /// Extracts value stored in the Optional container.
+        /// </summary>
+        /// <param name="optional">The container.</param>
+        /// <exception cref="InvalidOperationException">No value is present.</exception>
+        public static explicit operator T(in Optional<T> optional) => optional.Value;
+
+        /// <summary>
+        /// Determines whether two containers store the same value.
+        /// </summary>
+        /// <param name="first">The first container to compare.</param>
+        /// <param name="second">The second container to compare.</param>
+        /// <returns><see langword="true"/>, if both containers store the same value; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(in Optional<T> first, in Optional<T> second)
 			=> first.Equals(in second);
-		public static bool operator !=(in Optional<T> first, in Optional<T> second)
+
+        /// <summary>
+        /// Determines whether two containers store the different values.
+        /// </summary>
+        /// <param name="first">The first container to compare.</param>
+        /// <param name="second">The second container to compare.</param>
+        /// <returns><see langword="true"/>, if both containers store the different values; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(in Optional<T> first, in Optional<T> second)
 			=> !first.Equals(in second);
 
+        /// <summary>
+        /// Returns non-empty container.
+        /// </summary>
+        /// <param name="first">The first container.</param>
+        /// <param name="second">The second container.</param>
+        /// <returns>The first non-empty container.</returns>
+        /// <see cref="Optional.Coalesce{T}(in Optional{T}, in Optional{T})"/>
 		public static Optional<T> operator |(in Optional<T> first, in Optional<T> second)
 			=> first.IsPresent ? first : second;
 
+        /// <summary>
+        /// Determines whether two containers are empty or have values.
+        /// </summary>
+        /// <param name="first">The first container.</param>
+        /// <param name="second">The second container.</param>
+        /// <returns><see langword="true"/>, if both containers are empty or have values; otherwise, <see langword="false"/>.</returns>
         public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second)
         {
             if (first.IsPresent == second.IsPresent)
@@ -328,7 +450,20 @@ namespace DotNext
                 return second;
         }
 		
+        /// <summary>
+        /// Checks whether the container has value.
+        /// </summary>
+        /// <param name="optional">The container to check.</param>
+        /// <returns><see langword="true"/> if this container has value; otherwise, <see langword="false"/>.</returns>
+        /// <see cref="IsPresent"/>
 		public static bool operator true(in Optional<T> optional) => optional.IsPresent;
-		public static bool operator false(in Optional<T> optional) => !optional.IsPresent;
+        
+        /// <summary>
+        /// Checks whether the container has no value.
+        /// </summary>
+        /// <param name="optional">The container to check.</param>
+        /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
+        /// <see cref="IsPresent"/>
+        public static bool operator false(in Optional<T> optional) => !optional.IsPresent;
 	}
 }

@@ -30,25 +30,58 @@ namespace DotNext.Collections.Generic
 		}
 
         /// <summary>
-        /// Provides access to dictionary indexer.
+        /// Provides strongly-typed access to dictionary indexer.
         /// </summary>
         /// <typeparam name="K">Type of keys in the dictionary.</typeparam>
         /// <typeparam name="V">Type of values in the dictionary.</typeparam>
 		public static class Indexer<K, V>
 		{
+            /// <summary>
+            /// Represents read-only dictionary indexer.
+            /// </summary>
 			public static Func<IReadOnlyDictionary<K, V>, K, V> ReadOnly => Indexer<IReadOnlyDictionary<K, V>, K, V>.Getter;
 
+            /// <summary>
+            /// Represents dictionary value getter.
+            /// </summary>
 			public static Func<IDictionary<K, V>, K, V> Getter => Indexer<IDictionary<K, V>, K, V>.Getter;
 
+            /// <summary>
+            /// Represents dictionary value setter.
+            /// </summary>
 			public static Action<IDictionary<K, V>, K, V> Setter => Indexer<IDictionary<K, V>, K, V>.Setter;
 		}
 
+        /// <summary>
+        /// Returns <see cref="IReadOnlyDictionary{TKey, TValue}.get_Item"/> as
+        /// delegate attached to the dictionary instance.
+        /// </summary>
+        /// <typeparam name="K">Type of dictionary keys.</typeparam>
+        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <param name="dictionary">Read-only dictionary instance.</param>
+        /// <returns>A delegate representing dictionary indexer.</returns>
         public static Func<K, V> IndexerGetter<K, V>(this IReadOnlyDictionary<K, V> dictionary)
             => Indexer<K, V>.ReadOnly.Method.CreateDelegate<Func<K, V>>(dictionary);
 
+        /// <summary>
+        /// Returns <see cref="IDictionary{TKey, TValue}.get_Item"/> as
+        /// delegate attached to the dictionary instance.
+        /// </summary>
+        /// <typeparam name="K">Type of dictionary keys.</typeparam>
+        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <param name="dictionary">Mutable dictionary instance.</param>
+        /// <returns>A delegate representing dictionary indexer.</returns>
         public static Func<K, V> IndexerGetter<K, V>(this IDictionary<K, V> dictionary)
             => Indexer<K, V>.Getter.Method.CreateDelegate<Func<K, V>>(dictionary);
 
+        /// <summary>
+        /// Returns <see cref="IDictionary{TKey, TValue}.set_Item"/> as
+        /// delegate attached to the dictionary instance.
+        /// </summary>
+        /// <typeparam name="K">Type of dictionary keys.</typeparam>
+        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <param name="dictionary">Mutable dictionary instance.</param>
+        /// <returns>A delegate representing dictionary indexer.</returns>
         public static Action<K, V> IndexerSetter<K, V>(this IDictionary<K, V> dictionary)
             => Indexer<K, V>.Setter.Method.CreateDelegate<Action<K, V>>(dictionary);
 
@@ -114,18 +147,59 @@ namespace DotNext.Collections.Generic
 			}
 		}
 
+        /// <summary>
+        /// Applies specific action to each dictionary
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dictionary"></param>
+        /// <param name="action"></param>
 		public static void ForEach<K, V>(this IDictionary<K, V> dictionary, Action<K, V> action)
 		{
 			foreach (var (key, value) in dictionary)
 				action(key, value);
 		}
 
+        /// <summary>
+        /// Gets dictionary value by key if it exists or
+        /// invoke <paramref name="defaultValue"/> and
+        /// return its result as a default value.
+        /// </summary>
+        /// <typeparam name="K">Type of dictionary keys.</typeparam>
+        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <param name="dictionary">A dictionary to read from.</param>
+        /// <param name="key">A key associated with the value.</param>
+        /// <param name="defaultValue">A delegate to be invoked if key doesn't exist in the dictionary.</param>
+        /// <returns>The value associated with the key or returned by the delegate.</returns>
 		public static V GetOrInvoke<K, V>(this IDictionary<K, V> dictionary, K key, Func<V> defaultValue)
 			=> dictionary.TryGetValue(key, out var value) ? value : defaultValue();
-
+        
+        /// <summary>
+        /// Gets dictionary value associated with the key
+        /// and convert that value using passed converter.
+        /// </summary>
+        /// <typeparam name="K">Type of dictionary keys.</typeparam>
+        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <typeparam name="T">Type of value conversion result.</typeparam>
+        /// <param name="dictionary">A dictionary to read from.</param>
+        /// <param name="key">A key associated with value.</param>
+        /// <param name="mapper">Value converter.</param>
+        /// <returns>Converted value associated with the key.</returns>
 		public static Optional<T> ConvertValue<K, V, T>(this IDictionary<K, V> dictionary, K key, Converter<V, T> mapper)
 			=> dictionary.TryGetValue(key, out var value) ? mapper(value) : Optional<T>.Empty;
 
+        /// <summary>
+        /// Gets dictionary value associated with the key
+        /// and convert that value using passed converter.
+        /// </summary>
+        /// <typeparam name="K">Type of dictionary keys.</typeparam>
+        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <typeparam name="T">Type of value conversion result.</typeparam>
+        /// <param name="dictionary">A dictionary to read from.</param>
+        /// <param name="key">A key associated with value.</param>
+        /// <param name="mapper">Value converter.</param>
+        /// <param name="value">Converted value associated with the key.</param>
+        /// <returns><see langword="true"/>, if key exists in the dictionary; otherwise, <see langword="false"/>.</returns>
 		public static bool ConvertValue<K, V, T>(this IDictionary<K, V> dictionary, K key, Converter<V, T> mapper, out T value)
 			=> dictionary.ConvertValue(key, mapper).TryGet(out value);
 
