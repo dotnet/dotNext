@@ -57,6 +57,15 @@ namespace DotNext.Threading
         public static Lock Lock(this SemaphoreSlim semaphore) => Acquire(semaphore, Threading.Lock.Semaphore);
 
         /// <summary>
+        /// Blocks the current thread until it can enter the semaphore.
+        /// </summary>
+        /// <param name="semaphore">The semaphore.</param>
+        /// <param name="timeout">The amount of time to wait for the lock.</param>
+        /// <returns>The semaphore lock.</returns>
+        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+        public static Lock Lock(this SemaphoreSlim semaphore, TimeSpan timeout) => Acquire(semaphore, Threading.Lock.Semaphore, timeout);
+
+        /// <summary>
         /// Acquires read lock.
         /// </summary>
         /// <param name="rwLock">Read/write lock provider.</param>
