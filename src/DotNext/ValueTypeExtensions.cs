@@ -7,7 +7,7 @@ namespace DotNext
 	/// <summary>
 	/// Various extensions for value types.
 	/// </summary>
-    public static class ValueTypes
+    public static class ValueTypeExtensions
     {
         /// <summary>
         /// Obtain a value of type <typeparamref name="TO"/> by 
