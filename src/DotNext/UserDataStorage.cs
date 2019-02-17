@@ -112,7 +112,7 @@ namespace DotNext
 		/// Gets user data.
 		/// </summary>
 		/// <typeparam name="V">Type of data.</typeparam>
-		/// <param name="slot">User data slot.</param>
+		/// <param name="slot">The slot identifying user data.</param>
 		/// <param name="defaultValue">Default value to be returned if no user data contained in this collection.</param>
 		/// <returns>User data.</returns>
         public V Get<V>(UserDataSlot<V> slot, V defaultValue = default)
@@ -121,10 +121,23 @@ namespace DotNext
             return storage is null ? defaultValue : storage.Get(slot, defaultValue);
         }
 
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <returns>The data associated with the slot.</returns>
         public V GetOrSet<V>(UserDataSlot<V> slot)
             where V : new()
             => GetOrSet(slot, () => new V());
 
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
         public V GetOrSet<V>(UserDataSlot<V> slot, Func<V> valueFactory)
             => GetStorage(true).GetOrSet(slot, valueFactory);
 
@@ -132,7 +145,7 @@ namespace DotNext
         /// Tries to get user data.
         /// </summary>
         /// <typeparam name="V">Type of data.</typeparam>
-        /// <param name="slot">User data slot.</param>
+        /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">User data.</param>
         /// <returns><see langword="true"/>, if user data slot exists in this collection.</returns>
         public bool TryGet<V>(UserDataSlot<V> slot, out V userData)
@@ -151,7 +164,7 @@ namespace DotNext
         /// Sets user data.
         /// </summary>
         /// <typeparam name="V">Type of data.</typeparam>
-        /// <param name="slot">User data slot.</param>
+        /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">User data to be saved in this collection.</param>
         public void Set<V>(UserDataSlot<V> slot, V userData)
             => GetStorage(true).Set(slot, userData);
@@ -160,7 +173,7 @@ namespace DotNext
         /// Removes user data slot.
         /// </summary>
         /// <typeparam name="V">Type of data.</typeparam>
-        /// <param name="slot">User data slot to be removed from this collection.</param>
+        /// <param name="slot">The slot identifying user data.</param>
         /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
         public bool Remove<V>(UserDataSlot<V> slot)
         {

@@ -38,8 +38,8 @@ namespace DotNext
 		/// This method uses <see cref="object.Equals(object, object)"/>
 		/// to check equality between two objects.
 		/// </remarks>
-		/// <typeparam name="T">Type of object to compare.</typeparam>
-		/// <param name="value">An object to compare with other.</param>
+		/// <typeparam name="T">The type of object to compare.</typeparam>
+		/// <param name="value">The object to compare with other.</param>
 		/// <param name="values">Candidate objects.</param>
 		/// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
 		public static bool OneOf<T>(this T value, IEnumerable<T> values)
@@ -59,8 +59,8 @@ namespace DotNext
 		/// This method uses <see cref="object.Equals(object, object)"/>
 		/// to check equality between two objects.
 		/// </remarks>
-		/// <typeparam name="T">Type of object to compare.</typeparam>
-		/// <param name="value">An object to compare with other.</param>
+		/// <typeparam name="T">The type of object to compare.</typeparam>
+		/// <param name="value">The object to compare with other.</param>
 		/// <param name="values">Candidate objects.</param>
 		/// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
 		public static bool OneOf<T>(this T value, params T[] values)

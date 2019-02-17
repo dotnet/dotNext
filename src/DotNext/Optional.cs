@@ -25,6 +25,18 @@ namespace DotNext
 			=> (await task).Or(defaultValue);
 
         /// <summary>
+		/// If a value is present, apply the provided mapping function to it, and if the result is 
+		/// non-null, return an Optional describing the result. Otherwise returns <see cref="Optional{T}.Empty"/>.
+		/// </summary>
+        /// <typeparam name="I">The type of stored in the Optional container.</typeparam>
+		/// <typeparam name="O">The type of the result of the mapping function.</typeparam>
+        /// <param name="task">The task containing Optional value.</param>
+		/// <param name="converter">A mapping function to be applied to the value, if present.</param>
+		/// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.Empty"/>.</returns>
+		public static async Task<Optional<O>> Convert<I, O>(this Task<Optional<I>> task, Converter<I, O> converter)
+            => (await task).Convert(converter);
+
+        /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
         /// </summary>
         /// <param name="task">The task returning optional value.</param>

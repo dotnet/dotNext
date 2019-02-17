@@ -240,6 +240,11 @@ namespace DotNext.Threading
 	{
 		private T value;
 
+        /// <summary>
+        /// Initializes a new container with atomic operations 
+        /// for the reference type.
+        /// </summary>
+        /// <param name="value">Initial value to be placed into container.</param>
 		public AtomicReference(T value)
 		{
 			this.value = value;
@@ -278,13 +283,31 @@ namespace DotNext.Threading
 		public bool CompareAndSet(T expected, T update)
 			=> AtomicReference.CompareAndSet(ref value, expected, update);
 
+        /// <summary>
+        /// Returns textual representation of the stored value.
+        /// </summary>
+        /// <returns>The textual representation of the stored value.</returns>
 		public override string ToString() => Value?.ToString() ?? "NULL";
 
+        /// <summary>
+        /// Checks whether the stored value is equal to the given value.
+        /// </summary>
+        /// <param name="other">Other value to compare.</param>
+        /// <returns><see langword="true"/>, if the stored value is equal to <paramref name="other"/> value.</returns>
 		public bool Equals(T other) => Equals(other, Value);
 
-		public override bool Equals(object other)
+        /// <summary>
+        /// Checks whether the stored value is equal to the given value.
+        /// </summary>
+        /// <param name="other">Other value to compare.</param>
+        /// <returns><see langword="true"/>, if the stored value is equal to <paramref name="other"/> value.</returns>
+        public override bool Equals(object other)
 			=> other is AtomicReference<T> atomic ? Equals(atomic.Value) : Equals(other as T);
 
+        /// <summary>
+        /// Computes hash code for the stored value.
+        /// </summary>
+        /// <returns>The hash code of the stored value.</returns>
 		public override int GetHashCode()
 		{
 			var value = Value;
