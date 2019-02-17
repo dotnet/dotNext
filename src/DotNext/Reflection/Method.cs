@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Linq.Expressions;
 
 namespace DotNext.Reflection
 {
@@ -10,6 +8,11 @@ namespace DotNext.Reflection
 	/// </summary>
 	public static class Method
 	{
+        /// <summary>
+        /// Returns method parameter types respecting orded of parameters.
+        /// </summary>
+        /// <param name="method">The method to reflect.</param>
+        /// <returns>The array of parameter types.</returns>
 		public static Type[] GetParameterTypes(this MethodBase method)
             => method?.GetParameters().Convert(p => p.ParameterType);
 
@@ -29,11 +32,5 @@ namespace DotNext.Reflection
 
 		public static bool SignatureEquals(this MethodInfo method, MethodInfo other)
 			=> SignatureEquals((MethodBase)method, other) && method.ReturnType == other.ReturnType;
-		
-		public static MethodCallExpression AsExpression(this MethodInfo method, Expression instance, IEnumerable<Expression> arguments)
-			=> Expression.Call(instance, method, arguments);
-		
-		public static MethodCallExpression AsExpression(this MethodInfo method, IEnumerable<Expression> arguments)
-			=> method.AsExpression(null, arguments);
 	}
 }

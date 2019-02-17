@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace DotNext.Reflection
 {
+    /// <summary>
+    /// Provides specialized reflection methods for
+    /// collection types.
+    /// </summary>
     public static class CollectionType
     {
         /// <summary>

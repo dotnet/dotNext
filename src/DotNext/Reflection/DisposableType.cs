@@ -3,6 +3,10 @@ using System.Reflection;
 
 namespace DotNext.Reflection
 {
+    /// <summary>
+    /// Provides specialized reflection methods for
+    /// types implemeting dispose pattern.
+    /// </summary>
     public static class DisposableType
     {
         /// <summary>
