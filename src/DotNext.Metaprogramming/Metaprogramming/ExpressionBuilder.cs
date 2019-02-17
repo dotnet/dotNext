@@ -73,8 +73,18 @@ namespace DotNext.Metaprogramming
             where B: IExpressionBuilder<E>
             => AddStatement(Build<E, B>(builder, body));
 
+        /// <summary>
+        /// Adds no-operation instruction into this scope.
+        /// </summary>
+        /// <returns>No-operation instruction.</returns>
         public Expression Nop() => AddStatement(Expression.Empty());
         
+        /// <summary>
+        /// Adds assign operation into this scope.
+        /// </summary>
+        /// <param name="variable">The variable to modify.</param>
+        /// <param name="value">The value to be assigned to the variable.</param>
+        /// <returns>Assign operation.</returns>
         public BinaryExpression Assign(ParameterExpression variable, UniversalExpression value)
             => AddStatement(Expression.Assign(variable, value));
 
@@ -213,8 +223,21 @@ namespace DotNext.Metaprogramming
         public SwitchBuilder Switch(UniversalExpression switchValue)
             => new SwitchBuilder(switchValue, this, true);
 
+        /// <summary>
+        /// Constructs <see langword="return"/> instruction to return from
+        /// underlying lambda function having <see langword="void"/>
+        /// return type.
+        /// </summary>
+        /// <returns><see langword="return"/> instruction.</returns>
         public abstract Expression Return();
 
+        /// <summary>
+        /// Constructs <see langword="return"/> instruction to return from
+        /// underlying lambda function having non-<see langword="void"/>
+        /// return type.
+        /// </summary>
+        /// <param name="result">The value to be returned from the lambda function.</param>
+        /// <returns><see langword="return"/> instruction.</returns>
         public abstract Expression Return(UniversalExpression result);
 
         internal virtual Expression Build()
@@ -233,6 +256,10 @@ namespace DotNext.Metaprogramming
             }
         }
 
+        /// <summary>
+        /// Releases all resources associated with this builder.
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/>, if this method is called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer.</param>
         protected override void Dispose(bool disposing)
         {
             if(disposing)

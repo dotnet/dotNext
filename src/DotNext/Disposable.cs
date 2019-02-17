@@ -33,7 +33,7 @@ namespace DotNext
         /// <summary>
         /// Releases managed and unmanaged resources associated with this object.
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; otherwise, <see langword="false"/>.</param>
+        /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Finalize()"/>.</param>
 		protected abstract void Dispose(bool disposing);
 
 		private void DisposeCore(bool disposing)

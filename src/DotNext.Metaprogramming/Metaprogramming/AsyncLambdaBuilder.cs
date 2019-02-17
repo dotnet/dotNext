@@ -15,7 +15,7 @@ namespace DotNext.Metaprogramming
     /// Delegate should returns <see cref="Task"/> or <see cref="Task{TResult}"/>.
     /// </remarks>
     /// <typeparam name="D">Type of delegate representing lambda signature.</typeparam>
-    /// <see cref="Tast"/>
+    /// <see cref="Task"/>
     /// <see cref="Task{TResult}"/>
     public sealed class AsyncLambdaBuilder<D>: LambdaBuilder, IExpressionBuilder<Expression<D>>
         where D: Delegate
@@ -33,8 +33,14 @@ namespace DotNext.Metaprogramming
             Parameters = GetParameters(invokeMethod.GetParameters());
         }
 
+        /// <summary>
+        /// Sets the body of lambda expression.
+        /// </summary>
         public override Expression Body { set => base.Body = new AsyncResultExpression(value); }
 
+        /// <summary>
+        /// Gets this lambda expression suitable for recursive call.
+        /// </summary>
         public override Expression Self
         {
             get
@@ -45,8 +51,14 @@ namespace DotNext.Metaprogramming
             }
         }
 
+        /// <summary>
+        /// Return type of lambda function.
+        /// </summary>
         public override Type ReturnType => taskType.GetTaskType() ?? throw new GenericArgumentException<D>(ExceptionMessages.TaskTypeExpected, nameof(D));
 
+        /// <summary>
+        /// The list lambda function parameters.
+        /// </summary>
         public override IReadOnlyList<ParameterExpression> Parameters { get; }
 
         internal override Expression Return(Expression result, bool addAsStatement)
@@ -77,6 +89,10 @@ namespace DotNext.Metaprogramming
 
         Expression<D> IExpressionBuilder<Expression<D>>.Build() => (Expression<D>)Build();
 
+        /// <summary>
+        /// Releases all resources associated with this builder.
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/>, if this method is called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
