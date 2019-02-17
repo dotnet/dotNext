@@ -34,20 +34,58 @@ namespace DotNext
 			return new string(result);
         }
 
+        /// <summary>
+        /// Generates random string of the given length.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <param name="allowedChars">The array of allowed characters for the random string.</param>
+        /// <param name="length">The length of the random string.</param>
+        /// <returns>Randomly generated string.</returns>
 		public static string NextString(this Random random, char[] allowedChars, int length)
 			=> NextString(random, new ReadOnlySpan<char>(allowedChars), length);
 
-		public static string NextString(this Random random, string allowedChars, int length)
+        /// <summary>
+        /// Generates random string of the given length.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <param name="allowedChars">The string of allowed characters for the random string.</param>
+        /// <param name="length">The length of the random string.</param>
+        /// <returns>Randomly generated string.</returns>
+        public static string NextString(this Random random, string allowedChars, int length)
 			=> NextString(random, allowedChars.AsSpan(), length);
-		
+
+        /// <summary>
+        /// Generates random string of the given length.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <param name="allowedChars">The array of allowed characters for the random string.</param>
+        /// <param name="length">The length of the random string.</param>
+        /// <returns>Randomly generated string.</returns>
 		public static string NextString(this RandomNumberGenerator random, char[] allowedChars, int length)
 			=> NextString(random, new ReadOnlySpan<char>(allowedChars), length);
-		
-		public static string NextString(this RandomNumberGenerator random, string allowedChars, int length)
+
+        /// <summary>
+        /// Generates random string of the given length.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <param name="allowedChars">The string of allowed characters for the random string.</param>
+        /// <param name="length">The length of the random string.</param>
+        /// <returns>Randomly generated string.</returns>
+        public static string NextString(this RandomNumberGenerator random, string allowedChars, int length)
 			=> NextString(random, allowedChars.AsSpan(), length);
 
+        /// <summary>
+        /// Generates random boolean value.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <returns>Randomly generated boolean value.</returns>
         public static bool NextBoolean(this Random random) => Convert.ToBoolean(random.Next());
 
+        /// <summary>
+        /// Generates random non-negative random integer.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>].</returns>
         public static int Next(this RandomNumberGenerator random)
         {
             using(var buffer = new ArrayRental<byte>(ByteArrayPool, sizeof(int), true))
@@ -57,8 +95,19 @@ namespace DotNext
             }
         }
 
+        /// <summary>
+        /// Generates random boolean value.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <returns>Randomly generated boolean value.</returns>
         public static bool NextBoolean(this RandomNumberGenerator random) => Convert.ToBoolean(random.Next());
-        
+
+        /// <summary>
+        /// Returns a random floating-point number that is greater than
+        /// in range [0, 1).
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <returns>Randomly generated floating-point number.</returns>
         public static double NextDouble(this RandomNumberGenerator random)
         {
             using(var buffer = new ArrayRental<byte>(ByteArrayPool, sizeof(double), true))
@@ -69,9 +118,5 @@ namespace DotNext
                 return result / (result + 1D);
             }
         }
-
-        public static long NextInt64(this Random random) => random.NextDouble().BitCast<double, long>();
-
-        public static long NextInt64(this RandomNumberGenerator random) => random.NextDouble().BitCast<double, long>();
     }
 }

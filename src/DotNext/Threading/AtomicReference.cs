@@ -91,51 +91,133 @@ namespace DotNext.Threading
 			where T : class
 			=> Atomic<T, CASProvider<T>>.Update(ref value, updater).OldValue;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <summary>
+        /// Performs volatile read of the array element.
+        /// </summary>
+        /// <param name="array">The array to read from.</param>
+        /// <param name="index">The array element index.</param>
+        /// <returns>The array element.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T VolatileGet<T>(this T[] array, long index)
             where T : class
             => Volatile.Read(ref array[index]);
 
+        /// <summary>
+        /// Performs volatile write to the array element.
+        /// </summary>
+        /// <param name="array">The array to write into.</param>
+        /// <param name="index">The array element index.</param>
+        /// <param name="element">The new value of the array element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileSet<T>(this T[] array, long index, T element)
             where T : class
             => Volatile.Write(ref array[index], element);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <summary>
+		/// Atomically sets array element to the given updated value if the array element == the expected value.
+		/// </summary>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="expected">The expected value.</param>
+		/// <param name="update">The new value.</param>
+		/// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet<T>(this T[] array, long index, T expected, T update)
             where T : class
             => CompareAndSet(ref array[index], expected, update);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T CompareExchange<T>(this T[] array, long index, T value, T comparand)
+        /// <summary>
+		/// Atomically sets array element to the given updated value if the array element == the expected value.
+		/// </summary>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="comparand">The expected value.</param>
+		/// <param name="update">The new value.</param>
+		/// <returns>The original value of the array element.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T CompareExchange<T>(this T[] array, long index, T update, T comparand)
             where T: class
-            => Interlocked.CompareExchange(ref array[index], value, comparand);
+            => Interlocked.CompareExchange(ref array[index], update, comparand);
 
-        public static T GetAndSet<T>(this T[] array, long index, T value)
+        /// <summary>
+		/// Modifies the array element atomically.
+		/// </summary>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of array element to be modified.</param>
+		/// <param name="update">A new value to be stored as array element.</param>
+		/// <returns>Original array element before modification.</returns>
+		public static T GetAndSet<T>(this T[] array, long index, T update)
             where T : class
-            => Interlocked.Exchange(ref array[index], value);
+            => Interlocked.Exchange(ref array[index], update);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T SetAndGet<T>(this T[] array, long index, T value)
+        /// <summary>
+		/// Modifies the array element atomically.
+		/// </summary>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of array element to be modified.</param>
+		/// <param name="update">A new value to be stored as array element.</param>
+		/// <returns>The array element after modification.</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T SetAndGet<T>(this T[] array, long index, T update)
             where T : class
         {
-            VolatileSet(array, index, value);
-            return value;
+            VolatileSet(array, index, update);
+            return update;
         }
 
-        public static T AccumulateAndGet<T>(this T[] array, long index, T x, Func<T, T, T> accumulator)
+        /// <summary>
+		/// Atomically updates the array element with the results of applying the given function 
+		/// to the array element and given values, returning the updated value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the array element as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
+		/// <returns>The updated value.</returns>
+		public static T AccumulateAndGet<T>(this T[] array, long index, T x, Func<T, T, T> accumulator)
             where T : class
             => AccumulateAndGet(ref array[index], x, accumulator);
 
-        public static T GetAndAccumulate<T>(this T[] array, long index, T x, Func<T, T, T> accumulator)
+        /// <summary>
+		/// Atomically updates the array element with the results of applying the given function 
+		/// to the array element and given values, returning the original value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the array element as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
+		/// <returns>The original value of the array element.</returns>
+		public static T GetAndAccumulate<T>(this T[] array, long index, T x, Func<T, T, T> accumulator)
             where T : class
             => GetAndAccumulate(ref array[index], x, accumulator);
 
-        public static T UpdateAndGet<T>(this T[] array, long index, Func<T, T> updater)
+        /// <summary>
+		/// Atomically updates the array element with the results 
+		/// of applying the given function, returning the updated value.
+		/// </summary>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="updater">A side-effect-free function</param>
+		/// <returns>The updated value.</returns>
+		public static T UpdateAndGet<T>(this T[] array, long index, Func<T, T> updater)
             where T : class
             => UpdateAndGet(ref array[index], updater);
 
-        public static T GetAndUpdate<T>(this T[] array, long index, Func<T, T> updater)
+        /// <summary>
+		/// Atomically updates the array element with the results 
+		/// of applying the given function, returning the original value.
+		/// </summary>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="updater">A side-effect-free function</param>
+		/// <returns>The original value of the array element.</returns>
+		public static T GetAndUpdate<T>(this T[] array, long index, Func<T, T> updater)
             where T : class
             => GetAndUpdate(ref array[index], updater);
     }

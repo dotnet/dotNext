@@ -3,6 +3,12 @@ using System.Threading.Tasks;
 
 namespace DotNext.Reflection
 {
+    /// <summary>
+    /// Provides specialized reflection methods for
+    /// task types. 
+    /// </summary>
+    /// <seealso cref="Task"/>
+    /// <seealso cref="Task{TResult}"/>
     public static class TaskType
     {
         /// <summary>

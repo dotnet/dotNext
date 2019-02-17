@@ -30,19 +30,38 @@ namespace DotNext.Threading
         /// <summary>
         /// Creates monitor lock control object but doesn't acquire lock.
         /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="obj">Monitor lock target.</param>
+        /// <returns>The lock representing monitor.</returns>
         public static Lock Monitor(object obj)
             => new Lock(obj ?? throw new ArgumentNullException(nameof(obj)), LockType.Monitor);
 
+        /// <summary>
+        /// Creates exclusive lock.
+        /// </summary>
+        /// <returns>The exclusive lock.</returns>
         public static Lock Monitor() => Monitor(new object());
 
+        /// <summary>
+        /// Creates read lock but doesn't acquire it.
+        /// </summary>
+        /// <param name="rwLock">Read/write lock source.</param>
+        /// <returns>Read-only lock.</returns>
         public static Lock ReadLock(ReaderWriterLockSlim rwLock)
             => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), LockType.ReadLock);
 
+        /// <summary>
+        /// Creates write lock but doesn't acquire it.
+        /// </summary>
+        /// <param name="rwLock">Read/write lock source.</param>
+        /// <returns>Write-only lock.</returns>
         public static Lock WriteLock(ReaderWriterLockSlim rwLock)
             => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), LockType.WriteLock);
 
+        /// <summary>
+        /// Creates upgradable read lock but doesn't acquire.
+        /// </summary>
+        /// <param name="rwLock">Read/write lock source.</param>
+        /// <returns>Upgradable read lock.</returns>
         public static Lock UpgradableReadLock(ReaderWriterLockSlim rwLock)
             => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), LockType.UpgradableReadLock);
 
@@ -89,6 +108,11 @@ namespace DotNext.Threading
             }
         }
 
+        /// <summary>
+        /// Attempts to acquire lock.
+        /// </summary>
+        /// <param name="timeout">The amount of time to wait for the lock</param>
+        /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/></returns>
         public bool TryAcquire(TimeSpan timeout)
         {
             switch (type)
@@ -128,11 +152,27 @@ namespace DotNext.Threading
             }
         }
 
+        /// <summary>
+        /// Determines whether this lock object is the same as other lock.
+        /// </summary>
+        /// <param name="other">Other lock to compare.</param>
+        /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
         [CLSCompliant(false)]
         public bool Equals(in Lock other) => type == other.type && Equals(lockedObject, other.lockedObject);
+
         bool IEquatable<Lock>.Equals(Lock other) => Equals(in other);
+
+        /// <summary>
+        /// Determines whether this lock object is the same as other lock.
+        /// </summary>
+        /// <param name="other">Other lock to compare.</param>
+        /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other) => other is Lock @lock && Equals(@lock);
 
+        /// <summary>
+        /// Computes hash code of this lock.
+        /// </summary>
+        /// <returns>The hash code of this lock.</returns>
         public override int GetHashCode()
         {
             if (lockedObject is null)
@@ -143,7 +183,20 @@ namespace DotNext.Threading
             return hashCode;
         }
 
+        /// <summary>
+        /// Determines whether two locks are the same.
+        /// </summary>
+        /// <param name="first">The first lock to compare.</param>
+        /// <param name="second">The second lock to compare.</param>
+        /// <returns><see langword="true"/>, if both are the same; otherwise, <see langword="false"/>.</returns>
         public static bool operator ==(in Lock first, in Lock second) => first.Equals(second);
+
+        /// <summary>
+        /// Determines whether two locks are not the same.
+        /// </summary>
+        /// <param name="first">The first lock to compare.</param>
+        /// <param name="second">The second lock to compare.</param>
+        /// <returns><see langword="true"/>, if both are not the same; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in Lock first, in Lock second) => !first.Equals(second);
     }
 }

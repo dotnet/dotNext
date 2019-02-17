@@ -84,9 +84,22 @@ namespace DotNext
         public static Func<T, bool> AsFunc<T>(this Predicate<T> predicate)
             => predicate.ChangeType<Func<T, bool>>();
 
+        /// <summary>
+        /// Represents predicate as type <see cref="Converter{T,Boolean}"/>.
+        /// </summary>
+        /// <param name="predicate">A predicate to convert.</param>
+        /// <typeparam name="T">Type of predicate argument.</typeparam>
+        /// <returns>A delegate of type <see cref="Converter{T,Boolean}"/> referencing the same method as original predicate.</returns>
         public static Converter<T, bool> AsConverter<T>(this Predicate<T> predicate)
             => predicate.ChangeType<Converter<T, bool>>();
 
+        /// <summary>
+        /// Returns a predicate which negates evaluation result of
+        /// the original predicate.
+        /// </summary>
+        /// <typeparam name="T">Type of the predicate argument.</typeparam>
+        /// <param name="predicate">The predicate to negate.</param>
+        /// <returns>The predicate which negates evalutation result of the original predicate.</returns>
         public static Predicate<T> Negate<T>(this Predicate<T> predicate) => input => !predicate(input);
 
         public static Predicate<T> Or<T>(this Predicate<T> left, Predicate<T> right) => input => left(input) || right(input);

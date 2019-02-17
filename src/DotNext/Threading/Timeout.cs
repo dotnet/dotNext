@@ -38,11 +38,21 @@ namespace DotNext.Threading
 		/// Indicates that timeout is reached.
 		/// </summary>
 		/// <param name="timeout">Timeout control object.</param>
-		/// <returns>True, if timeout is reached; otherwise, false.</returns>
+		/// <returns><see langword="true"/>, if timeout is reached; otherwise, <see langword="false"/>.</returns>
 		public static bool operator true(Timeout timeout) => timeout.Expired;
 
-		public static bool operator false(Timeout timeout) => !timeout.Expired;
+        /// <summary>
+        /// Indicates that timeout is not reached.
+        /// </summary>
+        /// <param name="timeout">Timeout control object.</param>
+        /// <returns><see langword="false"/>, if timeout is not reached; otherwise, <see langword="false"/>.</returns>
+        public static bool operator false(Timeout timeout) => !timeout.Expired;
 
-		public static implicit operator TimeSpan(Timeout timeout) => timeout.timeout;
+        /// <summary>
+        /// Extracts original timeout value from this object.
+        /// </summary>
+        /// <param name="timeout">Timeout control object.</param>
+        /// <returns>The original timeout value.</returns>
+		public static implicit operator TimeSpan(in Timeout timeout) => timeout.timeout;
 	}
 }

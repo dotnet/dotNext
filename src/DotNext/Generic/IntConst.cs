@@ -33,6 +33,9 @@ namespace DotNext.Generic
         /// </summary>
         public sealed class Max: IntConst
         {
+            /// <summary>
+            /// Initializes a new constant value.
+            /// </summary>
             public Max()
                 : base(int.MaxValue)
             {
@@ -44,6 +47,9 @@ namespace DotNext.Generic
         /// </summary>
         public sealed class Min: IntConst
         {
+            /// <summary>
+            /// Initializes a new constant value.
+            /// </summary>
             public Min()
                 : base(int.MinValue)
             {

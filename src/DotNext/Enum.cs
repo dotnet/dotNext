@@ -199,7 +199,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns>Equality check result.</returns>
-        public bool Equals(object other)
+        public override bool Equals(object other)
         {
             switch(other)
             {
