@@ -11,50 +11,30 @@ namespace DotNext
         /// Restricts a <paramref name="value" /> in specific range.
         /// </summary>
         /// <typeparam name="T">Type of the values.</typeparam>
-        /// <param name="value">Value.</param>
+        /// <param name="value">Value to be restricted.</param>
         /// <param name="min">Minimal range value.</param>
         /// <param name="max">Maximum range value.</param>
         public static T Clamp<T> (this T value, T min, T max) 
             where T : IComparable<T>
-            => value.Max(min).Min(max);
+            => value.UpperBounded(max).LowerBounded(min);
 
         /// <summary>
-        /// Restricts a <paramref name="first" /> minimal value.
+        /// Restricts a <paramref name="value" /> minimal value.
         /// </summary>
         /// <typeparam name="T">Type of the values.</typeparam>
-        /// <param name="first">The first value.</param>
-        /// <param name="second">The second value.</param>
-        public static T Min<T> (this T first, T second) where T : IComparable<T>
-            => first.CompareTo (second) < 0 ? first : second;
-
-        /// <summary>
-        /// Restricts a <paramref name="first" /> minimal value.
-        /// </summary>
-        /// <typeparam name="T">Type of the values.</typeparam>
-        /// <param name="first">The first value.</param>
-        /// <param name="second">The second value.</param>
-        /// <param name="comparer">Comparison function.</param>
-        public static T Min<T>(T first, T second, Comparison<T> comparer)
-            => comparer(first, second) < 0 ? first : second;
+        /// <param name="value">The value to be restricted.</param>
+        /// <param name="min">The lower bound.</param>
+        public static T LowerBounded<T> (this T value, T min) where T : IComparable<T>
+            => value.CompareTo (min) < 0 ? min : value;
 
 		/// <summary>
-		/// Restricts a <paramref name="first" /> maximum value.
+		/// Restricts a <paramref name="value" /> maximum value.
 		/// </summary>
 		/// <typeparam name="T">Type of the values.</typeparam>
-		/// <param name="first">The first value.</param>
-		/// <param name="second">The second value.</param>
-		public static T Max<T>(this T first, T second) where T : IComparable<T>
-			=> first.CompareTo(second) > 0 ? first : second;
-
-        /// <summary>
-		/// Restricts a <paramref name="first" /> maximum value.
-		/// </summary>
-		/// <typeparam name="T">Type of the values.</typeparam>
-		/// <param name="first">The first value.</param>
-		/// <param name="second">The second value.</param>
-        /// <param name="comparer">Comparison function.</param>
-		public static T Max<T>(T first, T second, Comparison<T> comparer)
-            => comparer(first, second) > 0 ? first : second;
+		/// <param name="value">The value to be restricted.</param>
+		/// <param name="max">The upper bound.</param>
+		public static T UpperBounded<T>(this T value, T max) where T : IComparable<T>
+			=> value.CompareTo(max) > 0 ? max : value;
 
 		/// <summary>
 		/// Checks whether specified value is in range.

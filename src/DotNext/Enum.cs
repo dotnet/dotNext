@@ -56,8 +56,8 @@ namespace DotNext
                     Add(new Tuple(entry.name), entry);
                     Add(new Tuple(entry.value), entry);
                     //detect min and max
-                    min = Range.Min(min, entry.value, Comparer<E>.Default.Compare);
-                    max = Range.Max(max, entry.value, Comparer<E>.Default.Compare);
+                    min = Comparable.Min(min, entry.value, Comparer<E>.Default);
+                    max = Comparable.Max(max, entry.value, Comparer<E>.Default);
                 }
             }
         }
