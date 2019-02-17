@@ -1,4 +1,4 @@
-using Array = System.Array;
+using System;
 
 namespace DotNext
 {
@@ -36,5 +36,43 @@ namespace DotNext
 			Array.Reverse(chars);
 			return new string(chars);
 		}
+
+		/// <summary>
+        /// Compares two string using <see cref="StringComparison.OrdinalIgnoreCase" />.
+        /// </summary>
+        /// <param name="strA">String A (can be null).</param>
+		/// <param name="strB">Stirng B (can be null).</param>
+		/// <returns><see langword="true"/>, if the first string is equal to the second string; otherwise, <see langword="false"/>.</returns>
+		public static bool IsEqualIgnoreCase (this string strA, string strB)
+			=> string.Compare (strA, strB, StringComparison.OrdinalIgnoreCase) == 0;
+		
+		/// <summary>
+        /// Trims the source string to specified length if it exceeds it.
+        /// If source string is less that <paramref name="maxLength" /> then the source string returned.
+        /// </summary>
+        /// <param name="str">Source string.</param>
+        /// <param name="maxLength">Maximum length.</param>
+		/// <param name="trimmed">Indicates that string is trimmed.</param>
+		/// <returns>Trimmed string value.</returns>
+		public static string TrimLength (this string str, int maxLength, out bool trimmed)
+        {
+            if (str == null || str.Length <= maxLength)
+				trimmed = false;
+			else
+			{
+				trimmed = true;
+				str = str.Substring (0, maxLength);
+			}
+			return str;
+		}
+
+		/// <summary>
+        /// Trims the source string to specified length if it exceeds it.
+        /// If source string is less that <paramref name="maxLength" /> then the source string returned.
+        /// </summary>
+        /// <param name="str">Source string.</param>
+        /// <param name="maxLength">Maximum length.</param>
+		/// <returns>Trimmed string value.</returns>
+		public static string TrimLength (this string str, int maxLength) => str.TrimLength(maxLength, out _);
   	}
 }
