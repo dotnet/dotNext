@@ -7,6 +7,10 @@ namespace DotNext.VariantType
 	/// <summary>
 	/// Represents value that can be one of two possible types.
 	/// </summary>
+    /// <remarks>
+    /// Variant data type is fully compatible with <see langword="dynamic"/>
+    /// keyword and late binding.
+    /// </remarks>
 	/// <typeparam name="T1">First possible type.</typeparam>
 	/// <typeparam name="T2">Second possible type.</typeparam>
 	public readonly struct Variant<T1, T2>: IEquatable<Variant<T1, T2>>, IVariant
@@ -143,8 +147,20 @@ namespace DotNext.VariantType
 
         public static bool operator false(Variant<T1, T2> variant) => !variant.IsPresent;
 
+        /// <summary>
+        /// Provides textual representation of the stored value.
+        /// </summary>
+        /// <remarks>
+        /// This method calls virtual method <see cref="object.ToString()"/>
+        /// for the stored value.
+        /// </remarks>
+        /// <returns>The textual representation of the stored value.</returns>
         public override string ToString() => Value?.ToString() ?? "";
 
+        /// <summary>
+        /// Computes hash code for the stored value.
+        /// </summary>
+        /// <returns>The hash code of the stored value.</returns>
         public override int GetHashCode() => Value is null ? 0: Value.GetHashCode();
 
         public override bool Equals(object other)
@@ -160,13 +176,17 @@ namespace DotNext.VariantType
 			=> new VariantImmutableMetaObject(parameter, this);
     }
 
-	/// <summary>
-	/// Represents value that can be one of three possible types.
-	/// </summary>
-	/// <typeparam name="T1">First possible type.</typeparam>
-	/// <typeparam name="T2">Second possible type.</typeparam>
-	/// <typeparam name="T3">Third possible type.</typeparam>
-	public readonly struct Variant<T1, T2, T3>: IVariant, IEquatable<Variant<T1, T2, T3>>
+    /// <summary>
+    /// Represents value that can be one of three possible types.
+    /// </summary>
+    /// <remarks>
+    /// Variant data type is fully compatible with <see langword="dynamic"/>
+    /// keyword and late binding.
+    /// </remarks>
+    /// <typeparam name="T1">First possible type.</typeparam>
+    /// <typeparam name="T2">Second possible type.</typeparam>
+    /// <typeparam name="T3">Third possible type.</typeparam>
+    public readonly struct Variant<T1, T2, T3>: IVariant, IEquatable<Variant<T1, T2, T3>>
 		where T1: class
 		where T2: class
 		where T3: class
@@ -255,6 +275,10 @@ namespace DotNext.VariantType
     /// <summary>
 	/// Represents value that can be one of three possible types.
 	/// </summary>
+    /// <remarks>
+    /// Variant data type is fully compatible with <see langword="dynamic"/>
+    /// keyword and late binding.
+    /// </remarks>
 	/// <typeparam name="T1">First possible type.</typeparam>
 	/// <typeparam name="T2">Second possible type.</typeparam>
 	/// <typeparam name="T3">Third possible type.</typeparam>
