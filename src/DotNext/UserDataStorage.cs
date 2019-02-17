@@ -172,7 +172,7 @@ namespace DotNext
         /// <summary>
         /// Removes user data slot.
         /// </summary>
-        /// <typeparam name="V">Type of data.</typeparam>
+        /// <typeparam name="V">The type of user data.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
         public bool Remove<V>(UserDataSlot<V> slot)
@@ -181,6 +181,13 @@ namespace DotNext
             return storage is null ? false : storage.Remove(slot);
         }
 
+        /// <summary>
+        /// Removes user data slot.
+        /// </summary>
+        /// <typeparam name="V">The type of user data.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="userData">Remove user data.</param>
+        /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
         public bool Remove<V>(UserDataSlot<V> slot, out V userData)
         {
             var storage = GetStorage(false);
@@ -193,13 +200,41 @@ namespace DotNext
                 return storage.Remove(slot, out userData);
         }
 
+        /// <summary>
+        /// Computes identity hash code for this storage.
+        /// </summary>
+        /// <returns>The identity hash code for this storage.</returns>
         public override int GetHashCode() => RuntimeHelpers.GetHashCode(owner);
-        public override bool Equals(object other) => ReferenceEquals(owner, other);
-        public override string ToString() => owner.ToString();
 
+        /// <summary>
+        /// Determines whether this storage is attached to
+        /// the given object.
+        /// </summary>
+        /// <param name="other">Other object to check.</param>
+        /// <returns><see langword="true"/>, if this storage is attached to <paramref name="other"/> object; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object other) => ReferenceEquals(owner, other);
+
+        /// <summary>
+        /// Returns textual representation of this storage.
+        /// </summary>
+        /// <returns>The textual representation of this storage.</returns>
+        public override string ToString() => owner.ToString();
+        
+        /// <summary>
+        /// Determines whether two storages are for the same object.
+        /// </summary>
+        /// <param name="first">The first storage to compare.</param>
+        /// <param name="second">The second storage to compare.</param>
+        /// <returns><see langword="true"/>, if two storages are for the same object; otherwise, <see langword="false"/>.</returns>
         public static bool operator ==(UserDataStorage first, UserDataStorage second)
             => ReferenceEquals(first.owner, second.owner);
 
+        /// <summary>
+        /// Determines whether two storages are not for the same object.
+        /// </summary>
+        /// <param name="first">The first storage to compare.</param>
+        /// <param name="second">The second storage to compare.</param>
+        /// <returns><see langword="true"/>, if two storages are not for the same object; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(UserDataStorage first, UserDataStorage second)
             => !ReferenceEquals(first.owner, second.owner);
     }

@@ -102,10 +102,34 @@ namespace DotNext
         /// <returns>The predicate which negates evalutation result of the original predicate.</returns>
         public static Predicate<T> Negate<T>(this Predicate<T> predicate) => input => !predicate(input);
 
+        /// <summary>
+        /// Returns a predicate which computes logical OR between
+        /// results of two other predicates.
+        /// </summary>
+        /// <typeparam name="T">Type of the predicate argument.</typeparam>
+        /// <param name="left">The first predicate acting as logical OR operand.</param>
+        /// <param name="right">The second predicate acting as logical OR operand.</param>
+        /// <returns>The predicate which computes logical OR between results of two other predicates.</returns>
         public static Predicate<T> Or<T>(this Predicate<T> left, Predicate<T> right) => input => left(input) || right(input);
 
+        /// <summary>
+        /// Returns a predicate which computes logical AND between
+        /// results of two other predicates.
+        /// </summary>
+        /// <typeparam name="T">Type of the predicate argument.</typeparam>
+        /// <param name="left">The first predicate acting as logical AND operand.</param>
+        /// <param name="right">The second predicate acting as logical AND operand.</param>
+        /// <returns>The predicate which computes logical AND between results of two other predicates.</returns>
         public static Predicate<T> And<T>(this Predicate<T> left, Predicate<T> right) => input => left(input) && right(input);
 
+        /// <summary>
+        /// Returns a predicate which computes logical XOR between
+        /// results of two other predicates.
+        /// </summary>
+        /// <typeparam name="T">Type of the predicate argument.</typeparam>
+        /// <param name="left">The first predicate acting as logical XOR operand.</param>
+        /// <param name="right">The second predicate acting as logical XOR operand.</param>
+        /// <returns>The predicate which computes logical XOR between results of two other predicates.</returns>
         public static Predicate<T> Xor<T>(this Predicate<T> left, Predicate<T> right) => input => left(input) ^ right(input);
     }
 }

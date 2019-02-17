@@ -17,10 +17,21 @@ namespace DotNext.VariantType
 
         private Variant(object value) => Value = value;
 
+        /// <summary>
+        /// Creates a new variant value from value of type <typeparamref name="T1"/>.
+        /// </summary>
+        /// <param name="value">The value to be placed into variant container.</param>
 		public Variant(T1 value) => Value = value;
 
-		public Variant(T2 value) => Value = value;
+        /// <summary>
+        /// Creates a new variant value from value of type <typeparamref name="T2"/>.
+        /// </summary>
+        /// <param name="value">The value to be placed into variant container.</param>
+        public Variant(T2 value) => Value = value;
         
+        /// <summary>
+        /// Indicates that this container stores non-<see langword="null"/> value.
+        /// </summary>
 		public bool IsPresent => !(Value is null);
 
 		object IVariant.Value => Value;
@@ -35,7 +46,14 @@ namespace DotNext.VariantType
 		/// </summary>
         public Optional<T2> Second => (Value as T2).EmptyIfNull();
 
-        public Optional<R> Convert<R>(Func<T1, R> mapper1, Func<T2, R> mapper2)
+        /// <summary>
+        /// Converts the stored value.
+        /// </summary>
+        /// <typeparam name="R">The type of conversion result.</typeparam>
+        /// <param name="mapper1">The converter for the first possible type.</param>
+        /// <param name="mapper2">The converter for the second possible type.</param>
+        /// <returns>Conversion result; or <see cref="Optional{T}.Empty"/> if stored value is <see langword="null"/>.</returns>
+        public Optional<R> Convert<R>(Converter<T1, R> mapper1, Converter<T2, R> mapper2)
         {
             switch(Value)
             {
@@ -45,7 +63,15 @@ namespace DotNext.VariantType
             }
         }
 
-        public Variant<U1, U2> Convert<U1, U2>(Func<T1, U1> mapper1, Func<T2, U2> mapper2)
+        /// <summary>
+        /// Converts this variant value into another value.
+        /// </summary>
+        /// <typeparam name="U1">The first possible type of the conversion result.</typeparam>
+        /// <typeparam name="U2">The second possible type of the conversion result.</typeparam>
+        /// <param name="mapper1">The converter for the first possible type.</param>
+        /// <param name="mapper2">The converter for the second possible type.</param>
+        /// <returns>The variant value converted from this variant value.</returns>
+        public Variant<U1, U2> Convert<U1, U2>(Converter<T1, U1> mapper1, Converter<T2, U2> mapper2)
             where U1: class
             where U2: class
         {
@@ -53,7 +79,7 @@ namespace DotNext.VariantType
             {
                 case T1 first: return new Variant<U1, U2>(mapper1(first));
                 case T2 second: return new Variant<U1, U2>(mapper2(second));
-                default: return new Variant<U1, U2>();
+                default: return default;
             }
         }
 
@@ -63,12 +89,37 @@ namespace DotNext.VariantType
         /// <returns>A copy of variant value with changed order of type parameters.</returns>
         public Variant<T2, T1> Permute() => new Variant<T2, T1>(Value);
 
+        /// <summary>
+        /// Converts value of type <typeparamref name="T1"/> into variant.
+        /// </summary>
+        /// <param name="value">The value to be converted.</param>
         public static implicit operator Variant<T1, T2>(T1 value) => new Variant<T1, T2>(value);
+
+        /// <summary>
+        /// Converts variant value into type <typeparamref name="T1"/>.
+        /// </summary>
+        /// <param name="var">Variant value to convert into type <typeparamref name="T1"/>.</param>
         public static explicit operator T1(Variant<T1, T2> var) => var.Value as T1;
 
+        /// <summary>
+        /// Converts value of type <typeparamref name="T2"/> into variant.
+        /// </summary>
+        /// <param name="value">The value to be converted.</param>
         public static implicit operator Variant<T1, T2>(T2 value) => new Variant<T1, T2>(value);
         public static explicit operator T2(Variant<T1, T2> var) => var.Value as T2;
 
+        /// <summary>
+        /// Determines whether the value stored in this variant
+        /// container is equal to the value stored in the given variant
+        /// container.
+        /// </summary>
+        /// <typeparam name="V">The type of variant container.</typeparam>
+        /// <param name="other">Other variant value to compare.</param>
+        /// <returns>
+        /// <see langword="true"/>, if the value stored in this variant
+        /// container is equal to the value stored in the given variant
+        /// container; otherwise, <see langword="false"/>.
+        /// </returns>
         public bool Equals<V>(V other)
             where V : IVariant
             => Equals(Value, other.Value);
