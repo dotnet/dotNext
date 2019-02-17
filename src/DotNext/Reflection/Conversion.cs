@@ -16,23 +16,24 @@ namespace DotNext.Reflection
         /// wrapped into delegate.
         /// </summary>
         public static readonly Converter<I, O> Converter;
+        
         /// <summary>
         /// Indicates that overloaded type-cast operator between types <typeparamref name="I"/> and <typeparamref name="O"/>
         /// is present.
         /// </summary>
-        public static readonly bool Supported;
+        public static readonly bool IsSupported;
 
         static Conversion()
         {
             try
             {
                 Converter = Convert(Default(typeof(I)), typeof(O)).Method.CreateDelegate<Converter<I, O>>();
-                Supported = true;
+                IsSupported = true;
             }
             catch (InvalidOperationException e)
             {
                 Converter = input => throw e;
-                Supported = false;
+                IsSupported = false;
             }
         }
     }
