@@ -177,5 +177,25 @@ namespace DotNext.Reflection
         /// </example>
         public static bool IsAssignableFromWithoutBoxing(this Type to, Type from)
             => to == from || !from.IsValueType && to.IsAssignableFrom(from);
+        
+        /// <summary>
+        /// Casts an object to the class, value type or interface.
+        /// </summary>
+        /// <param name="type">The type t</param>
+        /// <param name="obj">The object to be cast.</param>
+        /// <returns>The object after casting, or <see langword="null"/> if <paramref name="obj"/> is <see langword="null"/>.</returns>
+        /// <exception cref="InvalidCastException">
+        /// If the object is not <see langword="null"/> and is not assignable to the <paramref name="type"/>; 
+        /// or if object is <see langword="null"/> and <paramref name="type"/> is value type.
+        /// </exception>
+        public static object Cast(this Type type, object obj)
+        {
+            if(obj is null)
+                return type.IsValueType ? new InvalidCastException(ExceptionMessages.CastNullToValueType) : null;
+            else if(type.IsAssignableFrom(obj.GetType()))
+                return obj;
+            else
+                throw new InvalidCastException();
+        }
     }
 }

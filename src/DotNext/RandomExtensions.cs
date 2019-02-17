@@ -78,8 +78,12 @@ namespace DotNext
         /// Generates random boolean value.
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
+        /// <param name="trueProbability">A probability of <see langword="true"/>  result (should be between 0.0 and 1.0).</param>
         /// <returns>Randomly generated boolean value.</returns>
-        public static bool NextBoolean(this Random random) => Convert.ToBoolean(random.Next());
+        public static bool NextBoolean(this Random random, double trueProbability = 0.5D)
+            => trueProbability.Between(0D, 1D, BoundType.Closed) ? 
+                    random.NextDouble() >= (1.0D - trueProbability) :
+                    throw new ArgumentOutOfRangeException(nameof(trueProbability));
 
         /// <summary>
         /// Generates random non-negative random integer.
