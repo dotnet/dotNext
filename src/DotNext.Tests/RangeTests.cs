@@ -13,10 +13,10 @@ namespace DotNext
 		}
 
 		[Fact]
-		public void MinMaxTest()
+		public void RestrictionTest()
 		{
-			Equal(20M, 20M.Min(30M));
-			Equal(30M, 10M.Max(30M));
+			Equal(30M, 20M.LowerBounded(30M));
+			Equal(10M, 10M.UpperBounded(30M));
 		}
 
 		[Fact]
