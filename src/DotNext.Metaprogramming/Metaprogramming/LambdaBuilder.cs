@@ -54,6 +54,9 @@ namespace DotNext.Metaprogramming
 
         public sealed override Expression Return() => Return(true);
 
+        /// <summary>
+        /// <see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.
+        /// </summary>
         private protected bool TailCall { private get; set; }
        
     }

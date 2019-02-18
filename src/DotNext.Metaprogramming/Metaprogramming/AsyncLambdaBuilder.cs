@@ -102,6 +102,12 @@ namespace DotNext.Metaprogramming
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// Constructs async lambda function.
+        /// </summary>
+        /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
+        /// <param name="lambdaBody">Lambda function body with <see langword="await"/> expressions.</param>
+        /// <returns>Asynchronous lambda function.</returns>
         public static Expression<D> Build(bool tailCall, Action<AsyncLambdaBuilder<D>> lambdaBody)
         {
             var builder = new AsyncLambdaBuilder<D>() { TailCall = tailCall };
