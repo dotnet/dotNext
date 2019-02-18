@@ -158,7 +158,7 @@ namespace DotNext
 
         internal static Expression CheckerBodyForValueType(Expression input)
         {
-            if (input.Type.OneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
+            if (input.Type.IsOneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
                 return Expression.Constant(false);
             var nullableType = Nullable.GetUnderlyingType(input.Type);
             if (nullableType is null)   //handle regular struct

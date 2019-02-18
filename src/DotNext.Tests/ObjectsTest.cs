@@ -8,7 +8,7 @@ namespace DotNext
         [Fact]
         public void OneOfTest()
         {
-            True("str".OneOf("a", "b", "str"));
+            True("str".IsOneOf("a", "b", "str"));
         }
 
         [Fact]

@@ -62,7 +62,7 @@ namespace DotNext
 		/// <param name="value">The object to compare with other.</param>
 		/// <param name="values">Candidate objects.</param>
 		/// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
-		public static bool OneOf<T>(this T value, params T[] values)
+		public static bool IsOneOf<T>(this T value, params T[] values)
 			where T: class
 			=> value.OneOf((IEnumerable<T>)values);
 
