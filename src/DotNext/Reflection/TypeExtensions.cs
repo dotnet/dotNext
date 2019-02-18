@@ -181,7 +181,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Casts an object to the class, value type or interface.
         /// </summary>
-        /// <param name="type">The type t</param>
+        /// <param name="type">The type cast result.</param>
         /// <param name="obj">The object to be cast.</param>
         /// <returns>The object after casting, or <see langword="null"/> if <paramref name="obj"/> is <see langword="null"/>.</returns>
         /// <exception cref="InvalidCastException">
