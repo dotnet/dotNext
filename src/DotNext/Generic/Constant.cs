@@ -73,7 +73,7 @@ namespace DotNext.Generic
         /// <summary>
         /// Extracts constant value from generic parameter.
         /// </summary>
-        /// <param name="intern">True to return interned constant value; otherwise, false.</param>
+        /// <param name="intern"><see langword="true"/> to return interned constant value; otherwise, <see langword="false"/>.</param>
         /// <typeparam name="G">A type representing a constant value.</typeparam>
         /// <returns>Constant value extracted from generic.</returns>
         public static T Of<G>(bool intern = true)
