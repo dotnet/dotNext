@@ -96,7 +96,7 @@ namespace DotNext
             using(var buffer = new ArrayRental<byte>(ByteArrayPool, sizeof(int), true))
             {
                 random.GetBytes(buffer, 0, sizeof(int));
-                return BitConverter.ToInt32(buffer, 0);
+                return Math.Abs(BitConverter.ToInt32(buffer, 0));
             }
         }
 
