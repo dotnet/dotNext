@@ -102,7 +102,7 @@ namespace DotNext.VariantType
         /// <summary>
         /// Converts variant value into type <typeparamref name="T1"/>.
         /// </summary>
-        /// <param name="var">Variant value to convert into type <typeparamref name="T1"/>.</param>
+        /// <param name="var">Variant value to convert into type <typeparamref name="T1"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T1"/>.</param>
         public static explicit operator T1(Variant<T1, T2> var) => var.Value as T1;
 
         /// <summary>
@@ -110,6 +110,11 @@ namespace DotNext.VariantType
         /// </summary>
         /// <param name="value">The value to be converted.</param>
         public static implicit operator Variant<T1, T2>(T2 value) => new Variant<T1, T2>(value);
+
+        /// <summary>
+        /// Converts variant value into type <typeparamref name="T2"/>.
+        /// </summary>
+        /// <param name="var">Variant value to convert into type <typeparamref name="T2"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T2"/>.</param>
         public static explicit operator T2(Variant<T1, T2> var) => var.Value as T2;
 
         /// <summary>
@@ -129,23 +134,40 @@ namespace DotNext.VariantType
             => Equals(Value, other.Value);
 
         bool IEquatable<Variant<T1, T2>>.Equals(Variant<T1, T2> other) => Equals(other);
-
-        public bool Equals(T1 other) => Equals(Value, other);
-
-        public bool Equals(T2 other) => Equals(Value, other);
-
-        public static bool operator==(Variant<T1, T2> first, T1 second) => first.Equals(second);
-        public static bool operator!=(Variant<T1, T2> first, T1 second) => !first.Equals(second);
-
-        public static bool operator==(Variant<T1, T2> first, T2 second) => first.Equals(second);
-        public static bool operator!=(Variant<T1, T2> first, T2 second) => !first.Equals(second);
-
+        
+        /// <summary>
+        /// Determines whether the two variant values are equal.
+        /// </summary>
+        /// <remarks>
+        /// This operator uses <see cref="object.Equals(object, object)"/>
+        /// to compare stored values.
+        /// </remarks>
+        /// <param name="first">The first value to compare.</param>
+        /// <param name="second">The second value to compare.</param>
+        /// <returns><see langword="true"/>, if variant values are equal; otherwise, <see langword="false"/>.</returns>
         public static bool operator==(Variant<T1, T2> first, Variant<T1, T2> second) => first.Equals(second);
+
+        /// <summary>
+        /// Determines whether the two variant values are not equal.
+        /// </summary>
+        /// <remarks>
+        /// This operator uses <see cref="object.Equals(object, object)"/>
+        /// to compare stored values.
+        /// </remarks>
+        /// <param name="first">The first value to compare.</param>
+        /// <param name="second">The second value to compare.</param>
+        /// <returns><see langword="true"/>, if variant values are not equal; otherwise, <see langword="false"/>.</returns>
         public static bool operator!=(Variant<T1, T2> first, Variant<T1, T2> second) => !first.Equals(second);
 
-        public static bool operator true(Variant<T1, T2> variant) => variant.IsPresent;
+        /// <summary>
+        /// Indicates that variant value is non-<see langword="null"/> value.
+        /// </summary>
+		public static bool operator true(Variant<T1, T2> variant) => !(variant.Value is null);
 
-        public static bool operator false(Variant<T1, T2> variant) => !variant.IsPresent;
+        /// <summary>
+        /// Indicates that variant value is <see langword="null"/> value.
+        /// </summary>
+		public static bool operator false(Variant<T1, T2> variant) => variant.Value is null;
 
         /// <summary>
         /// Provides textual representation of the stored value.
@@ -163,6 +185,11 @@ namespace DotNext.VariantType
         /// <returns>The hash code of the stored value.</returns>
         public override int GetHashCode() => Value is null ? 0: Value.GetHashCode();
 
+        /// <summary>
+        /// Determines whether stored value is equal to the given value.
+        /// </summary>
+        /// <param name="other">Other value to compare.</param>
+        /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
             switch(other)
@@ -195,17 +222,32 @@ namespace DotNext.VariantType
 
 		private Variant(object value) => Value = value;
 
-		public Variant(T1 value) => Value = value;
+        /// <summary>
+        /// Creates a new variant value from value of type <typeparamref name="T1"/>.
+        /// </summary>
+        /// <param name="value">The value to be placed into variant container.</param>
+        public Variant(T1 value) => Value = value;
 
-		public Variant(T2 value) => Value = value;
+        /// <summary>
+        /// Creates a new variant value from value of type <typeparamref name="T2"/>.
+        /// </summary>
+        /// <param name="value">The value to be placed into variant container.</param>
+        public Variant(T2 value) => Value = value;
 
-		public Variant(T3 value) => Value = value;
+        /// <summary>
+        /// Creates a new variant value from value of type <typeparamref name="T3"/>.
+        /// </summary>
+        /// <param name="value">The value to be placed into variant container.</param>
+        public Variant(T3 value) => Value = value;
 
 		private static Variant<T1, T2, T3> Create<V>(V variant)
 			where V: struct, IVariant
 			=> new Variant<T1, T2, T3>(variant.Value);
-        
-		public bool IsPresent => !(Value is null);
+
+        /// <summary>
+        /// Indicates that this container stores non-<see langword="null"/> value.
+        /// </summary>
+        public bool IsPresent => !(Value is null);
 
 		/// <summary>
 		/// Change order of type parameters.
@@ -215,51 +257,124 @@ namespace DotNext.VariantType
 
 		object IVariant.Value => Value;
 
+        /// <summary>
+        /// Determines whether the value stored in this variant
+        /// container is equal to the value stored in the given variant
+        /// container.
+        /// </summary>
+        /// <typeparam name="V">The type of variant container.</typeparam>
+        /// <param name="other">Other variant value to compare.</param>
+        /// <returns>
+        /// <see langword="true"/>, if the value stored in this variant
+        /// container is equal to the value stored in the given variant
+        /// container; otherwise, <see langword="false"/>.
+        /// </returns>
         public bool Equals<V>(V other)
             where V : IVariant
             => Equals(Value, other.Value);
 
         bool IEquatable<Variant<T1, T2, T3>>.Equals(Variant<T1, T2, T3> other) => Equals(other);
 
-		public bool Equals(T1 other) => Equals(Value, other);
+        /// <summary>
+        /// Determines whether the two variant values are equal.
+        /// </summary>
+        /// <remarks>
+        /// This operator uses <see cref="object.Equals(object, object)"/>
+        /// to compare stored values.
+        /// </remarks>
+        /// <param name="first">The first value to compare.</param>
+        /// <param name="second">The second value to compare.</param>
+        /// <returns><see langword="true"/>, if variant values are equal; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(Variant<T1, T2, T3> first, Variant<T1, T2, T3> second) => first.Equals(second);
 
-		public bool Equals(T2 other) => Equals(Value, other);
+        /// <summary>
+        /// Determines whether the two variant values are not equal.
+        /// </summary>
+        /// <remarks>
+        /// This operator uses <see cref="object.Equals(object, object)"/>
+        /// to compare stored values.
+        /// </remarks>
+        /// <param name="first">The first value to compare.</param>
+        /// <param name="second">The second value to compare.</param>
+        /// <returns><see langword="true"/>, if variant values are not equal; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(Variant<T1, T2, T3> first, Variant<T1, T2, T3> second) => !first.Equals(second);
 
-		public bool Equals(T3 other) => Equals(Value, other);
+        /// <summary>
+        /// Converts value of type <typeparamref name="T1"/> into variant.
+        /// </summary>
+        /// <param name="value">The value to be converted.</param>
+        public static implicit operator Variant<T1, T2, T3>(T1 value) => new Variant<T1, T2, T3>(value);
 
-		public static bool operator ==(Variant<T1, T2, T3> first, T1 second) => first.Equals(second);
-		public static bool operator !=(Variant<T1, T2, T3> first, T1 second) => !first.Equals(second);
+        /// <summary>
+        /// Converts variant value into type <typeparamref name="T1"/>.
+        /// </summary>
+        /// <param name="var">Variant value to convert into type <typeparamref name="T1"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T1"/>.</param>
+        public static explicit operator T1(Variant<T1, T2, T3> var) => var.Value as T1;
 
-		public static bool operator ==(Variant<T1, T2, T3> first, T2 second) => first.Equals(second);
-		public static bool operator !=(Variant<T1, T2, T3> first, T2 second) => !first.Equals(second);
+        /// <summary>
+        /// Converts value of type <typeparamref name="T2"/> into variant.
+        /// </summary>
+        /// <param name="value">The value to be converted.</param>
+        public static implicit operator Variant<T1, T2, T3>(T2 value) => new Variant<T1, T2, T3>(value);
 
-		public static bool operator ==(Variant<T1, T2, T3> first, T3 second) => first.Equals(second);
-		public static bool operator !=(Variant<T1, T2, T3> first, T3 second) => !first.Equals(second);
+        /// <summary>
+        /// Converts variant value into type <typeparamref name="T2"/>.
+        /// </summary>
+        /// <param name="var">Variant value to convert into type <typeparamref name="T2"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T2"/>.</param>
+        public static explicit operator T2(Variant<T1, T2, T3> var) => var.Value as T2;
 
-		public static bool operator ==(Variant<T1, T2, T3> first, Variant<T1, T2, T3> second) => first.Equals(second);
-		public static bool operator !=(Variant<T1, T2, T3> first, Variant<T1, T2, T3> second) => !first.Equals(second);
+        /// <summary>
+        /// Converts value of type <typeparamref name="T3"/> into variant.
+        /// </summary>
+        /// <param name="value">The value to be converted.</param>
+        public static implicit operator Variant<T1, T2, T3>(T3 value) => new Variant<T1, T2, T3>(value);
 
-		public static implicit operator Variant<T1, T2, T3>(T1 value) => new Variant<T1, T2, T3>(value);
-		public static explicit operator T1(Variant<T1, T2, T3> var) => var.Value as T1;
+        /// <summary>
+        /// Converts variant value into type <typeparamref name="T3"/>.
+        /// </summary>
+        /// <param name="var">Variant value to convert into type <typeparamref name="T3"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T3"/>.</param>
+        public static explicit operator T3(Variant<T1, T2, T3> var) => var.Value as T3;
 
-		public static implicit operator Variant<T1, T2, T3>(T2 value) => new Variant<T1, T2, T3>(value);
-		public static explicit operator T2(Variant<T1, T2, T3> var) => var.Value as T2;
-
-		public static implicit operator Variant<T1, T2, T3>(T3 value) => new Variant<T1, T2, T3>(value);
-		public static explicit operator T3(Variant<T1, T2, T3> var) => var.Value as T3;
-
-        public static bool operator true(Variant<T1, T2, T3> variant) => variant.IsPresent;
-
-        public static bool operator false(Variant<T1, T2, T3> variant) => !variant.IsPresent;
-
+        /// <summary>
+        /// Converts variant value of two possible types into variant value
+        /// of three possibles types.
+        /// </summary>
+        /// <param name="variant">The variant value to be converted.</param>
         public static implicit operator Variant<T1, T2, T3>(Variant<T1, T2> variant)
 			=> Create(variant);
 
-		public override string ToString() => Value?.ToString() ?? "";
+        /// <summary>
+        /// Indicates that variant value is non-<see langword="null"/> value.
+        /// </summary>
+		public static bool operator true(Variant<T1, T2, T3> variant) => !(variant.Value is null);
 
-		public override int GetHashCode() => Value is null ? 0 : Value.GetHashCode();
+        /// <summary>
+        /// Indicates that variant value is <see langword="null"/> value.
+        /// </summary>
+		public static bool operator false(Variant<T1, T2, T3> variant) => variant.Value is null;
 
-		public override bool Equals(object other)
+        /// <summary>
+        /// Provides textual representation of the stored value.
+        /// </summary>
+        /// <remarks>
+        /// This method calls virtual method <see cref="object.ToString()"/>
+        /// for the stored value.
+        /// </remarks>
+        /// <returns>The textual representation of the stored value.</returns>
+        public override string ToString() => Value?.ToString() ?? "";
+
+        /// <summary>
+        /// Computes hash code for the stored value.
+        /// </summary>
+        /// <returns>The hash code of the stored value.</returns>
+        public override int GetHashCode() => Value is null ? 0 : Value.GetHashCode();
+
+        /// <summary>
+        /// Determines whether stored value is equal to the given value.
+        /// </summary>
+        /// <param name="other">Other value to compare.</param>
+        /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object other)
 		{
 			switch (other)
 			{
@@ -293,19 +408,37 @@ namespace DotNext.VariantType
 
         private Variant(object value) => Value = value;
 
+        /// <summary>
+        /// Creates a new variant value from value of type <typeparamref name="T1"/>.
+        /// </summary>
+        /// <param name="value">The value to be placed into variant container.</param>
         public Variant(T1 value) => Value = value;
 
+        /// <summary>
+        /// Creates a new variant value from value of type <typeparamref name="T2"/>.
+        /// </summary>
+        /// <param name="value">The value to be placed into variant container.</param>
         public Variant(T2 value) => Value = value;
 
+        /// <summary>
+        /// Creates a new variant value from value of type <typeparamref name="T3"/>.
+        /// </summary>
+        /// <param name="value">The value to be placed into variant container.</param>
         public Variant(T3 value) => Value = value;
 
+        /// <summary>
+        /// Creates a new variant value from value of type <typeparamref name="T4"/>.
+        /// </summary>
+        /// <param name="value">The value to be placed into variant container.</param>
         public Variant(T4 value) => Value = value;
 
         private static Variant<T1, T2, T3, T4> Create<V>(V variant)
             where V : struct, IVariant
             => new Variant<T1, T2, T3, T4>(variant.Value);
-        
 
+        /// <summary>
+        /// Indicates that this container stores non-<see langword="null"/> value.
+        /// </summary>
         public bool IsPresent => !(Value is null);
 
         /// <summary>
@@ -316,61 +449,143 @@ namespace DotNext.VariantType
 
         object IVariant.Value => Value;
 
+        /// <summary>
+        /// Determines whether the value stored in this variant
+        /// container is equal to the value stored in the given variant
+        /// container.
+        /// </summary>
+        /// <typeparam name="V">The type of variant container.</typeparam>
+        /// <param name="other">Other variant value to compare.</param>
+        /// <returns>
+        /// <see langword="true"/>, if the value stored in this variant
+        /// container is equal to the value stored in the given variant
+        /// container; otherwise, <see langword="false"/>.
+        /// </returns>
         public bool Equals<V>(V other)
             where V : IVariant
             => Equals(Value, other.Value);
 
         bool IEquatable<Variant<T1, T2, T3, T4>>.Equals(Variant<T1, T2, T3, T4> other) => Equals(Value, other.Value);
 
-        public bool Equals(T1 other) => Equals(Value, other);
-
-        public bool Equals(T2 other) => Equals(Value, other);
-
-        public bool Equals(T3 other) => Equals(Value, other);
-
-        public bool Equals(T4 other) => Equals(Value, other);
-
-        public static bool operator ==(Variant<T1, T2, T3, T4> first, T1 second) => first.Equals(second);
-        public static bool operator !=(Variant<T1, T2, T3, T4> first, T1 second) => !first.Equals(second);
-
-        public static bool operator ==(Variant<T1, T2, T3, T4> first, T2 second) => first.Equals(second);
-        public static bool operator !=(Variant<T1, T2, T3, T4> first, T2 second) => !first.Equals(second);
-
-        public static bool operator ==(Variant<T1, T2, T3, T4> first, T3 second) => first.Equals(second);
-        public static bool operator !=(Variant<T1, T2, T3, T4> first, T3 second) => !first.Equals(second);
-
-        public static bool operator ==(Variant<T1, T2, T3, T4> first, T4 second) => first.Equals(second);
-        public static bool operator !=(Variant<T1, T2, T3, T4> first, T4 second) => !first.Equals(second);
-
+        /// <summary>
+        /// Determines whether the two variant values are equal.
+        /// </summary>
+        /// <remarks>
+        /// This operator uses <see cref="object.Equals(object, object)"/>
+        /// to compare stored values.
+        /// </remarks>
+        /// <param name="first">The first value to compare.</param>
+        /// <param name="second">The second value to compare.</param>
+        /// <returns><see langword="true"/>, if variant values are equal; otherwise, <see langword="false"/>.</returns>
         public static bool operator ==(Variant<T1, T2, T3, T4> first, Variant<T1, T2, T3, T4> second) => first.Equals(second);
+
+        /// <summary>
+        /// Determines whether the two variant values are not equal.
+        /// </summary>
+        /// <remarks>
+        /// This operator uses <see cref="object.Equals(object, object)"/>
+        /// to compare stored values.
+        /// </remarks>
+        /// <param name="first">The first value to compare.</param>
+        /// <param name="second">The second value to compare.</param>
+        /// <returns><see langword="true"/>, if variant values are not equal; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(Variant<T1, T2, T3, T4> first, Variant<T1, T2, T3, T4> second) => !first.Equals(second);
 
+        /// <summary>
+        /// Converts value of type <typeparamref name="T1"/> into variant.
+        /// </summary>
+        /// <param name="value">The value to be converted.</param>
         public static implicit operator Variant<T1, T2, T3, T4>(T1 value) => new Variant<T1, T2, T3, T4>(value);
+
+        /// <summary>
+        /// Converts variant value into type <typeparamref name="T2"/>.
+        /// </summary>
+        /// <param name="var">Variant value to convert into type <typeparamref name="T1"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T1"/>.</param>
         public static explicit operator T1(Variant<T1, T2, T3, T4> var) => var.Value as T1;
 
+        /// <summary>
+        /// Converts value of type <typeparamref name="T2"/> into variant.
+        /// </summary>
+        /// <param name="value">The value to be converted.</param>
         public static implicit operator Variant<T1, T2, T3, T4>(T2 value) => new Variant<T1, T2, T3, T4>(value);
+
+        /// <summary>
+        /// Converts variant value into type <typeparamref name="T2"/>.
+        /// </summary>
+        /// <param name="var">Variant value to convert into type <typeparamref name="T2"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T2"/>.</param>
         public static explicit operator T2(Variant<T1, T2, T3, T4> var) => var.Value as T2;
 
+        /// <summary>
+        /// Converts value of type <typeparamref name="T3"/> into variant.
+        /// </summary>
+        /// <param name="value">The value to be converted.</param>
         public static implicit operator Variant<T1, T2, T3, T4>(T3 value) => new Variant<T1, T2, T3, T4>(value);
+
+        /// <summary>
+        /// Converts variant value into type <typeparamref name="T3"/>.
+        /// </summary>
+        /// <param name="var">Variant value to convert into type <typeparamref name="T3"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T3"/>.</param>
         public static explicit operator T3(Variant<T1, T2, T3, T4> var) => var.Value as T3;
 
+        /// <summary>
+        /// Converts value of type <typeparamref name="T4"/> into variant.
+        /// </summary>
+        /// <param name="value">The value to be converted.</param>
         public static implicit operator Variant<T1, T2, T3, T4>(T4 value) => new Variant<T1, T2, T3, T4>(value);
+
+        /// <summary>
+        /// Converts variant value into type <typeparamref name="T4"/>.
+        /// </summary>
+        /// <param name="var">Variant value to convert into type <typeparamref name="T4"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T4"/>.</param>
         public static explicit operator T4(Variant<T1, T2, T3, T4> var) => var.Value as T4;
 
+        /// <summary>
+        /// Converts variant value of three possible types into variant value
+        /// of four possibles types.
+        /// </summary>
+        /// <param name="variant">The variant value to be converted.</param>
         public static implicit operator Variant<T1, T2, T3, T4>(Variant<T1, T2, T3> variant)
             => Create(variant);
 
+        /// <summary>
+        /// Converts variant value of two possible types into variant value
+        /// of four possibles types.
+        /// </summary>
+        /// <param name="variant">The variant value to be converted.</param>
         public static implicit operator Variant<T1, T2, T3, T4>(Variant<T1, T2> variant)
             => Create(variant);
 
-        public static bool operator true(Variant<T1, T2, T3, T4> variant) => variant.IsPresent;
+        /// <summary>
+        /// Indicates that variant value is non-<see langword="null"/> value.
+        /// </summary>
+        public static bool operator true(Variant<T1, T2, T3, T4> variant) => !(variant.Value is null);
 
-        public static bool operator false(Variant<T1, T2, T3, T4> variant) => !variant.IsPresent;
+        /// <summary>
+        /// Indicates that variant value is <see langword="null"/> value.
+        /// </summary>
+		public static bool operator false(Variant<T1, T2, T3, T4> variant) => variant.Value is null;
 
+        /// <summary>
+        /// Provides textual representation of the stored value.
+        /// </summary>
+        /// <remarks>
+        /// This method calls virtual method <see cref="object.ToString()"/>
+        /// for the stored value.
+        /// </remarks>
+        /// <returns>The textual representation of the stored value.</returns>
         public override string ToString() => Value?.ToString() ?? "";
 
+        /// <summary>
+        /// Computes hash code for the stored value.
+        /// </summary>
+        /// <returns>The hash code of the stored value.</returns>
         public override int GetHashCode() => Value is null ? 0 : Value.GetHashCode();
 
+        /// <summary>
+        /// Determines whether stored value is equal to the given value.
+        /// </summary>
+        /// <param name="other">Other value to compare.</param>
+        /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
             switch (other)
