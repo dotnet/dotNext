@@ -191,13 +191,7 @@ namespace DotNext.VariantType
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
-        {
-            switch(other)
-            {
-                case IVariant variant: return Equals(Value, variant.Value);
-                default: return Equals(Value, other);
-            }
-        }
+            => other is IVariant variant ? Equals(Value, variant.Value) : Equals(Value, other);
 
 		DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
 			=> new VariantImmutableMetaObject(parameter, this);
@@ -375,13 +369,7 @@ namespace DotNext.VariantType
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
-		{
-			switch (other)
-			{
-				case IVariant variant: return Equals(Value, variant.Value);
-				default: return Equals(Value, other);
-			}
-		}
+            => other is IVariant variant ? Equals(Value, variant.Value) : Equals(Value, other);
 
 		DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
 			=> new VariantImmutableMetaObject(parameter, this);
@@ -587,13 +575,7 @@ namespace DotNext.VariantType
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
-        {
-            switch (other)
-            {
-                case IVariant variant: return Equals(Value, variant.Value);
-                default: return Equals(Value, other);
-            }
-        }
+            => other is IVariant variant ? Equals(Value, variant.Value) : Equals(Value, other);
 
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
             => new VariantImmutableMetaObject(parameter, this);
