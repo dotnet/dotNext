@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext
 {
-	public sealed class MemoryTests: Assert
+	public sealed class ValueTypeTests: Assert
 	{
 		private struct Point
 		{

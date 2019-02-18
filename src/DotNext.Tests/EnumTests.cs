@@ -16,7 +16,8 @@ namespace DotNext
         [Fact]
         public void MinMaxTest()
         {
-
+            Equal(EnvironmentVariableTarget.Machine, Enum<EnvironmentVariableTarget>.MaxValue);
+            Equal(EnvironmentVariableTarget.Process, Enum<EnvironmentVariableTarget>.MinValue);
         }
     }
 }

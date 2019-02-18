@@ -3,7 +3,7 @@ using System;
 
 namespace DotNext
 {
-    public sealed class ArraysTest: Assert
+    public sealed class OneDimensionalArrayTests: Assert
     {
         [Fact]
         public void InsertTest()

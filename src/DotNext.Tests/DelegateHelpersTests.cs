@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext
 {
-    public sealed class DelegatesTest: Assert
+    public sealed class DelegateHelpersTests: Assert
     {
         [Fact]
         public void ContravarianceTest()

@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext
 {
-    public sealed class ObjectsTest: Assert
+    public sealed class ObjectExtensionsTests: Assert
     {
         [Fact]
         public void OneOfTest()

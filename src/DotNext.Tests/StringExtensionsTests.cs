@@ -4,7 +4,7 @@ using Xunit;
 
 namespace DotNext
 {
-	public sealed class StringsTests: Assert
+	public sealed class StringExtensionsTests: Assert
 	{
 		[Fact]
 		public void IfNullOrEmptyTest()

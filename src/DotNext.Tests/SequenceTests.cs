@@ -7,7 +7,7 @@ namespace DotNext
 {
 	using Collections.Generic;
 
-	public sealed class CollectionsTest : Assert
+	public sealed class SequenceTests : Assert
 	{
 		public sealed class Counter<T>
 		{
@@ -74,14 +74,6 @@ namespace DotNext
 			var array = new int[] { 10, 20, 30 };
 			var str = array.ToString(":");
 			Equal("10:20:30", str);
-		}
-
-		[Fact]
-		public void ToArrayTest()
-		{
-			var list = new List<long>() { 10, 40, 100 };
-			var array = list.ToArray(i => i.ToString());
-			True(array.SequenceEqual(new string[] { "10", "40", "100" }));
 		}
 	}
 }
