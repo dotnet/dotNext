@@ -53,7 +53,7 @@ namespace DotNext.Threading
 		/// <summary>
 		/// Read-only collection of objects in this pool.
 		/// </summary>
-		protected readonly ReadOnlyCollection<T> objects;
+		protected readonly IReadOnlyList<T> objects;
 		private int counter;
 
 		/// <summary>
@@ -62,7 +62,9 @@ namespace DotNext.Threading
 		/// <param name="objects">Predefined objects to be available from the pool.</param>
 		public ConcurrentObjectPool(IList<T> objects)
 		{
-			objects = new ReadOnlyCollection<T>(objects);
+            if (objects.Count == 0)
+                throw new ArgumentException(ExceptionMessages.CollectionIsEmpty);
+			this.objects = new ReadOnlyCollection<T>(objects);
 			counter = -1;
 		}
 
@@ -72,12 +74,11 @@ namespace DotNext.Threading
 		/// <returns>First unbusy object locked for the caller thread.</returns>
 		public Rental Rent()
 		{
-            Requires(objects.Count > 0, "This pool us empty");
 			//each thread must have its own spin awaiter
 			for (SpinWait spinner; ; spinner.SpinOnce())
 			{
 				//apply selection using round-robin mechanism
-				var index = Math.Abs(counter.IncrementAndGet() % objects.Count);
+				var index = counter.IncrementAndGet() % objects.Count;
 				//lock selected object if possible
 				var result = new Rental(objects[index], out var locked);
 				if (locked)

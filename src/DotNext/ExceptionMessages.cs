@@ -23,5 +23,7 @@ namespace DotNext
         internal static string IndexShouldBeZero => resourceManager.GetString("IndexShouldBeZero");
 
         internal static string CastNullToValueType => resourceManager.GetString("CastNullToValueType");
+
+        internal static string CollectionIsEmpty => resourceManager.GetString("CollectionIsEmpty");
     }
 }
