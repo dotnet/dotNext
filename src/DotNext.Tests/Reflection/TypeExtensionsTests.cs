@@ -6,7 +6,7 @@ using Xunit;
 
 namespace DotNext.Reflection
 {
-	public sealed class TypesTest : Assert
+	public sealed class TypeExtensionsTests : Assert
 	{
         public sealed class MyList: List<string>
         {
@@ -50,7 +50,7 @@ namespace DotNext.Reflection
             NotNull(method);
             method = typeof(Task).GetMethod(nameof(Task.FromException), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, typeof(Exception));
             NotNull(method);
-            method = typeof(TypesTest).GetMethod(nameof(GenericMethod), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, typeof(int));
+            method = typeof(TypeExtensionsTests).GetMethod(nameof(GenericMethod), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, typeof(int));
             NotNull(method);
         }
     }

@@ -25,15 +25,15 @@ namespace DotNext.Threading
         {
             if (@delegate is null)
                 return Task.CompletedTask;
-            var handlers = DelegateHelpers.GetInvocationList(@delegate);
+            var handlers = @delegate.GetInvocationList();
             switch (handlers.LongLength)
             {
                 case 0:
                     return Task.CompletedTask;
                 case 1:
-                    return invoker(handlers[0]);
+                    return invoker(@delegate);
                 default:
-                    return Task.WhenAll(handlers.Select(invoker));
+                    return Task.WhenAll(handlers.Cast<D>().Select(invoker));
             }
         }
 

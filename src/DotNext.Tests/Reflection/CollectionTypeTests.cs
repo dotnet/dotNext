@@ -1,0 +1,15 @@
+﻿using System.Collections.Generic;
+using Xunit;
+
+namespace DotNext.Reflection
+{
+    public sealed class CollectionTypeTests: Assert
+    {
+        [Fact]
+        public void GetItemTypeTest()
+        {
+            Equal(typeof(long), typeof(long[]).GetItemType());
+            Equal(typeof(bool), typeof(IList<bool>).GetItemType());
+        }
+    }
+}

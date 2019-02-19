@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace DotNext
@@ -8,19 +9,6 @@ namespace DotNext
     /// </summary>
     public static class DelegateHelpers
     {
-        /// <summary>
-        /// Returns the invocation list of this multicast delegate, in invocation order. 
-        /// </summary>
-        /// <typeparam name="D">Type of delegate.</typeparam>
-        /// <param name="delegate">Multicast delegate.</param>
-        /// <returns>
-        /// Typed array of delegates whose invocation lists collectively match the invocation
-        /// list of this instance.
-        /// </returns>
-        public static D[] GetInvocationList<D>(D @delegate)
-            where D: MulticastDelegate
-            => @delegate?.GetInvocationList() as D[] ?? Array.Empty<D>();
-
         /// <summary>
         /// Performs contravariant conversion
         /// of actual generic argument specified
