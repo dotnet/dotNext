@@ -34,4 +34,10 @@
   <ItemGroup>
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ExceptionMessages.restext">
+      <Generator></Generator>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

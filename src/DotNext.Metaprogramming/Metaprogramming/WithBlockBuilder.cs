@@ -14,11 +14,11 @@ namespace DotNext.Metaprogramming
             else
             {
                 scopeVar = DeclareVariable(expression.Type, NextName("block_var_"));
-                Assign(ScopeVar, expression);
+                Assign(scopeVar, expression);
             }
         }
 
-        public UniversalExpression ScopeVar { get; }
+        public UniversalExpression ScopeVar => scopeVar;
 
         Expression IExpressionBuilder<Expression>.Build() => Build();
     }

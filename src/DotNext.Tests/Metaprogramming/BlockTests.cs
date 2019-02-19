@@ -17,9 +17,12 @@ namespace DotNext.Metaprogramming
 
         private struct DisposableStruct
         {
-            public bool Disposed;
+            internal readonly ValueType<bool> Disposed;
 
-            public void Dispose() => Disposed = true;
+            internal DisposableStruct(ValueType<bool> disposedFlag)
+                => Disposed = disposedFlag;
+
+            public void Dispose() => Disposed.Value = true;
         }
 
         private delegate void DisposeLambda(ref DisposableStruct value);
@@ -32,10 +35,12 @@ namespace DotNext.Metaprogramming
                 fun.Using(fun.Parameters[0], @using => @using.Constant(42L));
             })
            .Compile();
-            var value = new DisposableStruct();
-            False(value.Disposed);
+            var flag = new ValueType<bool>(false);
+            var value = new DisposableStruct(flag);
+            False(flag);
             lambda(ref value);
-            True(value.Disposed);
+            True(flag);
+            Null(value.Disposed);
         }
 
         [Fact]

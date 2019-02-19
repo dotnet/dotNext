@@ -28,7 +28,7 @@ namespace DotNext
                 foreach(ref char element in result.AsSpan())
                 {
                     random.GetBytes(buffer, 0, sizeof(int));
-                    var randomNumber = BitConverter.ToInt32(buffer, 0) % allowedChars.Length;
+                    var randomNumber = Math.Abs(BitConverter.ToInt32(buffer, 0) % allowedChars.Length);   
                     element = allowedChars[randomNumber];
                 }
 			return new string(result);

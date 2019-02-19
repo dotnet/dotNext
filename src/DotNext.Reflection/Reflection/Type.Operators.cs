@@ -103,6 +103,7 @@ namespace DotNext.Reflection
             /// Gets binary operator. 
             /// </summary>
             /// <param name="op">Binary operator type.</param>
+            /// <param name="lookup">Operator resolution strategy.</param>
             /// <typeparam name="R">Result of binary operator.</typeparam>
             /// <returns>Binary operator; or null, if it doesn't exist.</returns>
             public static BinaryOperator<T, U, R> Get<R>(BinaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => Operators<R>.GetOrCreate(op, lookup);
@@ -111,6 +112,7 @@ namespace DotNext.Reflection
             /// Gets binary operator. 
             /// </summary>
             /// <param name="op">Binary operator type.</param>
+            /// <param name="lookup">Operator resolution strategy.</param>
             /// <typeparam name="R">Result of binary operator.</typeparam>
             /// <returns>Binary operator.</returns>
             /// <exception cref="MissingOperatorException">Operator doesn't exist.</exception>

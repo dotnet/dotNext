@@ -38,8 +38,6 @@ namespace DotNext.Reflection
 			True(20 == new DerivedClass());
 			var op2 = Type<int>.Operator<DerivedClass>.Require<bool>(BinaryOperator.Equal);
 			True(op2.Invoke(20, new DerivedClass()));
-			var revertedOp = Type<DerivedClass>.Operator<int>.Require<bool>(BinaryOperator.Equal);
-			True(revertedOp.Invoke(new DerivedClass(), 20));
 		}
 
 		[Fact]

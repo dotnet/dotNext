@@ -181,5 +181,11 @@ namespace DotNext
 		/// </summary>
 		/// <returns>Pinnnable reference.</returns>
 		public ref T GetPinnableReference() => ref Value;
+
+        /// <summary>
+        /// Unbox value type.
+        /// </summary>
+        /// <param name="box">Boxed representation of value type to unbox.</param>
+        public static implicit operator T(ValueType<T> box) => box.Value;
     }
 }
