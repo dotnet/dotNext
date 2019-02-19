@@ -38,6 +38,7 @@ namespace DotNext.Reflection
             /// Gets unary operator. 
             /// </summary>
             /// <param name="op">Unary operator type.</param>
+            /// <param name="lookup">Operator resolution strategy.</param>
             /// <typeparam name="R">Result of unary operator.</typeparam>
             /// <returns>Unary operator; or null, if it doesn't exist.</returns>
             public static UnaryOperator<T, R> Get<R>(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => Operators<R>.GetOrCreate(op, lookup);
@@ -46,6 +47,7 @@ namespace DotNext.Reflection
             /// Gets unary operator of the same result type as its operand.
             /// </summary>
             /// <param name="op">Unary operator type.</param>
+            /// <param name="lookup">Operator resolution strategy.</param>
             /// <returns>Unary operator; or null, if it doesn't exist.</returns>
             public static UnaryOperator<T, T> Get(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => Get<T>(op, lookup);
 
@@ -53,6 +55,7 @@ namespace DotNext.Reflection
             /// Gets unary operator. 
             /// </summary>
             /// <param name="op">Unary operator type.</param>
+            /// <param name="lookup">Operator resolution strategy.</param>
             /// <typeparam name="R">Result of unary operator.</typeparam>
             /// <returns>Unary operator.</returns>
             /// <exception cref="MissingOperatorException">Operator doesn't exist.</exception>
@@ -62,6 +65,7 @@ namespace DotNext.Reflection
             /// Gets unary operator of the same result type as its operand.
             /// </summary>
             /// <param name="op">Unary operator type.</param>
+            /// <param name="lookup">Operator resolution strategy.</param>
             /// <returns>Unary operator.</returns>
             /// <exception cref="MissingOperatorException">Operator doesn't exist.</exception>
             public static UnaryOperator<T, T> Require(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => Require<T>(op, lookup);

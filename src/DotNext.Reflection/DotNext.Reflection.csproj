@@ -15,6 +15,7 @@
 	<RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
 	<RepositoryType>git</RepositoryType>
 	<PackageTags>shapes;concept;reflection</PackageTags>
+	<PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/dotnext.png</PackageIconUrl>
   </PropertyGroup>
 
 
