@@ -9,7 +9,7 @@
 	<Authors>Roman Sakno</Authors>
 	<Product>.NEXT Family of Libraries</Product>
 	<Description>Statically-typed reflection and support of conceptual types (shapes)</Description>
-	<Copyright>2018-2019</Copyright>
+	<Copyright>Copyright © Roman Sakno 2019</Copyright>
 	<PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
 	<PackageProjectUrl>https://github.com/sakno/DotNext</PackageProjectUrl>
 	<RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
