@@ -25,11 +25,10 @@ namespace DotNext.Reflection
 
 		public sealed class DerivedClass: BaseClass
 		{
-			public override bool Equals(object obj)
-			{
-				return base.Equals(obj);
-			}
-		}
+            public override bool Equals(object obj) => obj is DerivedClass;
+
+            public override int GetHashCode() => GetType().GetHashCode();
+        }
 
 		[Fact]
 		public void BinaryOperatorTest()

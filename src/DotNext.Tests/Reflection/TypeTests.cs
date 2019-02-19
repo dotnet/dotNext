@@ -225,9 +225,7 @@ namespace DotNext.Reflection
 			Null(StaticEvent);
 		}
 
-#pragma warning disable IDE0044 // Add readonly modifier
-        private static long Field;
-#pragma warning restore IDE0044 // Add readonly modifier
+        private static long Field = 0;
 
         [Fact]
 		public void StaticFieldTest()
