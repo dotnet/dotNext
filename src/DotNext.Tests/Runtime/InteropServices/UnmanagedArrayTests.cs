@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext.Runtime.InteropServices
 {
-    public sealed class UnmanagedArrayTest: Assert
+    public sealed class UnmanagedArrayTests: Assert
     {
         [Fact]
         public void BitwiseOperationsTest()

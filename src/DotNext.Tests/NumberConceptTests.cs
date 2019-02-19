@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext
 {
-    public sealed class NumberConceptTest: Assert
+    public sealed class NumberConceptTests: Assert
     { 
         [Fact]
         public void LongTest()

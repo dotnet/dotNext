@@ -4,7 +4,7 @@ using Xunit;
 
 namespace DotNext.Runtime.InteropServices
 {
-    public sealed class PointerTest: Assert
+    public sealed class PointerTests: Assert
     {
         [Fact]
         public unsafe void BitwiseOperationsTest()

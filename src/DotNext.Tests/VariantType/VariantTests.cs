@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext.VariantType
 {
-    public sealed class VariantTest: Assert
+    public sealed class VariantTests: Assert
     {   
         [Fact]
         public void DynamicTest()
