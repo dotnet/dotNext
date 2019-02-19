@@ -27,5 +27,18 @@ namespace DotNext
 			}
 			Equal(7, str.Length);
 		}
+
+        [Fact]
+        public void ReverseTest()
+        {
+            Equal("cba", "abc".Reverse());
+            Equal("", "".Reverse());
+        }
+
+        [Fact]
+        public void TrimLengthTest()
+        {
+            Equal("ab", "abcd".TrimLength(2));
+        }
 	}
 }
