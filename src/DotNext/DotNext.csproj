@@ -17,7 +17,7 @@
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
-	<PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.svg</PackageIconUrl>
+	<PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
