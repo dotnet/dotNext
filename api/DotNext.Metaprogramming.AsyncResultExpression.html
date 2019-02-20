@@ -1,0 +1,1550 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class AsyncResultExpression
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class AsyncResultExpression
+   ">
+    <meta name="generator" content="docfx 2.40.7.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Metaprogramming.AsyncResultExpression">
+  
+  
+  <h1 id="DotNext_Metaprogramming_AsyncResultExpression" data-uid="DotNext.Metaprogramming.AsyncResultExpression" class="text-break">Class AsyncResultExpression
+  </h1>
+  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">System.Linq.Expressions.Expression</span></div>
+    <div class="level2"><span class="xref">AsyncResultExpression</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Accept(System.Linq.Expressions.ExpressionVisitor)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Add(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Add(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AddAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AddAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AddAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AddAssignChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AddAssignChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AddAssignChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AddChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AddChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.And(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.And(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AndAlso(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AndAlso(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AndAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AndAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.AndAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ArrayAccess(System.Linq.Expressions.Expression, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ArrayAccess(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ArrayIndex(System.Linq.Expressions.Expression, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ArrayIndex(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ArrayIndex(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ArrayLength(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Assign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Bind(System.Reflection.MemberInfo, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Bind(System.Reflection.MethodInfo, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Block(System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Block(System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Block(System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Block(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Block(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Block(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Block(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Block(System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Block(System.Type, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Block(System.Type, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Block(System.Type, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Block(System.Type, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Break(System.Linq.Expressions.LabelTarget)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Break(System.Linq.Expressions.LabelTarget, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Break(System.Linq.Expressions.LabelTarget, System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Break(System.Linq.Expressions.LabelTarget, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Linq.Expressions.Expression, System.String, System.Type[], System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Reflection.MethodInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Reflection.MethodInfo, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Reflection.MethodInfo, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Reflection.MethodInfo, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Reflection.MethodInfo, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Reflection.MethodInfo, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Reflection.MethodInfo, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Call(System.Type, System.String, System.Type[], System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Catch(System.Linq.Expressions.ParameterExpression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Catch(System.Linq.Expressions.ParameterExpression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Catch(System.Type, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Catch(System.Type, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ClearDebugInfo(System.Linq.Expressions.SymbolDocumentInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Coalesce(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Coalesce(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Condition(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Condition(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Constant(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Constant(System.Object, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Continue(System.Linq.Expressions.LabelTarget)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Continue(System.Linq.Expressions.LabelTarget, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Convert(System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Convert(System.Linq.Expressions.Expression, System.Type, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ConvertChecked(System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ConvertChecked(System.Linq.Expressions.Expression, System.Type, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.DebugInfo(System.Linq.Expressions.SymbolDocumentInfo, System.Int32, System.Int32, System.Int32, System.Int32)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Decrement(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Decrement(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Default(System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Divide(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Divide(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.DivideAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.DivideAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.DivideAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Dynamic(System.Runtime.CompilerServices.CallSiteBinder, System.Type, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Dynamic(System.Runtime.CompilerServices.CallSiteBinder, System.Type, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Dynamic(System.Runtime.CompilerServices.CallSiteBinder, System.Type, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Dynamic(System.Runtime.CompilerServices.CallSiteBinder, System.Type, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Dynamic(System.Runtime.CompilerServices.CallSiteBinder, System.Type, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Dynamic(System.Runtime.CompilerServices.CallSiteBinder, System.Type, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ElementInit(System.Reflection.MethodInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ElementInit(System.Reflection.MethodInfo, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Empty()</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Equal(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Equal(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Boolean, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ExclusiveOr(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ExclusiveOr(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ExclusiveOrAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ExclusiveOrAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ExclusiveOrAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Field(System.Linq.Expressions.Expression, System.Reflection.FieldInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Field(System.Linq.Expressions.Expression, System.String)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Field(System.Linq.Expressions.Expression, System.Type, System.String)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.GetActionType(System.Type[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.GetDelegateType(System.Type[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.GetFuncType(System.Type[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Goto(System.Linq.Expressions.LabelTarget)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Goto(System.Linq.Expressions.LabelTarget, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Goto(System.Linq.Expressions.LabelTarget, System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Goto(System.Linq.Expressions.LabelTarget, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.GreaterThan(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.GreaterThan(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Boolean, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.GreaterThanOrEqual(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.GreaterThanOrEqual(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Boolean, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.IfThen(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.IfThenElse(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Increment(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Increment(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Invoke(System.Linq.Expressions.Expression, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Invoke(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.IsFalse(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.IsFalse(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.IsTrue(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.IsTrue(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Label()</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Label(System.Linq.Expressions.LabelTarget)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Label(System.Linq.Expressions.LabelTarget, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Label(System.String)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Label(System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Label(System.Type, System.String)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda(System.Linq.Expressions.Expression, System.Boolean, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda(System.Linq.Expressions.Expression, System.Boolean, System.Linq.Expressions.ParameterExpression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda(System.Linq.Expressions.Expression, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda(System.Linq.Expressions.Expression, System.Linq.Expressions.ParameterExpression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda(System.Linq.Expressions.Expression, System.String, System.Boolean, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda(System.Linq.Expressions.Expression, System.String, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda(System.Type, System.Linq.Expressions.Expression, System.Boolean, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda(System.Type, System.Linq.Expressions.Expression, System.Boolean, System.Linq.Expressions.ParameterExpression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda(System.Type, System.Linq.Expressions.Expression, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda(System.Type, System.Linq.Expressions.Expression, System.Linq.Expressions.ParameterExpression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda(System.Type, System.Linq.Expressions.Expression, System.String, System.Boolean, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda(System.Type, System.Linq.Expressions.Expression, System.String, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda&lt;TDelegate&gt;(System.Linq.Expressions.Expression, System.Boolean, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda&lt;TDelegate&gt;(System.Linq.Expressions.Expression, System.Boolean, System.Linq.Expressions.ParameterExpression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda&lt;TDelegate&gt;(System.Linq.Expressions.Expression, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda&lt;TDelegate&gt;(System.Linq.Expressions.Expression, System.Linq.Expressions.ParameterExpression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda&lt;TDelegate&gt;(System.Linq.Expressions.Expression, System.String, System.Boolean, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Lambda&lt;TDelegate&gt;(System.Linq.Expressions.Expression, System.String, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.LeftShift(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.LeftShift(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.LeftShiftAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.LeftShiftAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.LeftShiftAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.LessThan(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.LessThan(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Boolean, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.LessThanOrEqual(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.LessThanOrEqual(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Boolean, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ListBind(System.Reflection.MemberInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ElementInit&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ListBind(System.Reflection.MemberInfo, System.Linq.Expressions.ElementInit[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ListBind(System.Reflection.MethodInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ElementInit&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ListBind(System.Reflection.MethodInfo, System.Linq.Expressions.ElementInit[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ListInit(System.Linq.Expressions.NewExpression, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ElementInit&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ListInit(System.Linq.Expressions.NewExpression, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ListInit(System.Linq.Expressions.NewExpression, System.Linq.Expressions.ElementInit[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ListInit(System.Linq.Expressions.NewExpression, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ListInit(System.Linq.Expressions.NewExpression, System.Reflection.MethodInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ListInit(System.Linq.Expressions.NewExpression, System.Reflection.MethodInfo, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Loop(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Loop(System.Linq.Expressions.Expression, System.Linq.Expressions.LabelTarget)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Loop(System.Linq.Expressions.Expression, System.Linq.Expressions.LabelTarget, System.Linq.Expressions.LabelTarget)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeBinary(System.Linq.Expressions.ExpressionType, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeBinary(System.Linq.Expressions.ExpressionType, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Boolean, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeBinary(System.Linq.Expressions.ExpressionType, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Boolean, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeCatchBlock(System.Type, System.Linq.Expressions.ParameterExpression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeDynamic(System.Type, System.Runtime.CompilerServices.CallSiteBinder, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeDynamic(System.Type, System.Runtime.CompilerServices.CallSiteBinder, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeDynamic(System.Type, System.Runtime.CompilerServices.CallSiteBinder, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeDynamic(System.Type, System.Runtime.CompilerServices.CallSiteBinder, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeDynamic(System.Type, System.Runtime.CompilerServices.CallSiteBinder, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeDynamic(System.Type, System.Runtime.CompilerServices.CallSiteBinder, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeGoto(System.Linq.Expressions.GotoExpressionKind, System.Linq.Expressions.LabelTarget, System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeIndex(System.Linq.Expressions.Expression, System.Reflection.PropertyInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeMemberAccess(System.Linq.Expressions.Expression, System.Reflection.MemberInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeTry(System.Type, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.CatchBlock&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeUnary(System.Linq.Expressions.ExpressionType, System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MakeUnary(System.Linq.Expressions.ExpressionType, System.Linq.Expressions.Expression, System.Type, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MemberBind(System.Reflection.MemberInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.MemberBinding&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MemberBind(System.Reflection.MemberInfo, System.Linq.Expressions.MemberBinding[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MemberBind(System.Reflection.MethodInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.MemberBinding&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MemberBind(System.Reflection.MethodInfo, System.Linq.Expressions.MemberBinding[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MemberInit(System.Linq.Expressions.NewExpression, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.MemberBinding&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MemberInit(System.Linq.Expressions.NewExpression, System.Linq.Expressions.MemberBinding[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Modulo(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Modulo(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ModuloAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ModuloAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ModuloAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Multiply(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Multiply(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MultiplyAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MultiplyAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MultiplyAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MultiplyAssignChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MultiplyAssignChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MultiplyAssignChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MultiplyChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.MultiplyChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Negate(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Negate(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.NegateChecked(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.NegateChecked(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.New(System.Reflection.ConstructorInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.New(System.Reflection.ConstructorInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.New(System.Reflection.ConstructorInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;, System.Collections.Generic.IEnumerable&lt;System.Reflection.MemberInfo&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.New(System.Reflection.ConstructorInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;, System.Reflection.MemberInfo[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.New(System.Reflection.ConstructorInfo, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.New(System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.NewArrayBounds(System.Type, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.NewArrayBounds(System.Type, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.NewArrayInit(System.Type, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.NewArrayInit(System.Type, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Not(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Not(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.NotEqual(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.NotEqual(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Boolean, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.OnesComplement(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.OnesComplement(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Or(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Or(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.OrAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.OrAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.OrAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.OrElse(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.OrElse(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Parameter(System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Parameter(System.Type, System.String)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.PostDecrementAssign(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.PostDecrementAssign(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.PostIncrementAssign(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.PostIncrementAssign(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Power(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Power(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.PowerAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.PowerAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.PowerAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.PreDecrementAssign(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.PreDecrementAssign(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.PreIncrementAssign(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.PreIncrementAssign(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Property(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Property(System.Linq.Expressions.Expression, System.Reflection.PropertyInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Property(System.Linq.Expressions.Expression, System.Reflection.PropertyInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Property(System.Linq.Expressions.Expression, System.Reflection.PropertyInfo, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Property(System.Linq.Expressions.Expression, System.String)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Property(System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Property(System.Linq.Expressions.Expression, System.Type, System.String)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.PropertyOrField(System.Linq.Expressions.Expression, System.String)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Quote(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ReduceAndCheck()</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ReduceExtensions()</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ReferenceEqual(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ReferenceNotEqual(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Rethrow()</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Rethrow(System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Return(System.Linq.Expressions.LabelTarget)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Return(System.Linq.Expressions.LabelTarget, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Return(System.Linq.Expressions.LabelTarget, System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Return(System.Linq.Expressions.LabelTarget, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.RightShift(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.RightShift(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.RightShiftAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.RightShiftAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.RightShiftAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.RuntimeVariables(System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.ParameterExpression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.RuntimeVariables(System.Linq.Expressions.ParameterExpression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Subtract(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Subtract(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SubtractAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SubtractAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SubtractAssign(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SubtractAssignChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SubtractAssignChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SubtractAssignChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.LambdaExpression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SubtractChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SubtractChecked(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Switch(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.SwitchCase[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Switch(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.SwitchCase&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Switch(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.SwitchCase[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Switch(System.Linq.Expressions.Expression, System.Linq.Expressions.SwitchCase[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Switch(System.Type, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.SwitchCase&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Switch(System.Type, System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Reflection.MethodInfo, System.Linq.Expressions.SwitchCase[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SwitchCase(System.Linq.Expressions.Expression, System.Collections.Generic.IEnumerable&lt;System.Linq.Expressions.Expression&gt;)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SwitchCase(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SymbolDocument(System.String)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SymbolDocument(System.String, System.Guid)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SymbolDocument(System.String, System.Guid, System.Guid)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.SymbolDocument(System.String, System.Guid, System.Guid, System.Guid)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Throw(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Throw(System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.ToString()</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.TryCatch(System.Linq.Expressions.Expression, System.Linq.Expressions.CatchBlock[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.TryCatchFinally(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, System.Linq.Expressions.CatchBlock[])</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.TryFault(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.TryFinally(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.TryGetActionType(System.Type[], System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.TryGetFuncType(System.Type[], System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.TypeAs(System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.TypeEqual(System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.TypeIs(System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.UnaryPlus(System.Linq.Expressions.Expression)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.UnaryPlus(System.Linq.Expressions.Expression, System.Reflection.MethodInfo)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Unbox(System.Linq.Expressions.Expression, System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Variable(System.Type)</span>
+    </div>
+    <div>
+      <span class="xref">System.Linq.Expressions.Expression.Variable(System.Type, System.String)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Metaprogramming.html">DotNext.Metaprogramming</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
+  <h5 id="DotNext_Metaprogramming_AsyncResultExpression_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class AsyncResultExpression : Expression</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_AsyncResultExpression__ctor.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.AsyncResultExpression.%23ctor%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncResultExpression.cs/#L16">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_AsyncResultExpression__ctor_" data-uid="DotNext.Metaprogramming.AsyncResultExpression.#ctor*"></a>
+  <h4 id="DotNext_Metaprogramming_AsyncResultExpression__ctor" data-uid="DotNext.Metaprogramming.AsyncResultExpression.#ctor">AsyncResultExpression()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AsyncResultExpression()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_AsyncResultExpression__ctor_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.AsyncResultExpression.%23ctor(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncResultExpression.cs/#L13">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_AsyncResultExpression__ctor_" data-uid="DotNext.Metaprogramming.AsyncResultExpression.#ctor*"></a>
+  <h4 id="DotNext_Metaprogramming_AsyncResultExpression__ctor_System_Linq_Expressions_Expression_" data-uid="DotNext.Metaprogramming.AsyncResultExpression.#ctor(System.Linq.Expressions.Expression)">AsyncResultExpression(Expression)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AsyncResultExpression(Expression result)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Linq.Expressions.Expression</span></td>
+        <td><span class="parametername">result</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_AsyncResultExpression_AsyncResult.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.AsyncResultExpression.AsyncResult%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncResultExpression.cs/#L21">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_AsyncResultExpression_AsyncResult_" data-uid="DotNext.Metaprogramming.AsyncResultExpression.AsyncResult*"></a>
+  <h4 id="DotNext_Metaprogramming_AsyncResultExpression_AsyncResult" data-uid="DotNext.Metaprogramming.AsyncResultExpression.AsyncResult">AsyncResult</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Expression AsyncResult { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Linq.Expressions.Expression</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_AsyncResultExpression_CanReduce.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.AsyncResultExpression.CanReduce%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncResultExpression.cs/#L24">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_AsyncResultExpression_CanReduce_" data-uid="DotNext.Metaprogramming.AsyncResultExpression.CanReduce*"></a>
+  <h4 id="DotNext_Metaprogramming_AsyncResultExpression_CanReduce" data-uid="DotNext.Metaprogramming.AsyncResultExpression.CanReduce">CanReduce</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool CanReduce { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.Linq.Expressions.Expression.CanReduce</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_AsyncResultExpression_NodeType.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.AsyncResultExpression.NodeType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncResultExpression.cs/#L23">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_AsyncResultExpression_NodeType_" data-uid="DotNext.Metaprogramming.AsyncResultExpression.NodeType*"></a>
+  <h4 id="DotNext_Metaprogramming_AsyncResultExpression_NodeType" data-uid="DotNext.Metaprogramming.AsyncResultExpression.NodeType">NodeType</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override ExpressionType NodeType { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Linq.Expressions.ExpressionType</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.Linq.Expressions.Expression.NodeType</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_AsyncResultExpression_Type.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.AsyncResultExpression.Type%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncResultExpression.cs/#L22">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_AsyncResultExpression_Type_" data-uid="DotNext.Metaprogramming.AsyncResultExpression.Type*"></a>
+  <h4 id="DotNext_Metaprogramming_AsyncResultExpression_Type" data-uid="DotNext.Metaprogramming.AsyncResultExpression.Type">Type</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Type Type { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Type</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.Linq.Expressions.Expression.Type</span></div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_AsyncResultExpression_Reduce.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.AsyncResultExpression.Reduce%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncResultExpression.cs/#L25">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_AsyncResultExpression_Reduce_" data-uid="DotNext.Metaprogramming.AsyncResultExpression.Reduce*"></a>
+  <h4 id="DotNext_Metaprogramming_AsyncResultExpression_Reduce" data-uid="DotNext.Metaprogramming.AsyncResultExpression.Reduce">Reduce()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Expression Reduce()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Linq.Expressions.Expression</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.Linq.Expressions.Expression.Reduce()</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_AsyncResultExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.AsyncResultExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncResultExpression.cs/#L55">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_AsyncResultExpression_VisitChildren_" data-uid="DotNext.Metaprogramming.AsyncResultExpression.VisitChildren*"></a>
+  <h4 id="DotNext_Metaprogramming_AsyncResultExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_" data-uid="DotNext.Metaprogramming.AsyncResultExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)">VisitChildren(ExpressionVisitor)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override Expression VisitChildren(ExpressionVisitor visitor)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Linq.Expressions.ExpressionVisitor</span></td>
+        <td><span class="parametername">visitor</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Linq.Expressions.Expression</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.Linq.Expressions.Expression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)</span></div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_UnaryPlus_System_Linq_Expressions_Expression_">Expressions.UnaryPlus(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Negate_System_Linq_Expressions_Expression_">Expressions.Negate(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Not_System_Linq_Expressions_Expression_">Expressions.Not(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_OnesComplement_System_Linq_Expressions_Expression_">Expressions.OnesComplement(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_And_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.And(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Or_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.Or(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Xor_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.Xor(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Modulo_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.Modulo(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Add_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.Add(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Subtract_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.Subtract(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Multiply_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.Multiply(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Divide_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.Divide(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_GreaterThan_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.GreaterThan(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_LessThan_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.LessThan(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_GreaterThanOrEqual_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.GreaterThanOrEqual(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_LessThanOrEqual_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.LessThanOrEqual(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Equal_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.Equal(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_NotEqual_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.NotEqual(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Power_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.Power(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_LeftShift_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.LeftShift(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_RightShift_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.RightShift(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_PreDecrementAssign_System_Linq_Expressions_Expression_">Expressions.PreDecrementAssign(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_PostDecrementAssign_System_Linq_Expressions_Expression_">Expressions.PostDecrementAssign(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Convert_System_Linq_Expressions_Expression_System_Type_">Expressions.Convert(Expression, Type)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Convert__1_System_Linq_Expressions_Expression_">Expressions.Convert&lt;T&gt;(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_InstanceOf_System_Linq_Expressions_Expression_System_Type_">Expressions.InstanceOf(Expression, Type)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_InstanceOf__1_System_Linq_Expressions_Expression_">Expressions.InstanceOf&lt;T&gt;(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_TryConvert_System_Linq_Expressions_Expression_System_Type_">Expressions.TryConvert(Expression, Type)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_TryConvert__1_System_Linq_Expressions_Expression_">Expressions.TryConvert&lt;T&gt;(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_AndAlso_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.AndAlso(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_OrElse_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.OrElse(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Await_System_Linq_Expressions_Expression_">Expressions.Await(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Unbox_System_Linq_Expressions_Expression_System_Type_">Expressions.Unbox(Expression, Type)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Unbox__1_System_Linq_Expressions_Expression_">Expressions.Unbox&lt;T&gt;(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Invoke_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression___">Expressions.Invoke(Expression, Expression[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Call_System_Linq_Expressions_Expression_System_Reflection_MethodInfo_System_Linq_Expressions_Expression___">Expressions.Call(Expression, MethodInfo, Expression[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Call_System_Linq_Expressions_Expression_System_String_System_Linq_Expressions_Expression___">Expressions.Call(Expression, String, Expression[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Call_System_Linq_Expressions_Expression_System_Type_System_String_System_Linq_Expressions_Expression___">Expressions.Call(Expression, Type, String, Expression[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Property_System_Linq_Expressions_Expression_System_Reflection_PropertyInfo_System_Linq_Expressions_Expression___">Expressions.Property(Expression, PropertyInfo, Expression[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Property_System_Linq_Expressions_Expression_System_Type_System_String_System_Linq_Expressions_Expression___">Expressions.Property(Expression, Type, String, Expression[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Property_System_Linq_Expressions_Expression_System_String_System_Linq_Expressions_Expression___">Expressions.Property(Expression, String, Expression[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Field_System_Linq_Expressions_Expression_System_Reflection_FieldInfo_">Expressions.Field(Expression, FieldInfo)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Field_System_Linq_Expressions_Expression_System_String_">Expressions.Field(Expression, String)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_ElementAt_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression___">Expressions.ElementAt(Expression, Expression[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_ArrayLength_System_Linq_Expressions_Expression_">Expressions.ArrayLength(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Loop_System_Linq_Expressions_Expression_System_Linq_Expressions_LabelTarget_System_Linq_Expressions_LabelTarget_">Expressions.Loop(Expression, LabelTarget, LabelTarget)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Loop_System_Linq_Expressions_Expression_System_Linq_Expressions_LabelTarget_">Expressions.Loop(Expression, LabelTarget)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Loop_System_Linq_Expressions_Expression_">Expressions.Loop(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Condition_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_System_Type_">Expressions.Condition(Expression, Expression, Expression, Type)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Condition__1_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.Condition&lt;R&gt;(Expression, Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Condition_System_Linq_Expressions_Expression_DotNext_Metaprogramming_ExpressionBuilder_">Expressions.Condition(Expression, ExpressionBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Finally_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">Expressions.Finally(Expression, Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Throw_System_Linq_Expressions_Expression_">Expressions.Throw(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_AsConst__1___0_">Expressions.AsConst&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Try_System_Linq_Expressions_Expression_DotNext_Metaprogramming_ExpressionBuilder_">Expressions.Try(Expression, ExpressionBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_With_System_Linq_Expressions_Expression_System_Action_DotNext_Metaprogramming_WithBlockBuilder__DotNext_Metaprogramming_ExpressionBuilder_">Expressions.With(Expression, Action&lt;WithBlockBuilder&gt;, ExpressionBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Using_System_Linq_Expressions_Expression_System_Action_DotNext_Metaprogramming_UsingBlockBuilder__DotNext_Metaprogramming_ExpressionBuilder_">Expressions.Using(Expression, Action&lt;UsingBlockBuilder&gt;, ExpressionBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_Switch_System_Linq_Expressions_Expression_DotNext_Metaprogramming_ExpressionBuilder_">Expressions.Switch(Expression, ExpressionBuilder)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_OneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.OneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Optional.html#DotNext_Optional_EmptyIfNull__1___0_">Optional.EmptyIfNull&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockHelpers.html#DotNext_Threading_LockHelpers_Lock__1___0_">LockHelpers.Lock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockHelpers.html#DotNext_Threading_LockHelpers_Lock__1___0_System_TimeSpan_">LockHelpers.Lock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_AsyncResultExpression.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.AsyncResultExpression%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncResultExpression.cs/#L11" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

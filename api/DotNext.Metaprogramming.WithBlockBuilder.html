@@ -1,0 +1,426 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class WithBlockBuilder
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class WithBlockBuilder
+   ">
+    <meta name="generator" content="docfx 2.40.7.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Metaprogramming.WithBlockBuilder">
+  
+  
+  <h1 id="DotNext_Metaprogramming_WithBlockBuilder" data-uid="DotNext.Metaprogramming.WithBlockBuilder" class="text-break">Class WithBlockBuilder
+  </h1>
+  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
+    <div class="level2"><a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html">ExpressionBuilder</a></div>
+    <div class="level3"><a class="xref" href="DotNext.Metaprogramming.ScopeBuilder.html">ScopeBuilder</a></div>
+    <div class="level4"><span class="xref">WithBlockBuilder</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">System.IDisposable</span></div>
+    <div><a class="xref" href="DotNext.Metaprogramming.IExpressionBuilder-1.html">IExpressionBuilder</a>&lt;<span class="xref">System.Linq.Expressions.Expression</span>&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ScopeBuilder.html#DotNext_Metaprogramming_ScopeBuilder_Constant__1___0_">ScopeBuilder.Constant&lt;T&gt;(T)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ScopeBuilder.html#DotNext_Metaprogramming_ScopeBuilder_Continue_DotNext_Metaprogramming_LoopBuilderBase_">ScopeBuilder.Continue(LoopBuilderBase)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ScopeBuilder.html#DotNext_Metaprogramming_ScopeBuilder_Break_DotNext_Metaprogramming_LoopBuilderBase_">ScopeBuilder.Break(LoopBuilderBase)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ScopeBuilder.html#DotNext_Metaprogramming_ScopeBuilder_Return">ScopeBuilder.Return()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ScopeBuilder.html#DotNext_Metaprogramming_ScopeBuilder_Return_DotNext_Metaprogramming_UniversalExpression_">ScopeBuilder.Return(UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ScopeBuilder.html#DotNext_Metaprogramming_ScopeBuilder_Rethrow">ScopeBuilder.Rethrow()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Body">ExpressionBuilder.Body</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Parent">ExpressionBuilder.Parent</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Nop">ExpressionBuilder.Nop()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Assign_System_Linq_Expressions_ParameterExpression_DotNext_Metaprogramming_UniversalExpression_">ExpressionBuilder.Assign(ParameterExpression, UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Assign_System_String_DotNext_Metaprogramming_UniversalExpression_">ExpressionBuilder.Assign(String, UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Assign_System_Linq_Expressions_Expression_System_Reflection_PropertyInfo_DotNext_Metaprogramming_UniversalExpression_">ExpressionBuilder.Assign(Expression, PropertyInfo, UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Assign_System_Reflection_PropertyInfo_DotNext_Metaprogramming_UniversalExpression_">ExpressionBuilder.Assign(PropertyInfo, UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Assign_System_Linq_Expressions_Expression_System_Reflection_FieldInfo_DotNext_Metaprogramming_UniversalExpression_">ExpressionBuilder.Assign(Expression, FieldInfo, UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Assign_System_Reflection_FieldInfo_DotNext_Metaprogramming_UniversalExpression_">ExpressionBuilder.Assign(FieldInfo, UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Invoke_DotNext_Metaprogramming_UniversalExpression_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__">ExpressionBuilder.Invoke(UniversalExpression, IEnumerable&lt;Expression&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Invoke_DotNext_Metaprogramming_UniversalExpression_DotNext_Metaprogramming_UniversalExpression___">ExpressionBuilder.Invoke(UniversalExpression, UniversalExpression[])</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Call_DotNext_Metaprogramming_UniversalExpression_System_Reflection_MethodInfo_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__">ExpressionBuilder.Call(UniversalExpression, MethodInfo, IEnumerable&lt;Expression&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Call_DotNext_Metaprogramming_UniversalExpression_System_Reflection_MethodInfo_DotNext_Metaprogramming_UniversalExpression___">ExpressionBuilder.Call(UniversalExpression, MethodInfo, UniversalExpression[])</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Call_System_Reflection_MethodInfo_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__">ExpressionBuilder.Call(MethodInfo, IEnumerable&lt;Expression&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Call_System_Reflection_MethodInfo_DotNext_Metaprogramming_UniversalExpression___">ExpressionBuilder.Call(MethodInfo, UniversalExpression[])</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Label_System_Type_System_String_">ExpressionBuilder.Label(Type, String)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Label__1_System_String_">ExpressionBuilder.Label&lt;T&gt;(String)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Label">ExpressionBuilder.Label()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Label_System_Linq_Expressions_LabelTarget_">ExpressionBuilder.Label(LabelTarget)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Goto_System_Linq_Expressions_LabelTarget_DotNext_Metaprogramming_UniversalExpression_">ExpressionBuilder.Goto(LabelTarget, UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Goto_System_Linq_Expressions_LabelTarget_">ExpressionBuilder.Goto(LabelTarget)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Item_System_String_">ExpressionBuilder.Item[String]</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_DeclareVariable__1_System_String_">ExpressionBuilder.DeclareVariable&lt;T&gt;(String)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_DeclareVariable__1_System_String___0_">ExpressionBuilder.DeclareVariable&lt;T&gt;(String, T)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_DeclareVariable_System_Type_System_String_System_Boolean_">ExpressionBuilder.DeclareVariable(Type, String, Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_If_DotNext_Metaprogramming_UniversalExpression_">ExpressionBuilder.If(UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_IfThen_DotNext_Metaprogramming_UniversalExpression_System_Action_DotNext_Metaprogramming_ExpressionBuilder__">ExpressionBuilder.IfThen(UniversalExpression, Action&lt;ExpressionBuilder&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_IfThenElse_DotNext_Metaprogramming_UniversalExpression_System_Action_DotNext_Metaprogramming_ExpressionBuilder__System_Action_DotNext_Metaprogramming_ExpressionBuilder__">ExpressionBuilder.IfThenElse(UniversalExpression, Action&lt;ExpressionBuilder&gt;, Action&lt;ExpressionBuilder&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_While_DotNext_Metaprogramming_UniversalExpression_System_Action_DotNext_Metaprogramming_WhileLoopBuider__">ExpressionBuilder.While(UniversalExpression, Action&lt;WhileLoopBuider&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_DoWhile_DotNext_Metaprogramming_UniversalExpression_System_Action_DotNext_Metaprogramming_WhileLoopBuider__">ExpressionBuilder.DoWhile(UniversalExpression, Action&lt;WhileLoopBuider&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_ForEach_DotNext_Metaprogramming_UniversalExpression_System_Action_DotNext_Metaprogramming_ForEachLoopBuilder__">ExpressionBuilder.ForEach(UniversalExpression, Action&lt;ForEachLoopBuilder&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_For_DotNext_Metaprogramming_UniversalExpression_System_Func_DotNext_Metaprogramming_UniversalExpression_System_Linq_Expressions_Expression__System_Action_DotNext_Metaprogramming_ForLoopBuilder__">ExpressionBuilder.For(UniversalExpression, Func&lt;UniversalExpression, Expression&gt;, Action&lt;ForLoopBuilder&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Loop_System_Action_DotNext_Metaprogramming_LoopBuilder__">ExpressionBuilder.Loop(Action&lt;LoopBuilder&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Lambda__1_System_Action_DotNext_Metaprogramming_LambdaBuilder___0___">ExpressionBuilder.Lambda&lt;D&gt;(Action&lt;LambdaBuilder&lt;D&gt;&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_AsyncLambda__1_System_Action_DotNext_Metaprogramming_AsyncLambdaBuilder___0___">ExpressionBuilder.AsyncLambda&lt;D&gt;(Action&lt;AsyncLambdaBuilder&lt;D&gt;&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Try_DotNext_Metaprogramming_UniversalExpression_">ExpressionBuilder.Try(UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Try_System_Action_DotNext_Metaprogramming_ScopeBuilder__">ExpressionBuilder.Try(Action&lt;ScopeBuilder&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Throw_DotNext_Metaprogramming_UniversalExpression_">ExpressionBuilder.Throw(UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Throw__1">ExpressionBuilder.Throw&lt;E&gt;()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Scope_System_Action_DotNext_Metaprogramming_ScopeBuilder__">ExpressionBuilder.Scope(Action&lt;ScopeBuilder&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_With_DotNext_Metaprogramming_UniversalExpression_System_Action_DotNext_Metaprogramming_WithBlockBuilder__">ExpressionBuilder.With(UniversalExpression, Action&lt;WithBlockBuilder&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Using_DotNext_Metaprogramming_UniversalExpression_System_Action_DotNext_Metaprogramming_UsingBlockBuilder__">ExpressionBuilder.Using(UniversalExpression, Action&lt;UsingBlockBuilder&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Switch_DotNext_Metaprogramming_UniversalExpression_">ExpressionBuilder.Switch(UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Dispose_System_Boolean_">ExpressionBuilder.Dispose(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_ThrowIfDisposed">Disposable.ThrowIfDisposed()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_IDisposable___">Disposable.Dispose(IDisposable[])</a>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ToString()</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Metaprogramming.html">DotNext.Metaprogramming</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
+  <h5 id="DotNext_Metaprogramming_WithBlockBuilder_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class WithBlockBuilder : ScopeBuilder, IDisposable, IExpressionBuilder&lt;Expression&gt;</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_WithBlockBuilder_ScopeVar.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.WithBlockBuilder.ScopeVar%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/WithBlockBuilder.cs/#L21">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_WithBlockBuilder_ScopeVar_" data-uid="DotNext.Metaprogramming.WithBlockBuilder.ScopeVar*"></a>
+  <h4 id="DotNext_Metaprogramming_WithBlockBuilder_ScopeVar" data-uid="DotNext.Metaprogramming.WithBlockBuilder.ScopeVar">ScopeVar</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public UniversalExpression ScopeVar { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Metaprogramming.UniversalExpression.html">UniversalExpression</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_WithBlockBuilder_DotNext_Metaprogramming_IExpressionBuilder_System_Linq_Expressions_Expression__Build.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.WithBlockBuilder.DotNext%23Metaprogramming%23IExpressionBuilder%7BSystem%23Linq%23Expressions%23Expression%7D%23Build%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/WithBlockBuilder.cs/#L23">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_WithBlockBuilder_DotNext_Metaprogramming_IExpressionBuilder_System_Linq_Expressions_Expression__Build_" data-uid="DotNext.Metaprogramming.WithBlockBuilder.DotNext#Metaprogramming#IExpressionBuilder{System#Linq#Expressions#Expression}#Build*"></a>
+  <h4 id="DotNext_Metaprogramming_WithBlockBuilder_DotNext_Metaprogramming_IExpressionBuilder_System_Linq_Expressions_Expression__Build" data-uid="DotNext.Metaprogramming.WithBlockBuilder.DotNext#Metaprogramming#IExpressionBuilder{System#Linq#Expressions#Expression}#Build">IExpressionBuilder&lt;Expression&gt;.Build()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Expression IExpressionBuilder&lt;Expression&gt;.Build()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Linq.Expressions.Expression</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">System.IDisposable</span>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.IExpressionBuilder-1.html">IExpressionBuilder&lt;E&gt;</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_AsConst__1___0_">Expressions.AsConst&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_OneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.OneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Optional.html#DotNext_Optional_EmptyIfNull__1___0_">Optional.EmptyIfNull&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockHelpers.html#DotNext_Threading_LockHelpers_Lock__1___0_">LockHelpers.Lock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockHelpers.html#DotNext_Threading_LockHelpers_Lock__1___0_System_TimeSpan_">LockHelpers.Lock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_WithBlockBuilder.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.WithBlockBuilder%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/WithBlockBuilder.cs/#L5" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
