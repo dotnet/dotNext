@@ -3,7 +3,7 @@
 
 .NEXT (Dot Next) is a set of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime. Wanted fast array or struct comparison, async delegate invocation, [Type Classes](https://github.com/dotnet/csharplang/issues/110), struct bitcast, metaprogramming, generic unsafe arrays? You're in right place.
 
-API reference and articles located [here](https://sakno.github.io/DotNext/).
+API reference and articles located [here](https://sakno.github.io/DotNext/). Libaries are available on [NuGet](https://www.nuget.org/packages?q=DotNext).
 
 
 Philosophy of development process:
