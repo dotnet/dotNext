@@ -1,0 +1,13 @@
+- name: Core Features
+  href: core/core.md
+  items:
+    - name: Delegates
+      href: core/delegates.md
+- name: Type Classes
+  href: concepts.md
+- name: Advanced Reflection
+  href: reflection.md
+- name: Metaprogramming
+  href: core.md
+- name: Unsafe Data Structures
+  href: unsafe.md
