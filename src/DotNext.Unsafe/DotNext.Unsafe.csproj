@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>unsafe;unmanaged;pointer</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.svg</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
