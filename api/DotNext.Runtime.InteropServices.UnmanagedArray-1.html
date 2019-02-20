@@ -1,0 +1,2997 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct UnmanagedArray&lt;T&gt;
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct UnmanagedArray&lt;T&gt;
+   ">
+    <meta name="generator" content="docfx 2.40.7.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1">
+  
+  
+  <h1 id="DotNext_Runtime_InteropServices_UnmanagedArray_1" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1" class="text-break">Struct UnmanagedArray&lt;T&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Represents typed array allocated in the unmanaged heap.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory-1.html">IUnmanagedMemory</a>&lt;T&gt;</div>
+    <div><span class="xref">System.IDisposable</span></div>
+    <div><span class="xref">System.ICloneable</span></div>
+    <div><span class="xref">System.IEquatable</span>&lt;<a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;&gt;</div>
+    <div><span class="xref">System.Collections.Generic.IEnumerable</span>&lt;T&gt;</div>
+    <div><span class="xref">System.Collections.IEnumerable</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.InteropServices.html">DotNext.Runtime.InteropServices</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
+  <h5 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public struct UnmanagedArray&lt;T&gt; : IUnmanagedMemory&lt;T&gt;, IDisposable, ICloneable, IEquatable&lt;UnmanagedArray&lt;T&gt;&gt;, IEnumerable&lt;T&gt;, IEnumerable where T : struct</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Array element type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Allocated memory is not controlled by Garbage Collector.
+Therefore, it's developer responsibility to release unmanaged memory using <span class="xref">System.IDisposable.Dispose()</span> call.</p>
+</div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.%23ctor(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L82">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1__ctor_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.#ctor*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1__ctor_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.#ctor(System.Int32)">UnmanagedArray(Int32)</h4>
+  <div class="markdown level1 summary"><p>Allocates a new array in the unmanaged memory of the specified length.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public UnmanagedArray(int length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>Array length. Cannot be less or equal than zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.ArgumentOutOfRangeException</span></td>
+        <td><p>Invalid length.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Item(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L145">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Item_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Item*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Item_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Item(System.Int32)">Item[Int32]</h4>
+  <div class="markdown level1 summary"><p>Gets or sets array element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T this[int index] { get; set; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>Element index.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>Array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.NullPointerException.html">NullPointerException</a></td>
+        <td><p>This array is not allocated.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.IndexOutOfRangeException</span></td>
+        <td><p>Invalid index.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Item_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Item(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L158">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Item_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Item*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Item_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Item(System.Int64)">Item[Int64]</h4>
+  <div class="markdown level1 summary"><p>Gets or sets array element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T this[long index] { get; set; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>Element index.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>Array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.NullPointerException.html">NullPointerException</a></td>
+        <td><p>This array is not allocated.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.IndexOutOfRangeException</span></td>
+        <td><p>Invalid index.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Length.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Length%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L110">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Length_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Length*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Length" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Length">Length</h4>
+  <div class="markdown level1 summary"><p>Gets length of this array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Length { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Size.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Size%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L115">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Size_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Size*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Size" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Size">Size</h4>
+  <div class="markdown level1 summary"><p>Size of allocated memory, in bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long Size { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_As__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.As%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L230">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_As_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.As*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_As__1" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.As``1">As&lt;U&gt;()</h4>
+  <div class="markdown level1 summary"><p>Reinterprets reference to the unmanaged array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public UnmanagedArray&lt;U&gt; As&lt;U&gt;()
+
+    where U : struct</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;U&gt;</td>
+        <td><p>Reinterpreted unmanaged array which points to the same memory as original array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">U</span></td>
+        <td><p>New element type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_As__1_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Size of <code data-dev-comment-type="typeparamref" class="typeparamref">U</code> must be a multiple of the size <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.GenericArgumentException-1.html">GenericArgumentException</a>&lt;G&gt;</td>
+        <td><p>Invalid size of target element type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_AsStream.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.AsStream%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L240">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_AsStream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.AsStream*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_AsStream" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.AsStream">AsStream()</h4>
+  <div class="markdown level1 summary"><p>Represents unmanaged array as stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public UnmanagedMemoryStream AsStream()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.IO.UnmanagedMemoryStream</span></td>
+        <td><p>A stream to unmanaged array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseCompare__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.BitwiseCompare(%600%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L307">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseCompare*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseCompare__0___" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseCompare(`0[])">BitwiseCompare(T[])</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int BitwiseCompare(T[] other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseCompare_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L299">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseCompare*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseCompare_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer{`0})">BitwiseCompare(Pointer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int BitwiseCompare(Pointer&lt;T&gt; other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseCompare_DotNext_Runtime_InteropServices_UnmanagedArray__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.BitwiseCompare(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L301">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseCompare*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseCompare_DotNext_Runtime_InteropServices_UnmanagedArray__0___" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseCompare(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)">BitwiseCompare(UnmanagedArray&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int BitwiseCompare(in UnmanagedArray&lt;T&gt; other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseEquals__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.BitwiseEquals(%600%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L285">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseEquals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseEquals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseEquals__0___" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseEquals(`0[])">BitwiseEquals(T[])</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool BitwiseEquals(T[] other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseEquals_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L280">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseEquals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseEquals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseEquals_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer{`0})">BitwiseEquals(Pointer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool BitwiseEquals(Pointer&lt;T&gt; other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseEquals_DotNext_Runtime_InteropServices_UnmanagedArray__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.BitwiseEquals(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L283">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseEquals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseEquals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseEquals_DotNext_Runtime_InteropServices_UnmanagedArray__0___" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseEquals(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)">BitwiseEquals(UnmanagedArray&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool BitwiseEquals(in UnmanagedArray&lt;T&gt; other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseHashCode_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.BitwiseHashCode(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L296">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseHashCode_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseHashCode*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseHashCode_System_Boolean_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseHashCode(System.Boolean)">BitwiseHashCode(Boolean)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int BitwiseHashCode(bool salted)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td><span class="parametername">salted</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Clear.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Clear%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L125">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Clear_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Clear*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Clear" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Clear">Clear()</h4>
+  <div class="markdown level1 summary"><p>Zeroes all bits in the allocated memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Clear()</code></pre>
+  </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.NullPointerException.html">NullPointerException</a></td>
+        <td><p>Array is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Compare__0___System_Collections_Generic_IComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Compare(%600%5B%5D%2CSystem.Collections.Generic.IComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L369">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Compare_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Compare*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Compare__0___System_Collections_Generic_IComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Compare(`0[],System.Collections.Generic.IComparer{`0})">Compare(T[], IComparer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Compare(T[] other, IComparer&lt;T&gt; comparer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IComparer</span>&lt;T&gt;</td>
+        <td><span class="parametername">comparer</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Compare_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Collections_Generic_IComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Compare(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40%2CSystem.Collections.Generic.IComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L384">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Compare_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Compare*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Compare_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Collections_Generic_IComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Compare(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Collections.Generic.IComparer{`0})">Compare(UnmanagedArray&lt;T&gt;, IComparer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Compare(in UnmanagedArray&lt;T&gt; other, IComparer&lt;T&gt; comparer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IComparer</span>&lt;T&gt;</td>
+        <td><span class="parametername">comparer</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Copy.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Copy%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L267">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Copy_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Copy*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Copy" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Copy">Copy()</h4>
+  <div class="markdown level1 summary"><p>Creates bitwise copy of unmanaged array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public UnmanagedArray&lt;T&gt; Copy()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><p>Bitwise copy of unmanaged array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_CopyToManagedHeap.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.CopyToManagedHeap%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L247">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_CopyToManagedHeap_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.CopyToManagedHeap*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_CopyToManagedHeap" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.CopyToManagedHeap">CopyToManagedHeap()</h4>
+  <div class="markdown level1 summary"><p>Converts this unmanaged array into managed array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T[] CopyToManagedHeap()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><p>Managed copy of unmanaged array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L444">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Dispose_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Dispose*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Dispose" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>Releases unmanaged memory associated with the array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.ElementAt(System.UInt32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L132">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_System_UInt32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt(System.UInt32)">ElementAt(UInt32)</h4>
+  <div class="markdown level1 summary"><p>Gets pointer to array element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public Pointer&lt;T&gt; ElementAt(uint index)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt32</span></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>Index of the element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td><p>Pointer to array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals__0___System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Equals(%600%5B%5D%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L341">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals__0___System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals(`0[],System.Collections.Generic.IEqualityComparer{`0})">Equals(T[], IEqualityComparer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(T[] other, IEqualityComparer&lt;T&gt; comparer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IEqualityComparer</span>&lt;T&gt;</td>
+        <td><span class="parametername">comparer</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Equals(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L356">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Collections.Generic.IEqualityComparer{`0})">Equals(UnmanagedArray&lt;T&gt;, IEqualityComparer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(in UnmanagedArray&lt;T&gt; other, IEqualityComparer&lt;T&gt; comparer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IEqualityComparer</span>&lt;T&gt;</td>
+        <td><span class="parametername">comparer</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L326">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals_System_Object_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals(System.Object)">Equals(Object)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(object other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Object</span></td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.ValueType.Equals(System.Object)</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals__1_DotNext_Runtime_InteropServices_UnmanagedArray___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Equals%60%601(DotNext.Runtime.InteropServices.UnmanagedArray%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L320">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals__1_DotNext_Runtime_InteropServices_UnmanagedArray___0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals``1(DotNext.Runtime.InteropServices.UnmanagedArray{``0})">Equals&lt;U&gt;(UnmanagedArray&lt;U&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals&lt;U&gt;(UnmanagedArray&lt;U&gt; other)
+
+    where U : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;U&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">U</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L397">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_GetEnumerator_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.GetEnumerator*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_GetEnumerator" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.GetEnumerator">GetEnumerator()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Pointer&lt;T&gt;.Enumerator GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.Enumerator.html">Pointer.Enumerator</a>&lt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L403">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_GetHashCode_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.GetHashCode*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_GetHashCode" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.ValueType.GetHashCode()</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.ReadFrom(%600%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L201">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom__0___" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom(`0[])">ReadFrom(T[])</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long ReadFrom(T[] source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom__0___System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.ReadFrom(%600%5B%5D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L198">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom__0___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom(`0[],System.Int64,System.Int64)">ReadFrom(T[], Int64, Int64)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long ReadFrom(T[] source, long offset, long length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td><span class="parametername">offset</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td><span class="parametername">length</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_DotNext_Runtime_InteropServices_UnmanagedArray__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L206">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_DotNext_Runtime_InteropServices_UnmanagedArray__0___" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)">ReadFrom(UnmanagedArray&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int ReadFrom(in UnmanagedArray&lt;T&gt; source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L203">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Int32_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Int32,System.Int32)">ReadFrom(UnmanagedArray&lt;T&gt;, Int32, Int32)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int ReadFrom(in UnmanagedArray&lt;T&gt; source, int offset, int length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">offset</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">length</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.ReadFrom(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L211">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom(System.IO.Stream)">ReadFrom(Stream)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long ReadFrom(Stream source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.IO.Stream</span></td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFromAsync_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.ReadFromAsync(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L214">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFromAsync_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFromAsync*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFromAsync_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFromAsync(System.IO.Stream)">ReadFromAsync(Stream)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;long&gt; ReadFromAsync(Stream source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.IO.Stream</span></td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.Int64</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_ToByteArray.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.ToByteArray%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L260">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ToByteArray_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ToByteArray*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ToByteArray" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ToByteArray">ToByteArray()</h4>
+  <div class="markdown level1 summary"><p>Converts unmanaged array into managed array of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public byte[] ToByteArray()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Byte</span>[]</td>
+        <td><p>Managed array of bytes as bitwise copy of unmanaged array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L406">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ToString_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ToString*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ToString" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ToString">ToString()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.ValueType.ToString()</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.WriteTo(%600%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L187">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo__0___" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo(`0[])">WriteTo(T[])</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long WriteTo(T[] destination)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">destination</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo__0___System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.WriteTo(%600%5B%5D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L184">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo__0___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo(`0[],System.Int64,System.Int64)">WriteTo(T[], Int64, Int64)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long WriteTo(T[] destination, long offset, long length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">destination</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td><span class="parametername">offset</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td><span class="parametername">length</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_DotNext_Runtime_InteropServices_UnmanagedArray__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.WriteTo(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L182">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_DotNext_Runtime_InteropServices_UnmanagedArray__0___" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)">WriteTo(UnmanagedArray&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int WriteTo(in UnmanagedArray&lt;T&gt; destination)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">destination</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.WriteTo(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L168">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Int32_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Int32,System.Int32)">WriteTo(UnmanagedArray&lt;T&gt;, Int32, Int32)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int WriteTo(in UnmanagedArray&lt;T&gt; destination, int offset, int length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">destination</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">offset</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">length</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.WriteTo(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L192">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo(System.IO.Stream)">WriteTo(Stream)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void WriteTo(Stream destination)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.IO.Stream</span></td>
+        <td><span class="parametername">destination</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteToAsync_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.WriteToAsync(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L195">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteToAsync_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteToAsync*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteToAsync_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteToAsync(System.IO.Stream)">WriteToAsync(Stream)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task WriteToAsync(Stream destination)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.IO.Stream</span></td>
+        <td><span class="parametername">destination</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Addition(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L427">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Int32)">Addition(UnmanagedArray&lt;T&gt;, Int32)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Pointer&lt;T&gt; operator +(in UnmanagedArray&lt;T&gt; array, int elementIndex)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">array</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td><span class="parametername">elementIndex</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Addition(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L430">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Int64)">Addition(UnmanagedArray&lt;T&gt;, Int64)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Pointer&lt;T&gt; operator +(in UnmanagedArray&lt;T&gt; array, long elementIndex)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">array</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td><span class="parametername">elementIndex</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedArray__0____0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40%2C%600*)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L419">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedArray__0____0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,`0*)">Equality(UnmanagedArray&lt;T&gt;, T*)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static bool operator ==(in UnmanagedArray&lt;T&gt; first, T*second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">first</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>T*</td>
+        <td><span class="parametername">second</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedArray__0___DotNext_Runtime_InteropServices_UnmanagedArray__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40%2CDotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L413">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedArray__0___DotNext_Runtime_InteropServices_UnmanagedArray__0___" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)">Equality(UnmanagedArray&lt;T&gt;, UnmanagedArray&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator ==(in UnmanagedArray&lt;T&gt; first, in UnmanagedArray&lt;T&gt; second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">first</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">second</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedArray__0____DotNext_Runtime_InteropServices_Pointer__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40)~DotNext.Runtime.InteropServices.Pointer%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L408">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedArray__0____DotNext_Runtime_InteropServices_Pointer__0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)~DotNext.Runtime.InteropServices.Pointer{`0}">Implicit(UnmanagedArray&lt;T&gt; to Pointer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator Pointer&lt;T&gt;(in UnmanagedArray&lt;T&gt; array)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">array</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedArray__0____System_ReadOnlySpan__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40)~System.ReadOnlySpan%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L410">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedArray__0____System_ReadOnlySpan__0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)~System.ReadOnlySpan{`0}">Implicit(UnmanagedArray&lt;T&gt; to ReadOnlySpan&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator ReadOnlySpan&lt;T&gt;(in UnmanagedArray&lt;T&gt; array)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">array</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.ReadOnlySpan</span>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedArray__0____0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40%2C%600*)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L423">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedArray__0____0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,`0*)">Inequality(UnmanagedArray&lt;T&gt;, T*)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static bool operator !=(in UnmanagedArray&lt;T&gt; first, T*second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">first</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>T*</td>
+        <td><span class="parametername">second</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedArray__0___DotNext_Runtime_InteropServices_UnmanagedArray__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40%2CDotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L416">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedArray__0___DotNext_Runtime_InteropServices_UnmanagedArray__0___" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)">Inequality(UnmanagedArray&lt;T&gt;, UnmanagedArray&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator !=(in UnmanagedArray&lt;T&gt; first, in UnmanagedArray&lt;T&gt; second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">first</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">second</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Address.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23Address%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L119">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Address_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Address*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Address" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Address">IUnmanagedMemory&lt;T&gt;.Address</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">T*IUnmanagedMemory&lt;T&gt;.Address { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T*</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Item_System_UInt64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23Item(System.UInt64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L164">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Item_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Item*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Item_System_UInt64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Item(System.UInt64)">IUnmanagedMemory&lt;T&gt;.Item[UInt64]</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">byte *IUnmanagedMemory&lt;T&gt;.this[ulong offset] { get; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td><span class="parametername">offset</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Byte</span>*</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFrom_System_Byte___System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23ReadFrom(System.Byte%5B%5D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L208">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFrom_System_Byte___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#ReadFrom(System.Byte[],System.Int64,System.Int64)">IUnmanagedMemory&lt;T&gt;.ReadFrom(Byte[], Int64, Int64)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ulong IUnmanagedMemory&lt;T&gt;.ReadFrom(byte[] source, long offset, long length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Byte</span>[]</td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td><span class="parametername">offset</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td><span class="parametername">length</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFrom_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23ReadFrom(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L217">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFrom_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#ReadFrom(System.IO.Stream)">IUnmanagedMemory&lt;T&gt;.ReadFrom(Stream)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ulong IUnmanagedMemory&lt;T&gt;.ReadFrom(Stream source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.IO.Stream</span></td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFromAsync_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23ReadFromAsync(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L219">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFromAsync_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#ReadFromAsync*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFromAsync_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#ReadFromAsync(System.IO.Stream)">IUnmanagedMemory&lt;T&gt;.ReadFromAsync(Stream)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task&lt;ulong&gt; IUnmanagedMemory&lt;T&gt;.ReadFromAsync(Stream source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.IO.Stream</span></td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;<span class="xref">System.UInt64</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Size.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23Size%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L117">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Size_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Size*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Size" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Size">IUnmanagedMemory&lt;T&gt;.Size</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ulong IUnmanagedMemory&lt;T&gt;.Size { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Span.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23Span%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L278">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Span_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Span*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Span" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Span">IUnmanagedMemory&lt;T&gt;.Span</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ReadOnlySpan&lt;T&gt; IUnmanagedMemory&lt;T&gt;.Span { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.ReadOnlySpan</span>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__WriteTo_System_Byte___System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23WriteTo(System.Byte%5B%5D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L189">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__WriteTo_System_Byte___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#WriteTo(System.Byte[],System.Int64,System.Int64)">IUnmanagedMemory&lt;T&gt;.WriteTo(Byte[], Int64, Int64)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ulong IUnmanagedMemory&lt;T&gt;.WriteTo(byte[] destination, long offset, long length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Byte</span>[]</td>
+        <td><span class="parametername">destination</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td><span class="parametername">offset</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Int64</span></td>
+        <td><span class="parametername">length</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_System_Collections_Generic_IEnumerable_T__GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.System%23Collections%23Generic%23IEnumerable%7BT%7D%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L399">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_System_Collections_Generic_IEnumerable_T__GetEnumerator_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.System#Collections#Generic#IEnumerable{T}#GetEnumerator*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_System_Collections_Generic_IEnumerable_T__GetEnumerator" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.System#Collections#Generic#IEnumerable{T}#GetEnumerator">IEnumerable&lt;T&gt;.GetEnumerator()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IEnumerator&lt;T&gt; IEnumerable&lt;T&gt;.GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IEnumerator</span>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_System_Collections_IEnumerable_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.System%23Collections%23IEnumerable%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L401">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_System_Collections_IEnumerable_GetEnumerator_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.System#Collections#IEnumerable#GetEnumerator*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_System_Collections_IEnumerable_GetEnumerator" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.System#Collections#IEnumerable#GetEnumerator">IEnumerable.GetEnumerator()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IEnumerator IEnumerable.GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.IEnumerator</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_System_ICloneable_Clone.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.System%23ICloneable%23Clone%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L276">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_System_ICloneable_Clone_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.System#ICloneable#Clone*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_System_ICloneable_Clone" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.System#ICloneable#Clone">ICloneable.Clone()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">object ICloneable.Clone()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Object</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_System_IEquatable_DotNext_Runtime_InteropServices_UnmanagedArray_T___Equals_DotNext_Runtime_InteropServices_UnmanagedArray__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.System%23IEquatable%7BDotNext%23Runtime%23InteropServices%23UnmanagedArray%7BT%7D%7D%23Equals(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L324">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_System_IEquatable_DotNext_Runtime_InteropServices_UnmanagedArray_T___Equals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.System#IEquatable{DotNext#Runtime#InteropServices#UnmanagedArray{T}}#Equals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_System_IEquatable_DotNext_Runtime_InteropServices_UnmanagedArray_T___Equals_DotNext_Runtime_InteropServices_UnmanagedArray__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.System#IEquatable{DotNext#Runtime#InteropServices#UnmanagedArray{T}}#Equals(DotNext.Runtime.InteropServices.UnmanagedArray{`0})">IEquatable&lt;UnmanagedArray&lt;T&gt;&gt;.Equals(UnmanagedArray&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool IEquatable&lt;UnmanagedArray&lt;T&gt;&gt;.Equals(UnmanagedArray&lt;T&gt; other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory-1.html">IUnmanagedMemory&lt;T&gt;</a>
+  </div>
+  <div>
+      <span class="xref">System.IDisposable</span>
+  </div>
+  <div>
+      <span class="xref">System.ICloneable</span>
+  </div>
+  <div>
+      <span class="xref">System.IEquatable&lt;T&gt;</span>
+  </div>
+  <div>
+      <span class="xref">System.Collections.Generic.IEnumerable&lt;T&gt;</span>
+  </div>
+  <div>
+      <span class="xref">System.Collections.IEnumerable</span>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_AsConst__1___0_">Expressions.AsConst&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_FirstOrNull__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrNull&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Sequence.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, Int32, out T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Sequence.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, String, String)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_OneOf__1___0___0___">ValueTypeExtensions.OneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_Box__1___0_">ValueTypeExtensions.Box&lt;T&gt;(T)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L20" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
