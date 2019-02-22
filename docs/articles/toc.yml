@@ -1,8 +1,5 @@
-- name: Core Features
-  href: core/core.md
-  items:
-    - name: Delegates
-      href: core/delegates.md
+- name: Extension methods
+  href: extensions.md
 - name: Type Classes
   href: concepts.md
 - name: Advanced Reflection
@@ -11,3 +8,5 @@
   href: core.md
 - name: Unsafe Data Structures
   href: unsafe.md
+- name: Benchmarks
+  href: benchmarks.md
