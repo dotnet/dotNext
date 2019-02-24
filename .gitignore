@@ -3,4 +3,5 @@ obj/
 .vs/
 .vscode/
 .nuget/
+logo.svg
 BenchmarkDotNet.Artifacts/

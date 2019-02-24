@@ -3,7 +3,7 @@
 
 .NEXT (Dot Next) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime. 
 
-This chapter gives quick overview of these libraries. Read [articles](/articles) to explore each feature in details.
+This chapter gives quick overview of these libraries. Read [articles](articles/extensions.md) to explore each feature in details.
 
 # DotNext
 This library is the core of .NEXT which extends .NET Standard API with
@@ -13,6 +13,7 @@ This library is the core of .NEXT which extends .NET Standard API with
   * Generic specialization with constant values
   * Generation of random strings
   * Low-level methods to work with value types
+  * Ad-hoc user data associated with any object
 
 # DotNext.Reflection 
 This library provides support of statically-typed and fast reflection as well as [Type Classes](https://github.com/dotnet/csharplang/issues/110). You don't need to wait C# language of version _X_ to obtain this feature.
