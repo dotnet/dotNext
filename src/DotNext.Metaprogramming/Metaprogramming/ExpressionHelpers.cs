@@ -314,6 +314,9 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Constructs assignment expression.
         /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a = b</code>.
+        /// </remarks>
         /// <param name="left">The assignee.</param>
         /// <param name="value">The value to be assigned to the left expression.</param>
         /// <returns>Binary expression.</returns>
@@ -323,6 +326,9 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Constructs assignment expression.
         /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a = default(T)</code>.
+        /// </remarks>
         /// <param name="left">The assignee.</param>
         /// <returns>Binary expression.</returns>
         public static BinaryExpression AssignDefault(this ParameterExpression left)
@@ -331,18 +337,36 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Constructs assignment expression.
         /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a.member = b</code>.
+        /// </remarks>
         /// <param name="left">The assignee.</param>
         /// <param name="value">The value to be assigned to the left expression.</param>
         /// <returns>Binary expression.</returns>
         public static BinaryExpression Assign(this MemberExpression left, Expression value)
             => Expression.Assign(left, value);
 
-        public static BinaryExpression Assign(this IndexExpression left, Expression value)
-            => Expression.Assign(left, value);
-
+        /// <summary>
+        /// Constructs type conversion expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>(T)a</code>.
+        /// </remarks>
+        /// <param name="expression">The expression to be converted.</param>
+        /// <param name="targetType">The target type.</param>
+        /// <returns>The type conversion expression.</returns>
         public static UnaryExpression Convert(this Expression expression, Type targetType)
             => Expression.Convert(expression, targetType);
 
+        /// <summary>
+        /// Constructs type conversion expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>(T)a</code>.
+        /// </remarks>
+        /// <typeparam name="T">The target type.</typeparam>
+        /// <param name="expression">The expression to be converted.</param>
+        /// <returns>The type conversion expression.</returns>
         public static UnaryExpression Convert<T>(this Expression expression)
             => expression.Convert(typeof(T));
 
