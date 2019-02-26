@@ -1,8 +1,8 @@
-Core Extensions
+Extension Methods
 ====
 
 # Randomization
-Related class: [RandomExtensions](../api/DotNext.RandomExtensions.yml)
+Related class: [RandomExtensions](../../api/DotNext.RandomExtensions.yml)
 
 Extension methods for random data generation extends both classes _System.Random_ and _System.Security.Cryptography.RandomNumberGenerator_.
 
@@ -32,7 +32,7 @@ var b = rand.NextBoolean(0.3D); //0.3 is a probability of TRUE value
 The same extension method is provided for class _System.Security.Cryptography.RandomNumberGenerator_.
 
 # String extensions
-Related class: [StringExtensions](../api/DotNext.StringExtensions.yml).
+Related class: [StringExtensions](../../api/DotNext.StringExtensions.yml).
 
 ## Reverse string
 Extension method _Reverse_ allows to reverse string characters and returns a new string:
@@ -52,7 +52,7 @@ str = "abc".TrimLength(4);  //str is "abc"
 ```
 
 # Delegates
-Related classes: [DelegateHelpers](../api/DotNext.StringExtensions.yml), [Func](../api/DotNext.Func.yml), [Converter](../api/DotNext.Converter.yml), [Predicate](../api/DotNext.Predicate.yml).
+Related classes: [DelegateHelpers](../../api/DotNext.StringExtensions.yml), [Func](../../api/DotNext.Func.yml), [Converter](../../api/DotNext.Converter.yml), [Predicate](../../api/DotNext.Predicate.yml).
 
 ## Change type of delegate
 Different types of delegates can refer to the same method. For instance, `Func<string, string>` represents the same signature as `Converter<string, string>`. It means that the delegate instance can be converted into another delegate type if signature matches.
@@ -110,7 +110,7 @@ predicate = predicate.Xor(Predicate.IsNull<string>());
 ```
 
 # Comparable data types
-Related classes: [Comparable](../api/DotNext.Comparable.yml), [Range](../api/DotNext.Range.yml).
+Related classes: [Comparable](../../api/DotNext.Comparable.yml), [Range](../../api/DotNext.Range.yml).
 
 ## Min/max value
 Generic methods for comparable data types:
@@ -145,7 +145,7 @@ b = 10.Between(0, 4); //b == false
 ```
 
 # Equality check
-Related classes: [Comparable](../api/DotNext.ObjectExtensions.yml), [Range](../api/DotNext.ValueTypeExtensions.yml).
+Related classes: [Comparable](../../api/DotNext.ObjectExtensions.yml), [Range](../../api/DotNext.ValueTypeExtensions.yml).
 
 Extension method _IsOneOf_ allows to check whether the value is equal to one of the given values.
 
@@ -155,4 +155,55 @@ using DotNext;
 var b = 42.IsOneOf(0, 5, 42, 3); //b == true
 
 b = "a".IsOneOf("b", "c", "d"); //b == false
+```
+
+# Array extensions
+Related classes: [OneDimensionalArray](../../api/DotNext.OneDimensionalArray.yml).
+
+Extension methods for slicing, iteration, conversion, element insertion and fast equality check between elements of two arrays.
+
+## Equality check
+There are two extension methods for equality check of each element between two arrays:
+* _SequenceEqual_ performs equality check between each element if element type implements interface `IEquatable<T>`
+* _BitwiseEquals_ performs bitwise equality between two regions of memory referenced by the arrays. Element type of these arrays should be of unmanaged value type, e.g. `int`, `long`, `System.Guid`.
+
+```csharp
+var array1 = new string[] {"ab", "bc"};
+array1.SequenceEqual(new [] {"ab", "bc"}); //true
+var array2 = new int[] { 1, 2, 3 };
+array2.BitwiseEquals(new [] {1, 2, 4});    //false
+```
+
+These methods are fast in comparison to naive implementation using `foreach` iteration and comparison by index. Read [Benchmarks](../benchmarks.md) for more information.
+
+## Functional iteration
+Extension method `ForEach` allows to iterate over array elements and, optionally, modify array element.
+
+```csharp
+var array = new string[] {"ab", "bc" };
+array.ForEach((long index, ref string element) => {
+    if(element == "ab")
+        element = "";
+});
+```
+
+## Insertion and Removal
+Extension methods _Insert_, _Slice_, _RemoveLast_ and _RemoveFirst_ allow to modify source array and return modified copy.
+```csharp
+var array = new string[] {"a", "b"};
+array = array.Insert("c", 2);   //array == new []{"a", "b", "c"}
+
+array = array.RemoveLast(2);    //array == new []{"a"}
+
+array = new string[] {"a", "b", "c"};
+array = array.RemoveFirst(2);   //array == new []{"c"}
+
+array = new string[]{"a", "b", "c", "d"}; 
+array = array.Slice(1, 2);      //array == new []{"b", "c"}
+```
+
+## Conversion
+Conversion of array elements:
+```csharp
+var array = (new string[] { "1", "2" }).Convert(int.Parse); //array = new int[] {1, 2}
 ```

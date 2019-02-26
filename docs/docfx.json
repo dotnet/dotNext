@@ -1,4 +1,9 @@
 {
+  "globalMetadata": {
+    "_appTitle": ".NEXT",
+    "_appLogoPath": "logo.png",
+    "_appFaviconPath": "favicon.ico"
+  },
   "metadata": [
     {
       "src": [

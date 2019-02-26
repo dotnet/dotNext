@@ -1,5 +1,13 @@
-- name: Extension methods
-  href: extensions.md
+- name: Core Features
+  items:
+    - name: Extension Methods
+      href: core/extensions.md
+    - name: Ad-hoc User Data
+      href: core/userdata.md
+    - name: Collection Helpers
+      href: core/collections.md
+    - name: Optional Type
+      href: core/optional.md
 - name: Type Classes
   href: concepts.md
 - name: Advanced Reflection
