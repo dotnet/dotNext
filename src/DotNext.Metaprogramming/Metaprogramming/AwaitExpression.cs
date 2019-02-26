@@ -15,6 +15,11 @@ namespace DotNext.Metaprogramming
     {
         private static readonly UserDataSlot<bool> IsAwaiterVarSlot = UserDataSlot<bool>.Allocate();
 
+        /// <summary>
+        /// Constructs <see langword="await"/> expression applied to the 
+        /// </summary>
+        /// <param name="expression">An expression providing asynchronous result in the form or <see cref="Task"/> or any other Awaiter pattern.</param>
+        /// <exception cref="ArgumentException">Passed expression doesn't implement Awaiter pattern.</exception>
         public AwaitExpression(Expression expression)
         {
             //expression type must have type with GetAwaiter() method
@@ -65,6 +70,11 @@ namespace DotNext.Metaprogramming
         /// <returns>Method call expression.</returns>
         public override Expression Reduce() => GetAwaiter.Call(GetResultMethod);
 
+        /// <summary>
+        /// Visit children expressions.
+        /// </summary>
+        /// <param name="visitor">Expression visitor.</param>
+        /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
             var expression = visitor.Visit(GetAwaiter.Object);

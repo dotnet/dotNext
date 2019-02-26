@@ -1,88 +1,339 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DotNext.Metaprogramming
 {
-    public static class Expressions
+    /// <summary>
+    /// Provides extension methods to simplify construction of complex expressions.
+    /// </summary>
+    public static class ExpressionHelpers
     {
+        /// <summary>
+        /// Constructs unary plus expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>+a</code>
+        /// </remarks>
+        /// <param name="expression">The operand.</param>
+        /// <returns>Unary expression.</returns>
         public static UnaryExpression UnaryPlus(this Expression expression)
             => Expression.UnaryPlus(expression);
 
+        /// <summary>
+        /// Constructs negate expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>-a</code>
+        /// </remarks>
+        /// <param name="expression">The operand.</param>
+        /// <returns>Unary expression.</returns>
         public static UnaryExpression Negate(this Expression expression)
             => Expression.Negate(expression);
 
+        /// <summary>
+        /// Constructs logical NOT expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>!a</code>
+        /// </remarks>
+        /// <param name="expression">The operand.</param>
+        /// <returns>Unary expression.</returns>
         public static UnaryExpression Not(this Expression expression)
             => Expression.Not(expression);
 
+        /// <summary>
+        /// Constructs ones complement.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>~a</code>
+        /// </remarks>
+        /// <param name="expression">The operand.</param>
+        /// <returns>Unary expression.</returns>
         public static UnaryExpression OnesComplement(this Expression expression)
             => Expression.OnesComplement(expression);
 
+        /// <summary>
+        /// Constructs binary logical AND expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a &amp; b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression And(this Expression left, Expression right)
             => Expression.And(left, right);
 
+        /// <summary>
+        /// Constructs binary logical OR expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a | b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression Or(this Expression left, Expression right)
             => Expression.Or(left, right);
 
+        /// <summary>
+        /// Constructs binary logical XOR expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a ^ b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression Xor(this Expression left, Expression right)
             => Expression.ExclusiveOr(left, right);
 
+        /// <summary>
+        /// Constructs arithmetic remainder expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a % b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression Modulo(this Expression left, Expression right)
             => Expression.Modulo(left, right);
 
+        /// <summary>
+        /// Constructs binary arithmetic addition expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a + b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression Add(this Expression left, Expression right)
             => Expression.Add(left, right);
 
+        /// <summary>
+        /// Constructs binary arithmetic subtraction expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a - b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression Subtract(this Expression left, Expression right)
             => Expression.Subtract(left, right);
 
+        /// <summary>
+        /// Constructs binary arithmetic multiplication expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a * b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression Multiply(this Expression left, Expression right)
             => Expression.Multiply(left, right);
 
+        /// <summary>
+        /// Constructs binary arithmetic division expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a / b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression Divide(this Expression left, Expression right)
             => Expression.Divide(left, right);
 
+        /// <summary>
+        /// Constructs "greater than" numeric comparison.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a &gt; b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression GreaterThan(this Expression left, Expression right)
             => Expression.GreaterThan(left, right);
 
+        /// <summary>
+        /// Constructs "less than" numeric comparison.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a &lt; b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression LessThan(this Expression left, Expression right)
             => Expression.LessThan(left, right);
 
+        /// <summary>
+        /// Constructs "greater than or equal" numeric comparison.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a &gt;= b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression GreaterThanOrEqual(this Expression left, Expression right)
             => Expression.GreaterThanOrEqual(left, right);
 
+        /// <summary>
+        /// Constructs "less than or equal" numeric comparison.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a &lt;= b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression LessThanOrEqual(this Expression left, Expression right)
             => Expression.LessThanOrEqual(left, right);
 
+        /// <summary>
+        /// Constructs equality comparison.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a == b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression Equal(this Expression left, Expression right)
             => Expression.Equal(left, right);
 
+        /// <summary>
+        /// Constructs inequality comparison.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a != b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression NotEqual(this Expression left, Expression right)
             => Expression.NotEqual(left, right);
 
+        /// <summary>
+        /// Constructs <see langword="null"/> check.
+        /// </summary>
+        /// <param name="operand">The operand.</param>
+        /// <returns><see langword="null"/> check operation.</returns>
+        public static BinaryExpression IsNull(this Expression operand)
+            => Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
+
+        /// <summary>
+        /// Constructs raising a number to a power expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a ^ b</code> in Visual Basic.
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression Power(this Expression left, Expression right)
             => Expression.Power(left, right);
 
+        /// <summary>
+        /// Constructs bitwise left-shift expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a &lt;&lt; b</code> in Visual Basic.
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression LeftShift(this Expression left, Expression right)
             => Expression.LeftShift(left, right);
 
+        /// <summary>
+        /// Constructs bitwise right-shift expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>a &gt;&gt; b</code> in Visual Basic.
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression RightShift(this Expression left, Expression right)
             => Expression.RightShift(left, right);
 
-        public static UnaryExpression PreDecrementAssign(this Expression left)
-            => Expression.PreDecrementAssign(left);
+        /// <summary>
+        /// Constructs an expression that decrements given expression by 1 and assigns the result back to the expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>--i</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PreDecrementAssign(this Expression operand)
+            => Expression.PreDecrementAssign(operand);
 
-        public static UnaryExpression PostDecrementAssign(this Expression left)
-            => Expression.PostDecrementAssign(left);
+        /// <summary>
+        /// Constructs an expression that increments given expression by 1 and assigns the result back to the expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>++i</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PreIncrementAssign(this Expression operand)
+            => Expression.PreIncrementAssign(operand);
 
+        /// <summary>
+        /// Constructs an expression that represents the assignment of given expression followed by a subsequent decrement by 1 of the original expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>i--</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PostDecrementAssign(this Expression operand)
+            => Expression.PostDecrementAssign(operand);
+
+        /// <summary>
+        /// Constructs an expression that represents the assignment of given expression followed by a subsequent increment by 1 of the original expression.
+        /// </summary>
+        /// <remarks>
+        /// The equal code is <code>i++</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PostIncrementAssign(this Expression operand)
+            => Expression.PostIncrementAssign(operand);
+
+        /// <summary>
+        /// Constructs assignment expression.
+        /// </summary>
+        /// <param name="left">The assignee.</param>
+        /// <param name="value">The value to be assigned to the left expression.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression Assign(this ParameterExpression left, Expression value)
             => Expression.Assign(left, value);
 
+        /// <summary>
+        /// Constructs assignment expression.
+        /// </summary>
+        /// <param name="left">The assignee.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression AssignDefault(this ParameterExpression left)
             => left.Assign(left.Type.AsDefault());
 
+        /// <summary>
+        /// Constructs assignment expression.
+        /// </summary>
+        /// <param name="left">The assignee.</param>
+        /// <param name="value">The value to be assigned to the left expression.</param>
+        /// <returns>Binary expression.</returns>
         public static BinaryExpression Assign(this MemberExpression left, Expression value)
             => Expression.Assign(left, value);
 

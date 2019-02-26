@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 namespace DotNext.Metaprogramming
 {
     using Reflection;
+
     /// <summary>
     /// Represents any expression with full support
     /// of overloaded operators and conversion from
@@ -20,6 +21,10 @@ namespace DotNext.Metaprogramming
     {
         private readonly Expression expression;
 
+        /// <summary>
+        /// Wraps regular LINQ expression into universal expression.
+        /// </summary>
+        /// <param name="expr">An expression to be wrapped.</param>
         public UniversalExpression(Expression expr) => expression = expr;
 
         internal static IEnumerable<Expression> AsExpressions(IEnumerable<UniversalExpression> expressions)
@@ -28,8 +33,16 @@ namespace DotNext.Metaprogramming
         internal static Expression[] AsExpressions(UniversalExpression[] expressions)
             => expressions.Convert(Conversion<UniversalExpression, Expression>.Converter);
 
+        /// <summary>
+        /// Converts universal expression into regular LINQ expression.
+        /// </summary>
+        /// <param name="view">Universal expression to be converted.</param>
         public static implicit operator Expression(UniversalExpression view) => view.expression ?? Expression.Empty();
 
+        /// <summary>
+        /// Converts universal expression into variable or parameter expression.
+        /// </summary>
+        /// <param name="view">Universal expression to be converted.</param>
         public static implicit operator ParameterExpression(UniversalExpression view) 
             => view.expression is ParameterExpression parameter ? parameter : throw new InvalidCastException(ExceptionMessages.ParameterExpected);
 

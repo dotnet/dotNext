@@ -8,20 +8,57 @@ namespace DotNext.Metaprogramming
     using Runtime.CompilerServices;
     using Reflection;
 
+    /// <summary>
+    /// Represents return from asynchronous lambda function.
+    /// </summary>
+    /// <remarks>
+    /// This expression turns async state machine into final state.
+    /// </remarks>
+    /// <see cref="AsyncLambdaBuilder{D}"/>
     public sealed class AsyncResultExpression: Expression
     {
+        /// <summary>
+        /// Constructs non-void return from asynchronous lambda function.
+        /// </summary>
+        /// <param name="result">An expression representing result to be returned from asynchronous lambda function.</param>
         public AsyncResultExpression(Expression result)
             => AsyncResult = result;
 
+        /// <summary>
+        /// Constructs void return from asynchronous lambda function.
+        /// </summary>
         public AsyncResultExpression()
             : this(Empty())
         {
         }
 
+        /// <summary>
+        /// An expression representing result to be returned from asynchronous lambda function.
+        /// </summary>
         public Expression AsyncResult { get; }
+
+        /// <summary>
+        /// Type of this expression.
+        /// </summary>
+        /// <remarks>
+        /// The type of this expression is <see cref="Task"/> or derived class.
+        /// </remarks>
         public override Type Type => AsyncResult.Type.MakeTaskType();
+
+        /// <summary>
+        /// Expression type. Always returns <see cref="ExpressionType.Extension"/>.
+        /// </summary>
         public override ExpressionType NodeType => ExpressionType.Extension;
+
+        /// <summary>
+        /// Indicates that this expression can be reduced to well-known LINQ expression.
+        /// </summary>
         public override bool CanReduce => true;
+
+        /// <summary>
+        /// Reduces this expression to the well-known LINQ expression.
+        /// </summary>
+        /// <returns>The reduced expression.</returns>
         public override Expression Reduce()
         {
             const BindingFlags PublicStatic = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
@@ -52,6 +89,11 @@ namespace DotNext.Metaprogramming
             return Block(AsyncResult, stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Complete)), endOfAsyncMethod.Return());
         }
 
+        /// <summary>
+        /// Visit children expressions.
+        /// </summary>
+        /// <param name="visitor">Expression visitor.</param>
+        /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
             var expression = visitor.Visit(AsyncResult);
