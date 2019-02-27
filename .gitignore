@@ -4,4 +4,5 @@ obj/
 .vscode/
 .nuget/
 logo.svg
+favicon.ico
 BenchmarkDotNet.Artifacts/
