@@ -23,6 +23,7 @@
     }
   ],
   "build": {
+    "xrefService": ["https://xref.docs.microsoft.com/query?uid={uid}"],
     "globalMetadata": {
       "_appTitle": ".NEXT",
       "_appLogoPath": "doc_logo.png",
