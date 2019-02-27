@@ -5,6 +5,12 @@ namespace DotNext.Runtime.CompilerServices
 {
     using Reflection;
 
+    /// <summary>
+    /// Represents awaitable concept type.
+    /// </summary>
+    /// <typeparam name="T">The constrained type.</typeparam>
+    /// <typeparam name="TAwaiter">The type constrained with concept <see cref="Awaiter{TAwaiter}"/>.</typeparam>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap"/>
     public static class Awaitable<T, [Constraint(typeof(Awaiter<>))] TAwaiter>
         where TAwaiter: ICriticalNotifyCompletion
     {

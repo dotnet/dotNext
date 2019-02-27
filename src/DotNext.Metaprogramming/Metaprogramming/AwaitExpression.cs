@@ -9,17 +9,18 @@ namespace DotNext.Metaprogramming
     using Runtime.CompilerServices;
 
     /// <summary>
-    /// Represents <see langword="await"/> expression.
+    /// Represents suspension point in the execution of the lambda function until the awaited task completes.
     /// </summary>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await"/>
     public sealed class AwaitExpression : Expression
     {
         private static readonly UserDataSlot<bool> IsAwaiterVarSlot = UserDataSlot<bool>.Allocate();
 
         /// <summary>
-        /// Constructs <see langword="await"/> expression applied to the 
+        /// Constructs <see langword="await"/> expression.
         /// </summary>
-        /// <param name="expression">An expression providing asynchronous result in the form or <see cref="Task"/> or any other Awaiter pattern.</param>
-        /// <exception cref="ArgumentException">Passed expression doesn't implement Awaiter pattern.</exception>
+        /// <param name="expression">An expression providing asynchronous result in the form or <see cref="Task"/> or any other TAP pattern.</param>
+        /// <exception cref="ArgumentException">Passed expression doesn't implement TAP pattern.</exception>
         public AwaitExpression(Expression expression)
         {
             //expression type must have type with GetAwaiter() method
