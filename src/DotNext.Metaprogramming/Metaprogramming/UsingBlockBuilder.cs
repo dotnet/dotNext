@@ -7,6 +7,10 @@ namespace DotNext.Metaprogramming
 {
     using static Reflection.DisposableType;
 
+    /// <summary>
+    /// Represents <see langword="using"/> statement builder.
+    /// </summary>
+    /// <see href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement"/>
     public sealed class UsingBlockBuilder: ScopeBuilder, IExpressionBuilder<Expression>
     {
         private readonly MethodInfo disposeMethod;
@@ -28,6 +32,9 @@ namespace DotNext.Metaprogramming
             }
         }
 
+        /// <summary>
+        /// Gets disposable resource attached to this statement.
+        /// </summary>
         public UniversalExpression DisposableVar => disposableVar;
 
         internal override Expression Build()

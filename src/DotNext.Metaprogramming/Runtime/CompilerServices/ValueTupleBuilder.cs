@@ -11,9 +11,10 @@ namespace DotNext.Runtime.CompilerServices
     /// items.
     /// </summary>
     /// <see cref="ValueTuple"/>
+    /// <see href="https://docs.microsoft.com/en-us/dotnet/csharp/tuples"/>
     public sealed class ValueTupleBuilder: Disposable, IEnumerable<Type>
     {
-        private readonly IList<Type> items = new List<Type>(7);//no more than 7 items
+        private readonly IList<Type> items = new List<Type>(7);//no more than 7 items because max number of generic arguments of tuple type
         private ValueTupleBuilder Rest;
 
         /// <summary>
@@ -61,6 +62,13 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
+        /// <summary>
+        /// Constructs expression tree based on value tuple type.
+        /// </summary>
+        /// <typeparam name="E">Type of expression tree.</typeparam>
+        /// <param name="expressionFactory">A function accepting value tuple type and returning expression tree.</param>
+        /// <param name="expression">Constructed expression.</param>
+        /// <returns>Sorted array of value tuple type components.</returns>
         public MemberExpression[] Build<E>(Func<Type, E> expressionFactory, out E expression)
             where E : Expression
         {
@@ -71,9 +79,9 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Adds new item into tuple.
+        /// Adds a new component into tuple.
         /// </summary>
-        /// <param name="itemType">Type of item.</param>
+        /// <param name="itemType">The type of the tuple component.</param>
         public void Add(Type itemType)
         {
             if (Count < 7)
@@ -84,13 +92,25 @@ namespace DotNext.Runtime.CompilerServices
                 Rest.Add(itemType);
         }
 
+        /// <summary>
+        /// Adds a new component into tuple.
+        /// </summary>
+        /// <typeparam name="T">The type of the tuple component.</typeparam>
         public void Add<T>() => Add(typeof(T));
 
+        /// <summary>
+        /// Returns an enumerator over all tuple components.
+        /// </summary>
+        /// <returns>An enumerator over all tuple components.</returns>
         public IEnumerator<Type> GetEnumerator()
             => (Rest is null ? items : Enumerable.Concat(items, Rest)).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <summary>
+        /// Releases all managed resources associated with this builder.
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; otherwise, <see langword="false"/>.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)

@@ -2,6 +2,10 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    /// <summary>
+    /// Represents <see langword="With"/> statement builder. 
+    /// </summary>
+    /// <see href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement"/>
     public sealed class WithBlockBuilder: ScopeBuilder, IExpressionBuilder<Expression>
     {
         private readonly ParameterExpression scopeVar;

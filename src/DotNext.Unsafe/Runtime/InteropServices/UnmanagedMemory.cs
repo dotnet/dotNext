@@ -308,6 +308,10 @@ namespace DotNext.Runtime.InteropServices
             }
         }
 
+        /// <summary>
+        /// Returns address of this memory in hexadecimal format.
+        /// </summary>
+        /// <returns>The addres of this memory.</returns>
 		public override string ToString() => new IntPtr(pointer).ToString("X");
 
         public bool BitwiseEquals(Pointer<T> other) => pointer.BitwiseEquals(other, 1);

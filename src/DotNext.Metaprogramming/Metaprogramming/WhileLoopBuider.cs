@@ -2,8 +2,9 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using Threading;
-
+    /// <summary>
+    /// Represents <see langword="while"/> loop builder.
+    /// </summary>
     public sealed class WhileLoopBuider: LoopBuilderBase, IExpressionBuilder<LoopExpression>
     {
         private readonly Expression test;
