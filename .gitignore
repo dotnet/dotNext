@@ -5,4 +5,5 @@ obj/
 .nuget/
 logo.svg
 favicon.ico
+manifest.json
 BenchmarkDotNet.Artifacts/
