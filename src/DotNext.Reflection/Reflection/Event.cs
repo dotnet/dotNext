@@ -114,7 +114,7 @@ namespace DotNext.Reflection
     }
 
     /// <summary>
-    /// Provides typed access to static event declared in type <typeparamref name="T"/>.
+    /// Provides typed access to static event declared in type <typeparamref name="D"/>.
     /// </summary>
     /// <typeparam name="D">Type of event handler.</typeparam>
     public sealed class Event<D> : EventBase<D>, IEvent<D>

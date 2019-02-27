@@ -18,6 +18,9 @@ namespace DotNext.Metaprogramming
             }
         }
 
+        /// <summary>
+        /// Represents implictly referenced value in this scope.
+        /// </summary>
         public UniversalExpression ScopeVar => scopeVar;
 
         Expression IExpressionBuilder<Expression>.Build() => Build();

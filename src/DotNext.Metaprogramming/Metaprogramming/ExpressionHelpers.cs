@@ -515,7 +515,7 @@ namespace DotNext.Metaprogramming
         /// Constructs instance method call expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>obj.Method(a, b,...)</code>.
+        /// The equivalent code is <code>obj.Method()</code>.
         /// </remarks>
         /// <param name="instance"><see langword="this"/> argument.</param>
         /// <param name="methodName">The name of the method to be called.</param>
@@ -528,7 +528,7 @@ namespace DotNext.Metaprogramming
         /// Constructs interface or base class method call expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>((T)obj).Method(a, b,...)</code>.
+        /// The equivalent code is <code>((T)obj).Method()</code>.
         /// </remarks>
         /// <param name="instance"><see langword="this"/> argument.</param>
         /// <param name="interfaceType">The interface or base class.</param>
@@ -545,9 +545,30 @@ namespace DotNext.Metaprogramming
                 instance.Call(method, arguments);
         }
 
+        /// <summary>
+        /// Constructs instance property or indexer access expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b</code> or <code>a.b[i]</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="property">Property metadata.</param>
+        /// <param name="indicies">Indexer indicies.</param>
+        /// <returns>Property access expression.</returns>
         public static Expression Property(this Expression instance, PropertyInfo property, params Expression[] indicies)
             => indicies.LongLength == 0 ? (Expression)Expression.Property(instance, property) : Expression.Property(instance, property, indicies);
 
+        /// <summary>
+        /// Constructs instance property or indexer access expression declared in the given interface or base type. 
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b</code> or <code>a.b[i]</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="interfaceType">The interface or base class declaring property.</param>
+        /// <param name="propertyName">The name of the instance property or indexer.</param>
+        /// <param name="indicies">Indexer indicies.</param>
+        /// <returns>Property access expression.</returns>
         public static Expression Property(this Expression instance, Type interfaceType, string propertyName, params Expression[] indicies)
         {
             var property = interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
@@ -556,64 +577,260 @@ namespace DotNext.Metaprogramming
                 instance.Property(property, indicies);
         }
 
+        /// <summary>
+        /// Constructs instance property or indexer access expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b</code> or <code>a.b[i]</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="propertyName">The name of the instance property or indexer.</param>
+        /// <param name="indicies">Indexer indicies.</param>
+        /// <returns>Property access expression.</returns>
         public static Expression Property(this Expression instance, string propertyName, params Expression[] indicies)
             => Expression.Property(instance, propertyName, indicies);
 
+        /// <summary>
+        /// Constructs instance field access expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="field">Field metadata.</param>
+        /// <returns>Field access expression.</returns>
         public static MemberExpression Field(this Expression instance, FieldInfo field)
             => Expression.Field(instance, field);
 
+        /// <summary>
+        /// Constructs instance field access expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="fieldName">The name of the instance field.</param>
+        /// <returns>Field access expression.</returns>
         public static MemberExpression Field(this Expression instance, string fieldName)
             => Expression.Field(instance, fieldName);
 
+        /// <summary>
+        /// Constructs array element access expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b[i]</code>.
+        /// </remarks>
+        /// <param name="array">The array expression.</param>
+        /// <param name="indexes">Array element indicies.</param>
+        /// <returns>Array element access expression.</returns>
         public static IndexExpression ElementAt(this Expression array, params Expression[] indexes)
             => Expression.ArrayAccess(array, indexes);
 
+        /// <summary>
+        /// Constructs array length expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.LongLength</code>.
+        /// </remarks>
+        /// <param name="array">The array expression.</param>
+        /// <returns>Array length expression.</returns>
         public static UnaryExpression ArrayLength(this Expression array)
             => Expression.ArrayLength(array);
 
+        /// <summary>
+        /// Constructs loop statement.
+        /// </summary>
+        /// <param name="body">The loop body.</param>
+        /// <param name="break">Optional loop break label which will installed automatically.</param>
+        /// <param name="continue">Optional loop continuation which will be installed automatically.</param>
+        /// <returns>Loop statement.</returns>
         public static LoopExpression Loop(this Expression body, LabelTarget @break, LabelTarget @continue)
             => Expression.Loop(body, @break, @continue);
 
+        /// <summary>
+        /// Constructs loop statement.
+        /// </summary>
+        /// <param name="body">The loop body.</param>
+        /// <param name="break">Optional loop break label which will installed automatically.</param>
+        /// <returns>Loop statement.</returns>
         public static LoopExpression Loop(this Expression body, LabelTarget @break) => Expression.Loop(body, @break);
 
+        /// <summary>
+        /// Constructs loop statement.
+        /// </summary>
+        /// <param name="body">The loop body.</param>
+        /// <returns>Loop statement.</returns>
         public static LoopExpression Loop(this Expression body) => Expression.Loop(body);
 
+        /// <summary>
+        /// Constructs unconditional control transfer statement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>goto label</code>.
+        /// </remarks>
+        /// <param name="label">The declared label.</param>
+        /// <returns>Unconditional control transfer statement.</returns>
         public static GotoExpression Goto(this LabelTarget label) => Expression.Goto(label);
 
+        /// <summary>
+        /// Constructs unconditional control transfer expression.
+        /// </summary>
+        /// <param name="label">The declared label.</param>
+        /// <param name="value"></param>
+        /// <returns>Unconditional control transfer expression.</returns>
         public static GotoExpression Goto(this LabelTarget label, Expression value) => Expression.Goto(label, value);
 
+        /// <summary>
+        /// Constructs <see langword="return"/> statement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>return</code>.
+        /// </remarks>
+        /// <param name="label">The label representing function exit.</param>
+        /// <returns>Return statement.</returns>
         public static GotoExpression Return(this LabelTarget label) => Expression.Return(label);
 
+        /// <summary>
+        /// Constructs <see langword="return"/> statement with given value.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>return a</code>.
+        /// </remarks>
+        /// <param name="label">The label representing function exit.</param>
+        /// <param name="value">The value to be returned from function.</param>
+        /// <returns>Return statement.</returns>
         public static GotoExpression Return(this LabelTarget label, Expression value) => Expression.Return(label, value);
 
+        /// <summary>
+        /// Constructs loop leave statement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>break</code>.
+        /// </remarks>
+        /// <param name="label">The label indicating loop exit.</param>
+        /// <returns>Break statement.</returns>
         public static GotoExpression Break(this LabelTarget label) => Expression.Break(label);
 
+        /// <summary>
+        /// Constructs loop leave statement.
+        /// </summary>
+        /// <param name="label">The label indicating loop exit.</param>
+        /// <param name="value">The value to be returned from loop.</param>
+        /// <returns>Break statement.</returns>
         public static GotoExpression Break(this LabelTarget label, Expression value) => Expression.Break(label, value);
 
+        /// <summary>
+        /// Constructs loop continuation statement.
+        /// </summary>
+        /// <param name="label">The label indicating loop start.</param>
+        /// <returns>Continue statement.</returns>
         public static GotoExpression Continue(this LabelTarget label) => Expression.Continue(label);
 
+        /// <summary>
+        /// Constructs label landing site.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>label:</code>.
+        /// </remarks>
+        /// <param name="label">The label reference.</param>
+        /// <returns>The label landing site.</returns>
         public static LabelExpression LandingSite(this LabelTarget label) => Expression.Label(label);
 
+        /// <summary>
+        /// Constructs label landing site with the default value.
+        /// </summary>
+        /// <param name="label">The label reference.</param>
+        /// <param name="default">The default value associated with the label.</param>
+        /// <returns>The label landing site.</returns>
         public static LabelExpression LandingSite(this LabelTarget label, Expression @default) => Expression.Label(label, @default);
 
-        public static ConditionalExpression Condition(this Expression expression, Expression ifTrue = null, Expression ifFalse = null, Type type = null)
-            => Expression.Condition(expression, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), type ?? typeof(void));
+        /// <summary>
+        /// Constructs conditional expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a ? b : c</code>.
+        /// </remarks>
+        /// <param name="test">Test expression.</param>
+        /// <param name="ifTrue">Positive branch.</param>
+        /// <param name="ifFalse">Negative branch.</param>
+        /// <param name="type">The type of conditional expression. Default is <see langword="void"/>.</param>
+        /// <returns>Conditional expression.</returns>
+        public static ConditionalExpression Condition(this Expression test, Expression ifTrue = null, Expression ifFalse = null, Type type = null)
+            => Expression.Condition(test, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), type ?? typeof(void));
 
-        public static ConditionalExpression Condition<R>(this Expression expression, Expression ifTrue, Expression ifFalse)
-            => expression.Condition(ifTrue, ifFalse, typeof(R));
+        /// <summary>
+        /// Constructs conditional expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a ? b : c</code>.
+        /// </remarks>
+        /// <typeparam name="R">The type of conditional expression. Default is <see langword="void"/>.</typeparam>
+        /// <param name="test">Test expression.</param>
+        /// <param name="ifTrue">Positive branch.</param>
+        /// <param name="ifFalse">Negative branch.</param>
+        /// <returns>Conditional expression.</returns>
+        public static ConditionalExpression Condition<R>(this Expression test, Expression ifTrue, Expression ifFalse)
+            => test.Condition(ifTrue, ifFalse, typeof(R));
 
+        /// <summary>
+        /// Creates conditional expression builder.
+        /// </summary>
+        /// <param name="test">Test expression.</param>
+        /// <param name="parent">Parent lexical scope.</param>
+        /// <returns>Conditional expression builder.</returns>
         public static ConditionalBuilder Condition(this Expression test, ExpressionBuilder parent = null)
             => new ConditionalBuilder(test, parent, false);
 
+        /// <summary>
+        /// Constructs a <see langword="try"/> block with a <see langword="finally"/> block without <see langword="catch"/> block.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>try { } finally { }</code>.
+        /// </remarks>
+        /// <param name="try"><see langword="try"/> block.</param>
+        /// <param name="finally"><see langword="finally"/> block</param>
+        /// <returns>Try-finally statement.</returns>
         public static TryExpression Finally(this Expression @try, Expression @finally) => Expression.TryFinally(@try, @finally);
 
-        public static UnaryExpression Throw(this Expression exception) => Expression.Throw(exception);
+        /// <summary>
+        /// Constructs <see langword="throw"/> expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>throw e</code>.
+        /// </remarks>
+        /// <param name="exception">An exception to be thrown.</param>
+        /// <param name="type">The type of expression. Default is <see langword="void"/>.</param>
+        /// <returns><see langword="throw"/> expression.</returns>
+        public static UnaryExpression Throw(this Expression exception, Type type = null) => Expression.Throw(exception, type ?? typeof(void));
 
+        /// <summary>
+        /// Converts arbitrary value into constant expression.
+        /// </summary>
+        /// <typeparam name="T">The type of constant.</typeparam>
+        /// <param name="value">The constant value.</param>
+        /// <returns></returns>
         public static Expression AsConst<T>(this T value)
             => value is Expression expr ? (Expression)Expression.Quote(expr) : Expression.Constant(value, typeof(T));
 
+        /// <summary>
+        /// Constructs type default value supplier.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>default(T)</code>.
+        /// </remarks>
+        /// <param name="type">The target type.</param>
+        /// <returns>The type default value expression.</returns>
         public static DefaultExpression AsDefault(this Type type) => Expression.Default(type);
 
+        /// <summary>
+        /// Constructs type instantiation expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>new T()</code>.
+        /// </remarks>
+        /// <param name="type">The type to be instantiated.</param>
+        /// <param name="args">The list of arguments to be passed into constructor.</param>
+        /// <returns>Instantiation expression.</returns>
         public static NewExpression New(this Type type, params Expression[] args)
         {
             if (args.LongLength == 0L)
@@ -625,18 +842,58 @@ namespace DotNext.Metaprogramming
                 return Expression.New(ctor, args);
         }
 
+        /// <summary>
+        /// Creates structured exception handling statement builder.
+        /// </summary>
+        /// <param name="expression"><see langword="try"/> block.</param>
+        /// <param name="parent">The parent lexical scope.</param>
+        /// <returns>Structured exception handling statement builder.</returns>
         public static TryBuilder Try(this Expression expression, ExpressionBuilder parent = null)
             => new TryBuilder(expression, parent, false);
 
+        /// <summary>
+        /// Constructs block of code.
+        /// </summary>
+        /// <param name="expression">An expression to be captured by scope.</param>
+        /// <param name="scope">The scope statements builder.</param>
+        /// <param name="parent">Parent lexical scope.</param>
+        /// <returns>Construct code block.</returns>
+        /// <see cref="WithBlockBuilder"/>
+        /// <see cref="WithBlockBuilder.ScopeVar"/>
         public static Expression With(this Expression expression, Action<WithBlockBuilder> scope, ExpressionBuilder parent = null)
             => ExpressionBuilder.Build<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, parent), scope);
 
+        /// <summary>
+        /// Constructs <see langword="using"/> statement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>using(var obj = expression){ }</code>.
+        /// </remarks>
+        /// <param name="expression">The expression representing disposable resource.</param>
+        /// <param name="scope">The body of <see langword="using"/> statement.</param>
+        /// <param name="parent">Optional parent scope.</param>
+        /// <returns><see langword="using"/> statement.</returns>
         public static Expression Using(this Expression expression, Action<UsingBlockBuilder> scope, ExpressionBuilder parent = null)
             => ExpressionBuilder.Build<Expression, UsingBlockBuilder>(new UsingBlockBuilder(expression, parent), scope);
 
+        /// <summary>
+        /// Creates selection statement builder that chooses a single <see langword="switch"/> section 
+        /// to execute from a list of candidates based on a pattern match with the match expression.
+        /// </summary>
+        /// <param name="switchValue">The value to be matched with provided candidates.</param>
+        /// <param name="parent">Optional parent scope.</param>
+        /// <returns><see langword="switch"/> statement builder.</returns>
         public static SwitchBuilder Switch(this Expression switchValue, ExpressionBuilder parent = null)
             => new SwitchBuilder(switchValue, parent, false);
 
+        /// <summary>
+        /// Transforms async lambda function into read-to-compile function.
+        /// </summary>
+        /// <typeparam name="D">Type of the delegate describing signature of asynchronous function.</typeparam>
+        /// <param name="lambda">The lambda with <see langword="await"/> expressions.</param>
+        /// <returns>Prepared async lambda function.</returns>
+        /// <see cref="AsyncResultExpression"/>
+        /// <see cref="AwaitExpression"/>
         public static Expression<D> ToAsyncLambda<D>(this Expression<D> lambda)
             where D : Delegate
         {
