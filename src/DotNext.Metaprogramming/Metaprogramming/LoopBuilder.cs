@@ -1,10 +1,13 @@
-﻿using System;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using Threading;
-
+    /// <summary>
+    /// Represents generic loop builder.
+    /// </summary>
+    /// <remarks>
+    /// This loop is equvalent to <code>while(true){ }</code>
+    /// </remarks>
     public sealed class LoopBuilder : LoopBuilderBase, IExpressionBuilder<LoopExpression>
     {
         internal LoopBuilder(ExpressionBuilder parent)

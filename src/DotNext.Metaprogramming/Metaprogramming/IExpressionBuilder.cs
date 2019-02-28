@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    public interface IExpressionBuilder<out E>
+    internal interface IExpressionBuilder<out E>
         where E: Expression
     {
         E Build();

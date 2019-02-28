@@ -3,26 +3,37 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    /// <summary>
+    /// Represents <see langword="for"/> loop statement builder.
+    /// </summary>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
     public sealed class ForLoopBuilder: LoopBuilderBase, IExpressionBuilder<LoopExpression>
     {
         private readonly Expression condition;
+        private readonly ParameterExpression loopVar;
         private bool continueLabelInstalled;
         
         internal ForLoopBuilder(Expression initialization, Func<UniversalExpression, Expression> condition, ExpressionBuilder parent)
             : base(parent)
         {
-            LoopVar = parent.DeclareVariable(initialization.Type, NextName("loop_var"));
-            parent.Assign(LoopVar, initialization);
+            loopVar = parent.DeclareVariable(initialization.Type, NextName("loop_var"));
+            parent.Assign(loopVar, initialization);
             this.condition = condition(LoopVar);
         }
 
+        /// <summary>
+        /// Starts iterator block of code which will be executed in the end of every iteration.
+        /// </summary>
         public void StartIteratorBlock()
         {
             Label(continueLabel);
             continueLabelInstalled = true;
         }
 
-        public ParameterExpression LoopVar { get; }
+        /// <summary>
+        /// Gets declared loop variable.
+        /// </summary>
+        public UniversalExpression LoopVar => loopVar;
 
         internal override Expression Build() => ((IExpressionBuilder<LoopExpression>)this).Build();
 
