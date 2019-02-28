@@ -4,7 +4,9 @@
       href: core/extensions.md
     - name: Ad-hoc User Data
       href: core/userdata.md
-    - name: Collection Helpers
+    - name: Value Type Enhancements
+      href: core/valuetype.md
+    - name: Collection Enhancements
       href: core/collections.md
     - name: Optional Type
       href: core/optional.md
