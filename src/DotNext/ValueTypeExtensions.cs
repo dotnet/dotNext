@@ -24,7 +24,6 @@ namespace DotNext
         /// <param name="output">Conversion result.</param>
         /// <typeparam name="FROM">The type of input struct.</typeparam>
         /// <typeparam name="TO">The type of output struct.</typeparam>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void BitCast<FROM, TO>(this FROM input, out TO output)
             where FROM : unmanaged
             where TO : unmanaged
