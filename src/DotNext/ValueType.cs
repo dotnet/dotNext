@@ -167,11 +167,37 @@ namespace DotNext
 					Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size) :
 					Size.CompareTo(ValueType<U>.Size);
 
-		/// <summary>
-		/// Initializes a new boxed value type.
-		/// </summary>
-		/// <param name="value">A struct to be placed onto heap.</param>
-		public ValueType(T value)
+        /// <summary>
+        /// Obtain a value of type <typeparamref name="TO"/> by 
+        /// reinterpreting the object representation of <typeparamref name="T"/>. 
+        /// </summary>
+        /// <remarks>
+        /// Every bit in the value representation of the returned <typeparamref name="TO"/> object 
+        /// is equal to the corresponding bit in the object representation of <typeparamref name="T"/>. 
+        /// The values of padding bits in the returned <typeparamref name="TO"/> object are unspecified. 
+        /// The method takes into account size of <typeparamref name="T"/> and <typeparamref name="TO"/> types
+        /// and able to provide conversion between types of different size.
+        /// </remarks>
+        /// <param name="input">A value to convert.</param>
+        /// <param name="output">Conversion result.</param>
+        /// <typeparam name="TO">The type of output struct.</typeparam>
+        public static void BitCast<TO>(ref T input, out TO output)
+            where TO : unmanaged
+        {
+            if (Size >= ValueType<TO>.Size)
+                output = Unsafe.As<T, TO>(ref input); 
+            else
+            {
+                output = default;
+                Unsafe.As<TO, T>(ref output) = input;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new boxed value type.
+        /// </summary>
+        /// <param name="value">A struct to be placed onto heap.</param>
+        public ValueType(T value)
 			: base(value)
 		{
 		}
