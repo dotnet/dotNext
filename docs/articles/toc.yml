@@ -13,7 +13,7 @@
 - name: Advanced Reflection
   href: reflection.md
 - name: Metaprogramming
-  href: core.md
+  href: meta.md
 - name: Unsafe Data Structures
   href: unsafe.md
 - name: Benchmarks
