@@ -10,7 +10,7 @@ namespace DotNext
 	/// Provides implementation of dispose pattern.
 	/// </summary>
 	/// <see cref="IDisposable"/>
-	/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose"/>
+	/// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
 	public abstract class Disposable : IDisposable
 	{
 		private AtomicBoolean disposed = new AtomicBoolean(false);

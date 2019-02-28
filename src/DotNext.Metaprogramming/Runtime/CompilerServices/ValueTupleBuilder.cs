@@ -10,8 +10,8 @@ namespace DotNext.Runtime.CompilerServices
     /// Represents value tuple builder with arbitrary number of tuple
     /// items.
     /// </summary>
-    /// <see cref="ValueTuple"/>
-    /// <see href="https://docs.microsoft.com/en-us/dotnet/csharp/tuples"/>
+    /// <seealso cref="ValueTuple"/>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/tuples">Tuples</seealso>
     public sealed class ValueTupleBuilder: Disposable, IEnumerable<Type>
     {
         private readonly IList<Type> items = new List<Type>(7);//no more than 7 items because max number of generic arguments of tuple type

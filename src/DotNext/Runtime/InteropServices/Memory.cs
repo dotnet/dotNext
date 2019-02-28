@@ -426,7 +426,7 @@ namespace DotNext.Runtime.InteropServices
         /// This method uses FNV-1a hash algorithm.
         /// </remarks>
         /// <returns>Content hash code.</returns>
-        /// <see href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</see>
+        /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         public static unsafe int GetHashCode(IntPtr source, long length, bool salted = true)
 		{
 			var hash = FNV1a.Offset;
@@ -464,7 +464,7 @@ namespace DotNext.Runtime.InteropServices
         /// This method uses FNV-1a hash algorithm.
         /// </remarks>
         /// <returns>Content hash code.</returns>
-        /// <see href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</see>
+        /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
 		public static unsafe int GetHashCode(void* source, long length, bool salted = true)
 			=> GetHashCode(new IntPtr(source), length, salted);

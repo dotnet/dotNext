@@ -96,6 +96,12 @@ namespace DotNext.Metaprogramming
         public void Assign(string variableName, UniversalExpression value)
             => Assign(this[variableName], value);
         
+        /// <summary>
+        /// Adds instance property assignment.
+        /// </summary>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instanceProperty">Instance property to be modified.</param>
+        /// <param name="value">A new value of the property.</param>
         public void Assign(Expression instance, PropertyInfo instanceProperty, UniversalExpression value)
             => AddStatement(Expression.Assign(Expression.Property(instance, instanceProperty), value));
         

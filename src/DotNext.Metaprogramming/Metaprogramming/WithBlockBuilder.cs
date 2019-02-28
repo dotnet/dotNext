@@ -5,7 +5,7 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents <see langword="With"/> statement builder. 
     /// </summary>
-    /// <see href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement"/>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
     public sealed class WithBlockBuilder: ScopeBuilder, IExpressionBuilder<Expression>
     {
         private readonly ParameterExpression scopeVar;

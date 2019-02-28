@@ -11,7 +11,7 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents suspension point in the execution of the lambda function until the awaited task completes.
     /// </summary>
-    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await"/>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
     public sealed class AwaitExpression : Expression
     {
         private static readonly UserDataSlot<bool> IsAwaiterVarSlot = UserDataSlot<bool>.Allocate();

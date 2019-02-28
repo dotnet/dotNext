@@ -14,7 +14,7 @@ namespace DotNext
     /// if it doesn't implement <see cref="IDisposable"/> interface directly.
     /// </remarks>
     /// <typeparam name="T">A type which implements dispose pattern.</typeparam>
-    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose"/>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
     public static class Disposable<T>
     {
         private delegate void DisposeMethod(in T instance);

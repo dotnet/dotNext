@@ -80,7 +80,7 @@ namespace DotNext.Metaprogramming
             => Expression.Or(left, right);
 
         /// <summary>
-        /// Constructs binary logical XOR expression.
+        /// Constructs binary logical exclusive OR expression.
         /// </summary>
         /// <remarks>
         /// The equivalent code is <code>a ^ b</code>
@@ -457,7 +457,7 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="expression">The expression </param>
         /// <returns></returns>
-        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await"/>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
         public static AwaitExpression Await(this Expression expression)
             => new AwaitExpression(expression);
 

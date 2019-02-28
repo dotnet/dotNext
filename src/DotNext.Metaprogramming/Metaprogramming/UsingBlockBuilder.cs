@@ -10,7 +10,7 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents <see langword="using"/> statement builder.
     /// </summary>
-    /// <see href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement"/>
+    /// <see href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">USING statement</see>
     public sealed class UsingBlockBuilder: ScopeBuilder, IExpressionBuilder<Expression>
     {
         private readonly MethodInfo disposeMethod;
