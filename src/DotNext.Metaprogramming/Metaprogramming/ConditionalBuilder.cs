@@ -20,13 +20,18 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Constructs positive branch of conditional expression.
+        /// Constructs positive branch of the conditional expression.
         /// </summary>
         /// <param name="branch">Branch builder.</param>
         /// <returns>Conditional expression builder.</returns>
         public ConditionalBuilder Then(Action<ScopeBuilder> branch)
             => Then(NewScope().Build(branch));
 
+        /// <summary>
+        /// Constructs positive branch of the conditional expression.
+        /// </summary>
+        /// <param name="branch">An expression representing positive branch.</param>
+        /// <returns>Conditional expression builder.</returns>
         public ConditionalBuilder Then(UniversalExpression branch)
         {
             ifTrue = branch;
@@ -34,13 +39,18 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Constructs negative branch of conditional expression.
+        /// Constructs negative branch of the conditional expression.
         /// </summary>
         /// <param name="branch">Branch builder.</param>
         /// <returns>Conditional expression builder.</returns>
         public ConditionalBuilder Else(Action<ScopeBuilder> branch)
             => Else(NewScope().Build(branch));
 
+        /// <summary>
+        /// Constructs negative branch of the conditional expression.
+        /// </summary>
+        /// <param name="branch">An expression representing negative branch.</param>
+        /// <returns>Conditional expression builder.</returns>
         public ConditionalBuilder Else(UniversalExpression branch)
         {
             ifFalse = branch;

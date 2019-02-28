@@ -7,6 +7,10 @@ namespace DotNext.Metaprogramming
     using static Reflection.DisposableType;
     using static Reflection.CollectionType;
 
+    /// <summary>
+    /// Represents <see langword="foreach"/> loop builder.
+    /// </summary>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
     public sealed class ForEachLoopBuilder: LoopBuilderBase, IExpressionBuilder<Expression>
     {
         private readonly ParameterExpression enumerator;

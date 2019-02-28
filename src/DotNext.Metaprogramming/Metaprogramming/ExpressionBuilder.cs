@@ -74,13 +74,13 @@ namespace DotNext.Metaprogramming
             => AddStatement(Build<E, B>(builder, body));
 
         /// <summary>
-        /// Adds no-operation instruction into this scope.
+        /// Adds no-operation instruction to this scope.
         /// </summary>
         /// <returns>No-operation instruction.</returns>
         public Expression Nop() => AddStatement(Expression.Empty());
         
         /// <summary>
-        /// Adds assign operation into this scope.
+        /// Adds assignment operation to this scope.
         /// </summary>
         /// <param name="variable">The variable to modify.</param>
         /// <param name="value">The value to be assigned to the variable.</param>
@@ -88,9 +88,20 @@ namespace DotNext.Metaprogramming
         public BinaryExpression Assign(ParameterExpression variable, UniversalExpression value)
             => AddStatement(Expression.Assign(variable, value));
 
+        /// <summary>
+        /// Adds local variable assignment operation this scope.
+        /// </summary>
+        /// <param name="variableName">The name of the declared local variable.</param>
+        /// <param name="value">The value to be assigned to the local variable.</param>
         public void Assign(string variableName, UniversalExpression value)
             => Assign(this[variableName], value);
         
+        /// <summary>
+        /// Adds instance property assignment.
+        /// </summary>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instanceProperty">Instance property to be modified.</param>
+        /// <param name="value">A new value of the property.</param>
         public void Assign(Expression instance, PropertyInfo instanceProperty, UniversalExpression value)
             => AddStatement(Expression.Assign(Expression.Property(instance, instanceProperty), value));
         
@@ -121,6 +132,12 @@ namespace DotNext.Metaprogramming
         public MethodCallExpression Call(MethodInfo method, params UniversalExpression[] arguments)
             => Call(method, UniversalExpression.AsExpressions((IEnumerable<UniversalExpression>)arguments));
         
+        /// <summary>
+        /// Declares label of the specified type.
+        /// </summary>
+        /// <param name="type">The type of landing site.</param>
+        /// <param name="name">The optional name of the label.</param>
+        /// <returns>Declared label.</returns>
         public LabelTarget Label(Type type, string name = null)
         {
             var target = Expression.Label(type, name);
@@ -128,29 +145,73 @@ namespace DotNext.Metaprogramming
             return target;
         }
 
+        /// <summary>
+        /// Declares label of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type of landing site.</typeparam>
+        /// <param name="name">The optional name of the label.</param>
+        /// <returns>Declared label.</returns>
         public LabelTarget Label<T>(string name = null) => Label(typeof(T), name);
 
+        /// <summary>
+        /// Declares label in the current scope.
+        /// </summary>
+        /// <returns>Declared label.</returns>
         public LabelTarget Label() => Label(typeof(void));
 
+        /// <summary>
+        /// Adds label landing site to this scope.
+        /// </summary>
+        /// <param name="target">The label target.</param>
+        /// <returns>The landing site for the label.</returns>
         public LabelExpression Label(LabelTarget target)
             => AddStatement(Expression.Label(target));
 
+        /// <summary>
+        /// Adds unconditional control transfer statement to this scope.
+        /// </summary>
+        /// <param name="target">The label reference.</param>
+        /// <param name="value">The value to be associated with the control transfer.</param>
+        /// <returns>Unconditional control transfer statement.</returns>
         public GotoExpression Goto(LabelTarget target, UniversalExpression value)
             => AddStatement(Expression.Goto(target, value));
 
+        /// <summary>
+        /// Adds unconditional control transfer statement to this scope.
+        /// </summary>
+        /// <param name="target">The label reference.</param>
+        /// <returns>Unconditional control transfer statement.</returns>
         public GotoExpression Goto(LabelTarget target) => Goto(target, default);
 
         private bool HasVariable(string name) => variables.ContainsKey(name) || Parent != null && Parent.HasVariable(name);
         
+        /// <summary>
+        /// Gets declared local variable in the current or parent scope.
+        /// </summary>
+        /// <param name="localVariableName">The name of the local variable.</param>
+        /// <returns>Declared local variable; or <see langword="null"/>, if there is no declared local variable with the given name.</returns>
         public ParameterExpression this[string localVariableName]
             => variables.TryGetValue(localVariableName, out var variable) ? variable : Parent?[localVariableName];
 
         private protected void DeclareVariable(ParameterExpression variable)
             => variables.Add(variable.Name, variable);
 
+        /// <summary>
+        /// Declares local variable in the current lexical scope.
+        /// </summary>
+        /// <typeparam name="T">The type of local variable.</typeparam>
+        /// <param name="name">The name of local variable.</param>
+        /// <returns>The expression representing local variable.</returns>
         public ParameterExpression DeclareVariable<T>(string name)
             => DeclareVariable(typeof(T), name);
 
+        /// <summary>
+        /// Declares and initializes local variable in the current lexical scope.
+        /// </summary>
+        /// <typeparam name="T">The type of local variable.</typeparam>
+        /// <param name="name">The name of local variable.</param>
+        /// <param name="initialValue">The initial value of the local variable.</param>
+        /// <returns>The expression representing local variable.</returns>
         public ParameterExpression DeclareVariable<T>(string name, T initialValue)
         {
             var variable = DeclareVariable<T>(name);
@@ -158,15 +219,24 @@ namespace DotNext.Metaprogramming
             return variable;
         }
 
-        public ParameterExpression DeclareVariable(Type variableType, string name, bool initialize = false)
+        /// <summary>
+        /// Declares local variable in the current lexical scope. 
+        /// </summary>
+        /// <param name="variableType">The type of local variable.</param>
+        /// <param name="name">The name of local variable.</param>
+        /// <returns>The expression representing local variable.</returns>
+        public ParameterExpression DeclareVariable(Type variableType, string name)
         {
             var variable = Expression.Variable(variableType, name);
             variables.Add(name, variable);
-            if (initialize)
-                Assign(variable, Expression.Default(variableType));
             return variable;
         }
 
+        /// <summary>
+        /// Adds if-then-else statement to this scope.
+        /// </summary>
+        /// <param name="test">Test expression.</param>
+        /// <returns>Conditional statement builder.</returns>
         public ConditionalBuilder If(UniversalExpression test)
             => new ConditionalBuilder(test, this, true);
 

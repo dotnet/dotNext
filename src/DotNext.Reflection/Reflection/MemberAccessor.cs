@@ -9,6 +9,7 @@
 	/// </summary>
 	/// <param name="this">This parameter.</param>
 	/// <typeparam name="T">Declaring type.</typeparam>
+    /// <typeparam name="V">Member type.</typeparam>
 	/// <returns>Field value.</returns>
 	public delegate V MemberGetter<T, out V>(in T @this);
 
@@ -18,5 +19,6 @@
 	/// <param name="this">This parameter.</param>
 	/// <param name="value">A value to set.</param>
 	/// <typeparam name="T">Declaring type.</typeparam>
+    /// <typeparam name="V">Member type.</typeparam>
 	public delegate void MemberSetter<T, in V>(in T @this, V value);
 }

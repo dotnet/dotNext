@@ -9,7 +9,6 @@ namespace DotNext.Reflection
     /// <summary>
     /// Describes signature of function or procedure.
     /// </summary>
-    /// <typeparam name="A">Method parameters.</typeparam>
     internal static class Signature
     {
         private static void Reflect(ParameterExpression argListParameter, out Type[] parameters, out Expression[] arglist)

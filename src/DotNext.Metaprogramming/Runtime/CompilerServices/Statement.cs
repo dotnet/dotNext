@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Metaprogramming.Expressions;
+    using static Metaprogramming.ExpressionHelpers;
     using VariantType;
     using static Collections.Generic.Collection;
 

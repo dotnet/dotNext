@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Metaprogramming.Expressions;
+    using static Metaprogramming.ExpressionHelpers;
 
     internal sealed class ExitGuardedCodeExpression: TransitionExpression
     {

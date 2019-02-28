@@ -13,7 +13,7 @@ namespace DotNext.Threading
     /// This class provides alternative approach which allows to invoke delegate asynchronously
     /// with full support of async/await feature.
     /// </remarks>
-    /// <seealso href="https://github.com/dotnet/corefx/issues/5940"/>
+    /// <seealso href="https://github.com/dotnet/corefx/issues/5940">BeginInvoke throws NotSupportedException</seealso>
     public static class AsyncDelegate
     {
         private static Task StartNew<D>(D @delegate, Action<D> invoker, CancellationToken token)

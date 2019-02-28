@@ -199,7 +199,7 @@ namespace DotNext.Reflection
     }
 
     /// <summary>
-    /// Provides typed access to static field declared in type <typeparamref name="T"/>.
+    /// Provides typed access to static field declared in type <typeparamref name="V"/>.
     /// </summary>
     /// <typeparam name="V">Type of field value.</typeparam>
     public sealed class Field<V> : FieldBase<V>, IField<V>

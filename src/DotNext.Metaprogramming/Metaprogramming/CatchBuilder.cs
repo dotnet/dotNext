@@ -3,6 +3,9 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    /// <summary>
+    /// Represents CATCH block builder as part of try-catch-finally statement.
+    /// </summary>
     public sealed class CatchBuilder: ScopeBuilder
     {
         private Expression filter;
@@ -18,6 +21,15 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public ParameterExpression Exception { get; }
 
+        /// <summary>
+        /// Appends optional exception filter.
+        /// </summary>
+        /// <remarks>
+        /// The exception handling filter is equal to <see langword="where"/> keyword applied
+        /// inside of <see langword="catch"/> block in C#.
+        /// Filter expression cannot have <see langword="await"/> expressions.
+        /// </remarks>
+        /// <param name="filter">Filter expression builder.</param>
         public void Filter(Action<ExpressionBuilder> filter)
             => this.filter = new ScopeBuilder(Parent).Build(filter);
 
