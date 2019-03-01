@@ -39,14 +39,14 @@ namespace DotNext.Threading
 		/// </summary>
 		/// <param name="timeout">Timeout control object.</param>
 		/// <returns><see langword="true"/>, if timeout is reached; otherwise, <see langword="false"/>.</returns>
-		public static bool operator true(Timeout timeout) => timeout.Expired;
+		public static bool operator true(in Timeout timeout) => timeout.Expired;
 
         /// <summary>
         /// Indicates that timeout is not reached.
         /// </summary>
         /// <param name="timeout">Timeout control object.</param>
         /// <returns><see langword="false"/>, if timeout is not reached; otherwise, <see langword="false"/>.</returns>
-        public static bool operator false(Timeout timeout) => !timeout.Expired;
+        public static bool operator false(in Timeout timeout) => !timeout.Expired;
 
         /// <summary>
         /// Extracts original timeout value from this object.
