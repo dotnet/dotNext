@@ -100,35 +100,89 @@ namespace DotNext.Metaprogramming
         /// Adds instance property assignment.
         /// </summary>
         /// <param name="instance"><see langword="this"/> argument.</param>
-        /// <param name="instanceProperty">Instance property to be modified.</param>
+        /// <param name="instanceProperty">Instance property to be assigned.</param>
         /// <param name="value">A new value of the property.</param>
         public void Assign(Expression instance, PropertyInfo instanceProperty, UniversalExpression value)
             => AddStatement(Expression.Assign(Expression.Property(instance, instanceProperty), value));
         
+        /// <summary>
+        /// Adds static property assignment.
+        /// </summary>
+        /// <param name="staticProperty">Static property to be assigned.</param>
+        /// <param name="value">A new value of the property.</param>
         public void Assign(PropertyInfo staticProperty, UniversalExpression value)
             => Assign(null, staticProperty, value);
-        
+
+        /// <summary>
+        /// Adds instance field assignment.
+        /// </summary>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instanceField">Instance field to be assigned.</param>
+        /// <param name="value">A new value of the field.</param>
         public void Assign(Expression instance, FieldInfo instanceField, UniversalExpression value)
             => AddStatement(Expression.Assign(Expression.Field(instance, instanceField), value));
 
-        public void Assign(FieldInfo instanceField, UniversalExpression value)
-            => Assign(null, instanceField, value);
+        /// <summary>
+        /// Adds static field assignment.
+        /// </summary>
+        /// <param name="staticField">Static field to be assigned.</param>
+        /// <param name="value">A new value of the field.</param>
+        public void Assign(FieldInfo staticField, UniversalExpression value)
+            => Assign(null, staticField, value);
 
+        /// <summary>
+        /// Adds invocation statement.
+        /// </summary>
+        /// <param name="delegate">The expression providing delegate to be invoked.</param>
+        /// <param name="arguments">Delegate invocation arguments.</param>
+        /// <returns>Invocation expression.</returns>
         public InvocationExpression Invoke(UniversalExpression @delegate, IEnumerable<Expression> arguments)
             => AddStatement(Expression.Invoke(@delegate, arguments));
 
+        /// <summary>
+        /// Adds invocation statement.
+        /// </summary>
+        /// <param name="delegate">The expression providing delegate to be invoked.</param>
+        /// <param name="arguments">Delegate invocation arguments.</param>
+        /// <returns>Invocation expression.</returns>
         public InvocationExpression Invoke(UniversalExpression @delegate, params UniversalExpression[] arguments)
             => AddStatement(@delegate.Invoke(arguments));
-        
+
+        /// <summary>
+        /// Adds instance method call statement.
+        /// </summary>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="method">The method to be called.</param>
+        /// <param name="arguments">Method call arguments.</param>
+        /// <returns>Method call statement.</returns>
         public MethodCallExpression Call(UniversalExpression instance, MethodInfo method, IEnumerable<Expression> arguments)
             => AddStatement(Expression.Call(instance, method, arguments));
 
+        /// <summary>
+        /// Adds instance method call statement.
+        /// </summary>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="method">The method to be called.</param>
+        /// <param name="arguments">Method call arguments.</param>
+        /// <returns>Method call statement.</returns>
         public MethodCallExpression Call(UniversalExpression instance, MethodInfo method, params UniversalExpression[] arguments)
             => Call(instance, method, UniversalExpression.AsExpressions((IEnumerable<UniversalExpression>)arguments));
 
+        /// <summary>
+        /// Adds static method call statement.,
+        /// </summary>
+        /// <param name="method">The method to be called.</param>
+        /// <param name="arguments">Method call arguments.</param>
+        /// <returns>Method call statement.</returns>
         public MethodCallExpression Call(MethodInfo method, IEnumerable<Expression> arguments)
             => AddStatement(Expression.Call(null, method, arguments));
 
+        /// <summary>
+        /// Adds static method call statement.
+        /// </summary>
+        /// <param name="method">The method to be called.</param>
+        /// <param name="arguments">Method call arguments.</param>
+        /// <returns>Method call statement.</returns>
         public MethodCallExpression Call(MethodInfo method, params UniversalExpression[] arguments)
             => Call(method, UniversalExpression.AsExpressions((IEnumerable<UniversalExpression>)arguments));
         
@@ -240,24 +294,73 @@ namespace DotNext.Metaprogramming
         public ConditionalBuilder If(UniversalExpression test)
             => new ConditionalBuilder(test, this, true);
 
+        /// <summary>
+        /// Adds if-then statement to this scope.
+        /// </summary>
+        /// <param name="test">Test expression.</param>
+        /// <param name="ifTrue">Positive branch builder.</param>
+        /// <returns>Constructed statement.</returns>
         public ConditionalExpression IfThen(UniversalExpression test, Action<ExpressionBuilder> ifTrue)
             => If(test).Then(ifTrue).End();
 
+        /// <summary>
+        /// Adds if-then-else statement to this scope.
+        /// </summary>
+        /// <param name="test">Test expression.</param>
+        /// <param name="ifTrue">Positive branch builder.</param>
+        /// <param name="ifFalse">Negative branch builder.</param>
+        /// <returns>Constructed statement.</returns>
         public ConditionalExpression IfThenElse(UniversalExpression test, Action<ExpressionBuilder> ifTrue, Action<ExpressionBuilder> ifFalse)
             => If(test).Then(ifTrue).Else(ifFalse).End();
 
+        /// <summary>
+        /// Adds <see langword="while"/> loop statement.
+        /// </summary>
+        /// <param name="test">Loop continuation condition.</param>
+        /// <param name="loop">Loop body.</param>
+        /// <returns>Loop statement.</returns>
         public LoopExpression While(UniversalExpression test, Action<WhileLoopBuider> loop)
             => AddStatement<LoopExpression, WhileLoopBuider>(new WhileLoopBuider(test, this, true), loop);
 
+        /// <summary>
+        /// Adds <code>do{ } while(condition);</code> loop statement.
+        /// </summary>
+        /// <param name="test">Loop continuation condition.</param>
+        /// <param name="loop">Loop body.</param>
+        /// <returns>Loop statement.</returns>
         public LoopExpression DoWhile(UniversalExpression test, Action<WhileLoopBuider> loop)
             => AddStatement<LoopExpression, WhileLoopBuider>(new WhileLoopBuider(test, this, false), loop);
 
-        public Expression ForEach(UniversalExpression collection, Action<ForEachLoopBuilder> loop)
-            => AddStatement<Expression, ForEachLoopBuilder>(new ForEachLoopBuilder(collection, this), loop);
+        /// <summary>
+        /// Adds <see langword="foreach"/> loop statement.
+        /// </summary>
+        /// <param name="collection">The expression providing enumerable collection.</param>
+        /// <param name="loop">Loop body.</param>
+        /// <returns>Loop statement.</returns>
+        /// <seealso cref="ForEachLoopBuilder"/>
+        public TryExpression ForEach(UniversalExpression collection, Action<ForEachLoopBuilder> loop)
+            => AddStatement<TryExpression, ForEachLoopBuilder>(new ForEachLoopBuilder(collection, this), loop);
 
+        /// <summary>
+        /// Adds <see langword="for"/> loop statement.
+        /// </summary>
+        /// <remarks>
+        /// This builder constructs the statement equivalent to <code>for(var i = initializer; condition; iter){ body; }</code>
+        /// </remarks>
+        /// <param name="initializer">Loop variable initialization expression.</param>
+        /// <param name="condition">Loop continuation condition.</param>
+        /// <param name="loop">Loop body.</param>
+        /// <returns>Loop statement.</returns>
+        /// <seealso cref="ForLoopBuilder"/>
         public LoopExpression For(UniversalExpression initializer, Func<UniversalExpression, Expression> condition, Action<ForLoopBuilder> loop)
             => AddStatement<LoopExpression, ForLoopBuilder>(new ForLoopBuilder(initializer, condition, this), loop);
-
+        
+        /// <summary>
+        /// Adds generic loop statement.
+        /// </summary>
+        /// <param name="loop">Loop body.</param>
+        /// <returns>Loop statement.</returns>
+        /// <seealso cref="LoopBuilder"/>
         public LoopExpression Loop(Action<LoopBuilder> loop)
             => AddStatement<LoopExpression, LoopBuilder>(new LoopBuilder(this), loop);
 
