@@ -1,15 +1,15 @@
-namespace DotNext.Generic
+﻿namespace DotNext.Generic
 {
     /// <summary>
-    /// Represents <see cref="int"/> constant as type.
+    /// Represents <see cref="long"/> constant as type.
     /// </summary>
-    public abstract class IntConst: Constant<int>
+    public abstract class LongConst: Constant<long>
     {
         /// <summary>
-        /// Associated <see cref="int"/> value with this type.
+        /// Associated <see cref="long"/> value with this type.
         /// </summary>
         /// <param name="value">A value to be associated with this type.</param>
-        protected IntConst(int value)
+        protected LongConst(long value)
             : base(value)
         {
         }
@@ -17,12 +17,12 @@ namespace DotNext.Generic
         /// <summary>
         /// Represents zero value as type.
         /// </summary>
-        public sealed class Zero: IntConst
+        public sealed class Zero : LongConst
         {
             /// <summary>
             /// Represents constant value.
             /// </summary>
-            public const int Value = 0;
+            public const long Value = 0;
 
             /// <summary>
             /// Initializes a new constant value.
@@ -34,14 +34,14 @@ namespace DotNext.Generic
         }
 
         /// <summary>
-        /// Represents max integer value as type.
+        /// Represents max long value as type.
         /// </summary>
-        public sealed class Max: IntConst
+        public sealed class Max : LongConst
         {
             /// <summary>
             /// Represents constant value.
             /// </summary>
-            public const int Value = int.MaxValue;
+            public const long Value = long.MaxValue;
 
             /// <summary>
             /// Initializes a new constant value.
@@ -53,14 +53,14 @@ namespace DotNext.Generic
         }
 
         /// <summary>
-        /// Represents min integer value as type.
+        /// Represents min long value as type.
         /// </summary>
-        public sealed class Min: IntConst
+        public sealed class Min : LongConst
         {
             /// <summary>
             /// Represents constant value.
             /// </summary>
-            public const int Value = int.MinValue;
+            public const long Value = long.MinValue;
 
             /// <summary>
             /// Initializes a new constant value.
