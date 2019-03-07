@@ -4,7 +4,55 @@ namespace DotNext.Threading
 {
 	public sealed class AtomicTests : Assert
 	{
-		[Fact]
+        [Fact]
+        public void AtomicFloatTest()
+        {
+            float i = 10F;
+            Equal(11F, i.IncrementAndGet());
+            Equal(10F, i.DecrementAndGet());
+            i = 20F;
+            True(i.CompareAndSet(20F, 30F));
+            Equal(30F, i);
+            False(i.CompareAndSet(20F, 50F));
+            Equal(30F, i);
+            Equal(80F, i.Add(50F));
+            Equal(80F, i);
+            Equal(80F, i.GetAndAccumulate(10F, (x, y) => x + y));
+            Equal(90F, i);
+            Equal(10F, i.AccumulateAndGet(80F, (x, y) => x - y));
+            Equal(10F, i);
+            Equal(10F, i.GetAndSet(25F));
+            Equal(25F, i);
+            Equal(42F, i.UpdateAndGet(current => 42F));
+            Equal(42F, i.GetAndUpdate(current => 52F));
+            Equal(52F, i);
+        }
+
+        [Fact]
+        public void AtomicDoubleTest()
+        {
+            double i = 10D;
+            Equal(11D, i.IncrementAndGet());
+            Equal(10D, i.DecrementAndGet());
+            i = 20D;
+            True(i.CompareAndSet(20D, 30D));
+            Equal(30D, i);
+            False(i.CompareAndSet(20D, 50D));
+            Equal(30D, i);
+            Equal(80D, i.Add(50D));
+            Equal(80D, i);
+            Equal(80D, i.GetAndAccumulate(10D, (x, y) => x + y));
+            Equal(90D, i);
+            Equal(10D, i.AccumulateAndGet(80D, (x, y) => x - y));
+            Equal(10D, i);
+            Equal(10D, i.GetAndSet(25D));
+            Equal(25D, i);
+            Equal(42D, i.UpdateAndGet(current => 42D));
+            Equal(42D, i.GetAndUpdate(current => 52D));
+            Equal(52D, i);
+        }
+
+        [Fact]
 		public void AtomicIntTest()
 		{
 			var i = 10;
