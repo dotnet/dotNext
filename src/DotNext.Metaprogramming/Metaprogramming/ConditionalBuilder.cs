@@ -12,7 +12,7 @@ namespace DotNext.Metaprogramming
         private Expression ifTrue;
         private Expression ifFalse;
 
-        internal ConditionalBuilder(Expression test, ExpressionBuilder parent, bool treatAsStatement)
+        internal ConditionalBuilder(Expression test, CompoundStatementBuilder parent, bool treatAsStatement)
             : base(parent, treatAsStatement)
         {
             this.test = test;

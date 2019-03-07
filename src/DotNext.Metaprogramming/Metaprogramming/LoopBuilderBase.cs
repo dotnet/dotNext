@@ -11,7 +11,7 @@ namespace DotNext.Metaprogramming
         private protected readonly LabelTarget breakLabel;
         private protected readonly LabelTarget continueLabel;
 
-        private protected LoopBuilderBase(ExpressionBuilder parent)
+        private protected LoopBuilderBase(CompoundStatementBuilder parent)
             : base(parent)
         {
             var loopCount = LoopBuilderBase.loopCount.IncrementAndGet();

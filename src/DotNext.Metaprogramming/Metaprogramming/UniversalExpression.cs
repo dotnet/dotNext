@@ -258,58 +258,180 @@ namespace DotNext.Metaprogramming
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator ==(UniversalExpression left, UniversalExpression right) => left.expression.Equal(right);
 
+        /// <summary>
+        /// Inequality comparison.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static UniversalExpression operator !=(UniversalExpression left, UniversalExpression right) => left.expression.NotEqual(right);
 
+        /// <summary>
+        /// Arithmetic remainder expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static UniversalExpression operator %(UniversalExpression left, UniversalExpression right) => left.expression.Modulo(right);
 
+        /// <summary>
+        /// Bitwise right-shift expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static UniversalExpression operator >>(UniversalExpression left, int right) => left.expression.RightShift(right.AsConst());
 
+        /// <summary>
+        /// Bitwise left-shift expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         public static UniversalExpression operator <<(UniversalExpression left, int right) => left.expression.LeftShift(right.AsConst());
 
+        /// <summary>
+        /// Constructs raising a number to a power expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         [SpecialName]
         public static UniversalExpression op_Exponent(UniversalExpression left, UniversalExpression right)
             => left.expression.Power(right);
 
+        /// <summary>
+        /// Bitwise left-shift expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         [SpecialName]
         public static UniversalExpression op_LeftShift(UniversalExpression left, UniversalExpression right)
             => left.expression.LeftShift(right);
 
+        /// <summary>
+        /// Bitwise right-shift expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
         [SpecialName]
         public static UniversalExpression op_RightShift(UniversalExpression left, UniversalExpression right)
             => left.expression.RightShift(right);
 
+        /// <summary>
+        /// Constructs suspension point in the execution of the lambda function until the awaited task completes.
+        /// </summary>
+        /// <returns></returns>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
         public UniversalExpression Await() => expression.Await();
 
-        public UniversalExpression Convert(Type type) => expression.Convert(type);
+        /// <summary>
+        /// Constructs type conversion expression.
+        /// </summary>
+        /// <param name="targetType">The target type.</param>
+        /// <returns>The type conversion expression.</returns>
+        public UniversalExpression Convert(Type targetType) => expression.Convert(targetType);
 
+        /// <summary>
+        /// Constructs type conversion expression.
+        /// </summary>
+        /// <typeparam name="T">The target type.</typeparam>
+        /// <returns>The type conversion expression.</returns>
         public UniversalExpression Convert<T>() => expression.Convert<T>();
 
-        public UniversalExpression InstanceOf(Type type) => expression.InstanceOf(type);
+        /// <summary>
+        /// Constructs type check expression.
+        /// </summary>
+        /// <param name="targetType">The target type.</param>
+        /// <returns>The type test expression.</returns>
+        public UniversalExpression InstanceOf(Type targetType) => expression.InstanceOf(targetType);
 
+        /// <summary>
+        /// Constructs type check expression.
+        /// </summary>
+        /// <typeparam name="T">The target type.</typeparam>
+        /// <returns>The type test expression.</returns>
         public UniversalExpression InstanceOf<T>() => expression.InstanceOf<T>();
 
-        public UniversalExpression TryConvert(Type type) => expression.TryConvert(type);
+        /// <summary>
+        /// Constructs an expression that represents an explicit
+        /// reference or boxing conversion where <see langword="null"/> is supplied if the conversion fails.
+        /// </summary>
+        /// <param name="targetType">The target type.</param>
+        /// <returns>Type conversion expression.</returns>
+        public UniversalExpression TryConvert(Type targetType) => expression.TryConvert(targetType);
 
+        /// <summary>
+        /// Constructs an expression that represents an explicit
+        /// reference or boxing conversion where <see langword="null"/> is supplied if the conversion fails.
+        /// </summary>
+        /// <typeparam name="T">The target type.</typeparam>
+        /// <returns>Type conversion expression.</returns>
         public UniversalExpression TryConvert<T>() => expression.TryConvert<T>();
 
+        /// <summary>
+        /// Constructs an expression that decrements this expression by 1 and assigns the result back to the expression.
+        /// </summary>
+        /// <returns>Unary expression.</returns>
         public UniversalExpression PreDecrementAssign() => expression.PreDecrementAssign();
 
+        /// <summary>
+        /// Constructs an expression that represents the assignment of this expression followed by a subsequent decrement by 1 of the original expression.
+        /// </summary>
+        /// <returns>Unary expression.</returns>
         public UniversalExpression PostDecrementAssign() => expression.PostDecrementAssign();
 
+        /// <summary>
+        /// Constructs an expression that increments this expression by 1 and assigns the result back to the expression.
+        /// </summary>
+        /// <returns>Unary expression.</returns>
         public UniversalExpression PreIncrementAssign() => expression.PreIncrementAssign();
 
+        /// <summary>
+        /// Constructs an expression that represents the assignment of this expression followed by a subsequent increment by 1 of the original expression.
+        /// </summary>
+        /// <returns>Unary expression.</returns>
         public UniversalExpression PostIncrementAssign() => expression.PostIncrementAssign();
 
+        /// <summary>
+        /// Binary expression that represents a conditional
+        /// OR operation that evaluates the second operand only if the this expression evaluates to <see langword="false"/>.
+        /// </summary>
+        /// <param name="other">The second operand.</param>
+        /// <returns>Binary expression.</returns>
         public UniversalExpression OrElse(Expression other) => expression.OrElse(other);
 
+        /// <summary>
+        /// Constructs binary expression that represents a conditional
+        /// AND operation that evaluates the second operand only if the this expression evaluates to <see langword="true"/>.
+        /// </summary>
+        /// <param name="other">The second operand.</param>
+        /// <returns>Binary expression.</returns>
         public UniversalExpression AndAlso(Expression other) => expression.AndAlso(other);
 
-        public UniversalExpression Unbox(Type type) => expression.Unbox(type);
+        /// <summary>
+        /// Explicit unboxing.
+        /// </summary>
+        /// <param name="targetType">The target value type.</param>
+        /// <returns>Unboxing expression.</returns>
+        public UniversalExpression Unbox(Type targetType) => expression.Unbox(targetType);
 
+        /// <summary>
+        /// Explicit unboxing.
+        /// </summary>
+        /// <typeparam name="T">The target value type.</typeparam>
+        /// <returns>Unboxing expression.</returns>
         public UniversalExpression Unbox<T>()
             where T : struct
             => expression.Unbox<T>();
 
+        /// <summary>
+        /// Constructs delegate invocation expression.
+        /// </summary>
+        /// <param name="arguments">Invocation arguments.</param>
+        /// <returns>Invocation expression.</returns>
         public InvocationExpression Invoke(params UniversalExpression[] arguments)
             => expression.Invoke(AsExpressions(arguments));
 
@@ -345,18 +467,18 @@ namespace DotNext.Metaprogramming
         public UniversalExpression Condition<R>(Expression ifTrue, Expression ifFalse)
             => expression.Condition<R>(ifTrue, ifFalse);
 
-        public ConditionalBuilder Condition(ExpressionBuilder parent = null)
+        public ConditionalBuilder Condition(CompoundStatementBuilder parent = null)
             => expression.Condition(parent);
 
-        public UniversalExpression With(Action<WithBlockBuilder> scope, ExpressionBuilder parent = null) => expression.With(scope, parent);
+        public UniversalExpression With(Action<WithBlockBuilder> scope, CompoundStatementBuilder parent = null) => expression.With(scope, parent);
 
-        public UniversalExpression Using(Action<UsingBlockBuilder> scope, ExpressionBuilder parent)
+        public UniversalExpression Using(Action<UsingBlockBuilder> scope, CompoundStatementBuilder parent)
             => expression.Using(scope, parent);
 
-        public SwitchBuilder Switch(ExpressionBuilder parent = null)
+        public SwitchBuilder Switch(CompoundStatementBuilder parent = null)
             => new SwitchBuilder(expression, parent, false);
 
-        public TryBuilder Try(ExpressionBuilder parent = null) => expression.Try(parent);
+        public TryBuilder Try(CompoundStatementBuilder parent = null) => expression.Try(parent);
 
         public UnaryExpression Throw() => expression.Throw();
 

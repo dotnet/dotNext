@@ -192,5 +192,56 @@ namespace DotNext
 				fixed(T* firstPtr = first, secondPtr = second)
 					return Memory.Equals(firstPtr, secondPtr, first.Length * ValueType<T>.Size);
 		}
+
+        /// <summary>
+        /// Computes bitwise hash code for the array content.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="array">The array to be hashed.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>The hash code of the array content.</returns>
+        public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
+            where T : unmanaged
+        {
+            if (array.IsNullOrEmpty())
+                return 0;
+            fixed (T* ptr = array)
+                return Memory.GetHashCode(ptr, array.LongLength * ValueType<T>.Size, salted);
+        }
+
+        /// <summary>
+        /// Computes bitwise hash code for the array content
+        /// and custom hash function.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="array">The array to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Custom hashing algorithm.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>The hash code of the array content.</returns>
+        public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            where T : unmanaged
+        {
+            if (array.IsNullOrEmpty())
+                return hash;
+            fixed (T* ptr = array)
+                return Memory.GetHashCode(ptr, array.LongLength * ValueType<T>.Size, hash, hashFunction, salted);
+        }
+
+        /// <summary>
+        /// Compares content of the two arrays.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="first">The first array to compare.</param>
+        /// <param name="second">The second array to compare.</param>
+        /// <returns>Comparison result.</returns>
+        public static unsafe int BitwiseCompare<T>(this T[] first, T[] second)
+            where T : unmanaged
+        {
+            if (first.Length != second.Length)
+                return first.Length.CompareTo(second.LongLength);
+            fixed (T* firstPtr = first, secondPtr = second)
+                return Memory.Compare(firstPtr, secondPtr, first.Length * ValueType<T>.Size);
+        }
 	}
 }

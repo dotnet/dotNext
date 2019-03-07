@@ -10,7 +10,7 @@ namespace DotNext.Metaprogramming
     {
         private Expression filter;
 
-        internal CatchBuilder(Type exceptionType, ExpressionBuilder parent)
+        internal CatchBuilder(Type exceptionType, CompoundStatementBuilder parent)
             : base(parent)
         {
             Exception = Expression.Variable(exceptionType, "e");
@@ -30,7 +30,7 @@ namespace DotNext.Metaprogramming
         /// Filter expression cannot have <see langword="await"/> expressions.
         /// </remarks>
         /// <param name="filter">Filter expression builder.</param>
-        public void Filter(Action<ExpressionBuilder> filter)
+        public void Filter(Action<CompoundStatementBuilder> filter)
             => this.filter = new ScopeBuilder(Parent).Build(filter);
 
         internal CatchBlock Build(Action<CatchBuilder> body)

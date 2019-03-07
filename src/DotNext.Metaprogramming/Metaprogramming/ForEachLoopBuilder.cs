@@ -11,13 +11,13 @@ namespace DotNext.Metaprogramming
     /// Represents <see langword="foreach"/> loop builder.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
-    public sealed class ForEachLoopBuilder: LoopBuilderBase, IExpressionBuilder<Expression>
+    public sealed class ForEachLoopBuilder: LoopBuilderBase, IExpressionBuilder<TryExpression>
     {
         private readonly ParameterExpression enumerator;
         private readonly MethodCallExpression moveNextCall;
         private readonly Expression element;
 
-        internal ForEachLoopBuilder(Expression collection, ExpressionBuilder parent)
+        internal ForEachLoopBuilder(Expression collection, CompoundStatementBuilder parent)
             : base(parent)
         {
             collection.Type.GetItemType(out var enumerable);
@@ -49,7 +49,9 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public UniversalExpression Element => element;
 
-        internal override Expression Build()
+        internal override Expression Build() => ((IExpressionBuilder<TryExpression>)this).Build();
+
+        TryExpression IExpressionBuilder<TryExpression>.Build()
         {
             Expression loopBody = moveNextCall.Condition(base.Build(), breakLabel.Goto());
             var disposeMethod = enumerator.Type.GetDisposeMethod();
@@ -59,7 +61,5 @@ namespace DotNext.Metaprogramming
                     Expression.Block(enumerator.Call(disposeMethod), enumerator.Assign(enumerator.Type.AsDefault()));
             return loopBody.Finally(@finally);
         }
-
-        Expression IExpressionBuilder<Expression>.Build() => Build();
     }
 }

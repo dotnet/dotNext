@@ -23,7 +23,7 @@ namespace DotNext.Metaprogramming
         private ParameterExpression recursion;
         private readonly Type taskType;
 
-        internal AsyncLambdaBuilder(ExpressionBuilder parent = null)
+        internal AsyncLambdaBuilder(CompoundStatementBuilder parent = null)
             : base(parent)
         {
             if (typeof(D).IsAbstract)

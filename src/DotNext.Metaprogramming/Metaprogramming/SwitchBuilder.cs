@@ -10,7 +10,7 @@ namespace DotNext.Metaprogramming
         private readonly ICollection<SwitchCase> cases;
         private Expression defaultExpression;
 
-        internal SwitchBuilder(Expression expression, ExpressionBuilder parent, bool treatAsStatement)
+        internal SwitchBuilder(Expression expression, CompoundStatementBuilder parent, bool treatAsStatement)
             : base(parent, treatAsStatement)
         {
             cases = new LinkedList<SwitchCase>();
@@ -18,7 +18,7 @@ namespace DotNext.Metaprogramming
             switchValue = expression;
         }
 
-        public SwitchBuilder Case(IEnumerable<Expression> testValues, Action<ExpressionBuilder> body)
+        public SwitchBuilder Case(IEnumerable<Expression> testValues, Action<CompoundStatementBuilder> body)
         {
             cases.Add(Expression.SwitchCase(NewScope().Build(body), testValues));
             return this;
@@ -30,10 +30,10 @@ namespace DotNext.Metaprogramming
             return this;
         }
 
-        public SwitchBuilder Case(IEnumerable<UniversalExpression> testValues, Action<ExpressionBuilder> body)
+        public SwitchBuilder Case(IEnumerable<UniversalExpression> testValues, Action<CompoundStatementBuilder> body)
             => Case(UniversalExpression.AsExpressions(testValues), body);
 
-        public SwitchBuilder Case(UniversalExpression test, Action<ExpressionBuilder> body)
+        public SwitchBuilder Case(UniversalExpression test, Action<CompoundStatementBuilder> body)
             => Case(Sequence.Singleton((Expression)test), body);
 
         public SwitchBuilder Case(UniversalExpression test, UniversalExpression body)
@@ -45,7 +45,7 @@ namespace DotNext.Metaprogramming
             return this;
         }
 
-        public SwitchBuilder Default(Action<ExpressionBuilder> body)
+        public SwitchBuilder Default(Action<CompoundStatementBuilder> body)
             => Default(NewScope().Build(body));
 
         private protected override SwitchExpression Build()
