@@ -14,6 +14,8 @@
       href: atomic.md
     - name: Generic specialization with constant values
       href: constgen.md
+    - name: Synchronization Enhancements
+      href: lock.md
 - name: Type Classes
   href: concepts.md
 - name: Advanced Reflection
