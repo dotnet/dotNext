@@ -1,490 +1,932 @@
-﻿using System;
-using System.Reflection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DotNext.Metaprogramming
 {
-    using static Threading.AtomicLong;
-
     /// <summary>
-    /// Represents basic lexical scope support.
+    /// Provides extension methods to simplify construction of complex expressions.
     /// </summary>
-    public abstract class ExpressionBuilder: Disposable
+    public static class ExpressionHelpers
     {
-        private readonly IDictionary<string, ParameterExpression> variables;
-        private readonly ICollection<Expression> statements;
-        private long nameGenerator;
-
-        private protected ExpressionBuilder(ExpressionBuilder parent = null)
-        {
-            Parent = parent;
-            variables = new Dictionary<string, ParameterExpression>();
-            statements = new LinkedList<Expression>();
-        }
-
-        private protected B FindScope<B>()
-            where B: ExpressionBuilder
-        {
-            for (var current = this; !(current is null); current = current.Parent)
-                if (current is B scope)
-                    return scope;
-            return null;
-        }
-
-        internal string NextName(string prefix) => Parent is null ? prefix + nameGenerator.IncrementAndGet() : Parent.NextName(prefix);
-
         /// <summary>
-        /// Sets body of this scope as single expression.
-        /// </summary>
-        public virtual Expression Body
-        {
-            set
-            {
-                variables.Clear();
-                statements.Clear();
-                statements.Add(value);
-            }
-        }
-
-        /// <summary>
-        /// Represents parent scope.
-        /// </summary>
-        public ExpressionBuilder Parent{ get; }
-
-        internal E AddStatement<E>(E expression)
-            where E: Expression
-        {
-            statements.Add(expression);
-            return expression;
-        }
-
-        internal static E Build<E, B>(B builder, Action<B> body)
-            where E: Expression
-            where B: IExpressionBuilder<E>
-        {
-            body(builder);
-            return builder.Build();
-        }
-
-        private E AddStatement<E, B>(B builder, Action<B> body)
-            where E: Expression
-            where B: IExpressionBuilder<E>
-            => AddStatement(Build<E, B>(builder, body));
-
-        /// <summary>
-        /// Adds no-operation instruction to this scope.
-        /// </summary>
-        /// <returns>No-operation instruction.</returns>
-        public Expression Nop() => AddStatement(Expression.Empty());
-        
-        /// <summary>
-        /// Adds assignment operation to this scope.
-        /// </summary>
-        /// <param name="variable">The variable to modify.</param>
-        /// <param name="value">The value to be assigned to the variable.</param>
-        /// <returns>Assign operation.</returns>
-        public BinaryExpression Assign(ParameterExpression variable, UniversalExpression value)
-            => AddStatement(Expression.Assign(variable, value));
-
-        /// <summary>
-        /// Adds local variable assignment operation this scope.
-        /// </summary>
-        /// <param name="variableName">The name of the declared local variable.</param>
-        /// <param name="value">The value to be assigned to the local variable.</param>
-        public void Assign(string variableName, UniversalExpression value)
-            => Assign(this[variableName], value);
-        
-        /// <summary>
-        /// Adds instance property assignment.
-        /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
-        /// <param name="instanceProperty">Instance property to be assigned.</param>
-        /// <param name="value">A new value of the property.</param>
-        public void Assign(Expression instance, PropertyInfo instanceProperty, UniversalExpression value)
-            => AddStatement(Expression.Assign(Expression.Property(instance, instanceProperty), value));
-        
-        /// <summary>
-        /// Adds static property assignment.
-        /// </summary>
-        /// <param name="staticProperty">Static property to be assigned.</param>
-        /// <param name="value">A new value of the property.</param>
-        public void Assign(PropertyInfo staticProperty, UniversalExpression value)
-            => Assign(null, staticProperty, value);
-
-        /// <summary>
-        /// Adds instance field assignment.
-        /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
-        /// <param name="instanceField">Instance field to be assigned.</param>
-        /// <param name="value">A new value of the field.</param>
-        public void Assign(Expression instance, FieldInfo instanceField, UniversalExpression value)
-            => AddStatement(Expression.Assign(Expression.Field(instance, instanceField), value));
-
-        /// <summary>
-        /// Adds static field assignment.
-        /// </summary>
-        /// <param name="staticField">Static field to be assigned.</param>
-        /// <param name="value">A new value of the field.</param>
-        public void Assign(FieldInfo staticField, UniversalExpression value)
-            => Assign(null, staticField, value);
-
-        /// <summary>
-        /// Adds invocation statement.
-        /// </summary>
-        /// <param name="delegate">The expression providing delegate to be invoked.</param>
-        /// <param name="arguments">Delegate invocation arguments.</param>
-        /// <returns>Invocation expression.</returns>
-        public InvocationExpression Invoke(UniversalExpression @delegate, IEnumerable<Expression> arguments)
-            => AddStatement(Expression.Invoke(@delegate, arguments));
-
-        /// <summary>
-        /// Adds invocation statement.
-        /// </summary>
-        /// <param name="delegate">The expression providing delegate to be invoked.</param>
-        /// <param name="arguments">Delegate invocation arguments.</param>
-        /// <returns>Invocation expression.</returns>
-        public InvocationExpression Invoke(UniversalExpression @delegate, params UniversalExpression[] arguments)
-            => AddStatement(@delegate.Invoke(arguments));
-
-        /// <summary>
-        /// Adds instance method call statement.
-        /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
-        /// <param name="method">The method to be called.</param>
-        /// <param name="arguments">Method call arguments.</param>
-        /// <returns>Method call statement.</returns>
-        public MethodCallExpression Call(UniversalExpression instance, MethodInfo method, IEnumerable<Expression> arguments)
-            => AddStatement(Expression.Call(instance, method, arguments));
-
-        /// <summary>
-        /// Adds instance method call statement.
-        /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
-        /// <param name="method">The method to be called.</param>
-        /// <param name="arguments">Method call arguments.</param>
-        /// <returns>Method call statement.</returns>
-        public MethodCallExpression Call(UniversalExpression instance, MethodInfo method, params UniversalExpression[] arguments)
-            => Call(instance, method, UniversalExpression.AsExpressions((IEnumerable<UniversalExpression>)arguments));
-
-        /// <summary>
-        /// Adds static method call statement.,
-        /// </summary>
-        /// <param name="method">The method to be called.</param>
-        /// <param name="arguments">Method call arguments.</param>
-        /// <returns>Method call statement.</returns>
-        public MethodCallExpression Call(MethodInfo method, IEnumerable<Expression> arguments)
-            => AddStatement(Expression.Call(null, method, arguments));
-
-        /// <summary>
-        /// Adds static method call statement.
-        /// </summary>
-        /// <param name="method">The method to be called.</param>
-        /// <param name="arguments">Method call arguments.</param>
-        /// <returns>Method call statement.</returns>
-        public MethodCallExpression Call(MethodInfo method, params UniversalExpression[] arguments)
-            => Call(method, UniversalExpression.AsExpressions((IEnumerable<UniversalExpression>)arguments));
-        
-        /// <summary>
-        /// Declares label of the specified type.
-        /// </summary>
-        /// <param name="type">The type of landing site.</param>
-        /// <param name="name">The optional name of the label.</param>
-        /// <returns>Declared label.</returns>
-        public LabelTarget Label(Type type, string name = null)
-        {
-            var target = Expression.Label(type, name);
-            Label(target);
-            return target;
-        }
-
-        /// <summary>
-        /// Declares label of the specified type.
-        /// </summary>
-        /// <typeparam name="T">The type of landing site.</typeparam>
-        /// <param name="name">The optional name of the label.</param>
-        /// <returns>Declared label.</returns>
-        public LabelTarget Label<T>(string name = null) => Label(typeof(T), name);
-
-        /// <summary>
-        /// Declares label in the current scope.
-        /// </summary>
-        /// <returns>Declared label.</returns>
-        public LabelTarget Label() => Label(typeof(void));
-
-        /// <summary>
-        /// Adds label landing site to this scope.
-        /// </summary>
-        /// <param name="target">The label target.</param>
-        /// <returns>The landing site for the label.</returns>
-        public LabelExpression Label(LabelTarget target)
-            => AddStatement(Expression.Label(target));
-
-        /// <summary>
-        /// Adds unconditional control transfer statement to this scope.
-        /// </summary>
-        /// <param name="target">The label reference.</param>
-        /// <param name="value">The value to be associated with the control transfer.</param>
-        /// <returns>Unconditional control transfer statement.</returns>
-        public GotoExpression Goto(LabelTarget target, UniversalExpression value)
-            => AddStatement(Expression.Goto(target, value));
-
-        /// <summary>
-        /// Adds unconditional control transfer statement to this scope.
-        /// </summary>
-        /// <param name="target">The label reference.</param>
-        /// <returns>Unconditional control transfer statement.</returns>
-        public GotoExpression Goto(LabelTarget target) => Goto(target, default);
-
-        private bool HasVariable(string name) => variables.ContainsKey(name) || Parent != null && Parent.HasVariable(name);
-        
-        /// <summary>
-        /// Gets declared local variable in the current or parent scope.
-        /// </summary>
-        /// <param name="localVariableName">The name of the local variable.</param>
-        /// <returns>Declared local variable; or <see langword="null"/>, if there is no declared local variable with the given name.</returns>
-        public ParameterExpression this[string localVariableName]
-            => variables.TryGetValue(localVariableName, out var variable) ? variable : Parent?[localVariableName];
-
-        private protected void DeclareVariable(ParameterExpression variable)
-            => variables.Add(variable.Name, variable);
-
-        /// <summary>
-        /// Declares local variable in the current lexical scope.
-        /// </summary>
-        /// <typeparam name="T">The type of local variable.</typeparam>
-        /// <param name="name">The name of local variable.</param>
-        /// <returns>The expression representing local variable.</returns>
-        public ParameterExpression DeclareVariable<T>(string name)
-            => DeclareVariable(typeof(T), name);
-
-        /// <summary>
-        /// Declares and initializes local variable in the current lexical scope.
-        /// </summary>
-        /// <typeparam name="T">The type of local variable.</typeparam>
-        /// <param name="name">The name of local variable.</param>
-        /// <param name="initialValue">The initial value of the local variable.</param>
-        /// <returns>The expression representing local variable.</returns>
-        public ParameterExpression DeclareVariable<T>(string name, T initialValue)
-        {
-            var variable = DeclareVariable<T>(name);
-            Assign(variable, Expression.Constant(initialValue, typeof(T)));
-            return variable;
-        }
-
-        /// <summary>
-        /// Declares local variable in the current lexical scope. 
-        /// </summary>
-        /// <param name="variableType">The type of local variable.</param>
-        /// <param name="name">The name of local variable.</param>
-        /// <returns>The expression representing local variable.</returns>
-        public ParameterExpression DeclareVariable(Type variableType, string name)
-        {
-            var variable = Expression.Variable(variableType, name);
-            variables.Add(name, variable);
-            return variable;
-        }
-
-        /// <summary>
-        /// Adds if-then-else statement to this scope.
-        /// </summary>
-        /// <param name="test">Test expression.</param>
-        /// <returns>Conditional statement builder.</returns>
-        public ConditionalBuilder If(UniversalExpression test)
-            => new ConditionalBuilder(test, this, true);
-
-        /// <summary>
-        /// Adds if-then statement to this scope.
-        /// </summary>
-        /// <param name="test">Test expression.</param>
-        /// <param name="ifTrue">Positive branch builder.</param>
-        /// <returns>Constructed statement.</returns>
-        public ConditionalExpression IfThen(UniversalExpression test, Action<ExpressionBuilder> ifTrue)
-            => If(test).Then(ifTrue).End();
-
-        /// <summary>
-        /// Adds if-then-else statement to this scope.
-        /// </summary>
-        /// <param name="test">Test expression.</param>
-        /// <param name="ifTrue">Positive branch builder.</param>
-        /// <param name="ifFalse">Negative branch builder.</param>
-        /// <returns>Constructed statement.</returns>
-        public ConditionalExpression IfThenElse(UniversalExpression test, Action<ExpressionBuilder> ifTrue, Action<ExpressionBuilder> ifFalse)
-            => If(test).Then(ifTrue).Else(ifFalse).End();
-
-        /// <summary>
-        /// Adds <see langword="while"/> loop statement.
-        /// </summary>
-        /// <param name="test">Loop continuation condition.</param>
-        /// <param name="loop">Loop body.</param>
-        /// <returns>Loop statement.</returns>
-        public LoopExpression While(UniversalExpression test, Action<WhileLoopBuider> loop)
-            => AddStatement<LoopExpression, WhileLoopBuider>(new WhileLoopBuider(test, this, true), loop);
-
-        /// <summary>
-        /// Adds <code>do{ } while(condition);</code> loop statement.
-        /// </summary>
-        /// <param name="test">Loop continuation condition.</param>
-        /// <param name="loop">Loop body.</param>
-        /// <returns>Loop statement.</returns>
-        public LoopExpression DoWhile(UniversalExpression test, Action<WhileLoopBuider> loop)
-            => AddStatement<LoopExpression, WhileLoopBuider>(new WhileLoopBuider(test, this, false), loop);
-
-        /// <summary>
-        /// Adds <see langword="foreach"/> loop statement.
-        /// </summary>
-        /// <param name="collection">The expression providing enumerable collection.</param>
-        /// <param name="loop">Loop body.</param>
-        /// <returns>Loop statement.</returns>
-        /// <seealso cref="ForEachLoopBuilder"/>
-        public TryExpression ForEach(UniversalExpression collection, Action<ForEachLoopBuilder> loop)
-            => AddStatement<TryExpression, ForEachLoopBuilder>(new ForEachLoopBuilder(collection, this), loop);
-
-        /// <summary>
-        /// Adds <see langword="for"/> loop statement.
+        /// Constructs unary plus expression.
         /// </summary>
         /// <remarks>
-        /// This builder constructs the statement equivalent to <code>for(var i = initializer; condition; iter){ body; }</code>
+        /// The equivalent code is <code>+a</code>
         /// </remarks>
-        /// <param name="initializer">Loop variable initialization expression.</param>
-        /// <param name="condition">Loop continuation condition.</param>
-        /// <param name="loop">Loop body.</param>
-        /// <returns>Loop statement.</returns>
-        /// <seealso cref="ForLoopBuilder"/>
-        public LoopExpression For(UniversalExpression initializer, Func<UniversalExpression, Expression> condition, Action<ForLoopBuilder> loop)
-            => AddStatement<LoopExpression, ForLoopBuilder>(new ForLoopBuilder(initializer, condition, this), loop);
-        
+        /// <param name="expression">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression UnaryPlus(this Expression expression)
+            => Expression.UnaryPlus(expression);
+
         /// <summary>
-        /// Adds generic loop statement.
+        /// Constructs negate expression.
         /// </summary>
-        /// <param name="loop">Loop body.</param>
+        /// <remarks>
+        /// The equivalent code is <code>-a</code>
+        /// </remarks>
+        /// <param name="expression">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression Negate(this Expression expression)
+            => Expression.Negate(expression);
+
+        /// <summary>
+        /// Constructs logical NOT expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>!a</code>
+        /// </remarks>
+        /// <param name="expression">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression Not(this Expression expression)
+            => Expression.Not(expression);
+
+        /// <summary>
+        /// Constructs ones complement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>~a</code>
+        /// </remarks>
+        /// <param name="expression">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression OnesComplement(this Expression expression)
+            => Expression.OnesComplement(expression);
+
+        /// <summary>
+        /// Constructs binary logical AND expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a &amp; b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression And(this Expression left, Expression right)
+            => Expression.And(left, right);
+
+        /// <summary>
+        /// Constructs binary logical OR expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a | b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression Or(this Expression left, Expression right)
+            => Expression.Or(left, right);
+
+        /// <summary>
+        /// Constructs binary logical exclusive OR expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a ^ b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression Xor(this Expression left, Expression right)
+            => Expression.ExclusiveOr(left, right);
+
+        /// <summary>
+        /// Constructs arithmetic remainder expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a % b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression Modulo(this Expression left, Expression right)
+            => Expression.Modulo(left, right);
+
+        /// <summary>
+        /// Constructs binary arithmetic addition expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a + b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression Add(this Expression left, Expression right)
+            => Expression.Add(left, right);
+
+        /// <summary>
+        /// Constructs binary arithmetic subtraction expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a - b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression Subtract(this Expression left, Expression right)
+            => Expression.Subtract(left, right);
+
+        /// <summary>
+        /// Constructs binary arithmetic multiplication expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a * b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression Multiply(this Expression left, Expression right)
+            => Expression.Multiply(left, right);
+
+        /// <summary>
+        /// Constructs binary arithmetic division expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a / b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression Divide(this Expression left, Expression right)
+            => Expression.Divide(left, right);
+
+        /// <summary>
+        /// Constructs "greater than" numeric comparison.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a &gt; b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression GreaterThan(this Expression left, Expression right)
+            => Expression.GreaterThan(left, right);
+
+        /// <summary>
+        /// Constructs "less than" numeric comparison.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a &lt; b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression LessThan(this Expression left, Expression right)
+            => Expression.LessThan(left, right);
+
+        /// <summary>
+        /// Constructs "greater than or equal" numeric comparison.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a &gt;= b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression GreaterThanOrEqual(this Expression left, Expression right)
+            => Expression.GreaterThanOrEqual(left, right);
+
+        /// <summary>
+        /// Constructs "less than or equal" numeric comparison.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a &lt;= b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression LessThanOrEqual(this Expression left, Expression right)
+            => Expression.LessThanOrEqual(left, right);
+
+        /// <summary>
+        /// Constructs equality comparison.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a == b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression Equal(this Expression left, Expression right)
+            => Expression.Equal(left, right);
+
+        /// <summary>
+        /// Constructs inequality comparison.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a != b</code>
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression NotEqual(this Expression left, Expression right)
+            => Expression.NotEqual(left, right);
+
+        /// <summary>
+        /// Constructs <see langword="null"/> check.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a is null</code>
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns><see langword="null"/> check operation.</returns>
+        public static BinaryExpression IsNull(this Expression operand)
+            => Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
+
+        /// <summary>
+        /// Constructs raising a number to a power expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a ^ b</code> in Visual Basic.
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression Power(this Expression left, Expression right)
+            => Expression.Power(left, right);
+
+        /// <summary>
+        /// Constructs bitwise left-shift expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a &lt;&lt; b</code> in Visual Basic.
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression LeftShift(this Expression left, Expression right)
+            => Expression.LeftShift(left, right);
+
+        /// <summary>
+        /// Constructs bitwise right-shift expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a &gt;&gt; b</code> in Visual Basic.
+        /// </remarks>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression RightShift(this Expression left, Expression right)
+            => Expression.RightShift(left, right);
+
+        /// <summary>
+        /// Constructs an expression that decrements given expression by 1 and assigns the result back to the expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>--i</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PreDecrementAssign(this Expression operand)
+            => Expression.PreDecrementAssign(operand);
+
+        /// <summary>
+        /// Constructs an expression that increments given expression by 1 and assigns the result back to the expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>++i</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PreIncrementAssign(this Expression operand)
+            => Expression.PreIncrementAssign(operand);
+
+        /// <summary>
+        /// Constructs an expression that represents the assignment of given expression followed by a subsequent decrement by 1 of the original expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>i--</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PostDecrementAssign(this Expression operand)
+            => Expression.PostDecrementAssign(operand);
+
+        /// <summary>
+        /// Constructs an expression that represents the assignment of given expression followed by a subsequent increment by 1 of the original expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>i++</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PostIncrementAssign(this Expression operand)
+            => Expression.PostIncrementAssign(operand);
+
+        /// <summary>
+        /// Constructs assignment expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a = b</code>.
+        /// </remarks>
+        /// <param name="left">The assignee.</param>
+        /// <param name="value">The value to be assigned to the left expression.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression Assign(this ParameterExpression left, Expression value)
+            => Expression.Assign(left, value);
+
+        /// <summary>
+        /// Constructs assignment expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a = default(T)</code>.
+        /// </remarks>
+        /// <param name="left">The assignee.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression AssignDefault(this ParameterExpression left)
+            => left.Assign(left.Type.AsDefault());
+
+        /// <summary>
+        /// Constructs assignment expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.member = b</code>.
+        /// </remarks>
+        /// <param name="left">The assignee.</param>
+        /// <param name="value">The value to be assigned to the left expression.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression Assign(this MemberExpression left, Expression value)
+            => Expression.Assign(left, value);
+
+        /// <summary>
+        /// Constructs type conversion expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>(T)a</code>.
+        /// </remarks>
+        /// <param name="expression">The expression to be converted.</param>
+        /// <param name="targetType">The target type.</param>
+        /// <returns>The type conversion expression.</returns>
+        public static UnaryExpression Convert(this Expression expression, Type targetType)
+            => Expression.Convert(expression, targetType);
+
+        /// <summary>
+        /// Constructs type conversion expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>(T)a</code>.
+        /// </remarks>
+        /// <typeparam name="T">The target type.</typeparam>
+        /// <param name="expression">The expression to be converted.</param>
+        /// <returns>The type conversion expression.</returns>
+        public static UnaryExpression Convert<T>(this Expression expression)
+            => expression.Convert(typeof(T));
+
+        /// <summary>
+        /// Constructs type check expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a is T</code>.
+        /// </remarks>
+        /// <param name="expression">The expression to test.</param>
+        /// <param name="type">The target type.</param>
+        /// <returns>The type test expression.</returns>
+        public static TypeBinaryExpression InstanceOf(this Expression expression, Type type)
+            => Expression.TypeIs(expression, type);
+
+        /// <summary>
+        /// Constructs type check expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a is T</code>.
+        /// </remarks>
+        /// <typeparam name="T">The target type.</typeparam>
+        /// <param name="expression">The expression to test.</param>
+        /// <returns>The type test expression.</returns>
+        public static TypeBinaryExpression InstanceOf<T>(this Expression expression)
+            => expression.InstanceOf(typeof(T));
+
+        /// <summary>
+        /// Constructs an expression that represents an explicit
+        /// reference or boxing conversion where <see langword="null"/> is supplied if the conversion fails.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a as T</code>.
+        /// </remarks>
+        /// <param name="expression">The expression to convert.</param>
+        /// <param name="type">The target type.</param>
+        /// <returns>Type conversion expression.</returns>
+        public static UnaryExpression TryConvert(this Expression expression, Type type)
+            => Expression.TypeAs(expression, type);
+
+        /// <summary>
+        /// Constructs an expression that represents an explicit
+        /// reference or boxing conversion where <see langword="null"/> is supplied if the conversion fails.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a as T</code>.
+        /// </remarks>
+        /// <typeparam name="T">The target type.</typeparam>
+        /// <param name="expression">The expression to convert.</param>
+        /// <returns>Type conversion expression.</returns>
+        public static UnaryExpression TryConvert<T>(this Expression expression)
+            => expression.TryConvert(typeof(T));
+
+        /// <summary>
+        /// Constructs binary expression that represents a conditional
+        /// AND operation that evaluates the second operand only if the first operand evaluates to <see langword="true"/>.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a &amp;&amp; b</code>.
+        /// </remarks>
+        /// <param name="left">The first operand.</param>
+        /// <param name="right">The second operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression AndAlso(this Expression left, Expression right)
+            => Expression.AndAlso(left, right);
+
+        /// <summary>
+        /// Constructs binary expression that represents a conditional
+        /// OR operation that evaluates the second operand only if the first operand evaluates to <see langword="false"/>.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a || b</code>.
+        /// </remarks>
+        /// <param name="left">The first operand.</param>
+        /// <param name="right">The second operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression OrElse(this Expression left, Expression right)
+            => Expression.OrElse(left, right);
+
+        /// <summary>
+        /// Constructs suspension point in the execution of the lambda function until the awaited task completes.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>await b</code>.
+        /// </remarks>
+        /// <param name="expression">The expression </param>
+        /// <returns></returns>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
+        public static AwaitExpression Await(this Expression expression)
+            => new AwaitExpression(expression);
+
+        /// <summary>
+        /// Constructs explicit unboxing.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>(T)b</code>.
+        /// </remarks>
+        /// <param name="expression">The operand.</param>
+        /// <param name="type">The target value type.</param>
+        /// <returns>Unboxing expression.</returns>
+        public static UnaryExpression Unbox(this Expression expression, Type type)
+            => Expression.Unbox(expression, type);
+
+        /// <summary>
+        /// Constructs explicit unboxing.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>(T)b</code>.
+        /// </remarks>
+        /// <typeparam name="T">The target value type.</typeparam>
+        /// <param name="expression">The operand.</param>
+        /// <returns>Unboxing expression.</returns>
+        public static UnaryExpression Unbox<T>(this Expression expression)
+            where T : struct
+            => expression.Unbox(typeof(T));
+
+        /// <summary>
+        /// Constructs delegate invocation expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>delegate.Invoke(a, b,...)</code>.
+        /// </remarks>
+        /// <param name="delegate">The expression representing delegate.</param>
+        /// <param name="arguments">Invocation arguments.</param>
+        /// <returns>Invocation expression.</returns>
+        public static InvocationExpression Invoke(this Expression @delegate, params Expression[] arguments)
+            => Expression.Invoke(@delegate, arguments);
+
+        /// <summary>
+        /// Constructs instance method call expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>obj.Method(a, b,...)</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="method">The method to be called.</param>
+        /// <param name="arguments">The method arguments.</param>
+        /// <returns>The method call expression.</returns>
+        public static MethodCallExpression Call(this Expression instance, MethodInfo method, params Expression[] arguments)
+            => Expression.Call(instance, method, arguments);
+
+        /// <summary>
+        /// Constructs instance method call expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>obj.Method()</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="methodName">The name of the method to be called.</param>
+        /// <param name="arguments">The method arguments.</param>
+        /// <returns>The method call expression.</returns>
+        public static MethodCallExpression Call(this Expression instance, string methodName, params Expression[] arguments)
+            => instance.Call(instance.Type, methodName, arguments);
+
+        /// <summary>
+        /// Constructs interface or base class method call expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>((T)obj).Method()</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="interfaceType">The interface or base class.</param>
+        /// <param name="methodName">The name of the method in the interface or base class to be called.</param>
+        /// <param name="arguments">The method arguments.</param>
+        /// <returns>The method call expression.</returns>
+        public static MethodCallExpression Call(this Expression instance, Type interfaceType, string methodName, params Expression[] arguments)
+        {
+            if (!interfaceType.IsAssignableFrom(instance.Type))
+                throw new ArgumentException(ExceptionMessages.InterfaceNotImplemented(instance.Type, interfaceType));
+            var method = interfaceType.GetMethod(methodName, arguments.Convert(arg => arg.Type));
+            return method is null ?
+                throw new MissingMethodException(ExceptionMessages.MissingMethod(methodName, interfaceType)) :
+                instance.Call(method, arguments);
+        }
+
+        /// <summary>
+        /// Constructs instance property or indexer access expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b</code> or <code>a.b[i]</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="property">Property metadata.</param>
+        /// <param name="indicies">Indexer indicies.</param>
+        /// <returns>Property access expression.</returns>
+        public static Expression Property(this Expression instance, PropertyInfo property, params Expression[] indicies)
+            => indicies.LongLength == 0 ? (Expression)Expression.Property(instance, property) : Expression.Property(instance, property, indicies);
+
+        /// <summary>
+        /// Constructs instance property or indexer access expression declared in the given interface or base type. 
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b</code> or <code>a.b[i]</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="interfaceType">The interface or base class declaring property.</param>
+        /// <param name="propertyName">The name of the instance property or indexer.</param>
+        /// <param name="indicies">Indexer indicies.</param>
+        /// <returns>Property access expression.</returns>
+        public static Expression Property(this Expression instance, Type interfaceType, string propertyName, params Expression[] indicies)
+        {
+            var property = interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            return property is null ?
+                throw new MissingMemberException(ExceptionMessages.MissingProperty(propertyName, interfaceType)) :
+                instance.Property(property, indicies);
+        }
+
+        /// <summary>
+        /// Constructs instance property or indexer access expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b</code> or <code>a.b[i]</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="propertyName">The name of the instance property or indexer.</param>
+        /// <param name="indicies">Indexer indicies.</param>
+        /// <returns>Property access expression.</returns>
+        public static Expression Property(this Expression instance, string propertyName, params Expression[] indicies)
+            => Expression.Property(instance, propertyName, indicies);
+
+        /// <summary>
+        /// Constructs instance field access expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="field">Field metadata.</param>
+        /// <returns>Field access expression.</returns>
+        public static MemberExpression Field(this Expression instance, FieldInfo field)
+            => Expression.Field(instance, field);
+
+        /// <summary>
+        /// Constructs instance field access expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b</code>.
+        /// </remarks>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="fieldName">The name of the instance field.</param>
+        /// <returns>Field access expression.</returns>
+        public static MemberExpression Field(this Expression instance, string fieldName)
+            => Expression.Field(instance, fieldName);
+
+        /// <summary>
+        /// Constructs array element access expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b[i]</code>.
+        /// </remarks>
+        /// <param name="array">The array expression.</param>
+        /// <param name="indexes">Array element indicies.</param>
+        /// <returns>Array element access expression.</returns>
+        public static IndexExpression ElementAt(this Expression array, params Expression[] indexes)
+            => Expression.ArrayAccess(array, indexes);
+
+        /// <summary>
+        /// Constructs array length expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.LongLength</code>.
+        /// </remarks>
+        /// <param name="array">The array expression.</param>
+        /// <returns>Array length expression.</returns>
+        public static UnaryExpression ArrayLength(this Expression array)
+            => Expression.ArrayLength(array);
+
+        /// <summary>
+        /// Constructs loop statement.
+        /// </summary>
+        /// <param name="body">The loop body.</param>
+        /// <param name="break">Optional loop break label which will installed automatically.</param>
+        /// <param name="continue">Optional loop continuation which will be installed automatically.</param>
         /// <returns>Loop statement.</returns>
-        /// <seealso cref="LoopBuilder"/>
-        public LoopExpression Loop(Action<LoopBuilder> loop)
-            => AddStatement<LoopExpression, LoopBuilder>(new LoopBuilder(this), loop);
+        public static LoopExpression Loop(this Expression body, LabelTarget @break, LabelTarget @continue)
+            => Expression.Loop(body, @break, @continue);
 
-        
-        public LambdaExpression Lambda<D>(Action<LambdaBuilder<D>> lambda)
-            where D: Delegate
-            => AddStatement<LambdaExpression, LambdaBuilder<D>>(new LambdaBuilder<D>(this), lambda);
+        /// <summary>
+        /// Constructs loop statement.
+        /// </summary>
+        /// <param name="body">The loop body.</param>
+        /// <param name="break">Optional loop break label which will installed automatically.</param>
+        /// <returns>Loop statement.</returns>
+        public static LoopExpression Loop(this Expression body, LabelTarget @break) => Expression.Loop(body, @break);
 
-        public LambdaExpression AsyncLambda<D>(Action<AsyncLambdaBuilder<D>> lambda)
+        /// <summary>
+        /// Constructs loop statement.
+        /// </summary>
+        /// <param name="body">The loop body.</param>
+        /// <returns>Loop statement.</returns>
+        public static LoopExpression Loop(this Expression body) => Expression.Loop(body);
+
+        /// <summary>
+        /// Constructs unconditional control transfer statement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>goto label</code>.
+        /// </remarks>
+        /// <param name="label">The declared label.</param>
+        /// <returns>Unconditional control transfer statement.</returns>
+        public static GotoExpression Goto(this LabelTarget label) => Expression.Goto(label);
+
+        /// <summary>
+        /// Constructs unconditional control transfer expression.
+        /// </summary>
+        /// <param name="label">The declared label.</param>
+        /// <param name="value"></param>
+        /// <returns>Unconditional control transfer expression.</returns>
+        public static GotoExpression Goto(this LabelTarget label, Expression value) => Expression.Goto(label, value);
+
+        /// <summary>
+        /// Constructs <see langword="return"/> statement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>return</code>.
+        /// </remarks>
+        /// <param name="label">The label representing function exit.</param>
+        /// <returns>Return statement.</returns>
+        public static GotoExpression Return(this LabelTarget label) => Expression.Return(label);
+
+        /// <summary>
+        /// Constructs <see langword="return"/> statement with given value.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>return a</code>.
+        /// </remarks>
+        /// <param name="label">The label representing function exit.</param>
+        /// <param name="value">The value to be returned from function.</param>
+        /// <returns>Return statement.</returns>
+        public static GotoExpression Return(this LabelTarget label, Expression value) => Expression.Return(label, value);
+
+        /// <summary>
+        /// Constructs loop leave statement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>break</code>.
+        /// </remarks>
+        /// <param name="label">The label indicating loop exit.</param>
+        /// <returns>Break statement.</returns>
+        public static GotoExpression Break(this LabelTarget label) => Expression.Break(label);
+
+        /// <summary>
+        /// Constructs loop leave statement.
+        /// </summary>
+        /// <param name="label">The label indicating loop exit.</param>
+        /// <param name="value">The value to be returned from loop.</param>
+        /// <returns>Break statement.</returns>
+        public static GotoExpression Break(this LabelTarget label, Expression value) => Expression.Break(label, value);
+
+        /// <summary>
+        /// Constructs loop continuation statement.
+        /// </summary>
+        /// <param name="label">The label indicating loop start.</param>
+        /// <returns>Continue statement.</returns>
+        public static GotoExpression Continue(this LabelTarget label) => Expression.Continue(label);
+
+        /// <summary>
+        /// Constructs label landing site.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>label:</code>.
+        /// </remarks>
+        /// <param name="label">The label reference.</param>
+        /// <returns>The label landing site.</returns>
+        public static LabelExpression LandingSite(this LabelTarget label) => Expression.Label(label);
+
+        /// <summary>
+        /// Constructs label landing site with the default value.
+        /// </summary>
+        /// <param name="label">The label reference.</param>
+        /// <param name="default">The default value associated with the label.</param>
+        /// <returns>The label landing site.</returns>
+        public static LabelExpression LandingSite(this LabelTarget label, Expression @default) => Expression.Label(label, @default);
+
+        /// <summary>
+        /// Constructs conditional expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a ? b : c</code>.
+        /// </remarks>
+        /// <param name="test">Test expression.</param>
+        /// <param name="ifTrue">Positive branch.</param>
+        /// <param name="ifFalse">Negative branch.</param>
+        /// <param name="type">The type of conditional expression. Default is <see langword="void"/>.</param>
+        /// <returns>Conditional expression.</returns>
+        public static ConditionalExpression Condition(this Expression test, Expression ifTrue = null, Expression ifFalse = null, Type type = null)
+            => Expression.Condition(test, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), type ?? typeof(void));
+
+        /// <summary>
+        /// Constructs conditional expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a ? b : c</code>.
+        /// </remarks>
+        /// <typeparam name="R">The type of conditional expression. Default is <see langword="void"/>.</typeparam>
+        /// <param name="test">Test expression.</param>
+        /// <param name="ifTrue">Positive branch.</param>
+        /// <param name="ifFalse">Negative branch.</param>
+        /// <returns>Conditional expression.</returns>
+        public static ConditionalExpression Condition<R>(this Expression test, Expression ifTrue, Expression ifFalse)
+            => test.Condition(ifTrue, ifFalse, typeof(R));
+
+        /// <summary>
+        /// Creates conditional expression builder.
+        /// </summary>
+        /// <param name="test">Test expression.</param>
+        /// <param name="parent">Parent lexical scope.</param>
+        /// <returns>Conditional expression builder.</returns>
+        public static ConditionalBuilder Condition(this Expression test, ExpressionBuilder parent = null)
+            => new ConditionalBuilder(test, parent, false);
+
+        /// <summary>
+        /// Constructs a <see langword="try"/> block with a <see langword="finally"/> block without <see langword="catch"/> block.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>try { } finally { }</code>.
+        /// </remarks>
+        /// <param name="try"><see langword="try"/> block.</param>
+        /// <param name="finally"><see langword="finally"/> block</param>
+        /// <returns>Try-finally statement.</returns>
+        public static TryExpression Finally(this Expression @try, Expression @finally) => Expression.TryFinally(@try, @finally);
+
+        /// <summary>
+        /// Constructs <see langword="throw"/> expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>throw e</code>.
+        /// </remarks>
+        /// <param name="exception">An exception to be thrown.</param>
+        /// <param name="type">The type of expression. Default is <see langword="void"/>.</param>
+        /// <returns><see langword="throw"/> expression.</returns>
+        public static UnaryExpression Throw(this Expression exception, Type type = null) => Expression.Throw(exception, type ?? typeof(void));
+
+        /// <summary>
+        /// Converts arbitrary value into constant expression.
+        /// </summary>
+        /// <typeparam name="T">The type of constant.</typeparam>
+        /// <param name="value">The constant value.</param>
+        /// <returns></returns>
+        public static Expression AsConst<T>(this T value)
+            => value is Expression expr ? (Expression)Expression.Quote(expr) : Expression.Constant(value, typeof(T));
+
+        /// <summary>
+        /// Constructs type default value supplier.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>default(T)</code>.
+        /// </remarks>
+        /// <param name="type">The target type.</param>
+        /// <returns>The type default value expression.</returns>
+        public static DefaultExpression AsDefault(this Type type) => Expression.Default(type);
+
+        /// <summary>
+        /// Constructs type instantiation expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>new T()</code>.
+        /// </remarks>
+        /// <param name="type">The type to be instantiated.</param>
+        /// <param name="args">The list of arguments to be passed into constructor.</param>
+        /// <returns>Instantiation expression.</returns>
+        public static NewExpression New(this Type type, params Expression[] args)
+        {
+            if (args.LongLength == 0L)
+                return Expression.New(type);
+            var ctor = type.GetConstructor(args.Convert(arg => arg.Type));
+            if (ctor is null)
+                throw new MissingMethodException(ExceptionMessages.MissingCtor(type));
+            else
+                return Expression.New(ctor, args);
+        }
+
+        /// <summary>
+        /// Creates structured exception handling statement builder.
+        /// </summary>
+        /// <param name="expression"><see langword="try"/> block.</param>
+        /// <param name="parent">The parent lexical scope.</param>
+        /// <returns>Structured exception handling statement builder.</returns>
+        public static TryBuilder Try(this Expression expression, ExpressionBuilder parent = null)
+            => new TryBuilder(expression, parent, false);
+
+        /// <summary>
+        /// Constructs block of code.
+        /// </summary>
+        /// <param name="expression">An expression to be captured by scope.</param>
+        /// <param name="scope">The scope statements builder.</param>
+        /// <param name="parent">Parent lexical scope.</param>
+        /// <returns>Construct code block.</returns>
+        /// <see cref="WithBlockBuilder"/>
+        /// <see cref="WithBlockBuilder.ScopeVar"/>
+        public static Expression With(this Expression expression, Action<WithBlockBuilder> scope, ExpressionBuilder parent = null)
+            => ExpressionBuilder.Build<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, parent), scope);
+
+        /// <summary>
+        /// Constructs <see langword="using"/> statement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>using(var obj = expression){ }</code>.
+        /// </remarks>
+        /// <param name="expression">The expression representing disposable resource.</param>
+        /// <param name="scope">The body of <see langword="using"/> statement.</param>
+        /// <param name="parent">Optional parent scope.</param>
+        /// <returns><see langword="using"/> statement.</returns>
+        public static Expression Using(this Expression expression, Action<UsingBlockBuilder> scope, ExpressionBuilder parent = null)
+            => ExpressionBuilder.Build<Expression, UsingBlockBuilder>(new UsingBlockBuilder(expression, parent), scope);
+
+        /// <summary>
+        /// Creates selection statement builder that chooses a single <see langword="switch"/> section 
+        /// to execute from a list of candidates based on a pattern match with the match expression.
+        /// </summary>
+        /// <param name="switchValue">The value to be matched with provided candidates.</param>
+        /// <param name="parent">Optional parent scope.</param>
+        /// <returns><see langword="switch"/> statement builder.</returns>
+        public static SwitchBuilder Switch(this Expression switchValue, ExpressionBuilder parent = null)
+            => new SwitchBuilder(switchValue, parent, false);
+
+        /// <summary>
+        /// Transforms async lambda function into read-to-compile function.
+        /// </summary>
+        /// <typeparam name="D">Type of the delegate describing signature of asynchronous function.</typeparam>
+        /// <param name="lambda">The lambda with <see langword="await"/> expressions.</param>
+        /// <returns>Prepared async lambda function.</returns>
+        /// <see cref="AsyncResultExpression"/>
+        /// <see cref="AwaitExpression"/>
+        public static Expression<D> ToAsyncLambda<D>(this Expression<D> lambda)
             where D : Delegate
-            => AddStatement<LambdaExpression, AsyncLambdaBuilder<D>>(new AsyncLambdaBuilder<D>(this), lambda);
-
-        public TryBuilder Try(UniversalExpression body) => new TryBuilder(body, this, true);
-
-        public TryBuilder Try(Action<ScopeBuilder> scope) => Try(Scope(scope));
-
-        public UnaryExpression Throw(UniversalExpression exception)
-            => AddStatement(Expression.Throw(exception));
-
-        public UnaryExpression Throw<E>()
-            where E : Exception, new()
-            => Throw(Expression.New(typeof(E).GetConstructor(Array.Empty<Type>())));
-
-        public Expression Scope(Action<ScopeBuilder> scope)
-            => new ScopeBuilder(this).Build(scope);
-
-        public Expression With(UniversalExpression expression, Action<WithBlockBuilder> scope)
-            => AddStatement<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, this), scope);
-
-        public Expression Using(UniversalExpression expression, Action<UsingBlockBuilder> scope)
-            => AddStatement<Expression, UsingBlockBuilder>(new UsingBlockBuilder(expression, this), scope);
-
-        public SwitchBuilder Switch(UniversalExpression switchValue)
-            => new SwitchBuilder(switchValue, this, true);
-
-        /// <summary>
-        /// Constructs <see langword="return"/> instruction to return from
-        /// underlying lambda function having <see langword="void"/>
-        /// return type.
-        /// </summary>
-        /// <returns><see langword="return"/> instruction.</returns>
-        public abstract Expression Return();
-
-        /// <summary>
-        /// Constructs <see langword="return"/> instruction to return from
-        /// underlying lambda function having non-<see langword="void"/>
-        /// return type.
-        /// </summary>
-        /// <param name="result">The value to be returned from the lambda function.</param>
-        /// <returns><see langword="return"/> instruction.</returns>
-        public abstract Expression Return(UniversalExpression result);
-
-        internal virtual Expression Build()
         {
-            switch(statements.Count)
+            using (var builder = new Runtime.CompilerServices.AsyncStateMachineBuilder<D>(lambda.Parameters))
             {
-                case 0:
-                    return Expression.Empty();
-                case 1:
-                    if(variables.Count == 0 && statements.Count == 1)
-                        return statements.First();
-                    else
-                        goto default;
-                default:
-                    return Expression.Block(variables.Values, statements);
+                return builder.Build(lambda.Body, lambda.TailCall);
             }
         }
 
-        /// <summary>
-        /// Releases all resources associated with this builder.
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/>, if this method is called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer.</param>
-        protected override void Dispose(bool disposing)
+        internal static Expression AddPrologue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)
         {
-            if(disposing)
-            {
-                variables.Clear();
-                statements.Clear();
-            }
-        }
-    }
-
-    public abstract class ExpressionBuilder<E> : IExpressionBuilder<E>
-        where E : Expression
-    {
-        private readonly ExpressionBuilder parent;
-        private readonly bool treatAsStatement;
-        private Type expressionType;
-
-        private protected ExpressionBuilder(ExpressionBuilder parent, bool treatAsStatement)
-        {
-            this.parent = parent;
-            this.treatAsStatement = treatAsStatement;
+            if (instructions.Count == 0)
+                return expression;
+            else if (expression is BlockExpression block)
+                return Expression.Block(inferType ? block.Type : typeof(void), block.Variables, instructions.Concat(block.Expressions));
+            else
+                return Expression.Block(inferType ? expression.Type : typeof(void), instructions.Concat(Sequence.Singleton(expression)));
         }
 
-        private protected ScopeBuilder NewScope() => new ScopeBuilder(parent);
-
-        private protected B NewScope<B>(Func<ExpressionBuilder, B> factory) 
-            where B: ScopeBuilder
-            => factory(parent);
-
-        private protected Type ExpressionType
+        internal static Expression AddEpilogue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)
         {
-            get => expressionType ?? typeof(void);
+            if (instructions.Count == 0)
+                return expression;
+            else if (expression is BlockExpression block)
+                return Expression.Block(inferType ? block.Type : typeof(void), block.Variables, block.Expressions.Concat(instructions));
+            else
+                return Expression.Block(inferType ? instructions.Last().Type : typeof(void), Sequence.Singleton(expression).Concat(instructions));
         }
 
-        public ExpressionBuilder<E> OfType(Type expressionType)
-        {
-            this.expressionType = expressionType;
-            return this;
-        }
+        internal static Expression AddPrologue(this Expression expression, bool inferType, params Expression[] instructions)
+            => AddPrologue(expression, inferType, (IReadOnlyCollection<Expression>)instructions);
 
-        public ExpressionBuilder<E> OfType<T>() => OfType(typeof(T));
-
-        public E End()
-        {
-            var expr = Build();
-            if (treatAsStatement)
-                parent.AddStatement(expr);
-            return expr;
-        }
-
-        private protected abstract E Build();
-
-        E IExpressionBuilder<E>.Build() => Build();
+        internal static Expression AddEpilogue(this Expression expression, bool inferType, params Expression[] instructions)
+            => AddEpilogue(expression, inferType, (IReadOnlyCollection<Expression>)instructions);
     }
 }
