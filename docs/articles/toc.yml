@@ -10,6 +10,8 @@
       href: core/collections.md
     - name: Optional Type
       href: core/optional.md
+    - name: Atomic Operations
+      href: atomic.md
 - name: Type Classes
   href: concepts.md
 - name: Advanced Reflection
