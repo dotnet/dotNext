@@ -5,6 +5,14 @@ namespace DotNext.Threading
 	public sealed class AtomicTests : Assert
 	{
         [Fact]
+        public void AtomicArrayTest()
+        {
+            var array = new[] { "a", "b" };
+            array.UpdateAndGet(1, s => s + "c");
+            Equal("bc", array.VolatileGet(1));
+        }
+
+        [Fact]
         public void AtomicFloatTest()
         {
             float i = 10F;
