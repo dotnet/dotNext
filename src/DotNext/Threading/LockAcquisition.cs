@@ -7,7 +7,7 @@ namespace DotNext.Threading
     /// Provides a set of methods to acquire different types
     /// of lock.
     /// </summary>
-    public static class LockHelpers
+    public static class LockAcquisition
     {
         private static Lock Acquire<T>(T obj, Converter<T, Lock> locker)
             where T : class

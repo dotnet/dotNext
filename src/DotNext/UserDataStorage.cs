@@ -5,7 +5,7 @@ using System.Threading;
 namespace DotNext
 {
     using System.Runtime.CompilerServices;
-    using static Threading.LockHelpers;
+    using static Threading.LockAcquisition;
 
     /// <summary>
     /// Provides access to user data associated with the object.
