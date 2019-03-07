@@ -11,7 +11,7 @@ namespace DotNext.Metaprogramming
         private Expression finallyBlock;
         private readonly ICollection<CatchBlock> handlers;
 
-        internal TryBuilder(Expression tryBlock, ExpressionBuilder parent, bool treatAsStatement)
+        internal TryBuilder(Expression tryBlock, CompoundStatementBuilder parent, bool treatAsStatement)
             : base(parent, treatAsStatement)
         {
             this.tryBlock = tryBlock;
@@ -37,7 +37,7 @@ namespace DotNext.Metaprogramming
             where E: Exception
             => Catch(typeof(E), @catch);
 
-        public TryBuilder Fault(Action<ExpressionBuilder> fault)
+        public TryBuilder Fault(Action<CompoundStatementBuilder> fault)
             => Fault(NewScope().Build(fault));
 
         public TryBuilder Fault(UniversalExpression fault)
@@ -46,7 +46,7 @@ namespace DotNext.Metaprogramming
             return this;
         }
 
-        public TryBuilder Finally(Action<ExpressionBuilder> @finally)
+        public TryBuilder Finally(Action<CompoundStatementBuilder> @finally)
             => Finally(NewScope().Build(@finally));
 
         public TryBuilder Finally(UniversalExpression @finally)

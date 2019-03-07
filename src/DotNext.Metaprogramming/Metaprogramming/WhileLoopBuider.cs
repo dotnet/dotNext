@@ -10,7 +10,7 @@ namespace DotNext.Metaprogramming
         private readonly Expression test;
         private readonly bool conditionFirst;
 
-        internal WhileLoopBuider(Expression test, ExpressionBuilder parent, bool checkConditionFirst)
+        internal WhileLoopBuider(Expression test, CompoundStatementBuilder parent, bool checkConditionFirst)
             : base(parent)
         {
             this.test = test;

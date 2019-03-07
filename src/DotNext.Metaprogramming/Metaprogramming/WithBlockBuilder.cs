@@ -10,7 +10,7 @@ namespace DotNext.Metaprogramming
     {
         private readonly ParameterExpression scopeVar;
 
-        internal WithBlockBuilder(Expression expression, ExpressionBuilder parent)
+        internal WithBlockBuilder(Expression expression, CompoundStatementBuilder parent)
             : base(parent)
         {
             if(expression is ParameterExpression variable)

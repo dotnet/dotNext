@@ -5,7 +5,7 @@ using System.Reflection;
 namespace DotNext.Runtime.CompilerServices
 {
     using static Reflection.TypeExtensions;
-    using static Metaprogramming.ExpressionHelpers;
+    using static Metaprogramming.ExpressionBuilder;
 
     internal sealed class MoveNextExpression : TransitionExpression
     {

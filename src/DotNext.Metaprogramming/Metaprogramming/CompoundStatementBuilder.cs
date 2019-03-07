@@ -11,13 +11,13 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents basic lexical scope support.
     /// </summary>
-    public abstract class ExpressionBuilder: Disposable
+    public abstract class CompoundStatementBuilder: Disposable
     {
         private readonly IDictionary<string, ParameterExpression> variables;
         private readonly ICollection<Expression> statements;
         private long nameGenerator;
 
-        private protected ExpressionBuilder(ExpressionBuilder parent = null)
+        private protected CompoundStatementBuilder(CompoundStatementBuilder parent = null)
         {
             Parent = parent;
             variables = new Dictionary<string, ParameterExpression>();
@@ -25,7 +25,7 @@ namespace DotNext.Metaprogramming
         }
 
         private protected B FindScope<B>()
-            where B: ExpressionBuilder
+            where B: CompoundStatementBuilder
         {
             for (var current = this; !(current is null); current = current.Parent)
                 if (current is B scope)
@@ -51,7 +51,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Represents parent scope.
         /// </summary>
-        public ExpressionBuilder Parent{ get; }
+        public CompoundStatementBuilder Parent{ get; }
 
         internal E AddStatement<E>(E expression)
             where E: Expression
@@ -300,7 +300,7 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Test expression.</param>
         /// <param name="ifTrue">Positive branch builder.</param>
         /// <returns>Constructed statement.</returns>
-        public ConditionalExpression IfThen(UniversalExpression test, Action<ExpressionBuilder> ifTrue)
+        public ConditionalExpression IfThen(UniversalExpression test, Action<CompoundStatementBuilder> ifTrue)
             => If(test).Then(ifTrue).End();
 
         /// <summary>
@@ -310,7 +310,7 @@ namespace DotNext.Metaprogramming
         /// <param name="ifTrue">Positive branch builder.</param>
         /// <param name="ifFalse">Negative branch builder.</param>
         /// <returns>Constructed statement.</returns>
-        public ConditionalExpression IfThenElse(UniversalExpression test, Action<ExpressionBuilder> ifTrue, Action<ExpressionBuilder> ifFalse)
+        public ConditionalExpression IfThenElse(UniversalExpression test, Action<CompoundStatementBuilder> ifTrue, Action<CompoundStatementBuilder> ifFalse)
             => If(test).Then(ifTrue).Else(ifFalse).End();
 
         /// <summary>
@@ -441,50 +441,5 @@ namespace DotNext.Metaprogramming
                 statements.Clear();
             }
         }
-    }
-
-    public abstract class ExpressionBuilder<E> : IExpressionBuilder<E>
-        where E : Expression
-    {
-        private readonly ExpressionBuilder parent;
-        private readonly bool treatAsStatement;
-        private Type expressionType;
-
-        private protected ExpressionBuilder(ExpressionBuilder parent, bool treatAsStatement)
-        {
-            this.parent = parent;
-            this.treatAsStatement = treatAsStatement;
-        }
-
-        private protected ScopeBuilder NewScope() => new ScopeBuilder(parent);
-
-        private protected B NewScope<B>(Func<ExpressionBuilder, B> factory) 
-            where B: ScopeBuilder
-            => factory(parent);
-
-        private protected Type ExpressionType
-        {
-            get => expressionType ?? typeof(void);
-        }
-
-        public ExpressionBuilder<E> OfType(Type expressionType)
-        {
-            this.expressionType = expressionType;
-            return this;
-        }
-
-        public ExpressionBuilder<E> OfType<T>() => OfType(typeof(T));
-
-        public E End()
-        {
-            var expr = Build();
-            if (treatAsStatement)
-                parent.AddStatement(expr);
-            return expr;
-        }
-
-        private protected abstract E Build();
-
-        E IExpressionBuilder<E>.Build() => Build();
     }
 }

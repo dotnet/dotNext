@@ -467,18 +467,18 @@ namespace DotNext.Metaprogramming
         public UniversalExpression Condition<R>(Expression ifTrue, Expression ifFalse)
             => expression.Condition<R>(ifTrue, ifFalse);
 
-        public ConditionalBuilder Condition(ExpressionBuilder parent = null)
+        public ConditionalBuilder Condition(CompoundStatementBuilder parent = null)
             => expression.Condition(parent);
 
-        public UniversalExpression With(Action<WithBlockBuilder> scope, ExpressionBuilder parent = null) => expression.With(scope, parent);
+        public UniversalExpression With(Action<WithBlockBuilder> scope, CompoundStatementBuilder parent = null) => expression.With(scope, parent);
 
-        public UniversalExpression Using(Action<UsingBlockBuilder> scope, ExpressionBuilder parent)
+        public UniversalExpression Using(Action<UsingBlockBuilder> scope, CompoundStatementBuilder parent)
             => expression.Using(scope, parent);
 
-        public SwitchBuilder Switch(ExpressionBuilder parent = null)
+        public SwitchBuilder Switch(CompoundStatementBuilder parent = null)
             => new SwitchBuilder(expression, parent, false);
 
-        public TryBuilder Try(ExpressionBuilder parent = null) => expression.Try(parent);
+        public TryBuilder Try(CompoundStatementBuilder parent = null) => expression.Try(parent);
 
         public UnaryExpression Throw() => expression.Throw();
 

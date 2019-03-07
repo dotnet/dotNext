@@ -10,7 +10,7 @@ namespace DotNext.Metaprogramming
     /// </remarks>
     public sealed class LoopBuilder : LoopBuilderBase, IExpressionBuilder<LoopExpression>
     {
-        internal LoopBuilder(ExpressionBuilder parent)
+        internal LoopBuilder(CompoundStatementBuilder parent)
             : base(parent)
         {
         }

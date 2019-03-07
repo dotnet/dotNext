@@ -11,9 +11,9 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents lambda expression builder.
     /// </summary>
-    public abstract class LambdaBuilder: ExpressionBuilder
+    public abstract class LambdaBuilder: CompoundStatementBuilder
     {
-        private protected LambdaBuilder(ExpressionBuilder parent = null)
+        private protected LambdaBuilder(CompoundStatementBuilder parent = null)
             : base(parent)
         {
         }
@@ -68,7 +68,7 @@ namespace DotNext.Metaprogramming
         private ParameterExpression lambdaResult;
         private LabelTarget returnLabel;
 
-        internal LambdaBuilder(ExpressionBuilder parent = null)
+        internal LambdaBuilder(CompoundStatementBuilder parent = null)
             : base(parent)
         {
             if (typeof(D).IsAbstract)

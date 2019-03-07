@@ -9,7 +9,7 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Provides extension methods to simplify construction of complex expressions.
     /// </summary>
-    public static class ExpressionHelpers
+    public static class ExpressionBuilder
     {
         /// <summary>
         /// Constructs unary plus expression.
@@ -778,7 +778,7 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Test expression.</param>
         /// <param name="parent">Parent lexical scope.</param>
         /// <returns>Conditional expression builder.</returns>
-        public static ConditionalBuilder Condition(this Expression test, ExpressionBuilder parent = null)
+        public static ConditionalBuilder Condition(this Expression test, CompoundStatementBuilder parent = null)
             => new ConditionalBuilder(test, parent, false);
 
         /// <summary>
@@ -848,7 +848,7 @@ namespace DotNext.Metaprogramming
         /// <param name="expression"><see langword="try"/> block.</param>
         /// <param name="parent">The parent lexical scope.</param>
         /// <returns>Structured exception handling statement builder.</returns>
-        public static TryBuilder Try(this Expression expression, ExpressionBuilder parent = null)
+        public static TryBuilder Try(this Expression expression, CompoundStatementBuilder parent = null)
             => new TryBuilder(expression, parent, false);
 
         /// <summary>
@@ -860,8 +860,8 @@ namespace DotNext.Metaprogramming
         /// <returns>Construct code block.</returns>
         /// <see cref="WithBlockBuilder"/>
         /// <see cref="WithBlockBuilder.ScopeVar"/>
-        public static Expression With(this Expression expression, Action<WithBlockBuilder> scope, ExpressionBuilder parent = null)
-            => ExpressionBuilder.Build<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, parent), scope);
+        public static Expression With(this Expression expression, Action<WithBlockBuilder> scope, CompoundStatementBuilder parent = null)
+            => CompoundStatementBuilder.Build<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, parent), scope);
 
         /// <summary>
         /// Constructs <see langword="using"/> statement.
@@ -873,8 +873,8 @@ namespace DotNext.Metaprogramming
         /// <param name="scope">The body of <see langword="using"/> statement.</param>
         /// <param name="parent">Optional parent scope.</param>
         /// <returns><see langword="using"/> statement.</returns>
-        public static Expression Using(this Expression expression, Action<UsingBlockBuilder> scope, ExpressionBuilder parent = null)
-            => ExpressionBuilder.Build<Expression, UsingBlockBuilder>(new UsingBlockBuilder(expression, parent), scope);
+        public static Expression Using(this Expression expression, Action<UsingBlockBuilder> scope, CompoundStatementBuilder parent = null)
+            => CompoundStatementBuilder.Build<Expression, UsingBlockBuilder>(new UsingBlockBuilder(expression, parent), scope);
 
         /// <summary>
         /// Creates selection statement builder that chooses a single <see langword="switch"/> section 
@@ -883,7 +883,7 @@ namespace DotNext.Metaprogramming
         /// <param name="switchValue">The value to be matched with provided candidates.</param>
         /// <param name="parent">Optional parent scope.</param>
         /// <returns><see langword="switch"/> statement builder.</returns>
-        public static SwitchBuilder Switch(this Expression switchValue, ExpressionBuilder parent = null)
+        public static SwitchBuilder Switch(this Expression switchValue, CompoundStatementBuilder parent = null)
             => new SwitchBuilder(switchValue, parent, false);
 
         /// <summary>
@@ -928,5 +928,77 @@ namespace DotNext.Metaprogramming
 
         internal static Expression AddEpilogue(this Expression expression, bool inferType, params Expression[] instructions)
             => AddEpilogue(expression, inferType, (IReadOnlyCollection<Expression>)instructions);
+    }
+
+    /// <summary>
+    /// Represents compound expresssion builder.
+    /// </summary>
+    /// <typeparam name="E">Type of expression to be constructed.</typeparam>
+    /// <see cref="WithBlockBuilder"/>
+    /// <see cref="UsingBlockBuilder"/>
+    /// <see cref="SwitchBuilder"/>
+    /// <see cref="ForLoopBuilder"/>
+    /// <see cref="ForEachLoopBuilder"/>
+    /// <see cref="WhileLoopBuider"/>
+    public abstract class ExpressionBuilder<E> : IExpressionBuilder<E>
+        where E : Expression
+    {
+        private readonly CompoundStatementBuilder parent;
+        private readonly bool treatAsStatement;
+        private Type expressionType;
+
+        private protected ExpressionBuilder(CompoundStatementBuilder parent, bool treatAsStatement)
+        {
+            this.parent = parent;
+            this.treatAsStatement = treatAsStatement;
+        }
+
+        private protected ScopeBuilder NewScope() => new ScopeBuilder(parent);
+
+        private protected B NewScope<B>(Func<CompoundStatementBuilder, B> factory)
+            where B : ScopeBuilder
+            => factory(parent);
+
+        private protected Type ExpressionType
+        {
+            get => expressionType ?? typeof(void);
+        }
+
+        /// <summary>
+        /// Changes type of the expression.
+        /// </summary>
+        /// <remarks>
+        /// By default, type of expression is <see cref="void"/>.
+        /// </remarks>
+        /// <param name="expressionType">The expression type.</param>
+        /// <returns>This builder.</returns>
+        public ExpressionBuilder<E> OfType(Type expressionType)
+        {
+            this.expressionType = expressionType;
+            return this;
+        }
+
+        /// <summary>
+        /// Changes type of the expression.
+        /// </summary>
+        /// <typeparam name="T">The expression type.</typeparam>
+        /// <returns>This builder.</returns>
+        public ExpressionBuilder<E> OfType<T>() => OfType(typeof(T));
+
+        /// <summary>
+        /// Constructs expression and add, optionally, it to the underlying compound statement.
+        /// </summary>
+        /// <returns></returns>
+        public E End()
+        {
+            var expr = Build();
+            if (treatAsStatement)
+                parent.AddStatement(expr);
+            return expr;
+        }
+
+        private protected abstract E Build();
+
+        E IExpressionBuilder<E>.Build() => Build();
     }
 }

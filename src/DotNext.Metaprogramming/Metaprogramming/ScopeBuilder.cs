@@ -6,9 +6,9 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents lexical scope builder.
     /// </summary>
-    public class ScopeBuilder : ExpressionBuilder
+    public class ScopeBuilder : CompoundStatementBuilder
     {
-        internal ScopeBuilder(ExpressionBuilder parent)
+        internal ScopeBuilder(CompoundStatementBuilder parent)
             : base(parent)
         {
         }

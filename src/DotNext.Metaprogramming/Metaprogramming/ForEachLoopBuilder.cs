@@ -17,7 +17,7 @@ namespace DotNext.Metaprogramming
         private readonly MethodCallExpression moveNextCall;
         private readonly Expression element;
 
-        internal ForEachLoopBuilder(Expression collection, ExpressionBuilder parent)
+        internal ForEachLoopBuilder(Expression collection, CompoundStatementBuilder parent)
             : base(parent)
         {
             collection.Type.GetItemType(out var enumerable);
