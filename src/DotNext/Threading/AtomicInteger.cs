@@ -7,14 +7,14 @@ namespace DotNext.Threading
 	using Generic;
 
 	/// <summary>
-	/// Various atomic operations for integer data type
+	/// Various atomic operations for <see cref="int"/> data type
 	/// accessible as extension methods.
 	/// </summary>
 	/// <remarks>
 	/// Methods exposed by this class provide volatile read/write
 	/// of the field even if it is not declared as volatile field.
 	/// </remarks>
-	/// <see cref="Interlocked"/>
+	/// <seealso cref="Interlocked"/>
 	public static class AtomicInteger
 	{
 		private sealed class CASProvider : Constant<CAS<int>>
