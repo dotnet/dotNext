@@ -12,6 +12,8 @@
       href: core/optional.md
     - name: Atomic Operations
       href: atomic.md
+    - name: Generic specialization with constant values
+      href: constgen.md
 - name: Type Classes
   href: concepts.md
 - name: Advanced Reflection
