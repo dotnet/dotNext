@@ -377,9 +377,19 @@ namespace DotNext.Metaprogramming
 
         public TryBuilder Try(Action<ScopeBuilder> scope) => Try(Scope(scope));
 
+        /// <summary>
+        /// Adds <see langword="throw"/> statement to the compound statement.
+        /// </summary>
+        /// <param name="exception">The exception to be thrown.</param>
+        /// <returns><see langword="throw"/> statement.</returns>
         public UnaryExpression Throw(UniversalExpression exception)
             => AddStatement(Expression.Throw(exception));
 
+        /// <summary>
+        /// Adds <see langword="throw"/> statement to the compound statement.
+        /// </summary>
+        /// <typeparam name="E">The exception to be thrown.</typeparam>
+        /// <returns><see langword="throw"/> statement.</returns>
         public UnaryExpression Throw<E>()
             where E : Exception, new()
             => Throw(Expression.New(typeof(E).GetConstructor(Array.Empty<Type>())));

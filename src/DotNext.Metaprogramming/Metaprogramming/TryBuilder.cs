@@ -4,6 +4,10 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    /// <summary>
+    /// Represents exception handling section.
+    /// </summary>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch">try-catch statement</seealso>
     public sealed class TryBuilder: ExpressionBuilder<TryExpression>
     {
         private readonly Expression tryBlock;
