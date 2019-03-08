@@ -19,16 +19,27 @@ namespace DotNext.Metaprogramming
             return Build();
         }
 
+        /// <summary>
+        /// Puts constant value as the result of this lexical scope.
+        /// </summary>
+        /// <typeparam name="T">The type of the constant.</typeparam>
+        /// <param name="value">Constant value.</param>
+        /// <returns>Constant expression added to this compound statement.</returns>
         public ConstantExpression Constant<T>(T value) => AddStatement(Expression.Constant(value, typeof(T)));
 
+        /// <summary>
+        /// Restarts execution of the loop.
+        /// </summary>
+        /// <param name="loop">The loop reference.</param>
+        /// <returns>An expression representing jump to the beginning of the loop.</returns>
         public GotoExpression Continue(LoopBuilderBase loop)
             => AddStatement(loop.Continue(false));
 
         /// <summary>
         /// Stops the specified loop.
         /// </summary>
-        /// <param name="loop">Loop identifier.</param>
-        /// <returns>An expression representing jumping outside of the loop.</returns>
+        /// <param name="loop">The loop reference.</param>
+        /// <returns>An expression representing jump outside of the loop.</returns>
         public GotoExpression Break(LoopBuilderBase loop)
             => AddStatement(loop.Break(false));
 

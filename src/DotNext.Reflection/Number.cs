@@ -43,15 +43,36 @@ namespace DotNext
 
 		private readonly T value;
 
+        /// <summary>
+        /// Initializes a new generic numeric value.
+        /// </summary>
+        /// <param name="value">Underlying numeric value.</param>
         public Number(T value)
             => this.value = value;
 
+        /// <summary>
+        /// Determines whether this number is equal to another.
+        /// </summary>
+        /// <param name="other">Other number to be compared.</param>
+        /// <returns><see langword="true"/> if this number is equal to the given number; otherwise, <see langword="false"/>.</returns>
         public bool Equals(T other) => Equality(in value, in other);
         
+        /// <summary>
+        /// Converts the number into string.
+        /// </summary>
+        /// <returns>The textual representation of the number.</returns>
         public override string ToString() => ToStringMethod(in value);
 
+        /// <summary>
+        /// Computes hash code of the number.
+        /// </summary>
+        /// <returns>Number hash code.</returns>
         public override int GetHashCode() => GetHashCodeMethod(in value);
 
+        /// <summary>
+        /// Converts container instance into the underlying numeric type.
+        /// </summary>
+        /// <param name="value">The container instance to be converted.</param>
         public static implicit operator T(Number<T> value)
             => value.value;
 

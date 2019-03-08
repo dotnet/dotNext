@@ -112,9 +112,15 @@ namespace DotNext.Reflection
 		Power = ExpressionType.Power
 	}
 
-	public sealed class BinaryOperator<T, OP, R>: Operator<Operator<T, OP, R>>
+    /// <summary>
+    /// Represents reflected binary operator.
+    /// </summary>
+    /// <typeparam name="OP1">The type of the first operand.</typeparam>
+    /// <typeparam name="OP2">The type of the second operand.</typeparam>
+    /// <typeparam name="R">The type of the operator result.</typeparam>
+	public sealed class BinaryOperator<OP1, OP2, R>: Operator<Operator<OP1, OP2, R>>
 	{
-		private BinaryOperator(Expression<Operator<T, OP, R>> invoker, BinaryOperator type, MethodInfo overloaded)
+		private BinaryOperator(Expression<Operator<OP1, OP2, R>> invoker, BinaryOperator type, MethodInfo overloaded)
 			: base(invoker.Compile(), type.ToExpressionType(), overloaded)
 		{
 		}
@@ -126,14 +132,14 @@ namespace DotNext.Reflection
 		/// <param name="second">Second operand.</param>
 		/// <returns>Result of binary operator.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public R Invoke(in T first, in OP second) => invoker(in first, in second);
+		public R Invoke(in OP1 first, in OP2 second) => invoker(in first, in second);
 
 		/// <summary>
         /// Type of operator.
         /// </summary>
         public new BinaryOperator Type => (BinaryOperator)base.Type;
 
-		private static Expression<Operator<T, OP, R>> MakeBinary(Operator.Kind @operator, Operator.Operand first, Operator.Operand second, out MethodInfo overloaded)
+		private static Expression<Operator<OP1, OP2, R>> MakeBinary(Operator.Kind @operator, Operator.Operand first, Operator.Operand second, out MethodInfo overloaded)
 		{
 			var resultType = typeof(R);
 			//perform automatic cast from byte/short/ushort/sbyte so binary operators become available for these types
@@ -145,8 +151,8 @@ namespace DotNext.Reflection
 				var body =  @operator.MakeBinary(first, second);
 				overloaded = body.Method;
 				return overloaded is null && usePrimitiveCast ?
-					Expression.Lambda<Operator<T, OP, R>>(Expression.Convert(body, resultType), first.Source, second.Source) :
-					Expression.Lambda<Operator<T, OP, R>>(body, first.Source, second.Source);
+					Expression.Lambda<Operator<OP1, OP2, R>>(Expression.Convert(body, resultType), first.Source, second.Source) :
+					Expression.Lambda<Operator<OP1, OP2, R>>(body, first.Source, second.Source);
 			} 
 			catch(ArgumentException e)
 			{
@@ -167,12 +173,12 @@ namespace DotNext.Reflection
 			}
 		}
 
-		internal static BinaryOperator<T, OP, R> Reflect(Operator.Kind op)
+		internal static BinaryOperator<OP1, OP2, R> Reflect(Operator.Kind op)
 		{
-			var first = Expression.Parameter(typeof(T).MakeByRefType(), "first");
-			var second = Expression.Parameter(typeof(OP).MakeByRefType(), "second");
+			var first = Expression.Parameter(typeof(OP1).MakeByRefType(), "first");
+			var second = Expression.Parameter(typeof(OP2).MakeByRefType(), "second");
 			var expr = MakeBinary(op, first, second, out var overloaded);
-			return expr is null ? null : new BinaryOperator<T, OP, R>(expr, op, overloaded);
+			return expr is null ? null : new BinaryOperator<OP1, OP2, R>(expr, op, overloaded);
 		}
 	}
 }

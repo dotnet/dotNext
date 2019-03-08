@@ -852,7 +852,9 @@ namespace DotNext.Metaprogramming
             => new TryBuilder(expression, parent, false);
 
         /// <summary>
-        /// Constructs block of code.
+        /// Constructs compound statement hat repeatedly refer to a single object or 
+        /// structure so that the statements can use a simplified syntax when accessing members 
+        /// of the object or structure.
         /// </summary>
         /// <param name="expression">An expression to be captured by scope.</param>
         /// <param name="scope">The scope statements builder.</param>

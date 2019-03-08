@@ -364,35 +364,95 @@ namespace DotNext.Metaprogramming
         public LoopExpression Loop(Action<LoopBuilder> loop)
             => AddStatement<LoopExpression, LoopBuilder>(new LoopBuilder(this), loop);
 
-        
+        /// <summary>
+        /// Constructs lamdba function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="lambda">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
         public LambdaExpression Lambda<D>(Action<LambdaBuilder<D>> lambda)
-            where D: Delegate
-            => AddStatement<LambdaExpression, LambdaBuilder<D>>(new LambdaBuilder<D>(this), lambda);
+            where D : Delegate
+            => Build<LambdaExpression, LambdaBuilder<D>>(new LambdaBuilder<D>(this), lambda);
 
+        /// <summary>
+        /// Constructs async lambda function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="lambda">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        /// <see cref="AwaitExpression"/>
+        /// <see cref="AsyncResultExpression"/>
+        /// <seealso cref="AsyncLambdaBuilder{D}"/>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
         public LambdaExpression AsyncLambda<D>(Action<AsyncLambdaBuilder<D>> lambda)
             where D : Delegate
-            => AddStatement<LambdaExpression, AsyncLambdaBuilder<D>>(new AsyncLambdaBuilder<D>(this), lambda);
+            => Build<LambdaExpression, AsyncLambdaBuilder<D>>(new AsyncLambdaBuilder<D>(this), lambda);
 
+        /// <summary>
+        /// Adds structured exception handling statement.
+        /// </summary>
+        /// <param name="body"><see langword="try"/> block.</param>
+        /// <returns>Structured exception handling builder.</returns>
         public TryBuilder Try(UniversalExpression body) => new TryBuilder(body, this, true);
 
+        /// <summary>
+        /// Adds structured exception handling statement.
+        /// </summary>
+        /// <param name="scope"><see langword="try"/> block builder.</param>
+        /// <returns>Structured exception handling builder.</returns>
         public TryBuilder Try(Action<ScopeBuilder> scope) => Try(Scope(scope));
 
+        /// <summary>
+        /// Adds <see langword="throw"/> statement to the compound statement.
+        /// </summary>
+        /// <param name="exception">The exception to be thrown.</param>
+        /// <returns><see langword="throw"/> statement.</returns>
         public UnaryExpression Throw(UniversalExpression exception)
             => AddStatement(Expression.Throw(exception));
 
+        /// <summary>
+        /// Adds <see langword="throw"/> statement to the compound statement.
+        /// </summary>
+        /// <typeparam name="E">The exception to be thrown.</typeparam>
+        /// <returns><see langword="throw"/> statement.</returns>
         public UnaryExpression Throw<E>()
             where E : Exception, new()
             => Throw(Expression.New(typeof(E).GetConstructor(Array.Empty<Type>())));
-
+        
+        /// <summary>
+        /// Constructs nested lexical scope.
+        /// </summary>
+        /// <param name="scope">The code block builder.</param>
+        /// <returns>Constructed compound statement.</returns>
         public Expression Scope(Action<ScopeBuilder> scope)
             => new ScopeBuilder(this).Build(scope);
 
+        /// <summary>
+        /// Constructs compound statement hat repeatedly refer to a single object or 
+        /// structure so that the statements can use a simplified syntax when accessing members 
+        /// of the object or structure.
+        /// </summary>
+        /// <param name="expression">The implicitly referenced object.</param>
+        /// <param name="scope">The statement body.</param>
+        /// <returns>Constructed compound statement.</returns>
+        /// <seealso cref="WithBlockBuilder.ScopeVar"/>
         public Expression With(UniversalExpression expression, Action<WithBlockBuilder> scope)
             => AddStatement<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, this), scope);
 
+        /// <summary>
+        /// Add <see langword="using"/> statement.
+        /// </summary>
+        /// <param name="expression">The expression representing disposable resource.</param>
+        /// <param name="scope">The body of the statement.</param>
+        /// <returns>Constructed expression.</returns>
         public Expression Using(UniversalExpression expression, Action<UsingBlockBuilder> scope)
             => AddStatement<Expression, UsingBlockBuilder>(new UsingBlockBuilder(expression, this), scope);
 
+        /// <summary>
+        /// Adds selection expression.
+        /// </summary>
+        /// <param name="switchValue">The value to be handled by the selection expression.</param>
+        /// <returns>Selection expression builder.</returns>
         public SwitchBuilder Switch(UniversalExpression switchValue)
             => new SwitchBuilder(switchValue, this, true);
 

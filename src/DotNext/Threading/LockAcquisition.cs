@@ -31,7 +31,8 @@ namespace DotNext.Threading
         /// <param name="obj">An object to be locked.</param>
         /// <returns>Lock control object.</returns>
         /// <remarks>
-        /// This methods acquires monitor lock.
+        /// This methods acquires monitor lock and equivalent 
+        /// to <see href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock statement</see>.
         /// </remarks>
         public static Lock Lock<T>(this T obj)
             where T : class

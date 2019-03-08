@@ -1,10 +1,12 @@
-using System;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
     using Threading;
 
+    /// <summary>
+    /// Represents abstract class for loop statement builders.
+    /// </summary>
     public abstract class LoopBuilderBase : ScopeBuilder
     {
         private static long loopCount = 0L;
@@ -19,8 +21,16 @@ namespace DotNext.Metaprogramming
             continueLabel = Expression.Label("continue" + loopCount);
         }
 
+        /// <summary>
+        /// Restarts execution of this loop.
+        /// </summary>
+        /// <returns>An expression representing jump to the beginning of the loop.</returns>
         public GotoExpression Continue() => Continue(true);
 
+        /// <summary>
+        /// Stops execution of this loop.
+        /// </summary>
+        /// <returns>An expression representing jump outside of the loop.</returns>
         public GotoExpression Break() => Break(true);
 
         internal GotoExpression Continue(bool addAsStatement)

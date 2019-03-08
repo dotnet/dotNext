@@ -13,6 +13,7 @@ namespace DotNext.Runtime.CompilerServices
     /// This type allows to implement custom async/await flow
     /// and intended for expert-level developers.
     /// </remarks>
+    /// <typeparam name="STATE">The local state of async function used to store computation state.</typeparam>
     [CLSCompliant(false)]
     public struct AsyncStateMachine<STATE>: IAsyncStateMachine<STATE>
     {
@@ -22,6 +23,9 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="stateMachine">A state to modify during transition.</param>
         public delegate void Transition(ref AsyncStateMachine<STATE> stateMachine);
 
+        /// <summary>
+        /// Represents final state identifier of async state machine.
+        /// </summary>
         public const uint FINAL_STATE = 0;
 
         /// <summary>
@@ -56,6 +60,11 @@ namespace DotNext.Runtime.CompilerServices
             private set;
         }
 
+        /// <summary>
+        /// Enters guarded code block which represents <see langword="try"/> block of code
+        /// inside of async lambda function.
+        /// </summary>
+        /// <param name="newState">The identifier of the async state machine representing guared code.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void EnterGuardedCode(uint newState)
@@ -64,6 +73,10 @@ namespace DotNext.Runtime.CompilerServices
             guardedRegionsCounter += 1;
         }
 
+        /// <summary>
+        /// Leaves guarded code block.
+        /// </summary>
+        /// <param name="previousState">The identifier of the async state machine before invocation of <see cref="EnterGuardedCode(uint)"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void ExitGuardedCode(uint previousState)
@@ -73,14 +86,20 @@ namespace DotNext.Runtime.CompilerServices
             
         }
 
+        /// <summary>
+        /// Attempts to recover from the exception and indicating prologue of <see langword="catch"/> statement
+        /// inside of async lambda function.
+        /// </summary>
+        /// <typeparam name="E">Type of expression to be caught.</typeparam>
+        /// <param name="restoredException">Reference to the captured exception.</param>
+        /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="E"/>; otherwise, <see langword="false"/>.</returns>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public bool TryRecover<E>(out E restoredException)
             where E : Exception
         {
-            var exception = this.exception?.SourceException;
-            if (exception is E typed)
+            if (exception?.SourceException is E typed)
             {
-                this.exception = null;
+                exception = null;
                 restoredException = typed;
                 return true;
             }
@@ -91,6 +110,9 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
+        /// <summary>
+        /// Indicates that this async state machine is not in exceptional state.
+        /// </summary>
         public bool HasNoException
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -144,6 +166,9 @@ namespace DotNext.Runtime.CompilerServices
             builder.AwaitUnsafeOnCompleted(ref awaiter, ref this);
         }
 
+        /// <summary>
+        /// Turns this state machine into final state.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void Complete()
@@ -158,12 +183,27 @@ namespace DotNext.Runtime.CompilerServices
             return builder.Task;
         }
 
+        /// <summary>
+        /// Executes async state machine.
+        /// </summary>
+        /// <param name="transition">Async function which execution is controlled by state machine.</param>
+        /// <param name="initialState">Initial state.</param>
+        /// <returns>The task representing execution of async function.</returns>
         public static Task Start(Transition transition, STATE initialState = default)
             => new AsyncStateMachine<STATE>(transition, initialState).Start();
 
         void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
     }
 
+    /// <summary>
+    /// Provides manual control over asynchronous state machine.
+    /// </summary>
+    /// <remarks>
+    /// This type allows to implement custom async/await flow
+    /// and intended for expert-level developers.
+    /// </remarks>
+    /// <typeparam name="STATE">The local state of async function used to store computation state.</typeparam>
+    /// <typeparam name="R">Result type of asynchronous function.</typeparam>
     [CLSCompliant(false)]
     public struct AsyncStateMachine<STATE, R> : IAsyncStateMachine<STATE>
         where STATE : struct
@@ -197,6 +237,9 @@ namespace DotNext.Runtime.CompilerServices
 
         STATE IAsyncStateMachine<STATE>.State => State;
 
+        /// <summary>
+        /// Gets state identifier.
+        /// </summary>
         public uint StateId
         {
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
@@ -204,6 +247,11 @@ namespace DotNext.Runtime.CompilerServices
             private set;
         }
 
+        /// <summary>
+        /// Enters guarded code block which represents <see langword="try"/> block of code
+        /// inside of async lambda function.
+        /// </summary>
+        /// <param name="newState">The identifier of the async machine state representing guared code.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void EnterGuardedCode(uint newState)
@@ -212,6 +260,10 @@ namespace DotNext.Runtime.CompilerServices
             guardedRegionsCounter += 1;
         }
 
+        /// <summary>
+        /// Leaves guarded code block.
+        /// </summary>
+        /// <param name="previousState">The identifier of the async state machine before invocation of <see cref="EnterGuardedCode(uint)"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void ExitGuardedCode(uint previousState)
@@ -220,14 +272,20 @@ namespace DotNext.Runtime.CompilerServices
             guardedRegionsCounter -= 1;
         }
 
+        /// <summary>
+        /// Attempts to recover from the exception and indicating prologue of <see langword="catch"/> statement
+        /// inside of async lambda function.
+        /// </summary>
+        /// <typeparam name="E">Type of expression to be caught.</typeparam>
+        /// <param name="restoredException">Reference to the captured exception.</param>
+        /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="E"/>; otherwise, <see langword="false"/>.</returns>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public bool TryRecover<E>(out E restoredException)
             where E : Exception
         {
-            var exception = this.exception?.SourceException;
-            if (exception is E typed)
+            if (exception?.SourceException is E typed)
             {
-                this.exception = null;
+                exception = null;
                 restoredException = typed;
                 return true;
             }
@@ -238,6 +296,9 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
+        /// <summary>
+        /// Indicates that this async state machine is not in exceptional state.
+        /// </summary>
         public bool HasNoException
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -257,6 +318,12 @@ namespace DotNext.Runtime.CompilerServices
             return builder.Task;
         }
 
+        /// <summary>
+        /// Executes async state machine.
+        /// </summary>
+        /// <param name="transition">Async function which execution is controlled by state machine.</param>
+        /// <param name="initialState">Initial state.</param>
+        /// <returns>The task representing execution of async function.</returns>
         public static Task<R> Start(Transition transition, STATE initialState = default)
             => new AsyncStateMachine<STATE, R>(transition, initialState).Start();
 
@@ -275,6 +342,12 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
+        /// <summary>
+        /// Performs transition.
+        /// </summary>
+        /// <typeparam name="TAwaiter">Type of asynchronous control flow object.</typeparam>
+        /// <param name="awaiter">Asynchronous result obtained from another method to await.</param>
+        /// <param name="stateId">A new state identifier.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
             where TAwaiter : ICriticalNotifyCompletion

@@ -9,7 +9,7 @@ namespace DotNext.Metaprogramming
     using static Reflection.DelegateType;
 
     /// <summary>
-    /// Represents lambda expression builder.
+    /// Represents lambda function builder.
     /// </summary>
     public abstract class LambdaBuilder: CompoundStatementBuilder
     {
@@ -50,8 +50,19 @@ namespace DotNext.Metaprogramming
 
         internal Expression Return(bool addAsStatement) => Return(ReturnType.AsDefault(), addAsStatement);
 
+        /// <summary>
+        /// Constructs <see langword="return"/> instruction to return from
+        /// this lambda function having non-<see langword="void"/> return type.
+        /// </summary>
+        /// <param name="result">The value to be returned from the lambda function.</param>
+        /// <returns><see langword="return"/> instruction.</returns>
         public sealed override Expression Return(UniversalExpression result) => Return(result, true);
 
+        /// <summary>
+        /// Constructs <see langword="return"/> instruction to return from
+        /// underlying lambda function having <see langword="void"/> return type.
+        /// </summary>
+        /// <returns><see langword="return"/> instruction.</returns>
         public sealed override Expression Return() => Return(true);
 
         /// <summary>
@@ -61,6 +72,10 @@ namespace DotNext.Metaprogramming
        
     }
 
+    /// <summary>
+    /// Represents lambda function builder.
+    /// </summary>
+    /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
     public sealed class LambdaBuilder<D>: LambdaBuilder, IExpressionBuilder<Expression<D>>
         where D: Delegate
     {
@@ -170,6 +185,10 @@ namespace DotNext.Metaprogramming
 
         Expression<D> IExpressionBuilder<Expression<D>>.Build() => (Expression<D>)Build();
 
+        /// <summary>
+        /// Releases all resources associated with this builder.
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/>, if this method is called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -181,6 +200,12 @@ namespace DotNext.Metaprogramming
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// Constructs lambda expression from expression tree.
+        /// </summary>
+        /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
+        /// <param name="lambdaBody">Lambda expression builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
         public static Expression<D> Build(bool tailCall, Action<LambdaBuilder<D>> lambdaBody)
         {
             var builder = new LambdaBuilder<D>() { TailCall = tailCall };
