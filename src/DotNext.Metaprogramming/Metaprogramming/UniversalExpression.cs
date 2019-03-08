@@ -512,35 +512,113 @@ namespace DotNext.Metaprogramming
         /// <returns>Field access expression.</returns>
         public UniversalExpression Field(string fieldName) => expression.Field(fieldName);
 
+        /// <summary>
+        /// Constructs loop statement which has a body equal to this expression.
+        /// </summary>
+        /// <param name="break">Optional loop break label which will installed automatically.</param>
+        /// <param name="continue">Optional loop continuation which will be installed automatically.</param>
+        /// <returns>Loop statement.</returns>
         public UniversalExpression Loop(LabelTarget @break, LabelTarget @continue) => expression.Loop(@break, @continue);
-        
+
+        /// <summary>
+        /// Constructs loop statement which has a body equal to this expression.
+        /// </summary>
+        /// <param name="break">Optional loop break label which will installed automatically.</param>
+        /// <returns>Loop statement.</returns>
         public UniversalExpression Loop(LabelTarget @break) => expression.Loop(@break);
-        
+
+        /// <summary>
+        /// Constructs loop statement which has a body equal to this expression.
+        /// </summary>
+        /// <returns>Loop statement.</returns>
         public UniversalExpression Loop() => expression.Loop();
 
+        /// <summary>
+        /// Constructs conditional expression.
+        /// </summary>
+        /// <param name="ifTrue">Positive branch.</param>
+        /// <param name="ifFalse">Negative branch.</param>
+        /// <param name="type">The type of conditional expression. Default is <see langword="void"/>.</param>
+        /// <returns>Conditional expression.</returns>
         public UniversalExpression Condition(Expression ifTrue = null, Expression ifFalse = null, Type type = null) 
             => expression.Condition(ifTrue, ifFalse, type);
-        
+
+        /// <summary>
+        /// Constructs conditional expression.
+        /// </summary>
+        /// <typeparam name="R">The type of conditional expression.</typeparam>
+        /// <param name="ifTrue">Positive branch.</param>
+        /// <param name="ifFalse">Negative branch.</param>
+        /// <returns>Conditional expression.</returns>
         public UniversalExpression Condition<R>(Expression ifTrue, Expression ifFalse)
             => expression.Condition<R>(ifTrue, ifFalse);
 
+        /// <summary>
+        /// Creates conditional expression builder.
+        /// </summary>
+        /// <param name="parent">Parent lexical scope.</param>
+        /// <returns>Conditional expression builder.</returns>
         public ConditionalBuilder Condition(CompoundStatementBuilder parent = null)
             => expression.Condition(parent);
 
+        /// <summary>
+        /// Constructs compound statement hat repeatedly refer to a single object or 
+        /// structure so that the statements can use a simplified syntax when accessing members 
+        /// of the object or structure.
+        /// </summary>
+        /// <param name="scope">The scope statements builder.</param>
+        /// <param name="parent">Parent lexical scope.</param>
+        /// <returns>Construct code block.</returns>
+        /// <see cref="WithBlockBuilder"/>
+        /// <see cref="WithBlockBuilder.ScopeVar"/>
         public UniversalExpression With(Action<WithBlockBuilder> scope, CompoundStatementBuilder parent = null) => expression.With(scope, parent);
 
+        /// <summary>
+        /// Constructs <see langword="using"/> statement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>using(var obj = expression){ }</code>.
+        /// </remarks>
+        /// <param name="scope">The body of <see langword="using"/> statement.</param>
+        /// <param name="parent">Optional parent scope.</param>
+        /// <returns><see langword="using"/> statement.</returns>
         public UniversalExpression Using(Action<UsingBlockBuilder> scope, CompoundStatementBuilder parent)
             => expression.Using(scope, parent);
 
+        /// <summary>
+        /// Creates selection statement builder that chooses a single <see langword="switch"/> section 
+        /// to execute from a list of candidates based on a pattern match with the match expression.
+        /// </summary>
+        /// <param name="parent">Optional parent scope.</param>
+        /// <returns><see langword="switch"/> statement builder.</returns>
         public SwitchBuilder Switch(CompoundStatementBuilder parent = null)
-            => new SwitchBuilder(expression, parent, false);
+            => expression.Switch(parent);
 
+        /// <summary>
+        /// Creates structured exception handling statement builder.
+        /// </summary>
+        /// <param name="parent">The parent lexical scope.</param>
+        /// <returns>Structured exception handling statement builder.</returns>
         public TryBuilder Try(CompoundStatementBuilder parent = null) => expression.Try(parent);
 
+        /// <summary>
+        /// Constructs <see langword="throw"/> statement.
+        /// </summary>
+        /// <returns><see langword="throw"/> statement.</returns>
         public UnaryExpression Throw() => expression.Throw();
 
-        public override int GetHashCode() => expression.GetHashCode();
+        /// <summary>
+        /// Computes the hash code for the underlying expression.
+        /// </summary>
+        /// <returns>The hash code of the underlying expression.</returns>
+        public override int GetHashCode() => expression is null ? 0 : expression.GetHashCode();
 
+        /// <summary>
+        /// Determines whether this universal expression
+        /// represents the same underlying expression as other.
+        /// </summary>
+        /// <param name="other">Other expression to compare.</param>
+        /// <returns><see langword="true"/>, if both expressions are equal; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
             switch(other)
