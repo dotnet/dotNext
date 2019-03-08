@@ -435,24 +435,81 @@ namespace DotNext.Metaprogramming
         public InvocationExpression Invoke(params UniversalExpression[] arguments)
             => expression.Invoke(AsExpressions(arguments));
 
+        /// <summary>
+        /// Constructs array element access expression.
+        /// </summary>
+        /// <param name="indexes">Array element indicies.</param>
+        /// <returns>Array element access expression.</returns>
         public UniversalExpression ElementAt(params UniversalExpression[] indexes) => expression.ElementAt(AsExpressions(indexes));
 
+        /// <summary>
+        /// Returns expression representing array length.
+        /// </summary>
+        /// <returns>Array length expression.</returns>
         public UniversalExpression ArrayLength() => expression.ArrayLength();
 
+        /// <summary>
+        /// Constructs instance method call expression.
+        /// </summary>
+        /// <param name="method">The method to be called.</param>
+        /// <param name="arguments">The method arguments.</param>
+        /// <returns>The method call expression.</returns>
         public UniversalExpression Call(MethodInfo method, params UniversalExpression[] arguments) => expression.Call(method, AsExpressions(arguments));
 
+        /// <summary>
+        /// Constructs instance method call expression.
+        /// </summary>
+        /// <param name="methodName">The name of the method to be called.</param>
+        /// <param name="arguments">The method arguments.</param>
+        /// <returns>The method call expression.</returns>
         public UniversalExpression Call(string methodName, params UniversalExpression[] arguments) => expression.Call(methodName, AsExpressions(arguments));
 
+        /// <summary>
+        /// Constructs interface or base class method call expression.
+        /// </summary>
+        /// <param name="interfaceType">The interface or base class.</param>
+        /// <param name="methodName">The name of the method in the interface or base class to be called.</param>
+        /// <param name="arguments">The method arguments.</param>
+        /// <returns>The method call expression.</returns>
         public UniversalExpression Call(Type interfaceType, string methodName, params UniversalExpression[] arguments) => expression.Call(interfaceType, methodName, AsExpressions(arguments));
 
+        /// <summary>
+        /// Constructs instance property or indexer access expression.
+        /// </summary>
+        /// <param name="property">Property metadata.</param>
+        /// <param name="indicies">Indexer indicies.</param>
+        /// <returns>Property access expression.</returns>
         public UniversalExpression Property(PropertyInfo property, params UniversalExpression[] indicies) => expression.Property(property, AsExpressions(indicies));
 
+        /// <summary>
+        /// Constructs instance property or indexer access expression declared in the given interface or base type. 
+        /// </summary>
+        /// <param name="interfaceType">The interface or base class declaring property.</param>
+        /// <param name="propertyName">The name of the instance property or indexer.</param>
+        /// <param name="indicies">Indexer indicies.</param>
+        /// <returns>Property access expression.</returns>
         public UniversalExpression Property(Type interfaceType, string propertyName, params UniversalExpression[] indicies) => expression.Property(interfaceType, propertyName, AsExpressions(indicies));
 
+        /// <summary>
+        /// Constructs instance property or indexer access expression.
+        /// </summary>
+        /// <param name="propertyName">The name of the instance property or indexer.</param>
+        /// <param name="indicies">Indexer indicies.</param>
+        /// <returns>Property access expression.</returns>
         public UniversalExpression Property(string propertyName, params UniversalExpression[] indicies) => expression.Property(propertyName, AsExpressions(indicies));
 
+        /// <summary>
+        /// Constructs instance field access expression.
+        /// </summary>
+        /// <param name="field">Field metadata.</param>
+        /// <returns>Field access expression.</returns>
         public UniversalExpression Field(FieldInfo field) => expression.Field(field);
 
+        /// <summary>
+        /// Constructs instance field access expression.
+        /// </summary>
+        /// <param name="fieldName">The name of the instance field.</param>
+        /// <returns>Field access expression.</returns>
         public UniversalExpression Field(string fieldName) => expression.Field(fieldName);
 
         public UniversalExpression Loop(LabelTarget @break, LabelTarget @continue) => expression.Loop(@break, @continue);
@@ -497,6 +554,10 @@ namespace DotNext.Metaprogramming
             }
         }
 
+        /// <summary>
+        /// Returns textual representation of this expression.
+        /// </summary>
+        /// <returns>The textual representation of this expression.</returns>
         public override string ToString() => expression?.ToString();
     }
 }

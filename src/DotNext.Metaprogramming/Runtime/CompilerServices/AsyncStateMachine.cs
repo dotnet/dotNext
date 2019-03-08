@@ -22,6 +22,9 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="stateMachine">A state to modify during transition.</param>
         public delegate void Transition(ref AsyncStateMachine<STATE> stateMachine);
 
+        /// <summary>
+        /// Represents final state identifier of async state machine.
+        /// </summary>
         public const uint FINAL_STATE = 0;
 
         /// <summary>
