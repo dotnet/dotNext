@@ -46,7 +46,7 @@ namespace DotNext
         /// <summary>
         /// Allocates list of arguments on the stack.
         /// </summary>
-        /// <typeparam name="T">Type of the first function argument.</typeparam>
+        /// <typeparam name="T">Type of explicit <see langword="this"/> argument.</typeparam>
         /// <typeparam name="A">The type representing list of arguments.</typeparam>
         /// <typeparam name="R">The return type of the function.</typeparam>
         /// <param name="function">The function instance.</param>
