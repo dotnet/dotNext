@@ -46,8 +46,15 @@ namespace DotNext.Reflection
 
         internal Constructor<D> OfType<T>() => DeclaringType == typeof(T) ? this : null;
 
+        /// <summary>
+        /// Extracts delegate which can be used to invoke this constructor.
+        /// </summary>
+        /// <param name="ctor">The reflected constructor.</param>
         public static implicit operator D(Constructor<D> ctor) => ctor?.invoker;
 
+        /// <summary>
+        /// Gets name of the constructor.
+        /// </summary>
         public override string Name => ctor?.Name ?? ".ctor";
 
         ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctor;
