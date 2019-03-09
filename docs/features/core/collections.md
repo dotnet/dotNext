@@ -8,7 +8,7 @@ Instance of `System.Collections.ObjectModel.ReadOnlyCollection<T>` is the read-o
 DotNext provides the following set of read-only views:
 * [Read-only list view](../../api/DotNext.Collections.Generic.ReadOnlyListView-1.yml) for lists and arrays
 * [Read-only collection view](../../api/DotNext.Collections.Generic.ReadOnlyCollectionView-1.yml) for generic collections without indexer support
-* [Read-only dictionary view](../../api/DotNext.Collections.Generic.ReadOnlyDictionaryView-1.yml) for generic dictionaries
+* [Read-only dictionary view](../../api/DotNext.Collections.Generic.ReadOnlyDictionaryView-2.yml) for generic dictionaries
 
 The following example demonstrates how to obtain read-only view for different types of collections:
 ```csharp

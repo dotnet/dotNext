@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>.NEXT </title>
+    <title>.NEXT | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content=".NEXT ">
+    <meta name="title" content=".NEXT | .NEXT ">
     <meta name="generator" content="docfx 2.40.7.0">
     
-    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="shortcut icon" href="fav.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
     <link rel="stylesheet" href="styles/docfx.css">
     <link rel="stylesheet" href="styles/main.css">
@@ -35,7 +35,7 @@
               </button>
               
               <a class="navbar-brand" href="index.html">
-                <img id="logo" class="svg" src="logo.svg" alt="">
+                <img id="logo" class="svg" src="doc_logo.png" alt="">
               </a>
             </div>
             <div class="collapse navbar-collapse" id="navbar">
@@ -62,8 +62,30 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="next">.NEXT</h1>
 
-<p>.NEXT (Dot Next) is a set of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime. For instance, <strong>async</strong>/<strong>await</strong> support for <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/expression-trees/">C# Expression Trees</a>.</p>
-<p>The following articles give a good impression about capabilities of .NEXT:</p>
+<p>.NEXT (Dot Next) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime.</p>
+<p>This chapter gives quick overview of these libraries. Read <a href="features/core/extensions.html">articles</a> for closer look at all available features.</p>
+<h1 id="dotnext">DotNext</h1>
+<p>This library is the core of .NEXT which extends .NET Standard API with</p>
+<ul>
+<li>Extension methods for .NET Standard types including generic collections</li>
+<li>Thread-safe atomic operations to work with <code>int</code>, <code>long</code>, <code>bool</code> and reference types</li>
+<li>Unified representation of synchronization lock</li>
+<li>Generic specialization with constant values</li>
+<li>Generation of random strings</li>
+<li>Low-level methods to work with value types</li>
+<li>Ad-hoc user data associated with any object</li>
+</ul>
+<h1 id="dotnextreflection">DotNext.Reflection</h1>
+<p>This library provides support of statically-typed and fast reflection as well as <a href="https://github.com/dotnet/csharplang/issues/110">Type Classes</a>. You don't need to wait C# language of version <em>X</em> to obtain this feature.</p>
+<h1 id="dotnextmetaprogramming">DotNext.Metaprogramming</h1>
+<p>This library provides a rich set of tools to write and execute code on-the-fly. It extends <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/expression-trees/">C# Expression Tree</a> programming model with ordinary things for C# such as <code>foreach</code> loop, <code>for</code> loop, <code>while</code> loop, <code>using</code> statement and even asynchronous lambda expressions with full support of <code>async</code>/<code>await</code> semantics.</p>
+<h1 id="dotnextunsafe">DotNext.Unsafe</h1>
+<p>This library provides a special types to work with unmanaged memory in type-safe manner:</p>
+<ul>
+<li>Value types allocated in the unmanaged memory (heap)</li>
+<li>Typed unmanaged arrays</li>
+<li>CLS-compliant generic pointer type for .NET languages without direct support of such type. Use this feature to work with pointers from VB.NET or F#.</li>
+</ul>
 </article>
           </div>
           

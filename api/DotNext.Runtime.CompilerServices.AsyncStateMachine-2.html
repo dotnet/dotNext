@@ -6,13 +6,13 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Struct AsyncStateMachine&lt;STATE, R&gt;
-   </title>
+   | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct AsyncStateMachine&lt;STATE, R&gt;
-   ">
+   | .NEXT ">
     <meta name="generator" content="docfx 2.40.7.0">
     
-    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../styles/docfx.css">
     <link rel="stylesheet" href="../styles/main.css">
@@ -37,7 +37,7 @@
               </button>
               
               <a class="navbar-brand" href="../index.html">
-                <img id="logo" class="svg" src="../logo.svg" alt="">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
               </a>
             </div>
             <div class="collapse navbar-collapse" id="navbar">
@@ -73,31 +73,32 @@
   
   <h1 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2" class="text-break">Struct AsyncStateMachine&lt;STATE, R&gt;
   </h1>
-  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 summary"><p>Provides manual control over asynchronous state machine.</p>
+</div>
   <div class="markdown level0 conceptual"></div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><span class="xref">System.Runtime.CompilerServices.IAsyncStateMachine</span></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.iasyncstatemachine">IAsyncStateMachine</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <span class="xref">System.ValueType.Equals(System.Object)</span>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a>
     </div>
     <div>
-      <span class="xref">System.ValueType.GetHashCode()</span>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <span class="xref">System.ValueType.ToString()</span>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a>
     </div>
     <div>
-      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
     </div>
     <div>
-      <span class="xref">System.Object.GetType()</span>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
     </div>
     <div>
-      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.CompilerServices.html">DotNext.Runtime.CompilerServices</a></h6>
@@ -118,14 +119,20 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <tbody>
       <tr>
         <td><span class="parametername">STATE</span></td>
-        <td></td>
+        <td><p>The local state of async function used to store computation state.</p>
+</td>
       </tr>
       <tr>
         <td><span class="parametername">R</span></td>
-        <td></td>
+        <td><p>Result type of asynchronous function.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This type allows to implement custom async/await flow
+and intended for expert-level developers.</p>
+</div>
   <h3 id="fields">Fields
   </h3>
   <span class="small pull-right mobile-hide">
@@ -133,7 +140,7 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2_State.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602.State%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L180">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L220">View Source</a>
   </span>
   <h4 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_State" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.State">State</h4>
   <div class="markdown level1 summary"><p>Represents internal state.</p>
@@ -165,11 +172,12 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2_HasNoException.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602.HasNoException%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L241">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L302">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_HasNoException_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.HasNoException*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_HasNoException" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.HasNoException">HasNoException</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Indicates that this async state machine is not in exceptional state.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -185,7 +193,7 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Boolean</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -195,7 +203,7 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2_Result.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602.Result%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L266">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L333">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_Result_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.Result*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_Result" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.Result">Result</h4>
@@ -226,11 +234,12 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2_StateId.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602.StateId%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L200">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L243">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_StateId_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.StateId*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_StateId" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.StateId">StateId</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets state identifier.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -246,7 +255,7 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.UInt32</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -258,11 +267,13 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2_EnterGuardedCode_System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602.EnterGuardedCode(System.UInt32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L207">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L255">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_EnterGuardedCode_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.EnterGuardedCode*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_EnterGuardedCode_System_UInt32_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.EnterGuardedCode(System.UInt32)">EnterGuardedCode(UInt32)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Enters guarded code block which represents <span class="xref">langword_csharp_try</span> block of code
+inside of async lambda function.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -279,9 +290,10 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.UInt32</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
         <td><span class="parametername">newState</span></td>
-        <td></td>
+        <td><p>The identifier of the async machine state representing guared code.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -290,11 +302,12 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2_ExitGuardedCode_System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602.ExitGuardedCode(System.UInt32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L215">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L267">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_ExitGuardedCode_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.ExitGuardedCode*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_ExitGuardedCode_System_UInt32_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.ExitGuardedCode(System.UInt32)">ExitGuardedCode(UInt32)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Leaves guarded code block.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -311,9 +324,10 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.UInt32</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
         <td><span class="parametername">previousState</span></td>
-        <td></td>
+        <td><p>The identifier of the async state machine before invocation of <a class="xref" href="DotNext.Runtime.CompilerServices.AsyncStateMachine-2.html#DotNext_Runtime_CompilerServices_AsyncStateMachine_2_EnterGuardedCode_System_UInt32_">EnterGuardedCode(UInt32)</a>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -322,11 +336,12 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2_MoveNext__1___0__System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602.MoveNext%60%601(%60%600%40%2CSystem.UInt32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L278">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L351">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_MoveNext_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.MoveNext*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_MoveNext__1___0__System_UInt32_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.MoveNext``1(``0@,System.UInt32)">MoveNext&lt;TAwaiter&gt;(ref TAwaiter, UInt32)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Performs transition.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -346,12 +361,14 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
       <tr>
         <td><span class="xref">TAwaiter</span></td>
         <td><span class="parametername">awaiter</span></td>
-        <td></td>
+        <td><p>Asynchronous result obtained from another method to await.</p>
+</td>
       </tr>
       <tr>
-        <td><span class="xref">System.UInt32</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
         <td><span class="parametername">stateId</span></td>
-        <td></td>
+        <td><p>A new state identifier.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -366,7 +383,8 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <tbody>
       <tr>
         <td><span class="parametername">TAwaiter</span></td>
-        <td></td>
+        <td><p>Type of asynchronous control flow object.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -375,7 +393,7 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2_Rethrow.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602.Rethrow%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L251">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L312">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_Rethrow_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.Rethrow*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_Rethrow" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.Rethrow">Rethrow()</h4>
@@ -391,11 +409,12 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2_Start_DotNext_Runtime_CompilerServices_AsyncStateMachine__0__1__Transition__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602.Start(DotNext.Runtime.CompilerServices.AsyncStateMachine%7B%600%2C%601%7D.Transition%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L260">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L327">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_Start_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.Start*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_Start_DotNext_Runtime_CompilerServices_AsyncStateMachine__0__1__Transition__0_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.Start(DotNext.Runtime.CompilerServices.AsyncStateMachine{`0,`1}.Transition,`0)">Start(AsyncStateMachine&lt;STATE, R&gt;.Transition, STATE)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Executes async state machine.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -414,12 +433,14 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
       <tr>
         <td><a class="xref" href="DotNext.Runtime.CompilerServices.AsyncStateMachine-2.Transition.html">AsyncStateMachine.Transition</a>&lt;&gt;</td>
         <td><span class="parametername">transition</span></td>
-        <td></td>
+        <td><p>Async function which execution is controlled by state machine.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">STATE</span></td>
         <td><span class="parametername">initialState</span></td>
-        <td></td>
+        <td><p>Initial state.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -433,8 +454,9 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Threading.Tasks.Task</span>&lt;R&gt;</td>
-        <td></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;R&gt;</td>
+        <td><p>The task representing execution of async function.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -443,11 +465,13 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2_TryRecover__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602.TryRecover%60%601(%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L223">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L282">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_TryRecover_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.TryRecover*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_TryRecover__1___0__" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.TryRecover``1(``0@)">TryRecover&lt;E&gt;(out E)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Attempts to recover from the exception and indicating prologue of <span class="xref">langword_csharp_catch</span> statement
+inside of async lambda function.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -467,7 +491,8 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
       <tr>
         <td><span class="xref">E</span></td>
         <td><span class="parametername">restoredException</span></td>
-        <td></td>
+        <td><p>Reference to the captured exception.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -481,8 +506,9 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Boolean</span></td>
-        <td></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if caught exception is of type <code data-dev-comment-type="typeparamref" class="typeparamref">E</code>; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -497,7 +523,8 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <tbody>
       <tr>
         <td><span class="parametername">E</span></td>
-        <td></td>
+        <td><p>Type of expression to be caught.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -508,7 +535,7 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2_System_Runtime_CompilerServices_IAsyncStateMachine_MoveNext.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602.System%23Runtime%23CompilerServices%23IAsyncStateMachine%23MoveNext%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L286">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L359">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_System_Runtime_CompilerServices_IAsyncStateMachine_MoveNext_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.System#Runtime#CompilerServices#IAsyncStateMachine#MoveNext*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_System_Runtime_CompilerServices_IAsyncStateMachine_MoveNext" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.System#Runtime#CompilerServices#IAsyncStateMachine#MoveNext">IAsyncStateMachine.MoveNext()</h4>
@@ -523,7 +550,7 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2_System_Runtime_CompilerServices_IAsyncStateMachine_SetStateMachine_System_Runtime_CompilerServices_IAsyncStateMachine_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602.System%23Runtime%23CompilerServices%23IAsyncStateMachine%23SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L312">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L385">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_System_Runtime_CompilerServices_IAsyncStateMachine_SetStateMachine_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.System#Runtime#CompilerServices#IAsyncStateMachine#SetStateMachine*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_AsyncStateMachine_2_System_Runtime_CompilerServices_IAsyncStateMachine_SetStateMachine_System_Runtime_CompilerServices_IAsyncStateMachine_" data-uid="DotNext.Runtime.CompilerServices.AsyncStateMachine`2.System#Runtime#CompilerServices#IAsyncStateMachine#SetStateMachine(System.Runtime.CompilerServices.IAsyncStateMachine)">IAsyncStateMachine.SetStateMachine(IAsyncStateMachine)</h4>
@@ -544,7 +571,7 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">System.Runtime.CompilerServices.IAsyncStateMachine</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.iasyncstatemachine">IAsyncStateMachine</a></td>
         <td><span class="parametername">stateMachine</span></td>
         <td></td>
       </tr>
@@ -552,11 +579,11 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <span class="xref">System.Runtime.CompilerServices.IAsyncStateMachine</span>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.iasyncstatemachine">System.Runtime.CompilerServices.IAsyncStateMachine</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Metaprogramming.Expressions.html#DotNext_Metaprogramming_Expressions_AsConst__1___0_">Expressions.AsConst&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_AsConst__1___0_">ExpressionBuilder.AsConst&lt;T&gt;(T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_Box__1___0_">ValueTypeExtensions.Box&lt;T&gt;(T)</a>
@@ -572,7 +599,7 @@ public struct AsyncStateMachine&lt;STATE, R&gt; : IAsyncStateMachine&lt;STATE&gt
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_AsyncStateMachine_2.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.AsyncStateMachine%602%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L167" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/AsyncStateMachine.cs/#L207" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

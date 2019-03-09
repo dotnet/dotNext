@@ -11,11 +11,11 @@
     - name: Optional Type
       href: core/optional.md
     - name: Atomic Operations
-      href: atomic.md
+      href: core/atomic.md
     - name: Generic specialization with constant values
-      href: constgen.md
+      href: core/constgen.md
     - name: Synchronization Enhancements
-      href: lock.md
+      href: core/lock.md
 - name: Type Classes
   href: concepts.md
 - name: Advanced Reflection
