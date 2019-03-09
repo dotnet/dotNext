@@ -10,7 +10,7 @@
     <Description>A library for metaprogramming and dynamic code generation</Description>
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
     <PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/sakno/DotNext</PackageProjectUrl>
+    <PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>metaprogramming</PackageTags>

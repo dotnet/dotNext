@@ -10,7 +10,7 @@
     <Version>0.1.0</Version>
 	<AssemblyName>DotNext</AssemblyName>
     <PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/sakno/DotNext</PackageProjectUrl>
+    <PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>extensions;.netstandard</PackageTags>
