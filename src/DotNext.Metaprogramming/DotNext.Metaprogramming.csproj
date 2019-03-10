@@ -31,14 +31,14 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-  
-<ItemGroup>
-    <ProjectReference Include="..\DotNext\DotNext.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="ExceptionMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNext" Version="0.1.0" />
   </ItemGroup>
 </Project>
