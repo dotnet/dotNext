@@ -1,0 +1,54 @@
+Multi-line Lambdas
+====
+Expression Trees in C# doesn't support multi-line lambda expressions. This limitation can be avoided using [LambdaBuilder](../../api/DotNext.Metaprogramming.LambdaBuilder.yaml). The builder represents lexical scope and a lot of methods for lambda body construction.
+
+The following example shows how to generate lambda function which performs factorial computation using recursion:
+
+```csharp
+using System;
+using DotNext.Metaprogramming;
+
+Func<long, long> fact = LambdaBuilder<Func<long, long>>.Build(fun => 
+{
+    UniversalExpression arg = fun.Parameters[0];
+    fun.If(arg > 1L)
+        .Then(arg * fun.Self.Invoke(arg - 1L))
+        .Else(arg)
+    .OfType<long>()
+    .End();
+}).Compile();
+fact(3);    // == 6
+```
+
+`fun` parameter represents lexical scope of the lambda function to be constructed. `arg` local variable is just a conversion of the lambda function parameter into [Universal Expression](universal.md). `fun.If` starts construction of _if-then-else_ expression. `fun.Self` is a reference to the function itself providing recursive access. `OfType` describes type of conditional expression that was started by `fun.If` call. `End` method call represents end of conditional expression.
+
+The last expression inside of lamda function is interpreted as return value. However, explicit return is supported.
+
+```csharp
+using System;
+using DotNext.Metaprogramming;
+
+Func<long, bool> isZero = LambdaBuilder<Func<long, bool>>.Build(fun => 
+{
+    UniversalExpression arg = fun.Parameters[0];
+    fun.If(arg != 0L)
+        .Then(then => then.Return(true))
+        .Else(otherwise => otherwise.Return(false))
+    .End();
+}).Compile();
+```
+
+The equivalent code is
+```csharp
+using System;
+
+private static bool IsZero(long arg)
+{
+    if(arg != 0L)
+        return true;
+    else
+        return false;
+}
+```
+
+`then` and `otherwise` parameters provide access to the lexical scope and code block of the positive and negative conditional branches respectively.

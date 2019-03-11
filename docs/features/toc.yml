@@ -1,7 +1,6 @@
-- name: Core Features
+- name: BCL Enhancements
+  href: core/extensions.md
   items:
-    - name: Extension Methods
-      href: core/extensions.md
     - name: Ad-hoc User Data
       href: core/userdata.md
     - name: Value Type Enhancements
@@ -21,7 +20,14 @@
 - name: Advanced Reflection
   href: reflection.md
 - name: Metaprogramming
-  href: meta.md
+  href: metaprogramming/preface.md
+  items:
+    - name: Universal Expression
+      href: metaprogramming/universal.md
+    - name: Compound Expressions
+      href: metaprogramming/compound.md
+    - name: Multi-line Lambdas
+      href: metaprogramming/lambda.md
 - name: Unsafe Data Structures
   href: unsafe.md
 - name: Benchmarks
