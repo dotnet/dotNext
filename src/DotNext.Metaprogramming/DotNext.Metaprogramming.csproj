@@ -4,17 +4,18 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>A library for metaprogramming and dynamic code generation</Description>
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
     <PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/sakno/DotNext</PackageProjectUrl>
+    <PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>metaprogramming</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
+    <PackageReleaseNotes>Updated DotNext dependency</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -31,14 +32,15 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-  
-<ItemGroup>
-    <ProjectReference Include="..\DotNext\DotNext.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="ExceptionMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'"/>
+    <PackageReference Include="DotNext" Version="0.1.1" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 </Project>

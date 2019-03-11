@@ -61,51 +61,140 @@ namespace DotNext.Reflection
 
         D IMember<ConstructorInfo, D>.Invoker => invoker;
 
+        /// <summary>
+        /// Gets the attributes associated with this constructor.
+        /// </summary>
         public override MethodAttributes Attributes => ctor is null ? (MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName) : ctor.Attributes;
 
+        /// <summary>
+        /// Gets a handle to the internal metadata representation of a constructor.
+        /// </summary>
         public override RuntimeMethodHandle MethodHandle => ctor is null ? invoker.Method.MethodHandle : ctor.MethodHandle;
 
+        /// <summary>
+        /// Gets the class that declares this member.
+        /// </summary>
         public override Type DeclaringType { get; }
 
+        /// <summary>
+        /// Gets the class object that was used to obtain this instance.
+        /// </summary>
         public override Type ReflectedType => ctor is null ? ctor.ReflectedType : invoker.Method.ReflectedType;
 
+        /// <summary>
+        /// Gets a value indicating the calling conventions for this constructor.
+        /// </summary>
         public override CallingConventions CallingConvention => ctor is null ? invoker.Method.CallingConvention : ctor.CallingConvention;
 
+        /// <summary>
+        /// Gets a value indicating whether the generic method contains unassigned generic type parameters.
+        /// </summary>
         public override bool ContainsGenericParameters => false;
 
+        /// <summary>
+        /// Gets a collection that contains this member's custom attributes.
+        /// </summary>
         public override IEnumerable<CustomAttributeData> CustomAttributes => GetCustomAttributesData();
 
+        /// <summary>
+        /// When overridden in a derived class, gets a System.Reflection.MethodBody object that provides access to the MSIL stream, 
+        /// local variables, and exceptions for the current method.
+        /// </summary>
+        /// <returns>An object that provides access to the MSIL stream, local variables, and exceptions for the current method.</returns>
         public override MethodBody GetMethodBody() => ctor?.GetMethodBody() ?? invoker.Method.GetMethodBody();
 
+        /// <summary>
+        /// Returns a list of custom attributes that have been applied to the target member.
+        /// </summary>
+        /// <returns>The data about the attributes that have been applied to the target member.</returns>
         public override IList<CustomAttributeData> GetCustomAttributesData() => ctor?.GetCustomAttributesData() ?? Array.Empty<CustomAttributeData>();
 
+        /// <summary>
+        /// Returns the type arguments of a generic method or the type parameters of a generic method definition.
+        /// </summary>
+        /// <returns>The list of generic arguments.</returns>
         public override Type[] GetGenericArguments() => Array.Empty<Type>();
 
+        /// <summary>
+        /// Gets a value indicating whether the constructor is generic.
+        /// </summary>
         public override bool IsGenericMethod => false;
 
+        /// <summary>
+        /// Gets a value indicating whether the constructor is a generic method definition.
+        /// </summary>
         public override bool IsGenericMethodDefinition => false;
 
+        /// <summary>
+        /// Gets a value that indicates whether the constructor is security-critical or security-safe-critical at the current trust level, 
+        /// and therefore can perform critical operations.
+        /// </summary>
         public override bool IsSecurityCritical => ctor is null ? invoker.Method.IsSecurityCritical : ctor.IsSecurityCritical;
 
+        /// <summary>
+        /// Gets a value that indicates whether the constructor is security-safe-critical at the current trust level; that is, 
+        /// whether it can perform critical operations and can be accessed by transparent code.
+        /// </summary>
         public override bool IsSecuritySafeCritical => ctor is null ? invoker.Method.IsSecuritySafeCritical : ctor.IsSecuritySafeCritical;
 
+        /// <summary>
+        /// Gets a value that indicates whether the current method or constructor is transparent at the current trust level, 
+        /// and therefore cannot perform critical operations.
+        /// </summary>
         public override bool IsSecurityTransparent => ctor is null ? invoker.Method.IsSecurityTransparent : ctor.IsSecurityTransparent;
 
+        /// <summary>
+        /// Always returns <see cref="MemberTypes.Constructor"/>.
+        /// </summary>
         public override MemberTypes MemberType => MemberTypes.Constructor;
 
+        /// <summary>
+        /// Gets a value that identifies a metadata element.
+        /// </summary>
         public override int MetadataToken => ctor is null ? invoker.Method.MetadataToken : ctor.MetadataToken;
 
+        /// <summary>
+        /// Gets constructor implementation attributes.
+        /// </summary>
         public override MethodImplAttributes MethodImplementationFlags => ctor is null ? invoker.Method.MethodImplementationFlags : ctor.MethodImplementationFlags;
 
+        /// <summary>
+        /// Gets the module in which the type that declares the constructor represented by the current instance is defined.
+        /// </summary>
         public override Module Module => ctor is null ? DeclaringType.Module : ctor.Module;
 
+        /// <summary>
+        /// Invokes this constructor.
+        /// </summary>
+        /// <param name="invokeAttr">Specifies the type of binding.</param>
+        /// <param name="binder">Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection</param>
+        /// <param name="parameters">A list of constructor arguments.</param>
+        /// <param name="culture">Used to govern the coercion of types.</param>
+        /// <returns>Instantiated object.</returns>
         public override object Invoke(BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
             => Invoke(null, invokeAttr, binder, parameters, culture);
 
+        /// <summary>
+        /// Gets constructor implementation attributes.
+        /// </summary>
+        /// <returns>Implementation attributes.</returns>
         public override MethodImplAttributes GetMethodImplementationFlags() => MethodImplementationFlags;
 
+        /// <summary>
+        /// Gets constructor parameters.
+        /// </summary>
+        /// <returns>The array of constructor parameters.</returns>
         public override ParameterInfo[] GetParameters() => ctor is null ? invoker.Method.GetParameters() : ctor.GetParameters();
 
+        /// <summary>
+        /// Invokes this constructor.
+        /// </summary>
+        /// <param name="obj">The object on which to invoke the constructor.</param>
+        /// <param name="invokeAttr">Specifies the type of binding.</param>
+        /// <param name="binder">Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection</param>
+        /// <param name="parameters">A list of constructor arguments.</param>
+        /// <param name="culture">Used to govern the coercion of types.</param>
+        /// <returns>Instantiated object.</returns>
         public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
             => ctor is null ? invoker.Method.Invoke(obj, invokeAttr, binder, parameters, culture) : ctor.Invoke(obj, invokeAttr, binder, parameters, culture);
 

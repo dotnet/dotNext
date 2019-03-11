@@ -10,7 +10,7 @@
     <Description>Rich data types to work with unmanaged memory in CLS-compliant way</Description>
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
     <PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/sakno/DotNext</PackageProjectUrl>
+    <PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>unsafe;unmanaged;pointer</PackageTags>
@@ -33,7 +33,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNext\DotNext.csproj" />
+    <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'"/>
+    <PackageReference Include="DotNext" Version="0.1.1" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
   <ItemGroup>
