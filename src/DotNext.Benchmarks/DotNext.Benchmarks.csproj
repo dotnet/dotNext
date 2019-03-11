@@ -26,7 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.11.3" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.4" />
     <PackageReference Include="FastMember.Signed" Version="1.4.1" />
   </ItemGroup>
 

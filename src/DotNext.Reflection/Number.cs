@@ -1,9 +1,10 @@
 using System;
+using System.Globalization;
 
 namespace DotNext
 {
     using Reflection;
-    
+
     /// <summary>
     /// Represents any primitive numeric type.
     /// </summary>
@@ -17,7 +18,7 @@ namespace DotNext
     public readonly struct Number<T>: IEquatable<T>, IConcept<T>
         where T: struct, IConvertible, IComparable, IFormattable
     {
-		#region Concept Definition
+        #region Concept Definition
 		private static readonly Operator<T, T> UnaryPlus = Type<T>.Operator.Require<T>(UnaryOperator.Plus, OperatorLookup.Predefined);
         private static readonly Operator<T, T> UnaryMinus = Type<T>.Operator.Require<T>(UnaryOperator.Negate, OperatorLookup.Predefined);
         
@@ -33,6 +34,7 @@ namespace DotNext
 		private static readonly Operator<T, T, bool> Inequality = Type<T>.Operator<T>.Require<bool>(BinaryOperator.NotEqual, OperatorLookup.Predefined);
 
         private static readonly Function<(string text, Ref<T> result), bool> TryParseMethod = Type<T>.RequireStaticMethod<(string, Ref<T>), bool>(nameof(int.TryParse));
+        private static readonly Function<(string text, NumberStyles styles, IFormatProvider provider, Ref<T> result), bool> AdvancedTryParseMethod = Type<T>.RequireStaticMethod<(string, NumberStyles, IFormatProvider, Ref<T>), bool>(nameof(int.TryParse));
 
         private static readonly Func<string, T> ParseMethod = Type<T>.Method<string>.GetStatic<T>(nameof(int.Parse));
 
@@ -76,27 +78,73 @@ namespace DotNext
         public static implicit operator T(Number<T> value)
             => value.value;
 
-        public static Number<T> operator +(Number<T> other)
-            => new Number<T>(UnaryPlus(other));
+        /// <summary>
+        /// Arithmetic unary plus operation.
+        /// </summary>
+        /// <param name="operand">Unary plus operand.</param>
+        /// <returns>The result of unary plus operation.</returns>
+        public static Number<T> operator +(Number<T> operand)
+            => new Number<T>(UnaryPlus(operand));
 
+        /// <summary>
+        /// Arithmetic addition operation.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>The result of addition.</returns>
         public static Number<T> operator+(Number<T> left, T right)
             => new Number<T>(BinaryPlus(in left.value, in right));
         
+        /// <summary>
+        /// Arithmetic subtraction operation.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>The result of subtraction.</returns>
         public static Number<T> operator-(Number<T> left, T right)
             => new Number<T>(BinaryMinus(in left.value, in right));
-        
+
+        /// <summary>
+        /// Arithmetic multiplication operation.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>The result of multiplication operation.</returns>
         public static Number<T> operator *(Number<T> left, T right)
             => new Number<T>(Multiply(in left.value, in right));
-        
+
+        /// <summary>
+        /// Arithmetic division operation.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>The result of division operation.</returns>
         public static Number<T> operator /(Number<T> left, T right)
             => new Number<T>(Divide(in left.value, in right));
 
+        /// <summary>
+        /// Performs equality check.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns><see langword="true"/>, if two numers are equal; otherwise, <see langword="false"/>.</returns>
 		public static bool operator ==(Number<T> left, T right)
 			=> Equality(in left.value, right);
 
+        /// <summary>
+        /// Performs inequality check.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns><see langword="true"/>, if two numers are not equal; otherwise, <see langword="false"/>.</returns>
 		public static bool operator !=(Number<T> left, T right)
 			=> Inequality(in left.value, right);
 
+        /// <summary>
+        /// Determines whether this number is equal to the specified number.
+        /// </summary>
+        /// <param name="other">The number to compare.</param>
+        /// <returns><see langword="true"/>, if two numers are equal; otherwise, <see langword="false"/>.</returns>
 		public override bool Equals(object other)
 		{
 			switch(other)
@@ -109,8 +157,14 @@ namespace DotNext
 					return false;
 			}
 		}
-        
-		public static bool TryParse(string text, out Number<T> value)
+
+        /// <summary>
+        /// Converts the string representation of a number to its typed equivalent.  
+        /// </summary>
+        /// <param name="text">A string containing a number to convert</param>
+        /// <param name="value">Converted number value.</param>
+        /// <returns>Parsed number.</returns>
+        public static bool TryParse(string text, out Number<T> value)
         {
             var args = TryParseMethod.ArgList();
             args.text = text;
@@ -119,6 +173,32 @@ namespace DotNext
             return success;
         }
 
+        /// <summary>
+        /// Converts the string representation of a number to its typed equivalent.  
+        /// </summary>
+        /// <param name="text">A string containing a number to convert.</param>
+        /// <param name="styles">Style of the number supplied as a string.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+        /// <param name="value">Converted number value.</param>
+        /// <returns>Parsed number.</returns>
+        public static bool TryParse(string text, NumberStyles styles, IFormatProvider provider, out Number<T> value)
+        {
+            var args = AdvancedTryParseMethod.ArgList();
+            args.provider = provider;
+            args.styles = styles;
+            args.text = text;
+            var success = AdvancedTryParseMethod(args);
+            value = new Number<T>(args.result);
+            return success;
+        }
+
+        /// <summary>
+        /// Converts the string representation of a number to its typed equivalent. 
+        /// </summary>
+        /// <param name="text">A string containing a number to convert.</param>
+        /// <returns>Parsed number.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="text"/> is <see langword="null"/>.</exception>
+        /// <exception cref="FormatException"><paramref name="text"/> is not in the correct format.</exception>
         public static Number<T> Parse(string text) => new Number<T>(ParseMethod(text));
     }
 }

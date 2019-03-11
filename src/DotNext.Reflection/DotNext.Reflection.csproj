@@ -33,7 +33,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNext\DotNext.csproj" />
+    <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'"/>
+    <PackageReference Include="DotNext" Version="0.1.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
   <ItemGroup>
