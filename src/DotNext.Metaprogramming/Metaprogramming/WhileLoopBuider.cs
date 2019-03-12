@@ -1,3 +1,4 @@
+using System.Dynamic;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
@@ -36,5 +37,8 @@ namespace DotNext.Metaprogramming
             }
             return loopExpr;
         }
+
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+            => new MetaExpression(parameter, this);
     }
 }

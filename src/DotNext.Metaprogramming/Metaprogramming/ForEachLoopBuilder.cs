@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Dynamic;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
@@ -61,5 +62,8 @@ namespace DotNext.Metaprogramming
                     Expression.Block(enumerator.Call(disposeMethod), enumerator.Assign(enumerator.Type.AsDefault()));
             return loopBody.Finally(@finally);
         }
+
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+            => new MetaExpression(parameter, this);
     }
 }

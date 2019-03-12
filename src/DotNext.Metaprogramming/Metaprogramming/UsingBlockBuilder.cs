@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 using MethodInfo = System.Reflection.MethodInfo;
 using System.Linq;
 using System.Linq.Expressions;
@@ -48,5 +49,8 @@ namespace DotNext.Metaprogramming
         }
 
         Expression IExpressionBuilder<Expression>.Build() => Build();
+
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+            => new MetaExpression(parameter, this);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Dynamic;
 using System.Linq;
@@ -17,6 +16,7 @@ namespace DotNext.Metaprogramming
         private static readonly MethodInfo InvokeMethod = typeof(Expression).GetMethod(nameof(Expression.Invoke), new[] { typeof(Expression), typeof(Expression[]) });
         private static readonly MethodInfo NewMethod = typeof(ExpressionBuilder).GetMethod(nameof(ExpressionBuilder.New), new[] { typeof(Type), typeof(Expression[]) });
         private static readonly MethodInfo PropertyMethod = typeof(Expression).GetMethod(nameof(Expression.Property), new[] { typeof(Expression), typeof(string), typeof(Expression[]) });
+        private static readonly MethodInfo ActivateMethod = typeof(ExpressionBuilder).GetMethod(nameof(ExpressionBuilder.New), new[] { typeof(Expression), typeof(Expression[]) });
 
         private static readonly ConstantExpression ItemName = "Item".AsConst();
         private static readonly ConstantExpression ConvertOperator = ExpressionType.Convert.AsConst();
@@ -114,6 +114,22 @@ namespace DotNext.Metaprogramming
                 binding = Expression.Call(MakeUnaryMethod, ConvertOperator, binding, binder.Type.AsConst());
                 return new MetaExpression(binding, Restrictions);
             }
+        }
+
+        public override DynamicMetaObject BindDeleteMember(DeleteMemberBinder binder)
+            => throw new NotSupportedException();
+
+        public override DynamicMetaObject BindDeleteIndex(DeleteIndexBinder binder, DynamicMetaObject[] indexes)
+            => throw new NotSupportedException();
+
+        public override DynamicMetaObject BindCreateInstance(CreateInstanceBinder binder, DynamicMetaObject[] args)
+        {
+            var binding = PrepareExpression();
+            if (Expression is ConstantExpression expr && expr.Value is ConstantExpression constExpr && constExpr.Value is Type)
+                binding = Expression.Call(NewMethod, constExpr, Expression.NewArrayInit(typeof(Expression), args.Select(ToExpression)));
+            else
+                binding = Expression.Call(ActivateMethod, binding, Expression.NewArrayInit(typeof(Expression), args.Select(ToExpression)));
+            return new MetaExpression(binding, Restrictions);
         }
     }
 }

@@ -930,6 +930,21 @@ namespace DotNext.Metaprogramming
 
         internal static Expression AddEpilogue(this Expression expression, bool inferType, params Expression[] instructions)
             => AddEpilogue(expression, inferType, (IReadOnlyCollection<Expression>)instructions);
+
+        /// <summary>
+        /// Constructs type instantiation expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>new T()</code>.
+        /// </remarks>
+        /// <param name="type">The expression representung the type to be instantiated.</param>
+        /// <param name="args">The list of arguments to be passed into constructor.</param>
+        /// <returns>Instantiation expression.</returns>
+        public static MethodCallExpression New(this Expression type, params Expression[] args)
+        {
+            var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), new[] { typeof(Type), typeof(object[]) });
+            return Expression.Call(activate, type, Expression.NewArrayInit(typeof(object), args));
+        }
     }
 
     /// <summary>

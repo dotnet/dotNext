@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -220,5 +221,8 @@ namespace DotNext.Metaprogramming
         /// <returns>Constructed lambda expression.</returns>
         public static Expression<D> Build(Action<LambdaBuilder<D>> lambdaBody)
             => Build(false, lambdaBody);
+
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+            => new MetaExpression(parameter, this);
     }
 }
