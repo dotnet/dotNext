@@ -809,8 +809,7 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="T">The type of constant.</typeparam>
         /// <param name="value">The constant value.</param>
         /// <returns></returns>
-        public static Expression AsConst<T>(this T value)
-            => value is Expression expr ? (Expression)Expression.Quote(expr) : Expression.Constant(value, typeof(T));
+        public static ConstantExpression AsConst<T>(this T value) => Expression.Constant(value, typeof(T));
 
         /// <summary>
         /// Constructs type default value supplier.
