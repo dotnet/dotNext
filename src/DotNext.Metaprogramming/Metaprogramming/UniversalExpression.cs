@@ -18,7 +18,7 @@ namespace DotNext.Metaprogramming
     /// <remarks>
     /// This class is intended for expression building purposes only.
     /// </remarks>
-    public readonly struct UniversalExpression: IExpressionBuilder<Expression>, IDynamicMetaObjectProvider
+    public readonly struct UniversalExpression: IExpressionBuilder<Expression>
     {
         private readonly Expression expression;
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -1001,5 +1002,7 @@ namespace DotNext.Metaprogramming
         private protected abstract E Build();
 
         E IExpressionBuilder<E>.Build() => Build();
+
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter) => new MetaExpression(parameter, this);
     }
 }
