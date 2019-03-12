@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Dynamic;
+using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
@@ -18,5 +19,8 @@ namespace DotNext.Metaprogramming
         LoopExpression IExpressionBuilder<LoopExpression>.Build() => base.Build().Loop(breakLabel, continueLabel);
 
         internal override Expression Build() => ((IExpressionBuilder<LoopExpression>)this).Build();
+
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+            => new MetaExpression(parameter, this);
     }
 }
