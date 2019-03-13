@@ -23,18 +23,39 @@ namespace DotNext.Reflection
 
         public override void SetValue(object obj, object value, object[] index) => property.SetValue(obj, value, index);
 
+        /// <summary>
+        /// Gets name of the property.
+        /// </summary>
         public sealed override string Name => property.Name;
 
+        /// <summary>
+        /// Gets a value indicating whether the property can be read.
+        /// </summary>
         public sealed override bool CanRead => property.CanRead;
 
+        /// <summary>
+        /// Gets a value indicating whether the property can be written to.
+        /// </summary>
         public sealed override bool CanWrite => property.CanWrite;
 
+        /// <summary>
+        /// Gets the get accessor for this property.
+        /// </summary>
         public sealed override MethodInfo GetMethod => property.GetMethod;
 
+        /// <summary>
+        /// Gets the attributes for this property.
+        /// </summary>
         public sealed override PropertyAttributes Attributes => property.Attributes;
 
+        /// <summary>
+        /// Gets the type of this property.
+        /// </summary>
         public sealed override Type PropertyType => property.PropertyType;
 
+        /// <summary>
+        /// Gets the set accessor for this property.
+        /// </summary>
         public sealed override MethodInfo SetMethod => property.SetMethod;
 
         public sealed override MethodInfo[] GetAccessors(bool nonPublic) => property.GetAccessors(nonPublic);
