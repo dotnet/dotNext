@@ -40,12 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-<<<<<<< HEAD
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'"/>
     <PackageReference Include="DotNext" Version="0.1.1" Condition="'$(Configuration)'=='Release'" />
-=======
-    <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.1.0" Condition="'$(Configuration)'=='Release'" />
->>>>>>> meta-dynamic
   </ItemGroup>
 </Project>
