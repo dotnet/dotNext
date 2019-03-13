@@ -10,7 +10,7 @@ namespace DotNext.Reflection
     /// Represents property.
     /// </summary>
     /// <typeparam name="V">Type of property value.</typeparam>
-    public abstract class PropertyBase<V> : PropertyInfo, IProperty, IEquatable<PropertyBase<V>>, IEquatable<PropertyInfo>
+    public abstract class PropertyBase<V> : PropertyInfo, IProperty, IEquatable<PropertyInfo>
     {
         private readonly PropertyInfo property;
 
@@ -80,21 +80,16 @@ namespace DotNext.Reflection
 
         PropertyInfo IMember<PropertyInfo>.RuntimeMember => property;
 
-        public bool Equals(PropertyInfo other) => property == other;
-
-        public bool Equals(PropertyBase<V> other)
-            => other != null &&
-                GetType() == other.GetType() &&
-                property == other.property;
+        public bool Equals(PropertyInfo other) => other is PropertyBase<V> property ? property.property == this.property : this.property == other;
 
         public override bool Equals(object other)
         {
             switch (other)
             {
                 case PropertyBase<V> property:
-                    return Equals(property);
+                    return this.property == property.property;
                 case PropertyInfo property:
-                    return Equals(property);
+                    return this.property == property;
                 default:
                     return false;
             }

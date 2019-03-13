@@ -11,7 +11,7 @@ namespace DotNext.Reflection
     /// Provides constructor definition based on delegate signature.
     /// </summary>
     /// <typeparam name="D">Type of delegate representing constructor of type <typeparamref name="D"/>.</typeparam>
-    public sealed class Constructor<D> : ConstructorInfo, IConstructor<D>, IEquatable<ConstructorInfo>, IEquatable<Constructor<D>>
+    public sealed class Constructor<D> : ConstructorInfo, IConstructor<D>, IEquatable<ConstructorInfo>
         where D : MulticastDelegate
     {
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public;
@@ -72,7 +72,7 @@ namespace DotNext.Reflection
         public override RuntimeMethodHandle MethodHandle => ctor is null ? invoker.Method.MethodHandle : ctor.MethodHandle;
 
         /// <summary>
-        /// Gets the class that declares this member.
+        /// Gets the class that declares this constructor.
         /// </summary>
         public override Type DeclaringType { get; }
 
@@ -104,9 +104,9 @@ namespace DotNext.Reflection
         public override MethodBody GetMethodBody() => ctor?.GetMethodBody() ?? invoker.Method.GetMethodBody();
 
         /// <summary>
-        /// Returns a list of custom attributes that have been applied to the target member.
+        /// Returns a list of custom attributes that have been applied to the target constructor.
         /// </summary>
-        /// <returns>The data about the attributes that have been applied to the target member.</returns>
+        /// <returns>The data about the attributes that have been applied to the target constructor.</returns>
         public override IList<CustomAttributeData> GetCustomAttributesData() => ctor?.GetCustomAttributesData() ?? Array.Empty<CustomAttributeData>();
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace DotNext.Reflection
         public override bool IsSecuritySafeCritical => ctor is null ? invoker.Method.IsSecuritySafeCritical : ctor.IsSecuritySafeCritical;
 
         /// <summary>
-        /// Gets a value that indicates whether the current method or constructor is transparent at the current trust level, 
+        /// Gets a value that indicates whether the current constructor is transparent at the current trust level, 
         /// and therefore cannot perform critical operations.
         /// </summary>
         public override bool IsSecurityTransparent => ctor is null ? invoker.Method.IsSecurityTransparent : ctor.IsSecurityTransparent;
@@ -198,34 +198,69 @@ namespace DotNext.Reflection
         public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
             => ctor is null ? invoker.Method.Invoke(obj, invokeAttr, binder, parameters, culture) : ctor.Invoke(obj, invokeAttr, binder, parameters, culture);
 
+        /// <summary>
+        /// Returns an array of all custom attributes applied to this constructor.
+        /// </summary>
+        /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
+        /// <returns>An array that contains all the custom attributes applied to this constructor.</returns>
         public override object[] GetCustomAttributes(bool inherit)
             => ctor is null ? Array.Empty<object>() : ctor.GetCustomAttributes(inherit);
 
+        /// <summary>
+        /// Returns an array of all custom attributes applied to this constructor.
+        /// </summary>
+        /// <param name="attributeType">The type of attribute to search for. Only attributes that are assignable to this type are returned.</param>
+        /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
+        /// <returns>An array that contains all the custom attributes applied to this constructor.</returns>
         public override object[] GetCustomAttributes(Type attributeType, bool inherit)
             => ctor is null ? Array.Empty<object>() : ctor.GetCustomAttributes(attributeType, inherit);
 
+        /// <summary>
+        /// Determines whether one or more attributes of the specified type or of its derived types is applied to this constructor.
+        /// </summary>
+        /// <param name="attributeType">The type of custom attribute to search for. The search includes derived types.</param>
+        /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
+        /// <returns><see langword="true"/> if one or more instances of <paramref name="attributeType"/> or any of its derived types is applied to this constructor; otherwise, <see langword="false"/>.</returns>
         public override bool IsDefined(Type attributeType, bool inherit)
             => ctor is null ? false : ctor.IsDefined(attributeType, inherit);
 
-        public bool Equals(ConstructorInfo other) => ctor == other;
+        /// <summary>
+        /// Determines whether this constructor is equal to the given constructor.
+        /// </summary>
+        /// <param name="other">Other constructor to compare.</param>
+        /// <returns><see langword="true"/> if this object reflects the same constructor as the specified object; otherwise, <see langword="false"/>.</returns>
+        public bool Equals(ConstructorInfo other) => other is Constructor<D> ctor ? this.ctor == ctor.ctor : other == this.ctor;
 
-        public bool Equals(Constructor<D> other) => ctor == other.ctor;
-
+        /// <summary>
+        /// Determines whether this constructor is equal to the given constructor.
+        /// </summary>
+        /// <param name="other">Other constructor to compare.</param>
+        /// <returns><see langword="true"/> if this object reflects the same constructor as the specified object; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
             switch (other)
             {
                 case Constructor<D> ctor:
-                    return Equals(ctor);
+                    return this.ctor == ctor.ctor;
                 case ConstructorInfo ctor:
-                    return Equals(ctor);
+                    return this.ctor == ctor;
+                case D invoker:
+                    return Equals(this.invoker, invoker);
                 default:
                     return false;
             }
         }
 
+        /// <summary>
+        /// Returns textual representation of this constructor.
+        /// </summary>
+        /// <returns>The textual representation of this constructor.</returns>
         public override string ToString() => ctor is null ? invoker.ToString() : ctor.ToString();
 
+        /// <summary>
+        /// Computes hash code uniquely identifies the reflected constructor.
+        /// </summary>
+        /// <returns>The hash code of the constructor.</returns>
         public override int GetHashCode() => ctor is null ? DeclaringType.GetHashCode() : ctor.GetHashCode();
 
         private static Constructor<D> Reflect(Type declaringType, Type[] parameters, bool nonPublic)

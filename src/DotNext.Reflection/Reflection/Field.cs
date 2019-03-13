@@ -11,7 +11,7 @@ namespace DotNext.Reflection
     /// Represents reflected field.
     /// </summary>
     /// <typeparam name="V">Type of field value.</typeparam>
-    public abstract class FieldBase<V> : FieldInfo, IField, IEquatable<FieldBase<V>>, IEquatable<FieldInfo>
+    public abstract class FieldBase<V> : FieldInfo, IField, IEquatable<FieldInfo>
     {
         private readonly FieldInfo field;
 
@@ -20,88 +20,215 @@ namespace DotNext.Reflection
             this.field = field;
         }
 
+        /// <summary>
+        /// Returns the value of a field supported by a given object.
+        /// </summary>
+        /// <param name="obj">The object whose field value will be returned.</param>
+        /// <param name="value">An object containing the value of the field reflected by this instance.</param>
+        /// <returns><see langword="true"/>, if field value is obtained successfully; otherwise, <see langword="false"/>.</returns>
         public abstract bool GetValue(object obj, out V value);
+
+        /// <summary>
+        /// Sets the value of the field supported by the given object.
+        /// </summary>
+        /// <param name="obj">The object whose field value will be set.</param>
+        /// <param name="value">The value to assign to the field.</param>
+        /// <returns><see langword="true"/>, if field value is modified successfully; otherwise, <see langword="false"/>.</returns>
         public abstract bool SetValue(object obj, V value);
 
+        /// <summary>
+        /// Gets the class that declares this field.
+        /// </summary>
         public sealed override Type DeclaringType => field.DeclaringType;
 
+        /// <summary>
+        /// Always returns <see cref="MemberTypes.Field"/>.
+        /// </summary>
         public sealed override MemberTypes MemberType => field.MemberType;
 
+        /// <summary>
+        /// Gets name of the field.
+        /// </summary>
         public sealed override string Name => field.Name;
 
+        /// <summary>
+        /// Gets the class object that was used to obtain this instance.
+        /// </summary>
         public sealed override Type ReflectedType => field.ReflectedType;
 
+        /// <summary>
+        /// Returns an array of all custom attributes applied to this field.
+        /// </summary>
+        /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
+        /// <returns>An array that contains all the custom attributes applied to this field.</returns>
         public sealed override object[] GetCustomAttributes(bool inherit) => field.GetCustomAttributes(inherit);
+
+        /// <summary>
+        /// Returns an array of all custom attributes applied to this field.
+        /// </summary>
+        /// <param name="attributeType">The type of attribute to search for. Only attributes that are assignable to this type are returned.</param>
+        /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
+        /// <returns>An array that contains all the custom attributes applied to this field.</returns>
         public sealed override object[] GetCustomAttributes(Type attributeType, bool inherit) => field.GetCustomAttributes(attributeType, inherit);
 
+        /// <summary>
+        /// Determines whether one or more attributes of the specified type or of its derived types is applied to this field.
+        /// </summary>
+        /// <param name="attributeType">The type of custom attribute to search for. The search includes derived types.</param>
+        /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
+        /// <returns><see langword="true"/> if one or more instances of <paramref name="attributeType"/> or any of its derived types is applied to this field; otherwise, <see langword="false"/>.</returns>
         public sealed override bool IsDefined(Type attributeType, bool inherit) => field.IsDefined(attributeType, inherit);
 
+        /// <summary>
+        /// Gets a value that identifies a metadata element.
+        /// </summary>
         public sealed override int MetadataToken => field.MetadataToken;
 
+        /// <summary>
+        /// Gets the module in which the type that declares the field represented by the current instance is defined.
+        /// </summary>
         public sealed override Module Module => field.Module;
 
+        /// <summary>
+        /// Gets a collection that contains this member's custom attributes.
+        /// </summary>
         public sealed override IList<CustomAttributeData> GetCustomAttributesData() => field.GetCustomAttributesData();
 
+        /// <summary>
+        /// Gets a collection that contains this member's custom attributes.
+        /// </summary>
         public sealed override IEnumerable<CustomAttributeData> CustomAttributes => field.CustomAttributes;
 
+        /// <summary>
+        /// Gets the attributes associated with this field.
+        /// </summary>
         public sealed override FieldAttributes Attributes => field.Attributes;
 
+        /// <summary>
+        /// Gets a handle to the internal metadata representation of this field.
+        /// </summary>
         public sealed override RuntimeFieldHandle FieldHandle => field.FieldHandle;
 
+        /// <summary>
+        /// Gets type of this field.
+        /// </summary>
         public sealed override Type FieldType => field.FieldType;
 
+        /// <summary>
+        /// Gets an array of types that identify the optional custom modifiers of the field.
+        /// </summary>
+        /// <returns>An array of objects that identify the optional custom modifiers of the current field.</returns>
         public sealed override Type[] GetOptionalCustomModifiers() => field.GetOptionalCustomModifiers();
 
+        /// <summary>
+        /// Returns a literal value associated with the field by a compiler.
+        /// </summary>
+        /// <returns>The literal value associated with the field. If the literal value is a class type with an element value of zero, 
+        /// the return value is <see langword="null"/>.</returns>
         public sealed override object GetRawConstantValue() => field.GetRawConstantValue();
 
+        /// <summary>
+        /// Gets an array of types that identify the required custom modifiers of the field.
+        /// </summary>
+        /// <returns>An array of objects that identify the required custom modifiers of the current field.</returns>
         public sealed override Type[] GetRequiredCustomModifiers() => field.GetRequiredCustomModifiers();
 
+        /// <summary>
+        /// Returns the value of a field supported by a given object.
+        /// </summary>
+        /// <param name="obj">The object whose field value will be returned.</param>
+        /// <returns>An object containing the value of the field reflected by this instance.</returns>
         public override object GetValue(object obj) => field.GetValue(obj);
 
+        /// <summary>
+        /// Returns the value of a field supported by a given object.
+        /// </summary>
+        /// <param name="obj">A managed pointer to a location and a runtime representation of the type that might be stored at that location.</param>
+        /// <returns>An object containing the value of the field reflected by this instance.</returns>
         [CLSCompliant(false)]
         public sealed override object GetValueDirect(TypedReference obj) => field.GetValueDirect(obj);
 
+        /// <summary>
+        /// Gets a value that indicates whether the field is security-critical or security-safe-critical at the current trust level, 
+        /// and therefore can perform critical operations.
+        /// </summary>
         public sealed override bool IsSecurityCritical => field.IsSecurityCritical;
 
+        /// <summary>
+        /// Gets a value that indicates whether the field is security-safe-critical at the current trust level; that is, 
+        /// whether it can perform critical operations and can be accessed by transparent code.
+        /// </summary>
         public sealed override bool IsSecuritySafeCritical => field.IsSecuritySafeCritical;
 
+        /// <summary>
+        /// Gets a value that indicates whether the current field is transparent at the current trust level, 
+        /// and therefore cannot perform critical operations.
+        /// </summary>
         public sealed override bool IsSecurityTransparent => field.IsSecurityTransparent;
 
+        /// <summary>
+        /// Sets the value of the field supported by the given object.
+        /// </summary>
+        /// <param name="obj">The object whose field value will be returned.</param>
+        /// <param name="value">The value to assign to the field.</param>
+        /// <param name="invokeAttr">The type of binding that is desired.</param>
+        /// <param name="binder">A set of properties that enables the binding, coercion of argument types, and invocation of members through reflection.</param>
+        /// <param name="culture">The software preferences of a particular culture.</param>
         public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
             => field.SetValue(obj, value, invokeAttr, binder, culture);
 
+        /// <summary>
+        /// Sets the value of the field supported by the given object.
+        /// </summary>
+        /// <param name="obj">A managed pointer to a location and a runtime representation of the type that might be stored at that location.</param>
+        /// <param name="value">The value to assign to the field.</param>
         [CLSCompliant(false)]
         public sealed override void SetValueDirect(TypedReference obj, object value)
             => field.SetValueDirect(obj, value);
 
+        /// <summary>
+        /// Determines whether this field is read-only and cannot be modified.
+        /// </summary>
         public bool IsReadOnly => field.Attributes.HasFlag(FieldAttributes.InitOnly);
 
         FieldInfo IMember<FieldInfo>.RuntimeMember => field;
 
-        public bool Equals(FieldInfo other) => field.Equals(other);
+        /// <summary>
+        /// Determines whether this field is equal to the given field.
+        /// </summary>
+        /// <param name="other">Other field to compare.</param>
+        /// <returns><see langword="true"/> if this object reflects the same field as the specified object; otherwise, <see langword="false"/>.</returns>
+        public bool Equals(FieldInfo other) => other is FieldBase<V> field ? field.field == this.field : this.field == other;
 
-        public bool Equals(FieldBase<V> other) => other != null && Equals(other.field);
-
+        /// <summary>
+        /// Computes hash code uniquely identifies the reflected field.
+        /// </summary>
+        /// <returns>The hash code of the field.</returns>
         public sealed override int GetHashCode() => field.GetHashCode();
 
+        /// <summary>
+        /// Determines whether this field is equal to the given field.
+        /// </summary>
+        /// <param name="other">Other field to compare.</param>
+        /// <returns><see langword="true"/> if this object reflects the same field as the specified object; otherwise, <see langword="false"/>.</returns>
         public sealed override bool Equals(object other)
         {
             switch (other)
             {
                 case FieldBase<V> field:
-                    return Equals(field);
+                    return this.field == field.field;
                 case FieldInfo field:
-                    return Equals(field);
+                    return this.field == field;
                 default:
                     return false;
             }
         }
 
+        /// <summary>
+        /// Returns textual representation of this field.
+        /// </summary>
+        /// <returns>The textual representation of this field.</returns>
         public sealed override string ToString() => field.ToString();
-
-        public static bool operator ==(FieldBase<V> first, FieldBase<V> second) => Equals(first, second);
-
-        public static bool operator !=(FieldBase<V> first, FieldBase<V> second) => !Equals(first, second);
     }
 
     /// <summary>
@@ -127,9 +254,24 @@ namespace DotNext.Reflection
             setter = field.IsInitOnly ? null : Lambda<MemberSetter<T, V>>(Assign(Field(instanceParam, field), valueParam), instanceParam, valueParam).Compile();
         }
 
+        /// <summary>
+        /// Obtains field getter in the form of the delegate instance.
+        /// </summary>
+        /// <param name="field">The reflected field.</param>
         public static implicit operator MemberGetter<T, V>(Field<T, V> field) => field?.getter;
+
+        /// <summary>
+        /// Obtains field setter in the form of the delegate instance.
+        /// </summary>
+        /// <param name="field">The reflected field.</param>
         public static implicit operator MemberSetter<T, V>(Field<T, V> field) => field?.setter;
 
+        /// <summary>
+        /// Returns the value of a field supported by a given object.
+        /// </summary>
+        /// <param name="obj">The object whose field value will be returned.</param>
+        /// <param name="value">An object containing the value of the field reflected by this instance.</param>
+        /// <returns><see langword="true"/>, if field value is obtained successfully; otherwise, <see langword="false"/>.</returns>
         public override bool GetValue(object obj, out V value)
         {
             if(obj is T instance)
@@ -143,6 +285,13 @@ namespace DotNext.Reflection
                 return false;
             }
         }
+
+        /// <summary>
+        /// Sets the value of the field supported by the given object.
+        /// </summary>
+        /// <param name="obj">The object whose field value will be set.</param>
+        /// <param name="value">The value to assign to the field.</param>
+        /// <returns><see langword="true"/>, if field value is modified successfully; otherwise, <see langword="false"/>.</returns>
         public override bool SetValue(object obj, V value)
         {
             if(IsInitOnly)
@@ -156,9 +305,22 @@ namespace DotNext.Reflection
                 return false;
         }
 
+        /// <summary>
+        /// Returns the value of a field supported by a given object.
+        /// </summary>
+        /// <param name="obj">The object whose field value will be returned.</param>
+        /// <returns>An object containing the value of the field reflected by this instance.</returns>
         public override object GetValue(object obj)
             => obj is T instance ? this[instance] : throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(obj, typeof(T)));
 
+        /// <summary>
+        /// Sets the value of the field supported by the given object.
+        /// </summary>
+        /// <param name="obj">The object whose field value will be returned.</param>
+        /// <param name="value">The value to assign to the field.</param>
+        /// <param name="invokeAttr">The type of binding that is desired.</param>
+        /// <param name="binder">A set of properties that enables the binding, coercion of argument types, and invocation of members through reflection.</param>
+        /// <param name="culture">The software preferences of a particular culture.</param>
         public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
         {
             if (IsInitOnly)
@@ -176,7 +338,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets or sets instance field value.
         /// </summary>
-        /// <param name="this">This parameter.</param>
+        /// <param name="this"><see langword="this"/> parameter.</param>
         public V this[in T @this]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -218,9 +380,24 @@ namespace DotNext.Reflection
             setter = field.IsInitOnly ? null : Lambda<MemberSetter<V>>(Assign(Field(null, field), valueParam), valueParam).Compile();
         }
 
+        /// <summary>
+        /// Obtains field getter in the form of the delegate instance.
+        /// </summary>
+        /// <param name="field">The reflected field.</param>
         public static implicit operator MemberGetter<V>(Field<V> field) => field?.getter;
+
+        /// <summary>
+        /// Obtains field setter in the form of the delegate instance.
+        /// </summary>
+        /// <param name="field">The reflected field.</param>
         public static implicit operator MemberSetter<V>(Field<V> field) => field?.setter;
 
+        /// <summary>
+        /// Returns the value of a field supported by a given object.
+        /// </summary>
+        /// <param name="obj">Must be <see langword="null"/>.</param>
+        /// <param name="value">An object containing the value of the field reflected by this instance.</param>
+        /// <returns><see langword="true"/>, if field value is obtained successfully; otherwise, <see langword="false"/>.</returns>
         public override bool GetValue(object obj, out V value)
         {
             if(obj is null)
@@ -234,6 +411,13 @@ namespace DotNext.Reflection
                 return false;
             }
         }
+
+        /// <summary>
+        /// Sets the value of the field supported by the given object.
+        /// </summary>
+        /// <param name="obj">Must be <see langword="null"/>.</param>
+        /// <param name="value">The value to assign to the field.</param>
+        /// <returns><see langword="true"/>, if field value is modified successfully; otherwise, <see langword="false"/>.</returns>
         public override bool SetValue(object obj, V value)
         {
             if(IsInitOnly)
@@ -247,8 +431,21 @@ namespace DotNext.Reflection
                 return false;
         }
 
+        /// <summary>
+        /// Returns the value of a field supported by a given object.
+        /// </summary>
+        /// <param name="obj">Must be <see langword="null"/>.</param>
+        /// <returns>An object containing the value of the field reflected by this instance.</returns>
         public override object GetValue(object obj) => Value;
 
+        /// <summary>
+        /// Sets the value of the field supported by the given object.
+        /// </summary>
+        /// <param name="obj">Must be <see langword="null"/>.</param>
+        /// <param name="value">The value to assign to the field.</param>
+        /// <param name="invokeAttr">The type of binding that is desired.</param>
+        /// <param name="binder">A set of properties that enables the binding, coercion of argument types, and invocation of members through reflection.</param>
+        /// <param name="culture">The software preferences of a particular culture.</param>
         public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
         {
             if (IsInitOnly)
@@ -262,7 +459,7 @@ namespace DotNext.Reflection
         }
 
         /// <summary>
-        /// Gets or sets field value.
+        /// Gets or sets static field value.
         /// </summary>s
         public V Value
         {

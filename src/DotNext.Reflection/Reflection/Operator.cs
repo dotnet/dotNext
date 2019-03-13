@@ -102,50 +102,83 @@ namespace DotNext.Reflection
 			}
 	}
 
-	/// <summary>
-	/// Abstract class for all reflected operators.
-	/// </summary>
-	/// <typeparam name="D">Type of delegate representing operator signature.</typeparam>
-	public abstract class Operator<D> : IOperator<D>
-		where D : Delegate 
-	{
-		private protected readonly D invoker;
+    /// <summary>
+    /// Abstract class for all reflected operators.
+    /// </summary>
+    /// <typeparam name="D">Type of delegate representing operator signature.</typeparam>
+    public abstract class Operator<D> : IOperator<D>
+        where D : Delegate
+    {
+        private protected readonly D invoker;
 
-		private protected Operator (D invoker, ExpressionType type, MethodInfo overloaded) {
-			Type = type;
-			this.invoker = invoker;
-		}
+        private protected Operator(D invoker, ExpressionType type, MethodInfo overloaded)
+        {
+            Type = type;
+            this.invoker = invoker;
+            Method = overloaded;
+        }
 
-		/// <summary>
-		/// Gets the implementing method for the operator.
-		/// </summary>
-		public MethodInfo Method { get; }
+        /// <summary>
+        /// Gets the implementing method for the operator.
+        /// </summary>
+        public MethodInfo Method { get; }
 
-		D IOperator<D>.Invoker => invoker;
+        D IOperator<D>.Invoker => invoker;
 
-		public static implicit operator D (Operator<D> @operator) => @operator?.invoker;
+        public static implicit operator D(Operator<D> @operator) => @operator?.invoker;
 
-		/// <summary>
-		/// Gets type of operator.
-		/// </summary>
-		public ExpressionType Type { get; }
+        /// <summary>
+        /// Gets type of operator.
+        /// </summary>
+        public ExpressionType Type { get; }
 
-		private static Expression<D> Convert (ParameterExpression parameter, Expression operand, Type conversionType, bool @checked) {
-				try {
-					return Expression.Lambda<D> (@checked ? Expression.ConvertChecked (operand, conversionType) : Expression.Convert (operand, conversionType), parameter);
-				} catch (ArgumentException e) {
-					WriteLine (e);
-					return null;
-				} catch (InvalidOperationException) {
-					//do not walk through inheritance hierarchy for value types
-					if (parameter.Type.IsValueType) return null;
-					var lookup = operand.Type.BaseType;
-					return lookup is null ? null : Convert (parameter, Expression.Convert (parameter, lookup), conversionType, @checked);
-				}
-		}
+        private static Expression<D> Convert(ParameterExpression parameter, Expression operand, Type conversionType, bool @checked)
+        {
+            try
+            {
+                return Expression.Lambda<D>(@checked ? Expression.ConvertChecked(operand, conversionType) : Expression.Convert(operand, conversionType), parameter);
+            }
+            catch (ArgumentException e)
+            {
+                WriteLine(e);
+                return null;
+            }
+            catch (InvalidOperationException)
+            {
+                //do not walk through inheritance hierarchy for value types
+                if (parameter.Type.IsValueType) return null;
+                var lookup = operand.Type.BaseType;
+                return lookup is null ? null : Convert(parameter, Expression.Convert(parameter, lookup), conversionType, @checked);
+            }
+        }
 
-		private protected static Expression<D> MakeConvert<T> (ParameterExpression parameter, bool @checked) => Convert (parameter, parameter, typeof (T), @checked);
-	}
+        private protected static Expression<D> MakeConvert<T>(ParameterExpression parameter, bool @checked) => Convert(parameter, parameter, typeof(T), @checked);
+
+        public override bool Equals(object other)
+        {
+            switch (other)
+            {
+                case Operator<D> op:
+                    return Type == op.Type && Method == op.Method;
+                case D invoker:
+                    return Equals(this.invoker, invoker);
+                default:
+                    return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 220548157;
+            hashCode = hashCode * -1521134295 + typeof(D).GetHashCode();
+            hashCode = hashCode * -1521134295 + Type.GetHashCode();
+            if (!(Method is null))
+                hashCode = hashCode * -1521134295 + Method.GetHashCode();
+            return hashCode;
+        }
+
+        public override string ToString() => Type.ToString();
+    }
 
 	/// <summary>
 	/// A delegate representing unary operator.

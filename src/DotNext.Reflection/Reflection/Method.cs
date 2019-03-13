@@ -11,7 +11,7 @@ namespace DotNext.Reflection
     /// Represents reflected method.
     /// </summary>
     /// <typeparam name="D">Type of delegate describing signature of the reflected method.</typeparam>
-    public sealed class Method<D> : MethodInfo, IMethod<D>, IEquatable<Method<D>>, IEquatable<MethodInfo>
+    public sealed class Method<D> : MethodInfo, IMethod<D>, IEquatable<MethodInfo>
         where D : MulticastDelegate
     {
         private const BindingFlags StaticPublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
@@ -83,17 +83,18 @@ namespace DotNext.Reflection
         public sealed override Type ReturnType => method.ReturnType;
         public sealed override ICustomAttributeProvider ReturnTypeCustomAttributes => method.ReturnTypeCustomAttributes;
 
-        public bool Equals(MethodInfo other) => method == other;
-        public bool Equals(Method<D> other) => Equals(other?.method);
+        public bool Equals(MethodInfo other) => other is Method<D> method ? this.method == method.method : this.method == other;
 
         public override bool Equals(object other)
         {
             switch (other)
             {
                 case Method<D> method:
-                    return Equals(method);
+                    return this.method == method.method;
                 case MethodInfo method:
-                    return Equals(method);
+                    return this.method == method;
+                case D invoker:
+                    return Equals(Invoker, invoker);
                 default:
                     return false;
             }

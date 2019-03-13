@@ -37,6 +37,9 @@ namespace DotNext.Reflection
 		D Invoker { get; }
 	}
 
+    /// <summary>
+    /// Provides extension methods for interface <see cref="IMember{M, D}"/> or <see cref="IMember{M}"/>.
+    /// </summary>
 	public static class Member
 	{
 
