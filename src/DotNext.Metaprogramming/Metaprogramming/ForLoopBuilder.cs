@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Dynamic;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
@@ -43,8 +42,5 @@ namespace DotNext.Metaprogramming
             var body = Expression.Condition(condition, base.Build(), Expression.Goto(breakLabel), typeof(void));
             return continueLabelInstalled ? Expression.Loop(body, breakLabel) : Expression.Loop(body, breakLabel, continueLabel);
         }
-
-        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
-            => new MetaExpression(parameter, this);
     }
 }

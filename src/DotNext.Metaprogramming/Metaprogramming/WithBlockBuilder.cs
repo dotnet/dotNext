@@ -1,4 +1,3 @@
-using System.Dynamic;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
@@ -29,8 +28,5 @@ namespace DotNext.Metaprogramming
         public UniversalExpression ScopeVar => scopeVar;
 
         Expression IExpressionBuilder<Expression>.Build() => Build();
-
-        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
-            => new MetaExpression(parameter, this);
     }
 }
