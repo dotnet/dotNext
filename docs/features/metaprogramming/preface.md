@@ -22,3 +22,40 @@ Additionally, DotNext Metaprogramming library replaces limit of [C# Expression T
 
 > [!IMPORTANT]
 > In spite of rich set of Metaprogramming API, a few limits still exist. These restrictions dictated by internal design of LINQ Expression. The first, overloaded operators with [in parameter modifier](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/in-parameter-modifier) cannot be resolved. The second, [ref return](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref#reference-return-values) and [ref locals](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref#ref-locals) are not supported.
+
+# Concept
+The code construction based on the following concepts:
+* [Universal Expression](universal.md)
+* [Expression builder](../../api/DotNext.Metaprogramming.CompoundStatementBuilder.yml) and its derived classes. This class provides lexical scope of local variables, declaration methods and methods for adding statement such as method calls, assignment, loops, if-then-else statement etc.
+* [Lambda function builder](../../api/DotNext.Metaprogramming.LambdaBuilder-1.yml) or [Async lambda function builder](../../api/DotNext.Metaprogramming.AsyncLambdaBuilder-1.yml)
+
+The lexical scope is enclosed by multi-line lambda function. The body of such function contains the code for generation of expressions and statements.
+
+```csharp
+using System;
+using DotNext.Metaprogramming;
+
+Func<long, long> fact = LambdaBuilder<Func<long, long>>.Build(fun => 
+{
+    UniversalExpression arg = fun.Parameters[0];    //convert parameter into universal expression
+    //if-then-else expression
+    fun.If(arg > 1L)
+        .Then(arg * fun.Self.Invoke(arg - 1L))  //recursive invocation of the current lambda function
+        .Else(arg)  //else branch
+    .OfType<long>()
+    .End();
+    //declare local variable of type long
+    var local = fun.DeclareVariable<long>("local");
+    //assignment
+    fun.Assign(local, -arg);  //equivalent is the assignment statement local = -arg
+    //try-catch
+    fun.Try(tryScope => {
+        tryScope.Return(10);    //return from lambda function
+    })
+    .Finally(finallyScope => {  //finally block
+        //method call Console.WriteLine(local);
+        finallyScope.Call(typeof(Console).GetMethod(nameof(Console.WriteLine), new[] { typeof(object) }), local);
+    })
+    .End(); //end of try block
+}).Compile();
+```

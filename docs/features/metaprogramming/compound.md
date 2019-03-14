@@ -17,3 +17,14 @@ using DotNext.Metaprogramming;
 
 typeof(Exception).New("Exception message".AsConst()).Throw()    //equivalent to new Exception("Exception message")
 ```
+
+Compound expression can be constructed with **dynamic** type:
+
+```csharp
+using System;
+using DotNext.Metaprogramming;
+
+dynamic expr = (UniversalExpression)42;
+expr = -expr + 1;
+Expression tree = expr; //tree is -42 + 1
+```
