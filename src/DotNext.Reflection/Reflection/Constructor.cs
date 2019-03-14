@@ -97,10 +97,9 @@ namespace DotNext.Reflection
         public override IEnumerable<CustomAttributeData> CustomAttributes => GetCustomAttributesData();
 
         /// <summary>
-        /// When overridden in a derived class, gets a System.Reflection.MethodBody object that provides access to the MSIL stream, 
-        /// local variables, and exceptions for the current method.
+        /// Provides access to the MSIL stream, local variables, and exceptions for the current constructor.
         /// </summary>
-        /// <returns>An object that provides access to the MSIL stream, local variables, and exceptions for the current method.</returns>
+        /// <returns>An object that provides access to the MSIL stream, local variables, and exceptions for the current constructor.</returns>
         public override MethodBody GetMethodBody() => ctor?.GetMethodBody() ?? invoker.Method.GetMethodBody();
 
         /// <summary>
@@ -167,7 +166,7 @@ namespace DotNext.Reflection
         /// Invokes this constructor.
         /// </summary>
         /// <param name="invokeAttr">Specifies the type of binding.</param>
-        /// <param name="binder">Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection</param>
+        /// <param name="binder">Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection.</param>
         /// <param name="parameters">A list of constructor arguments.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
         /// <returns>Instantiated object.</returns>
