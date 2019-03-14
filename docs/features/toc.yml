@@ -1,5 +1,5 @@
 - name: BCL Enhancements
-  href: core/extensions.md
+  href: core/index.md
   items:
     - name: Ad-hoc User Data
       href: core/userdata.md
@@ -20,7 +20,7 @@
 - name: Advanced Reflection
   href: reflection.md
 - name: Metaprogramming
-  href: metaprogramming/preface.md
+  href: metaprogramming/index.md
   items:
     - name: Universal Expression
       href: metaprogramming/universal.md
