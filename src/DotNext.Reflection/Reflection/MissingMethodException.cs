@@ -8,6 +8,13 @@ namespace DotNext.Reflection
 	/// </summary>
     public sealed class MissingMethodException: ConstraintViolationException
     {
+        /// <summary>
+        /// Initializes a new exception indicating that requested method doesn't exist.
+        /// </summary>
+        /// <param name="declaringType">The inspected type.</param>
+        /// <param name="methodName"></param>
+        /// <param name="returnType"></param>
+        /// <param name="parameters"></param>
         public MissingMethodException(Type declaringType, string methodName, Type returnType, params Type[] parameters)
             : base(declaringType, ExceptionMessages.MissingMethod(methodName, parameters, returnType, declaringType))
         {
@@ -16,8 +23,19 @@ namespace DotNext.Reflection
             Parameters = Array.AsReadOnly(parameters);
         }
 
+        /// <summary>
+        /// Gets name of missing method.
+        /// </summary>
         public string MethodName { get; }
+
+        /// <summary>
+        /// Gets return type of missing method.
+        /// </summary>
         public Type ReturnType { get; }
+
+        /// <summary>
+        /// Gets parameters of missing method.
+        /// </summary>
         public ReadOnlyCollection<Type> Parameters { get; }
 
         internal static MissingMethodException Create<T, D>(string methodName)
