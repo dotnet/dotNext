@@ -4,6 +4,17 @@ using System.IO;
 
 namespace DotNext.Runtime.InteropServices
 {
+    public interface IUnmanagedMemory: IDisposable, ICloneable
+    {
+        long Size { get; }
+
+        IntPtr Address { get; }
+
+        Pointer<T> ToPointer<T>() where T: unmanaged;
+        
+        Pointer<byte> ToPointer(ulong offset);
+    }
+
 	/// <summary>
 	/// Represents a common interface for unmanaged memory
 	/// managers.
