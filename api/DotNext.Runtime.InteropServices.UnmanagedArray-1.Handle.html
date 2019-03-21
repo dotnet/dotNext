@@ -158,11 +158,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_DotNext_Runtime_InteropServices_UnmanagedArray__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Handle.%23ctor(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L50">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L61">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.#ctor*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_DotNext_Runtime_InteropServices_UnmanagedArray__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.#ctor(DotNext.Runtime.InteropServices.UnmanagedArray{`0})">Handle(UnmanagedArray&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Initializes a new handle for the given array.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -181,21 +182,24 @@
       <tr>
         <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a>&lt;T&gt;</td>
         <td><span class="parametername">array</span></td>
-        <td></td>
+        <td><p>The unmanaged array.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_DotNext_Runtime_InteropServices_UnmanagedArray__0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The handle instantiated with this constructor doesn't have ownership over unmanaged memory.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Handle.%23ctor(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L44">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L48">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.#ctor*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.#ctor(System.Int32)">Handle(Int32)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new unmanaged array and associate
-it with the handle.</p>
+  <div class="markdown level1 summary"><p>Initializes a new unmanaged array and associate it with the handle.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -220,6 +224,11 @@ it with the handle.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_System_Int32__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The handle instantiated with this constructor has ownership over unmanaged memory.
+Unmanaged memory will be released when Garbage Collector reclaims instance of this handle
+or <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Dispose">Dispose()</a> will be called directly.</p>
+</div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
@@ -227,11 +236,12 @@ it with the handle.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle_IsInvalid.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Handle.IsInvalid%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L55">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L69">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle_IsInvalid_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.IsInvalid*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle_IsInvalid" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.IsInvalid">IsInvalid</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether the unmanaged memory is released.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -261,11 +271,12 @@ it with the handle.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle_ReleaseHandle.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Handle.ReleaseHandle%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L57">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L75">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle_ReleaseHandle_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.ReleaseHandle*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle_ReleaseHandle" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.ReleaseHandle">ReleaseHandle()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Releases referenced unmanaged memory.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -282,7 +293,8 @@ it with the handle.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span>, if this handle is valid; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -295,7 +307,7 @@ it with the handle.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedArray__0__Handle__DotNext_Runtime_InteropServices_UnmanagedArray__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Handle.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D.Handle)~DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L64">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L82">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedArray__0__Handle__DotNext_Runtime_InteropServices_UnmanagedArray__0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray{`0}.Handle)~DotNext.Runtime.InteropServices.UnmanagedArray{`0}">Implicit(UnmanagedArray&lt;T&gt;.Handle to UnmanagedArray&lt;T&gt;)</h4>
@@ -386,6 +398,24 @@ it with the handle.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_Lock__1___0_System_TimeSpan_">LockAcquisition.Lock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_">LockAcquisition.ReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_System_TimeSpan_">LockAcquisition.ReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_">LockAcquisition.WriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_System_TimeSpan_">LockAcquisition.WriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_System_TimeSpan_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
 </article>
           </div>

@@ -128,6 +128,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseCompare&lt;T&gt;(this T[] first, T[] second)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -201,6 +202,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool BitwiseEquals&lt;T&gt;(this T[] first, T[] second)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -277,6 +279,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this T[] array, bool salted = true)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -351,6 +354,7 @@ and custom hash function.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this T[] array, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1004,6 +1008,7 @@ because each array element is passed by reference into action.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool SequenceEqual&lt;T&gt;(this T[] first, T[] second)
+
     where T : IEquatable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

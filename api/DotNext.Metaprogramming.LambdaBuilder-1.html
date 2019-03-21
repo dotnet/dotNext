@@ -79,14 +79,9 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
-    <div class="level2"><a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html">CompoundStatementBuilder</a></div>
-    <div class="level3"><a class="xref" href="DotNext.Metaprogramming.LambdaBuilder.html">LambdaBuilder</a></div>
-    <div class="level4"><span class="xref">LambdaBuilder&lt;D&gt;</span></div>
-  </div>
-  <div classs="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div class="level1"><a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html">CompoundStatementBuilder</a></div>
+    <div class="level2"><a class="xref" href="DotNext.Metaprogramming.LambdaBuilder.html">LambdaBuilder</a></div>
+    <div class="level3"><span class="xref">LambdaBuilder&lt;D&gt;</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -104,6 +99,18 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_System_Linq_Expressions_ParameterExpression_DotNext_Metaprogramming_UniversalExpression_">CompoundStatementBuilder.Assign(ParameterExpression, UniversalExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PreIncrementAssign_System_Linq_Expressions_ParameterExpression_">CompoundStatementBuilder.PreIncrementAssign(ParameterExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PostIncrementAssign_System_Linq_Expressions_ParameterExpression_">CompoundStatementBuilder.PostIncrementAssign(ParameterExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PreDecrementAssign_System_Linq_Expressions_ParameterExpression_">CompoundStatementBuilder.PreDecrementAssign(ParameterExpression)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PostDecrementAssign_System_Linq_Expressions_ParameterExpression_">CompoundStatementBuilder.PostDecrementAssign(ParameterExpression)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_System_String_DotNext_Metaprogramming_UniversalExpression_">CompoundStatementBuilder.Assign(String, UniversalExpression)</a>
@@ -131,6 +138,9 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Call_DotNext_Metaprogramming_UniversalExpression_System_Reflection_MethodInfo_DotNext_Metaprogramming_UniversalExpression___">CompoundStatementBuilder.Call(UniversalExpression, MethodInfo, UniversalExpression[])</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Call_DotNext_Metaprogramming_UniversalExpression_System_String_DotNext_Metaprogramming_UniversalExpression___">CompoundStatementBuilder.Call(UniversalExpression, String, UniversalExpression[])</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Call_System_Reflection_MethodInfo_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__">CompoundStatementBuilder.Call(MethodInfo, IEnumerable&lt;Expression&gt;)</a>
@@ -220,50 +230,17 @@
       <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Using_DotNext_Metaprogramming_UniversalExpression_System_Action_DotNext_Metaprogramming_UsingBlockBuilder__">CompoundStatementBuilder.Using(UniversalExpression, Action&lt;UsingBlockBuilder&gt;)</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Lock_DotNext_Metaprogramming_UniversalExpression_System_Action_DotNext_Metaprogramming_LockBuilder__">CompoundStatementBuilder.Lock(UniversalExpression, Action&lt;LockBuilder&gt;)</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Switch_DotNext_Metaprogramming_UniversalExpression_">CompoundStatementBuilder.Switch(UniversalExpression)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_ThrowIfDisposed">Disposable.ThrowIfDisposed()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_IDisposable___">Disposable.Dispose(IDisposable[])</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Metaprogramming.html">DotNext.Metaprogramming</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
   <h5 id="DotNext_Metaprogramming_LambdaBuilder_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class LambdaBuilder&lt;D&gt; : LambdaBuilder, IDisposable, IExpressionBuilder&lt;Expression&lt;D&gt;&gt; where D : Delegate</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class LambdaBuilder&lt;D&gt; : LambdaBuilder, IExpressionBuilder&lt;Expression&lt;D&gt;&gt; where D : Delegate</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -586,17 +563,13 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">disposing</span></td>
-        <td><p><span class="xref">true</span>, if this method is called from <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Dispose()</a>; <span class="xref">false</span> if called from finalizer.</p>
+        <td><p><span class="xref">true</span>, if this method is called from <see cref="!:Disposable.Dispose()"></see>; <span class="xref">false</span> if called from finalizer.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Dispose_System_Boolean_">CompoundStatementBuilder.Dispose(Boolean)</a></div>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
-  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_AsConst__1___0_">ExpressionBuilder.AsConst&lt;T&gt;(T)</a>
@@ -624,6 +597,24 @@
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_Lock__1___0_System_TimeSpan_">LockAcquisition.Lock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_">LockAcquisition.ReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_System_TimeSpan_">LockAcquisition.ReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_">LockAcquisition.WriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_System_TimeSpan_">LockAcquisition.WriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_System_TimeSpan_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
 </article>
           </div>

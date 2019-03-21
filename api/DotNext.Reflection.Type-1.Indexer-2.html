@@ -110,6 +110,7 @@
   <h5 id="DotNext_Reflection_Type_1_Indexer_2_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static class Indexer&lt;A, V&gt;
+
     where A : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
@@ -140,11 +141,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Indexer_2_Get_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Indexer%602.Get(System.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Indexers.cs/#L53">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Indexers.cs/#L66">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Indexer_2_Get_" data-uid="DotNext.Reflection.Type`1.Indexer`2.Get*"></a>
   <h4 id="DotNext_Reflection_Type_1_Indexer_2_Get_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Indexer`2.Get(System.String,System.Boolean)">Get(String, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects instance indexer property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -163,12 +165,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">propertyName</span></td>
-        <td></td>
+        <td><p>The name of the indexer property.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -183,7 +187,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Indexer-3.html">Indexer</a>&lt;T, A, V&gt;</td>
-        <td></td>
+        <td><p>The reflected property; or <span class="xref">null</span>, if property doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -216,13 +221,13 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">propertyName</span></td>
-        <td><p>Property name.</p>
+        <td><p>The name of the indexer property.</p>
 </td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td><p>True to reflect non-public property.</p>
+        <td><p><span class="xref">true</span> to reflect non-public property.</p>
 </td>
       </tr>
     </tbody>
@@ -238,7 +243,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Indexer-2.html">Indexer</a>&lt;A, V&gt;</td>
-        <td><p>Property field; or null, if property doesn't exist.</p>
+        <td><p>The reflected property; or <span class="xref">null</span>, if property doesn't exist.</p>
 </td>
       </tr>
     </tbody>
@@ -248,11 +253,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Indexer_2_Require_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Indexer%602.Require(System.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Indexers.cs/#L56">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Indexers.cs/#L76">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Indexer_2_Require_" data-uid="DotNext.Reflection.Type`1.Indexer`2.Require*"></a>
   <h4 id="DotNext_Reflection_Type_1_Indexer_2_Require_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Indexer`2.Require(System.String,System.Boolean)">Require(String, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects instance indexer property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -271,12 +277,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">propertyName</span></td>
-        <td></td>
+        <td><p>The name of the indexer property.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -291,7 +299,24 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Indexer-3.html">Indexer</a>&lt;T, A, V&gt;</td>
-        <td></td>
+        <td><p>The reflected indexer property.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MissingPropertyException.html">MissingPropertyException</a></td>
+        <td><p>The property doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -300,11 +325,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Indexer_2_RequireStatic_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Indexer%602.RequireStatic(System.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Indexers.cs/#L50">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Indexers.cs/#L57">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Indexer_2_RequireStatic_" data-uid="DotNext.Reflection.Type`1.Indexer`2.RequireStatic*"></a>
   <h4 id="DotNext_Reflection_Type_1_Indexer_2_RequireStatic_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Indexer`2.RequireStatic(System.String,System.Boolean)">RequireStatic(String, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects static indexer property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -323,12 +349,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">propertyName</span></td>
-        <td></td>
+        <td><p>The name of the indexer property.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -343,7 +371,24 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Indexer-2.html">Indexer</a>&lt;A, V&gt;</td>
-        <td></td>
+        <td><p>The reflected indexer property.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MissingPropertyException.html">MissingPropertyException</a></td>
+        <td><p>The property doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>

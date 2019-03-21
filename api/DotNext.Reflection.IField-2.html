@@ -131,15 +131,16 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_IField_2_Item__0__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.IField%602.Item(%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IField.cs/#L35">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IField.cs/#L39">View Source</a>
   </span>
   <a id="DotNext_Reflection_IField_2_Item_" data-uid="DotNext.Reflection.IField`2.Item*"></a>
   <h4 id="DotNext_Reflection_IField_2_Item__0__" data-uid="DotNext.Reflection.IField`2.Item(`0@)">Item[T]</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets or sets instance field value.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">F this[in T instance] { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">F this[in T this] { get; set; }</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -153,8 +154,9 @@
     <tbody>
       <tr>
         <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td></td>
+        <td><span class="parametername">this</span></td>
+        <td><p><span class="xref">langword_csharp_this</span> parameter.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -200,6 +202,24 @@
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_Lock__1___0_System_TimeSpan_">LockAcquisition.Lock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_">LockAcquisition.ReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_System_TimeSpan_">LockAcquisition.ReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_">LockAcquisition.WriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_System_TimeSpan_">LockAcquisition.WriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_System_TimeSpan_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
 </article>
           </div>

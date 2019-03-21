@@ -156,7 +156,7 @@ public static readonly void *NullPtr</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_AddressOf__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.AddressOf%60%601(%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L563">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L667">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_AddressOf_" data-uid="DotNext.Runtime.InteropServices.Memory.AddressOf*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_AddressOf__1___0__" data-uid="DotNext.Runtime.InteropServices.Memory.AddressOf``1(``0@)">AddressOf&lt;T&gt;(T)</h4>
@@ -227,7 +227,7 @@ not the address of the object itself.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_AreSame__1___0____0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.AreSame%60%601(%60%600%40%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L549">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L653">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_AreSame_" data-uid="DotNext.Runtime.InteropServices.Memory.AreSame*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_AreSame__1___0____0__" data-uid="DotNext.Runtime.InteropServices.Memory.AreSame``1(``0@,``0@)">AreSame&lt;T&gt;(T, T)</h4>
@@ -300,7 +300,7 @@ public static bool AreSame&lt;T&gt;(in T first, in T second)</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Compare_System_IntPtr_System_IntPtr_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Compare(System.IntPtr%2CSystem.IntPtr%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L539">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L590">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Compare_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_Compare_System_IntPtr_System_IntPtr_System_Int32_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare(System.IntPtr,System.IntPtr,System.Int32)">Compare(IntPtr, IntPtr, Int32)</h4>
@@ -309,7 +309,8 @@ public static bool AreSame&lt;T&gt;(in T first, in T second)</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int Compare(IntPtr first, IntPtr second, int length)</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use overloaded method with long length&quot;)]
+public static int Compare(IntPtr first, IntPtr second, int length)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -359,10 +360,72 @@ public static bool AreSame&lt;T&gt;(in T first, in T second)</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Compare_System_IntPtr_System_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Compare(System.IntPtr%2CSystem.IntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L601">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Memory_Compare_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_Compare_System_IntPtr_System_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare(System.IntPtr,System.IntPtr,System.Int64)">Compare(IntPtr, IntPtr, Int64)</h4>
+  <div class="markdown level1 summary"><p>Bitwise comparison of two memory blocks.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int Compare(IntPtr first, IntPtr second, long length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The pointer to the first memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The pointer to the second memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the first and second memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>Comparison result which has the semantics as return type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.icomparable.compareto#System_IComparable_CompareTo_System_Object_">CompareTo(Object)</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Compare_System_Void__System_Void__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Compare(System.Void*%2CSystem.Void*%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L514">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L579">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Compare_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_Compare_System_Void__System_Void__System_Int32_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare(System.Void*,System.Void*,System.Int32)">Compare(Void*, Void*, Int32)</h4>
@@ -372,6 +435,7 @@ public static bool AreSame&lt;T&gt;(in T first, in T second)</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+[Obsolete(&quot;Use overloaded method with long length&quot;)]
 public static int Compare(void *first, void *second, int length)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -398,6 +462,69 @@ public static int Compare(void *first, void *second, int length)</code></pre>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the first and second memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>Comparison result which has the semantics as return type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.icomparable.compareto#System_IComparable_CompareTo_System_Object_">CompareTo(Object)</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Compare_System_Void__System_Void__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Compare(System.Void*%2CSystem.Void*%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L643">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Memory_Compare_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_Compare_System_Void__System_Void__System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare(System.Void*,System.Void*,System.Int64)">Compare(Void*, Void*, Int64)</h4>
+  <div class="markdown level1 summary"><p>Bitwise comparison of two memory blocks.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static int Compare(void *first, void *second, long length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>*</td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The pointer to the first memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>*</td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The pointer to the second memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">length</span></td>
         <td><p>The length of the first and second memory blocks.</p>
 </td>
@@ -518,7 +645,7 @@ public static void Copy(void *source, void *destination, long length)</code></pr
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Equals_System_IntPtr_System_IntPtr_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Equals(System.IntPtr%2CSystem.IntPtr%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L504">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L528">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Equals_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_Equals_System_IntPtr_System_IntPtr_System_Int32_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals(System.IntPtr,System.IntPtr,System.Int32)">Equals(IntPtr, IntPtr, Int32)</h4>
@@ -527,7 +654,8 @@ public static void Copy(void *source, void *destination, long length)</code></pr
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool Equals(IntPtr first, IntPtr second, int length)</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use overloaded method with long length&quot;)]
+public static bool Equals(IntPtr first, IntPtr second, int length)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -577,10 +705,72 @@ public static void Copy(void *source, void *destination, long length)</code></pr
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Equals_System_IntPtr_System_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Equals(System.IntPtr%2CSystem.IntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L539">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Memory_Equals_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_Equals_System_IntPtr_System_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals(System.IntPtr,System.IntPtr,System.Int64)">Equals(IntPtr, IntPtr, Int64)</h4>
+  <div class="markdown level1 summary"><p>Computes equality between two blocks of memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool Equals(IntPtr first, IntPtr second, long length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">first</span></td>
+        <td><p>A pointer to the first memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">second</span></td>
+        <td><p>A pointer to the second memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>Length of first and second memory blocks, in bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>True, if both memory blocks have the same data; otherwise, false.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Equals_System_Void__System_Void__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Equals(System.Void*%2CSystem.Void*%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L479">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L507">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Equals_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_Equals_System_Void__System_Void__System_Int32_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals(System.Void*,System.Void*,System.Int32)">Equals(Void*, Void*, Int32)</h4>
@@ -590,6 +780,7 @@ public static void Copy(void *source, void *destination, long length)</code></pr
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+[Obsolete(&quot;Use overloaded method with long length&quot;)]
 public static bool Equals(void *first, void *second, int length)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -616,6 +807,69 @@ public static bool Equals(void *first, void *second, int length)</code></pre>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>Length of first and second memory blocks, in bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>True, if both memory blocks have the same data; otherwise, false.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Equals_System_Void__System_Void__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Equals(System.Void*%2CSystem.Void*%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L518">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Memory_Equals_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_Equals_System_Void__System_Void__System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals(System.Void*,System.Void*,System.Int64)">Equals(Void*, Void*, Int64)</h4>
+  <div class="markdown level1 summary"><p>Computes equality between two blocks of memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static bool Equals(void *first, void *second, long length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>*</td>
+        <td><span class="parametername">first</span></td>
+        <td><p>A pointer to the first memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>*</td>
+        <td><span class="parametername">second</span></td>
+        <td><p>A pointer to the second memory block.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">length</span></td>
         <td><p>Length of first and second memory blocks, in bytes.</p>
 </td>
@@ -1107,6 +1361,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(ref IntPtr source)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1438,6 +1693,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T ReadUnaligned&lt;T&gt;(ref IntPtr source)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1507,6 +1763,7 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(ref IntPtr destination, T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1796,6 +2053,7 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void WriteUnaligned&lt;T&gt;(ref IntPtr destination, T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1834,6 +2092,91 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
       <tr>
         <td><span class="parametername">T</span></td>
         <td><p>Unmanaged type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ZeroMem_System_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ZeroMem(System.IntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L481">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Memory_ZeroMem_" data-uid="DotNext.Runtime.InteropServices.Memory.ZeroMem*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_ZeroMem_System_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.ZeroMem(System.IntPtr,System.Int64)">ZeroMem(IntPtr, Int64)</h4>
+  <div class="markdown level1 summary"><p>Sets all bits of allocated memory to zero.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void ZeroMem(IntPtr ptr, long length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">ptr</span></td>
+        <td><p>The pointer to the memory to be cleared.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the memory to be cleared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_ZeroMem_System_IntPtr_System_Int64__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method has the same behavior as <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.unsafe.initblockunaligned#System_Runtime_CompilerServices_Unsafe_InitBlockUnaligned_System_Void__System_Byte_System_UInt32_">InitBlockUnaligned(Void*, Byte, UInt32)</a> but
+without restriction on <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a> data type for the length of the memory block.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ZeroMem_System_Void__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ZeroMem(System.Void*%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L497">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Memory_ZeroMem_" data-uid="DotNext.Runtime.InteropServices.Memory.ZeroMem*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_ZeroMem_System_Void__System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.ZeroMem(System.Void*,System.Int64)">ZeroMem(Void*, Int64)</h4>
+  <div class="markdown level1 summary"><p>Sets all bits of allocated memory to zero.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static void ZeroMem(void *ptr, long length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>*</td>
+        <td><span class="parametername">ptr</span></td>
+        <td><p>The pointer to the memory to be cleared.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the memory to be cleared.</p>
 </td>
       </tr>
     </tbody>

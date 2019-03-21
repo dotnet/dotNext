@@ -73,13 +73,14 @@
   
   <h1 id="DotNext_Reflection_Indexer_3_Getter" data-uid="DotNext.Reflection.Indexer`3.Getter" class="text-break">Delegate Indexer&lt;T, A, V&gt;.Getter
   </h1>
-  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 summary"><p>Represents property getter.</p>
+</div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Reflection.html">DotNext.Reflection</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_Indexer_3_Getter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public delegate V Getter(in T instance, in A arguments);</code></pre>
+    <pre><code class="lang-csharp hljs">public delegate V Getter(in T this, in A index);</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -93,13 +94,15 @@
     <tbody>
       <tr>
         <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td></td>
+        <td><span class="parametername">this</span></td>
+        <td><p>The object whose property value will be returned.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">A</span></td>
-        <td><span class="parametername">arguments</span></td>
-        <td></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>Index values for indexed properties.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -114,7 +117,8 @@
     <tbody>
       <tr>
         <td><span class="xref">V</span></td>
-        <td></td>
+        <td><p>The property value.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -152,6 +156,24 @@
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_Lock__1___0_System_TimeSpan_">LockAcquisition.Lock&lt;T&gt;(T, TimeSpan)</a>
   </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_">LockAcquisition.ReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_System_TimeSpan_">LockAcquisition.ReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_">LockAcquisition.WriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_System_TimeSpan_">LockAcquisition.WriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_System_TimeSpan_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
 </article>
           </div>
           
@@ -163,7 +185,7 @@
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Indexer_3_Getter.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Indexer%603.Getter%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L203" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L374" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

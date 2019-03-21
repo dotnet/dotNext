@@ -158,7 +158,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle__ctor.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Handle.%23ctor%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L44">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L41">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle__ctor_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Handle.#ctor*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle__ctor" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Handle.#ctor">Handle()</h4>
@@ -171,20 +171,20 @@ with handle.</p>
     <pre><code class="lang-csharp hljs">public Handle()</code></pre>
   </div>
   <h5 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle__ctor_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Disposing of the handle created with this constructor
-will release unmanaged memory.</p>
+  <div class="markdown level1 remarks"><p>The handle instantiated with this constructor has ownership over unmanaged memory.
+Unmanaged memory will be released when Garbage Collector reclaims instance of this handle
+or <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_Dispose">Dispose()</a> will be called directly.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Handle.%23ctor(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L58">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L55">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle__ctor_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Handle.#ctor*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle__ctor__0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Handle.#ctor(`0)">Handle(T)</h4>
-  <div class="markdown level1 summary"><p>Allocates a new unmanaged memory and associate it
-with handle.</p>
+  <div class="markdown level1 summary"><p>Allocates a new unmanaged memory and associate it with handle.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -210,19 +210,21 @@ with handle.</p>
     </tbody>
   </table>
   <h5 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle__ctor__0__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Disposing of the handle created with this constructor
-will release unmanaged memory.</p>
+  <div class="markdown level1 remarks"><p>The handle instantiated with this constructor has ownership over unmanaged memory.
+Unmanaged memory will be released when Garbage Collector reclaims instance of this handle
+or <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_Dispose">Dispose()</a> will be called directly.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle__ctor_DotNext_Runtime_InteropServices_UnmanagedMemory__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Handle.%23ctor(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L63">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L67">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle__ctor_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Handle.#ctor*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle__ctor_DotNext_Runtime_InteropServices_UnmanagedMemory__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Handle.#ctor(DotNext.Runtime.InteropServices.UnmanagedMemory{`0})">Handle(UnmanagedMemory&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Initializes a new handle for the given unmanaged memory.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -245,6 +247,9 @@ will release unmanaged memory.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle__ctor_DotNext_Runtime_InteropServices_UnmanagedMemory__0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The handle instantiated with this constructor doesn't have ownership over unmanaged memory.</p>
+</div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
@@ -252,11 +257,12 @@ will release unmanaged memory.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle_IsInvalid.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Handle.IsInvalid%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L68">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L75">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle_IsInvalid_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Handle.IsInvalid*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle_IsInvalid" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Handle.IsInvalid">IsInvalid</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether the unmanaged memory is released.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -286,11 +292,12 @@ will release unmanaged memory.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle_ReleaseHandle.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Handle.ReleaseHandle%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L70">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L81">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle_ReleaseHandle_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Handle.ReleaseHandle*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle_ReleaseHandle" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Handle.ReleaseHandle">ReleaseHandle()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Releases referenced unmanaged memory.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -307,7 +314,8 @@ will release unmanaged memory.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span>, if this handle is valid; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -320,7 +328,7 @@ will release unmanaged memory.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__0__Handle__DotNext_Runtime_InteropServices_UnmanagedMemory__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Handle.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D.Handle)~DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L77">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L88">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Handle.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__0__Handle__DotNext_Runtime_InteropServices_UnmanagedMemory__0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Handle.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory{`0}.Handle)~DotNext.Runtime.InteropServices.UnmanagedMemory{`0}">Implicit(UnmanagedMemory&lt;T&gt;.Handle to UnmanagedMemory&lt;T&gt;)</h4>
@@ -412,6 +420,24 @@ will release unmanaged memory.</p>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_Lock__1___0_System_TimeSpan_">LockAcquisition.Lock&lt;T&gt;(T, TimeSpan)</a>
   </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_">LockAcquisition.ReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_System_TimeSpan_">LockAcquisition.ReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_">LockAcquisition.WriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_System_TimeSpan_">LockAcquisition.WriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_System_TimeSpan_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
 </article>
           </div>
           
@@ -423,7 +449,7 @@ will release unmanaged memory.</p>
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Handle.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Handle%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L29" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L25" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

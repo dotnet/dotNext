@@ -73,7 +73,7 @@
   
   <h1 id="DotNext_Reflection_PropertyBase_1" data-uid="DotNext.Reflection.PropertyBase`1" class="text-break">Class PropertyBase&lt;V&gt;
   </h1>
-  <div class="markdown level0 summary"><p>Represents property.</p>
+  <div class="markdown level0 summary"><p>Represents non-indexer property.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -90,7 +90,6 @@
     <div><a class="xref" href="DotNext.Reflection.IProperty.html">IProperty</a></div>
     <div><a class="xref" href="DotNext.Reflection.IMember-1.html">IMember</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo">PropertyInfo</a>&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a></div>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Reflection.PropertyBase-1.html">PropertyBase</a>&lt;V&gt;&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo">PropertyInfo</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
@@ -130,7 +129,7 @@
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_PropertyBase_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class PropertyBase&lt;V&gt; : PropertyInfo, IProperty, IMember&lt;PropertyInfo&gt;, ICustomAttributeProvider, IEquatable&lt;PropertyBase&lt;V&gt;&gt;, IEquatable&lt;PropertyInfo&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class PropertyBase&lt;V&gt; : PropertyInfo, IProperty, IMember&lt;PropertyInfo&gt;, ICustomAttributeProvider, IEquatable&lt;PropertyInfo&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -155,11 +154,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_Attributes.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.Attributes%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L34">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L74">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_Attributes_" data-uid="DotNext.Reflection.PropertyBase`1.Attributes*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_Attributes" data-uid="DotNext.Reflection.PropertyBase`1.Attributes">Attributes</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the attributes for this property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -187,11 +187,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_CanRead.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.CanRead%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L28">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L59">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_CanRead_" data-uid="DotNext.Reflection.PropertyBase`1.CanRead*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_CanRead" data-uid="DotNext.Reflection.PropertyBase`1.CanRead">CanRead</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether the property can be read.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -219,11 +220,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_CanWrite.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.CanWrite%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L30">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L64">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_CanWrite_" data-uid="DotNext.Reflection.PropertyBase`1.CanWrite*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_CanWrite" data-uid="DotNext.Reflection.PropertyBase`1.CanWrite">CanWrite</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether the property can be written to.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -251,11 +253,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_CustomAttributes.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.CustomAttributes%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L79">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L219">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_CustomAttributes_" data-uid="DotNext.Reflection.PropertyBase`1.CustomAttributes*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_CustomAttributes" data-uid="DotNext.Reflection.PropertyBase`1.CustomAttributes">CustomAttributes</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets a collection that contains this member's custom attributes.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -283,11 +286,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_DeclaringType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.DeclaringType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L62">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L165">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_DeclaringType_" data-uid="DotNext.Reflection.PropertyBase`1.DeclaringType*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_DeclaringType" data-uid="DotNext.Reflection.PropertyBase`1.DeclaringType">DeclaringType</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the class that declares this property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -315,11 +319,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetMethod.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetMethod%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L32">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L69">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetMethod_" data-uid="DotNext.Reflection.PropertyBase`1.GetMethod*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetMethod" data-uid="DotNext.Reflection.PropertyBase`1.GetMethod">GetMethod</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the get accessor for this property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -347,11 +352,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_MemberType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.MemberType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L64">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L170">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_MemberType_" data-uid="DotNext.Reflection.PropertyBase`1.MemberType*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_MemberType" data-uid="DotNext.Reflection.PropertyBase`1.MemberType">MemberType</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Always returns <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.membertypes#System_Reflection_MemberTypes_Property">Property</a>.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -379,11 +385,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_MetadataToken.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.MetadataToken%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L73">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L203">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_MetadataToken_" data-uid="DotNext.Reflection.PropertyBase`1.MetadataToken*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_MetadataToken" data-uid="DotNext.Reflection.PropertyBase`1.MetadataToken">MetadataToken</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets a value that identifies a metadata element.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -411,11 +418,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_Module.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.Module%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L75">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L208">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_Module_" data-uid="DotNext.Reflection.PropertyBase`1.Module*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_Module" data-uid="DotNext.Reflection.PropertyBase`1.Module">Module</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the module in which the type that declares the property represented by the current instance is defined.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -443,11 +451,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_Name.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.Name%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L26">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L54">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_Name_" data-uid="DotNext.Reflection.PropertyBase`1.Name*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_Name" data-uid="DotNext.Reflection.PropertyBase`1.Name">Name</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets name of the property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -475,11 +484,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_PropertyType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.PropertyType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L36">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L79">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_PropertyType_" data-uid="DotNext.Reflection.PropertyBase`1.PropertyType*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_PropertyType" data-uid="DotNext.Reflection.PropertyBase`1.PropertyType">PropertyType</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the type of this property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -507,11 +517,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_ReflectedType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.ReflectedType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L66">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L175">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_ReflectedType_" data-uid="DotNext.Reflection.PropertyBase`1.ReflectedType*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_ReflectedType" data-uid="DotNext.Reflection.PropertyBase`1.ReflectedType">ReflectedType</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the class object that was used to obtain this instance.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -539,11 +550,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_SetMethod.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.SetMethod%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L38">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L84">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_SetMethod_" data-uid="DotNext.Reflection.PropertyBase`1.SetMethod*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_SetMethod" data-uid="DotNext.Reflection.PropertyBase`1.SetMethod">SetMethod</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the set accessor for this property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -570,61 +582,15 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_Equals_DotNext_Reflection_PropertyBase__0__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.Equals(DotNext.Reflection.PropertyBase%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L85">View Source</a>
-  </span>
-  <a id="DotNext_Reflection_PropertyBase_1_Equals_" data-uid="DotNext.Reflection.PropertyBase`1.Equals*"></a>
-  <h4 id="DotNext_Reflection_PropertyBase_1_Equals_DotNext_Reflection_PropertyBase__0__" data-uid="DotNext.Reflection.PropertyBase`1.Equals(DotNext.Reflection.PropertyBase{`0})">Equals(PropertyBase&lt;V&gt;)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Equals(PropertyBase&lt;V&gt; other)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.PropertyBase-1.html">PropertyBase</a>&lt;V&gt;</td>
-        <td><span class="parametername">other</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L90">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L235">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_Equals_" data-uid="DotNext.Reflection.PropertyBase`1.Equals*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_Equals_System_Object_" data-uid="DotNext.Reflection.PropertyBase`1.Equals(System.Object)">Equals(Object)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Determines whether this property is equal to the given property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -643,7 +609,8 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">other</span></td>
-        <td></td>
+        <td><p>Other property to compare.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -658,7 +625,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span> if this object reflects the same property as the specified object; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -669,11 +637,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_Equals_System_Reflection_PropertyInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.Equals(System.Reflection.PropertyInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L83">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L228">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_Equals_" data-uid="DotNext.Reflection.PropertyBase`1.Equals*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_Equals_System_Reflection_PropertyInfo_" data-uid="DotNext.Reflection.PropertyBase`1.Equals(System.Reflection.PropertyInfo)">Equals(PropertyInfo)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Determines whether this property is equal to the given property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -692,7 +661,8 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo">PropertyInfo</a></td>
         <td><span class="parametername">other</span></td>
-        <td></td>
+        <td><p>Other property to compare.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -707,7 +677,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span> if this object reflects the same property as the specified object; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -716,11 +687,13 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetAccessors_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetAccessors(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L40">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L92">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetAccessors_" data-uid="DotNext.Reflection.PropertyBase`1.GetAccessors*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetAccessors_System_Boolean_" data-uid="DotNext.Reflection.PropertyBase`1.GetAccessors(System.Boolean)">GetAccessors(Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns an array whose elements reflect the public and, if specified, non-public get and set accessors of the
+property reflected by the current instance.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -739,7 +712,8 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p>Indicates whether non-public methods should be returned in the returned array.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -754,7 +728,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>[]</td>
-        <td></td>
+        <td><p>An array whose elements reflect the get and set accessors of the property reflected by the current instance.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -765,11 +740,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetConstantValue.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetConstantValue%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L42">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L98">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetConstantValue_" data-uid="DotNext.Reflection.PropertyBase`1.GetConstantValue*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetConstantValue" data-uid="DotNext.Reflection.PropertyBase`1.GetConstantValue">GetConstantValue()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns a literal value associated with the property by a compiler.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -786,7 +762,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
-        <td></td>
+        <td><p>The literal value associated with the property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -797,11 +774,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetCustomAttributes_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetCustomAttributes(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L68">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L182">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetCustomAttributes_" data-uid="DotNext.Reflection.PropertyBase`1.GetCustomAttributes*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetCustomAttributes_System_Boolean_" data-uid="DotNext.Reflection.PropertyBase`1.GetCustomAttributes(System.Boolean)">GetCustomAttributes(Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns an array of all custom attributes applied to this property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -820,7 +798,8 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">inherit</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to search this member's inheritance chain to find the attributes; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -835,7 +814,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>[]</td>
-        <td></td>
+        <td><p>An array that contains all the custom attributes applied to this property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -846,11 +826,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetCustomAttributes_System_Type_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetCustomAttributes(System.Type%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L69">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L190">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetCustomAttributes_" data-uid="DotNext.Reflection.PropertyBase`1.GetCustomAttributes*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetCustomAttributes_System_Type_System_Boolean_" data-uid="DotNext.Reflection.PropertyBase`1.GetCustomAttributes(System.Type,System.Boolean)">GetCustomAttributes(Type, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns an array of all custom attributes applied to this property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -869,12 +850,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
         <td><span class="parametername">attributeType</span></td>
-        <td></td>
+        <td><p>The type of attribute to search for. Only attributes that are assignable to this type are returned.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">inherit</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to search this member's inheritance chain to find the attributes; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -889,7 +872,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>[]</td>
-        <td></td>
+        <td><p>An array that contains all the custom attributes applied to this property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -900,11 +884,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetCustomAttributesData.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetCustomAttributesData%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L77">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L214">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetCustomAttributesData_" data-uid="DotNext.Reflection.PropertyBase`1.GetCustomAttributesData*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetCustomAttributesData" data-uid="DotNext.Reflection.PropertyBase`1.GetCustomAttributesData">GetCustomAttributesData()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns a list of custom attributes that have been applied to the target property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -921,7 +906,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.customattributedata">CustomAttributeData</a>&gt;</td>
-        <td></td>
+        <td><p>The data about the attributes that have been applied to the target property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -932,11 +918,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetGetMethod_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetGetMethod(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L44">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetGetMethod_" data-uid="DotNext.Reflection.PropertyBase`1.GetGetMethod*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetGetMethod_System_Boolean_" data-uid="DotNext.Reflection.PropertyBase`1.GetGetMethod(System.Boolean)">GetGetMethod(Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns the public or non-public get accessor for this property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -955,7 +942,8 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p>Indicates whether a non-public get accessor should be returned.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -970,7 +958,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
-        <td></td>
+        <td><p>The object representing the get accessor for this property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -981,11 +970,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L103">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L252">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetHashCode_" data-uid="DotNext.Reflection.PropertyBase`1.GetHashCode*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetHashCode" data-uid="DotNext.Reflection.PropertyBase`1.GetHashCode">GetHashCode()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Computes hash code uniquely identifies the reflected property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1002,7 +992,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td></td>
+        <td><p>The hash code of the property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1013,11 +1004,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetIndexParameters.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetIndexParameters%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L46">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L111">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetIndexParameters_" data-uid="DotNext.Reflection.PropertyBase`1.GetIndexParameters*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetIndexParameters" data-uid="DotNext.Reflection.PropertyBase`1.GetIndexParameters">GetIndexParameters()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns an array of all the index parameters for the property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1034,7 +1026,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.parameterinfo">ParameterInfo</a>[]</td>
-        <td></td>
+        <td><p>An array containing the parameters for the indexes.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1045,11 +1038,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetOptionalCustomModifiers.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetOptionalCustomModifiers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L48">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L117">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetOptionalCustomModifiers_" data-uid="DotNext.Reflection.PropertyBase`1.GetOptionalCustomModifiers*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetOptionalCustomModifiers" data-uid="DotNext.Reflection.PropertyBase`1.GetOptionalCustomModifiers">GetOptionalCustomModifiers()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns an array of types representing the optional custom modifiers of the property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1066,7 +1060,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a>[]</td>
-        <td></td>
+        <td><p>An array of objects that identify the optional custom modifiers of the current property</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1077,11 +1072,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetRawConstantValue.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetRawConstantValue%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L50">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L123">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetRawConstantValue_" data-uid="DotNext.Reflection.PropertyBase`1.GetRawConstantValue*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetRawConstantValue" data-uid="DotNext.Reflection.PropertyBase`1.GetRawConstantValue">GetRawConstantValue()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns a literal value associated with the property by a compiler.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1098,7 +1094,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
-        <td></td>
+        <td><p>An object that contains the literal value associated with the property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1109,11 +1106,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetRequiredCustomModifiers.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetRequiredCustomModifiers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L52">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L129">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetRequiredCustomModifiers_" data-uid="DotNext.Reflection.PropertyBase`1.GetRequiredCustomModifiers*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetRequiredCustomModifiers" data-uid="DotNext.Reflection.PropertyBase`1.GetRequiredCustomModifiers">GetRequiredCustomModifiers()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns an array of types representing the required custom modifiers of the property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1130,7 +1128,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a>[]</td>
-        <td></td>
+        <td><p>An array of objects that identify the required custom modifiers of the current property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1141,11 +1140,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetSetMethod_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetSetMethod(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L54">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L136">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetSetMethod_" data-uid="DotNext.Reflection.PropertyBase`1.GetSetMethod*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetSetMethod_System_Boolean_" data-uid="DotNext.Reflection.PropertyBase`1.GetSetMethod(System.Boolean)">GetSetMethod(Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets the set accessor for this property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1164,7 +1164,8 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p>Indicates whether a non-public set  accessor should be returned.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1179,7 +1180,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
-        <td></td>
+        <td><p>The object representing the set accessor for this property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1190,11 +1192,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetValue_System_Object__0__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetValue(System.Object%2C%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L19">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L25">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetValue_" data-uid="DotNext.Reflection.PropertyBase`1.GetValue*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetValue_System_Object__0__" data-uid="DotNext.Reflection.PropertyBase`1.GetValue(System.Object,`0@)">GetValue(Object, out V)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns the value of the property supported by a given object.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1213,12 +1216,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">obj</span></td>
-        <td></td>
+        <td><p>The object whose property value will be returned.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">V</span></td>
         <td><span class="parametername">value</span></td>
-        <td></td>
+        <td><p>An object containing the value of the property reflected by this instance.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1233,7 +1238,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span>, if property value is obtained successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1242,11 +1248,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetValue_System_Object_System_Object___.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetValue(System.Object%2CSystem.Object%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L22">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L41">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetValue_" data-uid="DotNext.Reflection.PropertyBase`1.GetValue*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetValue_System_Object_System_Object___" data-uid="DotNext.Reflection.PropertyBase`1.GetValue(System.Object,System.Object[])">GetValue(Object, Object[])</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns the property value of a specified object with index values for indexed properties.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1265,12 +1272,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">obj</span></td>
-        <td></td>
+        <td><p>The object whose property value will be returned.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>[]</td>
         <td><span class="parametername">index</span></td>
-        <td></td>
+        <td><p>Index values for indexed properties.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1285,7 +1294,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
-        <td></td>
+        <td><p>The property value of the specified object.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1296,11 +1306,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_GetValue_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Object___System_Globalization_CultureInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.GetValue(System.Object%2CSystem.Reflection.BindingFlags%2CSystem.Reflection.Binder%2CSystem.Object%5B%5D%2CSystem.Globalization.CultureInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L56">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L147">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_GetValue_" data-uid="DotNext.Reflection.PropertyBase`1.GetValue*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_GetValue_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Object___System_Globalization_CultureInfo_" data-uid="DotNext.Reflection.PropertyBase`1.GetValue(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)">GetValue(Object, BindingFlags, Binder, Object[], CultureInfo)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns the property value of a specified object with index values for indexed properties.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1319,27 +1330,32 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">obj</span></td>
-        <td></td>
+        <td><p>The object whose property value will be returned.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.bindingflags">BindingFlags</a></td>
         <td><span class="parametername">invokeAttr</span></td>
-        <td></td>
+        <td><p>Specifies the type of binding.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.binder">Binder</a></td>
         <td><span class="parametername">binder</span></td>
-        <td></td>
+        <td><p>Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>[]</td>
         <td><span class="parametername">index</span></td>
-        <td></td>
+        <td><p>Index values for indexed properties.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.cultureinfo">CultureInfo</a></td>
         <td><span class="parametername">culture</span></td>
-        <td></td>
+        <td><p>Used to govern the coercion of types.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1354,7 +1370,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
-        <td></td>
+        <td><p>The property value of the specified object.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1365,11 +1382,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_IsDefined_System_Type_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.IsDefined(System.Type%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L71">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L198">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_IsDefined_" data-uid="DotNext.Reflection.PropertyBase`1.IsDefined*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_IsDefined_System_Type_System_Boolean_" data-uid="DotNext.Reflection.PropertyBase`1.IsDefined(System.Type,System.Boolean)">IsDefined(Type, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Determines whether one or more attributes of the specified type or of its derived types is applied to this property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1388,12 +1406,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
         <td><span class="parametername">attributeType</span></td>
-        <td></td>
+        <td><p>The type of custom attribute to search for. The search includes derived types.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">inherit</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to search this member's inheritance chain to find the attributes; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1408,7 +1428,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span> if one or more instances of <code data-dev-comment-type="paramref" class="paramref">attributeType</code> or any of its derived types is applied to this property; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1419,11 +1440,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_SetValue_System_Object__0_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.SetValue(System.Object%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L20">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L33">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_SetValue_" data-uid="DotNext.Reflection.PropertyBase`1.SetValue*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_SetValue_System_Object__0_" data-uid="DotNext.Reflection.PropertyBase`1.SetValue(System.Object,`0)">SetValue(Object, V)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Sets the value of the property supported by the given object.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1442,12 +1464,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">obj</span></td>
-        <td></td>
+        <td><p>The object whose property value will be set.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">V</span></td>
         <td><span class="parametername">value</span></td>
-        <td></td>
+        <td><p>The value to assign to the property.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1462,7 +1486,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span>, if property value is modified successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1471,11 +1496,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_SetValue_System_Object_System_Object_System_Object___.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.SetValue(System.Object%2CSystem.Object%2CSystem.Object%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L24">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_SetValue_" data-uid="DotNext.Reflection.PropertyBase`1.SetValue*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_SetValue_System_Object_System_Object_System_Object___" data-uid="DotNext.Reflection.PropertyBase`1.SetValue(System.Object,System.Object,System.Object[])">SetValue(Object, Object, Object[])</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Sets the property value of a specified object with optional index values for index properties.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1494,17 +1520,20 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">obj</span></td>
-        <td></td>
+        <td><p>The object whose property value will be set.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">value</span></td>
-        <td></td>
+        <td><p>The new property value.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>[]</td>
         <td><span class="parametername">index</span></td>
-        <td></td>
+        <td><p>The property value of the specified object.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1515,11 +1544,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_SetValue_System_Object_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Object___System_Globalization_CultureInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.SetValue(System.Object%2CSystem.Object%2CSystem.Reflection.BindingFlags%2CSystem.Reflection.Binder%2CSystem.Object%5B%5D%2CSystem.Globalization.CultureInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L59">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L159">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_SetValue_" data-uid="DotNext.Reflection.PropertyBase`1.SetValue*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_SetValue_System_Object_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Object___System_Globalization_CultureInfo_" data-uid="DotNext.Reflection.PropertyBase`1.SetValue(System.Object,System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)">SetValue(Object, Object, BindingFlags, Binder, Object[], CultureInfo)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Sets the property value for a specified object that has the specified binding, index, and culture-specific information.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1538,32 +1568,38 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">obj</span></td>
-        <td></td>
+        <td><p>The object whose property value will be set.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">value</span></td>
-        <td></td>
+        <td><p>The new value of the property.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.bindingflags">BindingFlags</a></td>
         <td><span class="parametername">invokeAttr</span></td>
-        <td></td>
+        <td><p>Specifies the type of binding.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.binder">Binder</a></td>
         <td><span class="parametername">binder</span></td>
-        <td></td>
+        <td><p>Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>[]</td>
         <td><span class="parametername">index</span></td>
-        <td></td>
+        <td><p>Index values for indexed properties.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.globalization.cultureinfo">CultureInfo</a></td>
         <td><span class="parametername">culture</span></td>
-        <td></td>
+        <td><p>Used to govern the coercion of types.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1574,11 +1610,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L109">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L258">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_ToString_" data-uid="DotNext.Reflection.PropertyBase`1.ToString*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_ToString" data-uid="DotNext.Reflection.PropertyBase`1.ToString">ToString()</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns textual representation of this property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -1595,118 +1632,13 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td></td>
+        <td><p>The textual representation of this property.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a></div>
-  <h3 id="operators">Operators
-  </h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_op_Equality_DotNext_Reflection_PropertyBase__0__DotNext_Reflection_PropertyBase__0__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.op_Equality(DotNext.Reflection.PropertyBase%7B%600%7D%2CDotNext.Reflection.PropertyBase%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L105">View Source</a>
-  </span>
-  <a id="DotNext_Reflection_PropertyBase_1_op_Equality_" data-uid="DotNext.Reflection.PropertyBase`1.op_Equality*"></a>
-  <h4 id="DotNext_Reflection_PropertyBase_1_op_Equality_DotNext_Reflection_PropertyBase__0__DotNext_Reflection_PropertyBase__0__" data-uid="DotNext.Reflection.PropertyBase`1.op_Equality(DotNext.Reflection.PropertyBase{`0},DotNext.Reflection.PropertyBase{`0})">Equality(PropertyBase&lt;V&gt;, PropertyBase&lt;V&gt;)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator ==(PropertyBase&lt;V&gt; first, PropertyBase&lt;V&gt; second)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.PropertyBase-1.html">PropertyBase</a>&lt;V&gt;</td>
-        <td><span class="parametername">first</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.PropertyBase-1.html">PropertyBase</a>&lt;V&gt;</td>
-        <td><span class="parametername">second</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_op_Inequality_DotNext_Reflection_PropertyBase__0__DotNext_Reflection_PropertyBase__0__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.op_Inequality(DotNext.Reflection.PropertyBase%7B%600%7D%2CDotNext.Reflection.PropertyBase%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L107">View Source</a>
-  </span>
-  <a id="DotNext_Reflection_PropertyBase_1_op_Inequality_" data-uid="DotNext.Reflection.PropertyBase`1.op_Inequality*"></a>
-  <h4 id="DotNext_Reflection_PropertyBase_1_op_Inequality_DotNext_Reflection_PropertyBase__0__DotNext_Reflection_PropertyBase__0__" data-uid="DotNext.Reflection.PropertyBase`1.op_Inequality(DotNext.Reflection.PropertyBase{`0},DotNext.Reflection.PropertyBase{`0})">Inequality(PropertyBase&lt;V&gt;, PropertyBase&lt;V&gt;)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator !=(PropertyBase&lt;V&gt; first, PropertyBase&lt;V&gt; second)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.PropertyBase-1.html">PropertyBase</a>&lt;V&gt;</td>
-        <td><span class="parametername">first</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.PropertyBase-1.html">PropertyBase</a>&lt;V&gt;</td>
-        <td><span class="parametername">second</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="eii">Explicit Interface Implementations
   </h3>
   <span class="small pull-right mobile-hide">
@@ -1714,7 +1646,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_PropertyBase_1_DotNext_Reflection_IMember_System_Reflection_PropertyInfo__RuntimeMember.md&amp;value=---%0Auid%3A%20DotNext.Reflection.PropertyBase%601.DotNext%23Reflection%23IMember%7BSystem%23Reflection%23PropertyInfo%7D%23RuntimeMember%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L81">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Property.cs/#L221">View Source</a>
   </span>
   <a id="DotNext_Reflection_PropertyBase_1_DotNext_Reflection_IMember_System_Reflection_PropertyInfo__RuntimeMember_" data-uid="DotNext.Reflection.PropertyBase`1.DotNext#Reflection#IMember{System#Reflection#PropertyInfo}#RuntimeMember*"></a>
   <h4 id="DotNext_Reflection_PropertyBase_1_DotNext_Reflection_IMember_System_Reflection_PropertyInfo__RuntimeMember" data-uid="DotNext.Reflection.PropertyBase`1.DotNext#Reflection#IMember{System#Reflection#PropertyInfo}#RuntimeMember">IMember&lt;PropertyInfo&gt;.RuntimeMember</h4>
@@ -1752,9 +1684,6 @@
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
   </div>
-  <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
-  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_AsConst__1___0_">ExpressionBuilder.AsConst&lt;T&gt;(T)</a>
@@ -1782,6 +1711,24 @@
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_Lock__1___0_System_TimeSpan_">LockAcquisition.Lock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_">LockAcquisition.ReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_System_TimeSpan_">LockAcquisition.ReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_">LockAcquisition.WriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_System_TimeSpan_">LockAcquisition.WriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_System_TimeSpan_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
 </article>
           </div>

@@ -78,7 +78,7 @@
   <div class="markdown level0 conceptual"></div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory-1.html">IUnmanagedMemory</a>&lt;T&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a></div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.icloneable">ICloneable</a></div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.istrongbox">IStrongBox</a></div>
@@ -100,7 +100,7 @@
   <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
   <h5 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct UnmanagedMemory&lt;T&gt; : IUnmanagedMemory&lt;T&gt;, IDisposable, ICloneable, IStrongBox, IEquatable&lt;UnmanagedMemory&lt;T&gt;&gt; where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public struct UnmanagedMemory&lt;T&gt; : IUnmanagedMemory&lt;T&gt;, IUnmanagedMemory, IDisposable, ICloneable, IStrongBox, IEquatable&lt;UnmanagedMemory&lt;T&gt;&gt; where T : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -126,153 +126,10 @@ Therefore, it's developer responsibility to release unmanaged memory using <a cl
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Item(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L257">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Item_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Item*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Item_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Item(System.Int32)">Item[Int32]</h4>
-  <div class="markdown level1 summary"><p>Gets pointer to the memory block.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Pointer&lt;byte&gt; this[int offset] { get; }</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td><p>Zero-based byte offset.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><p>Byte located at the specified offset in the memory.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.NullPointerException.html">NullPointerException</a></td>
-        <td><p>This buffer is not allocated.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.indexoutofrangeexception">IndexOutOfRangeException</a></td>
-        <td><p>Invalid offset.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Item_System_UInt64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Item(System.UInt64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L243">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Item_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Item*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Item_System_UInt64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Item(System.UInt64)">Item[UInt64]</h4>
-  <div class="markdown level1 summary"><p>Gets pointer to the memory block.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td><p>Zero-based byte offset.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><p>Byte located at the specified offset in the memory.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.NullPointerException.html">NullPointerException</a></td>
-        <td><p>This buffer is not allocated.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.indexoutofrangeexception">IndexOutOfRangeException</a></td>
-        <td><p>Invalid offset.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L101">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L127">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Value_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Value*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Value" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Value">Value</h4>
@@ -305,7 +162,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Alloc.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Alloc%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L144">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L164">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Alloc_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Alloc*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Alloc" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Alloc">Alloc()</h4>
@@ -337,7 +194,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_As__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.As%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L226">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L210">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_As_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.As*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_As__1" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.As``1">As&lt;U&gt;()</h4>
@@ -347,6 +204,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public UnmanagedMemory&lt;U&gt; As&lt;U&gt;()
+
     where U : struct</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -384,60 +242,12 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
   <h5 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_As__1_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Type <code data-dev-comment-type="typeparamref" class="typeparamref">U</code> should be of the same size or less than type <code data-dev-comment-type="typeparamref" class="typeparamref">U</code>.</p>
 </div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.GenericArgumentException-1.html">GenericArgumentException</a>&lt;G&gt;</td>
-        <td><p>Target type should be of the same size or less than original type.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_AsStream.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.AsStream%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L271">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_AsStream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.AsStream*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_AsStream" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.AsStream">AsStream()</h4>
-  <div class="markdown level1 summary"><p>Gets unmanaged memory buffer as stream.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public UnmanagedMemoryStream AsStream()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.unmanagedmemorystream">UnmanagedMemoryStream</a></td>
-        <td><p>Stream to unmanaged memory buffer.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseCompare_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L322">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L281">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.BitwiseCompare*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseCompare_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer{`0})">BitwiseCompare(Pointer&lt;T&gt;)</h4>
@@ -481,57 +291,10 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseCompare_DotNext_Runtime_InteropServices_UnmanagedMemory__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.BitwiseCompare(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L324">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.BitwiseCompare*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseCompare_DotNext_Runtime_InteropServices_UnmanagedMemory__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.BitwiseCompare(DotNext.Runtime.InteropServices.UnmanagedMemory{`0})">BitwiseCompare(UnmanagedMemory&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int BitwiseCompare(UnmanagedMemory&lt;T&gt; other)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemory-1.html">UnmanagedMemory</a>&lt;T&gt;</td>
-        <td><span class="parametername">other</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseEquals_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L317">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L279">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseEquals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.BitwiseEquals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseEquals_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer{`0})">BitwiseEquals(Pointer&lt;T&gt;)</h4>
@@ -575,104 +338,10 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseEquals_DotNext_Runtime_InteropServices_UnmanagedMemory__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.BitwiseEquals(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L319">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseEquals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.BitwiseEquals*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseEquals_DotNext_Runtime_InteropServices_UnmanagedMemory__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.BitwiseEquals(DotNext.Runtime.InteropServices.UnmanagedMemory{`0})">BitwiseEquals(UnmanagedMemory&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool BitwiseEquals(UnmanagedMemory&lt;T&gt; other)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemory-1.html">UnmanagedMemory</a>&lt;T&gt;</td>
-        <td><span class="parametername">other</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseHashCode_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.BitwiseHashCode(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L294">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseHashCode_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.BitwiseHashCode*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_BitwiseHashCode_System_Boolean_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.BitwiseHashCode(System.Boolean)">BitwiseHashCode(Boolean)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int BitwiseHashCode(bool salted = true)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">salted</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Box__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Box(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L132">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L152">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Box_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Box*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Box__0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Box(`0)">Box(T)</h4>
@@ -719,42 +388,10 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Clear.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Clear%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L155">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Clear_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Clear*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Clear" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Clear">Clear()</h4>
-  <div class="markdown level1 summary"><p>Sets all bits of allocated memory to zero.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Clear()</code></pre>
-  </div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.NullPointerException.html">NullPointerException</a></td>
-        <td><p>This buffer is not allocated.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Copy.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Copy%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L212">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L196">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Copy_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Copy*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Copy" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Copy">Copy()</h4>
@@ -786,7 +423,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_CopyToManagedHeap.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.CopyToManagedHeap%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L206">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L190">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_CopyToManagedHeap_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.CopyToManagedHeap*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_CopyToManagedHeap" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.CopyToManagedHeap">CopyToManagedHeap()</h4>
@@ -818,7 +455,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L284">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L244">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Dispose_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Dispose*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Dispose" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Dispose">Dispose()</h4>
@@ -834,7 +471,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Equals__0_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Equals(%600%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L327">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L283">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Equals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Equals__0_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Equals(`0,System.Collections.Generic.IEqualityComparer{`0})">Equals(T, IEqualityComparer&lt;T&gt;)</h4>
@@ -886,7 +523,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L296">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L258">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Equals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Equals_System_Object_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Equals(System.Object)">Equals(Object)</h4>
@@ -935,7 +572,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_Equals__1_DotNext_Runtime_InteropServices_UnmanagedMemory___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.Equals%60%601(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L286">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L250">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Equals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_Equals__1_DotNext_Runtime_InteropServices_UnmanagedMemory___0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.Equals``1(DotNext.Runtime.InteropServices.UnmanagedMemory{``0})">Equals&lt;U&gt;(UnmanagedMemory&lt;U&gt;)</h4>
@@ -944,6 +581,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool Equals&lt;U&gt;(UnmanagedMemory&lt;U&gt; other)
+
     where U : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -998,7 +636,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L292">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L256">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_GetHashCode_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.GetHashCode*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_GetHashCode" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.GetHashCode">GetHashCode()</h4>
@@ -1030,7 +668,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_GetHashCode_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.GetHashCode(System.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L330">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L286">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_GetHashCode_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.GetHashCode*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_GetHashCode_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.GetHashCode(System.Collections.Generic.IEqualityComparer{`0})">GetHashCode(IEqualityComparer&lt;T&gt;)</h4>
@@ -1074,161 +712,10 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFrom_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.ReadFrom(System.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L164">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ReadFrom*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFrom_System_Byte___" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ReadFrom(System.Byte[])">ReadFrom(Byte[])</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public long ReadFrom(byte[] source)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
-        <td><span class="parametername">source</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFrom_System_Byte___System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.ReadFrom(System.Byte%5B%5D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L161">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ReadFrom*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFrom_System_Byte___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ReadFrom(System.Byte[],System.Int64,System.Int64)">ReadFrom(Byte[], Int64, Int64)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public long ReadFrom(byte[] source, long offset, long length)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
-        <td><span class="parametername">source</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">length</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFrom_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.ReadFrom(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L168">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ReadFrom*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFrom_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ReadFrom(System.IO.Stream)">ReadFrom(Stream)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public long ReadFrom(Stream source)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">source</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFrom__1_DotNext_Runtime_InteropServices_Pointer___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.ReadFrom%60%601(DotNext.Runtime.InteropServices.Pointer%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L157">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L171">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ReadFrom*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFrom__1_DotNext_Runtime_InteropServices_Pointer___0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ReadFrom``1(DotNext.Runtime.InteropServices.Pointer{``0})">ReadFrom&lt;U&gt;(Pointer&lt;U&gt;)</h4>
@@ -1237,6 +724,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void ReadFrom&lt;U&gt;(Pointer&lt;U&gt; source)
+
     where U : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1273,18 +761,19 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFromAsync_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.ReadFromAsync(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToPointer_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.ToPointer(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L171">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L221">View Source</a>
   </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFromAsync_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ReadFromAsync*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ReadFromAsync_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ReadFromAsync(System.IO.Stream)">ReadFromAsync(Stream)</h4>
-  <div class="markdown level1 summary"></div>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToPointer_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ToPointer*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToPointer_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ToPointer(System.Int64)">ToPointer(Int64)</h4>
+  <div class="markdown level1 summary"><p>Gets pointer to the memory block.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;long&gt; ReadFromAsync(Stream source)</code></pre>
+    <pre><code class="lang-csharp hljs">public Pointer&lt;byte&gt; ToPointer(long offset)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1297,9 +786,10 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">source</span></td>
-        <td></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td><p>Zero-based byte offset.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -1313,26 +803,50 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
-        <td></td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><p>Byte located at the specified offset in the memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.NullPointerException.html">NullPointerException</a></td>
+        <td><p>This buffer is not allocated.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.indexoutofrangeexception">IndexOutOfRangeException</a></td>
+        <td><p>Invalid offset.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToByteArray.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.ToByteArray%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToPointer__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.ToPointer%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L234">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L114">View Source</a>
   </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToByteArray_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ToByteArray*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToByteArray" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ToByteArray">ToByteArray()</h4>
-  <div class="markdown level1 summary"><p>Converts unmanaged buffer into managed array.</p>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToPointer_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ToPointer*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToPointer__1" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ToPointer``1">ToPointer&lt;U&gt;()</h4>
+  <div class="markdown level1 summary"><p>Obtains typed pointer to the unmanaged memory.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public byte[] ToByteArray()</code></pre>
+    <pre><code class="lang-csharp hljs">public Pointer&lt;U&gt; ToPointer&lt;U&gt;()
+
+    where U : struct</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1344,8 +858,24 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
-        <td><p>Copy of unmanaged buffer in the form of managed byte array.</p>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;U&gt;</td>
+        <td><p>The typed pointer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">U</span></td>
+        <td><p>The type of the pointer.</p>
 </td>
       </tr>
     </tbody>
@@ -1355,7 +885,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L315">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L277">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToString_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ToString*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToString" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.ToString">ToString()</h4>
@@ -1389,7 +919,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.WriteTo(%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L182">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L179">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo(`0@)">WriteTo(ref T)</h4>
@@ -1418,146 +948,10 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.WriteTo(System.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L192">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_System_Byte___" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo(System.Byte[])">WriteTo(Byte[])</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public long WriteTo(byte[] destination)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
-        <td><span class="parametername">destination</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_System_Byte___System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.WriteTo(System.Byte%5B%5D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L189">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_System_Byte___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo(System.Byte[],System.Int64,System.Int64)">WriteTo(Byte[], Int64, Int64)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public long WriteTo(byte[] destination, long offset, long length)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
-        <td><span class="parametername">destination</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">length</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.WriteTo(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L196">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo(System.IO.Stream)">WriteTo(Stream)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void WriteTo(Stream destination)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">destination</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo__1_DotNext_Runtime_InteropServices_Pointer___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.WriteTo%60%601(DotNext.Runtime.InteropServices.Pointer%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L178">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L175">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo__1_DotNext_Runtime_InteropServices_Pointer___0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo``1(DotNext.Runtime.InteropServices.Pointer{``0})">WriteTo&lt;U&gt;(Pointer&lt;U&gt;)</h4>
@@ -1566,6 +960,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void WriteTo&lt;U&gt;(Pointer&lt;U&gt; destination)
+
     where U : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1605,7 +1000,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo__1_DotNext_Runtime_InteropServices_UnmanagedMemory___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.WriteTo%60%601(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L185">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L182">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo__1_DotNext_Runtime_InteropServices_UnmanagedMemory___0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo``1(DotNext.Runtime.InteropServices.UnmanagedMemory{``0})">WriteTo&lt;U&gt;(UnmanagedMemory&lt;U&gt;)</h4>
@@ -1614,6 +1009,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void WriteTo&lt;U&gt;(UnmanagedMemory&lt;U&gt; destination)
+
     where U : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1648,53 +1044,6 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteToAsync_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.WriteToAsync(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L199">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteToAsync_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteToAsync*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteToAsync_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteToAsync(System.IO.Stream)">WriteToAsync(Stream)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task WriteToAsync(Stream destination)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">destination</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="operators">Operators
   </h3>
   <span class="small pull-right mobile-hide">
@@ -1702,7 +1051,7 @@ public Pointer&lt;byte&gt; this[ulong offset] { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedMemory__0__DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.op_Equality(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D%2CDotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L339">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L295">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Equality_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Equality*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedMemory__0__DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Equality(DotNext.Runtime.InteropServices.UnmanagedMemory{`0},DotNext.Runtime.InteropServices.Pointer{`0})">Equality(UnmanagedMemory&lt;T&gt;, Pointer&lt;T&gt;)</h4>
@@ -1755,7 +1104,7 @@ public static bool operator ==(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedMemory__0__DotNext_Runtime_InteropServices_UnmanagedMemory__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.op_Equality(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D%2CDotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L333">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L289">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Equality_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Equality*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedMemory__0__DotNext_Runtime_InteropServices_UnmanagedMemory__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Equality(DotNext.Runtime.InteropServices.UnmanagedMemory{`0},DotNext.Runtime.InteropServices.UnmanagedMemory{`0})">Equality(UnmanagedMemory&lt;T&gt;, UnmanagedMemory&lt;T&gt;)</h4>
@@ -1807,7 +1156,7 @@ public static bool operator ==(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__0____0.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L265">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L231">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__0____0" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory{`0})~`0">Implicit(UnmanagedMemory&lt;T&gt; to T)</h4>
@@ -1854,7 +1203,7 @@ public static bool operator ==(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__0___DotNext_Runtime_InteropServices_Pointer__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D)~DotNext.Runtime.InteropServices.Pointer%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L259">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L225">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__0___DotNext_Runtime_InteropServices_Pointer__0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory{`0})~DotNext.Runtime.InteropServices.Pointer{`0}">Implicit(UnmanagedMemory&lt;T&gt; to Pointer&lt;T&gt;)</h4>
@@ -1901,7 +1250,7 @@ public static bool operator ==(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__0___System_ReadOnlySpan__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D)~System.ReadOnlySpan%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L262">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L228">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__0___System_ReadOnlySpan__0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory{`0})~System.ReadOnlySpan{`0}">Implicit(UnmanagedMemory&lt;T&gt; to ReadOnlySpan&lt;T&gt;)</h4>
@@ -1948,7 +1297,7 @@ public static bool operator ==(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedMemory__0__DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D%2CDotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L343">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L299">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Inequality_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Inequality*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedMemory__0__DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedMemory{`0},DotNext.Runtime.InteropServices.Pointer{`0})">Inequality(UnmanagedMemory&lt;T&gt;, Pointer&lt;T&gt;)</h4>
@@ -2001,7 +1350,7 @@ public static bool operator !=(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedMemory__0__DotNext_Runtime_InteropServices_UnmanagedMemory__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D%2CDotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L336">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L292">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Inequality_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Inequality*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedMemory__0__DotNext_Runtime_InteropServices_UnmanagedMemory__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedMemory{`0},DotNext.Runtime.InteropServices.UnmanagedMemory{`0})">Inequality(UnmanagedMemory&lt;T&gt;, UnmanagedMemory&lt;T&gt;)</h4>
@@ -2052,18 +1401,18 @@ public static bool operator !=(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Address.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23Address%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Address.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%23Address%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L121">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L120">View Source</a>
   </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Address_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Address*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Address" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Address">IUnmanagedMemory&lt;T&gt;.Address</h4>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Address_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Address" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address">IUnmanagedMemory.Address</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">T*IUnmanagedMemory&lt;T&gt;.Address { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">IntPtr IUnmanagedMemory.Address { get; }</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2075,43 +1424,26 @@ public static bool operator !=(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
     </thead>
     <tbody>
       <tr>
-        <td>T*</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Item_System_UInt64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23Item(System.UInt64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Size.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%23Size%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L248">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L118">View Source</a>
   </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Item_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Item*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Item_System_UInt64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Item(System.UInt64)">IUnmanagedMemory&lt;T&gt;.Item[UInt64]</h4>
+  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Size_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Size*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Size" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Size">IUnmanagedMemory.Size</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">byte *IUnmanagedMemory&lt;T&gt;.this[ulong offset] { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">long IUnmanagedMemory.Size { get; }</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
@@ -2121,276 +1453,8 @@ public static bool operator !=(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>*</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFrom_System_Byte___System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23ReadFrom(System.Byte%5B%5D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L166">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#ReadFrom*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFrom_System_Byte___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#ReadFrom(System.Byte[],System.Int64,System.Int64)">IUnmanagedMemory&lt;T&gt;.ReadFrom(Byte[], Int64, Int64)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ulong IUnmanagedMemory&lt;T&gt;.ReadFrom(byte[] source, long offset, long length)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
-        <td><span class="parametername">source</span></td>
-        <td></td>
-      </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">length</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFrom_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23ReadFrom(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L174">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFrom_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#ReadFrom*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFrom_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#ReadFrom(System.IO.Stream)">IUnmanagedMemory&lt;T&gt;.ReadFrom(Stream)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ulong IUnmanagedMemory&lt;T&gt;.ReadFrom(Stream source)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">source</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFromAsync_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23ReadFromAsync(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L176">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFromAsync_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#ReadFromAsync*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__ReadFromAsync_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#ReadFromAsync(System.IO.Stream)">IUnmanagedMemory&lt;T&gt;.ReadFromAsync(Stream)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;ulong&gt; IUnmanagedMemory&lt;T&gt;.ReadFromAsync(Stream source)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">source</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Size.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23Size%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L119">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Size_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Size*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Size" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Size">IUnmanagedMemory&lt;T&gt;.Size</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ulong IUnmanagedMemory&lt;T&gt;.Size { get; }</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Span.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23Span%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L123">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Span_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Span*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__Span" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#Span">IUnmanagedMemory&lt;T&gt;.Span</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ReadOnlySpan&lt;T&gt; IUnmanagedMemory&lt;T&gt;.Span { get; }</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__WriteTo_System_Byte___System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.DotNext%23Runtime%23InteropServices%23IUnmanagedMemory%7BT%7D%23WriteTo(System.Byte%5B%5D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L194">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#WriteTo*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_T__WriteTo_System_Byte___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory{T}#WriteTo(System.Byte[],System.Int64,System.Int64)">IUnmanagedMemory&lt;T&gt;.WriteTo(Byte[], Int64, Int64)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ulong IUnmanagedMemory&lt;T&gt;.WriteTo(byte[] destination, long offset, long length)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
-        <td><span class="parametername">destination</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">length</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -2400,7 +1464,7 @@ public static bool operator !=(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_System_ICloneable_Clone.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.System%23ICloneable%23Clone%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L215">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L199">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_System_ICloneable_Clone_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.System#ICloneable#Clone*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_System_ICloneable_Clone" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.System#ICloneable#Clone">ICloneable.Clone()</h4>
@@ -2430,7 +1494,7 @@ public static bool operator !=(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_System_IEquatable_DotNext_Runtime_InteropServices_UnmanagedMemory_T___Equals_DotNext_Runtime_InteropServices_UnmanagedMemory__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.System%23IEquatable%7BDotNext%23Runtime%23InteropServices%23UnmanagedMemory%7BT%7D%7D%23Equals(DotNext.Runtime.InteropServices.UnmanagedMemory%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L290">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L254">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_System_IEquatable_DotNext_Runtime_InteropServices_UnmanagedMemory_T___Equals_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.System#IEquatable{DotNext#Runtime#InteropServices#UnmanagedMemory{T}}#Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_System_IEquatable_DotNext_Runtime_InteropServices_UnmanagedMemory_T___Equals_DotNext_Runtime_InteropServices_UnmanagedMemory__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.System#IEquatable{DotNext#Runtime#InteropServices#UnmanagedMemory{T}}#Equals(DotNext.Runtime.InteropServices.UnmanagedMemory{`0})">IEquatable&lt;UnmanagedMemory&lt;T&gt;&gt;.Equals(UnmanagedMemory&lt;T&gt;)</h4>
@@ -2477,7 +1541,7 @@ public static bool operator !=(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1_System_Runtime_CompilerServices_IStrongBox_Value.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601.System%23Runtime%23CompilerServices%23IStrongBox%23Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L107">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L133">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_System_Runtime_CompilerServices_IStrongBox_Value_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.System#Runtime#CompilerServices#IStrongBox#Value*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_System_Runtime_CompilerServices_IStrongBox_Value" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.System#Runtime#CompilerServices#IStrongBox#Value">IStrongBox.Value</h4>
@@ -2504,7 +1568,7 @@ public static bool operator !=(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory-1.html">IUnmanagedMemory&lt;T&gt;</a>
+      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a>
   </div>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
@@ -2519,6 +1583,48 @@ public static bool operator !=(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_ToByteArray__1___0__">UnmanagedMemoryExtensions.ToByteArray&lt;M&gt;(ref M)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_AsStream__1___0__">UnmanagedMemoryExtensions.AsStream&lt;M&gt;(ref M)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_WriteTo__1___0__System_IO_Stream_">UnmanagedMemoryExtensions.WriteTo&lt;M&gt;(ref M, Stream)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_WriteToAsync__1___0__System_IO_Stream_">UnmanagedMemoryExtensions.WriteToAsync&lt;M&gt;(ref M, Stream)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_WriteTo__1___0__System_Byte___System_Int64_System_Int64_">UnmanagedMemoryExtensions.WriteTo&lt;M&gt;(ref M, Byte[], Int64, Int64)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_WriteTo__1___0__System_Byte___">UnmanagedMemoryExtensions.WriteTo&lt;M&gt;(ref M, Byte[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_Clear__1___0__">UnmanagedMemoryExtensions.Clear&lt;M&gt;(ref M)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_ReadFrom__1___0__System_Byte___System_Int64_System_Int64_">UnmanagedMemoryExtensions.ReadFrom&lt;M&gt;(ref M, Byte[], Int64, Int64)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_ReadFrom__1___0__System_Byte___">UnmanagedMemoryExtensions.ReadFrom&lt;M&gt;(ref M, Byte[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_ReadFrom__1___0__System_IO_Stream_">UnmanagedMemoryExtensions.ReadFrom&lt;M&gt;(ref M, Stream)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_ReadFromAsync__1___0__System_IO_Stream_">UnmanagedMemoryExtensions.ReadFromAsync&lt;M&gt;(ref M, Stream)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_BitwiseEquals__2___0____1_">UnmanagedMemoryExtensions.BitwiseEquals&lt;M1, M2&gt;(ref M1, M2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_BitwiseHashCode__1___0__System_Boolean_">UnmanagedMemoryExtensions.BitwiseHashCode&lt;M&gt;(ref M, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryExtensions.html#DotNext_Runtime_InteropServices_UnmanagedMemoryExtensions_BitwiseCompare__2___0____1_">UnmanagedMemoryExtensions.BitwiseCompare&lt;M1, M2&gt;(ref M1, M2)</a>
+  </div>
   <div>
       <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_AsConst__1___0_">ExpressionBuilder.AsConst&lt;T&gt;(T)</a>
   </div>
@@ -2542,7 +1648,7 @@ public static bool operator !=(UnmanagedMemory&lt;T&gt; first, Pointer&lt;T&gt; 
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedMemory_1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedMemory%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L20" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L16" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

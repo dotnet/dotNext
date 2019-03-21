@@ -73,7 +73,8 @@
   
   <h1 id="DotNext_Runtime_CompilerServices_Awaitable_3" data-uid="DotNext.Runtime.CompilerServices.Awaitable`3" class="text-break">Class Awaitable&lt;T, TAwaiter, R&gt;
   </h1>
-  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 summary"><p>Represents awaitable concept type for the task type with non-void result.</p>
+</div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
@@ -109,6 +110,7 @@
   <h5 id="DotNext_Runtime_CompilerServices_Awaitable_3_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static class Awaitable&lt;T, TAwaiter, R&gt;
+
     where TAwaiter : ICriticalNotifyCompletion</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
@@ -122,15 +124,18 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td></td>
+        <td><p>The constrained type.</p>
+</td>
       </tr>
       <tr>
         <td><span class="parametername">TAwaiter</span></td>
-        <td></td>
+        <td><p>The type constrained with concept <a class="xref" href="DotNext.Runtime.CompilerServices.Awaiter-1.html">Awaiter&lt;TAwaiter&gt;</a>.</p>
+</td>
       </tr>
       <tr>
         <td><span class="parametername">R</span></td>
-        <td></td>
+        <td><p>The type of asynchronous result.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -141,11 +146,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_Awaitable_3_GetAwaiter__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.Awaitable%603.GetAwaiter(%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaitable.cs/#L32">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaitable.cs/#L48">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_Awaitable_3_GetAwaiter_" data-uid="DotNext.Runtime.CompilerServices.Awaitable`3.GetAwaiter*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_Awaitable_3_GetAwaiter__0__" data-uid="DotNext.Runtime.CompilerServices.Awaitable`3.GetAwaiter(`0@)">GetAwaiter(T)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets awaiter used to await asynchronous result represented by type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -164,7 +170,8 @@
       <tr>
         <td><span class="xref">T</span></td>
         <td><span class="parametername">obj</span></td>
-        <td></td>
+        <td><p>The object representing asynchronous computing.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -179,7 +186,8 @@
     <tbody>
       <tr>
         <td><span class="xref">TAwaiter</span></td>
-        <td></td>
+        <td><p>An awaiter instance.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -194,7 +202,7 @@
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_Awaitable_3.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.Awaitable%603%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaitable.cs/#L25" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/Awaitable.cs/#L36" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

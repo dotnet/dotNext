@@ -86,7 +86,6 @@
   </div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Reflection.EventBase-1.html">EventBase</a>&lt;D&gt;&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.eventinfo">EventInfo</a>&gt;</div>
     <div><a class="xref" href="DotNext.Reflection.IEvent-2.html">IEvent</a>&lt;T, D&gt;</div>
     <div><a class="xref" href="DotNext.Reflection.IEvent.html">IEvent</a></div>
@@ -165,9 +164,6 @@
       <a class="xref" href="DotNext.Reflection.EventBase-1.html#DotNext_Reflection_EventBase_1_Equals_System_Reflection_EventInfo_">EventBase&lt;D&gt;.Equals(EventInfo)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Reflection.EventBase-1.html#DotNext_Reflection_EventBase_1_Equals_DotNext_Reflection_EventBase__0__">EventBase&lt;D&gt;.Equals(EventBase&lt;D&gt;)</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Reflection.EventBase-1.html#DotNext_Reflection_EventBase_1_Equals_System_Object_">EventBase&lt;D&gt;.Equals(Object)</a>
     </div>
     <div>
@@ -208,7 +204,7 @@
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_Event_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class Event&lt;T, D&gt; : EventBase&lt;D&gt;, IEquatable&lt;EventBase&lt;D&gt;&gt;, IEquatable&lt;EventInfo&gt;, IEvent&lt;T, D&gt;, IEvent, IMember&lt;EventInfo&gt;, ICustomAttributeProvider where D : MulticastDelegate</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class Event&lt;T, D&gt; : EventBase&lt;D&gt;, IEquatable&lt;EventInfo&gt;, IEvent&lt;T, D&gt;, IEvent, IMember&lt;EventInfo&gt;, ICustomAttributeProvider where D : MulticastDelegate</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -238,16 +234,16 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Event_2_AddEventHandler__0___1_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Event%602.AddEventHandler(%600%40%2C%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L269">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L439">View Source</a>
   </span>
   <a id="DotNext_Reflection_Event_2_AddEventHandler_" data-uid="DotNext.Reflection.Event`2.AddEventHandler*"></a>
   <h4 id="DotNext_Reflection_Event_2_AddEventHandler__0___1_" data-uid="DotNext.Reflection.Event`2.AddEventHandler(`0@,`1)">AddEventHandler(T, D)</h4>
-  <div class="markdown level1 summary"><p>Add event handler.</p>
+  <div class="markdown level1 summary"><p>Adds an event handler to an event source.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void AddEventHandler(in T instance, D handler)</code></pre>
+    <pre><code class="lang-csharp hljs">public void AddEventHandler(in T target, D handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -261,14 +257,14 @@
     <tbody>
       <tr>
         <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Object with declared event.</p>
+        <td><span class="parametername">target</span></td>
+        <td><p>The event source.</p>
 </td>
       </tr>
       <tr>
         <td><span class="xref">D</span></td>
         <td><span class="parametername">handler</span></td>
-        <td><p>An event handler to add.</p>
+        <td><p>Encapsulates a method or methods to be invoked when the event is raised by the target.</p>
 </td>
       </tr>
     </tbody>
@@ -278,11 +274,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Event_2_AddEventHandler_System_Object__1_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Event%602.AddEventHandler(System.Object%2C%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L244">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L407">View Source</a>
   </span>
   <a id="DotNext_Reflection_Event_2_AddEventHandler_" data-uid="DotNext.Reflection.Event`2.AddEventHandler*"></a>
   <h4 id="DotNext_Reflection_Event_2_AddEventHandler_System_Object__1_" data-uid="DotNext.Reflection.Event`2.AddEventHandler(System.Object,`1)">AddEventHandler(Object, D)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Adds an event handler to an event source.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -301,12 +298,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">target</span></td>
-        <td></td>
+        <td><p>The event source.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">D</span></td>
         <td><span class="parametername">handler</span></td>
-        <td></td>
+        <td><p>Encapsulates a method or methods to be invoked when the event is raised by the target.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -321,7 +320,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span>, if arguments are correct; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -332,11 +332,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Event_2_AddEventHandler_System_Object_System_Delegate_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Event%602.AddEventHandler(System.Object%2CSystem.Delegate)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L273">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L448">View Source</a>
   </span>
   <a id="DotNext_Reflection_Event_2_AddEventHandler_" data-uid="DotNext.Reflection.Event`2.AddEventHandler*"></a>
   <h4 id="DotNext_Reflection_Event_2_AddEventHandler_System_Object_System_Delegate_" data-uid="DotNext.Reflection.Event`2.AddEventHandler(System.Object,System.Delegate)">AddEventHandler(Object, Delegate)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Adds an event handler to an event source.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -355,12 +356,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">target</span></td>
-        <td></td>
+        <td><p>The event source.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate">Delegate</a></td>
         <td><span class="parametername">handler</span></td>
-        <td></td>
+        <td><p>Encapsulates a method or methods to be invoked when the event is raised by the target.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -371,16 +374,16 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Event_2_RemoveEventHandler__0___1_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Event%602.RemoveEventHandler(%600%40%2C%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L286">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L461">View Source</a>
   </span>
   <a id="DotNext_Reflection_Event_2_RemoveEventHandler_" data-uid="DotNext.Reflection.Event`2.RemoveEventHandler*"></a>
   <h4 id="DotNext_Reflection_Event_2_RemoveEventHandler__0___1_" data-uid="DotNext.Reflection.Event`2.RemoveEventHandler(`0@,`1)">RemoveEventHandler(T, D)</h4>
-  <div class="markdown level1 summary"><p>Remove event handler.</p>
+  <div class="markdown level1 summary"><p>Removes an event handler from an event source.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void RemoveEventHandler(in T instance, D handler)</code></pre>
+    <pre><code class="lang-csharp hljs">public void RemoveEventHandler(in T target, D handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -394,14 +397,14 @@
     <tbody>
       <tr>
         <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Object with declared event.</p>
+        <td><span class="parametername">target</span></td>
+        <td><p>The event source.</p>
 </td>
       </tr>
       <tr>
         <td><span class="xref">D</span></td>
         <td><span class="parametername">handler</span></td>
-        <td><p>An event handler to remove.</p>
+        <td><p>The delegate to be disassociated from the events raised by target.</p>
 </td>
       </tr>
     </tbody>
@@ -411,11 +414,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Event_2_RemoveEventHandler_System_Object__1_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Event%602.RemoveEventHandler(System.Object%2C%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L253">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L423">View Source</a>
   </span>
   <a id="DotNext_Reflection_Event_2_RemoveEventHandler_" data-uid="DotNext.Reflection.Event`2.RemoveEventHandler*"></a>
   <h4 id="DotNext_Reflection_Event_2_RemoveEventHandler_System_Object__1_" data-uid="DotNext.Reflection.Event`2.RemoveEventHandler(System.Object,`1)">RemoveEventHandler(Object, D)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Removes an event handler from an event source.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -434,12 +438,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">target</span></td>
-        <td></td>
+        <td><p>The event source.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">D</span></td>
         <td><span class="parametername">handler</span></td>
-        <td></td>
+        <td><p>The delegate to be disassociated from the events raised by target.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -454,7 +460,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><p><span class="xref">true</span>, if arguments are correct; otherwise, <span class="xref">false</span>.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -465,11 +472,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Event_2_RemoveEventHandler_System_Object_System_Delegate_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Event%602.RemoveEventHandler(System.Object%2CSystem.Delegate)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L290">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L470">View Source</a>
   </span>
   <a id="DotNext_Reflection_Event_2_RemoveEventHandler_" data-uid="DotNext.Reflection.Event`2.RemoveEventHandler*"></a>
   <h4 id="DotNext_Reflection_Event_2_RemoveEventHandler_System_Object_System_Delegate_" data-uid="DotNext.Reflection.Event`2.RemoveEventHandler(System.Object,System.Delegate)">RemoveEventHandler(Object, Delegate)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Removes an event handler from an event source.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -488,12 +496,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">target</span></td>
-        <td></td>
+        <td><p>The event source.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate">Delegate</a></td>
         <td><span class="parametername">handler</span></td>
-        <td></td>
+        <td><p>The delegate to be disassociated from the events raised by target.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -506,11 +516,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Event_2_op_UnaryNegation_DotNext_Reflection_Event__0__1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Event%602.op_UnaryNegation(DotNext.Reflection.Event%7B%600%2C%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L300">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L490">View Source</a>
   </span>
   <a id="DotNext_Reflection_Event_2_op_UnaryNegation_" data-uid="DotNext.Reflection.Event`2.op_UnaryNegation*"></a>
   <h4 id="DotNext_Reflection_Event_2_op_UnaryNegation_DotNext_Reflection_Event__0__1__" data-uid="DotNext.Reflection.Event`2.op_UnaryNegation(DotNext.Reflection.Event{`0,`1})">UnaryNegation(Event&lt;T, D&gt;)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns a delegate which can be used to detach from the event.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -529,7 +540,8 @@
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Event-2.html">Event</a>&lt;T, D&gt;</td>
         <td><span class="parametername">event</span></td>
-        <td></td>
+        <td><p>Reflected event.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -544,7 +556,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Event-2.Accessor.html">Event.Accessor</a>&lt;&gt;</td>
-        <td></td>
+        <td><p>The delegate which can be used to detach from the event.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -553,11 +566,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Event_2_op_UnaryPlus_DotNext_Reflection_Event__0__1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Event%602.op_UnaryPlus(DotNext.Reflection.Event%7B%600%2C%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L298">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L483">View Source</a>
   </span>
   <a id="DotNext_Reflection_Event_2_op_UnaryPlus_" data-uid="DotNext.Reflection.Event`2.op_UnaryPlus*"></a>
   <h4 id="DotNext_Reflection_Event_2_op_UnaryPlus_DotNext_Reflection_Event__0__1__" data-uid="DotNext.Reflection.Event`2.op_UnaryPlus(DotNext.Reflection.Event{`0,`1})">UnaryPlus(Event&lt;T, D&gt;)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Returns a delegate which can be used to attach new handlers to the event.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -576,7 +590,8 @@
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Event-2.html">Event</a>&lt;T, D&gt;</td>
         <td><span class="parametername">event</span></td>
-        <td></td>
+        <td><p>Reflected event.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -591,14 +606,12 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Event-2.Accessor.html">Event.Accessor</a>&lt;&gt;</td>
-        <td></td>
+        <td><p>The delegate which can be used to attach new handlers to the event.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
-  </div>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
   </div>
@@ -642,6 +655,24 @@
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_Lock__1___0_System_TimeSpan_">LockAcquisition.Lock&lt;T&gt;(T, TimeSpan)</a>
   </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_">LockAcquisition.ReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_System_TimeSpan_">LockAcquisition.ReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_">LockAcquisition.WriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_System_TimeSpan_">LockAcquisition.WriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_System_TimeSpan_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
 </article>
           </div>
           
@@ -653,7 +684,7 @@
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Event_2.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Event%602%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L213" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Event.cs/#L365" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

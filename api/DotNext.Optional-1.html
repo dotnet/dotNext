@@ -951,6 +951,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public T OrThrow&lt;E&gt;()
+
     where E : Exception, new()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -1000,6 +1001,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public T OrThrow&lt;E&gt;(Func&lt;E&gt; exceptionFactory)
+
     where E : Exception</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

@@ -130,9 +130,11 @@ types implemeting dispose pattern.</p>
       <section><p>Represents statix indexer property.</p>
 </section>
       <h4><a class="xref" href="DotNext.Reflection.IndexerBase-2.html">IndexerBase&lt;A, V&gt;</a></h4>
-      <section></section>
+      <section><p>Represents reflected indexer property.</p>
+</section>
       <h4><a class="xref" href="DotNext.Reflection.Member.html">Member</a></h4>
-      <section></section>
+      <section><p>Provides extension methods for interface <a class="xref" href="DotNext.Reflection.IMember-2.html">IMember&lt;M, D&gt;</a> or <a class="xref" href="DotNext.Reflection.IMember-1.html">IMember&lt;M&gt;</a>.</p>
+</section>
       <h4><a class="xref" href="DotNext.Reflection.Method.html">Method</a></h4>
       <section><p>Various extension methods for method reflection.</p>
 </section>
@@ -170,7 +172,7 @@ types implemeting dispose pattern.</p>
       <section><p>Provides typed access to instance property declared in type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
 </section>
       <h4><a class="xref" href="DotNext.Reflection.PropertyBase-1.html">PropertyBase&lt;V&gt;</a></h4>
-      <section><p>Represents property.</p>
+      <section><p>Represents non-indexer property.</p>
 </section>
       <h4><a class="xref" href="DotNext.Reflection.Reflector.html">Reflector</a></h4>
       <section><p>Provides access to fast reflection routines.</p>
@@ -239,6 +241,15 @@ task types.</p>
       <h4><a class="xref" href="DotNext.Reflection.Type-1.Method-3.html">Type&lt;T&gt;.Method&lt;P1, P2, P3&gt;</a></h4>
       <section><p>Provides access to methods with three parameters declared in type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
 </section>
+      <h4><a class="xref" href="DotNext.Reflection.Type-1.Method-4.html">Type&lt;T&gt;.Method&lt;P1, P2, P3, P4&gt;</a></h4>
+      <section><p>Provides access to methods with four parameters declared in type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Reflection.Type-1.Method-5.html">Type&lt;T&gt;.Method&lt;P1, P2, P3, P4, P5&gt;</a></h4>
+      <section><p>Provides access to methods with five parameters declared in type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Reflection.Type-1.Method-6.html">Type&lt;T&gt;.Method&lt;P1, P2, P3, P4, P5, P6&gt;</a></h4>
+      <section><p>Provides access to methods with six parameters declared in type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+</section>
       <h4><a class="xref" href="DotNext.Reflection.Type-1.Operator.html">Type&lt;T&gt;.Operator</a></h4>
       <section><p>Represents unary operator applicable to type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
 </section>
@@ -295,7 +306,8 @@ task types.</p>
       <section><p>Represents regular method.</p>
 </section>
       <h4><a class="xref" href="DotNext.Reflection.IMethod-2.html">IMethod&lt;M, D&gt;</a></h4>
-      <section></section>
+      <section><p>Represents reflected statically typed method.</p>
+</section>
       <h4><a class="xref" href="DotNext.Reflection.IOperator-1.html">IOperator&lt;D&gt;</a></h4>
       <section><p>Represents operator.</p>
 </section>
@@ -328,22 +340,29 @@ task types.</p>
     <h3 id="delegates">Delegates
   </h3>
       <h4><a class="xref" href="DotNext.Reflection.Event-2.Accessor.html">Event&lt;T, D&gt;.Accessor</a></h4>
-      <section></section>
+      <section><p>Represents event accessor.</p>
+</section>
       <h4><a class="xref" href="DotNext.Reflection.Indexer-2.Getter.html">Indexer&lt;A, V&gt;.Getter</a></h4>
-      <section></section>
+      <section><p>Represents property getter.</p>
+</section>
       <h4><a class="xref" href="DotNext.Reflection.Indexer-2.Setter.html">Indexer&lt;A, V&gt;.Setter</a></h4>
-      <section></section>
+      <section><p>Represents property setter.</p>
+</section>
       <h4><a class="xref" href="DotNext.Reflection.Indexer-3.Getter.html">Indexer&lt;T, A, V&gt;.Getter</a></h4>
-      <section></section>
+      <section><p>Represents property getter.</p>
+</section>
       <h4><a class="xref" href="DotNext.Reflection.Indexer-3.Setter.html">Indexer&lt;T, A, V&gt;.Setter</a></h4>
-      <section></section>
+      <section><p>Represents property setter.</p>
+</section>
       <h4><a class="xref" href="DotNext.Reflection.MemberGetter-1.html">MemberGetter&lt;V&gt;</a></h4>
-      <section></section>
+      <section><p>Represents static property or field value getter.</p>
+</section>
       <h4><a class="xref" href="DotNext.Reflection.MemberGetter-2.html">MemberGetter&lt;T, V&gt;</a></h4>
       <section><p>Represents instance field/property getter.</p>
 </section>
       <h4><a class="xref" href="DotNext.Reflection.MemberSetter-1.html">MemberSetter&lt;V&gt;</a></h4>
-      <section></section>
+      <section><p>Represents static property or field setter.</p>
+</section>
       <h4><a class="xref" href="DotNext.Reflection.MemberSetter-2.html">MemberSetter&lt;T, V&gt;</a></h4>
       <section><p>Represents field setter.</p>
 </section>

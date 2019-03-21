@@ -89,7 +89,6 @@
     <div><a class="xref" href="DotNext.Reflection.IProperty.html">IProperty</a></div>
     <div><a class="xref" href="DotNext.Reflection.IMember-1.html">IMember</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo">PropertyInfo</a>&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a></div>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Reflection.IndexerBase-2.html">IndexerBase</a>&lt;A, V&gt;&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.propertyinfo">PropertyInfo</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
@@ -186,9 +185,6 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Reflection.IndexerBase-2.html#DotNext_Reflection_IndexerBase_2_Equals_System_Reflection_PropertyInfo_">IndexerBase&lt;A, V&gt;.Equals(PropertyInfo)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Reflection.IndexerBase-2.html#DotNext_Reflection_IndexerBase_2_Equals_DotNext_Reflection_IndexerBase__0__1__">IndexerBase&lt;A, V&gt;.Equals(IndexerBase&lt;A, V&gt;)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Reflection.IndexerBase-2.html#DotNext_Reflection_IndexerBase_2_Equals_System_Object_">IndexerBase&lt;A, V&gt;.Equals(Object)</a>
@@ -324,7 +320,7 @@
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_Indexer_3_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class Indexer&lt;T, A, V&gt; : IndexerBase&lt;A, V&gt;, IProperty, IMember&lt;PropertyInfo&gt;, ICustomAttributeProvider, IEquatable&lt;IndexerBase&lt;A, V&gt;&gt;, IEquatable&lt;PropertyInfo&gt; where A : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class Indexer&lt;T, A, V&gt; : IndexerBase&lt;A, V&gt;, IProperty, IMember&lt;PropertyInfo&gt;, ICustomAttributeProvider, IEquatable&lt;PropertyInfo&gt; where A : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -359,7 +355,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Indexer_3_GetMethod.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Indexer%603.GetMethod%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L220">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L406">View Source</a>
   </span>
   <a id="DotNext_Reflection_Indexer_3_GetMethod_" data-uid="DotNext.Reflection.Indexer`3.GetMethod*"></a>
   <h4 id="DotNext_Reflection_Indexer_3_GetMethod" data-uid="DotNext.Reflection.Indexer`3.GetMethod">GetMethod</h4>
@@ -390,15 +386,16 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Indexer_3_Item__0___1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Indexer%603.Item(%600%40%2C%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L227">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L419">View Source</a>
   </span>
   <a id="DotNext_Reflection_Indexer_3_Item_" data-uid="DotNext.Reflection.Indexer`3.Item*"></a>
   <h4 id="DotNext_Reflection_Indexer_3_Item__0___1__" data-uid="DotNext.Reflection.Indexer`3.Item(`0@,`1@)">Item[T, A]</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets or sets instance property.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public V this[in T instance, in A arguments] { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public V this[in T this, in A index] { get; set; }</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -412,13 +409,15 @@
     <tbody>
       <tr>
         <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td></td>
+        <td><span class="parametername">this</span></td>
+        <td><p>The object whose property value will be set or returned.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">A</span></td>
-        <td><span class="parametername">arguments</span></td>
-        <td></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>Index values for indexed properties.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -442,7 +441,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Indexer_3_SetMethod.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Indexer%603.SetMethod%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L225">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L411">View Source</a>
   </span>
   <a id="DotNext_Reflection_Indexer_3_SetMethod_" data-uid="DotNext.Reflection.Indexer`3.SetMethod*"></a>
   <h4 id="DotNext_Reflection_Indexer_3_SetMethod" data-uid="DotNext.Reflection.Indexer`3.SetMethod">SetMethod</h4>
@@ -475,11 +474,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Indexer_3_op_Implicit_DotNext_Reflection_Indexer__0__1__2___DotNext_Reflection_Indexer__0__1__2__Getter.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Indexer%603.op_Implicit(DotNext.Reflection.Indexer%7B%600%2C%601%2C%602%7D)~DotNext.Reflection.Indexer%7B%600%2C%601%2C%602%7D.Getter%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L213">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L395">View Source</a>
   </span>
   <a id="DotNext_Reflection_Indexer_3_op_Implicit_" data-uid="DotNext.Reflection.Indexer`3.op_Implicit*"></a>
   <h4 id="DotNext_Reflection_Indexer_3_op_Implicit_DotNext_Reflection_Indexer__0__1__2___DotNext_Reflection_Indexer__0__1__2__Getter" data-uid="DotNext.Reflection.Indexer`3.op_Implicit(DotNext.Reflection.Indexer{`0,`1,`2})~DotNext.Reflection.Indexer{`0,`1,`2}.Getter">Implicit(Indexer&lt;T, A, V&gt; to Indexer&lt;T, A, V&gt;.Getter)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Obtains property getter.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -498,7 +498,8 @@
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Indexer-3.html">Indexer</a>&lt;T, A, V&gt;</td>
         <td><span class="parametername">indexer</span></td>
-        <td></td>
+        <td><p>The reflected property instance.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -522,11 +523,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Indexer_3_op_Implicit_DotNext_Reflection_Indexer__0__1__2___DotNext_Reflection_Indexer__0__1__2__Setter.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Indexer%603.op_Implicit(DotNext.Reflection.Indexer%7B%600%2C%601%2C%602%7D)~DotNext.Reflection.Indexer%7B%600%2C%601%2C%602%7D.Setter%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L215">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L401">View Source</a>
   </span>
   <a id="DotNext_Reflection_Indexer_3_op_Implicit_" data-uid="DotNext.Reflection.Indexer`3.op_Implicit*"></a>
   <h4 id="DotNext_Reflection_Indexer_3_op_Implicit_DotNext_Reflection_Indexer__0__1__2___DotNext_Reflection_Indexer__0__1__2__Setter" data-uid="DotNext.Reflection.Indexer`3.op_Implicit(DotNext.Reflection.Indexer{`0,`1,`2})~DotNext.Reflection.Indexer{`0,`1,`2}.Setter">Implicit(Indexer&lt;T, A, V&gt; to Indexer&lt;T, A, V&gt;.Setter)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Obtains property setter.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -545,7 +547,8 @@
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Indexer-3.html">Indexer</a>&lt;T, A, V&gt;</td>
         <td><span class="parametername">indexer</span></td>
-        <td></td>
+        <td><p>The reflected property instance.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -573,9 +576,6 @@
   </div>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">System.Reflection.ICustomAttributeProvider</a>
-  </div>
-  <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
   </div>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
@@ -608,6 +608,24 @@
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_Lock__1___0_System_TimeSpan_">LockAcquisition.Lock&lt;T&gt;(T, TimeSpan)</a>
   </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_">LockAcquisition.ReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_ReadLock__1___0_System_TimeSpan_">LockAcquisition.ReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_">LockAcquisition.WriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_WriteLock__1___0_System_TimeSpan_">LockAcquisition.WriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_System_TimeSpan_">LockAcquisition.UpgradableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
 </article>
           </div>
           
@@ -619,7 +637,7 @@
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Indexer_3.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Indexer%603%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L197" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/IndexerBase.cs/#L362" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

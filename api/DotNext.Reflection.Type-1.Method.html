@@ -118,11 +118,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Method_Get_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.Get(System.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L76">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L243">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Method_Get_" data-uid="DotNext.Reflection.Type`1.Method.Get*"></a>
   <h4 id="DotNext_Reflection_Type_1_Method_Get_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Get(System.String,System.Boolean)">Get(String, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects instance parameterless method without return type as delegate type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action&lt;T&gt;</a>.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -141,12 +142,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">methodName</span></td>
-        <td></td>
+        <td><p>The name of the method.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -161,7 +164,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;&gt;</td>
-        <td></td>
+        <td><p>The reflected method; otherwise, <span class="xref">null</span> if method doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -170,15 +174,17 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.Get%60%601(System.String%2CDotNext.Reflection.MethodLookup%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L54">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L200">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Method_Get_" data-uid="DotNext.Reflection.Type`1.Method.Get*"></a>
   <h4 id="DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Get``1(System.String,DotNext.Reflection.MethodLookup,System.Boolean)">Get&lt;D&gt;(String, MethodLookup, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects class method.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;D&gt; Get&lt;D&gt;(string methodName, MethodLookup methodType, bool nonPublic = false)
+
     where D : MulticastDelegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -194,17 +200,20 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">methodName</span></td>
-        <td></td>
+        <td><p>The name of the method.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.MethodLookup.html">MethodLookup</a></td>
         <td><span class="parametername">methodType</span></td>
-        <td></td>
+        <td><p>The type of the method to be resolved.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -219,7 +228,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;D&gt;</td>
-        <td></td>
+        <td><p>The reflected method; otherwise, <span class="xref">null</span> if method doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -234,20 +244,28 @@
     <tbody>
       <tr>
         <td><span class="parametername">D</span></td>
-        <td></td>
+        <td><p>The delegate describing signature of the requested method.</p>
+</td>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method supports special types of delegates: <a class="xref" href="DotNext.Function-3.html">Function&lt;T, A, R&gt;</a> or <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, A&gt;</a> for instance methods,
+<a class="xref" href="DotNext.Function-2.html">Function&lt;A, R&gt;</a> or <a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;A&gt;</a> for static methods.
+The value returned by this method is cached by the given delegate type and method name.
+Two calls of this method with the same arguments will return the same object.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Method_Get__1_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.Get%60%601(System.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L88">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L282">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Method_Get_" data-uid="DotNext.Reflection.Type`1.Method.Get*"></a>
   <h4 id="DotNext_Reflection_Type_1_Method_Get__1_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Get``1(System.String,System.Boolean)">Get&lt;R&gt;(String, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects instance parameterless method which as delegate type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func&lt;T,TResult&gt;</a>.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -266,12 +284,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">methodName</span></td>
-        <td></td>
+        <td><p>The name of the method.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -286,7 +306,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, R&gt;&gt;</td>
-        <td></td>
+        <td><p>The reflected method; otherwise, <span class="xref">null</span> if method doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -301,7 +322,8 @@
     <tbody>
       <tr>
         <td><span class="parametername">R</span></td>
-        <td></td>
+        <td><p>The method return type.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -310,11 +332,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Method_GetStatic_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.GetStatic(System.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L82">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L262">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Method_GetStatic_" data-uid="DotNext.Reflection.Type`1.Method.GetStatic*"></a>
   <h4 id="DotNext_Reflection_Type_1_Method_GetStatic_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.GetStatic(System.String,System.Boolean)">GetStatic(String, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects static parameterless method without return type as delegate type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a>.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -333,12 +356,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">methodName</span></td>
-        <td></td>
+        <td><p>The name of the method.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -353,7 +378,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a>&gt;</td>
-        <td></td>
+        <td><p>The reflected method; otherwise, <span class="xref">null</span> if method doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -362,11 +388,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Method_GetStatic__1_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.GetStatic%60%601(System.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L94">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L303">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Method_GetStatic_" data-uid="DotNext.Reflection.Type`1.Method.GetStatic*"></a>
   <h4 id="DotNext_Reflection_Type_1_Method_GetStatic__1_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.GetStatic``1(System.String,System.Boolean)">GetStatic&lt;R&gt;(String, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects static parameterless method which as delegate type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func&lt;TResult&gt;</a>.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -385,12 +412,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">methodName</span></td>
-        <td></td>
+        <td><p>The name of the method.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -405,7 +434,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;R&gt;&gt;</td>
-        <td></td>
+        <td><p>The reflected method; otherwise, <span class="xref">null</span> if method doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -420,7 +450,8 @@
     <tbody>
       <tr>
         <td><span class="parametername">R</span></td>
-        <td></td>
+        <td><p>The method return type.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -429,11 +460,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Method_Require_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.Require(System.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L79">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L253">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Method_Require_" data-uid="DotNext.Reflection.Type`1.Method.Require*"></a>
   <h4 id="DotNext_Reflection_Type_1_Method_Require_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Require(System.String,System.Boolean)">Require(String, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects instance parameterless method without return type as delegate type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action&lt;T&gt;</a>.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -452,12 +484,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">methodName</span></td>
-        <td></td>
+        <td><p>The name of the method.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -472,7 +506,24 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;&gt;</td>
-        <td></td>
+        <td><p>The reflected method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
+        <td><p>The requested method doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -481,15 +532,17 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Method_Require__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.Require%60%601(System.String%2CDotNext.Reflection.MethodLookup%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L72">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L233">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Method_Require_" data-uid="DotNext.Reflection.Type`1.Method.Require*"></a>
   <h4 id="DotNext_Reflection_Type_1_Method_Require__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Require``1(System.String,DotNext.Reflection.MethodLookup,System.Boolean)">Require&lt;D&gt;(String, MethodLookup, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects class method.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;D&gt; Require&lt;D&gt;(string methodName, MethodLookup methodType, bool nonPublic = false)
+
     where D : MulticastDelegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -505,17 +558,20 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">methodName</span></td>
-        <td></td>
+        <td><p>The name of the method.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.MethodLookup.html">MethodLookup</a></td>
         <td><span class="parametername">methodType</span></td>
-        <td></td>
+        <td><p>The type of the method to be resolved.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -530,7 +586,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;D&gt;</td>
-        <td></td>
+        <td><p>The reflected method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -545,7 +602,30 @@
     <tbody>
       <tr>
         <td><span class="parametername">D</span></td>
-        <td></td>
+        <td><p>The delegate describing signature of the requested method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Reflection_Type_1_Method_Require__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method supports special types of delegates: <a class="xref" href="DotNext.Function-3.html">Function&lt;T, A, R&gt;</a> or <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, A&gt;</a> for instance methods,
+<a class="xref" href="DotNext.Function-2.html">Function&lt;A, R&gt;</a> or <a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;A&gt;</a> for static methods.
+The value returned by this method is cached by the given delegate type and method name.
+Two calls of this method with the same arguments will return the same object.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
+        <td><p>The requested method doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -554,11 +634,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Method_Require__1_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.Require%60%601(System.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L91">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L293">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Method_Require_" data-uid="DotNext.Reflection.Type`1.Method.Require*"></a>
   <h4 id="DotNext_Reflection_Type_1_Method_Require__1_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Require``1(System.String,System.Boolean)">Require&lt;R&gt;(String, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects instance parameterless method which as delegate type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func&lt;T,TResult&gt;</a>.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -577,12 +658,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">methodName</span></td>
-        <td></td>
+        <td><p>The name of the method.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -597,7 +680,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, R&gt;&gt;</td>
-        <td></td>
+        <td><p>The reflected method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -612,7 +696,24 @@
     <tbody>
       <tr>
         <td><span class="parametername">R</span></td>
-        <td></td>
+        <td><p>The method return type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
+        <td><p>The requested method doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -621,11 +722,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Method_RequireStatic_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.RequireStatic(System.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L85">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L272">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Method_RequireStatic_" data-uid="DotNext.Reflection.Type`1.Method.RequireStatic*"></a>
   <h4 id="DotNext_Reflection_Type_1_Method_RequireStatic_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.RequireStatic(System.String,System.Boolean)">RequireStatic(String, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects static parameterless method without return type as delegate type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a>.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -644,12 +746,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">methodName</span></td>
-        <td></td>
+        <td><p>The name of the method.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -664,7 +768,24 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a>&gt;</td>
-        <td></td>
+        <td><p>The reflected method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
+        <td><p>The requested method doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -673,11 +794,12 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Method_RequireStatic__1_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.RequireStatic%60%601(System.String%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L97">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L314">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Method_RequireStatic_" data-uid="DotNext.Reflection.Type`1.Method.RequireStatic*"></a>
   <h4 id="DotNext_Reflection_Type_1_Method_RequireStatic__1_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.RequireStatic``1(System.String,System.Boolean)">RequireStatic&lt;R&gt;(String, Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Reflects static parameterless method which as delegate type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func&lt;TResult&gt;</a>.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -696,12 +818,14 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">methodName</span></td>
-        <td></td>
+        <td><p>The name of the method.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">nonPublic</span></td>
-        <td></td>
+        <td><p><span class="xref">true</span> to reflect non-public method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -716,7 +840,8 @@
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;R&gt;&gt;</td>
-        <td></td>
+        <td><p>The reflected method.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -731,7 +856,24 @@
     <tbody>
       <tr>
         <td><span class="parametername">R</span></td>
-        <td></td>
+        <td><p>The method return type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
+        <td><p>The requested method doesn't exist.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -746,7 +888,7 @@
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Method.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L27" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L159" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
