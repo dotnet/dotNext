@@ -18,7 +18,8 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Updated System.Memory dependency</PackageReleaseNotes>
+	<PackageReleaseNotes>Low-level memory operations such as Memory.Equals and Memory.Compare now support 64-bit length parameter
+Built-in reader/writer lock for any reference type which is similar to monitor lock statement</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

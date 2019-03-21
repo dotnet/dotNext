@@ -23,8 +23,10 @@ namespace DotNext.Metaprogramming
                 assignment = this.syncRoot.Assign(syncRoot);
             }
         }
-        
-        internal override Expression Build()
+
+        internal override Expression Build() => Build<BlockExpression, LockBuilder>(this);
+
+        BlockExpression IExpressionBuilder<BlockExpression>.Build()
         {
             var monitorEnter = typeof(Monitor).GetMethod(nameof(Monitor.Enter), new[] { typeof(object) });
             var monitorExit = typeof(Monitor).GetMethod(nameof(Monitor.Exit), new[] { typeof(object) });
@@ -34,7 +36,5 @@ namespace DotNext.Metaprogramming
                 Expression.Block(typeof(void), Expression.Call(monitorEnter, syncRoot), body) :
                 Expression.Block(typeof(void), Sequence.Singleton(syncRoot), assignment, Expression.Call(monitorEnter, syncRoot), body);
         }
-
-        BlockExpression IExpressionBuilder<BlockExpression>.Build() => Build<BlockExpression, LockBuilder>(this);
     }
 }
