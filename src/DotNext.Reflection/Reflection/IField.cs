@@ -32,6 +32,10 @@ namespace DotNext.Reflection
 	/// <typeparam name="F">Type of field.</typeparam>
 	public interface IField<T, F> : IField
 	{
-		F this[in T instance] { get; set; }
+        /// <summary>
+        /// Gets or sets instance field value.
+        /// </summary>
+        /// <param name="this"><see langword="this"/> parameter.</param>
+		F this[in T @this] { get; set; }
 	}
 }

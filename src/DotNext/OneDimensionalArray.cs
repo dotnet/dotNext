@@ -190,7 +190,7 @@ namespace DotNext
 				return true;
 			else
 				fixed(T* firstPtr = first, secondPtr = second)
-					return Memory.Equals(firstPtr, secondPtr, first.Length * ValueType<T>.Size);
+					return Memory.Equals(firstPtr, secondPtr, first.LongLength * ValueType<T>.Size);
 		}
 
         /// <summary>
@@ -238,10 +238,10 @@ namespace DotNext
         public static unsafe int BitwiseCompare<T>(this T[] first, T[] second)
             where T : unmanaged
         {
-            if (first.Length != second.Length)
-                return first.Length.CompareTo(second.LongLength);
+            if (first.LongLength != second.LongLength)
+                return first.LongLength.CompareTo(second.LongLength);
             fixed (T* firstPtr = first, secondPtr = second)
-                return Memory.Compare(firstPtr, secondPtr, first.Length * ValueType<T>.Size);
+                return Memory.Compare(firstPtr, secondPtr, first.LongLength * ValueType<T>.Size);
         }
 	}
 }

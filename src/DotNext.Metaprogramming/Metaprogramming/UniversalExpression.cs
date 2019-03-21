@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Dynamic;
 
 namespace DotNext.Metaprogramming
 {
@@ -17,7 +18,7 @@ namespace DotNext.Metaprogramming
     /// <remarks>
     /// This class is intended for expression building purposes only.
     /// </remarks>
-    public readonly struct UniversalExpression
+    public readonly struct UniversalExpression: IExpressionBuilder<Expression>, IDynamicMetaObjectProvider
     {
         private readonly Expression expression;
 
@@ -133,6 +134,12 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="value">The constant value.</param>
         public static implicit operator UniversalExpression(double value) => value.AsConst();
+
+        /// <summary>
+        /// Constructs constant value of <see cref="char"/> type.
+        /// </summary>
+        /// <param name="value">The constant value.</param>
+        public static implicit operator UniversalExpression(char value) => value.AsConst();
 
         /// <summary>
         /// Logical NOT expression.
@@ -637,5 +644,9 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <returns>The textual representation of this expression.</returns>
         public override string ToString() => expression?.ToString();
+
+        Expression IExpressionBuilder<Expression>.Build() => expression;
+
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter) => new MetaExpression(parameter, this);
     }
 }

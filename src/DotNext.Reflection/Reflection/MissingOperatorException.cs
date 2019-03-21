@@ -8,6 +8,11 @@ namespace DotNext.Reflection
 	/// </summary>
     public sealed class MissingOperatorException: ConstraintViolationException
     {
+        /// <summary>
+        /// Initializes a new exception indicating that requested operator doesn't exist.
+        /// </summary>
+        /// <param name="target">The inspected type.</param>
+        /// <param name="operator">Missing operator.</param>
         public MissingOperatorException(Type target, ExpressionType @operator)
             : base(target, ExceptionMessages.MissingOperator(@operator))
         {

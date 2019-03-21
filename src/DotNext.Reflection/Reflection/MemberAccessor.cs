@@ -1,7 +1,17 @@
 ﻿namespace DotNext.Reflection
 {
+    /// <summary>
+    /// Represents static property or field value getter.
+    /// </summary>
+    /// <typeparam name="V">Type of the property of field.</typeparam>
+    /// <returns>The value of the property of field.</returns>
 	public delegate V MemberGetter<out V>();
 
+    /// <summary>
+    /// Represents static property or field setter.
+    /// </summary>
+    /// <typeparam name="V">Type of the property of field.</typeparam>
+    /// <param name="value">The new value of the property or field.</param>
 	public delegate void MemberSetter<in V>(V value);
 
 	/// <summary>
