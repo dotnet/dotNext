@@ -33,3 +33,35 @@ using(syncRoot.Lock(TimeSpan.FromSeconds(10)))
     //code protected by monitor lock
 }
 ```
+
+# Built-in reader/writer synchronization
+Exclusive lock such as monitor lock may not be applicable due to performance reasons to some data types. For example, exclusive lock for dictionary or list is redundant because there are two consumers of these objects: writers and readers.
+
+> [!NOTE]
+> Built-in support for reader/writer locks is available since version 0.2 of DotNext library.
+
+DotNext library provides several extension methods for more granular control over synchronization for any reference type:
+* `ReadLock` acquires reader lock
+* `WriteLock` acquires exclusive lock
+* `UpgradableReadLock` acquires read lock which can be upgraded to write lock
+
+These methods allow to turn any thread-unsafe object into thread-safe object with precise control of multithreading access.
+
+```csharp
+using System.Text;
+using DotNext.Threading;
+
+var builder = new StringBuilder();
+
+//reader
+using(builder.ReadLock())
+{
+    Console.WriteLine(builder.ToString());
+}
+
+//writer
+using(builder.WriteLock())
+{
+    builder.Append("Hello, world!");
+}
+```
