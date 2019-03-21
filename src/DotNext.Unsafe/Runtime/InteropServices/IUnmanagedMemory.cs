@@ -1,55 +1,44 @@
 using System;
-using System.Threading.Tasks;
-using System.IO;
 
 namespace DotNext.Runtime.InteropServices
 {
-    public interface IUnmanagedMemory: IDisposable, ICloneable
+    /// <summary>
+    /// Describes a block of unmanaged memory.
+    /// </summary>
+    /// <remarks>
+    /// This interface should be implemented by 
+    /// </remarks>
+    public interface IUnmanagedMemory : IDisposable, ICloneable
     {
+        /// <summary>
+        /// Number of bytes in the allocated memory.
+        /// </summary>
         long Size { get; }
 
+        /// <summary>
+        /// The address of the unmanaged memory.
+        /// </summary>
         IntPtr Address { get; }
 
-        Pointer<T> ToPointer<T>() where T: unmanaged;
-        
-        Pointer<byte> ToPointer(ulong offset);
+        /// <summary>
+        /// Obtains typed pointer to the unmanaged memory.
+        /// </summary>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The typed pointer.</returns>
+        Pointer<T> ToPointer<T>() where T : unmanaged;
+
+        /// <summary>
+        /// Obtains pointer to the unmanaged memory at the specified offset in the memory.
+        /// </summary>
+        /// <param name="offset">The desired offset in the unmanaged memory.</param>
+        /// <returns>The pointer to the unmanaged memory adjusted at the specified offset.</returns>
+        Pointer<byte> ToPointer(long offset);
     }
 
-	/// <summary>
-	/// Represents a common interface for unmanaged memory
-	/// managers.
-	/// </summary>
-	/// <typeparam name="T">Type of pointer.</typeparam>
-    [CLSCompliant(false)]
-    public interface IUnmanagedMemory<T>: IDisposable, ICloneable
-        where T: unmanaged
+    internal interface IUnmanagedMemory<T> : IUnmanagedMemory
+        where T : unmanaged
     {
-        UnmanagedMemoryStream AsStream();
-
-        unsafe T* Address { get; }
-
-        ulong Size { get; }
-
-        unsafe byte* this[ulong offset]
-        {
-            get;
-        }
-
-        byte[] ToByteArray();
-
-        void WriteTo(Stream destination);
-
-        Task WriteToAsync(Stream destination);
-
-        ulong WriteTo(byte[] destination, long offset, long length);
-
-		ulong ReadFrom(byte[] source, long offset, long length);
-
-        ulong ReadFrom(Stream source);
-
-        Task<ulong> ReadFromAsync(Stream source);
-
-        void Clear();
+        Pointer<T> Pointer { get; }
 
         ReadOnlySpan<T> Span { get; }
     }

@@ -104,7 +104,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The number of bytes to copy from source address to destination.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		[CLSCompliant(false)]
-		public static unsafe void Copy(void* source, void* destination, long length)
+		public unsafe static void Copy(void* source, void* destination, long length)
 			=> Buffer.MemoryCopy(source, destination, length, length);
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The number of bytes to copy from source stream into destination memory block.</param>
         /// <returns>The task representing state of copy operation and returning number of bytes copied.</returns>
         [CLSCompliant(false)]
-		public static unsafe Task<long> ReadFromStreamAsync(Stream source, void* destination, long length)
+		public unsafe static Task<long> ReadFromStreamAsync(Stream source, void* destination, long length)
 			=> ReadFromStreamAsync(source, new IntPtr(destination), length);
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The number of bytes to copy.</param>
         /// <returns>The number of bytes copied.</returns>
         [CLSCompliant(false)]
-		public static unsafe long ReadFromStream(Stream source, void* destination, long length)
+		public unsafe static long ReadFromStream(Stream source, void* destination, long length)
 			=> ReadFromStream(source, new IntPtr(destination), length);
 		
         /// <summary>
@@ -260,7 +260,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The number of bytes to copy.</param>
         /// <param name="destination">The stream to write into.</param>
         [CLSCompliant(false)]
-		public static unsafe void WriteToSteam(void* source, long length, Stream destination)
+		public unsafe static void WriteToSteam(void* source, long length, Stream destination)
 			=> WriteToSteam(new IntPtr(source), length, destination);
 
         /// <summary>
@@ -301,7 +301,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="destination">The stream to write into.</param>
         /// <returns>The task representing asynchronous state of copying.</returns>
         [CLSCompliant(false)]
-		public static unsafe Task WriteToSteamAsync(void* source, long length, Stream destination)
+		public unsafe static Task WriteToSteamAsync(void* source, long length, Stream destination)
 			=> WriteToSteamAsync(new IntPtr(source), length, destination);
 
 		/// <summary>
@@ -357,7 +357,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
-		public static unsafe long GetHashCode(void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
+		public unsafe static long GetHashCode(void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
 			=> GetHashCode(new IntPtr(source), length, hash, hashFunction, salted);
 
 		/// <summary>
@@ -373,7 +373,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="hashFunction">Hashing function.</param>
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
-		public static unsafe int GetHashCode(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
+		public static int GetHashCode(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
 		{
 			switch(length)
 			{
@@ -413,7 +413,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
-		public static unsafe int GetHashCode(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
+		public unsafe static int GetHashCode(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
 			=> GetHashCode(new IntPtr(source), length, hash, hashFunction, salted);
 
         /// <summary>
@@ -427,7 +427,7 @@ namespace DotNext.Runtime.InteropServices
         /// </remarks>
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
-        public static unsafe int GetHashCode(IntPtr source, long length, bool salted = true)
+        public static int GetHashCode(IntPtr source, long length, bool salted = true)
 		{
 			var hash = FNV1a.Offset;
 			switch(length)
@@ -466,10 +466,49 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
-		public static unsafe int GetHashCode(void* source, long length, bool salted = true)
+		public unsafe static int GetHashCode(void* source, long length, bool salted = true)
 			=> GetHashCode(new IntPtr(source), length, salted);
 
-		/// <summary>
+        /// <summary>
+        /// Sets all bits of allocated memory to zero.
+        /// </summary>
+        /// <remarks>
+        /// This method has the same behavior as <see cref="Unsafe.InitBlockUnaligned(void*, byte, uint)"/> but
+        /// without restriction on <see cref="uint"/> data type for the length of the memory block.
+        /// </remarks>
+        /// <param name="ptr">The pointer to the memory to be cleared.</param>
+        /// <param name="length">The length of the memory to be cleared.</param>
+        public unsafe static void ZeroMem(IntPtr ptr, long length)
+        {
+            do
+            {
+                var count = (int)length.UpperBounded(int.MaxValue);
+                Unsafe.InitBlockUnaligned(ptr.ToPointer(), 0, (uint)count);
+                ptr += count;
+                length -= count;
+            } while (length > 0);
+        }
+
+        /// <summary>
+        /// Sets all bits of allocated memory to zero.
+        /// </summary>
+        /// <param name="ptr">The pointer to the memory to be cleared.</param>
+        /// <param name="length">The length of the memory to be cleared.</param>
+        [CLSCompliant(false)]
+        public unsafe static void ZeroMem(void* ptr, long length) => ZeroMem(new IntPtr(ptr), length);
+
+        /// <summary>
+        /// Computes equality between two blocks of memory.
+        /// </summary>
+        /// <param name="first">A pointer to the first memory block.</param>
+        /// <param name="second">A pointer to the second memory block.</param>
+        /// <param name="length">Length of first and second memory blocks, in bytes.</param>
+        /// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
+        [CLSCompliant(false)]
+        [Obsolete("Use overloaded method with long length")]
+        public unsafe static bool Equals(void* first, void* second, int length) => Equals(first, second, (long)length);
+
+        /// <summary>
 		/// Computes equality between two blocks of memory.
 		/// </summary>
 		/// <param name="first">A pointer to the first memory block.</param>
@@ -477,32 +516,58 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="length">Length of first and second memory blocks, in bytes.</param>
 		/// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
 		[CLSCompliant(false)]
-		public static unsafe bool Equals(void* first, void* second, int length)
-		{
-			switch(length)
-			{
-				case sizeof(byte):
-					return Unsafe.Read<byte>(first) == Unsafe.ReadUnaligned<byte>(second);
-				case sizeof(ushort):
-					return Unsafe.ReadUnaligned<ushort>(first) == Unsafe.ReadUnaligned<ushort>(second);
-				case sizeof(uint):
-					return Unsafe.ReadUnaligned<uint>(first) == Unsafe.ReadUnaligned<uint>(second);
-				case sizeof(ulong):
-					return Unsafe.ReadUnaligned<ulong>(first) == Unsafe.ReadUnaligned<ulong>(second);
-				default:
-					return new ReadOnlySpan<byte>(first, length).SequenceEqual(new ReadOnlySpan<byte>(second, length));
-			}
-		}
+        public unsafe static bool Equals(void* first, void* second, long length) => Equals(new IntPtr(first), new IntPtr(second), length);
 
-		/// <summary>
-		/// Computes equality between two blocks of memory.
-		/// </summary>
-		/// <param name="first">A pointer to the first memory block.</param>
-		/// <param name="second">A pointer to the second memory block.</param>
-		/// <param name="length">Length of first and second memory blocks, in bytes.</param>
-		/// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
-		public static unsafe bool Equals(IntPtr first, IntPtr second, int length)
+        /// <summary>
+        /// Computes equality between two blocks of memory.
+        /// </summary>
+        /// <param name="first">A pointer to the first memory block.</param>
+        /// <param name="second">A pointer to the second memory block.</param>
+        /// <param name="length">Length of first and second memory blocks, in bytes.</param>
+        /// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
+        [Obsolete("Use overloaded method with long length")]
+        public unsafe static bool Equals(IntPtr first, IntPtr second, int length)
 			=> Equals(first.ToPointer(), second.ToPointer(), length);
+
+        /// <summary>
+        /// Computes equality between two blocks of memory.
+        /// </summary>
+        /// <param name="first">A pointer to the first memory block.</param>
+        /// <param name="second">A pointer to the second memory block.</param>
+        /// <param name="length">Length of first and second memory blocks, in bytes.</param>
+        /// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
+        public unsafe static bool Equals(IntPtr first, IntPtr second, long length)
+        {
+            if (first == second)
+                return true;
+            switch (length)
+            {
+                case 0L:
+                    return true;
+                case sizeof(byte):
+                    return Unsafe.Read<byte>(first.ToPointer()) == Unsafe.ReadUnaligned<byte>(second.ToPointer());
+                case sizeof(ushort):
+                    return Unsafe.ReadUnaligned<ushort>(first.ToPointer()) == Unsafe.ReadUnaligned<ushort>(second.ToPointer());
+                case sizeof(uint):
+                    return Unsafe.ReadUnaligned<uint>(first.ToPointer()) == Unsafe.ReadUnaligned<uint>(second.ToPointer());
+                case sizeof(ulong):
+                    return Unsafe.ReadUnaligned<ulong>(first.ToPointer()) == Unsafe.ReadUnaligned<ulong>(second.ToPointer());
+                default:
+                    do
+                    {
+                        var count = (int)length.UpperBounded(int.MaxValue);
+                        if (new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceEqual(new ReadOnlySpan<byte>(second.ToPointer(), count)))
+                        {
+                            first += count;
+                            second += count;
+                            length -= count;
+                        }
+                        else
+                            return false;
+                    } while (length > 0);
+                    return true;
+            }
+        }
 
         /// <summary>
         /// Bitwise comparison of two memory blocks.
@@ -512,22 +577,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The length of the first and second memory blocks.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
         [CLSCompliant(false)]
-		public static unsafe int Compare(void* first, void* second, int length)
-		{
-			switch(length)
-			{
-				case sizeof(byte):
-					return Unsafe.Read<byte>(first).CompareTo(Unsafe.Read<byte>(second));
-				case sizeof(ushort):
-					return Unsafe.ReadUnaligned<ushort>(first).CompareTo(Unsafe.ReadUnaligned<ushort>(second));
-				case sizeof(uint):
-					return Unsafe.ReadUnaligned<uint>(first).CompareTo(Unsafe.ReadUnaligned<uint>(second));
-				case sizeof(ulong):
-					return Unsafe.ReadUnaligned<ulong>(first).CompareTo(Unsafe.ReadUnaligned<ulong>(second));
-				default:
-					return new ReadOnlySpan<byte>(first, length).SequenceCompareTo(new ReadOnlySpan<byte>(second, length));
-			}
-		}
+        [Obsolete("Use overloaded method with long length")]
+        public unsafe static int Compare(void* first, void* second, int length) => Compare(first, second, (long)length);
 
         /// <summary>
         /// Bitwise comparison of two memory blocks.
@@ -536,8 +587,61 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="second">The pointer to the second memory block.</param>
         /// <param name="length">The length of the first and second memory blocks.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
-		public static unsafe int Compare(IntPtr first, IntPtr second, int length)
+        [Obsolete("Use overloaded method with long length")]
+        public unsafe static int Compare(IntPtr first, IntPtr second, int length)
 			=> Compare(first.ToPointer(), second.ToPointer(), length);
+
+        /// <summary>
+        /// Bitwise comparison of two memory blocks.
+        /// </summary>
+        /// <param name="first">The pointer to the first memory block.</param>
+        /// <param name="second">The pointer to the second memory block.</param>
+        /// <param name="length">The length of the first and second memory blocks.</param>
+        /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
+        public unsafe static int Compare(IntPtr first, IntPtr second, long length)
+        {
+            if (first == second)
+                return 0;
+            switch (length)
+            {
+                case 0L:
+                    return 0;
+                case sizeof(byte):
+                    return Unsafe.Read<byte>(first.ToPointer()).CompareTo(Unsafe.Read<byte>(second.ToPointer()));
+                case sizeof(ushort):
+                    return Unsafe.ReadUnaligned<ushort>(first.ToPointer()).CompareTo(Unsafe.ReadUnaligned<ushort>(second.ToPointer()));
+                case sizeof(uint):
+                    return Unsafe.ReadUnaligned<uint>(first.ToPointer()).CompareTo(Unsafe.ReadUnaligned<uint>(second.ToPointer()));
+                case sizeof(ulong):
+                    return Unsafe.ReadUnaligned<ulong>(first.ToPointer()).CompareTo(Unsafe.ReadUnaligned<ulong>(second.ToPointer()));
+                default:
+                    var comparison = 0;
+                    do
+                    {
+                        var count = (int)length.UpperBounded(int.MaxValue);
+                        comparison = new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceCompareTo(new ReadOnlySpan<byte>(second.ToPointer(), count));
+                        if (comparison == 0)
+                        {
+                            first += count;
+                            second += count;
+                            length -= count;
+                        }
+                        else
+                            break;
+                    } while (length > 0);
+                    return comparison;
+            }
+        }
+
+        /// <summary>
+        /// Bitwise comparison of two memory blocks.
+        /// </summary>
+        /// <param name="first">The pointer to the first memory block.</param>
+        /// <param name="second">The pointer to the second memory block.</param>
+        /// <param name="length">The length of the first and second memory blocks.</param>
+        /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
+        [CLSCompliant(false)]
+        public unsafe static int Compare(void* first, void* second, long length) => Compare(new IntPtr(first), new IntPtr(second), length);
 
         /// <summary>
         /// Indicates that two managed pointers are equal.
@@ -561,7 +665,7 @@ namespace DotNext.Runtime.InteropServices
         /// not the address of the object itself.
         /// </remarks>
         [CLSCompliant(false)]
-        public static unsafe IntPtr AddressOf<T>(in T value)
+        public unsafe static IntPtr AddressOf<T>(in T value)
 			=> new IntPtr(Unsafe.AsPointer(ref Unsafe.AsRef(in value)));
 	}
 }
