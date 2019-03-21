@@ -28,13 +28,13 @@ namespace DotNext.Metaprogramming
                 getEnumerator = collection.Call(GetEnumeratorMethod);
                 if (getEnumerator is null)
                     throw new ArgumentException(ExceptionMessages.EnumerablePatternExpected);
-                enumerator = Parent.DeclareVariable(getEnumerator.Method.ReturnType, NextName("enumerator_"));
+                enumerator = parent.DeclareVariable(getEnumerator.Method.ReturnType, NextName("enumerator_"));
                 moveNextCall = enumerator.Call(nameof(IEnumerator.MoveNext));
             }
             else
             {
                 getEnumerator = collection.Call(enumerable, GetEnumeratorMethod);
-                enumerator = Parent.DeclareVariable(getEnumerator.Method.ReturnType, NextName("enumerator_"));
+                enumerator = parent.DeclareVariable(getEnumerator.Method.ReturnType, NextName("enumerator_"));
                 //enumerator.MoveNext()
                 moveNextCall = enumerator.Call(typeof(IEnumerator), nameof(IEnumerator.MoveNext));
             }
@@ -49,7 +49,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public UniversalExpression Element => element;
 
-        internal override Expression Build() => ((IExpressionBuilder<TryExpression>)this).Build();
+        internal override Expression Build() => Build<TryExpression, ForEachLoopBuilder>(this);
 
         TryExpression IExpressionBuilder<TryExpression>.Build()
         {

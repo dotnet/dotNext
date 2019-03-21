@@ -28,7 +28,7 @@ namespace DotNext.Metaprogramming
             else
             {
                 disposableVar = Expression.Variable(expression.Type, NextName("disposable_"));
-                assignment = Expression.Assign(disposableVar, expression);
+                assignment = disposableVar.Assign(expression);
             }
         }
 
@@ -44,7 +44,7 @@ namespace DotNext.Metaprogramming
             @finally = base.Build().Finally(@finally);
             return assignment is null ?
                 @finally :
-                Expression.Block(typeof(void), Sequence.Singleton(disposableVar), Sequence.Singleton(assignment).Concat(Sequence.Singleton(@finally)));
+                Expression.Block(typeof(void), Sequence.Singleton(disposableVar), assignment, @finally);
         }
 
         Expression IExpressionBuilder<Expression>.Build() => Build();

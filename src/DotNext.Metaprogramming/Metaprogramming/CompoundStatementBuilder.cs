@@ -53,6 +53,11 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public CompoundStatementBuilder Parent{ get; }
 
+        private protected E Build<E, B>(B builder) 
+            where E: Expression
+            where B: IExpressionBuilder<E>
+            => builder.Build();
+
         internal E AddStatement<E>(E expression)
             where E: Expression
         {
@@ -199,6 +204,16 @@ namespace DotNext.Metaprogramming
         /// <returns>Method call statement.</returns>
         public MethodCallExpression Call(UniversalExpression instance, MethodInfo method, params UniversalExpression[] arguments)
             => Call(instance, method, UniversalExpression.AsExpressions((IEnumerable<UniversalExpression>)arguments));
+        
+        /// <summary>
+        /// Adds instance method call statement.
+        /// </summary>
+        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="methodName">The method to be called.</param>
+        /// <param name="arguments">Method call arguments.</param>
+        /// <returns>Method call statement.</returns>
+        public Expression Call(UniversalExpression instance, string methodName, params UniversalExpression[] arguments)
+            => AddStatement<Expression>(instance.Call(methodName, arguments));
 
         /// <summary>
         /// Adds static method call statement.,
@@ -472,13 +487,22 @@ namespace DotNext.Metaprogramming
             => AddStatement<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, this), scope);
 
         /// <summary>
-        /// Add <see langword="using"/> statement.
+        /// Adds <see langword="using"/> statement.
         /// </summary>
         /// <param name="expression">The expression representing disposable resource.</param>
         /// <param name="scope">The body of the statement.</param>
         /// <returns>Constructed expression.</returns>
         public Expression Using(UniversalExpression expression, Action<UsingBlockBuilder> scope)
             => AddStatement<Expression, UsingBlockBuilder>(new UsingBlockBuilder(expression, this), scope);
+
+        /// <summary>
+        /// Adds <see langword="lock"/> statement.
+        /// </summary>
+        /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
+        /// <param name="scope">Synchronized scope of code.</param>
+        /// <returns>Constructed expression.</returns>
+        public BlockExpression Lock(UniversalExpression syncRoot, Action<LockBuilder> scope)
+            => AddStatement<BlockExpression, LockBuilder>(new LockBuilder(syncRoot, this), scope);
 
         /// <summary>
         /// Adds selection expression.

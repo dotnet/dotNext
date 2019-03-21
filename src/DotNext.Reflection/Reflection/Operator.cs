@@ -181,6 +181,10 @@ namespace DotNext.Reflection
             return hashCode;
         }
 
+        /// <summary>
+        /// Returns textual representation of the reflected operator.
+        /// </summary>
+        /// <returns>The textual representation of the reflected operator.</returns>
         public override string ToString() => Type.ToString();
     }
 

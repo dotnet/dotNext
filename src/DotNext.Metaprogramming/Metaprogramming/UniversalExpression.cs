@@ -136,6 +136,12 @@ namespace DotNext.Metaprogramming
         public static implicit operator UniversalExpression(double value) => value.AsConst();
 
         /// <summary>
+        /// Constructs constant value of <see cref="char"/> type.
+        /// </summary>
+        /// <param name="value">The constant value.</param>
+        public static implicit operator UniversalExpression(char value) => value.AsConst();
+
+        /// <summary>
         /// Logical NOT expression.
         /// </summary>
         /// <param name="expr">The operand.</param>
