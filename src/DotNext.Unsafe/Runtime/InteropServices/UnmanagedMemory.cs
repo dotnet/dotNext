@@ -241,7 +241,11 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Releases unmanaged memory associated with the boxed type.
         /// </summary>
-        public void Dispose() => FreeMem(pointer.Address);
+        public void Dispose()
+        {
+            FreeMem(pointer.Address);
+            this = default;
+        }
 
         public bool Equals<U>(UnmanagedMemory<U> other)
             where U: unmanaged

@@ -5,6 +5,9 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.InteropServices
 {
+    /// <summary>
+    /// Represents extension methods common to all unmanaged memory structures.
+    /// </summary>
     public unsafe static class UnmanagedMemoryExtensions
     {
         /// <summary>

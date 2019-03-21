@@ -411,6 +411,10 @@ namespace DotNext.Runtime.InteropServices
 		/// <summary>
 		/// Releases unmanaged memory associated with the array.
 		/// </summary>
-		public void Dispose() => FreeMem(pointer.Address);
+		public void Dispose()
+		{
+			FreeMem(pointer.Address);
+			this = default;
+		}
 	}
 }
