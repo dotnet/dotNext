@@ -12,11 +12,18 @@ namespace DotNext.Runtime.InteropServices
         {
         }
 
+        /// <summary>
+        /// Initializes a new exception representing attempt to dereference zero pointer.
+        /// </summary>
+        /// <param name="message">The human-readable description of this message.</param>
         public NullPointerException(string message)
             : base(message)
         {
         }
 
+        /// <summary>
+        /// Initializes a new exception representing attempt to dereference zero pointer.
+        /// </summary>
         public NullPointerException()
             : this(ExceptionMessages.NullPtr)
         {

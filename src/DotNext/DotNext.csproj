@@ -7,7 +7,7 @@
     <Authors>Roman Sakno</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>0.1.1</Version>
+    <Version>0.2</Version>
 	<AssemblyName>DotNext</AssemblyName>
     <PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>

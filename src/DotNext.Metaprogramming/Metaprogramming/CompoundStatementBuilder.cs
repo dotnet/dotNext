@@ -89,6 +89,38 @@ namespace DotNext.Metaprogramming
             => AddStatement(Expression.Assign(variable, value));
 
         /// <summary>
+        /// Adds an expression that increments given variable by 1 and assigns the result back to the variable.
+        /// </summary>
+        /// <param name="variable">The variable to be modified.</param>
+        /// <returns>The expression representing increment.</returns>
+        public UnaryExpression PreIncrementAssign(ParameterExpression variable)
+            => AddStatement(variable.PreIncrementAssign());
+
+        /// <summary>
+        /// Adds an expression that represents the assignment of given variable followed by a subsequent increment by 1 of the original variable.
+        /// </summary>
+        /// <param name="variable">The variable to be modified.</param>
+        /// <returns>The expression representing increment.</returns>
+        public UnaryExpression PostIncrementAssign(ParameterExpression variable)
+            => AddStatement(variable.PostIncrementAssign());
+        
+        /// <summary>
+        /// Adds an expression that decrements given variable by 1 and assigns the result back to the variable.
+        /// </summary>
+        /// <param name="variable">The variable to be modified.</param>
+        /// <returns>The expression representing decrement.</returns>
+        public UnaryExpression PreDecrementAssign(ParameterExpression variable)
+            => AddStatement(variable.PreDecrementAssign());
+
+        /// <summary>
+        /// Adds an expression that represents the assignment of given variable followed by a subsequent decrement by 1 of the original variable.
+        /// </summary>
+        /// <param name="variable">The variable to be modified.</param>
+        /// <returns>The expression representing decrement.</returns>
+        public UnaryExpression PostDecrementAssign(ParameterExpression variable)
+            => AddStatement(variable.PostDecrementAssign());
+
+        /// <summary>
         /// Adds local variable assignment operation this scope.
         /// </summary>
         /// <param name="variableName">The name of the declared local variable.</param>

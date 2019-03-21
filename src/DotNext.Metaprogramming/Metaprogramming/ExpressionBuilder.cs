@@ -809,8 +809,7 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="T">The type of constant.</typeparam>
         /// <param name="value">The constant value.</param>
         /// <returns></returns>
-        public static Expression AsConst<T>(this T value)
-            => value is Expression expr ? (Expression)Expression.Quote(expr) : Expression.Constant(value, typeof(T));
+        public static ConstantExpression AsConst<T>(this T value) => Expression.Constant(value, typeof(T));
 
         /// <summary>
         /// Constructs type default value supplier.
@@ -930,6 +929,21 @@ namespace DotNext.Metaprogramming
 
         internal static Expression AddEpilogue(this Expression expression, bool inferType, params Expression[] instructions)
             => AddEpilogue(expression, inferType, (IReadOnlyCollection<Expression>)instructions);
+
+        /// <summary>
+        /// Constructs type instantiation expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>new T()</code>.
+        /// </remarks>
+        /// <param name="type">The expression representung the type to be instantiated.</param>
+        /// <param name="args">The list of arguments to be passed into constructor.</param>
+        /// <returns>Instantiation expression.</returns>
+        public static MethodCallExpression New(this Expression type, params Expression[] args)
+        {
+            var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), new[] { typeof(Type), typeof(object[]) });
+            return Expression.Call(activate, type, Expression.NewArrayInit(typeof(object), args));
+        }
     }
 
     /// <summary>

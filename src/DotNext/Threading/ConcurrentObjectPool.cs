@@ -24,7 +24,7 @@ namespace DotNext.Threading
 		/// </remarks>
 		public ref struct Rental
 		{
-			private T lockedObject;
+			private readonly T lockedObject;
 
 			internal Rental(T obj, out bool lockTaken)
 			{
@@ -40,7 +40,7 @@ namespace DotNext.Threading
 				if (lockedObject is null)
 					throw new ObjectDisposedException(ExceptionMessages.ReleasedLock);
 				Monitor.Exit(lockedObject);
-				lockedObject = null;
+				this = default;
 			}
 
 			/// <summary>
