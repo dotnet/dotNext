@@ -113,17 +113,35 @@ namespace DotNext.Reflection
         /// Determines whether an instance of a specified type can be assigned to an instance of the current type.
         /// </summary>
         /// <typeparam name="U">The type to compare with the current type.</typeparam>
-        /// <returns>True, if instance of type <typeparamref name="U"/> can be assigned to type <typeparamref name="T"/>.</returns>
+        /// <returns><see langword="true"/>, if instance of type <typeparamref name="U"/> can be assigned to type <typeparamref name="T"/>.</returns>
         public static bool IsAssignableFrom<U>() => RuntimeType.IsAssignableFrom(typeof(U));
 
+        /// <summary>
+        /// Determines whether an instance of the current type can be assigned to an instance of the specified type.
+        /// </summary>
+        /// <typeparam name="U">The type to compare with the current type.</typeparam>
+        /// <returns><see langword="true"/>, if instance of type <typeparamref name="T"/> can be assigned to type <typeparamref name="U"/>.</returns>
         public static bool IsAssignableTo<U>() => Type<U>.IsAssignableFrom<T>();
 
+        /// <summary>
+        /// Applies type cast to the given object respecting overloaded cast operator.
+        /// </summary>
+        /// <typeparam name="U">The type of object to be converted.</typeparam>
+        /// <param name="value">The value to be converted.</param>
+        /// <returns>Optional conversion result if it is supported for the given type.</returns>
         public static Optional<T> TryConvert<U>(U value)
         {
             Operator<U, T> converter = Type<U>.Operator.Get<T>(UnaryOperator.Convert);
             return converter is null ? Optional<T>.Empty : converter(value);
         }
 
+        /// <summary>
+        /// Applies type cast to the given object respecting overloaded cast operator.
+        /// </summary>
+        /// <typeparam name="U">The type of object to be converted.</typeparam>
+        /// <param name="value">The value to be converted.</param>
+        /// <param name="result">The conversion result.</param>
+        /// <returns><see langword="true"/>, if conversion is supported by the given type; otherwise, <see langword="false"/>.</returns>
         public static bool TryConvert<U>(U value, out T result) => TryConvert(value).TryGet(out result);
 
         /// <summary>

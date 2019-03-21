@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Collections.ObjectModel;
 
 namespace DotNext.Reflection
@@ -46,7 +47,12 @@ namespace DotNext.Reflection
         }
 
         internal static MissingMethodException Create<T, A, R>(string methodName)
-			where A: struct
-			=> new MissingMethodException(typeof(T), methodName, typeof(R), Signature.Reflect(typeof(A)).Parameters);
-	}
+            where A : struct
+        {
+            var type = typeof(R);
+            if (type == typeof(Missing))
+                type = typeof(void);
+            return new MissingMethodException(typeof(T), methodName, type, Signature.Reflect(typeof(A)).Parameters);
+        }
+    }
 }

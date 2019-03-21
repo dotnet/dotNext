@@ -125,6 +125,10 @@ namespace DotNext.Reflection
 
         D IOperator<D>.Invoker => invoker;
 
+        /// <summary>
+        /// Returns the delegate instance that can be used to invoke operator.
+        /// </summary>
+        /// <param name="operator">The reflected operator.</param>
         public static implicit operator D(Operator<D> @operator) => @operator?.invoker;
 
         /// <summary>

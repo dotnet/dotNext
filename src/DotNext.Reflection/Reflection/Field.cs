@@ -338,7 +338,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets or sets instance field value.
         /// </summary>
-        /// <param name="this"><see langword="this"/> parameter.</param>
+        /// <param name="this"><see langword="this"/> argument.</param>
         public V this[in T @this]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

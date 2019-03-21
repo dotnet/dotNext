@@ -240,9 +240,9 @@ namespace DotNext.Reflection
         public override int GetHashCode() => property.GetHashCode();
 
         /// <summary>
-        /// Returns textual representation of this constructor.
+        /// Returns textual representation of this property.
         /// </summary>
-        /// <returns>The textual representation of this constructor.</returns>
+        /// <returns>The textual representation of this property.</returns>
         public override string ToString() => property.ToString();
 	}
 
