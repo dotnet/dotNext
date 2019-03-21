@@ -37,9 +37,13 @@ namespace DotNext.Runtime.InteropServices
 			}
 
 			/// <summary>
-			/// Initializes a new unmanaged array and associate
-			/// it with the handle.
+			/// Initializes a new unmanaged array and associate it with the handle.
 			/// </summary>
+            /// <remarks>
+            /// The handle instantiated with this constructor has ownership over unmanaged memory.
+            /// Unmanaged memory will be released when Garbage Collector reclaims instance of this handle
+            /// or <see cref="Dispose()"/> will be called directly.
+            /// </remarks>
 			/// <param name="length">Array length.</param>
 			public Handle(int length)
 				: this(new UnmanagedArray<T>(length), true)
@@ -47,13 +51,27 @@ namespace DotNext.Runtime.InteropServices
 
 			}
 
+            /// <summary>
+            /// Initializes a new handle for the given array.
+            /// </summary>
+            /// <remarks>
+            /// The handle instantiated with this constructor doesn't have ownership over unmanaged memory.
+            /// </remarks>
+            /// <param name="array">The unmanaged array.</param>
 			public Handle(UnmanagedArray<T> array)
 				: this(array, false)
 			{
 			}
 
+            /// <summary>
+            /// Gets a value indicating whether the unmanaged memory is released.
+            /// </summary>
 			public override bool IsInvalid => handle == IntPtr.Zero;
 
+            /// <summary>
+            /// Releases referenced unmanaged memory.
+            /// </summary>
+            /// <returns><see langword="true"/>, if this handle is valid; otherwise, <see langword="false"/>.</returns>
 			protected override bool ReleaseHandle() => FreeMem(handle);
 
 			/// <summary>

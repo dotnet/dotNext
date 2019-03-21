@@ -29,40 +29,55 @@ namespace DotNext.Runtime.InteropServices
 			{
 			}
 
-			/// <summary>
-			/// Allocates a new unmanaged memory and associate it
-			/// with handle.
-			/// </summary>
-			/// <remarks>
-			/// Disposing of the handle created with this constructor
-			/// will release unmanaged memory.
-			/// </remarks>
-			public Handle()
+            /// <summary>
+            /// Allocates a new unmanaged memory and associate it
+            /// with handle.
+            /// </summary>
+            /// <remarks>
+            /// The handle instantiated with this constructor has ownership over unmanaged memory.
+            /// Unmanaged memory will be released when Garbage Collector reclaims instance of this handle
+            /// or <see cref="Dispose()"/> will be called directly.
+            /// </remarks>
+            public Handle()
 				: this(Alloc(), true)
 			{
 			}
 
-			/// <summary>
-			/// Allocates a new unmanaged memory and associate it
-			/// with handle.
-			/// </summary>
-			/// <remarks>
-			/// Disposing of the handle created with this constructor
-			/// will release unmanaged memory.
-			/// </remarks>
-			/// <param name="value">A value to be placed into unmanaged memory.</param>
-			public Handle(T value)
+            /// <summary>
+            /// Allocates a new unmanaged memory and associate it with handle.
+            /// </summary>
+            /// <remarks>
+            /// The handle instantiated with this constructor has ownership over unmanaged memory.
+            /// Unmanaged memory will be released when Garbage Collector reclaims instance of this handle
+            /// or <see cref="Dispose()"/> will be called directly.
+            /// </remarks>
+            /// <param name="value">A value to be placed into unmanaged memory.</param>
+            public Handle(T value)
 				: this(Box(value), true)
 			{
 			}
 
+            /// <summary>
+            /// Initializes a new handle for the given unmanaged memory.
+            /// </summary>
+            /// <remarks>
+            /// The handle instantiated with this constructor doesn't have ownership over unmanaged memory.
+            /// </remarks>
+            /// <param name="buffer"></param>
 			public Handle(UnmanagedMemory<T> buffer)
 				: this(buffer, false)
 			{
 			}
 
+            /// <summary>
+            /// Gets a value indicating whether the unmanaged memory is released.
+            /// </summary>
 			public override bool IsInvalid => handle == IntPtr.Zero;
 
+            /// <summary>
+            /// Releases referenced unmanaged memory.
+            /// </summary>
+            /// <returns><see langword="true"/>, if this handle is valid; otherwise, <see langword="false"/>.</returns>
 			protected override bool ReleaseHandle() => FreeMem(handle);
 
 			/// <summary>

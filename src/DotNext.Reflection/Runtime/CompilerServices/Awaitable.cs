@@ -18,10 +18,21 @@ namespace DotNext.Runtime.CompilerServices
 
         static Awaitable() => Type<TAwaiter>.Concept(typeof(Awaiter<TAwaiter>));
 
+        /// <summary>
+        /// Gets awaiter used to await asynchronous result represented by type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="obj">The object representing asynchronous computing.</param>
+        /// <returns>An awaiter instance.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TAwaiter GetAwaiter(in T obj) => getAwaiter(in obj);
     }
 
+    /// <summary>
+    /// Represents awaitable concept type for the task type with non-void result.
+    /// </summary>
+    /// <typeparam name="T">The constrained type.</typeparam>
+    /// <typeparam name="TAwaiter">The type constrained with concept <see cref="Awaiter{TAwaiter}"/>.</typeparam>
+    /// <typeparam name="R">The type of asynchronous result.</typeparam>
     public static class Awaitable<T, [Constraint(typeof(Awaiter<,>))] TAwaiter, R>
         where TAwaiter : ICriticalNotifyCompletion
     {
@@ -29,6 +40,11 @@ namespace DotNext.Runtime.CompilerServices
 
         static Awaitable() => Type<TAwaiter>.Concept(typeof(Awaiter<TAwaiter, R>));
 
+        /// <summary>
+        /// Gets awaiter used to await asynchronous result represented by type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="obj">The object representing asynchronous computing.</param>
+        /// <returns>An awaiter instance.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TAwaiter GetAwaiter(in T obj) => getAwaiter(in obj);
     }

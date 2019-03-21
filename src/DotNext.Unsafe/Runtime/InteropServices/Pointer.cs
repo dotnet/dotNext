@@ -57,6 +57,9 @@ namespace DotNext.Runtime.InteropServices
                 return index < count;
             }
 
+            /// <summary>
+            /// Sets the enumerator to its initial position.
+            /// </summary>
             public void Reset() => index = -1L;
 
             void IDisposable.Dispose()
