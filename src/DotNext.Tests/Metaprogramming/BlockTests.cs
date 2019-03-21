@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Xunit;
 
 namespace DotNext.Metaprogramming
@@ -67,6 +68,22 @@ namespace DotNext.Metaprogramming
             })
             .Compile();
             Equal(28, lambda(4));
+        }
+
+        [Fact]
+        public void LockTest()
+        {
+            var lambda = LambdaBuilder<Action<StringBuilder>>.Build(fun =>
+            {
+                fun.Lock(fun.Parameters[0], @lock => 
+                {
+                    @lock.Call(fun.Parameters[0], nameof(StringBuilder.Append), 'a');
+                });
+            })
+            .Compile();
+            var builder = new StringBuilder();
+            lambda(builder);
+            Equal("a", builder.ToString());
         }
     }
 }

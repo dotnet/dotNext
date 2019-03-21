@@ -35,7 +35,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public UniversalExpression LoopVar => loopVar;
 
-        internal override Expression Build() => ((IExpressionBuilder<LoopExpression>)this).Build();
+        internal override Expression Build() => Build<LoopExpression, ForLoopBuilder>(this);
 
         LoopExpression IExpressionBuilder<LoopExpression>.Build()
         {
