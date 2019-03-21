@@ -158,6 +158,11 @@ namespace DotNext.Reflection
 
         private protected static Expression<D> MakeConvert<T>(ParameterExpression parameter, bool @checked) => Convert(parameter, parameter, typeof(T), @checked);
 
+        /// <summary>
+        /// Determines whether this object reflects the same operator as other object.
+        /// </summary>
+        /// <param name="other">Other reflected operator to be compared.</param>
+        /// <returns><see langword="true"/>, if  this object reflects the same operator as other object; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
             switch (other)
@@ -171,6 +176,10 @@ namespace DotNext.Reflection
             }
         }
 
+        /// <summary>
+        /// Computes hash code of the reflected operator.
+        /// </summary>
+        /// <returns>The hash code of the reflected operator.</returns>
         public override int GetHashCode()
         {
             var hashCode = 220548157;

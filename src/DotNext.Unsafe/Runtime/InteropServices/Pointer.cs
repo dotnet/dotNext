@@ -79,25 +79,36 @@ namespace DotNext.Runtime.InteropServices
 
         private readonly T* value;
 
+        /// <summary>
+        /// Constructs CLS-compliant pointer from non CLS-compliant pointer.
+        /// </summary>
+        /// <param name="ptr">The pointer value.</param>
         [CLSCompliant(false)]
         public Pointer(T* ptr) => value = ptr;
 
+        /// <summary>
+        /// Constructs CLS-compliant pointer from non CLS-compliant untyped pointer.
+        /// </summary>
+        /// <param name="ptr">The untyped pointer value.</param>
         [CLSCompliant(false)]
         public Pointer(void* ptr) => value = (T*)ptr;
 
+        /// <summary>
+        /// Constructs pointer from <see cref="IntPtr"/> value.
+        /// </summary>
+        /// <param name="ptr">The pointer value.</param>
         public Pointer(IntPtr ptr)
             : this(ptr.ToPointer())
         {
         }
 
+        /// <summary>
+        /// Constructs pointer from <see cref="UIntPtr"/> value.
+        /// </summary>
+        /// <param name="ptr">The pointer value.</param>
         [CLSCompliant(false)]
         public Pointer(UIntPtr ptr)
             : this(ptr.ToPointer())
-        {
-        }
-
-        public Pointer(ref T value)
-            : this(Unsafe.AsPointer(ref value))
         {
         }
 
@@ -117,90 +128,119 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Fill memory with zero bytes.
         /// </summary>
-        /// <param name="length">Number of elements in the unmanaged array.</param>
-        public void Clear(int length)
+        /// <param name="count">Number of elements in the unmanaged array.</param>
+        public void Clear(long count)
         {
-            if(IsNull)
+            if (IsNull)
                 throw new NullPointerException();
-            else if(length < 0)
-                throw new ArgumentOutOfRangeException(nameof(length));
+            else if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
             else
-                Unsafe.InitBlockUnaligned(value, 0, (uint)(length * Size));
+                Memory.ZeroMem(value, count);
         }
 
         /// <summary>
         /// Copies block of memory from the source address to the destination address.
         /// </summary>
         /// <param name="destination">Destination address.</param>
-        /// <param name="length">Number of elements to copy.</param>
-        public void WriteTo(Pointer<T> destination, long length)
+        /// <param name="count">The number of elements to be copied.</param>
+        public void WriteTo(Pointer<T> destination, long count)
         {
             if(IsNull)
                 throw new NullPointerException(ExceptionMessages.NullSource);
             else if(destination.IsNull)
                 throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
             else
-                Memory.Copy(value, destination.value, length * Size);
+                Memory.Copy(value, destination.value, count * Size);
         }
 
-        public long WriteTo(T[] destination, long offset, long length)
+        /// <summary>
+        /// Copies elements from the memory location identified
+        /// by this pointer to managed array.
+        /// </summary>
+        /// <param name="destination">The array to be modified.</param>
+        /// <param name="offset">The position in the destination array from which copying begins.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        /// <returns>Actual number of copied elements.</returns>
+        public long WriteTo(T[] destination, long offset, long count)
         {
             if (IsNull)
 				throw new NullPointerException();
 			else if (destination is null)
 				throw new ArgumentNullException(nameof(destination));
-            else if (length < 0)
+            else if (count < 0)
 				throw new IndexOutOfRangeException();
-			else if (destination.LongLength == 0L || (offset + length) > destination.LongLength)
+			else if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
 				return 0L;
 			fixed (T* dest = &destination[offset])
-				Memory.Copy(value, dest, length * Size);
-			return length;
+				Memory.Copy(value, dest, count * Size);
+			return count;
         }
 
-        public void WriteTo(Stream destination, long length)
+        /// <summary>
+        /// Copies bytes from the memory location identified
+        /// by this pointer to the stream.
+        /// </summary>
+        /// <param name="destination">The destinarion stream.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        public void WriteTo(Stream destination, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
 			else if (destination is null)
 				throw new ArgumentNullException(nameof(destination));
 			else
-				Memory.WriteToSteam(value, length * Size, destination);
+				Memory.WriteToSteam(value, count * Size, destination);
         }
 
-        public Task WriteToAsync(Stream destination, long length)
+        /// <summary>
+        /// Copies bytes from the memory location identified
+        /// by this pointer to the stream asynchronously.
+        /// </summary>
+        /// <param name="destination">The destinarion stream.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        /// <returns>The task instance representing asynchronous state of the copying process.</returns>
+        public Task WriteToAsync(Stream destination, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
 			else if (destination is null)
 				throw new ArgumentNullException(nameof(destination));
 			else
-				return Memory.WriteToSteamAsync(value, length * Size, destination);
+				return Memory.WriteToSteamAsync(value, count * Size, destination);
         }
 
-        public long ReadFrom(T[] source, long offset, long length)
+        /// <summary>
+        /// Copies elements from the specified array into
+        /// the memory block identified by this pointer.
+        /// </summary>
+        /// <param name="source">The source array.</param>
+        /// <param name="offset">The position in the source array from which copying begins.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        /// <returns>Actual number of copied elements.</returns>
+        public long ReadFrom(T[] source, long offset, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
 			else if (source is null)
 				throw new ArgumentNullException(nameof(source));
-            else if (length < 0L)
+            else if (count < 0L)
 				throw new IndexOutOfRangeException();
-			else if (source.LongLength == 0L || (length + offset) > source.LongLength)
+			else if (source.LongLength == 0L || (count + offset) > source.LongLength)
 				return 0L;
 			fixed (T* src = &source[offset])
-				Memory.Copy(src, value, length * Size);
-			return length;
+				Memory.Copy(src, value, count * Size);
+			return count;
 		}
 
-        public long ReadFrom(Stream source, long length)
+        public long ReadFrom(Stream source, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
 			else if (source is null)
 				throw new ArgumentNullException(nameof(source));
 			else
-				return Memory.ReadFromStream(source, value, Size * length);
+				return Memory.ReadFromStream(source, value, Size * count);
 		}
 
 		public Task<long> ReadFromAsync(Stream source, long length)
