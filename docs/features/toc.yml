@@ -28,10 +28,14 @@
       href: metaprogramming/compound.md
     - name: Multi-line Lambdas
       href: metaprogramming/lambda.md
+    - name: Async Lambda
+      href: metaprogramming/async.md
     - name: using Statement
       href: metaprogramming/using.md
     - name: Loops
       href: metaprogramming/loop.md
+    - name: lock Statement
+      href: metaprogramming/lock.md
 - name: Unsafe Data Structures
   href: unsafe.md
 - name: Benchmarks

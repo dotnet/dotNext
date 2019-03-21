@@ -7,6 +7,7 @@ Metaprogramming API provided by DotNext library allows to generate and execute c
 
 Metaprogramming library extends LINQ Expression with the following features:
 * [using statement](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement)
+* [lock statement](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement)
 * Loops
     * [foreach loop](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in)
     * [while loop](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/while)
