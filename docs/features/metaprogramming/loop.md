@@ -58,12 +58,43 @@ new Func<long, long>(arg =>
 `do-while` loop can be constructed using `DoWhile` method.
 
 # for Loop
+`for` loop implementation in Metaprogramming library has many similarities with implementation in other C-like languages with one exception: _increment_ (or _post iteration_) statement is optional, has access to the local variables declared inside of the loop and can be a compount statement. This statement is separated from main loop body with a special method call `StartIteratorBlock`.
 
+```csharp
+using System;
+using DotNext.Metaprogramming;
+
+LambdaBuilder<Fun<long, long>>(fun => 
+{
+    fun.Assign(fun.Result, 1L);  //result = 1L;
+    fun.For(fun.Parameters[0], i => i > 1L, loop => 
+    {
+        loop.Assign(fun.Result, i * fun.Result);    //result *= i;
+        loop.StartIteratorBlock();
+        loop.PostDecrementAssign(loop.LoopVar);  //i--
+    });
+});
+
+//generated code is
+
+new Func<long, long>(arg => 
+{
+    var result = 1L;
+    for(var i = arg; i > 1L; i--)
+        result *= i;
+    return result;
+});
+```
+
+Any call of code generation methods after `StartIteratorBlock` will be interpreted as _post iteration_ statement. Therefore, this statement is not limited to the simple expression. If method `StartIteratorBlock` is not used then `for` loop will be similar to `while` loop but with implicitly declared loop variable.
 
 # Plain Loop
 Plain loop is similar to `while(true)` loop and doesn't have built-in loop control tools. Developer need to control loop execution by calling `Continue()` and `Break` manually.
 
 ```csharp
+using System;
+using DotNext.Metaprogramming;
+
 LambdaBuilder<Fun<long, long>>(fun => 
 {
     UniversalExpression arg = fun.Parameters[0];
