@@ -70,6 +70,12 @@
 <h1 id="async-lambda">Async Lambda</h1>
 
 <p>Metaprogramming library provides full support of dynamic generation of <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/async">async lambda functions</a>. This functionality is not supported by LINQ Expressions out-of-the-box.</p>
+<p>There are three key elements required to generated async lambda:</p>
+<ul>
+<li><a href="../../api/DotNext.Metaprogramming.AsyncLambdaBuilder-1.html">AsyncLambdaBuilder</a> used to build async lambda function</li>
+<li><a href="../../api/DotNext.Metaprogramming.AsyncResultExpression.html">AsyncResultExpression</a> used to return value from the asynchronous lambda function</li>
+<li><a href="../../api/DotNext.Metaprogramming.AwaitExpression.html">AwaitExpression</a> is similar to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">await</a> operator.</li>
+</ul>
 </article>
           </div>
           

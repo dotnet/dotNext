@@ -1826,6 +1826,615 @@ references:
   fullName.vb: DotNext.Collections.Generic.Stack.TryPop(Of T)(System.Collections.Generic.Stack(Of T), ByRef T)
   nameWithType: Stack.TryPop<T>(Stack<T>, out T)
   nameWithType.vb: Stack.TryPop(Of T)(Stack(Of T), ByRef T)
+- uid: DotNext.Collections.Generic.UnmanagedList`1
+  name: UnmanagedList<T>
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html
+  commentId: T:DotNext.Collections.Generic.UnmanagedList`1
+  name.vb: UnmanagedList(Of T)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T)
+  nameWithType: UnmanagedList<T>
+  nameWithType.vb: UnmanagedList(Of T)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.#ctor(System.Int32)
+  name: UnmanagedList(Int32)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1__ctor_System_Int32_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.#ctor(System.Int32)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.UnmanagedList(System.Int32)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).UnmanagedList(System.Int32)
+  nameWithType: UnmanagedList<T>.UnmanagedList(Int32)
+  nameWithType.vb: UnmanagedList(Of T).UnmanagedList(Int32)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.#ctor*
+  name: UnmanagedList
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1__ctor_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.#ctor
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.UnmanagedList
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).UnmanagedList
+  nameWithType: UnmanagedList<T>.UnmanagedList
+  nameWithType.vb: UnmanagedList(Of T).UnmanagedList
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Add(`0)
+  name: Add(T)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Add__0_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.Add(`0)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Add(T)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Add(T)
+  nameWithType: UnmanagedList<T>.Add(T)
+  nameWithType.vb: UnmanagedList(Of T).Add(T)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Add*
+  name: Add
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Add_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.Add
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Add
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Add
+  nameWithType: UnmanagedList<T>.Add
+  nameWithType.vb: UnmanagedList(Of T).Add
+- uid: DotNext.Collections.Generic.UnmanagedList`1.BinarySearch(`0)
+  name: BinarySearch(T)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_BinarySearch__0_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.BinarySearch(`0)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.BinarySearch(T)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).BinarySearch(T)
+  nameWithType: UnmanagedList<T>.BinarySearch(T)
+  nameWithType.vb: UnmanagedList(Of T).BinarySearch(T)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.BinarySearch(`0,System.Comparison{`0})
+  name: BinarySearch(T, Comparison<T>)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_BinarySearch__0_System_Comparison__0__
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.BinarySearch(`0,System.Comparison{`0})
+  name.vb: BinarySearch(T, Comparison(Of T))
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.BinarySearch(T, System.Comparison<T>)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).BinarySearch(T, System.Comparison(Of T))
+  nameWithType: UnmanagedList<T>.BinarySearch(T, Comparison<T>)
+  nameWithType.vb: UnmanagedList(Of T).BinarySearch(T, Comparison(Of T))
+- uid: DotNext.Collections.Generic.UnmanagedList`1.BinarySearch*
+  name: BinarySearch
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_BinarySearch_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.BinarySearch
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.BinarySearch
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).BinarySearch
+  nameWithType: UnmanagedList<T>.BinarySearch
+  nameWithType.vb: UnmanagedList(Of T).BinarySearch
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Capacity
+  name: Capacity
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Capacity
+  commentId: P:DotNext.Collections.Generic.UnmanagedList`1.Capacity
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Capacity
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Capacity
+  nameWithType: UnmanagedList<T>.Capacity
+  nameWithType.vb: UnmanagedList(Of T).Capacity
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Capacity*
+  name: Capacity
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Capacity_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.Capacity
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Capacity
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Capacity
+  nameWithType: UnmanagedList<T>.Capacity
+  nameWithType.vb: UnmanagedList(Of T).Capacity
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Clear
+  name: Clear()
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Clear
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.Clear
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Clear()
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Clear()
+  nameWithType: UnmanagedList<T>.Clear()
+  nameWithType.vb: UnmanagedList(Of T).Clear()
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Clear*
+  name: Clear
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Clear_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.Clear
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Clear
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Clear
+  nameWithType: UnmanagedList<T>.Clear
+  nameWithType.vb: UnmanagedList(Of T).Clear
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Contains(`0)
+  name: Contains(T)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Contains__0_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.Contains(`0)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Contains(T)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Contains(T)
+  nameWithType: UnmanagedList<T>.Contains(T)
+  nameWithType.vb: UnmanagedList(Of T).Contains(T)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Contains*
+  name: Contains
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Contains_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.Contains
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Contains
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Contains
+  nameWithType: UnmanagedList<T>.Contains
+  nameWithType.vb: UnmanagedList(Of T).Contains
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Copy
+  name: Copy()
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Copy
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.Copy
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Copy()
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Copy()
+  nameWithType: UnmanagedList<T>.Copy()
+  nameWithType.vb: UnmanagedList(Of T).Copy()
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Copy*
+  name: Copy
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Copy_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.Copy
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Copy
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Copy
+  nameWithType: UnmanagedList<T>.Copy
+  nameWithType.vb: UnmanagedList(Of T).Copy
+- uid: DotNext.Collections.Generic.UnmanagedList`1.CopyTo(`0[],System.Int32)
+  name: CopyTo(T[], Int32)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_CopyTo__0___System_Int32_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.CopyTo(`0[],System.Int32)
+  name.vb: CopyTo(T(), Int32)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.CopyTo(T[], System.Int32)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).CopyTo(T(), System.Int32)
+  nameWithType: UnmanagedList<T>.CopyTo(T[], Int32)
+  nameWithType.vb: UnmanagedList(Of T).CopyTo(T(), Int32)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.CopyTo(`0[],System.Int32,System.Int32)
+  name: CopyTo(T[], Int32, Int32)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_CopyTo__0___System_Int32_System_Int32_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.CopyTo(`0[],System.Int32,System.Int32)
+  name.vb: CopyTo(T(), Int32, Int32)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.CopyTo(T[], System.Int32, System.Int32)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).CopyTo(T(), System.Int32, System.Int32)
+  nameWithType: UnmanagedList<T>.CopyTo(T[], Int32, Int32)
+  nameWithType.vb: UnmanagedList(Of T).CopyTo(T(), Int32, Int32)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.CopyTo(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int32)
+  name: CopyTo(UnmanagedArray<T>, Int32)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_CopyTo_DotNext_Runtime_InteropServices_UnmanagedArray__0__System_Int32_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.CopyTo(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int32)
+  name.vb: CopyTo(UnmanagedArray(Of T), Int32)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.CopyTo(DotNext.Runtime.InteropServices.UnmanagedArray<T>, System.Int32)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).CopyTo(DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Int32)
+  nameWithType: UnmanagedList<T>.CopyTo(UnmanagedArray<T>, Int32)
+  nameWithType.vb: UnmanagedList(Of T).CopyTo(UnmanagedArray(Of T), Int32)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.CopyTo(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int32,System.Int32)
+  name: CopyTo(UnmanagedArray<T>, Int32, Int32)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_CopyTo_DotNext_Runtime_InteropServices_UnmanagedArray__0__System_Int32_System_Int32_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.CopyTo(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int32,System.Int32)
+  name.vb: CopyTo(UnmanagedArray(Of T), Int32, Int32)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.CopyTo(DotNext.Runtime.InteropServices.UnmanagedArray<T>, System.Int32, System.Int32)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).CopyTo(DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Int32, System.Int32)
+  nameWithType: UnmanagedList<T>.CopyTo(UnmanagedArray<T>, Int32, Int32)
+  nameWithType.vb: UnmanagedList(Of T).CopyTo(UnmanagedArray(Of T), Int32, Int32)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.CopyTo*
+  name: CopyTo
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_CopyTo_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.CopyTo
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.CopyTo
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).CopyTo
+  nameWithType: UnmanagedList<T>.CopyTo
+  nameWithType.vb: UnmanagedList(Of T).CopyTo
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Count
+  name: Count
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Count
+  commentId: P:DotNext.Collections.Generic.UnmanagedList`1.Count
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Count
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Count
+  nameWithType: UnmanagedList<T>.Count
+  nameWithType.vb: UnmanagedList(Of T).Count
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Count*
+  name: Count
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Count_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.Count
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Count
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Count
+  nameWithType: UnmanagedList<T>.Count
+  nameWithType.vb: UnmanagedList(Of T).Count
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Dispose
+  name: Dispose()
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Dispose
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.Dispose
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Dispose()
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Dispose()
+  nameWithType: UnmanagedList<T>.Dispose()
+  nameWithType.vb: UnmanagedList(Of T).Dispose()
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Dispose*
+  name: Dispose
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Dispose_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.Dispose
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Dispose
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Dispose
+  nameWithType: UnmanagedList<T>.Dispose
+  nameWithType.vb: UnmanagedList(Of T).Dispose
+- uid: DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address
+  name: IUnmanagedMemory.Address
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Address
+  commentId: P:DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address
+  name.vb: DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
+  nameWithType: UnmanagedList<T>.IUnmanagedMemory.Address
+  nameWithType.vb: UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
+- uid: DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address*
+  name: IUnmanagedMemory.Address
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Address_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address
+  isSpec: "True"
+  name.vb: DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
+  nameWithType: UnmanagedList<T>.IUnmanagedMemory.Address
+  nameWithType.vb: UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
+- uid: DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Size
+  name: IUnmanagedMemory.Size
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Size
+  commentId: P:DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Size
+  name.vb: DotNext.Runtime.InteropServices.IUnmanagedMemory.Size
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.DotNext.Runtime.InteropServices.IUnmanagedMemory.Size
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Size
+  nameWithType: UnmanagedList<T>.IUnmanagedMemory.Size
+  nameWithType.vb: UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Size
+- uid: DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Size*
+  name: IUnmanagedMemory.Size
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Size_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Size
+  isSpec: "True"
+  name.vb: DotNext.Runtime.InteropServices.IUnmanagedMemory.Size
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.DotNext.Runtime.InteropServices.IUnmanagedMemory.Size
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Size
+  nameWithType: UnmanagedList<T>.IUnmanagedMemory.Size
+  nameWithType.vb: UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Size
+- uid: DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#ToPointer(System.Int64)
+  name: IUnmanagedMemory.ToPointer(Int64)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_ToPointer_System_Int64_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#ToPointer(System.Int64)
+  name.vb: DotNext.Runtime.InteropServices.IUnmanagedMemory.ToPointer(Int64)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.DotNext.Runtime.InteropServices.IUnmanagedMemory.ToPointer(System.Int64)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.ToPointer(System.Int64)
+  nameWithType: UnmanagedList<T>.IUnmanagedMemory.ToPointer(Int64)
+  nameWithType.vb: UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.ToPointer(Int64)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#ToPointer*
+  name: IUnmanagedMemory.ToPointer
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_ToPointer_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#ToPointer
+  isSpec: "True"
+  name.vb: DotNext.Runtime.InteropServices.IUnmanagedMemory.ToPointer
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.DotNext.Runtime.InteropServices.IUnmanagedMemory.ToPointer
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.ToPointer
+  nameWithType: UnmanagedList<T>.IUnmanagedMemory.ToPointer
+  nameWithType.vb: UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.ToPointer
+- uid: DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#ToPointer``1
+  name: IUnmanagedMemory.ToPointer<T>()
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_ToPointer__1
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#ToPointer``1
+  name.vb: DotNext.Runtime.InteropServices.IUnmanagedMemory.ToPointer(Of U)()
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.DotNext.Runtime.InteropServices.IUnmanagedMemory.ToPointer<T>()
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.ToPointer(Of U)()
+  nameWithType: UnmanagedList<T>.IUnmanagedMemory.ToPointer<T>()
+  nameWithType.vb: UnmanagedList(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.ToPointer(Of U)()
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Find(System.Predicate{`0})
+  name: Find(Predicate<T>)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Find_System_Predicate__0__
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.Find(System.Predicate{`0})
+  name.vb: Find(Predicate(Of T))
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Find(System.Predicate<T>)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Find(System.Predicate(Of T))
+  nameWithType: UnmanagedList<T>.Find(Predicate<T>)
+  nameWithType.vb: UnmanagedList(Of T).Find(Predicate(Of T))
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Find*
+  name: Find
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Find_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.Find
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Find
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Find
+  nameWithType: UnmanagedList<T>.Find
+  nameWithType.vb: UnmanagedList(Of T).Find
+- uid: DotNext.Collections.Generic.UnmanagedList`1.FindLast(System.Predicate{`0})
+  name: FindLast(Predicate<T>)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_FindLast_System_Predicate__0__
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.FindLast(System.Predicate{`0})
+  name.vb: FindLast(Predicate(Of T))
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.FindLast(System.Predicate<T>)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).FindLast(System.Predicate(Of T))
+  nameWithType: UnmanagedList<T>.FindLast(Predicate<T>)
+  nameWithType.vb: UnmanagedList(Of T).FindLast(Predicate(Of T))
+- uid: DotNext.Collections.Generic.UnmanagedList`1.FindLast*
+  name: FindLast
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_FindLast_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.FindLast
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.FindLast
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).FindLast
+  nameWithType: UnmanagedList<T>.FindLast
+  nameWithType.vb: UnmanagedList(Of T).FindLast
+- uid: DotNext.Collections.Generic.UnmanagedList`1.GetEnumerator
+  name: GetEnumerator()
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_GetEnumerator
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.GetEnumerator
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.GetEnumerator()
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).GetEnumerator()
+  nameWithType: UnmanagedList<T>.GetEnumerator()
+  nameWithType.vb: UnmanagedList(Of T).GetEnumerator()
+- uid: DotNext.Collections.Generic.UnmanagedList`1.GetEnumerator*
+  name: GetEnumerator
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_GetEnumerator_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.GetEnumerator
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.GetEnumerator
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).GetEnumerator
+  nameWithType: UnmanagedList<T>.GetEnumerator
+  nameWithType.vb: UnmanagedList(Of T).GetEnumerator
+- uid: DotNext.Collections.Generic.UnmanagedList`1.IndexOf(`0)
+  name: IndexOf(T)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_IndexOf__0_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.IndexOf(`0)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.IndexOf(T)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).IndexOf(T)
+  nameWithType: UnmanagedList<T>.IndexOf(T)
+  nameWithType.vb: UnmanagedList(Of T).IndexOf(T)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.IndexOf(`0,System.Collections.Generic.IEqualityComparer{`0})
+  name: IndexOf(T, IEqualityComparer<T>)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_IndexOf__0_System_Collections_Generic_IEqualityComparer__0__
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.IndexOf(`0,System.Collections.Generic.IEqualityComparer{`0})
+  name.vb: IndexOf(T, IEqualityComparer(Of T))
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.IndexOf(T, System.Collections.Generic.IEqualityComparer<T>)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).IndexOf(T, System.Collections.Generic.IEqualityComparer(Of T))
+  nameWithType: UnmanagedList<T>.IndexOf(T, IEqualityComparer<T>)
+  nameWithType.vb: UnmanagedList(Of T).IndexOf(T, IEqualityComparer(Of T))
+- uid: DotNext.Collections.Generic.UnmanagedList`1.IndexOf*
+  name: IndexOf
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_IndexOf_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.IndexOf
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.IndexOf
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).IndexOf
+  nameWithType: UnmanagedList<T>.IndexOf
+  nameWithType.vb: UnmanagedList(Of T).IndexOf
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Insert(System.Int32,`0)
+  name: Insert(Int32, T)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Insert_System_Int32__0_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.Insert(System.Int32,`0)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Insert(System.Int32, T)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Insert(System.Int32, T)
+  nameWithType: UnmanagedList<T>.Insert(Int32, T)
+  nameWithType.vb: UnmanagedList(Of T).Insert(Int32, T)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Insert*
+  name: Insert
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Insert_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.Insert
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Insert
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Insert
+  nameWithType: UnmanagedList<T>.Insert
+  nameWithType.vb: UnmanagedList(Of T).Insert
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Item(System.Int32)
+  name: Item[Int32]
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Item_System_Int32_
+  commentId: P:DotNext.Collections.Generic.UnmanagedList`1.Item(System.Int32)
+  name.vb: Item(Int32)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Item[System.Int32]
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Item(System.Int32)
+  nameWithType: UnmanagedList<T>.Item[Int32]
+  nameWithType.vb: UnmanagedList(Of T).Item(Int32)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Item*
+  name: Item
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Item_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.Item
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Item
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Item
+  nameWithType: UnmanagedList<T>.Item
+  nameWithType.vb: UnmanagedList(Of T).Item
+- uid: DotNext.Collections.Generic.UnmanagedList`1.LastIndexOf(`0)
+  name: LastIndexOf(T)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_LastIndexOf__0_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.LastIndexOf(`0)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.LastIndexOf(T)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).LastIndexOf(T)
+  nameWithType: UnmanagedList<T>.LastIndexOf(T)
+  nameWithType.vb: UnmanagedList(Of T).LastIndexOf(T)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.LastIndexOf(`0,System.Collections.Generic.IEqualityComparer{`0})
+  name: LastIndexOf(T, IEqualityComparer<T>)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_LastIndexOf__0_System_Collections_Generic_IEqualityComparer__0__
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.LastIndexOf(`0,System.Collections.Generic.IEqualityComparer{`0})
+  name.vb: LastIndexOf(T, IEqualityComparer(Of T))
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.LastIndexOf(T, System.Collections.Generic.IEqualityComparer<T>)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).LastIndexOf(T, System.Collections.Generic.IEqualityComparer(Of T))
+  nameWithType: UnmanagedList<T>.LastIndexOf(T, IEqualityComparer<T>)
+  nameWithType.vb: UnmanagedList(Of T).LastIndexOf(T, IEqualityComparer(Of T))
+- uid: DotNext.Collections.Generic.UnmanagedList`1.LastIndexOf*
+  name: LastIndexOf
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_LastIndexOf_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.LastIndexOf
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.LastIndexOf
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).LastIndexOf
+  nameWithType: UnmanagedList<T>.LastIndexOf
+  nameWithType.vb: UnmanagedList(Of T).LastIndexOf
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Remove(`0)
+  name: Remove(T)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Remove__0_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.Remove(`0)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Remove(T)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Remove(T)
+  nameWithType: UnmanagedList<T>.Remove(T)
+  nameWithType.vb: UnmanagedList(Of T).Remove(T)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Remove*
+  name: Remove
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Remove_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.Remove
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Remove
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Remove
+  nameWithType: UnmanagedList<T>.Remove
+  nameWithType.vb: UnmanagedList(Of T).Remove
+- uid: DotNext.Collections.Generic.UnmanagedList`1.RemoveAt(System.Int32)
+  name: RemoveAt(Int32)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_RemoveAt_System_Int32_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.RemoveAt(System.Int32)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.RemoveAt(System.Int32)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).RemoveAt(System.Int32)
+  nameWithType: UnmanagedList<T>.RemoveAt(Int32)
+  nameWithType.vb: UnmanagedList(Of T).RemoveAt(Int32)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.RemoveAt*
+  name: RemoveAt
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_RemoveAt_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.RemoveAt
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.RemoveAt
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).RemoveAt
+  nameWithType: UnmanagedList<T>.RemoveAt
+  nameWithType.vb: UnmanagedList(Of T).RemoveAt
+- uid: DotNext.Collections.Generic.UnmanagedList`1.RemoveLast(`0)
+  name: RemoveLast(T)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_RemoveLast__0_
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.RemoveLast(`0)
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.RemoveLast(T)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).RemoveLast(T)
+  nameWithType: UnmanagedList<T>.RemoveLast(T)
+  nameWithType.vb: UnmanagedList(Of T).RemoveLast(T)
+- uid: DotNext.Collections.Generic.UnmanagedList`1.RemoveLast*
+  name: RemoveLast
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_RemoveLast_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.RemoveLast
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.RemoveLast
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).RemoveLast
+  nameWithType: UnmanagedList<T>.RemoveLast
+  nameWithType.vb: UnmanagedList(Of T).RemoveLast
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Sort
+  name: Sort()
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Sort
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.Sort
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Sort()
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Sort()
+  nameWithType: UnmanagedList<T>.Sort()
+  nameWithType.vb: UnmanagedList(Of T).Sort()
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Sort(System.Comparison{`0})
+  name: Sort(Comparison<T>)
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Sort_System_Comparison__0__
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.Sort(System.Comparison{`0})
+  name.vb: Sort(Comparison(Of T))
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Sort(System.Comparison<T>)
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Sort(System.Comparison(Of T))
+  nameWithType: UnmanagedList<T>.Sort(Comparison<T>)
+  nameWithType.vb: UnmanagedList(Of T).Sort(Comparison(Of T))
+- uid: DotNext.Collections.Generic.UnmanagedList`1.Sort*
+  name: Sort
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_Sort_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.Sort
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.Sort
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).Sort
+  nameWithType: UnmanagedList<T>.Sort
+  nameWithType.vb: UnmanagedList(Of T).Sort
+- uid: DotNext.Collections.Generic.UnmanagedList`1.System#Collections#Generic#ICollection{T}#IsReadOnly
+  name: ICollection<T>.IsReadOnly
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_System_Collections_Generic_ICollection_T__IsReadOnly
+  commentId: P:DotNext.Collections.Generic.UnmanagedList`1.System#Collections#Generic#ICollection{T}#IsReadOnly
+  name.vb: System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+  nameWithType: UnmanagedList<T>.ICollection<T>.IsReadOnly
+  nameWithType.vb: UnmanagedList(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+- uid: DotNext.Collections.Generic.UnmanagedList`1.System#Collections#Generic#ICollection{T}#IsReadOnly*
+  name: ICollection<T>.IsReadOnly
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_System_Collections_Generic_ICollection_T__IsReadOnly_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.System#Collections#Generic#ICollection{T}#IsReadOnly
+  isSpec: "True"
+  name.vb: System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+  nameWithType: UnmanagedList<T>.ICollection<T>.IsReadOnly
+  nameWithType.vb: UnmanagedList(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+- uid: DotNext.Collections.Generic.UnmanagedList`1.System#Collections#Generic#IEnumerable{T}#GetEnumerator
+  name: IEnumerable<T>.GetEnumerator()
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_System_Collections_Generic_IEnumerable_T__GetEnumerator
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.System#Collections#Generic#IEnumerable{T}#GetEnumerator
+  name.vb: System.Collections.Generic.IEnumerable<T>.GetEnumerator()
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.System.Collections.Generic.IEnumerable<T>.GetEnumerator()
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).System.Collections.Generic.IEnumerable<T>.GetEnumerator()
+  nameWithType: UnmanagedList<T>.IEnumerable<T>.GetEnumerator()
+  nameWithType.vb: UnmanagedList(Of T).System.Collections.Generic.IEnumerable<T>.GetEnumerator()
+- uid: DotNext.Collections.Generic.UnmanagedList`1.System#Collections#Generic#IEnumerable{T}#GetEnumerator*
+  name: IEnumerable<T>.GetEnumerator
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_System_Collections_Generic_IEnumerable_T__GetEnumerator_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.System#Collections#Generic#IEnumerable{T}#GetEnumerator
+  isSpec: "True"
+  name.vb: System.Collections.Generic.IEnumerable<T>.GetEnumerator
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.System.Collections.Generic.IEnumerable<T>.GetEnumerator
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).System.Collections.Generic.IEnumerable<T>.GetEnumerator
+  nameWithType: UnmanagedList<T>.IEnumerable<T>.GetEnumerator
+  nameWithType.vb: UnmanagedList(Of T).System.Collections.Generic.IEnumerable<T>.GetEnumerator
+- uid: DotNext.Collections.Generic.UnmanagedList`1.System#Collections#IEnumerable#GetEnumerator
+  name: IEnumerable.GetEnumerator()
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_System_Collections_IEnumerable_GetEnumerator
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.System#Collections#IEnumerable#GetEnumerator
+  name.vb: System.Collections.IEnumerable.GetEnumerator()
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.System.Collections.IEnumerable.GetEnumerator()
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).System.Collections.IEnumerable.GetEnumerator()
+  nameWithType: UnmanagedList<T>.IEnumerable.GetEnumerator()
+  nameWithType.vb: UnmanagedList(Of T).System.Collections.IEnumerable.GetEnumerator()
+- uid: DotNext.Collections.Generic.UnmanagedList`1.System#Collections#IEnumerable#GetEnumerator*
+  name: IEnumerable.GetEnumerator
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_System_Collections_IEnumerable_GetEnumerator_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.System#Collections#IEnumerable#GetEnumerator
+  isSpec: "True"
+  name.vb: System.Collections.IEnumerable.GetEnumerator
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.System.Collections.IEnumerable.GetEnumerator
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).System.Collections.IEnumerable.GetEnumerator
+  nameWithType: UnmanagedList<T>.IEnumerable.GetEnumerator
+  nameWithType.vb: UnmanagedList(Of T).System.Collections.IEnumerable.GetEnumerator
+- uid: DotNext.Collections.Generic.UnmanagedList`1.System#ICloneable#Clone
+  name: ICloneable.Clone()
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_System_ICloneable_Clone
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.System#ICloneable#Clone
+  name.vb: System.ICloneable.Clone()
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.System.ICloneable.Clone()
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).System.ICloneable.Clone()
+  nameWithType: UnmanagedList<T>.ICloneable.Clone()
+  nameWithType.vb: UnmanagedList(Of T).System.ICloneable.Clone()
+- uid: DotNext.Collections.Generic.UnmanagedList`1.System#ICloneable#Clone*
+  name: ICloneable.Clone
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_System_ICloneable_Clone_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.System#ICloneable#Clone
+  isSpec: "True"
+  name.vb: System.ICloneable.Clone
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.System.ICloneable.Clone
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).System.ICloneable.Clone
+  nameWithType: UnmanagedList<T>.ICloneable.Clone
+  nameWithType.vb: UnmanagedList(Of T).System.ICloneable.Clone
+- uid: DotNext.Collections.Generic.UnmanagedList`1.ToArray
+  name: ToArray()
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_ToArray
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.ToArray
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.ToArray()
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).ToArray()
+  nameWithType: UnmanagedList<T>.ToArray()
+  nameWithType.vb: UnmanagedList(Of T).ToArray()
+- uid: DotNext.Collections.Generic.UnmanagedList`1.ToArray*
+  name: ToArray
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_ToArray_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.ToArray
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.ToArray
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).ToArray
+  nameWithType: UnmanagedList<T>.ToArray
+  nameWithType.vb: UnmanagedList(Of T).ToArray
+- uid: DotNext.Collections.Generic.UnmanagedList`1.TrimExcess
+  name: TrimExcess()
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_TrimExcess
+  commentId: M:DotNext.Collections.Generic.UnmanagedList`1.TrimExcess
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.TrimExcess()
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).TrimExcess()
+  nameWithType: UnmanagedList<T>.TrimExcess()
+  nameWithType.vb: UnmanagedList(Of T).TrimExcess()
+- uid: DotNext.Collections.Generic.UnmanagedList`1.TrimExcess*
+  name: TrimExcess
+  href: api/DotNext.Collections.Generic.UnmanagedList-1.html#DotNext_Collections_Generic_UnmanagedList_1_TrimExcess_
+  commentId: Overload:DotNext.Collections.Generic.UnmanagedList`1.TrimExcess
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.UnmanagedList<T>.TrimExcess
+  fullName.vb: DotNext.Collections.Generic.UnmanagedList(Of T).TrimExcess
+  nameWithType: UnmanagedList<T>.TrimExcess
+  nameWithType.vb: UnmanagedList(Of T).TrimExcess
 - uid: DotNext.Comparable
   name: Comparable
   href: api/DotNext.Comparable.html
@@ -18593,30 +19202,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Runtime.InteropServices.Memory.ZeroMem
   nameWithType: Memory.ZeroMem
-- uid: DotNext.Runtime.InteropServices.MemoryAccess
-  name: MemoryAccess
-  href: api/DotNext.Runtime.InteropServices.MemoryAccess.html
-  commentId: T:DotNext.Runtime.InteropServices.MemoryAccess
-  fullName: DotNext.Runtime.InteropServices.MemoryAccess
-  nameWithType: MemoryAccess
-- uid: DotNext.Runtime.InteropServices.MemoryAccess.Aligned
-  name: Aligned
-  href: api/DotNext.Runtime.InteropServices.MemoryAccess.html#DotNext_Runtime_InteropServices_MemoryAccess_Aligned
-  commentId: F:DotNext.Runtime.InteropServices.MemoryAccess.Aligned
-  fullName: DotNext.Runtime.InteropServices.MemoryAccess.Aligned
-  nameWithType: MemoryAccess.Aligned
-- uid: DotNext.Runtime.InteropServices.MemoryAccess.Default
-  name: Default
-  href: api/DotNext.Runtime.InteropServices.MemoryAccess.html#DotNext_Runtime_InteropServices_MemoryAccess_Default
-  commentId: F:DotNext.Runtime.InteropServices.MemoryAccess.Default
-  fullName: DotNext.Runtime.InteropServices.MemoryAccess.Default
-  nameWithType: MemoryAccess.Default
-- uid: DotNext.Runtime.InteropServices.MemoryAccess.Unaligned
-  name: Unaligned
-  href: api/DotNext.Runtime.InteropServices.MemoryAccess.html#DotNext_Runtime_InteropServices_MemoryAccess_Unaligned
-  commentId: F:DotNext.Runtime.InteropServices.MemoryAccess.Unaligned
-  fullName: DotNext.Runtime.InteropServices.MemoryAccess.Unaligned
-  nameWithType: MemoryAccess.Unaligned
 - uid: DotNext.Runtime.InteropServices.NullPointerException
   name: NullPointerException
   href: api/DotNext.Runtime.InteropServices.NullPointerException.html
@@ -18761,15 +19346,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).AsStream
   nameWithType: Pointer<T>.AsStream
   nameWithType.vb: Pointer(Of T).AsStream
-- uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer{`0},System.Int32)
-  name: BitwiseCompare(Pointer<T>, Int32)
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseCompare_DotNext_Runtime_InteropServices_Pointer__0__System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer{`0},System.Int32)
-  name.vb: BitwiseCompare(Pointer(Of T), Int32)
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer<T>, System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseCompare(DotNext.Runtime.InteropServices.Pointer(Of T), System.Int32)
-  nameWithType: Pointer<T>.BitwiseCompare(Pointer<T>, Int32)
-  nameWithType.vb: Pointer(Of T).BitwiseCompare(Pointer(Of T), Int32)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer{`0},System.Int64)
+  name: BitwiseCompare(Pointer<T>, Int64)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseCompare_DotNext_Runtime_InteropServices_Pointer__0__System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer{`0},System.Int64)
+  name.vb: BitwiseCompare(Pointer(Of T), Int64)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer<T>, System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseCompare(DotNext.Runtime.InteropServices.Pointer(Of T), System.Int64)
+  nameWithType: Pointer<T>.BitwiseCompare(Pointer<T>, Int64)
+  nameWithType.vb: Pointer(Of T).BitwiseCompare(Pointer(Of T), Int64)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseCompare*
   name: BitwiseCompare
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseCompare_
@@ -18779,15 +19364,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseCompare
   nameWithType: Pointer<T>.BitwiseCompare
   nameWithType.vb: Pointer(Of T).BitwiseCompare
-- uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer{`0},System.Int32)
-  name: BitwiseEquals(Pointer<T>, Int32)
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseEquals_DotNext_Runtime_InteropServices_Pointer__0__System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer{`0},System.Int32)
-  name.vb: BitwiseEquals(Pointer(Of T), Int32)
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer<T>, System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseEquals(DotNext.Runtime.InteropServices.Pointer(Of T), System.Int32)
-  nameWithType: Pointer<T>.BitwiseEquals(Pointer<T>, Int32)
-  nameWithType.vb: Pointer(Of T).BitwiseEquals(Pointer(Of T), Int32)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer{`0},System.Int64)
+  name: BitwiseEquals(Pointer<T>, Int64)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseEquals_DotNext_Runtime_InteropServices_Pointer__0__System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer{`0},System.Int64)
+  name.vb: BitwiseEquals(Pointer(Of T), Int64)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer<T>, System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseEquals(DotNext.Runtime.InteropServices.Pointer(Of T), System.Int64)
+  nameWithType: Pointer<T>.BitwiseEquals(Pointer<T>, Int64)
+  nameWithType.vb: Pointer(Of T).BitwiseEquals(Pointer(Of T), Int64)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseEquals*
   name: BitwiseEquals
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseEquals_
@@ -18883,6 +19468,23 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Enumerator.Current
   nameWithType: Pointer<T>.Enumerator.Current
   nameWithType.vb: Pointer(Of T).Enumerator.Current
+- uid: DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Dispose
+  name: Dispose()
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.Enumerator.html#DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Dispose
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Dispose
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Enumerator.Dispose()
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Enumerator.Dispose()
+  nameWithType: Pointer<T>.Enumerator.Dispose()
+  nameWithType.vb: Pointer(Of T).Enumerator.Dispose()
+- uid: DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Dispose*
+  name: Dispose
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.Enumerator.html#DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Dispose_
+  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Dispose
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Enumerator.Dispose
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Enumerator.Dispose
+  nameWithType: Pointer<T>.Enumerator.Dispose
+  nameWithType.vb: Pointer(Of T).Enumerator.Dispose
 - uid: DotNext.Runtime.InteropServices.Pointer`1.Enumerator.MoveNext
   name: MoveNext()
   href: api/DotNext.Runtime.InteropServices.Pointer-1.Enumerator.html#DotNext_Runtime_InteropServices_Pointer_1_Enumerator_MoveNext
@@ -18953,25 +19555,6 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Enumerator.System.Collections.IEnumerator.Current
   nameWithType: Pointer<T>.Enumerator.IEnumerator.Current
   nameWithType.vb: Pointer(Of T).Enumerator.System.Collections.IEnumerator.Current
-- uid: DotNext.Runtime.InteropServices.Pointer`1.Enumerator.System#IDisposable#Dispose
-  name: IDisposable.Dispose()
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.Enumerator.html#DotNext_Runtime_InteropServices_Pointer_1_Enumerator_System_IDisposable_Dispose
-  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.Enumerator.System#IDisposable#Dispose
-  name.vb: System.IDisposable.Dispose()
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Enumerator.System.IDisposable.Dispose()
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Enumerator.System.IDisposable.Dispose()
-  nameWithType: Pointer<T>.Enumerator.IDisposable.Dispose()
-  nameWithType.vb: Pointer(Of T).Enumerator.System.IDisposable.Dispose()
-- uid: DotNext.Runtime.InteropServices.Pointer`1.Enumerator.System#IDisposable#Dispose*
-  name: IDisposable.Dispose
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.Enumerator.html#DotNext_Runtime_InteropServices_Pointer_1_Enumerator_System_IDisposable_Dispose_
-  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.Enumerator.System#IDisposable#Dispose
-  isSpec: "True"
-  name.vb: System.IDisposable.Dispose
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Enumerator.System.IDisposable.Dispose
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Enumerator.System.IDisposable.Dispose
-  nameWithType: Pointer<T>.Enumerator.IDisposable.Dispose
-  nameWithType.vb: Pointer(Of T).Enumerator.System.IDisposable.Dispose
 - uid: DotNext.Runtime.InteropServices.Pointer`1.Equals(`0,System.Collections.Generic.IEqualityComparer{`0})
   name: Equals(T, IEqualityComparer<T>)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Equals__0_System_Collections_Generic_IEqualityComparer__0__
@@ -19292,23 +19875,6 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).True
   nameWithType: Pointer<T>.True
   nameWithType.vb: Pointer(Of T).True
-- uid: DotNext.Runtime.InteropServices.Pointer`1.Read(DotNext.Runtime.InteropServices.MemoryAccess)
-  name: Read(MemoryAccess)
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Read_DotNext_Runtime_InteropServices_MemoryAccess_
-  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.Read(DotNext.Runtime.InteropServices.MemoryAccess)
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Read(DotNext.Runtime.InteropServices.MemoryAccess)
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Read(DotNext.Runtime.InteropServices.MemoryAccess)
-  nameWithType: Pointer<T>.Read(MemoryAccess)
-  nameWithType.vb: Pointer(Of T).Read(MemoryAccess)
-- uid: DotNext.Runtime.InteropServices.Pointer`1.Read*
-  name: Read
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Read_
-  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.Read
-  isSpec: "True"
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Read
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Read
-  nameWithType: Pointer<T>.Read
-  nameWithType.vb: Pointer(Of T).Read
 - uid: DotNext.Runtime.InteropServices.Pointer`1.ReadFrom(`0[],System.Int64,System.Int64)
   name: ReadFrom(T[], Int64, Int64)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_ReadFrom__0___System_Int64_System_Int64_
@@ -19369,6 +19935,24 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Size
   nameWithType: Pointer<T>.Size
   nameWithType.vb: Pointer(Of T).Size
+- uid: DotNext.Runtime.InteropServices.Pointer`1.Swap(DotNext.Runtime.InteropServices.Pointer{`0})
+  name: Swap(Pointer<T>)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Swap_DotNext_Runtime_InteropServices_Pointer__0__
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.Swap(DotNext.Runtime.InteropServices.Pointer{`0})
+  name.vb: Swap(Pointer(Of T))
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Swap(DotNext.Runtime.InteropServices.Pointer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Swap(DotNext.Runtime.InteropServices.Pointer(Of T))
+  nameWithType: Pointer<T>.Swap(Pointer<T>)
+  nameWithType.vb: Pointer(Of T).Swap(Pointer(Of T))
+- uid: DotNext.Runtime.InteropServices.Pointer`1.Swap*
+  name: Swap
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Swap_
+  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.Swap
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Swap
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Swap
+  nameWithType: Pointer<T>.Swap
+  nameWithType.vb: Pointer(Of T).Swap
 - uid: DotNext.Runtime.InteropServices.Pointer`1.System#IEquatable{DotNext#Runtime#InteropServices#Pointer{T}}#Equals(DotNext.Runtime.InteropServices.Pointer{`0})
   name: IEquatable<Pointer<T>>.Equals(Pointer<T>)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_System_IEquatable_DotNext_Runtime_InteropServices_Pointer_T___Equals_DotNext_Runtime_InteropServices_Pointer__0__
@@ -19422,23 +20006,23 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).ToString
   nameWithType: Pointer<T>.ToString
   nameWithType.vb: Pointer(Of T).ToString
-- uid: DotNext.Runtime.InteropServices.Pointer`1.Write(DotNext.Runtime.InteropServices.MemoryAccess,`0)
-  name: Write(MemoryAccess, T)
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Write_DotNext_Runtime_InteropServices_MemoryAccess__0_
-  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.Write(DotNext.Runtime.InteropServices.MemoryAccess,`0)
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Write(DotNext.Runtime.InteropServices.MemoryAccess, T)
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Write(DotNext.Runtime.InteropServices.MemoryAccess, T)
-  nameWithType: Pointer<T>.Write(MemoryAccess, T)
-  nameWithType.vb: Pointer(Of T).Write(MemoryAccess, T)
-- uid: DotNext.Runtime.InteropServices.Pointer`1.Write*
-  name: Write
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Write_
-  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.Write
+- uid: DotNext.Runtime.InteropServices.Pointer`1.Value
+  name: Value
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Value
+  commentId: P:DotNext.Runtime.InteropServices.Pointer`1.Value
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Value
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Value
+  nameWithType: Pointer<T>.Value
+  nameWithType.vb: Pointer(Of T).Value
+- uid: DotNext.Runtime.InteropServices.Pointer`1.Value*
+  name: Value
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Value_
+  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.Value
   isSpec: "True"
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Write
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Write
-  nameWithType: Pointer<T>.Write
-  nameWithType.vb: Pointer(Of T).Write
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Value
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Value
+  nameWithType: Pointer<T>.Value
+  nameWithType.vb: Pointer(Of T).Value
 - uid: DotNext.Runtime.InteropServices.Pointer`1.WriteTo(`0[],System.Int64,System.Int64)
   name: WriteTo(T[], Int64, Int64)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_WriteTo__0___System_Int64_System_Int64_
@@ -19517,6 +20101,23 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).UnmanagedArray
   nameWithType: UnmanagedArray<T>.UnmanagedArray
   nameWithType.vb: UnmanagedArray(Of T).UnmanagedArray
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Address
+  name: Address
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Address
+  commentId: P:DotNext.Runtime.InteropServices.UnmanagedArray`1.Address
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Address
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Address
+  nameWithType: UnmanagedArray<T>.Address
+  nameWithType.vb: UnmanagedArray(Of T).Address
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Address*
+  name: Address
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Address_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedArray`1.Address
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Address
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Address
+  nameWithType: UnmanagedArray<T>.Address
+  nameWithType.vb: UnmanagedArray(Of T).Address
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.As*
   name: As
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_As_
@@ -19535,6 +20136,41 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).As(Of U)()
   nameWithType: UnmanagedArray<T>.As<U>()
   nameWithType.vb: UnmanagedArray(Of T).As(Of U)()
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch(`0)
+  name: BinarySearch(T)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_BinarySearch__0_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch(`0)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.BinarySearch(T)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).BinarySearch(T)
+  nameWithType: UnmanagedArray<T>.BinarySearch(T)
+  nameWithType.vb: UnmanagedArray(Of T).BinarySearch(T)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch(`0,System.Comparison{`0})
+  name: BinarySearch(T, Comparison<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_BinarySearch__0_System_Comparison__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch(`0,System.Comparison{`0})
+  name.vb: BinarySearch(T, Comparison(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.BinarySearch(T, System.Comparison<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).BinarySearch(T, System.Comparison(Of T))
+  nameWithType: UnmanagedArray<T>.BinarySearch(T, Comparison<T>)
+  nameWithType.vb: UnmanagedArray(Of T).BinarySearch(T, Comparison(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch(`0,System.Int32,System.Int32,System.Comparison{`0})
+  name: BinarySearch(T, Int32, Int32, Comparison<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_BinarySearch__0_System_Int32_System_Int32_System_Comparison__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch(`0,System.Int32,System.Int32,System.Comparison{`0})
+  name.vb: BinarySearch(T, Int32, Int32, Comparison(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.BinarySearch(T, System.Int32, System.Int32, System.Comparison<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).BinarySearch(T, System.Int32, System.Int32, System.Comparison(Of T))
+  nameWithType: UnmanagedArray<T>.BinarySearch(T, Int32, Int32, Comparison<T>)
+  nameWithType.vb: UnmanagedArray(Of T).BinarySearch(T, Int32, Int32, Comparison(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch*
+  name: BinarySearch
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_BinarySearch_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.BinarySearch
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).BinarySearch
+  nameWithType: UnmanagedArray<T>.BinarySearch
+  nameWithType.vb: UnmanagedArray(Of T).BinarySearch
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.BitwiseCompare(`0[])
   name: BitwiseCompare(T[])
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_BitwiseCompare__0___
@@ -19598,15 +20234,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Compare(T(), System.Collections.Generic.IComparer(Of T))
   nameWithType: UnmanagedArray<T>.Compare(T[], IComparer<T>)
   nameWithType.vb: UnmanagedArray(Of T).Compare(T(), IComparer(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Compare(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Collections.Generic.IComparer{`0})
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Compare(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Collections.Generic.IComparer{`0})
   name: Compare(UnmanagedArray<T>, IComparer<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Compare_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Collections_Generic_IComparer__0__
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Compare(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Collections.Generic.IComparer{`0})
-  name.vb: Compare(ByRef UnmanagedArray(Of T), IComparer(Of T))
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Compare_DotNext_Runtime_InteropServices_UnmanagedArray__0__System_Collections_Generic_IComparer__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Compare(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Collections.Generic.IComparer{`0})
+  name.vb: Compare(UnmanagedArray(Of T), IComparer(Of T))
   fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Compare(DotNext.Runtime.InteropServices.UnmanagedArray<T>, System.Collections.Generic.IComparer<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Compare(ByRef DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Collections.Generic.IComparer(Of T))
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Compare(DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Collections.Generic.IComparer(Of T))
   nameWithType: UnmanagedArray<T>.Compare(UnmanagedArray<T>, IComparer<T>)
-  nameWithType.vb: UnmanagedArray(Of T).Compare(ByRef UnmanagedArray(Of T), IComparer(Of T))
+  nameWithType.vb: UnmanagedArray(Of T).Compare(UnmanagedArray(Of T), IComparer(Of T))
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Compare*
   name: Compare
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Compare_
@@ -19667,33 +20303,14 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Dispose
   nameWithType: UnmanagedArray<T>.Dispose
   nameWithType.vb: UnmanagedArray(Of T).Dispose
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address
-  name: IUnmanagedMemory.Address
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Address
-  commentId: P:DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address
-  name.vb: DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-  nameWithType: UnmanagedArray<T>.IUnmanagedMemory.Address
-  nameWithType.vb: UnmanagedArray(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address*
-  name: IUnmanagedMemory.Address
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Address_
-  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedArray`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address
-  isSpec: "True"
-  name.vb: DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-  nameWithType: UnmanagedArray<T>.IUnmanagedMemory.Address
-  nameWithType.vb: UnmanagedArray(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt(System.UInt32)
-  name: ElementAt(UInt32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_System_UInt32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt(System.UInt32)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.ElementAt(System.UInt32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).ElementAt(System.UInt32)
-  nameWithType: UnmanagedArray<T>.ElementAt(UInt32)
-  nameWithType.vb: UnmanagedArray(Of T).ElementAt(UInt32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt(System.Int32)
+  name: ElementAt(Int32)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_System_Int32_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt(System.Int32)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.ElementAt(System.Int32)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).ElementAt(System.Int32)
+  nameWithType: UnmanagedArray<T>.ElementAt(Int32)
+  nameWithType.vb: UnmanagedArray(Of T).ElementAt(Int32)
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt*
   name: ElementAt
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_
@@ -19712,15 +20329,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Equals(T(), System.Collections.Generic.IEqualityComparer(Of T))
   nameWithType: UnmanagedArray<T>.Equals(T[], IEqualityComparer<T>)
   nameWithType.vb: UnmanagedArray(Of T).Equals(T(), IEqualityComparer(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Collections.Generic.IEqualityComparer{`0})
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Collections.Generic.IEqualityComparer{`0})
   name: Equals(UnmanagedArray<T>, IEqualityComparer<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Collections_Generic_IEqualityComparer__0__
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Collections.Generic.IEqualityComparer{`0})
-  name.vb: Equals(ByRef UnmanagedArray(Of T), IEqualityComparer(Of T))
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals_DotNext_Runtime_InteropServices_UnmanagedArray__0__System_Collections_Generic_IEqualityComparer__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Collections.Generic.IEqualityComparer{`0})
+  name.vb: Equals(UnmanagedArray(Of T), IEqualityComparer(Of T))
   fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Equals(DotNext.Runtime.InteropServices.UnmanagedArray<T>, System.Collections.Generic.IEqualityComparer<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Equals(ByRef DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Collections.Generic.IEqualityComparer(Of T))
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Equals(DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Collections.Generic.IEqualityComparer(Of T))
   nameWithType: UnmanagedArray<T>.Equals(UnmanagedArray<T>, IEqualityComparer<T>)
-  nameWithType.vb: UnmanagedArray(Of T).Equals(ByRef UnmanagedArray(Of T), IEqualityComparer(Of T))
+  nameWithType.vb: UnmanagedArray(Of T).Equals(UnmanagedArray(Of T), IEqualityComparer(Of T))
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Equals_System_Object_
@@ -19747,6 +20364,78 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Equals(Of U)(DotNext.Runtime.InteropServices.UnmanagedArray(Of U))
   nameWithType: UnmanagedArray<T>.Equals<U>(UnmanagedArray<U>)
   nameWithType.vb: UnmanagedArray(Of T).Equals(Of U)(UnmanagedArray(Of U))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0})
+  name: Find(Predicate<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0})
+  name.vb: Find(Predicate(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Find(System.Predicate<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Find(System.Predicate(Of T))
+  nameWithType: UnmanagedArray<T>.Find(Predicate<T>)
+  nameWithType.vb: UnmanagedArray(Of T).Find(Predicate(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int32)
+  name: Find(Predicate<T>, Int32)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int32_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int32)
+  name.vb: Find(Predicate(Of T), Int32)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Find(System.Predicate<T>, System.Int32)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Find(System.Predicate(Of T), System.Int32)
+  nameWithType: UnmanagedArray<T>.Find(Predicate<T>, Int32)
+  nameWithType.vb: UnmanagedArray(Of T).Find(Predicate(Of T), Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int32,System.Int32)
+  name: Find(Predicate<T>, Int32, Int32)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int32_System_Int32_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int32,System.Int32)
+  name.vb: Find(Predicate(Of T), Int32, Int32)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Find(System.Predicate<T>, System.Int32, System.Int32)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Find(System.Predicate(Of T), System.Int32, System.Int32)
+  nameWithType: UnmanagedArray<T>.Find(Predicate<T>, Int32, Int32)
+  nameWithType.vb: UnmanagedArray(Of T).Find(Predicate(Of T), Int32, Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Find*
+  name: Find
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedArray`1.Find
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Find
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Find
+  nameWithType: UnmanagedArray<T>.Find
+  nameWithType.vb: UnmanagedArray(Of T).Find
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0})
+  name: FindLast(Predicate<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0})
+  name.vb: FindLast(Predicate(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.FindLast(System.Predicate<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).FindLast(System.Predicate(Of T))
+  nameWithType: UnmanagedArray<T>.FindLast(Predicate<T>)
+  nameWithType.vb: UnmanagedArray(Of T).FindLast(Predicate(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int32)
+  name: FindLast(Predicate<T>, Int32)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int32_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int32)
+  name.vb: FindLast(Predicate(Of T), Int32)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.FindLast(System.Predicate<T>, System.Int32)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).FindLast(System.Predicate(Of T), System.Int32)
+  nameWithType: UnmanagedArray<T>.FindLast(Predicate<T>, Int32)
+  nameWithType.vb: UnmanagedArray(Of T).FindLast(Predicate(Of T), Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int32,System.Int32)
+  name: FindLast(Predicate<T>, Int32, Int32)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int32_System_Int32_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int32,System.Int32)
+  name.vb: FindLast(Predicate(Of T), Int32, Int32)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.FindLast(System.Predicate<T>, System.Int32, System.Int32)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).FindLast(System.Predicate(Of T), System.Int32, System.Int32)
+  nameWithType: UnmanagedArray<T>.FindLast(Predicate<T>, Int32, Int32)
+  nameWithType.vb: UnmanagedArray(Of T).FindLast(Predicate(Of T), Int32, Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast*
+  name: FindLast
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.FindLast
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).FindLast
+  nameWithType: UnmanagedArray<T>.FindLast
+  nameWithType.vb: UnmanagedArray(Of T).FindLast
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.GetEnumerator
   name: GetEnumerator()
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_GetEnumerator
@@ -19869,6 +20558,49 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Handle.ReleaseHandle
   nameWithType: UnmanagedArray<T>.Handle.ReleaseHandle
   nameWithType.vb: UnmanagedArray(Of T).Handle.ReleaseHandle
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0)
+  name: IndexOf(T)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.IndexOf(T)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).IndexOf(T)
+  nameWithType: UnmanagedArray<T>.IndexOf(T)
+  nameWithType.vb: UnmanagedArray(Of T).IndexOf(T)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32)
+  name: IndexOf(T, Int32)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.IndexOf(T, System.Int32)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).IndexOf(T, System.Int32)
+  nameWithType: UnmanagedArray<T>.IndexOf(T, Int32)
+  nameWithType.vb: UnmanagedArray(Of T).IndexOf(T, Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
+  name: IndexOf(T, Int32, IEqualityComparer<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32_System_Collections_Generic_IEqualityComparer__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
+  name.vb: IndexOf(T, Int32, IEqualityComparer(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.IndexOf(T, System.Int32, System.Collections.Generic.IEqualityComparer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).IndexOf(T, System.Int32, System.Collections.Generic.IEqualityComparer(Of T))
+  nameWithType: UnmanagedArray<T>.IndexOf(T, Int32, IEqualityComparer<T>)
+  nameWithType.vb: UnmanagedArray(Of T).IndexOf(T, Int32, IEqualityComparer(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
+  name: IndexOf(T, Int32, Int32, IEqualityComparer<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32_System_Int32_System_Collections_Generic_IEqualityComparer__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
+  name.vb: IndexOf(T, Int32, Int32, IEqualityComparer(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.IndexOf(T, System.Int32, System.Int32, System.Collections.Generic.IEqualityComparer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).IndexOf(T, System.Int32, System.Int32, System.Collections.Generic.IEqualityComparer(Of T))
+  nameWithType: UnmanagedArray<T>.IndexOf(T, Int32, Int32, IEqualityComparer<T>)
+  nameWithType.vb: UnmanagedArray(Of T).IndexOf(T, Int32, Int32, IEqualityComparer(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf*
+  name: IndexOf
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.IndexOf
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).IndexOf
+  nameWithType: UnmanagedArray<T>.IndexOf
+  nameWithType.vb: UnmanagedArray(Of T).IndexOf
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Item(System.Int32)
   name: Item[Int32]
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Item_System_Int32_
@@ -19878,15 +20610,6 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Item(System.Int32)
   nameWithType: UnmanagedArray<T>.Item[Int32]
   nameWithType.vb: UnmanagedArray(Of T).Item(Int32)
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Item(System.Int64)
-  name: Item[Int64]
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Item_System_Int64_
-  commentId: P:DotNext.Runtime.InteropServices.UnmanagedArray`1.Item(System.Int64)
-  name.vb: Item(Int64)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Item[System.Int64]
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Item(System.Int64)
-  nameWithType: UnmanagedArray<T>.Item[Int64]
-  nameWithType.vb: UnmanagedArray(Of T).Item(Int64)
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Item*
   name: Item
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Item_
@@ -19896,6 +20619,49 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Item
   nameWithType: UnmanagedArray<T>.Item
   nameWithType.vb: UnmanagedArray(Of T).Item
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0)
+  name: LastIndexOf(T)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.LastIndexOf(T)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).LastIndexOf(T)
+  nameWithType: UnmanagedArray<T>.LastIndexOf(T)
+  nameWithType.vb: UnmanagedArray(Of T).LastIndexOf(T)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32)
+  name: LastIndexOf(T, Int32)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.LastIndexOf(T, System.Int32)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).LastIndexOf(T, System.Int32)
+  nameWithType: UnmanagedArray<T>.LastIndexOf(T, Int32)
+  nameWithType.vb: UnmanagedArray(Of T).LastIndexOf(T, Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
+  name: LastIndexOf(T, Int32, IEqualityComparer<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32_System_Collections_Generic_IEqualityComparer__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
+  name.vb: LastIndexOf(T, Int32, IEqualityComparer(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.LastIndexOf(T, System.Int32, System.Collections.Generic.IEqualityComparer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).LastIndexOf(T, System.Int32, System.Collections.Generic.IEqualityComparer(Of T))
+  nameWithType: UnmanagedArray<T>.LastIndexOf(T, Int32, IEqualityComparer<T>)
+  nameWithType.vb: UnmanagedArray(Of T).LastIndexOf(T, Int32, IEqualityComparer(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
+  name: LastIndexOf(T, Int32, Int32, IEqualityComparer<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32_System_Int32_System_Collections_Generic_IEqualityComparer__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
+  name.vb: LastIndexOf(T, Int32, Int32, IEqualityComparer(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.LastIndexOf(T, System.Int32, System.Int32, System.Collections.Generic.IEqualityComparer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).LastIndexOf(T, System.Int32, System.Int32, System.Collections.Generic.IEqualityComparer(Of T))
+  nameWithType: UnmanagedArray<T>.LastIndexOf(T, Int32, Int32, IEqualityComparer<T>)
+  nameWithType.vb: UnmanagedArray(Of T).LastIndexOf(T, Int32, Int32, IEqualityComparer(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf*
+  name: LastIndexOf
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.LastIndexOf
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).LastIndexOf
+  nameWithType: UnmanagedArray<T>.LastIndexOf
+  nameWithType.vb: UnmanagedArray(Of T).LastIndexOf
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Length
   name: Length
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Length
@@ -19913,24 +20679,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Length
   nameWithType: UnmanagedArray<T>.Length
   nameWithType.vb: UnmanagedArray(Of T).Length
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int32)
   name: Addition(UnmanagedArray<T>, Int32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Int32)
-  name.vb: Addition(ByRef UnmanagedArray(Of T), Int32)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_DotNext_Runtime_InteropServices_UnmanagedArray__0__System_Int32_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int32)
+  name.vb: Addition(UnmanagedArray(Of T), Int32)
   fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Addition(DotNext.Runtime.InteropServices.UnmanagedArray<T>, System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Addition(ByRef DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Int32)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Addition(DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Int32)
   nameWithType: UnmanagedArray<T>.Addition(UnmanagedArray<T>, Int32)
-  nameWithType.vb: UnmanagedArray(Of T).Addition(ByRef UnmanagedArray(Of T), Int32)
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Int64)
-  name: Addition(UnmanagedArray<T>, Int64)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Int64_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Int64)
-  name.vb: Addition(ByRef UnmanagedArray(Of T), Int64)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Addition(DotNext.Runtime.InteropServices.UnmanagedArray<T>, System.Int64)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Addition(ByRef DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Int64)
-  nameWithType: UnmanagedArray<T>.Addition(UnmanagedArray<T>, Int64)
-  nameWithType.vb: UnmanagedArray(Of T).Addition(ByRef UnmanagedArray(Of T), Int64)
+  nameWithType.vb: UnmanagedArray(Of T).Addition(UnmanagedArray(Of T), Int32)
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition*
   name: Addition
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_
@@ -19940,15 +20697,24 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Addition
   nameWithType: UnmanagedArray<T>.Addition
   nameWithType.vb: UnmanagedArray(Of T).Addition
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray{`0},DotNext.Runtime.InteropServices.Pointer{`0})
+  name: Equality(UnmanagedArray<T>, Pointer<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedArray__0__DotNext_Runtime_InteropServices_Pointer__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray{`0},DotNext.Runtime.InteropServices.Pointer{`0})
+  name.vb: Equality(UnmanagedArray(Of T), Pointer(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Equality(DotNext.Runtime.InteropServices.UnmanagedArray<T>, DotNext.Runtime.InteropServices.Pointer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Equality(DotNext.Runtime.InteropServices.UnmanagedArray(Of T), DotNext.Runtime.InteropServices.Pointer(Of T))
+  nameWithType: UnmanagedArray<T>.Equality(UnmanagedArray<T>, Pointer<T>)
+  nameWithType.vb: UnmanagedArray(Of T).Equality(UnmanagedArray(Of T), Pointer(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray{`0},DotNext.Runtime.InteropServices.UnmanagedArray{`0})
   name: Equality(UnmanagedArray<T>, UnmanagedArray<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedArray__0___DotNext_Runtime_InteropServices_UnmanagedArray__0___
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)
-  name.vb: Equality(ByRef UnmanagedArray(Of T), ByRef UnmanagedArray(Of T))
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedArray__0__DotNext_Runtime_InteropServices_UnmanagedArray__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray{`0},DotNext.Runtime.InteropServices.UnmanagedArray{`0})
+  name.vb: Equality(UnmanagedArray(Of T), UnmanagedArray(Of T))
   fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Equality(DotNext.Runtime.InteropServices.UnmanagedArray<T>, DotNext.Runtime.InteropServices.UnmanagedArray<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Equality(ByRef DotNext.Runtime.InteropServices.UnmanagedArray(Of T), ByRef DotNext.Runtime.InteropServices.UnmanagedArray(Of T))
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Equality(DotNext.Runtime.InteropServices.UnmanagedArray(Of T), DotNext.Runtime.InteropServices.UnmanagedArray(Of T))
   nameWithType: UnmanagedArray<T>.Equality(UnmanagedArray<T>, UnmanagedArray<T>)
-  nameWithType.vb: UnmanagedArray(Of T).Equality(ByRef UnmanagedArray(Of T), ByRef UnmanagedArray(Of T))
+  nameWithType.vb: UnmanagedArray(Of T).Equality(UnmanagedArray(Of T), UnmanagedArray(Of T))
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality*
   name: Equality
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_
@@ -19958,24 +20724,24 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Equality
   nameWithType: UnmanagedArray<T>.Equality
   nameWithType.vb: UnmanagedArray(Of T).Equality
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)~DotNext.Runtime.InteropServices.Pointer{`0}
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray{`0})~DotNext.Runtime.InteropServices.Pointer{`0}
   name: Implicit(UnmanagedArray<T> to Pointer<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedArray__0____DotNext_Runtime_InteropServices_Pointer__0_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)~DotNext.Runtime.InteropServices.Pointer{`0}
-  name.vb: Widening(ByRef UnmanagedArray(Of T) to Pointer(Of T))
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedArray__0___DotNext_Runtime_InteropServices_Pointer__0_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray{`0})~DotNext.Runtime.InteropServices.Pointer{`0}
+  name.vb: Widening(UnmanagedArray(Of T) to Pointer(Of T))
   fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Implicit(DotNext.Runtime.InteropServices.UnmanagedArray<T> to DotNext.Runtime.InteropServices.Pointer<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Widening(ByRef DotNext.Runtime.InteropServices.UnmanagedArray(Of T) to DotNext.Runtime.InteropServices.Pointer(Of T))
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Widening(DotNext.Runtime.InteropServices.UnmanagedArray(Of T) to DotNext.Runtime.InteropServices.Pointer(Of T))
   nameWithType: UnmanagedArray<T>.Implicit(UnmanagedArray<T> to Pointer<T>)
-  nameWithType.vb: UnmanagedArray(Of T).Widening(ByRef UnmanagedArray(Of T) to Pointer(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)~System.ReadOnlySpan{`0}
-  name: Implicit(UnmanagedArray<T> to ReadOnlySpan<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedArray__0____System_ReadOnlySpan__0_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)~System.ReadOnlySpan{`0}
-  name.vb: Widening(ByRef UnmanagedArray(Of T) to ReadOnlySpan(Of T))
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Implicit(DotNext.Runtime.InteropServices.UnmanagedArray<T> to System.ReadOnlySpan<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Widening(ByRef DotNext.Runtime.InteropServices.UnmanagedArray(Of T) to System.ReadOnlySpan(Of T))
-  nameWithType: UnmanagedArray<T>.Implicit(UnmanagedArray<T> to ReadOnlySpan<T>)
-  nameWithType.vb: UnmanagedArray(Of T).Widening(ByRef UnmanagedArray(Of T) to ReadOnlySpan(Of T))
+  nameWithType.vb: UnmanagedArray(Of T).Widening(UnmanagedArray(Of T) to Pointer(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray{`0})~System.Span{`0}
+  name: Implicit(UnmanagedArray<T> to Span<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Span__0_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedArray{`0})~System.Span{`0}
+  name.vb: Widening(UnmanagedArray(Of T) to Span(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Implicit(DotNext.Runtime.InteropServices.UnmanagedArray<T> to System.Span<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Widening(DotNext.Runtime.InteropServices.UnmanagedArray(Of T) to System.Span(Of T))
+  nameWithType: UnmanagedArray<T>.Implicit(UnmanagedArray<T> to Span<T>)
+  nameWithType.vb: UnmanagedArray(Of T).Widening(UnmanagedArray(Of T) to Span(Of T))
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Implicit*
   name: Implicit
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Implicit_
@@ -19986,15 +20752,24 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Widening
   nameWithType: UnmanagedArray<T>.Implicit
   nameWithType.vb: UnmanagedArray(Of T).Widening
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray{`0},DotNext.Runtime.InteropServices.Pointer{`0})
+  name: Inequality(UnmanagedArray<T>, Pointer<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedArray__0__DotNext_Runtime_InteropServices_Pointer__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray{`0},DotNext.Runtime.InteropServices.Pointer{`0})
+  name.vb: Inequality(UnmanagedArray(Of T), Pointer(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Inequality(DotNext.Runtime.InteropServices.UnmanagedArray<T>, DotNext.Runtime.InteropServices.Pointer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Inequality(DotNext.Runtime.InteropServices.UnmanagedArray(Of T), DotNext.Runtime.InteropServices.Pointer(Of T))
+  nameWithType: UnmanagedArray<T>.Inequality(UnmanagedArray<T>, Pointer<T>)
+  nameWithType.vb: UnmanagedArray(Of T).Inequality(UnmanagedArray(Of T), Pointer(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray{`0},DotNext.Runtime.InteropServices.UnmanagedArray{`0})
   name: Inequality(UnmanagedArray<T>, UnmanagedArray<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedArray__0___DotNext_Runtime_InteropServices_UnmanagedArray__0___
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,DotNext.Runtime.InteropServices.UnmanagedArray{`0}@)
-  name.vb: Inequality(ByRef UnmanagedArray(Of T), ByRef UnmanagedArray(Of T))
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedArray__0__DotNext_Runtime_InteropServices_UnmanagedArray__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray{`0},DotNext.Runtime.InteropServices.UnmanagedArray{`0})
+  name.vb: Inequality(UnmanagedArray(Of T), UnmanagedArray(Of T))
   fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Inequality(DotNext.Runtime.InteropServices.UnmanagedArray<T>, DotNext.Runtime.InteropServices.UnmanagedArray<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Inequality(ByRef DotNext.Runtime.InteropServices.UnmanagedArray(Of T), ByRef DotNext.Runtime.InteropServices.UnmanagedArray(Of T))
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Inequality(DotNext.Runtime.InteropServices.UnmanagedArray(Of T), DotNext.Runtime.InteropServices.UnmanagedArray(Of T))
   nameWithType: UnmanagedArray<T>.Inequality(UnmanagedArray<T>, UnmanagedArray<T>)
-  nameWithType.vb: UnmanagedArray(Of T).Inequality(ByRef UnmanagedArray(Of T), ByRef UnmanagedArray(Of T))
+  nameWithType.vb: UnmanagedArray(Of T).Inequality(UnmanagedArray(Of T), UnmanagedArray(Of T))
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality*
   name: Inequality
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_
@@ -20031,15 +20806,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray(Of T))
   nameWithType: UnmanagedArray<T>.ReadFrom(UnmanagedArray<T>)
   nameWithType.vb: UnmanagedArray(Of T).ReadFrom(UnmanagedArray(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int32,System.Int32)
-  name: ReadFrom(UnmanagedArray<T>, Int32, Int32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_DotNext_Runtime_InteropServices_UnmanagedArray__0__System_Int32_System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int32,System.Int32)
-  name.vb: ReadFrom(UnmanagedArray(Of T), Int32, Int32)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray<T>, System.Int32, System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Int32, System.Int32)
-  nameWithType: UnmanagedArray<T>.ReadFrom(UnmanagedArray<T>, Int32, Int32)
-  nameWithType.vb: UnmanagedArray(Of T).ReadFrom(UnmanagedArray(Of T), Int32, Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int64,System.Int64)
+  name: ReadFrom(UnmanagedArray<T>, Int64, Int64)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_DotNext_Runtime_InteropServices_UnmanagedArray__0__System_Int64_System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int64,System.Int64)
+  name.vb: ReadFrom(UnmanagedArray(Of T), Int64, Int64)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray<T>, System.Int64, System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).ReadFrom(DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Int64, System.Int64)
+  nameWithType: UnmanagedArray<T>.ReadFrom(UnmanagedArray<T>, Int64, Int64)
+  nameWithType.vb: UnmanagedArray(Of T).ReadFrom(UnmanagedArray(Of T), Int64, Int64)
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.ReadFrom*
   name: ReadFrom
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_ReadFrom_
@@ -20066,6 +20841,41 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Size
   nameWithType: UnmanagedArray<T>.Size
   nameWithType.vb: UnmanagedArray(Of T).Size
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort
+  name: Sort()
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Sort
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Sort()
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Sort()
+  nameWithType: UnmanagedArray<T>.Sort()
+  nameWithType.vb: UnmanagedArray(Of T).Sort()
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort(System.Comparison{`0})
+  name: Sort(Comparison<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Sort_System_Comparison__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort(System.Comparison{`0})
+  name.vb: Sort(Comparison(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Sort(System.Comparison<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Sort(System.Comparison(Of T))
+  nameWithType: UnmanagedArray<T>.Sort(Comparison<T>)
+  nameWithType.vb: UnmanagedArray(Of T).Sort(Comparison(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort(System.Int32,System.Int32,System.Comparison{`0})
+  name: Sort(Int32, Int32, Comparison<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Sort_System_Int32_System_Int32_System_Comparison__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort(System.Int32,System.Int32,System.Comparison{`0})
+  name.vb: Sort(Int32, Int32, Comparison(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Sort(System.Int32, System.Int32, System.Comparison<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Sort(System.Int32, System.Int32, System.Comparison(Of T))
+  nameWithType: UnmanagedArray<T>.Sort(Int32, Int32, Comparison<T>)
+  nameWithType.vb: UnmanagedArray(Of T).Sort(Int32, Int32, Comparison(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort*
+  name: Sort
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Sort_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Sort
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Sort
+  nameWithType: UnmanagedArray<T>.Sort
+  nameWithType.vb: UnmanagedArray(Of T).Sort
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.System#Collections#Generic#IEnumerable{T}#GetEnumerator
   name: IEnumerable<T>.GetEnumerator()
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_System_Collections_Generic_IEnumerable_T__GetEnumerator
@@ -20212,15 +21022,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).WriteTo(DotNext.Runtime.InteropServices.UnmanagedArray(Of T))
   nameWithType: UnmanagedArray<T>.WriteTo(UnmanagedArray<T>)
   nameWithType.vb: UnmanagedArray(Of T).WriteTo(UnmanagedArray(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Int32,System.Int32)
-  name: WriteTo(UnmanagedArray<T>, Int32, Int32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_DotNext_Runtime_InteropServices_UnmanagedArray__0___System_Int32_System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo(DotNext.Runtime.InteropServices.UnmanagedArray{`0}@,System.Int32,System.Int32)
-  name.vb: WriteTo(ByRef UnmanagedArray(Of T), Int32, Int32)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.WriteTo(DotNext.Runtime.InteropServices.UnmanagedArray<T>, System.Int32, System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).WriteTo(ByRef DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Int32, System.Int32)
-  nameWithType: UnmanagedArray<T>.WriteTo(UnmanagedArray<T>, Int32, Int32)
-  nameWithType.vb: UnmanagedArray(Of T).WriteTo(ByRef UnmanagedArray(Of T), Int32, Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int64,System.Int64)
+  name: WriteTo(UnmanagedArray<T>, Int64, Int64)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_DotNext_Runtime_InteropServices_UnmanagedArray__0__System_Int64_System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int64,System.Int64)
+  name.vb: WriteTo(UnmanagedArray(Of T), Int64, Int64)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.WriteTo(DotNext.Runtime.InteropServices.UnmanagedArray<T>, System.Int64, System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).WriteTo(DotNext.Runtime.InteropServices.UnmanagedArray(Of T), System.Int64, System.Int64)
+  nameWithType: UnmanagedArray<T>.WriteTo(UnmanagedArray<T>, Int64, Int64)
+  nameWithType.vb: UnmanagedArray(Of T).WriteTo(UnmanagedArray(Of T), Int64, Int64)
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.WriteTo*
   name: WriteTo
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_WriteTo_
@@ -20239,6 +21049,23 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T)
   nameWithType: UnmanagedMemory<T>
   nameWithType.vb: UnmanagedMemory(Of T)
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.Address
+  name: Address
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_Address
+  commentId: P:DotNext.Runtime.InteropServices.UnmanagedMemory`1.Address
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.Address
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).Address
+  nameWithType: UnmanagedMemory<T>.Address
+  nameWithType.vb: UnmanagedMemory(Of T).Address
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.Address*
+  name: Address
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_Address_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedMemory`1.Address
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.Address
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).Address
+  nameWithType: UnmanagedMemory<T>.Address
+  nameWithType.vb: UnmanagedMemory(Of T).Address
 - uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.Alloc
   name: Alloc()
   href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_Alloc
@@ -20378,25 +21205,6 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).Dispose
   nameWithType: UnmanagedMemory<T>.Dispose
   nameWithType.vb: UnmanagedMemory(Of T).Dispose
-- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address
-  name: IUnmanagedMemory.Address
-  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Address
-  commentId: P:DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address
-  name.vb: DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-  nameWithType: UnmanagedMemory<T>.IUnmanagedMemory.Address
-  nameWithType.vb: UnmanagedMemory(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address*
-  name: IUnmanagedMemory.Address
-  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Address_
-  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Address
-  isSpec: "True"
-  name.vb: DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
-  nameWithType: UnmanagedMemory<T>.IUnmanagedMemory.Address
-  nameWithType.vb: UnmanagedMemory(Of T).DotNext.Runtime.InteropServices.IUnmanagedMemory.Address
 - uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.DotNext#Runtime#InteropServices#IUnmanagedMemory#Size
   name: IUnmanagedMemory.Size
   href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_DotNext_Runtime_InteropServices_IUnmanagedMemory_Size
@@ -20618,15 +21426,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).Widening(DotNext.Runtime.InteropServices.UnmanagedMemory(Of T) to DotNext.Runtime.InteropServices.Pointer(Of T))
   nameWithType: UnmanagedMemory<T>.Implicit(UnmanagedMemory<T> to Pointer<T>)
   nameWithType.vb: UnmanagedMemory(Of T).Widening(UnmanagedMemory(Of T) to Pointer(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory{`0})~System.ReadOnlySpan{`0}
-  name: Implicit(UnmanagedMemory<T> to ReadOnlySpan<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__0___System_ReadOnlySpan__0_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory{`0})~System.ReadOnlySpan{`0}
-  name.vb: Widening(UnmanagedMemory(Of T) to ReadOnlySpan(Of T))
-  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory<T> to System.ReadOnlySpan<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).Widening(DotNext.Runtime.InteropServices.UnmanagedMemory(Of T) to System.ReadOnlySpan(Of T))
-  nameWithType: UnmanagedMemory<T>.Implicit(UnmanagedMemory<T> to ReadOnlySpan<T>)
-  nameWithType.vb: UnmanagedMemory(Of T).Widening(UnmanagedMemory(Of T) to ReadOnlySpan(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory{`0})~System.Span{`0}
+  name: Implicit(UnmanagedMemory<T> to Span<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Implicit_DotNext_Runtime_InteropServices_UnmanagedMemory__0___System_Span__0_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory{`0})~System.Span{`0}
+  name.vb: Widening(UnmanagedMemory(Of T) to Span(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.Implicit(DotNext.Runtime.InteropServices.UnmanagedMemory<T> to System.Span<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).Widening(DotNext.Runtime.InteropServices.UnmanagedMemory(Of T) to System.Span(Of T))
+  nameWithType: UnmanagedMemory<T>.Implicit(UnmanagedMemory<T> to Span<T>)
+  nameWithType.vb: UnmanagedMemory(Of T).Widening(UnmanagedMemory(Of T) to Span(Of T))
 - uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.op_Implicit*
   name: Implicit
   href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_op_Implicit_
