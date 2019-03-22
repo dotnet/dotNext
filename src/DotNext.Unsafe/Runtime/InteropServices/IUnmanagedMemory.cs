@@ -40,6 +40,6 @@ namespace DotNext.Runtime.InteropServices
     {
         Pointer<T> Pointer { get; }
 
-        ReadOnlySpan<T> Span { get; }
+        Span<T> Span { get; }
     }
 }

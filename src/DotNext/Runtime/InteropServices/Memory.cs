@@ -503,7 +503,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="first">A pointer to the first memory block.</param>
         /// <param name="second">A pointer to the second memory block.</param>
         /// <param name="length">Length of first and second memory blocks, in bytes.</param>
-        /// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
+        /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
         [CLSCompliant(false)]
         [Obsolete("Use overloaded method with long length")]
         public unsafe static bool Equals(void* first, void* second, int length) => Equals(first, second, (long)length);
@@ -514,7 +514,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="first">A pointer to the first memory block.</param>
 		/// <param name="second">A pointer to the second memory block.</param>
 		/// <param name="length">Length of first and second memory blocks, in bytes.</param>
-		/// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
+		/// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
 		[CLSCompliant(false)]
         public unsafe static bool Equals(void* first, void* second, long length) => Equals(new IntPtr(first), new IntPtr(second), length);
 
@@ -524,7 +524,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="first">A pointer to the first memory block.</param>
         /// <param name="second">A pointer to the second memory block.</param>
         /// <param name="length">Length of first and second memory blocks, in bytes.</param>
-        /// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
+        /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
         [Obsolete("Use overloaded method with long length")]
         public unsafe static bool Equals(IntPtr first, IntPtr second, int length)
 			=> Equals(first.ToPointer(), second.ToPointer(), length);
@@ -535,7 +535,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="first">A pointer to the first memory block.</param>
         /// <param name="second">A pointer to the second memory block.</param>
         /// <param name="length">Length of first and second memory blocks, in bytes.</param>
-        /// <returns>True, if both memory blocks have the same data; otherwise, false.</returns>
+        /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
         public unsafe static bool Equals(IntPtr first, IntPtr second, long length)
         {
             if (first == second)

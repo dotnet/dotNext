@@ -51,7 +51,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public void SetMemberTest()
         {
-            dynamic expr = new UniversalExpression(new MyClass().AsConst());
+            dynamic expr = new UniversalExpression(new MyClass() { Field = null }.AsConst());
             expr = expr.Field = "value";
             Expression staticExpr = expr;
             IsAssignableFrom<BinaryExpression>(staticExpr);

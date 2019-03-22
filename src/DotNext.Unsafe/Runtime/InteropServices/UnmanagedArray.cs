@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -136,15 +135,14 @@ namespace DotNext.Runtime.InteropServices
 
         IntPtr IUnmanagedMemory.Address => pointer.Address;
 
-        ReadOnlySpan<T> IUnmanagedMemory<T>.Span => this;
+        Span<T> IUnmanagedMemory<T>.Span => this;
 
         /// <summary>
         /// Gets pointer to array element.
         /// </summary>
         /// <param name="index">Index of the element.</param>
         /// <returns>Pointer to array element.</returns>
-        [CLSCompliant(false)]
-        public Pointer<T> ElementAt(uint index)
+        public Pointer<T> ElementAt(int index)
             => index >= 0 && index < Length ?
             pointer + index :
             throw new IndexOutOfRangeException(ExceptionMessages.InvalidIndexValue(Length));
@@ -158,21 +156,8 @@ namespace DotNext.Runtime.InteropServices
 		/// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
 		public T this[int index]
 		{
-			get => this[(long)index];
-			set => this[(long)index] = value;
-		}
-
-		/// <summary>
-		/// Gets or sets array element.
-		/// </summary>
-		/// <param name="index">Element index.</param>
-		/// <returns>Array element.</returns>
-		/// <exception cref="NullPointerException">This array is not allocated.</exception>
-		/// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
-		public T this[long index]
-		{
-			get => ElementAt(checked((uint)index)).Read(MemoryAccess.Aligned);
-			set => ElementAt(checked((uint)index)).Write(MemoryAccess.Aligned, value);
+            get => ElementAt(index).Read(MemoryAccess.Aligned);
+            set => ElementAt(index).Write(MemoryAccess.Aligned, value);
 		}
 
         /// <summary>
@@ -193,36 +178,84 @@ namespace DotNext.Runtime.InteropServices
                 pointer.As<byte>() + offset :
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidOffsetValue(Pointer<T>.Size));
 
-		public int WriteTo(in UnmanagedArray<T> destination, int offset, int length)
+        /// <summary>
+        /// Copies elements from this array into other array. 
+        /// </summary>
+        /// <param name="destination">The destination array.</param>
+        /// <param name="offset">The position in the destination array from which copying begins.</param>
+        /// <param name="count">The number of elements to be copied.</param>
+        /// <returns>Actual number of copied elements.</returns>
+		public long WriteTo(UnmanagedArray<T> destination, long offset, long count)
 		{
 			if (pointer.IsNull)
 				throw new NullPointerException();
 			else if (destination.pointer.IsNull)
 				throw new ArgumentNullException(nameof(destination));
-			else if (length < 0)
+			else if (count < 0)
 				throw new IndexOutOfRangeException();
-			else if (destination.Length == 0 || (length + offset) >= destination.Length)
+			else if (destination.Length == 0 || (count + offset) >= destination.Length)
 				return 0;
-			pointer.WriteTo(destination.pointer + offset, length);
-			return length;
+			pointer.WriteTo(destination.pointer + offset, count);
+			return count;
 		}
 
-		public int WriteTo(UnmanagedArray<T> destination) => WriteTo(destination, 0, destination.Length);
+        /// <summary>
+        /// Copies elements from this array to the destination array,
+        /// </summary>
+        /// <param name="destination">The destination array.</param>
+        /// <returns>The actual number of copied elements.</returns>
+		public long WriteTo(UnmanagedArray<T> destination) => WriteTo(destination, 0, destination.Length);
 
-		public long WriteTo(T[] destination, long offset, long length)
-			=> pointer.WriteTo(destination, offset, Math.Min(length, Length));
+        /// <summary>
+        /// Copies elements from this array to the managed array. 
+        /// </summary>
+        /// <param name="destination">The destination array.</param>
+        /// <param name="offset">The position in the destination array from which copying begins.</param>
+        /// <param name="count">The number of elements to be copied.</param>
+        /// <returns>Actual number of copied elements.</returns>
+		public long WriteTo(T[] destination, long offset, long count)
+			=> pointer.WriteTo(destination, offset, Math.Min(count, Length));
 
+        /// <summary>
+        /// Copies elements from this array to the managed array. 
+        /// </summary>
+        /// <param name="destination">The destination array.</param>
+        /// <returns>Actual number of copied elements.</returns>
 		public long WriteTo(T[] destination) => WriteTo(destination, 0, destination.LongLength);
 
-		public long ReadFrom(T[] source, long offset, long length)
-			=> pointer.ReadFrom(source, offset, Math.Min(length, Length));
+        /// <summary>
+        /// Copies elements from given managed array to the this array. 
+        /// </summary>
+        /// <param name="source">The source array.</param>
+        /// <param name="offset">The position in the source array from which copying begins.</param>
+        /// <param name="count">The number of elements to be copied.</param>
+        /// <returns>Actual number of copied elements.</returns>
+		public long ReadFrom(T[] source, long offset, long count)
+			=> pointer.ReadFrom(source, offset, Math.Min(count, Length));
 
+        /// <summary>
+        /// Copies elements from given managed array to the this array. 
+        /// </summary>
+        /// <param name="source">The source array.</param>
+        /// <returns>Actual number of copied elements.</returns>
 		public long ReadFrom(T[] source) => ReadFrom(source, 0L, source.LongLength);
 
-		public int ReadFrom(UnmanagedArray<T> source, int offset, int length)
-			=> source.WriteTo(this, offset, length);
+        /// <summary>
+        /// Copies elements from given unmanaged array to the this array. 
+        /// </summary>
+        /// <param name="source">The source unmanaged array.</param>
+        /// <param name="offset">The position in the source array from which copying begins.</param>
+        /// <param name="count">The number of elements to be copied.</param>
+        /// <returns>Actual number of copied elements.</returns>
+		public long ReadFrom(UnmanagedArray<T> source, long offset, long count)
+			=> source.WriteTo(this, offset, count);
 
-		public int ReadFrom(UnmanagedArray<T> source) => ReadFrom(source, 0, source.Length);
+        /// <summary>
+        /// Copies elements from given unmanaged array to the this array. 
+        /// </summary>
+        /// <param name="source">The source unmanaged array.</param>
+        /// <returns>Actual number of copied elements.</returns>
+		public long ReadFrom(UnmanagedArray<T> source) => ReadFrom(source, 0, source.Length);
 
         /// <summary>
         /// Reinterprets reference to the unmanaged array.
@@ -267,22 +300,42 @@ namespace DotNext.Runtime.InteropServices
 
 		object ICloneable.Clone() => Copy();
 
+        /// <summary>
+        /// Computes bitwise equality between two blocks of memory.
+        /// </summary>
+        /// <param name="other">The block of memory to be compared.</param>
+        /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
 		public bool BitwiseEquals(Pointer<T> other)
 			=> pointer.BitwiseEquals(other, Length);
 
+        /// <summary>
+        /// Computes bitwise equality between this array and the specified managed array.
+        /// </summary>
+        /// <param name="other">The array to be compared.</param>
+        /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
 		public bool BitwiseEquals(T[] other)
 		{
 			if (other.IsNullOrEmpty())
 				return pointer.IsNull;
-			else if(Length == other.Length)
+			else if(Length == other.LongLength)
 				fixed (T* ptr = other)
 					return BitwiseEquals(ptr);
 			else
 				return false;
 		}
 
+        /// <summary>
+        /// Bitwise comparison of the memory blocks.
+        /// </summary>
+        /// <param name="other">The block of memory to be compared.</param>
+        /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
 		public int BitwiseCompare(Pointer<T> other) => pointer.BitwiseCompare(other, Length);
 
+        /// <summary>
+        /// Bitwise comparison of the memory blocks.
+        /// </summary>
+        /// <param name="other">The array to be compared.</param>
+        /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
 		public int BitwiseCompare(T[] other)
 		{
 			if (other is null)
@@ -296,13 +349,22 @@ namespace DotNext.Runtime.InteropServices
 				return Length.CompareTo(other.Length);
 		}
 
-		public bool Equals<U>(UnmanagedArray<U> other) 
-			where U: unmanaged
-			=> pointer.Equals(other.pointer);
+        /// <summary>
+        /// Determines whether this unmanaged array points to the same memory block as other unmanaged array.
+        /// </summary>
+        /// <typeparam name="U">The type of elements in other unmanaged array.</typeparam>
+        /// <param name="other">The array to be compared.</param>
+        /// <returns><see langword="true"/>, if this unmanaged array points to the same memory block as other unmanaged array; otherwise, <see langword="false"/>.</returns>
+		public bool Equals<U>(UnmanagedArray<U> other) where U: unmanaged => pointer.Equals(other.pointer);
 
         bool IEquatable<UnmanagedArray<T>>.Equals(UnmanagedArray<T> other) => Equals(other);
 
-		public override bool Equals(object other)
+        /// <summary>
+        /// Determines whether this unmanaged array points to the same memory block as other unmanaged array.
+        /// </summary>
+        /// <param name="other">The object of type <see cref="UnmanagedArray{T}"/>, <see cref="IntPtr"/> or <see cref="UIntPtr"/> to be compared.</param>
+        /// <returns><see langword="true"/>, if this unmanaged array points to the same memory block as other unmanaged array; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object other)
 		{
 			switch(other)
 			{
@@ -317,6 +379,13 @@ namespace DotNext.Runtime.InteropServices
 			}
 		}
 
+        /// <summary>
+        /// Determines this array contains the same elements as the given array using
+        /// custom equality check function.
+        /// </summary>
+        /// <param name="other">The array to be compared.</param>
+        /// <param name="comparer">The object implementing equality check logic.</param>
+        /// <returns><see langword="true"/>, if this array contains the same elements as the given array; otherwise, <see langword="false"/>.</returns>
 		public bool Equals(T[] other, IEqualityComparer<T> comparer)
 		{
 			if (other is null)
@@ -332,7 +401,14 @@ namespace DotNext.Runtime.InteropServices
 				return false;
 		}
 
-		public bool Equals(in UnmanagedArray<T> other, IEqualityComparer<T> comparer)
+        /// <summary>
+        /// Determines this array contains the same elements as the given array using
+        /// custom equality check function.
+        /// </summary>
+        /// <param name="other">The array to be compared.</param>
+        /// <param name="comparer">The object implementing equality check logic.</param>
+        /// <returns><see langword="true"/>, if this array contains the same elements as the given array; otherwise, <see langword="false"/>.</returns>
+        public bool Equals(UnmanagedArray<T> other, IEqualityComparer<T> comparer)
 		{
 			if(Length == other.Length)
 			{
@@ -345,6 +421,12 @@ namespace DotNext.Runtime.InteropServices
 				return false;
 		}
 
+        /// <summary>
+        /// Performs comparison between each two elements from this and given array.
+        /// </summary>
+        /// <param name="other">The array to be compared.</param>
+        /// <param name="comparer">The custom comparison logic.</param>
+        /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
 		public int Compare(T[] other, IComparer<T> comparer)
 		{
 			if (other is null)
@@ -360,7 +442,13 @@ namespace DotNext.Runtime.InteropServices
 				return Length.CompareTo(other.Length);
 		}
 
-		public int Compare(in UnmanagedArray<T> other, IComparer<T> comparer)
+        /// <summary>
+        /// Performs comparison between each two elements from this and given array.
+        /// </summary>
+        /// <param name="other">The array to be compared.</param>
+        /// <param name="comparer">The custom comparison logic.</param>
+        /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
+		public int Compare(UnmanagedArray<T> other, IComparer<T> comparer)
 		{
 			if(Length == other.Length)
 			{
@@ -373,32 +461,89 @@ namespace DotNext.Runtime.InteropServices
 				return Length.CompareTo(other.Length);
 		}
 
+        /// <summary>
+        /// Gets enumerator over elements in this array.
+        /// </summary>
+        /// <returns>The enumerator over elements in this array.</returns>
         public Pointer<T>.Enumerator GetEnumerator() => pointer.GetEnumerator(Length);
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <summary>
+        /// Computes the hash code of the unmanaged array address, not of the array content.
+        /// </summary>
+        /// <returns>The hash code of the unmanaged array.</returns>
         public override int GetHashCode() => pointer.GetHashCode();
 
+        /// <summary>
+        /// Returns hexadecimal representation of the unmanaged array address.
+        /// </summary>
+        /// <returns>The hexadecimal representation of the unmanaged array address.</returns>
 		public override string ToString() => new IntPtr(pointer).ToString("X");
 
-		public static implicit operator Pointer<T>(in UnmanagedArray<T> array) => array.pointer;
+        /// <summary>
+        /// Obtains a pointer to the unmanaged array.
+        /// </summary>
+        /// <param name="array">The array.</param>
+		public static implicit operator Pointer<T>(UnmanagedArray<T> array) => array.pointer;
 
-		public static implicit operator ReadOnlySpan<T>(in UnmanagedArray<T> array)
-			=> array.pointer == Memory.NullPtr ? new ReadOnlySpan<T>() : new ReadOnlySpan<T>(array.pointer, array.Length);
+        /// <summary>
+        /// Obtains span to the unmanaged array.
+        /// </summary>
+        /// <param name="array">The unmanaged array.</param>
+		public static implicit operator Span<T>(UnmanagedArray<T> array)
+			=> array.pointer == Memory.NullPtr ? default : new Span<T>(array.pointer, array.Length);
 
-		public static bool operator ==(in UnmanagedArray<T> first, in UnmanagedArray<T> second)
+        /// <summary>
+        /// Determines whether two unmanaged arrays point to the same memory block.
+        /// </summary>
+        /// <param name="first">The first unmanaged array reference to be compared.</param>
+        /// <param name="second">The second unmanaged array reference to be compared.</param>
+        /// <returns><see langword="true"/>, if both unmanaged arrays point to the same memory block.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static bool operator ==(UnmanagedArray<T> first, UnmanagedArray<T> second)
 			=> first.pointer == second.pointer;
 
-		public static bool operator !=(in UnmanagedArray<T> first, in UnmanagedArray<T> second)
+        /// <summary>
+        /// Determines whether two unmanaged arrays point to the different memory blocks.
+        /// </summary>
+        /// <param name="first">The first unmanaged array reference to be compared.</param>
+        /// <param name="second">The second unmanaged array reference to be compared.</param>
+        /// <returns><see langword="true"/>, if both unmanaged arrays point to the different memory blocks.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(UnmanagedArray<T> first, UnmanagedArray<T> second)
 			=> first.pointer != second.pointer;
 
-		public static Pointer<T> operator+(in UnmanagedArray<T> array, int elementIndex)
-			=> array.ElementAt(checked((uint)elementIndex));
+        /// <summary>
+        /// Determines whether two unmanaged arrays point to the same memory block.
+        /// </summary>
+        /// <param name="first">The first unmanaged array reference to be compared.</param>
+        /// <param name="second">The second unmanaged array reference to be compared.</param>
+        /// <returns><see langword="true"/>, if both unmanaged arrays point to the same memory block.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(UnmanagedArray<T> first, Pointer<T> second)
+            => first.pointer == second;
 
-		public static Pointer<T> operator+(in UnmanagedArray<T> array, long elementIndex)
-			=> array.ElementAt(checked((uint)elementIndex));
+        /// <summary>
+        /// Determines whether two unmanaged arrays point to the different memory blocks.
+        /// </summary>
+        /// <param name="first">The first unmanaged array reference to be compared.</param>
+        /// <param name="second">The second unmanaged array reference to be compared.</param>
+        /// <returns><see langword="true"/>, if both unmanaged arrays point to the different memory blocks.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(UnmanagedArray<T> first, Pointer<T> second)
+            => first.pointer != second;
+
+        /// <summary>
+        /// Obtains a pointer to the array element.
+        /// </summary>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="elementIndex">The element index.</param>
+        /// <returns>The pointer to the array element.</returns>
+		public static Pointer<T> operator+(UnmanagedArray<T> array, int elementIndex)
+			=> array.ElementAt(elementIndex);
 
 		private static bool FreeMem(IntPtr memory)
 		{
