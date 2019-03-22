@@ -40,19 +40,21 @@ namespace DotNext.Runtime.InteropServices
             /// <summary>
             /// Pointer to the currently enumerating element.
             /// </summary>
-            public Pointer<T> Pointer => ptr + index; 
+            public Pointer<T> Pointer => ptr + index;
 
             /// <summary>
             /// Current element.
             /// </summary>
-            public T Current => Pointer.Read(MemoryAccess.Default);
-            
+            public T Current => Pointer.Value;
+
             /// <summary>
             /// Adjust pointer.
             /// </summary>
             /// <returns><see langword="true"/>, if next element is available; <see langword="false"/>, if end of sequence reached.</returns>
             public bool MoveNext()
             {
+                if (ptr.IsNull)
+                    return false;
                 index += 1L;
                 return index < count;
             }
@@ -62,9 +64,10 @@ namespace DotNext.Runtime.InteropServices
             /// </summary>
             public void Reset() => index = -1L;
 
-            void IDisposable.Dispose()
-            {
-            }
+            /// <summary>
+            /// Releases all resources with this enumerator.
+            /// </summary>
+            public void Dispose() => this = default;
         }
 
         /// <summary>
@@ -79,26 +82,54 @@ namespace DotNext.Runtime.InteropServices
 
         private readonly T* value;
 
+        /// <summary>
+        /// Constructs CLS-compliant pointer from non CLS-compliant pointer.
+        /// </summary>
+        /// <param name="ptr">The pointer value.</param>
         [CLSCompliant(false)]
         public Pointer(T* ptr) => value = ptr;
 
+        /// <summary>
+        /// Constructs CLS-compliant pointer from non CLS-compliant untyped pointer.
+        /// </summary>
+        /// <param name="ptr">The untyped pointer value.</param>
         [CLSCompliant(false)]
         public Pointer(void* ptr) => value = (T*)ptr;
 
+        /// <summary>
+        /// Constructs pointer from <see cref="IntPtr"/> value.
+        /// </summary>
+        /// <param name="ptr">The pointer value.</param>
         public Pointer(IntPtr ptr)
             : this(ptr.ToPointer())
         {
         }
 
+        /// <summary>
+        /// Constructs pointer from <see cref="UIntPtr"/> value.
+        /// </summary>
+        /// <param name="ptr">The pointer value.</param>
         [CLSCompliant(false)]
         public Pointer(UIntPtr ptr)
             : this(ptr.ToPointer())
         {
         }
 
-        public Pointer(ref T value)
-            : this(Unsafe.AsPointer(ref value))
+        /// <summary>
+        /// Swaps values between this memory location and the given memory location.
+        /// </summary>
+        /// <param name="other">The other memory location.</param>
+        /// <exception cref="NullPointerException">This pointer is zero.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="other"/> pointer is zero.</exception>
+        public void Swap(Pointer<T> other)
         {
+            if (IsNull)
+                throw new NullPointerException();
+            else if (other.IsNull)
+                throw new ArgumentNullException(nameof(other));
+            var tmp = *value;
+            *value = *other.value;
+            *other.value = tmp;
         }
 
         /// <summary>
@@ -117,105 +148,151 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Fill memory with zero bytes.
         /// </summary>
-        /// <param name="length">Number of elements in the unmanaged array.</param>
-        public void Clear(int length)
+        /// <param name="count">Number of elements in the unmanaged array.</param>
+        public void Clear(long count)
         {
-            if(IsNull)
+            if (IsNull)
                 throw new NullPointerException();
-            else if(length < 0)
-                throw new ArgumentOutOfRangeException(nameof(length));
+            else if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
             else
-                Unsafe.InitBlockUnaligned(value, 0, (uint)(length * Size));
+                Memory.ZeroMem(value, count);
         }
 
         /// <summary>
         /// Copies block of memory from the source address to the destination address.
         /// </summary>
         /// <param name="destination">Destination address.</param>
-        /// <param name="length">Number of elements to copy.</param>
-        public void WriteTo(Pointer<T> destination, long length)
+        /// <param name="count">The number of elements to be copied.</param>
+        public void WriteTo(Pointer<T> destination, long count)
         {
             if(IsNull)
                 throw new NullPointerException(ExceptionMessages.NullSource);
             else if(destination.IsNull)
                 throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
             else
-                Memory.Copy(value, destination.value, length * Size);
+                Memory.Copy(value, destination.value, count * Size);
         }
 
-        public long WriteTo(T[] destination, long offset, long length)
+        /// <summary>
+        /// Copies elements from the memory location identified
+        /// by this pointer to managed array.
+        /// </summary>
+        /// <param name="destination">The array to be modified.</param>
+        /// <param name="offset">The position in the destination array from which copying begins.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        /// <returns>Actual number of copied elements.</returns>
+        public long WriteTo(T[] destination, long offset, long count)
         {
             if (IsNull)
 				throw new NullPointerException();
 			else if (destination is null)
 				throw new ArgumentNullException(nameof(destination));
-            else if (length < 0)
+            else if (count < 0)
 				throw new IndexOutOfRangeException();
-			else if (destination.LongLength == 0L || (offset + length) > destination.LongLength)
+			else if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
 				return 0L;
 			fixed (T* dest = &destination[offset])
-				Memory.Copy(value, dest, length * Size);
-			return length;
+				Memory.Copy(value, dest, count * Size);
+			return count;
         }
 
-        public void WriteTo(Stream destination, long length)
+        /// <summary>
+        /// Copies bytes from the memory location identified by this pointer to the stream.
+        /// </summary>
+        /// <param name="destination">The destination stream.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        public void WriteTo(Stream destination, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
 			else if (destination is null)
 				throw new ArgumentNullException(nameof(destination));
 			else
-				Memory.WriteToSteam(value, length * Size, destination);
+				Memory.WriteToSteam(value, count * Size, destination);
         }
 
-        public Task WriteToAsync(Stream destination, long length)
+        /// <summary>
+        /// Copies bytes from the memory location identified
+        /// by this pointer to the stream asynchronously.
+        /// </summary>
+        /// <param name="destination">The destination stream.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        /// <returns>The task instance representing asynchronous state of the copying process.</returns>
+        public Task WriteToAsync(Stream destination, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
 			else if (destination is null)
 				throw new ArgumentNullException(nameof(destination));
 			else
-				return Memory.WriteToSteamAsync(value, length * Size, destination);
+				return Memory.WriteToSteamAsync(value, count * Size, destination);
         }
 
-        public long ReadFrom(T[] source, long offset, long length)
+        /// <summary>
+        /// Copies elements from the specified array into
+        /// the memory block identified by this pointer.
+        /// </summary>
+        /// <param name="source">The source array.</param>
+        /// <param name="offset">The position in the source array from which copying begins.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        /// <returns>Actual number of copied elements.</returns>
+        public long ReadFrom(T[] source, long offset, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
 			else if (source is null)
 				throw new ArgumentNullException(nameof(source));
-            else if (length < 0L)
+            else if (count < 0L)
 				throw new IndexOutOfRangeException();
-			else if (source.LongLength == 0L || (length + offset) > source.LongLength)
+			else if (source.LongLength == 0L || (count + offset) > source.LongLength)
 				return 0L;
 			fixed (T* src = &source[offset])
-				Memory.Copy(src, value, length * Size);
-			return length;
+				Memory.Copy(src, value, count * Size);
+			return count;
 		}
 
-        public long ReadFrom(Stream source, long length)
+        /// <summary>
+        /// Copies bytes from the given stream to the memory location identified by this pointer.
+        /// </summary>
+        /// <param name="source">The source stream.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        public long ReadFrom(Stream source, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
 			else if (source is null)
 				throw new ArgumentNullException(nameof(source));
 			else
-				return Memory.ReadFromStream(source, value, Size * length);
+				return Memory.ReadFromStream(source, value, Size * count);
 		}
 
-		public Task<long> ReadFromAsync(Stream source, long length)
+        /// <summary>
+        /// Copies bytes from the given stream to the memory location identified by this pointer asynchronously.
+        /// </summary>
+        /// <param name="source">The source stream.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+		public Task<long> ReadFromAsync(Stream source, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
 			else if (source is null)
 				throw new ArgumentNullException(nameof(source));
 			else
-				return Memory.ReadFromStreamAsync(source, value, Size * length);
+				return Memory.ReadFromStreamAsync(source, value, Size * count);
 		}
 
+        /// <summary>
+        /// Returns representation of the memory identified by this pointer in the form of the stream.
+        /// </summary>
+        /// <remarks>
+        /// This method returns <see cref="Stream"/> compatible over the memory identified by this pointer. No copying is performed.
+        /// </remarks>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this memory.</param>
+        /// <returns>The stream representing the memory identified by this pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public UnmanagedMemoryStream AsStream(long length)
-            => new UnmanagedMemoryStream(As<byte>().value, length * Size);
+        public UnmanagedMemoryStream AsStream(long count)
+            => new UnmanagedMemoryStream(As<byte>().value, count * Size);
 
         /// <summary>
         /// Copies block of memory referenced by this pointer
@@ -241,7 +318,11 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Indicates that this pointer is null
         /// </summary>
-        public bool IsNull => value == Memory.NullPtr;
+        public bool IsNull
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => value == Memory.NullPtr;
+        }
 
         /// <summary>
         /// Reinterprets pointer type.
@@ -267,50 +348,22 @@ namespace DotNext.Runtime.InteropServices
             else
                 return ref Unsafe.AsRef<T>(value);
         }
-        
+
         /// <summary>
-        /// Reads a value of type <typeparamref name="T"/> from the current location.
+        /// Gets or sets value stored in the memory identified by this pointer.
         /// </summary>
-        /// <param name="access">Memory access mode.</param>
-        /// <returns>Dereferenced value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T Read(MemoryAccess access)
+        public T Value
         {
-            if(IsNull)
-                 throw new NullPointerException();
-            switch(access)
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => IsNull ? throw new NullPointerException() : *value;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
             {
-                case MemoryAccess.Aligned:
-                    return Unsafe.Read<T>(value);
-                case MemoryAccess.Unaligned:
-                    return Unsafe.ReadUnaligned<T>(value);
-                default:
-                    return *value;
-            }
-        }
-        
-        /// <summary>
-        /// Writes a value of type <typeparamref name="T"/> to the current location
-        /// assuming architecture dependent alignment of the addresses.
-        /// </summary>
-        /// <param name="access">Memory access mode.</param>
-        /// <param name="value">A value to be placed to the current location.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Write(MemoryAccess access, T value)
-        {
-            if(IsNull)
-                throw new NullPointerException();
-            switch(access)
-            {
-                case MemoryAccess.Aligned:
-                    Unsafe.Write(this.value, value);
-                    return;
-                case MemoryAccess.Unaligned:
-                    Unsafe.WriteUnaligned(this.value, value);
-                    return;
-                default:
+                if (IsNull)
+                    throw new NullPointerException();
+                else
                     *this.value = value;
-                    return;
             }
         }
 
@@ -321,102 +374,262 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Iterator object.</returns>
         public Enumerator GetEnumerator(long length) => new Enumerator(this, length);
 
-        public bool BitwiseEquals(Pointer<T> other, int length)
+        /// <summary>
+        /// Computes bitwise equality between two blocks of memory.
+        /// </summary>
+        /// <param name="other">The pointer identifies block of memory to be compared.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by both pointers.</param>
+        /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
+        public bool BitwiseEquals(Pointer<T> other, long count)
         {
             if (value == other.value)
 				return true;
 			else if (value == Memory.NullPtr || other.value == Memory.NullPtr)
 				return false;
 			else
-				return Memory.Equals(value, other, length * Size);
+				return Memory.Equals(value, other, count * Size);
         }
 
-        public int BitwiseHashCode(long length, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode(value, length * Size, salted);
+        /// <summary>
+        /// Computes 32-bit hash code for the block of memory identified by this pointer.
+        /// </summary>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Content hash code.</returns>
+        public int BitwiseHashCode(long count, bool salted = true)
+            => IsNull ? 0 : Memory.GetHashCode(value, count * Size, salted);
 
-        public int BitwiseHashCode(long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode(value, length * Size, hash, hashFunction, salted);
-        
-        public long BitwiseHashCode(long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode(value, length * Size, hash, hashFunction, salted);
+        /// <summary>
+        /// Computes 32-bit hash code for the block of memory identified by this pointer.
+        /// </summary>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+        /// <param name="hash">Initial value of the hash to be passed into hashing function.</param>
+        /// <param name="hashFunction">The custom hash function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Content hash code.</returns>
+        public int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            => IsNull ? 0 : Memory.GetHashCode(value, count * Size, hash, hashFunction, salted);
 
-        public int BitwiseCompare(Pointer<T> other, int length)
+        /// <summary>
+        /// Computes 64-bit hash code for the block of memory identified by this pointer.
+        /// </summary>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+        /// <param name="hash">Initial value of the hash to be passed into hashing function.</param>
+        /// <param name="hashFunction">The custom hash function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Content hash code.</returns>
+        public long BitwiseHashCode(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
+            => IsNull ? 0 : Memory.GetHashCode(value, count * Size, hash, hashFunction, salted);
+
+        /// <summary>
+        /// Bitwise comparison of two memory blocks.
+        /// </summary>
+        /// <param name="other">The pointer identifies block of memory to be compared.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by both pointers.</param>
+        /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
+        public int BitwiseCompare(Pointer<T> other, long count)
         {
-            if(IsNull)
+            if (value == other.value)
+                return 0;
+            else if(IsNull)
                 throw new NullPointerException();
             else if(other.value == Memory.NullPtr)
                 throw new ArgumentNullException(nameof(other));
             else
-                return Memory.Compare(value, other, length * Size);
+                return Memory.Compare(value, other, count * Size);
         }
 
+        /// <summary>
+        /// Adds an offset to the value of a pointer.
+        /// </summary>
+        /// <remarks>
+        /// The offset specifies number of elements of type <typeparamref name="T"/>, not bytes.
+        /// </remarks>
+        /// <param name="pointer">The pointer to add the offset to.</param>
+        /// <param name="offset">The offset to add.</param>
+        /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Pointer<T> operator +(Pointer<T> pointer, int offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
 
+        /// <summary>
+        /// Subtracts an offset from the value of a pointer.
+        /// </summary>
+        /// <remarks>
+        /// The offset specifies number of elements of type <typeparamref name="T"/>, not bytes.
+        /// </remarks>
+        /// <param name="pointer">The pointer to subtract the offset from.</param>
+        /// <param name="offset">The offset to subtract.</param>
+        /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]        
         public static Pointer<T> operator -(Pointer<T> pointer, int offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
 
+        /// <summary>
+        /// Adds an offset to the value of a pointer.
+        /// </summary>
+        /// <remarks>
+        /// The offset specifies number of elements of type <typeparamref name="T"/>, not bytes.
+        /// </remarks>
+        /// <param name="pointer">The pointer to add the offset to.</param>
+        /// <param name="offset">The offset to add.</param>
+        /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Pointer<T> operator +(Pointer<T> pointer, long offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
 
+        /// <summary>
+        /// Subtracts an offset from the value of a pointer.
+        /// </summary>
+        /// <remarks>
+        /// The offset specifies number of elements of type <typeparamref name="T"/>, not bytes.
+        /// </remarks>
+        /// <param name="pointer">The pointer to subtract the offset from.</param>
+        /// <param name="offset">The offset to subtract.</param>
+        /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Pointer<T> operator -(Pointer<T> pointer, long offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
 
+        /// <summary>
+        /// Adds an offset to the value of a pointer.
+        /// </summary>
+        /// <remarks>
+        /// The offset specifies number of elements of type <typeparamref name="T"/>, not bytes.
+        /// </remarks>
+        /// <param name="pointer">The pointer to add the offset to.</param>
+        /// <param name="offset">The offset to add.</param>
+        /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Pointer<T> operator +(Pointer<T> pointer, ulong offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
 
+        /// <summary>
+        /// Subtracts an offset from the value of a pointer.
+        /// </summary>
+        /// <remarks>
+        /// The offset specifies number of elements of type <typeparamref name="T"/>, not bytes.
+        /// </remarks>
+        /// <param name="pointer">The pointer to subtract the offset from.</param>
+        /// <param name="offset">The offset to subtract.</param>
+        /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Pointer<T> operator -(Pointer<T> pointer, ulong offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
 
+        /// <summary>
+        /// Increments this pointer by 1 element of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="pointer">The pointer to add the offset to.</param>
+        /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
         public static Pointer<T> operator++(Pointer<T> pointer) => pointer + 1;
 
+        /// <summary>
+        /// Decrements this pointer by 1 element of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="pointer">The pointer to subtract the offset from.</param>
+        /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
         public static Pointer<T> operator--(Pointer<T> pointer) => pointer -1;
 
+        /// <summary>
+        /// Indicates that the first pointer represents the same memory location as the second pointer.
+        /// </summary>
+        /// <param name="first">The first pointer to be compared.</param>
+        /// <param name="second">The second pointer to be compared.</param>
+        /// <returns><see langword="true"/>, if the first pointer represents the same memory location as the second pointer; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Pointer<T> first, Pointer<T> second)
             => first.Equals(second);
 
+        /// <summary>
+        /// Indicates that the first pointer represents the different memory location as the second pointer.
+        /// </summary>
+        /// <param name="first">The first pointer to be compared.</param>
+        /// <param name="second">The second pointer to be compared.</param>
+        /// <returns><see langword="true"/>, if the first pointer represents the different memory location as the second pointer; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(Pointer<T> first, Pointer<T> second)
             => !first.Equals(second);
 
+        /// <summary>
+        /// Converts non CLS-compliant pointer into its CLS-compliant representation. 
+        /// </summary>
+        /// <param name="value">The pointer value.</param>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Pointer<T>(T* value) => new Pointer<T>(value);
 
+        /// <summary>
+        /// Converts CLS-compliant pointer into its non CLS-compliant representation. 
+        /// </summary>
+        /// <param name="ptr">The pointer value.</param>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator T*(Pointer<T> ptr) => ptr.value;
 
+        /// <summary>
+        /// Checks whether this pointer is not zero.
+        /// </summary>
+        /// <param name="ptr">The pointer to check.</param>
+        /// <returns><see langword="true"/>, if this pointer is not zero; otherwise, <see langword="false"/>.</returns>
 		public static bool operator true(Pointer<T> ptr) => !ptr.IsNull;
 
+        /// <summary>
+        /// Checks whether this pointer is zero.
+        /// </summary>
+        /// <param name="ptr">The pointer to check.</param>
+        /// <returns><see langword="true"/>, if this pointer is zero; otherwise, <see langword="false"/>.</returns>
 		public static bool operator false(Pointer<T> ptr) => ptr.IsNull;
 
         bool IEquatable<Pointer<T>>.Equals(Pointer<T> other) => Equals(other);
 
+        /// <summary>
+        /// Indicates that this pointer represents the same memory location as other pointer.
+        /// </summary>
+        /// <typeparam name="U">The type of the another pointer.</typeparam>
+        /// <param name="other">The pointer to be compared.</param>
+        /// <returns><see langword="true"/>, if this pointer represents the same memory location as other pointer; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals<U>(Pointer<U> other)
             where U: unmanaged
             => value == other.value;
-        
+
+        /// <summary>
+        /// Determines whether the value stored in the memory identified by this pointer is equal to the given value.
+        /// </summary>
+        /// <param name="other">The value to be compared.</param>
+        /// <param name="comparer">The object implementing comparison algorithm.</param>
+        /// <returns><see langword="true"/>, if the value stored in the memory identified by this pointer is equal to the given value; otherwise, <see langword="false"/>.</returns>
         public bool Equals(T other, IEqualityComparer<T> comparer)
             => !IsNull && comparer.Equals(*value, other);
 
+        /// <summary>
+        /// Computes hash code of the value stored in the memory identified by this pointer.
+        /// </summary>
+        /// <param name="comparer">The object implementing custom hash function.</param>
+        /// <returns>The hash code of the value stored in the memory identified by this pointer.</returns>
         public int GetHashCode(IEqualityComparer<T> comparer)
-            => IsNull ? 0 : comparer.GetHashCode(*value); 
-        
-        public override int GetHashCode() => Address.ToInt32();
+            => IsNull ? 0 : comparer.GetHashCode(*value);
 
+        /// <summary>
+        /// Computes hash code of the pointer itself (i.e. address), not of the memory content.
+        /// </summary>
+        /// <returns>The hash code of this pointer.</returns>
+        public override int GetHashCode() => Address.GetHashCode();
+
+        /// <summary>
+        /// Indicates that this pointer represents the same memory location as other pointer.
+        /// </summary>
+        /// <param name="other">The object of type <see cref="Pointer{T}"/> to be compared.</param>
+        /// <returns><see langword="true"/>, if this pointer represents the same memory location as other pointer; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other) => other is Pointer<T> ptr && Equals(ptr);
 
+        /// <summary>
+        /// Returns hexadecimal address represented by this pointer.
+        /// </summary>
+        /// <returns>The hexadecimal value of this pointer.</returns>
         public override string ToString() => Address.ToString("X");
     }
 }
