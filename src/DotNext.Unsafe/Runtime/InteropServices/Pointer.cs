@@ -40,19 +40,21 @@ namespace DotNext.Runtime.InteropServices
             /// <summary>
             /// Pointer to the currently enumerating element.
             /// </summary>
-            public Pointer<T> Pointer => ptr + index; 
+            public Pointer<T> Pointer => ptr + index;
 
             /// <summary>
             /// Current element.
             /// </summary>
-            public T Current => Pointer.Read(MemoryAccess.Default);
-            
+            public T Current => Pointer.Value;
+
             /// <summary>
             /// Adjust pointer.
             /// </summary>
             /// <returns><see langword="true"/>, if next element is available; <see langword="false"/>, if end of sequence reached.</returns>
             public bool MoveNext()
             {
+                if (ptr.IsNull)
+                    return false;
                 index += 1L;
                 return index < count;
             }
@@ -111,6 +113,23 @@ namespace DotNext.Runtime.InteropServices
         public Pointer(UIntPtr ptr)
             : this(ptr.ToPointer())
         {
+        }
+
+        /// <summary>
+        /// Swaps values between this memory location and the given memory location.
+        /// </summary>
+        /// <param name="other">The other memory location.</param>
+        /// <exception cref="NullPointerException">This pointer is zero.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="other"/> pointer is zero.</exception>
+        public void Swap(Pointer<T> other)
+        {
+            if (IsNull)
+                throw new NullPointerException();
+            else if (other.IsNull)
+                throw new ArgumentNullException(nameof(other));
+            var tmp = *value;
+            *value = *other.value;
+            *other.value = tmp;
         }
 
         /// <summary>
@@ -299,7 +318,11 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Indicates that this pointer is null
         /// </summary>
-        public bool IsNull => value == Memory.NullPtr;
+        public bool IsNull
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => value == Memory.NullPtr;
+        }
 
         /// <summary>
         /// Reinterprets pointer type.
@@ -325,50 +348,22 @@ namespace DotNext.Runtime.InteropServices
             else
                 return ref Unsafe.AsRef<T>(value);
         }
-        
+
         /// <summary>
-        /// Reads a value of type <typeparamref name="T"/> from the current location.
+        /// Gets or sets value stored in the memory identified by this pointer.
         /// </summary>
-        /// <param name="access">Memory access mode.</param>
-        /// <returns>Dereferenced value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T Read(MemoryAccess access)
+        public T Value
         {
-            if(IsNull)
-                 throw new NullPointerException();
-            switch(access)
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => IsNull ? throw new NullPointerException() : *value;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
             {
-                case MemoryAccess.Aligned:
-                    return Unsafe.Read<T>(value);
-                case MemoryAccess.Unaligned:
-                    return Unsafe.ReadUnaligned<T>(value);
-                default:
-                    return *value;
-            }
-        }
-        
-        /// <summary>
-        /// Writes a value of type <typeparamref name="T"/> to the current location
-        /// assuming architecture dependent alignment of the addresses.
-        /// </summary>
-        /// <param name="access">Memory access mode.</param>
-        /// <param name="value">A value to be placed to the current location.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Write(MemoryAccess access, T value)
-        {
-            if(IsNull)
-                throw new NullPointerException();
-            switch(access)
-            {
-                case MemoryAccess.Aligned:
-                    Unsafe.Write(this.value, value);
-                    return;
-                case MemoryAccess.Unaligned:
-                    Unsafe.WriteUnaligned(this.value, value);
-                    return;
-                default:
+                if (IsNull)
+                    throw new NullPointerException();
+                else
                     *this.value = value;
-                    return;
             }
         }
 

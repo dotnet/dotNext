@@ -6,8 +6,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices
 {
-	using Threading.Tasks;
-
 	/// <summary>
 	/// Represents typed array allocated in the unmanaged heap.
 	/// </summary>
@@ -133,9 +131,312 @@ namespace DotNext.Runtime.InteropServices
 
         Pointer<T> IUnmanagedMemory<T>.Pointer => pointer;
 
-        IntPtr IUnmanagedMemory.Address => pointer.Address;
+        /// <summary>
+        /// Gets address of the unmanaged memory.
+        /// </summary>
+        public IntPtr Address => pointer.Address;
 
         Span<T> IUnmanagedMemory<T>.Span => this;
+
+        /// <summary>
+        /// Searches item matching to the given predicate in a range of elements of the unmanaged array, and returns 
+        /// the index of its last occurrence. The range extends from a specified 
+        /// index for a specified number of elements.
+        /// </summary>
+        /// <param name="predicate">The predicate used to check item.</param>
+        /// <param name="startIndex">The starting index of the search.</param>
+        /// <param name="count">The number of elements to search.</param>
+        /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
+        public int FindLast(Predicate<T> predicate, int startIndex, int count)
+        {
+            if (count == 0 || Length == 0)
+                return -1;
+            else
+                count = count.UpperBounded(Length);
+            for (var index = count - 1; index >= startIndex; index--)
+                if (predicate((pointer + index).Value))
+                    return index;
+            return -1;
+        }
+
+        /// <summary>
+        /// Searches item matching to the given predicate in a range of elements of the unmanaged array, and returns 
+        /// the index of its last occurrence. The range extends from a specified 
+        /// index for a specified number of elements.
+        /// </summary>
+        /// <param name="predicate">The predicate used to check item.</param>
+        /// <param name="startIndex">The starting index of the search.</param>
+        /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
+        public int FindLast(Predicate<T> predicate, int startIndex) => FindLast(predicate, startIndex, Length);
+
+        /// <summary>
+        /// Searches item matching to the given predicate in the unmanaged array, and returns 
+        /// the index of its last occurrence.
+        /// </summary>
+        /// <param name="predicate">The predicate used to check item.</param>
+        /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
+        public int FindLast(Predicate<T> predicate) => FindLast(predicate, 0);
+                
+        /// <summary>
+        /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
+        /// the index of its last occurrence. The range extends from a specified 
+        /// index for a specified number of elements.
+        /// </summary>
+        /// <param name="item">The value to locate in this array.</param>
+        /// <param name="startIndex">The starting index of the search.</param>
+        /// <param name="count">The number of elements to search.</param>
+        /// <param name="comparer">The custom comparer used to compare array element with the given value.</param>
+        /// <returns>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</returns>
+        public int LastIndexOf(T item, int startIndex, int count, IEqualityComparer<T> comparer)
+        {
+            if (count == 0 || Length == 0)
+                return -1;
+            else
+                count = count.UpperBounded(Length);
+            for (var index = count - 1; index >= startIndex; index--)
+                if (comparer.Equals((pointer + index).Value, item))
+                    return index;
+            return -1;
+        }
+
+        /// <summary>
+        /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
+        /// the index of its last occurrence. The range extends from a specified 
+        /// index for a specified number of elements.
+        /// </summary>
+        /// <param name="item">The value to locate in this array.</param>
+        /// <param name="startIndex">The starting index of the search.</param>
+        /// <param name="comparer">The custom comparer used to compare array element with the given value.</param>
+        /// <returns>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</returns>
+        public int LastIndexOf(T item, int startIndex, IEqualityComparer<T> comparer) => LastIndexOf(item, startIndex, Length, comparer);
+
+        /// <summary>
+        /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
+        /// the index of its last occurrence. The range extends from a specified 
+        /// index for a specified number of elements.
+        /// </summary>
+        /// <remarks>
+        /// This method uses <see cref="EqualityComparer{T}.Default"/> comparer
+        /// to compare elements in this array.
+        /// </remarks>
+        /// <param name="item">The value to locate in this array.</param>
+        /// <param name="startIndex">The starting index of the search.</param>
+        /// <returns>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</returns>
+        public int LastIndexOf(T item, int startIndex) => LastIndexOf(item, startIndex, EqualityComparer<T>.Default);
+
+        /// <summary>
+        /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
+        /// the index of its last occurrence. The range extends from a specified 
+        /// index for a specified number of elements.
+        /// </summary>
+        /// <remarks>
+        /// This method uses <see cref="EqualityComparer{T}.Default"/> comparer
+        /// to compare elements in this array.
+        /// </remarks>
+        /// <param name="item">The value to locate in this array.</param>
+        /// <returns>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</returns>
+        public int LastIndexOf(T item) => LastIndexOf(item, 0);
+
+        /// <summary>
+        /// Searches item matching to the given predicate in a range of elements of the unmanaged array, and returns 
+        /// the index of its first occurrence. The range extends from a specified 
+        /// index for a specified number of elements.
+        /// </summary>
+        /// <param name="predicate">The predicate used to check item.</param>
+        /// <param name="startIndex">The starting index of the search.</param>
+        /// <param name="count">The number of elements to search.</param>
+        /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
+        public int Find(Predicate<T> predicate, int startIndex, int count)
+        {
+            if (count == 0 || Length == 0)
+                return -1;
+            else
+                count = count.UpperBounded(Length);
+            for (var index = startIndex; index < count; index++)
+                if (predicate((pointer + index).Value))
+                    return index;
+            return -1;
+        }
+
+        /// <summary>
+        /// Searches item matching to the given predicate in a range of elements of the unmanaged array, and returns 
+        /// the index of its first occurrence. The range extends from a specified 
+        /// index for a specified number of elements.
+        /// </summary>
+        /// <param name="predicate">The predicate used to check item.</param>
+        /// <param name="startIndex">The starting index of the search.</param>
+        /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
+        public int Find(Predicate<T> predicate, int startIndex) => Find(predicate, startIndex, Length);
+
+        /// <summary>
+        /// Searches item matching to the given predicate in the unmanaged array, and returns 
+        /// the index of its first occurrence.
+        /// </summary>
+        /// <param name="predicate">The predicate used to check item.</param>
+        /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
+        public int Find(Predicate<T> predicate) => Find(predicate, 0);
+
+        /// <summary>
+        /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
+        /// the index of its first occurrence. The range extends from a specified 
+        /// index for a specified number of elements.
+        /// </summary>
+        /// <param name="item">The value to locate in this array.</param>
+        /// <param name="startIndex">The starting index of the search.</param>
+        /// <param name="count">The number of elements to search.</param>
+        /// <param name="comparer">The custom comparer used to compare array element with the given value.</param>
+        /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
+        public int IndexOf(T item, int startIndex, int count, IEqualityComparer<T> comparer)
+        {
+            if (count == 0 || Length == 0)
+                return -1;
+            else
+                count = count.UpperBounded(Length);
+            for (var index = startIndex; index < count; index++)
+                if (comparer.Equals((pointer + index).Value, item))
+                    return index;
+            return -1;
+        }
+
+        /// <summary>
+        /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
+        /// the index of its first occurrence. The range extends from a specified 
+        /// index for a specified number of elements.
+        /// </summary>
+        /// <param name="item">The value to locate in this array.</param>
+        /// <param name="startIndex">The starting index of the search.</param>
+        /// <param name="comparer">The custom comparer used to compare array element with the given value.</param>
+        /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
+        public int IndexOf(T item, int startIndex, IEqualityComparer<T> comparer) => IndexOf(item, startIndex, Length, comparer);
+
+        /// <summary>
+        /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
+        /// the index of its first occurrence. The range extends from a specified 
+        /// index for a specified number of elements.
+        /// </summary>
+        /// <remarks>
+        /// This method uses <see cref="ValueType{T}.BitwiseEquals(T, T)"/> comparer
+        /// to compare elements in this array.
+        /// </remarks>
+        /// <param name="item">The value to locate in this array.</param>
+        /// <param name="startIndex">The starting index of the search.</param>
+        /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
+        public int IndexOf(T item, int startIndex) => IndexOf(item, startIndex, ValueType<T>.EqualityComparer);
+
+        /// <summary>
+        /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
+        /// the index of its first occurrence. The range extends from a specified 
+        /// index for a specified number of elements.
+        /// </summary>
+        /// <remarks>
+        /// This method uses <see cref="ValueType{T}.BitwiseEquals(T, T)"/> comparer
+        /// to compare elements in this array.
+        /// </remarks>
+        /// <param name="item">The value to locate in this array.</param>
+        /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
+        public int IndexOf(T item) => IndexOf(item, 0);
+
+        /// <summary>
+        /// Uses a binary search algorithm to locate a specific element in the sorted array.
+        /// </summary>
+        /// <param name="item">The value to locate.</param>
+        /// <param name="startIndex">The starting index of the range to search.</param>
+        /// <param name="count">The length of the range to search.</param>
+        /// <param name="comparison">The comparison algorithm.</param>
+        /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
+        public int BinarySearch(T item, int startIndex, int count, Comparison<T> comparison)
+        {
+            count = count.UpperBounded(Length);
+            count -= 1;
+            while(startIndex <= count)
+            {
+                var mid = (startIndex + count) / 2;
+                var cmd = comparison((pointer + mid).Value, item);
+                if (cmd < 0)
+                    startIndex = mid + 1;
+                else if (cmd > 0)
+                    count = mid - 1;
+                else
+                    return mid;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Uses a binary search algorithm to locate a specific element in the sorted array.
+        /// </summary>
+        /// <param name="item">The value to locate.</param>
+        /// <param name="comparison">The comparison algorithm.</param>
+        /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
+        public int BinarySearch(T item, Comparison<T> comparison) => BinarySearch(item, 0, Length, comparison);
+
+        private int Partition(int startIndex, int endIndex, Comparison<T> comparison)
+        {
+            var pivot = (pointer + endIndex).Value;
+            var i = startIndex - 1;
+
+            for (var j = startIndex; j < endIndex; j++)
+            {
+                var jptr = pointer + j;
+                if (comparison(jptr.Value, pivot) <= 0)
+                {
+                    i += 1;
+                    (pointer + i).Swap(jptr);
+                }
+            }
+
+            i += 1;
+            (pointer + endIndex).Swap(pointer + i);
+            return i;
+        }
+
+        private void QuickSort(int startIndex, int endIndex, Comparison<T> comparison)
+        {
+            if (startIndex < endIndex)
+            {
+                var partitionIndex = Partition(startIndex, endIndex, comparison);
+                QuickSort(startIndex, partitionIndex - 1, comparison);
+                QuickSort(partitionIndex + 1, endIndex, comparison);
+            }
+        }
+
+        /// <summary>
+        /// Sorts the range of this array.
+        /// </summary>
+        /// <param name="startIndex">The starting index of the range to sort.</param>
+        /// <param name="count">The length of the range to sort.</param>
+        /// <param name="comparison">The comparison algorithm.</param>
+        public void Sort(int startIndex, int count, Comparison<T> comparison)
+        {
+            if (count == 0 || Length == 0)
+                return;
+            QuickSort(startIndex, count.UpperBounded(Length) - 1, comparison);
+        }
+
+        /// <summary>
+        /// Sorts this array.
+        /// </summary>
+        /// <param name="comparison">The comparison logic.</param>
+        public void Sort(Comparison<T> comparison) => Sort(0, Length, comparison);
+
+        /// <summary>
+        /// Applies ascending sort of this array.
+        /// </summary>
+        /// <remarks>
+        /// This method uses QuickSort algorithm.
+        /// </remarks>
+        public void Sort() => Sort(ValueType<T>.BitwiseCompare);
+
+        /// <summary>
+        /// Uses a binary search algorithm to locate a specific element in the sorted array.
+        /// </summary>
+        /// <remarks>
+        /// This method uses <see cref="ValueType{T}.BitwiseCompare(T, T)"/> method
+        /// to compare two values.
+        /// </remarks>
+        /// <param name="item">The value to locate.</param>
+        /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
+        public int BinarySearch(T item) => BinarySearch(item, ValueType<T>.BitwiseCompare);
 
         /// <summary>
         /// Gets pointer to array element.
@@ -156,8 +457,12 @@ namespace DotNext.Runtime.InteropServices
 		/// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
 		public T this[int index]
 		{
-            get => ElementAt(index).Read(MemoryAccess.Aligned);
-            set => ElementAt(index).Write(MemoryAccess.Aligned, value);
+            get => ElementAt(index).Value;
+            set
+            {
+                var ptr = ElementAt(index);
+                ptr.Value = value;
+            }
 		}
 
         /// <summary>
@@ -204,7 +509,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="destination">The destination array.</param>
         /// <returns>The actual number of copied elements.</returns>
-		public long WriteTo(UnmanagedArray<T> destination) => WriteTo(destination, 0, destination.Length);
+		public long WriteTo(UnmanagedArray<T> destination) => WriteTo(destination, 0, Length);
 
         /// <summary>
         /// Copies elements from this array to the managed array. 
@@ -214,14 +519,14 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="count">The number of elements to be copied.</param>
         /// <returns>Actual number of copied elements.</returns>
 		public long WriteTo(T[] destination, long offset, long count)
-			=> pointer.WriteTo(destination, offset, Math.Min(count, Length));
+			=> pointer.WriteTo(destination, offset, count.Min(Length));
 
         /// <summary>
         /// Copies elements from this array to the managed array. 
         /// </summary>
         /// <param name="destination">The destination array.</param>
         /// <returns>Actual number of copied elements.</returns>
-		public long WriteTo(T[] destination) => WriteTo(destination, 0, destination.LongLength);
+		public long WriteTo(T[] destination) => WriteTo(destination, 0, Length);
 
         /// <summary>
         /// Copies elements from given managed array to the this array. 
@@ -231,7 +536,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="count">The number of elements to be copied.</param>
         /// <returns>Actual number of copied elements.</returns>
 		public long ReadFrom(T[] source, long offset, long count)
-			=> pointer.ReadFrom(source, offset, Math.Min(count, Length));
+			=> pointer.ReadFrom(source, offset, count.Min(Length));
 
         /// <summary>
         /// Copies elements from given managed array to the this array. 

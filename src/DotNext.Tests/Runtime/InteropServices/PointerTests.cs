@@ -49,9 +49,25 @@ namespace DotNext.Runtime.InteropServices
                 Equal(array, dest);
                 dest[0] = 50;
                 Equal(3L, ptr.ReadFrom(dest, 0, dest.LongLength));
-                Equal(50, ptr.Read(MemoryAccess.Aligned));
+                Equal(50, ptr.Value);
                 Equal(50, array[0]);
             }
+        }
+
+        [Fact]
+        public unsafe void SwapTest()
+        {
+            var array = new ushort[] { 1, 2 };
+            fixed (ushort* p = array)
+            {
+                var ptr1 = new Pointer<ushort>(p);
+                var ptr2 = ptr1 + 1;
+                Equal(1, ptr1.Value);
+                Equal(2, ptr2.Value);
+                ptr1.Swap(ptr2);
+            }
+            Equal(2, array[0]);
+            Equal(1, array[1]);
         }
 
         [Fact]
@@ -62,17 +78,17 @@ namespace DotNext.Runtime.InteropServices
             {
                 var ptr = new Pointer<ushort>(p);
                 Equal(new IntPtr(p), ptr.Address);
-                ptr.Write(MemoryAccess.Aligned, 20);
+                ptr.Value = 20;
                 Equal(20, array[0]);
-                Equal(20, ptr.Read(MemoryAccess.Aligned));
+                Equal(20, ptr.Value);
                 ++ptr;
-                ptr.Write(MemoryAccess.Aligned, 30);
+                ptr.Value = 30;
                 Equal(30, array[1]);
-                Equal(30, ptr.Read(MemoryAccess.Aligned));
+                Equal(30, ptr.Value);
                 --ptr;
-                ptr.Write(MemoryAccess.Aligned, 42);
+                ptr.Value = 42;
                 Equal(42, array[0]);
-                Equal(42, ptr.Read(MemoryAccess.Aligned));
+                Equal(42, ptr.Value);
             }
         }
     }

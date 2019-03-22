@@ -96,7 +96,7 @@ namespace DotNext.Runtime.InteropServices
 			}
 		}
 
-        private readonly Pointer<T> pointer;
+        private Pointer<T> pointer;
 
         private UnmanagedMemory(Pointer<T> pointer)
             => this.pointer = pointer;
@@ -117,7 +117,10 @@ namespace DotNext.Runtime.InteropServices
 
         long IUnmanagedMemory.Size => Pointer<T>.Size;
 
-        IntPtr IUnmanagedMemory.Address => pointer.Address;
+        /// <summary>
+        /// Gets address of the unmanaged memory.
+        /// </summary>
+        public IntPtr Address => pointer.Address;
 
         Span<T> IUnmanagedMemory<T>.Span => this;
 
@@ -126,8 +129,8 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         public T Value
 		{
-			get => pointer.Read(MemoryAccess.Aligned);
-			set => pointer.Write(MemoryAccess.Aligned, value);
+            get => pointer.Value;
+            set => pointer.Value = value;
 		}
 
 		object IStrongBox.Value
