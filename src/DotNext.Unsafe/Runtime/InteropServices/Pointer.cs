@@ -62,9 +62,10 @@ namespace DotNext.Runtime.InteropServices
             /// </summary>
             public void Reset() => index = -1L;
 
-            void IDisposable.Dispose()
-            {
-            }
+            /// <summary>
+            /// Releases all resources with this enumerator.
+            /// </summary>
+            public void Dispose() => this = default;
         }
 
         /// <summary>
