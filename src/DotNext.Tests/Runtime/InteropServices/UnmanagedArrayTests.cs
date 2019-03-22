@@ -68,5 +68,30 @@ namespace DotNext.Runtime.InteropServices
             Equal(0, array[2]);
             array.Dispose();
         }
+
+        [Fact]
+        public void EnumeratorTest()
+        {
+            var array = new UnmanagedArray<int>(3);
+            array[0] = 10;
+            array[1] = 20;
+            array[2] = 30;
+            var i = 0;
+            foreach (var item in array)
+                switch (i++)
+                {
+                    case 0:
+                        Equal(10, item);
+                        continue;
+                    case 1:
+                        Equal(20, item);
+                        continue;
+                    case 2:
+                        Equal(30, item);
+                        continue;
+                    default:
+                        throw new Exception();
+                }
+        }
     }
 }
