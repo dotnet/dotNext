@@ -20,9 +20,9 @@ namespace DotNext
 
         internal static string ArrayNegativeLength => resourceManager.GetString("ArrayNegativeLength");
 
-        internal static string InvalidIndexValue(int length) => string.Format(resourceManager.GetString("InvalidIndexValue"), length);
+        internal static string InvalidIndexValue(long length) => string.Format(resourceManager.GetString("InvalidIndexValue"), length);
 
-        internal static string InvalidOffsetValue(int size) => string.Format(resourceManager.GetString("InvalidOffsetValue"), size);
+        internal static string InvalidOffsetValue(long size) => string.Format(resourceManager.GetString("InvalidOffsetValue"), size);
 
         internal static string TargetSizeMustBeMultipleOf => resourceManager.GetString("TargetSizeMustBeMultipleOf");
 
