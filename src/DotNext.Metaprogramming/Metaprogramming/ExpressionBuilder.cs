@@ -278,7 +278,7 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
-        public static UnaryExpression PreDecrementAssign(this Expression operand)
+        public static UnaryExpression PreDecrementAssign(this ParameterExpression operand)
             => Expression.PreDecrementAssign(operand);
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
-        public static UnaryExpression PreIncrementAssign(this Expression operand)
+        public static UnaryExpression PreIncrementAssign(this ParameterExpression operand)
             => Expression.PreIncrementAssign(operand);
 
         /// <summary>
@@ -300,7 +300,7 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
-        public static UnaryExpression PostDecrementAssign(this Expression operand)
+        public static UnaryExpression PostDecrementAssign(this ParameterExpression operand)
             => Expression.PostDecrementAssign(operand);
 
         /// <summary>
@@ -311,7 +311,95 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
-        public static UnaryExpression PostIncrementAssign(this Expression operand)
+        public static UnaryExpression PostIncrementAssign(this ParameterExpression operand)
+            => Expression.PostIncrementAssign(operand);
+        
+        /// <summary>
+        /// Constructs an expression that decrements given expression by 1 and assigns the result back to the expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>--a.b</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PreDecrementAssign(this MemberExpression operand)
+            => Expression.PreDecrementAssign(operand);
+
+        /// <summary>
+        /// Constructs an expression that increments given expression by 1 and assigns the result back to the expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>++a.b</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PreIncrementAssign(this MemberExpression operand)
+            => Expression.PreIncrementAssign(operand);
+
+        /// <summary>
+        /// Constructs an expression that represents the assignment of given expression followed by a subsequent decrement by 1 of the original expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b--</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PostDecrementAssign(this MemberExpression operand)
+            => Expression.PostDecrementAssign(operand);
+
+        /// <summary>
+        /// Constructs an expression that represents the assignment of given expression followed by a subsequent increment by 1 of the original expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b++</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PostIncrementAssign(this MemberExpression operand)
+            => Expression.PostIncrementAssign(operand);
+        
+        /// <summary>
+        /// Constructs an expression that decrements given expression by 1 and assigns the result back to the expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>--a.b[i]</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PreDecrementAssign(this IndexExpression operand)
+            => Expression.PreDecrementAssign(operand);
+
+        /// <summary>
+        /// Constructs an expression that increments given expression by 1 and assigns the result back to the expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>++a.b[i]</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PreIncrementAssign(this IndexExpression operand)
+            => Expression.PreIncrementAssign(operand);
+
+        /// <summary>
+        /// Constructs an expression that represents the assignment of given expression followed by a subsequent decrement by 1 of the original expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b[i]--</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PostDecrementAssign(this IndexExpression operand)
+            => Expression.PostDecrementAssign(operand);
+
+        /// <summary>
+        /// Constructs an expression that represents the assignment of given expression followed by a subsequent increment by 1 of the original expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b[i]++</code>.
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns>Unary expression.</returns>
+        public static UnaryExpression PostIncrementAssign(this IndexExpression operand)
             => Expression.PostIncrementAssign(operand);
 
         /// <summary>
@@ -325,6 +413,18 @@ namespace DotNext.Metaprogramming
         /// <returns>Binary expression.</returns>
         public static BinaryExpression Assign(this ParameterExpression left, Expression value)
             => Expression.Assign(left, value);
+        
+        /// <summary>
+        /// Constructs assignment expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.b[i] = c</code>.
+        /// </remarks>
+        /// <param name="left">The assignee.</param>
+        /// <param name="value">The value to be assigned to the left expression.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression Assign(this IndexExpression left, Expression value)
+            => Expression.Assign(left, value);
 
         /// <summary>
         /// Constructs assignment expression.
@@ -335,6 +435,28 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The assignee.</param>
         /// <returns>Binary expression.</returns>
         public static BinaryExpression AssignDefault(this ParameterExpression left)
+            => left.Assign(left.Type.AsDefault());
+
+        /// <summary>
+        /// Constructs assignment expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.member = default(T)</code>.
+        /// </remarks>
+        /// <param name="left">The assignee.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression AssignDefault(this MemberExpression left)
+            => left.Assign(left.Type.AsDefault());
+
+        /// <summary>
+        /// Constructs assignment expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>a.member[i] = default(T)</code>.
+        /// </remarks>
+        /// <param name="left">The assignee.</param>
+        /// <returns>Binary expression.</returns>
+        public static BinaryExpression AssignDefault(this IndexExpression left)
             => left.Assign(left.Type.AsDefault());
 
         /// <summary>

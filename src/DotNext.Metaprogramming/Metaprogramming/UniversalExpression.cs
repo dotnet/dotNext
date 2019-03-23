@@ -384,30 +384,6 @@ namespace DotNext.Metaprogramming
         public UniversalExpression TryConvert<T>() => expression.TryConvert<T>();
 
         /// <summary>
-        /// Constructs an expression that decrements this expression by 1 and assigns the result back to the expression.
-        /// </summary>
-        /// <returns>Unary expression.</returns>
-        public UniversalExpression PreDecrementAssign() => expression.PreDecrementAssign();
-
-        /// <summary>
-        /// Constructs an expression that represents the assignment of this expression followed by a subsequent decrement by 1 of the original expression.
-        /// </summary>
-        /// <returns>Unary expression.</returns>
-        public UniversalExpression PostDecrementAssign() => expression.PostDecrementAssign();
-
-        /// <summary>
-        /// Constructs an expression that increments this expression by 1 and assigns the result back to the expression.
-        /// </summary>
-        /// <returns>Unary expression.</returns>
-        public UniversalExpression PreIncrementAssign() => expression.PreIncrementAssign();
-
-        /// <summary>
-        /// Constructs an expression that represents the assignment of this expression followed by a subsequent increment by 1 of the original expression.
-        /// </summary>
-        /// <returns>Unary expression.</returns>
-        public UniversalExpression PostIncrementAssign() => expression.PostIncrementAssign();
-
-        /// <summary>
         /// Binary expression that represents a conditional
         /// OR operation that evaluates the second operand only if the this expression evaluates to <see langword="false"/>.
         /// </summary>

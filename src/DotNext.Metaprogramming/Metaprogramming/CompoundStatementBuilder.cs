@@ -83,7 +83,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <returns>No-operation instruction.</returns>
         public Expression Nop() => AddStatement(Expression.Empty());
-        
+
         /// <summary>
         /// Adds assignment operation to this scope.
         /// </summary>
@@ -91,7 +91,25 @@ namespace DotNext.Metaprogramming
         /// <param name="value">The value to be assigned to the variable.</param>
         /// <returns>Assign operation.</returns>
         public BinaryExpression Assign(ParameterExpression variable, UniversalExpression value)
-            => AddStatement(Expression.Assign(variable, value));
+            => AddStatement(variable.Assign(value));
+
+        /// <summary>
+        /// Adds assignment operation to this scope.
+        /// </summary>
+        /// <param name="indexer">The indexer property or array element to modify.</param>
+        /// <param name="value">The value to be assigned to the member or array element.</param>
+        /// <returns>Assign operation.</returns>
+        public BinaryExpression Assign(IndexExpression indexer, UniversalExpression value)
+            => AddStatement(indexer.Assign(value));
+
+        /// <summary>
+        /// Adds assignment operation to this scope.
+        /// </summary>
+        /// <param name="member">The field or property to modify.</param>
+        /// <param name="value">The value to be assigned to the member.</param>
+        /// <returns>Assign operation.</returns>
+        public BinaryExpression Assign(MemberExpression member, UniversalExpression value)
+            => AddStatement(member.Assign(value));
 
         /// <summary>
         /// Adds an expression that increments given variable by 1 and assigns the result back to the variable.
@@ -155,6 +173,38 @@ namespace DotNext.Metaprogramming
         /// <param name="member">The member to be modified.</param>
         /// <returns>The expression representing decrement.</returns>
         public UnaryExpression PostDecrementAssign(MemberExpression member)
+            => AddStatement(member.PostDecrementAssign());
+        
+        /// <summary>
+        /// Adds an expression that increments given field or property by 1 and assigns the result back to the member.
+        /// </summary>
+        /// <param name="member">The member to be modified.</param>
+        /// <returns>The expression representing increment.</returns>
+        public UnaryExpression PreIncrementAssign(IndexExpression member)
+            => AddStatement(member.PreIncrementAssign());
+
+        /// <summary>
+        /// Adds an expression that represents the assignment of given field or property followed by a subsequent increment by 1 of the original member.
+        /// </summary>
+        /// <param name="member">The member to be modified.</param>
+        /// <returns>The expression representing increment.</returns>
+        public UnaryExpression PostIncrementAssign(IndexExpression member)
+            => AddStatement(member.PostIncrementAssign());
+
+        /// <summary>
+        /// Adds an expression that decrements given field or property by 1 and assigns the result back to the member.
+        /// </summary>
+        /// <param name="member">The member to be modified.</param>
+        /// <returns>The expression representing decrement.</returns>
+        public UnaryExpression PreDecrementAssign(IndexExpression member)
+            => AddStatement(member.PreDecrementAssign());
+
+        /// <summary>
+        /// Adds an expression that represents the assignment of given field or property followed by a subsequent decrement by 1 of the original member.
+        /// </summary>
+        /// <param name="member">The member to be modified.</param>
+        /// <returns>The expression representing decrement.</returns>
+        public UnaryExpression PostDecrementAssign(IndexExpression member)
             => AddStatement(member.PostDecrementAssign());
 
         /// <summary>
