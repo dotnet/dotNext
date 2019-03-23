@@ -121,6 +121,17 @@ namespace DotNext.Runtime.InteropServices
         /// Gets address of the unmanaged memory.
         /// </summary>
         public IntPtr Address => pointer.Address;
+        
+        /// <summary>
+        /// Converts unmanaged pointer into managed pointer.
+        /// </summary>
+        /// <returns>Managed pointer.</returns>
+        /// <exception cref="NullPointerException">This pointer is null.</exception>
+        public ref T Ref
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref pointer.Ref;
+        }
 
         Span<T> IUnmanagedMemory<T>.Span => this;
 
@@ -260,7 +271,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <exception cref="IndexOutOfRangeException">Invalid offset.</exception>    
 		public Pointer<byte> ToPointer(long offset) => offset >= 0 && offset < Pointer<T>.Size ? 
                 pointer.As<byte>() + offset : 
-                throw new IndexOutOfRangeException(ExceptionMessages.InvalidOffsetValue(Pointer<T>.Size));
+                throw new IndexOutOfRangeException(ExceptionMessages.InvalidOffsetValue(offset));
 
         /// <summary>
         /// Obtains typed pointer to the memory block identified by this instance.

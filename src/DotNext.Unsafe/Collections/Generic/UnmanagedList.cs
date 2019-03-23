@@ -39,7 +39,7 @@ namespace DotNext.Collections.Generic
         /// <summary>
         /// Gets capacity of this list.
         /// </summary>
-        public int Capacity => array.Length;
+        public int Capacity => (int)array.Length;
 
         private void EnsureCapacity(int capacity)
         {
@@ -193,7 +193,7 @@ namespace DotNext.Collections.Generic
         /// <param name="item">The object to locate in the list.</param>
         /// <param name="comparer">The equality check function used to compare the given item with the list item.</param>
         /// <returns>The zero-based index of the first occurence of the given item; otherwise, -1.</returns>
-        public int IndexOf(T item, IEqualityComparer<T> comparer) => array.IndexOf(item, 0, count, comparer);
+        public int IndexOf(T item, IEqualityComparer<T> comparer) => (int)array.IndexOf(item, 0, count, comparer);
 
         /// <summary>
         /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire list.
@@ -208,7 +208,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="predicate">The predicate used to check item.</param>
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this list.</returns>
-        public int Find(Predicate<T> predicate) => array.Find(predicate, 0, count);
+        public int Find(Predicate<T> predicate) => (int)array.Find(predicate, 0, count);
 
         /// <summary>
         /// Searches for the specified object and returns the zero-based index of the last occurrence within the entire list.
@@ -223,7 +223,7 @@ namespace DotNext.Collections.Generic
         /// <param name="item">The object to locate in the list.</param>
         /// <param name="comparer">The equality check function used to compare the given item with the list item.</param>
         /// <returns>The zero-based index of the last occurence of the given item; otherwise, -1.</returns>
-        public int LastIndexOf(T item, IEqualityComparer<T> comparer) => array.LastIndexOf(item, 0, count, comparer);
+        public int LastIndexOf(T item, IEqualityComparer<T> comparer) => (int)array.LastIndexOf(item, 0, count, comparer);
 
         /// <summary>
         /// Searches item matching to the given predicate in this list, and returns 
@@ -231,7 +231,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="predicate">The predicate used to check item.</param>
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this list.</returns>
-        public int FindLast(Predicate<T> predicate) => array.FindLast(predicate, 0, count);
+        public int FindLast(Predicate<T> predicate) => (int)array.FindLast(predicate, 0, count);
 
         /// <summary>
         /// Uses a binary search algorithm to locate a specific element in the sorted list.
@@ -239,14 +239,14 @@ namespace DotNext.Collections.Generic
         /// <param name="item">The value to locate.</param>
         /// <param name="comparison">The comparison algorithm.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the list.</returns>
-        public int BinarySearch(T item, Comparison<T> comparison) => array.BinarySearch(item, 0, count, comparison);
+        public int BinarySearch(T item, Comparison<T> comparison) => (int)array.BinarySearch(item, 0, count, comparison);
 
         /// <summary>
         /// Uses a binary search algorithm to locate a specific element in the sorted list.
         /// </summary>
         /// <param name="item">The value to locate.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the list.</returns>
-        public int BinarySearch(T item) => array.BinarySearch(item, 0, count, ValueType<T>.BitwiseCompare);
+        public int BinarySearch(T item) => (int)array.BinarySearch(item, 0, count, ValueType<T>.BitwiseCompare);
 
         /// <summary>
         /// Sorts the items in this list according with given comparer.
