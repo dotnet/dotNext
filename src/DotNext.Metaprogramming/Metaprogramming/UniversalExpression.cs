@@ -28,6 +28,11 @@ namespace DotNext.Metaprogramming
         /// <param name="expr">An expression to be wrapped.</param>
         public UniversalExpression(Expression expr) => expression = expr;
 
+        /// <summary>
+        /// Gets the static type of this expression.
+        /// </summary>
+        public Type Type => expression?.Type ?? typeof(void);
+
         internal static IEnumerable<Expression> AsExpressions(IEnumerable<UniversalExpression> expressions)
             => expressions.Select(Conversion<UniversalExpression, Expression>.Converter.AsFunc());
 
@@ -330,7 +335,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Constructs suspension point in the execution of the lambda function until the awaited task completes.
         /// </summary>
-        /// <returns></returns>
+        /// <returns><see langword="await"/> expression.</returns>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
         public UniversalExpression Await() => expression.Await();
 
@@ -377,30 +382,6 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="T">The target type.</typeparam>
         /// <returns>Type conversion expression.</returns>
         public UniversalExpression TryConvert<T>() => expression.TryConvert<T>();
-
-        /// <summary>
-        /// Constructs an expression that decrements this expression by 1 and assigns the result back to the expression.
-        /// </summary>
-        /// <returns>Unary expression.</returns>
-        public UniversalExpression PreDecrementAssign() => expression.PreDecrementAssign();
-
-        /// <summary>
-        /// Constructs an expression that represents the assignment of this expression followed by a subsequent decrement by 1 of the original expression.
-        /// </summary>
-        /// <returns>Unary expression.</returns>
-        public UniversalExpression PostDecrementAssign() => expression.PostDecrementAssign();
-
-        /// <summary>
-        /// Constructs an expression that increments this expression by 1 and assigns the result back to the expression.
-        /// </summary>
-        /// <returns>Unary expression.</returns>
-        public UniversalExpression PreIncrementAssign() => expression.PreIncrementAssign();
-
-        /// <summary>
-        /// Constructs an expression that represents the assignment of this expression followed by a subsequent increment by 1 of the original expression.
-        /// </summary>
-        /// <returns>Unary expression.</returns>
-        public UniversalExpression PostIncrementAssign() => expression.PostIncrementAssign();
 
         /// <summary>
         /// Binary expression that represents a conditional
