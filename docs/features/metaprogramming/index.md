@@ -1,6 +1,6 @@
 Metaprogramming
 ====
-Metaprogramming API provided by DotNext library allows to generate and execute code in runtime. Code generation object model is language agnostic so developer can use it from any .NET programming language. From design point of view, metaprogramming capabilities built on top of [LINQ Expressions](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions) without direct usage of IL generator. This increases portability of the library between different .NET implementations.
+Metaprogramming API provided by DotNext library allows to generate and execute code in runtime. Code generation object model is language agnostic so developer can use it from any .NET programming language. From design point of view, metaprogramming capabilities built on top of [LINQ Expressions](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions) without direct usage of IL generator. This increases portability of the library between different .NET implementations. All custom expressions introduced by Metaprogramming libary are reducible into predefined set of LINQ Expressions.
 
 > [!WARNING]
 > Xamarin.iOS supports only interpretation of Expression Trees without Just-in-Time Compilation. Since the iPhone's kernel prevents an application from generating code dynamically Mono on the iPhone does not support any form of dynamic code generation. Check out [this article](https://docs.microsoft.com/en-us/xamarin/ios/internals/limitations) for more information. As a result, the code generated using DotNext Metaprogramming library demonstrates significantly slower performance on iOS.
@@ -17,7 +17,7 @@ Metaprogramming library extends LINQ Expression with the following features:
 * Extension methods for easy construction of compound expressions and statements
 * Universal expression which allows to use standard operators provided by programming language
 
-All these extensions are compatible with [Expression class](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression).
+All these extensions are compatible with [Expression](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression) class.
 
 Additionally, DotNext Metaprogramming library replaces limit of [C# Expression Trees](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/expression-trees/) where only single-line lambda expression is allowed.
 
