@@ -37,6 +37,13 @@
     - name: lock Statement
       href: metaprogramming/lock.md
 - name: Unsafe Data Structures
-  href: unsafe.md
+  href: unsafe/index.md
+  items:
+    - name: Unmanaged Array
+      href: unsafe/array.md
+    - name: Off-Heap Allocation of Value Type
+      href: unsafe/offheap.md
+    - name: Unmanaged List
+      href: unsafe/list.md
 - name: Benchmarks
   href: benchmarks.md
