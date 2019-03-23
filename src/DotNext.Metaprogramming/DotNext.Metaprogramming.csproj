@@ -15,8 +15,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>metaprogramming</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Integration with DLR for more convenient generation of expression trees
-Monitor lock statement support</PackageReleaseNotes>
+    <PackageReleaseNotes>Support of assignment operation for array element, property, indexer property.
+Ability to add await statement</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
