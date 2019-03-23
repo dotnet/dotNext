@@ -25,7 +25,7 @@ namespace DotNext.Runtime.InteropServices
 		/// </remarks>
 		public sealed class Handle : UnmanagedMemoryHandle<T>
 		{
-			private readonly int length;
+			private readonly long length;
 
 			private Handle(UnmanagedArray<T> array, bool ownsHandle)
 				: base(array, ownsHandle)
@@ -42,7 +42,7 @@ namespace DotNext.Runtime.InteropServices
             /// or <see cref="Dispose()"/> will be called directly.
             /// </remarks>
 			/// <param name="length">Array length.</param>
-			public Handle(int length)
+			public Handle(long length)
 				: this(new UnmanagedArray<T>(length), true)
 			{
 
@@ -94,27 +94,27 @@ namespace DotNext.Runtime.InteropServices
 		/// </summary>
 		/// <param name="length">Array length. Cannot be less or equal than zero.</param>
 		/// <exception cref="ArgumentOutOfRangeException">Invalid length.</exception>
-		public UnmanagedArray(int length)
+		public UnmanagedArray(long length)
 		{
 			if (length < 0)
 				throw new ArgumentOutOfRangeException(ExceptionMessages.ArrayNegativeLength);
 			else if ((Length = length) > 0L)
 			{
 				var size = length * Pointer<T>.Size;
-				pointer = new Pointer<T>(Marshal.AllocHGlobal(size));
+                pointer = new Pointer<T>(Marshal.AllocHGlobal(new IntPtr(size)));
 				pointer.Clear(length);
 			}
 			else
 				pointer = Pointer<T>.Null;
 		}
 
-		private UnmanagedArray(Pointer<T> pointer, int length)
+		private UnmanagedArray(Pointer<T> pointer, long length)
 		{
 			Length = length;
 			this.pointer = pointer;
 		}
 
-		private UnmanagedArray(IntPtr pointer, int length)
+		private UnmanagedArray(IntPtr pointer, long length)
 			: this((T*)pointer, length)
 		{
 		}
@@ -122,7 +122,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <summary>
 		/// Gets length of this array.
 		/// </summary>
-		public int Length { get; }
+		public long Length { get; }
 
 		/// <summary>
 		/// Size of allocated memory, in bytes.
@@ -147,7 +147,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="startIndex">The starting index of the search.</param>
         /// <param name="count">The number of elements to search.</param>
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
-        public int FindLast(Predicate<T> predicate, int startIndex, int count)
+        public long FindLast(Predicate<T> predicate, long startIndex, long count)
         {
             if (count == 0 || Length == 0)
                 return -1;
@@ -167,7 +167,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="predicate">The predicate used to check item.</param>
         /// <param name="startIndex">The starting index of the search.</param>
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
-        public int FindLast(Predicate<T> predicate, int startIndex) => FindLast(predicate, startIndex, Length);
+        public long FindLast(Predicate<T> predicate, long startIndex) => FindLast(predicate, startIndex, Length);
 
         /// <summary>
         /// Searches item matching to the given predicate in the unmanaged array, and returns 
@@ -175,7 +175,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="predicate">The predicate used to check item.</param>
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
-        public int FindLast(Predicate<T> predicate) => FindLast(predicate, 0);
+        public long FindLast(Predicate<T> predicate) => FindLast(predicate, 0);
                 
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
@@ -187,7 +187,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="count">The number of elements to search.</param>
         /// <param name="comparer">The custom comparer used to compare array element with the given value.</param>
         /// <returns>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public int LastIndexOf(T item, int startIndex, int count, IEqualityComparer<T> comparer)
+        public long LastIndexOf(T item, long startIndex, long count, IEqualityComparer<T> comparer)
         {
             if (count == 0 || Length == 0)
                 return -1;
@@ -208,7 +208,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="startIndex">The starting index of the search.</param>
         /// <param name="comparer">The custom comparer used to compare array element with the given value.</param>
         /// <returns>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public int LastIndexOf(T item, int startIndex, IEqualityComparer<T> comparer) => LastIndexOf(item, startIndex, Length, comparer);
+        public long LastIndexOf(T item, long startIndex, IEqualityComparer<T> comparer) => LastIndexOf(item, startIndex, Length, comparer);
 
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
@@ -222,7 +222,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="item">The value to locate in this array.</param>
         /// <param name="startIndex">The starting index of the search.</param>
         /// <returns>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public int LastIndexOf(T item, int startIndex) => LastIndexOf(item, startIndex, EqualityComparer<T>.Default);
+        public long LastIndexOf(T item, long startIndex) => LastIndexOf(item, startIndex, EqualityComparer<T>.Default);
 
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
@@ -235,7 +235,7 @@ namespace DotNext.Runtime.InteropServices
         /// </remarks>
         /// <param name="item">The value to locate in this array.</param>
         /// <returns>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public int LastIndexOf(T item) => LastIndexOf(item, 0);
+        public long LastIndexOf(T item) => LastIndexOf(item, 0);
 
         /// <summary>
         /// Searches item matching to the given predicate in a range of elements of the unmanaged array, and returns 
@@ -246,7 +246,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="startIndex">The starting index of the search.</param>
         /// <param name="count">The number of elements to search.</param>
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
-        public int Find(Predicate<T> predicate, int startIndex, int count)
+        public long Find(Predicate<T> predicate, long startIndex, long count)
         {
             if (count == 0 || Length == 0)
                 return -1;
@@ -266,7 +266,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="predicate">The predicate used to check item.</param>
         /// <param name="startIndex">The starting index of the search.</param>
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
-        public int Find(Predicate<T> predicate, int startIndex) => Find(predicate, startIndex, Length);
+        public long Find(Predicate<T> predicate, long startIndex) => Find(predicate, startIndex, Length);
 
         /// <summary>
         /// Searches item matching to the given predicate in the unmanaged array, and returns 
@@ -274,7 +274,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="predicate">The predicate used to check item.</param>
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
-        public int Find(Predicate<T> predicate) => Find(predicate, 0);
+        public long Find(Predicate<T> predicate) => Find(predicate, 0);
 
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
@@ -286,7 +286,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="count">The number of elements to search.</param>
         /// <param name="comparer">The custom comparer used to compare array element with the given value.</param>
         /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public int IndexOf(T item, int startIndex, int count, IEqualityComparer<T> comparer)
+        public long IndexOf(T item, long startIndex, long count, IEqualityComparer<T> comparer)
         {
             if (count == 0 || Length == 0)
                 return -1;
@@ -307,7 +307,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="startIndex">The starting index of the search.</param>
         /// <param name="comparer">The custom comparer used to compare array element with the given value.</param>
         /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public int IndexOf(T item, int startIndex, IEqualityComparer<T> comparer) => IndexOf(item, startIndex, Length, comparer);
+        public long IndexOf(T item, long startIndex, IEqualityComparer<T> comparer) => IndexOf(item, startIndex, Length, comparer);
 
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
@@ -321,7 +321,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="item">The value to locate in this array.</param>
         /// <param name="startIndex">The starting index of the search.</param>
         /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public int IndexOf(T item, int startIndex) => IndexOf(item, startIndex, ValueType<T>.EqualityComparer);
+        public long IndexOf(T item, long startIndex) => IndexOf(item, startIndex, ValueType<T>.EqualityComparer);
 
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
@@ -334,7 +334,7 @@ namespace DotNext.Runtime.InteropServices
         /// </remarks>
         /// <param name="item">The value to locate in this array.</param>
         /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public int IndexOf(T item) => IndexOf(item, 0);
+        public long IndexOf(T item) => IndexOf(item, 0);
 
         /// <summary>
         /// Uses a binary search algorithm to locate a specific element in the sorted array.
@@ -344,7 +344,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="count">The length of the range to search.</param>
         /// <param name="comparison">The comparison algorithm.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
-        public int BinarySearch(T item, int startIndex, int count, Comparison<T> comparison)
+        public long BinarySearch(T item, long startIndex, long count, Comparison<T> comparison)
         {
             count = count.UpperBounded(Length);
             count -= 1;
@@ -368,9 +368,9 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="item">The value to locate.</param>
         /// <param name="comparison">The comparison algorithm.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
-        public int BinarySearch(T item, Comparison<T> comparison) => BinarySearch(item, 0, Length, comparison);
+        public long BinarySearch(T item, Comparison<T> comparison) => BinarySearch(item, 0, Length, comparison);
 
-        private int Partition(int startIndex, int endIndex, Comparison<T> comparison)
+        private long Partition(long startIndex, long endIndex, Comparison<T> comparison)
         {
             var pivot = (pointer + endIndex).Value;
             var i = startIndex - 1;
@@ -390,7 +390,7 @@ namespace DotNext.Runtime.InteropServices
             return i;
         }
 
-        private void QuickSort(int startIndex, int endIndex, Comparison<T> comparison)
+        private void QuickSort(long startIndex, long endIndex, Comparison<T> comparison)
         {
             if (startIndex < endIndex)
             {
@@ -406,7 +406,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="startIndex">The starting index of the range to sort.</param>
         /// <param name="count">The length of the range to sort.</param>
         /// <param name="comparison">The comparison algorithm.</param>
-        public void Sort(int startIndex, int count, Comparison<T> comparison)
+        public void Sort(long startIndex, long count, Comparison<T> comparison)
         {
             if (count == 0 || Length == 0)
                 return;
@@ -436,18 +436,18 @@ namespace DotNext.Runtime.InteropServices
         /// </remarks>
         /// <param name="item">The value to locate.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
-        public int BinarySearch(T item) => BinarySearch(item, ValueType<T>.BitwiseCompare);
+        public long BinarySearch(T item) => BinarySearch(item, ValueType<T>.BitwiseCompare);
 
         /// <summary>
         /// Gets pointer to array element.
         /// </summary>
         /// <param name="index">Index of the element.</param>
         /// <returns>Pointer to array element.</returns>
-        public Pointer<T> ElementAt(int index)
+        public Pointer<T> ElementAt(long index)
             => index >= 0 && index < Length ?
             pointer + index :
             throw new IndexOutOfRangeException(ExceptionMessages.InvalidIndexValue(Length));
-
+        
 		/// <summary>
 		/// Gets or sets array element.
 		/// </summary>
@@ -799,7 +799,16 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="array">The unmanaged array.</param>
 		public static implicit operator Span<T>(UnmanagedArray<T> array)
-			=> array.pointer == Memory.NullPtr ? default : new Span<T>(array.pointer, array.Length);
+        {
+            //TODO: should be fixed if Span will support long data type
+            //for length parameter
+            if (array.pointer.IsNull)
+                return default;
+            else if (array.Length <= int.MaxValue)
+                return new Span<T>(array.pointer, (int)array.Length);
+            else
+                return new Span<T>(array.pointer, int.MaxValue);
+        }
 
         /// <summary>
         /// Determines whether two unmanaged arrays point to the same memory block.

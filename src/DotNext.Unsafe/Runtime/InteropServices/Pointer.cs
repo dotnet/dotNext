@@ -334,19 +334,22 @@ namespace DotNext.Runtime.InteropServices
         public Pointer<U> As<U>()
             where U : unmanaged
             => Size <= Pointer<U>.Size ? new Pointer<U>(value) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize);
-        
+
         /// <summary>
         /// Converts unmanaged pointer into managed pointer.
         /// </summary>
         /// <returns>Managed pointer.</returns>
         /// <exception cref="NullPointerException">This pointer is null.</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T AsRef()
+        public ref T Ref
         {
-            if(IsNull)
-                throw new NullPointerException();
-            else
-                return ref Unsafe.AsRef<T>(value);
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                if (IsNull)
+                    throw new NullPointerException();
+                else
+                    return ref Unsafe.AsRef<T>(value);
+            }
         }
 
         /// <summary>
