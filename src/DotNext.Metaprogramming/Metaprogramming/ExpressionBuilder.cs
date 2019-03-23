@@ -453,10 +453,10 @@ namespace DotNext.Metaprogramming
         /// Constructs suspension point in the execution of the lambda function until the awaited task completes.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>await b</code>.
+        /// The equivalent code is <c>await b</c>.
         /// </remarks>
         /// <param name="expression">The expression </param>
-        /// <returns></returns>
+        /// <returns><see langword="await"/> expression.</returns>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
         public static AwaitExpression Await(this Expression expression)
             => new AwaitExpression(expression);

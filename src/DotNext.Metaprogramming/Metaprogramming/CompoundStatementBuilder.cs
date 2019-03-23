@@ -124,6 +124,38 @@ namespace DotNext.Metaprogramming
         /// <returns>The expression representing decrement.</returns>
         public UnaryExpression PostDecrementAssign(ParameterExpression variable)
             => AddStatement(variable.PostDecrementAssign());
+        
+        /// <summary>
+        /// Adds an expression that increments given field or property by 1 and assigns the result back to the member.
+        /// </summary>
+        /// <param name="member">The member to be modified.</param>
+        /// <returns>The expression representing increment.</returns>
+        public UnaryExpression PreIncrementAssign(MemberExpression member)
+            => AddStatement(member.PreIncrementAssign());
+
+        /// <summary>
+        /// Adds an expression that represents the assignment of given field or property followed by a subsequent increment by 1 of the original member.
+        /// </summary>
+        /// <param name="member">The member to be modified.</param>
+        /// <returns>The expression representing increment.</returns>
+        public UnaryExpression PostIncrementAssign(MemberExpression member)
+            => AddStatement(member.PostIncrementAssign());
+
+        /// <summary>
+        /// Adds an expression that decrements given field or property by 1 and assigns the result back to the member.
+        /// </summary>
+        /// <param name="member">The member to be modified.</param>
+        /// <returns>The expression representing decrement.</returns>
+        public UnaryExpression PreDecrementAssign(MemberExpression member)
+            => AddStatement(member.PreDecrementAssign());
+
+        /// <summary>
+        /// Adds an expression that represents the assignment of given field or property followed by a subsequent decrement by 1 of the original member.
+        /// </summary>
+        /// <param name="member">The member to be modified.</param>
+        /// <returns>The expression representing decrement.</returns>
+        public UnaryExpression PostDecrementAssign(MemberExpression member)
+            => AddStatement(member.PostDecrementAssign());
 
         /// <summary>
         /// Adds local variable assignment operation this scope.
@@ -156,7 +188,7 @@ namespace DotNext.Metaprogramming
         /// <param name="instance"><see langword="this"/> argument.</param>
         /// <param name="instanceField">Instance field to be assigned.</param>
         /// <param name="value">A new value of the field.</param>
-        public void Assign(Expression instance, FieldInfo instanceField, UniversalExpression value)
+        public void Assign(UniversalExpression instance, FieldInfo instanceField, UniversalExpression value)
             => AddStatement(Expression.Assign(Expression.Field(instance, instanceField), value));
 
         /// <summary>
@@ -165,7 +197,7 @@ namespace DotNext.Metaprogramming
         /// <param name="staticField">Static field to be assigned.</param>
         /// <param name="value">A new value of the field.</param>
         public void Assign(FieldInfo staticField, UniversalExpression value)
-            => Assign(null, staticField, value);
+            => AddStatement(Expression.Assign(Expression.Field(null, staticField), value));
 
         /// <summary>
         /// Adds invocation statement.
@@ -329,9 +361,34 @@ namespace DotNext.Metaprogramming
         public ParameterExpression DeclareVariable(Type variableType, string name)
         {
             var variable = Expression.Variable(variableType, name);
-            variables.Add(name, variable);
+            DeclareVariable(variable);
             return variable;
         }
+
+        /// <summary>
+        /// Declares initialized local variable of automatically
+        /// inferred type.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <c>var i = expr;</c>
+        /// </remarks>
+        /// <param name="name">The name of the variable.</param>
+        /// <param name="init">Initialization expression.</param>
+        /// <returns>The expression representing local variable.</returns>
+        public ParameterExpression DeclareVariable(string name, UniversalExpression init)
+        {
+            var variable = DeclareVariable(init.Type, name);
+            Assign(variable, init);
+            return variable;
+        }
+
+        /// <summary>
+        /// Adds await operator.
+        /// </summary>
+        /// <param name="asyncResult">The expression representing asynchronous computing process.</param>
+        /// <returns><see langword="await"/> expression.</returns>
+        public Expression Await(UniversalExpression asyncResult)
+            => AddStatement<Expression>(asyncResult.Await());
 
         /// <summary>
         /// Adds if-then-else statement to this scope.
