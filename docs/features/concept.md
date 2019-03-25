@@ -69,5 +69,5 @@ Now this concept allows to obtain value of `Length` property from any object.
 The library offers ready-to-use concept types:
 * [Number&lt;T&gt;](../api/DotNext.Number-1.yml) represents any numeric type. This concept exposes operators, instance and static methods that are common to all numeric types in .NET Base Class Library.
 * [Disposable](../api/DotNext.Disposable-1.yml) represents any type implementing _Dispose pattern_ even if target type doesn't implement [IDisposable](https://docs.microsoft.com/en-us/dotnet/api/system.idisposable) interface directly.
-* [Awaitable&lt;T, TAwaiter&gt;](../api/DotNext.Runtime.CompilerServices.Awaitable-2) or [Awaitable&lt;T, TAwaiter, R&gt;](../api/DotNext.Runtime.CompilerServices.Awaitable-2) represents_awaitable pattern_ which describes any type compatible with **await** operator.
+* [Awaitable&lt;T, TAwaiter&gt;](../api/DotNext.Runtime.CompilerServices.Awaitable-2.yml) or [Awaitable&lt;T, TAwaiter, R&gt;](../api/DotNext.Runtime.CompilerServices.Awaitable-2.yml) represents_awaitable pattern_ which describes any type compatible with **await** operator.
 

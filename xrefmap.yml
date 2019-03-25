@@ -4113,18 +4113,30 @@ references:
   commentId: T:DotNext.Metaprogramming.CompoundStatementBuilder
   fullName: DotNext.Metaprogramming.CompoundStatementBuilder
   nameWithType: CompoundStatementBuilder
-- uid: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.Expression,System.Reflection.FieldInfo,DotNext.Metaprogramming.UniversalExpression)
-  name: Assign(Expression, FieldInfo, UniversalExpression)
-  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_System_Linq_Expressions_Expression_System_Reflection_FieldInfo_DotNext_Metaprogramming_UniversalExpression_
-  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.Expression,System.Reflection.FieldInfo,DotNext.Metaprogramming.UniversalExpression)
-  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.Expression, System.Reflection.FieldInfo, DotNext.Metaprogramming.UniversalExpression)
-  nameWithType: CompoundStatementBuilder.Assign(Expression, FieldInfo, UniversalExpression)
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(DotNext.Metaprogramming.UniversalExpression,System.Reflection.FieldInfo,DotNext.Metaprogramming.UniversalExpression)
+  name: Assign(UniversalExpression, FieldInfo, UniversalExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_DotNext_Metaprogramming_UniversalExpression_System_Reflection_FieldInfo_DotNext_Metaprogramming_UniversalExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.Assign(DotNext.Metaprogramming.UniversalExpression,System.Reflection.FieldInfo,DotNext.Metaprogramming.UniversalExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(DotNext.Metaprogramming.UniversalExpression, System.Reflection.FieldInfo, DotNext.Metaprogramming.UniversalExpression)
+  nameWithType: CompoundStatementBuilder.Assign(UniversalExpression, FieldInfo, UniversalExpression)
 - uid: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.Expression,System.Reflection.PropertyInfo,DotNext.Metaprogramming.UniversalExpression)
   name: Assign(Expression, PropertyInfo, UniversalExpression)
   href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_System_Linq_Expressions_Expression_System_Reflection_PropertyInfo_DotNext_Metaprogramming_UniversalExpression_
   commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.Expression,System.Reflection.PropertyInfo,DotNext.Metaprogramming.UniversalExpression)
   fullName: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.Expression, System.Reflection.PropertyInfo, DotNext.Metaprogramming.UniversalExpression)
   nameWithType: CompoundStatementBuilder.Assign(Expression, PropertyInfo, UniversalExpression)
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.IndexExpression,DotNext.Metaprogramming.UniversalExpression)
+  name: Assign(IndexExpression, UniversalExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_System_Linq_Expressions_IndexExpression_DotNext_Metaprogramming_UniversalExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.IndexExpression,DotNext.Metaprogramming.UniversalExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.IndexExpression, DotNext.Metaprogramming.UniversalExpression)
+  nameWithType: CompoundStatementBuilder.Assign(IndexExpression, UniversalExpression)
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.MemberExpression,DotNext.Metaprogramming.UniversalExpression)
+  name: Assign(MemberExpression, UniversalExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_System_Linq_Expressions_MemberExpression_DotNext_Metaprogramming_UniversalExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.MemberExpression,DotNext.Metaprogramming.UniversalExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.MemberExpression, DotNext.Metaprogramming.UniversalExpression)
+  nameWithType: CompoundStatementBuilder.Assign(MemberExpression, UniversalExpression)
 - uid: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.ParameterExpression,DotNext.Metaprogramming.UniversalExpression)
   name: Assign(ParameterExpression, UniversalExpression)
   href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_System_Linq_Expressions_ParameterExpression_DotNext_Metaprogramming_UniversalExpression_
@@ -4172,6 +4184,19 @@ references:
   fullName.vb: DotNext.Metaprogramming.CompoundStatementBuilder.AsyncLambda(Of D)(System.Action(Of DotNext.Metaprogramming.AsyncLambdaBuilder(Of D)))
   nameWithType: CompoundStatementBuilder.AsyncLambda<D>(Action<AsyncLambdaBuilder<D>>)
   nameWithType.vb: CompoundStatementBuilder.AsyncLambda(Of D)(Action(Of AsyncLambdaBuilder(Of D)))
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.Await(DotNext.Metaprogramming.UniversalExpression)
+  name: Await(UniversalExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Await_DotNext_Metaprogramming_UniversalExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.Await(DotNext.Metaprogramming.UniversalExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.Await(DotNext.Metaprogramming.UniversalExpression)
+  nameWithType: CompoundStatementBuilder.Await(UniversalExpression)
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.Await*
+  name: Await
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Await_
+  commentId: Overload:DotNext.Metaprogramming.CompoundStatementBuilder.Await
+  isSpec: "True"
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.Await
+  nameWithType: CompoundStatementBuilder.Await
 - uid: DotNext.Metaprogramming.CompoundStatementBuilder.Body
   name: Body
   href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Body
@@ -4237,6 +4262,12 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.CompoundStatementBuilder.Call
   nameWithType: CompoundStatementBuilder.Call
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.DeclareVariable(System.String,DotNext.Metaprogramming.UniversalExpression)
+  name: DeclareVariable(String, UniversalExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_DeclareVariable_System_String_DotNext_Metaprogramming_UniversalExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.DeclareVariable(System.String,DotNext.Metaprogramming.UniversalExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.DeclareVariable(System.String, DotNext.Metaprogramming.UniversalExpression)
+  nameWithType: CompoundStatementBuilder.DeclareVariable(String, UniversalExpression)
 - uid: DotNext.Metaprogramming.CompoundStatementBuilder.DeclareVariable(System.Type,System.String)
   name: DeclareVariable(Type, String)
   href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_DeclareVariable_System_Type_System_String_
@@ -4542,6 +4573,18 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.CompoundStatementBuilder.Parent
   nameWithType: CompoundStatementBuilder.Parent
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.PostDecrementAssign(System.Linq.Expressions.IndexExpression)
+  name: PostDecrementAssign(IndexExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PostDecrementAssign_System_Linq_Expressions_IndexExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.PostDecrementAssign(System.Linq.Expressions.IndexExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.PostDecrementAssign(System.Linq.Expressions.IndexExpression)
+  nameWithType: CompoundStatementBuilder.PostDecrementAssign(IndexExpression)
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.PostDecrementAssign(System.Linq.Expressions.MemberExpression)
+  name: PostDecrementAssign(MemberExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PostDecrementAssign_System_Linq_Expressions_MemberExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.PostDecrementAssign(System.Linq.Expressions.MemberExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.PostDecrementAssign(System.Linq.Expressions.MemberExpression)
+  nameWithType: CompoundStatementBuilder.PostDecrementAssign(MemberExpression)
 - uid: DotNext.Metaprogramming.CompoundStatementBuilder.PostDecrementAssign(System.Linq.Expressions.ParameterExpression)
   name: PostDecrementAssign(ParameterExpression)
   href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PostDecrementAssign_System_Linq_Expressions_ParameterExpression_
@@ -4555,6 +4598,18 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.CompoundStatementBuilder.PostDecrementAssign
   nameWithType: CompoundStatementBuilder.PostDecrementAssign
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.PostIncrementAssign(System.Linq.Expressions.IndexExpression)
+  name: PostIncrementAssign(IndexExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PostIncrementAssign_System_Linq_Expressions_IndexExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.PostIncrementAssign(System.Linq.Expressions.IndexExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.PostIncrementAssign(System.Linq.Expressions.IndexExpression)
+  nameWithType: CompoundStatementBuilder.PostIncrementAssign(IndexExpression)
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.PostIncrementAssign(System.Linq.Expressions.MemberExpression)
+  name: PostIncrementAssign(MemberExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PostIncrementAssign_System_Linq_Expressions_MemberExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.PostIncrementAssign(System.Linq.Expressions.MemberExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.PostIncrementAssign(System.Linq.Expressions.MemberExpression)
+  nameWithType: CompoundStatementBuilder.PostIncrementAssign(MemberExpression)
 - uid: DotNext.Metaprogramming.CompoundStatementBuilder.PostIncrementAssign(System.Linq.Expressions.ParameterExpression)
   name: PostIncrementAssign(ParameterExpression)
   href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PostIncrementAssign_System_Linq_Expressions_ParameterExpression_
@@ -4568,6 +4623,18 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.CompoundStatementBuilder.PostIncrementAssign
   nameWithType: CompoundStatementBuilder.PostIncrementAssign
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.PreDecrementAssign(System.Linq.Expressions.IndexExpression)
+  name: PreDecrementAssign(IndexExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PreDecrementAssign_System_Linq_Expressions_IndexExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.PreDecrementAssign(System.Linq.Expressions.IndexExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.PreDecrementAssign(System.Linq.Expressions.IndexExpression)
+  nameWithType: CompoundStatementBuilder.PreDecrementAssign(IndexExpression)
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.PreDecrementAssign(System.Linq.Expressions.MemberExpression)
+  name: PreDecrementAssign(MemberExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PreDecrementAssign_System_Linq_Expressions_MemberExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.PreDecrementAssign(System.Linq.Expressions.MemberExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.PreDecrementAssign(System.Linq.Expressions.MemberExpression)
+  nameWithType: CompoundStatementBuilder.PreDecrementAssign(MemberExpression)
 - uid: DotNext.Metaprogramming.CompoundStatementBuilder.PreDecrementAssign(System.Linq.Expressions.ParameterExpression)
   name: PreDecrementAssign(ParameterExpression)
   href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PreDecrementAssign_System_Linq_Expressions_ParameterExpression_
@@ -4581,6 +4648,18 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.CompoundStatementBuilder.PreDecrementAssign
   nameWithType: CompoundStatementBuilder.PreDecrementAssign
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.PreIncrementAssign(System.Linq.Expressions.IndexExpression)
+  name: PreIncrementAssign(IndexExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PreIncrementAssign_System_Linq_Expressions_IndexExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.PreIncrementAssign(System.Linq.Expressions.IndexExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.PreIncrementAssign(System.Linq.Expressions.IndexExpression)
+  nameWithType: CompoundStatementBuilder.PreIncrementAssign(IndexExpression)
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.PreIncrementAssign(System.Linq.Expressions.MemberExpression)
+  name: PreIncrementAssign(MemberExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PreIncrementAssign_System_Linq_Expressions_MemberExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.PreIncrementAssign(System.Linq.Expressions.MemberExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.PreIncrementAssign(System.Linq.Expressions.MemberExpression)
+  nameWithType: CompoundStatementBuilder.PreIncrementAssign(MemberExpression)
 - uid: DotNext.Metaprogramming.CompoundStatementBuilder.PreIncrementAssign(System.Linq.Expressions.ParameterExpression)
   name: PreIncrementAssign(ParameterExpression)
   href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_PreIncrementAssign_System_Linq_Expressions_ParameterExpression_
@@ -4871,6 +4950,12 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.ExpressionBuilder.AsDefault
   nameWithType: ExpressionBuilder.AsDefault
+- uid: DotNext.Metaprogramming.ExpressionBuilder.Assign(System.Linq.Expressions.IndexExpression,System.Linq.Expressions.Expression)
+  name: Assign(IndexExpression, Expression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Assign_System_Linq_Expressions_IndexExpression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.Assign(System.Linq.Expressions.IndexExpression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.Assign(System.Linq.Expressions.IndexExpression, System.Linq.Expressions.Expression)
+  nameWithType: ExpressionBuilder.Assign(IndexExpression, Expression)
 - uid: DotNext.Metaprogramming.ExpressionBuilder.Assign(System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression)
   name: Assign(MemberExpression, Expression)
   href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_Assign_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_Expression_
@@ -4890,6 +4975,18 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.ExpressionBuilder.Assign
   nameWithType: ExpressionBuilder.Assign
+- uid: DotNext.Metaprogramming.ExpressionBuilder.AssignDefault(System.Linq.Expressions.IndexExpression)
+  name: AssignDefault(IndexExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_AssignDefault_System_Linq_Expressions_IndexExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.AssignDefault(System.Linq.Expressions.IndexExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.AssignDefault(System.Linq.Expressions.IndexExpression)
+  nameWithType: ExpressionBuilder.AssignDefault(IndexExpression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.AssignDefault(System.Linq.Expressions.MemberExpression)
+  name: AssignDefault(MemberExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_AssignDefault_System_Linq_Expressions_MemberExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.AssignDefault(System.Linq.Expressions.MemberExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.AssignDefault(System.Linq.Expressions.MemberExpression)
+  nameWithType: ExpressionBuilder.AssignDefault(MemberExpression)
 - uid: DotNext.Metaprogramming.ExpressionBuilder.AssignDefault(System.Linq.Expressions.ParameterExpression)
   name: AssignDefault(ParameterExpression)
   href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_AssignDefault_System_Linq_Expressions_ParameterExpression_
@@ -5414,12 +5511,24 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.ExpressionBuilder.OrElse
   nameWithType: ExpressionBuilder.OrElse
-- uid: DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign(System.Linq.Expressions.Expression)
-  name: PostDecrementAssign(Expression)
-  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PostDecrementAssign_System_Linq_Expressions_Expression_
-  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign(System.Linq.Expressions.Expression)
-  fullName: DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign(System.Linq.Expressions.Expression)
-  nameWithType: ExpressionBuilder.PostDecrementAssign(Expression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign(System.Linq.Expressions.IndexExpression)
+  name: PostDecrementAssign(IndexExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PostDecrementAssign_System_Linq_Expressions_IndexExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign(System.Linq.Expressions.IndexExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign(System.Linq.Expressions.IndexExpression)
+  nameWithType: ExpressionBuilder.PostDecrementAssign(IndexExpression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign(System.Linq.Expressions.MemberExpression)
+  name: PostDecrementAssign(MemberExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PostDecrementAssign_System_Linq_Expressions_MemberExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign(System.Linq.Expressions.MemberExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign(System.Linq.Expressions.MemberExpression)
+  nameWithType: ExpressionBuilder.PostDecrementAssign(MemberExpression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign(System.Linq.Expressions.ParameterExpression)
+  name: PostDecrementAssign(ParameterExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PostDecrementAssign_System_Linq_Expressions_ParameterExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign(System.Linq.Expressions.ParameterExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign(System.Linq.Expressions.ParameterExpression)
+  nameWithType: ExpressionBuilder.PostDecrementAssign(ParameterExpression)
 - uid: DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign*
   name: PostDecrementAssign
   href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PostDecrementAssign_
@@ -5427,12 +5536,24 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.ExpressionBuilder.PostDecrementAssign
   nameWithType: ExpressionBuilder.PostDecrementAssign
-- uid: DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign(System.Linq.Expressions.Expression)
-  name: PostIncrementAssign(Expression)
-  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PostIncrementAssign_System_Linq_Expressions_Expression_
-  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign(System.Linq.Expressions.Expression)
-  fullName: DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign(System.Linq.Expressions.Expression)
-  nameWithType: ExpressionBuilder.PostIncrementAssign(Expression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign(System.Linq.Expressions.IndexExpression)
+  name: PostIncrementAssign(IndexExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PostIncrementAssign_System_Linq_Expressions_IndexExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign(System.Linq.Expressions.IndexExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign(System.Linq.Expressions.IndexExpression)
+  nameWithType: ExpressionBuilder.PostIncrementAssign(IndexExpression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign(System.Linq.Expressions.MemberExpression)
+  name: PostIncrementAssign(MemberExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PostIncrementAssign_System_Linq_Expressions_MemberExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign(System.Linq.Expressions.MemberExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign(System.Linq.Expressions.MemberExpression)
+  nameWithType: ExpressionBuilder.PostIncrementAssign(MemberExpression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign(System.Linq.Expressions.ParameterExpression)
+  name: PostIncrementAssign(ParameterExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PostIncrementAssign_System_Linq_Expressions_ParameterExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign(System.Linq.Expressions.ParameterExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign(System.Linq.Expressions.ParameterExpression)
+  nameWithType: ExpressionBuilder.PostIncrementAssign(ParameterExpression)
 - uid: DotNext.Metaprogramming.ExpressionBuilder.PostIncrementAssign*
   name: PostIncrementAssign
   href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PostIncrementAssign_
@@ -5453,12 +5574,24 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.ExpressionBuilder.Power
   nameWithType: ExpressionBuilder.Power
-- uid: DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign(System.Linq.Expressions.Expression)
-  name: PreDecrementAssign(Expression)
-  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PreDecrementAssign_System_Linq_Expressions_Expression_
-  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign(System.Linq.Expressions.Expression)
-  fullName: DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign(System.Linq.Expressions.Expression)
-  nameWithType: ExpressionBuilder.PreDecrementAssign(Expression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign(System.Linq.Expressions.IndexExpression)
+  name: PreDecrementAssign(IndexExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PreDecrementAssign_System_Linq_Expressions_IndexExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign(System.Linq.Expressions.IndexExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign(System.Linq.Expressions.IndexExpression)
+  nameWithType: ExpressionBuilder.PreDecrementAssign(IndexExpression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign(System.Linq.Expressions.MemberExpression)
+  name: PreDecrementAssign(MemberExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PreDecrementAssign_System_Linq_Expressions_MemberExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign(System.Linq.Expressions.MemberExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign(System.Linq.Expressions.MemberExpression)
+  nameWithType: ExpressionBuilder.PreDecrementAssign(MemberExpression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign(System.Linq.Expressions.ParameterExpression)
+  name: PreDecrementAssign(ParameterExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PreDecrementAssign_System_Linq_Expressions_ParameterExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign(System.Linq.Expressions.ParameterExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign(System.Linq.Expressions.ParameterExpression)
+  nameWithType: ExpressionBuilder.PreDecrementAssign(ParameterExpression)
 - uid: DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign*
   name: PreDecrementAssign
   href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PreDecrementAssign_
@@ -5466,12 +5599,24 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.ExpressionBuilder.PreDecrementAssign
   nameWithType: ExpressionBuilder.PreDecrementAssign
-- uid: DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign(System.Linq.Expressions.Expression)
-  name: PreIncrementAssign(Expression)
-  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PreIncrementAssign_System_Linq_Expressions_Expression_
-  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign(System.Linq.Expressions.Expression)
-  fullName: DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign(System.Linq.Expressions.Expression)
-  nameWithType: ExpressionBuilder.PreIncrementAssign(Expression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign(System.Linq.Expressions.IndexExpression)
+  name: PreIncrementAssign(IndexExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PreIncrementAssign_System_Linq_Expressions_IndexExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign(System.Linq.Expressions.IndexExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign(System.Linq.Expressions.IndexExpression)
+  nameWithType: ExpressionBuilder.PreIncrementAssign(IndexExpression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign(System.Linq.Expressions.MemberExpression)
+  name: PreIncrementAssign(MemberExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PreIncrementAssign_System_Linq_Expressions_MemberExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign(System.Linq.Expressions.MemberExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign(System.Linq.Expressions.MemberExpression)
+  nameWithType: ExpressionBuilder.PreIncrementAssign(MemberExpression)
+- uid: DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign(System.Linq.Expressions.ParameterExpression)
+  name: PreIncrementAssign(ParameterExpression)
+  href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PreIncrementAssign_System_Linq_Expressions_ParameterExpression_
+  commentId: M:DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign(System.Linq.Expressions.ParameterExpression)
+  fullName: DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign(System.Linq.Expressions.ParameterExpression)
+  nameWithType: ExpressionBuilder.PreIncrementAssign(ParameterExpression)
 - uid: DotNext.Metaprogramming.ExpressionBuilder.PreIncrementAssign*
   name: PreIncrementAssign
   href: api/DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_PreIncrementAssign_
@@ -7032,58 +7177,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.UniversalExpression.OrElse
   nameWithType: UniversalExpression.OrElse
-- uid: DotNext.Metaprogramming.UniversalExpression.PostDecrementAssign
-  name: PostDecrementAssign()
-  href: api/DotNext.Metaprogramming.UniversalExpression.html#DotNext_Metaprogramming_UniversalExpression_PostDecrementAssign
-  commentId: M:DotNext.Metaprogramming.UniversalExpression.PostDecrementAssign
-  fullName: DotNext.Metaprogramming.UniversalExpression.PostDecrementAssign()
-  nameWithType: UniversalExpression.PostDecrementAssign()
-- uid: DotNext.Metaprogramming.UniversalExpression.PostDecrementAssign*
-  name: PostDecrementAssign
-  href: api/DotNext.Metaprogramming.UniversalExpression.html#DotNext_Metaprogramming_UniversalExpression_PostDecrementAssign_
-  commentId: Overload:DotNext.Metaprogramming.UniversalExpression.PostDecrementAssign
-  isSpec: "True"
-  fullName: DotNext.Metaprogramming.UniversalExpression.PostDecrementAssign
-  nameWithType: UniversalExpression.PostDecrementAssign
-- uid: DotNext.Metaprogramming.UniversalExpression.PostIncrementAssign
-  name: PostIncrementAssign()
-  href: api/DotNext.Metaprogramming.UniversalExpression.html#DotNext_Metaprogramming_UniversalExpression_PostIncrementAssign
-  commentId: M:DotNext.Metaprogramming.UniversalExpression.PostIncrementAssign
-  fullName: DotNext.Metaprogramming.UniversalExpression.PostIncrementAssign()
-  nameWithType: UniversalExpression.PostIncrementAssign()
-- uid: DotNext.Metaprogramming.UniversalExpression.PostIncrementAssign*
-  name: PostIncrementAssign
-  href: api/DotNext.Metaprogramming.UniversalExpression.html#DotNext_Metaprogramming_UniversalExpression_PostIncrementAssign_
-  commentId: Overload:DotNext.Metaprogramming.UniversalExpression.PostIncrementAssign
-  isSpec: "True"
-  fullName: DotNext.Metaprogramming.UniversalExpression.PostIncrementAssign
-  nameWithType: UniversalExpression.PostIncrementAssign
-- uid: DotNext.Metaprogramming.UniversalExpression.PreDecrementAssign
-  name: PreDecrementAssign()
-  href: api/DotNext.Metaprogramming.UniversalExpression.html#DotNext_Metaprogramming_UniversalExpression_PreDecrementAssign
-  commentId: M:DotNext.Metaprogramming.UniversalExpression.PreDecrementAssign
-  fullName: DotNext.Metaprogramming.UniversalExpression.PreDecrementAssign()
-  nameWithType: UniversalExpression.PreDecrementAssign()
-- uid: DotNext.Metaprogramming.UniversalExpression.PreDecrementAssign*
-  name: PreDecrementAssign
-  href: api/DotNext.Metaprogramming.UniversalExpression.html#DotNext_Metaprogramming_UniversalExpression_PreDecrementAssign_
-  commentId: Overload:DotNext.Metaprogramming.UniversalExpression.PreDecrementAssign
-  isSpec: "True"
-  fullName: DotNext.Metaprogramming.UniversalExpression.PreDecrementAssign
-  nameWithType: UniversalExpression.PreDecrementAssign
-- uid: DotNext.Metaprogramming.UniversalExpression.PreIncrementAssign
-  name: PreIncrementAssign()
-  href: api/DotNext.Metaprogramming.UniversalExpression.html#DotNext_Metaprogramming_UniversalExpression_PreIncrementAssign
-  commentId: M:DotNext.Metaprogramming.UniversalExpression.PreIncrementAssign
-  fullName: DotNext.Metaprogramming.UniversalExpression.PreIncrementAssign()
-  nameWithType: UniversalExpression.PreIncrementAssign()
-- uid: DotNext.Metaprogramming.UniversalExpression.PreIncrementAssign*
-  name: PreIncrementAssign
-  href: api/DotNext.Metaprogramming.UniversalExpression.html#DotNext_Metaprogramming_UniversalExpression_PreIncrementAssign_
-  commentId: Overload:DotNext.Metaprogramming.UniversalExpression.PreIncrementAssign
-  isSpec: "True"
-  fullName: DotNext.Metaprogramming.UniversalExpression.PreIncrementAssign
-  nameWithType: UniversalExpression.PreIncrementAssign
 - uid: DotNext.Metaprogramming.UniversalExpression.Property(System.Reflection.PropertyInfo,DotNext.Metaprogramming.UniversalExpression[])
   name: Property(PropertyInfo, UniversalExpression[])
   href: api/DotNext.Metaprogramming.UniversalExpression.html#DotNext_Metaprogramming_UniversalExpression_Property_System_Reflection_PropertyInfo_DotNext_Metaprogramming_UniversalExpression___
@@ -7209,6 +7302,19 @@ references:
   fullName.vb: DotNext.Metaprogramming.UniversalExpression.TryConvert(Of T)()
   nameWithType: UniversalExpression.TryConvert<T>()
   nameWithType.vb: UniversalExpression.TryConvert(Of T)()
+- uid: DotNext.Metaprogramming.UniversalExpression.Type
+  name: Type
+  href: api/DotNext.Metaprogramming.UniversalExpression.html#DotNext_Metaprogramming_UniversalExpression_Type
+  commentId: P:DotNext.Metaprogramming.UniversalExpression.Type
+  fullName: DotNext.Metaprogramming.UniversalExpression.Type
+  nameWithType: UniversalExpression.Type
+- uid: DotNext.Metaprogramming.UniversalExpression.Type*
+  name: Type
+  href: api/DotNext.Metaprogramming.UniversalExpression.html#DotNext_Metaprogramming_UniversalExpression_Type_
+  commentId: Overload:DotNext.Metaprogramming.UniversalExpression.Type
+  isSpec: "True"
+  fullName: DotNext.Metaprogramming.UniversalExpression.Type
+  nameWithType: UniversalExpression.Type
 - uid: DotNext.Metaprogramming.UniversalExpression.Unbox(System.Type)
   name: Unbox(Type)
   href: api/DotNext.Metaprogramming.UniversalExpression.html#DotNext_Metaprogramming_UniversalExpression_Unbox_System_Type_
@@ -19312,23 +19418,6 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).As(Of U)()
   nameWithType: Pointer<T>.As<U>()
   nameWithType.vb: Pointer(Of T).As(Of U)()
-- uid: DotNext.Runtime.InteropServices.Pointer`1.AsRef
-  name: AsRef()
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_AsRef
-  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.AsRef
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.AsRef()
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).AsRef()
-  nameWithType: Pointer<T>.AsRef()
-  nameWithType.vb: Pointer(Of T).AsRef()
-- uid: DotNext.Runtime.InteropServices.Pointer`1.AsRef*
-  name: AsRef
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_AsRef_
-  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.AsRef
-  isSpec: "True"
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.AsRef
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).AsRef
-  nameWithType: Pointer<T>.AsRef
-  nameWithType.vb: Pointer(Of T).AsRef
 - uid: DotNext.Runtime.InteropServices.Pointer`1.AsStream(System.Int64)
   name: AsStream(Int64)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_AsStream_System_Int64_
@@ -19918,6 +20007,23 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).ReadFromAsync
   nameWithType: Pointer<T>.ReadFromAsync
   nameWithType.vb: Pointer(Of T).ReadFromAsync
+- uid: DotNext.Runtime.InteropServices.Pointer`1.Ref
+  name: Ref
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Ref
+  commentId: P:DotNext.Runtime.InteropServices.Pointer`1.Ref
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Ref
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Ref
+  nameWithType: Pointer<T>.Ref
+  nameWithType.vb: Pointer(Of T).Ref
+- uid: DotNext.Runtime.InteropServices.Pointer`1.Ref*
+  name: Ref
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Ref_
+  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.Ref
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Ref
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Ref
+  nameWithType: Pointer<T>.Ref
+  nameWithType.vb: Pointer(Of T).Ref
 - uid: DotNext.Runtime.InteropServices.Pointer`1.Size
   name: Size
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Size
@@ -20084,14 +20190,14 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T)
   nameWithType: UnmanagedArray<T>
   nameWithType.vb: UnmanagedArray(Of T)
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.#ctor(System.Int32)
-  name: UnmanagedArray(Int32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1__ctor_System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.#ctor(System.Int32)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.UnmanagedArray(System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).UnmanagedArray(System.Int32)
-  nameWithType: UnmanagedArray<T>.UnmanagedArray(Int32)
-  nameWithType.vb: UnmanagedArray(Of T).UnmanagedArray(Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.#ctor(System.Int64)
+  name: UnmanagedArray(Int64)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1__ctor_System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.#ctor(System.Int64)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.UnmanagedArray(System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).UnmanagedArray(System.Int64)
+  nameWithType: UnmanagedArray<T>.UnmanagedArray(Int64)
+  nameWithType.vb: UnmanagedArray(Of T).UnmanagedArray(Int64)
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.#ctor*
   name: UnmanagedArray
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1__ctor_
@@ -20153,15 +20259,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).BinarySearch(T, System.Comparison(Of T))
   nameWithType: UnmanagedArray<T>.BinarySearch(T, Comparison<T>)
   nameWithType.vb: UnmanagedArray(Of T).BinarySearch(T, Comparison(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch(`0,System.Int32,System.Int32,System.Comparison{`0})
-  name: BinarySearch(T, Int32, Int32, Comparison<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_BinarySearch__0_System_Int32_System_Int32_System_Comparison__0__
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch(`0,System.Int32,System.Int32,System.Comparison{`0})
-  name.vb: BinarySearch(T, Int32, Int32, Comparison(Of T))
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.BinarySearch(T, System.Int32, System.Int32, System.Comparison<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).BinarySearch(T, System.Int32, System.Int32, System.Comparison(Of T))
-  nameWithType: UnmanagedArray<T>.BinarySearch(T, Int32, Int32, Comparison<T>)
-  nameWithType.vb: UnmanagedArray(Of T).BinarySearch(T, Int32, Int32, Comparison(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch(`0,System.Int64,System.Int64,System.Comparison{`0})
+  name: BinarySearch(T, Int64, Int64, Comparison<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_BinarySearch__0_System_Int64_System_Int64_System_Comparison__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch(`0,System.Int64,System.Int64,System.Comparison{`0})
+  name.vb: BinarySearch(T, Int64, Int64, Comparison(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.BinarySearch(T, System.Int64, System.Int64, System.Comparison<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).BinarySearch(T, System.Int64, System.Int64, System.Comparison(Of T))
+  nameWithType: UnmanagedArray<T>.BinarySearch(T, Int64, Int64, Comparison<T>)
+  nameWithType.vb: UnmanagedArray(Of T).BinarySearch(T, Int64, Int64, Comparison(Of T))
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch*
   name: BinarySearch
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_BinarySearch_
@@ -20303,14 +20409,14 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Dispose
   nameWithType: UnmanagedArray<T>.Dispose
   nameWithType.vb: UnmanagedArray(Of T).Dispose
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt(System.Int32)
-  name: ElementAt(Int32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt(System.Int32)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.ElementAt(System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).ElementAt(System.Int32)
-  nameWithType: UnmanagedArray<T>.ElementAt(Int32)
-  nameWithType.vb: UnmanagedArray(Of T).ElementAt(Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt(System.Int64)
+  name: ElementAt(Int64)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt(System.Int64)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.ElementAt(System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).ElementAt(System.Int64)
+  nameWithType: UnmanagedArray<T>.ElementAt(Int64)
+  nameWithType.vb: UnmanagedArray(Of T).ElementAt(Int64)
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt*
   name: ElementAt
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_
@@ -20373,24 +20479,24 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Find(System.Predicate(Of T))
   nameWithType: UnmanagedArray<T>.Find(Predicate<T>)
   nameWithType.vb: UnmanagedArray(Of T).Find(Predicate(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int32)
-  name: Find(Predicate<T>, Int32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int32)
-  name.vb: Find(Predicate(Of T), Int32)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Find(System.Predicate<T>, System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Find(System.Predicate(Of T), System.Int32)
-  nameWithType: UnmanagedArray<T>.Find(Predicate<T>, Int32)
-  nameWithType.vb: UnmanagedArray(Of T).Find(Predicate(Of T), Int32)
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int32,System.Int32)
-  name: Find(Predicate<T>, Int32, Int32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int32_System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int32,System.Int32)
-  name.vb: Find(Predicate(Of T), Int32, Int32)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Find(System.Predicate<T>, System.Int32, System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Find(System.Predicate(Of T), System.Int32, System.Int32)
-  nameWithType: UnmanagedArray<T>.Find(Predicate<T>, Int32, Int32)
-  nameWithType.vb: UnmanagedArray(Of T).Find(Predicate(Of T), Int32, Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int64)
+  name: Find(Predicate<T>, Int64)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int64)
+  name.vb: Find(Predicate(Of T), Int64)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Find(System.Predicate<T>, System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Find(System.Predicate(Of T), System.Int64)
+  nameWithType: UnmanagedArray<T>.Find(Predicate<T>, Int64)
+  nameWithType.vb: UnmanagedArray(Of T).Find(Predicate(Of T), Int64)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int64,System.Int64)
+  name: Find(Predicate<T>, Int64, Int64)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int64_System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int64,System.Int64)
+  name.vb: Find(Predicate(Of T), Int64, Int64)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Find(System.Predicate<T>, System.Int64, System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Find(System.Predicate(Of T), System.Int64, System.Int64)
+  nameWithType: UnmanagedArray<T>.Find(Predicate<T>, Int64, Int64)
+  nameWithType.vb: UnmanagedArray(Of T).Find(Predicate(Of T), Int64, Int64)
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Find*
   name: Find
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_
@@ -20409,24 +20515,24 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).FindLast(System.Predicate(Of T))
   nameWithType: UnmanagedArray<T>.FindLast(Predicate<T>)
   nameWithType.vb: UnmanagedArray(Of T).FindLast(Predicate(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int32)
-  name: FindLast(Predicate<T>, Int32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int32)
-  name.vb: FindLast(Predicate(Of T), Int32)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.FindLast(System.Predicate<T>, System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).FindLast(System.Predicate(Of T), System.Int32)
-  nameWithType: UnmanagedArray<T>.FindLast(Predicate<T>, Int32)
-  nameWithType.vb: UnmanagedArray(Of T).FindLast(Predicate(Of T), Int32)
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int32,System.Int32)
-  name: FindLast(Predicate<T>, Int32, Int32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int32_System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int32,System.Int32)
-  name.vb: FindLast(Predicate(Of T), Int32, Int32)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.FindLast(System.Predicate<T>, System.Int32, System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).FindLast(System.Predicate(Of T), System.Int32, System.Int32)
-  nameWithType: UnmanagedArray<T>.FindLast(Predicate<T>, Int32, Int32)
-  nameWithType.vb: UnmanagedArray(Of T).FindLast(Predicate(Of T), Int32, Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int64)
+  name: FindLast(Predicate<T>, Int64)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int64)
+  name.vb: FindLast(Predicate(Of T), Int64)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.FindLast(System.Predicate<T>, System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).FindLast(System.Predicate(Of T), System.Int64)
+  nameWithType: UnmanagedArray<T>.FindLast(Predicate<T>, Int64)
+  nameWithType.vb: UnmanagedArray(Of T).FindLast(Predicate(Of T), Int64)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int64,System.Int64)
+  name: FindLast(Predicate<T>, Int64, Int64)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int64_System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int64,System.Int64)
+  name.vb: FindLast(Predicate(Of T), Int64, Int64)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.FindLast(System.Predicate<T>, System.Int64, System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).FindLast(System.Predicate(Of T), System.Int64, System.Int64)
+  nameWithType: UnmanagedArray<T>.FindLast(Predicate<T>, Int64, Int64)
+  nameWithType.vb: UnmanagedArray(Of T).FindLast(Predicate(Of T), Int64, Int64)
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast*
   name: FindLast
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_
@@ -20488,14 +20594,14 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Handle.Handle(DotNext.Runtime.InteropServices.UnmanagedArray(Of T))
   nameWithType: UnmanagedArray<T>.Handle.Handle(UnmanagedArray<T>)
   nameWithType.vb: UnmanagedArray(Of T).Handle.Handle(UnmanagedArray(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.#ctor(System.Int32)
-  name: Handle(Int32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.Handle.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.#ctor(System.Int32)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Handle.Handle(System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Handle.Handle(System.Int32)
-  nameWithType: UnmanagedArray<T>.Handle.Handle(Int32)
-  nameWithType.vb: UnmanagedArray(Of T).Handle.Handle(Int32)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.#ctor(System.Int64)
+  name: Handle(Int64)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.Handle.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.#ctor(System.Int64)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Handle.Handle(System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Handle.Handle(System.Int64)
+  nameWithType: UnmanagedArray<T>.Handle.Handle(Int64)
+  nameWithType.vb: UnmanagedArray(Of T).Handle.Handle(Int64)
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.#ctor*
   name: Handle
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.Handle.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_
@@ -20566,32 +20672,32 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).IndexOf(T)
   nameWithType: UnmanagedArray<T>.IndexOf(T)
   nameWithType.vb: UnmanagedArray(Of T).IndexOf(T)
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32)
-  name: IndexOf(T, Int32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.IndexOf(T, System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).IndexOf(T, System.Int32)
-  nameWithType: UnmanagedArray<T>.IndexOf(T, Int32)
-  nameWithType.vb: UnmanagedArray(Of T).IndexOf(T, Int32)
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
-  name: IndexOf(T, Int32, IEqualityComparer<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32_System_Collections_Generic_IEqualityComparer__0__
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
-  name.vb: IndexOf(T, Int32, IEqualityComparer(Of T))
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.IndexOf(T, System.Int32, System.Collections.Generic.IEqualityComparer<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).IndexOf(T, System.Int32, System.Collections.Generic.IEqualityComparer(Of T))
-  nameWithType: UnmanagedArray<T>.IndexOf(T, Int32, IEqualityComparer<T>)
-  nameWithType.vb: UnmanagedArray(Of T).IndexOf(T, Int32, IEqualityComparer(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
-  name: IndexOf(T, Int32, Int32, IEqualityComparer<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32_System_Int32_System_Collections_Generic_IEqualityComparer__0__
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
-  name.vb: IndexOf(T, Int32, Int32, IEqualityComparer(Of T))
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.IndexOf(T, System.Int32, System.Int32, System.Collections.Generic.IEqualityComparer<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).IndexOf(T, System.Int32, System.Int32, System.Collections.Generic.IEqualityComparer(Of T))
-  nameWithType: UnmanagedArray<T>.IndexOf(T, Int32, Int32, IEqualityComparer<T>)
-  nameWithType.vb: UnmanagedArray(Of T).IndexOf(T, Int32, Int32, IEqualityComparer(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int64)
+  name: IndexOf(T, Int64)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int64)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.IndexOf(T, System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).IndexOf(T, System.Int64)
+  nameWithType: UnmanagedArray<T>.IndexOf(T, Int64)
+  nameWithType.vb: UnmanagedArray(Of T).IndexOf(T, Int64)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int64,System.Collections.Generic.IEqualityComparer{`0})
+  name: IndexOf(T, Int64, IEqualityComparer<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int64_System_Collections_Generic_IEqualityComparer__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int64,System.Collections.Generic.IEqualityComparer{`0})
+  name.vb: IndexOf(T, Int64, IEqualityComparer(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.IndexOf(T, System.Int64, System.Collections.Generic.IEqualityComparer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).IndexOf(T, System.Int64, System.Collections.Generic.IEqualityComparer(Of T))
+  nameWithType: UnmanagedArray<T>.IndexOf(T, Int64, IEqualityComparer<T>)
+  nameWithType.vb: UnmanagedArray(Of T).IndexOf(T, Int64, IEqualityComparer(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int64,System.Int64,System.Collections.Generic.IEqualityComparer{`0})
+  name: IndexOf(T, Int64, Int64, IEqualityComparer<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int64_System_Int64_System_Collections_Generic_IEqualityComparer__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int64,System.Int64,System.Collections.Generic.IEqualityComparer{`0})
+  name.vb: IndexOf(T, Int64, Int64, IEqualityComparer(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.IndexOf(T, System.Int64, System.Int64, System.Collections.Generic.IEqualityComparer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).IndexOf(T, System.Int64, System.Int64, System.Collections.Generic.IEqualityComparer(Of T))
+  nameWithType: UnmanagedArray<T>.IndexOf(T, Int64, Int64, IEqualityComparer<T>)
+  nameWithType.vb: UnmanagedArray(Of T).IndexOf(T, Int64, Int64, IEqualityComparer(Of T))
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf*
   name: IndexOf
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf_
@@ -20627,32 +20733,32 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).LastIndexOf(T)
   nameWithType: UnmanagedArray<T>.LastIndexOf(T)
   nameWithType.vb: UnmanagedArray(Of T).LastIndexOf(T)
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32)
-  name: LastIndexOf(T, Int32)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.LastIndexOf(T, System.Int32)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).LastIndexOf(T, System.Int32)
-  nameWithType: UnmanagedArray<T>.LastIndexOf(T, Int32)
-  nameWithType.vb: UnmanagedArray(Of T).LastIndexOf(T, Int32)
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
-  name: LastIndexOf(T, Int32, IEqualityComparer<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32_System_Collections_Generic_IEqualityComparer__0__
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
-  name.vb: LastIndexOf(T, Int32, IEqualityComparer(Of T))
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.LastIndexOf(T, System.Int32, System.Collections.Generic.IEqualityComparer<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).LastIndexOf(T, System.Int32, System.Collections.Generic.IEqualityComparer(Of T))
-  nameWithType: UnmanagedArray<T>.LastIndexOf(T, Int32, IEqualityComparer<T>)
-  nameWithType.vb: UnmanagedArray(Of T).LastIndexOf(T, Int32, IEqualityComparer(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
-  name: LastIndexOf(T, Int32, Int32, IEqualityComparer<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32_System_Int32_System_Collections_Generic_IEqualityComparer__0__
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32,System.Int32,System.Collections.Generic.IEqualityComparer{`0})
-  name.vb: LastIndexOf(T, Int32, Int32, IEqualityComparer(Of T))
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.LastIndexOf(T, System.Int32, System.Int32, System.Collections.Generic.IEqualityComparer<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).LastIndexOf(T, System.Int32, System.Int32, System.Collections.Generic.IEqualityComparer(Of T))
-  nameWithType: UnmanagedArray<T>.LastIndexOf(T, Int32, Int32, IEqualityComparer<T>)
-  nameWithType.vb: UnmanagedArray(Of T).LastIndexOf(T, Int32, Int32, IEqualityComparer(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int64)
+  name: LastIndexOf(T, Int64)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int64)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.LastIndexOf(T, System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).LastIndexOf(T, System.Int64)
+  nameWithType: UnmanagedArray<T>.LastIndexOf(T, Int64)
+  nameWithType.vb: UnmanagedArray(Of T).LastIndexOf(T, Int64)
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int64,System.Collections.Generic.IEqualityComparer{`0})
+  name: LastIndexOf(T, Int64, IEqualityComparer<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int64_System_Collections_Generic_IEqualityComparer__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int64,System.Collections.Generic.IEqualityComparer{`0})
+  name.vb: LastIndexOf(T, Int64, IEqualityComparer(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.LastIndexOf(T, System.Int64, System.Collections.Generic.IEqualityComparer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).LastIndexOf(T, System.Int64, System.Collections.Generic.IEqualityComparer(Of T))
+  nameWithType: UnmanagedArray<T>.LastIndexOf(T, Int64, IEqualityComparer<T>)
+  nameWithType.vb: UnmanagedArray(Of T).LastIndexOf(T, Int64, IEqualityComparer(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int64,System.Int64,System.Collections.Generic.IEqualityComparer{`0})
+  name: LastIndexOf(T, Int64, Int64, IEqualityComparer<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int64_System_Int64_System_Collections_Generic_IEqualityComparer__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int64,System.Int64,System.Collections.Generic.IEqualityComparer{`0})
+  name.vb: LastIndexOf(T, Int64, Int64, IEqualityComparer(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.LastIndexOf(T, System.Int64, System.Int64, System.Collections.Generic.IEqualityComparer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).LastIndexOf(T, System.Int64, System.Int64, System.Collections.Generic.IEqualityComparer(Of T))
+  nameWithType: UnmanagedArray<T>.LastIndexOf(T, Int64, Int64, IEqualityComparer<T>)
+  nameWithType.vb: UnmanagedArray(Of T).LastIndexOf(T, Int64, Int64, IEqualityComparer(Of T))
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf*
   name: LastIndexOf
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf_
@@ -20858,15 +20964,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Sort(System.Comparison(Of T))
   nameWithType: UnmanagedArray<T>.Sort(Comparison<T>)
   nameWithType.vb: UnmanagedArray(Of T).Sort(Comparison(Of T))
-- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort(System.Int32,System.Int32,System.Comparison{`0})
-  name: Sort(Int32, Int32, Comparison<T>)
-  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Sort_System_Int32_System_Int32_System_Comparison__0__
-  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort(System.Int32,System.Int32,System.Comparison{`0})
-  name.vb: Sort(Int32, Int32, Comparison(Of T))
-  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Sort(System.Int32, System.Int32, System.Comparison<T>)
-  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Sort(System.Int32, System.Int32, System.Comparison(Of T))
-  nameWithType: UnmanagedArray<T>.Sort(Int32, Int32, Comparison<T>)
-  nameWithType.vb: UnmanagedArray(Of T).Sort(Int32, Int32, Comparison(Of T))
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort(System.Int64,System.Int64,System.Comparison{`0})
+  name: Sort(Int64, Int64, Comparison<T>)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Sort_System_Int64_System_Int64_System_Comparison__0__
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort(System.Int64,System.Int64,System.Comparison{`0})
+  name.vb: Sort(Int64, Int64, Comparison(Of T))
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Sort(System.Int64, System.Int64, System.Comparison<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Sort(System.Int64, System.Int64, System.Comparison(Of T))
+  nameWithType: UnmanagedArray<T>.Sort(Int64, Int64, Comparison<T>)
+  nameWithType.vb: UnmanagedArray(Of T).Sort(Int64, Int64, Comparison(Of T))
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort*
   name: Sort
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Sort_
@@ -21490,6 +21596,23 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).ReadFrom(Of U)(DotNext.Runtime.InteropServices.Pointer(Of U))
   nameWithType: UnmanagedMemory<T>.ReadFrom<U>(Pointer<U>)
   nameWithType.vb: UnmanagedMemory(Of T).ReadFrom(Of U)(Pointer(Of U))
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.Ref
+  name: Ref
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_Ref
+  commentId: P:DotNext.Runtime.InteropServices.UnmanagedMemory`1.Ref
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.Ref
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).Ref
+  nameWithType: UnmanagedMemory<T>.Ref
+  nameWithType.vb: UnmanagedMemory(Of T).Ref
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.Ref*
+  name: Ref
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_Ref_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedMemory`1.Ref
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.Ref
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).Ref
+  nameWithType: UnmanagedMemory<T>.Ref
+  nameWithType.vb: UnmanagedMemory(Of T).Ref
 - uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.System#ICloneable#Clone
   name: ICloneable.Clone()
   href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_System_ICloneable_Clone

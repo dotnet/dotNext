@@ -192,19 +192,19 @@
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Handle.%23ctor(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Handle.%23ctor(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L45">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.#ctor*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.#ctor(System.Int32)">Handle(Int32)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Handle.#ctor(System.Int64)">Handle(Int64)</h4>
   <div class="markdown level1 summary"><p>Initializes a new unmanaged array and associate it with the handle.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Handle(int length)</code></pre>
+    <pre><code class="lang-csharp hljs">public Handle(long length)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -217,14 +217,14 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">length</span></td>
         <td><p>Array length.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_System_Int32__remarks">Remarks</h5>
+  <h5 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Handle__ctor_System_Int64__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The handle instantiated with this constructor has ownership over unmanaged memory.
 Unmanaged memory will be released when Garbage Collector reclaims instance of this handle
 or <a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Dispose">Dispose()</a> will be called directly.</p>

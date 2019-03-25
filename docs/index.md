@@ -3,7 +3,7 @@
 
 .NEXT (Dot Next) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime. 
 
-This chapter gives quick overview of these libraries. Read [articles](./features/core/extensions.md) for closer look at all available features.
+This chapter gives quick overview of these libraries. Read [articles](./features/core/index.md) for closer look at all available features.
 
 > [!IMPORTANT]
 > DotNext is in early stage of development. Backward compatibility of API is not guaranteed before 1.0 version.

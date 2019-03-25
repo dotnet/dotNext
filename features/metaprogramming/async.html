@@ -72,10 +72,72 @@
 <p>Metaprogramming library provides full support of dynamic generation of <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/async">async lambda functions</a>. This functionality is not supported by LINQ Expressions out-of-the-box.</p>
 <p>There are three key elements required to generated async lambda:</p>
 <ul>
-<li><a href="../../api/DotNext.Metaprogramming.AsyncLambdaBuilder-1.html">AsyncLambdaBuilder</a> used to build async lambda function</li>
-<li><a href="../../api/DotNext.Metaprogramming.AsyncResultExpression.html">AsyncResultExpression</a> used to return value from the asynchronous lambda function</li>
+<li><a href="../../api/DotNext.Metaprogramming.AsyncLambdaBuilder-1.html">AsyncLambdaBuilder</a> used to build async lambda function instead of <a href="../../api/DotNext.Metaprogramming.LambdaBuilder-1.html">LambdaBuilder</a> suitable for synchronous lambda functions only.</li>
+<li><a href="../../api/DotNext.Metaprogramming.AsyncResultExpression.html">AsyncResultExpression</a> used to return value from the asynchronous lambda function (known as async return). Usually, the developer don't need to use this type of expression explicitly.</li>
 <li><a href="../../api/DotNext.Metaprogramming.AwaitExpression.html">AwaitExpression</a> is similar to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">await</a> operator.</li>
 </ul>
+<p><strong>await</strong> operator can be used even in <em>try-catch-finally</em> statement and means that async lambda function works in the same way as <strong>async</strong> methods in C#.</p>
+<p>Let's translate the following example of async method in C# programming language.</p>
+<pre><code class="lang-csharp">using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+private static async Task&lt;long&gt; GetPageSizeAsync(string url)  
+{  
+    var client = new HttpClient();  
+    var uri = new Uri(url);
+    var urlContents = await client.GetByteArrayAsync(uri);
+    return urlContents.LongLength;
+}  
+</code></pre>
+<p><code>Await()</code> extension method applicable to any object of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression</a> is an equivalent of <strong>await</strong> operator and do all necessary magic. Note that <code>Await()</code> is applicable inside of async lambda function. If <strong>await</strong> operator is used inside of synchronous async lambda function then compiled code will block the thread during execution of the expression used as an argument for this operator.</p>
+<pre><code class="lang-csharp">using DotNext.Metaprogramming;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+AsyncLambdaBuilder&lt;Func&lt;string, Task&lt;long&gt;&gt;&gt;(fun =&gt; 
+{
+    var client = fun.DeclareVariable(&quot;client&quot;, typeof(HttpClient).New());       //var client = new HttpClient();
+    var uri = fun.DeclareVariable(&quot;uri&quot;, typeof(Uri).New(fun.Parameters[0]));   //var uri = new Uri(url);
+    var urlContents = fun.DeclareVariable&lt;byte[]&gt;(&quot;urlContents&quot;);
+    fun.Assign(urlContents, client.Call(nameof(HttpClient.GetByteArrayAsync), uri).Await());    //urlContents = await client.GetByteArrayAsync(uri);
+    fun.Assign(fun.Result, urlContents);
+});
+</code></pre>
+<p><strong>await</strong> operator can be placed inside of any statement: <em>switch</em>, <em>if-then-else</em>, <em>try-catch-finally</em> etc.</p>
+<h1 id="limitations">Limitations</h1>
+<p>Async lambda function has the following limitations:</p>
+<ul>
+<li>The return type of the delegate representing lambda function should have one of the following return types:
+<ul>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a></li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1">Task&lt;T&gt;</a></li>
+</ul>
+</li>
+<li>All limitations inherited from LINQ Expression framework which are described <a href="index.html">here</a></li>
+</ul>
+<p><strong>void</strong> return type is not supported as well as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>. Instead of <strong>void</strong> return type use <em>Task</em> class.</p>
+<div class="TIP">
+<h5>Tip</h5>
+<p>Support of arbitrary async return type (such as ValueTask) may be a subject to future improvements. To do that, Metaprogramming code generator should recognize the type marked with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asyncmethodbuilderattribute">AsyncMethodBuilderAttribute</a> and extract the information needed for code generation.</p>
+</div>
+<p>However, <strong>await</strong> operator is applicable to any async method with return type which differs from <code>Task</code> or <code>Task&lt;R&gt;</code> types without limitations.</p>
+<h1 id="code-generation-principles">Code Generation Principles</h1>
+<p>Metaprogramming library transforms the body of async lambda function into state machine. The algorithm of transformation is similar to <a href="https://github.com/dotnet/roslyn">Roslyn</a> Compiler but not equal. You can start from <a href="https://github.com/dotnet/roslyn/blob/master/src/Compilers/CSharp/Portable/Lowering/AsyncRewriter/AsyncMethodToStateMachineRewriter.cs">this</a> source code to learn how Roslyn transforms the code of async method.</p>
+<p>The data type used to store local variables in the form of machine state is not compiler-generated because LINQ Expression doesn't have dynamic type generation functionality. Value tuples are used instead of dynamically generated type.</p>
+<p><em>try-catch-finally</em> block is transformed into code without structured exception handling instructions. The exception management is centralized by <a href="../../api/DotNext.Runtime.CompilerServices.AsyncStateMachine-1.html">async state machine</a>.</p>
+<p>The exception raised by the async lambda function is stored inside of async state machine, not as separated field in the machine state value type generated by Roslyn Compiler.</p>
+<p><a href="../../api/DotNext.Runtime.CompilerServices.AsyncStateMachine-1.html">Async State Machine</a> class contains low-level methods allow to control execution of async lambda function. To be more precise, there are two async state machine classes:</p>
+<ul>
+<li><a href="../../api/DotNext.Runtime.CompilerServices.AsyncStateMachine-1.html">AsyncStateMachine&lt;TState&gt;</a> is used by async lambda function without return value (actual return type is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a>)</li>
+<li><a href="../../api/DotNext.Runtime.CompilerServices.AsyncStateMachine-1.html">AsyncStateMachine&lt;TState, R&gt;</a> is used by async lambda function with return value (actual return type is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1">Task&lt;T&gt;</a>)</li>
+</ul>
+<div class="CAUTION">
+<h5>Caution</h5>
+<p><em>AsyncStateMachine</em> class is subject to change in future versions of the library.</p>
+</div>
+<p>The developer can use async state machine directly to write asynchronous methods in .NET languages where <strong>async</strong>/<strong>await</strong> feature is not supported syntactically.</p>
 </article>
           </div>
           

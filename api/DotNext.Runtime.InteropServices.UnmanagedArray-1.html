@@ -127,19 +127,19 @@ Therefore, it's developer responsibility to release unmanaged memory using <a cl
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.%23ctor(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1__ctor_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.%23ctor(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L97">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1__ctor_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.#ctor*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1__ctor_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.#ctor(System.Int32)">UnmanagedArray(Int32)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1__ctor_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.#ctor(System.Int64)">UnmanagedArray(Int64)</h4>
   <div class="markdown level1 summary"><p>Allocates a new array in the unmanaged memory of the specified length.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public UnmanagedArray(int length)</code></pre>
+    <pre><code class="lang-csharp hljs">public UnmanagedArray(long length)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -152,7 +152,7 @@ Therefore, it's developer responsibility to release unmanaged memory using <a cl
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">length</span></td>
         <td><p>Array length. Cannot be less or equal than zero.</p>
 </td>
@@ -293,7 +293,7 @@ Therefore, it's developer responsibility to release unmanaged memory using <a cl
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int Length { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public long Length { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -305,7 +305,7 @@ Therefore, it's developer responsibility to release unmanaged memory using <a cl
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -410,7 +410,7 @@ Therefore, it's developer responsibility to release unmanaged memory using <a cl
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int BinarySearch(T item)</code></pre>
+    <pre><code class="lang-csharp hljs">public long BinarySearch(T item)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -440,7 +440,7 @@ Therefore, it's developer responsibility to release unmanaged memory using <a cl
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the item; or -1, if item doesn't exist in the array.</p>
 </td>
       </tr>
@@ -464,7 +464,7 @@ to compare two values.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int BinarySearch(T item, Comparison&lt;T&gt; comparison)</code></pre>
+    <pre><code class="lang-csharp hljs">public long BinarySearch(T item, Comparison&lt;T&gt; comparison)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -500,7 +500,7 @@ to compare two values.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the item; or -1, if item doesn't exist in the array.</p>
 </td>
       </tr>
@@ -508,19 +508,19 @@ to compare two values.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_BinarySearch__0_System_Int32_System_Int32_System_Comparison__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.BinarySearch(%600%2CSystem.Int32%2CSystem.Int32%2CSystem.Comparison%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_BinarySearch__0_System_Int64_System_Int64_System_Comparison__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.BinarySearch(%600%2CSystem.Int64%2CSystem.Int64%2CSystem.Comparison%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L347">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BinarySearch_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BinarySearch__0_System_Int32_System_Int32_System_Comparison__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch(`0,System.Int32,System.Int32,System.Comparison{`0})">BinarySearch(T, Int32, Int32, Comparison&lt;T&gt;)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_BinarySearch__0_System_Int64_System_Int64_System_Comparison__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.BinarySearch(`0,System.Int64,System.Int64,System.Comparison{`0})">BinarySearch(T, Int64, Int64, Comparison&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Uses a binary search algorithm to locate a specific element in the sorted array.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int BinarySearch(T item, int startIndex, int count, Comparison&lt;T&gt; comparison)</code></pre>
+    <pre><code class="lang-csharp hljs">public long BinarySearch(T item, long startIndex, long count, Comparison&lt;T&gt; comparison)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -539,13 +539,13 @@ to compare two values.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
         <td><p>The starting index of the range to search.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">count</span></td>
         <td><p>The length of the range to search.</p>
 </td>
@@ -568,7 +568,7 @@ to compare two values.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the item; or -1, if item doesn't exist in the array.</p>
 </td>
       </tr>
@@ -955,7 +955,7 @@ to compare two values.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L864">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L873">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Dispose_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Dispose*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Dispose" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Dispose">Dispose()</h4>
@@ -968,19 +968,19 @@ to compare two values.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.ElementAt(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.ElementAt(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L446">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt(System.Int32)">ElementAt(Int32)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_ElementAt_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.ElementAt(System.Int64)">ElementAt(Int64)</h4>
   <div class="markdown level1 summary"><p>Gets pointer to array element.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Pointer&lt;T&gt; ElementAt(int index)</code></pre>
+    <pre><code class="lang-csharp hljs">public Pointer&lt;T&gt; ElementAt(long index)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -993,7 +993,7 @@ to compare two values.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">index</span></td>
         <td><p>Index of the element.</p>
 </td>
@@ -1265,7 +1265,7 @@ the index of its first occurrence.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int Find(Predicate&lt;T&gt; predicate)</code></pre>
+    <pre><code class="lang-csharp hljs">public long Find(Predicate&lt;T&gt; predicate)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1295,7 +1295,7 @@ the index of its first occurrence.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the matched item; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
@@ -1303,13 +1303,13 @@ the index of its first occurrence.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Find(System.Predicate%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Find(System.Predicate%7B%600%7D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L269">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Find*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int32)">Find(Predicate&lt;T&gt;, Int32)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int64)">Find(Predicate&lt;T&gt;, Int64)</h4>
   <div class="markdown level1 summary"><p>Searches item matching to the given predicate in a range of elements of the unmanaged array, and returns
 the index of its first occurrence. The range extends from a specified
 index for a specified number of elements.</p>
@@ -1317,7 +1317,7 @@ index for a specified number of elements.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int Find(Predicate&lt;T&gt; predicate, int startIndex)</code></pre>
+    <pre><code class="lang-csharp hljs">public long Find(Predicate&lt;T&gt; predicate, long startIndex)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1336,7 +1336,7 @@ index for a specified number of elements.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
         <td><p>The starting index of the search.</p>
 </td>
@@ -1353,7 +1353,7 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the matched item; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
@@ -1361,13 +1361,13 @@ index for a specified number of elements.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Find(System.Predicate%7B%600%7D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Find(System.Predicate%7B%600%7D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L249">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Find*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int32_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int32,System.Int32)">Find(Predicate&lt;T&gt;, Int32, Int32)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Find_System_Predicate__0__System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Find(System.Predicate{`0},System.Int64,System.Int64)">Find(Predicate&lt;T&gt;, Int64, Int64)</h4>
   <div class="markdown level1 summary"><p>Searches item matching to the given predicate in a range of elements of the unmanaged array, and returns
 the index of its first occurrence. The range extends from a specified
 index for a specified number of elements.</p>
@@ -1375,7 +1375,7 @@ index for a specified number of elements.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int Find(Predicate&lt;T&gt; predicate, int startIndex, int count)</code></pre>
+    <pre><code class="lang-csharp hljs">public long Find(Predicate&lt;T&gt; predicate, long startIndex, long count)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1394,13 +1394,13 @@ index for a specified number of elements.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
         <td><p>The starting index of the search.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">count</span></td>
         <td><p>The number of elements to search.</p>
 </td>
@@ -1417,7 +1417,7 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the matched item; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
@@ -1438,7 +1438,7 @@ the index of its last occurrence.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int FindLast(Predicate&lt;T&gt; predicate)</code></pre>
+    <pre><code class="lang-csharp hljs">public long FindLast(Predicate&lt;T&gt; predicate)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1468,7 +1468,7 @@ the index of its last occurrence.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the matched item; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
@@ -1476,13 +1476,13 @@ the index of its last occurrence.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.FindLast(System.Predicate%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.FindLast(System.Predicate%7B%600%7D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L170">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int32)">FindLast(Predicate&lt;T&gt;, Int32)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int64)">FindLast(Predicate&lt;T&gt;, Int64)</h4>
   <div class="markdown level1 summary"><p>Searches item matching to the given predicate in a range of elements of the unmanaged array, and returns
 the index of its last occurrence. The range extends from a specified
 index for a specified number of elements.</p>
@@ -1490,7 +1490,7 @@ index for a specified number of elements.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int FindLast(Predicate&lt;T&gt; predicate, int startIndex)</code></pre>
+    <pre><code class="lang-csharp hljs">public long FindLast(Predicate&lt;T&gt; predicate, long startIndex)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1509,7 +1509,7 @@ index for a specified number of elements.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
         <td><p>The starting index of the search.</p>
 </td>
@@ -1526,7 +1526,7 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the matched item; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
@@ -1534,13 +1534,13 @@ index for a specified number of elements.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.FindLast(System.Predicate%7B%600%7D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.FindLast(System.Predicate%7B%600%7D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L150">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int32_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int32,System.Int32)">FindLast(Predicate&lt;T&gt;, Int32, Int32)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_FindLast_System_Predicate__0__System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.FindLast(System.Predicate{`0},System.Int64,System.Int64)">FindLast(Predicate&lt;T&gt;, Int64, Int64)</h4>
   <div class="markdown level1 summary"><p>Searches item matching to the given predicate in a range of elements of the unmanaged array, and returns
 the index of its last occurrence. The range extends from a specified
 index for a specified number of elements.</p>
@@ -1548,7 +1548,7 @@ index for a specified number of elements.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int FindLast(Predicate&lt;T&gt; predicate, int startIndex, int count)</code></pre>
+    <pre><code class="lang-csharp hljs">public long FindLast(Predicate&lt;T&gt; predicate, long startIndex, long count)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1567,13 +1567,13 @@ index for a specified number of elements.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
         <td><p>The starting index of the search.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">count</span></td>
         <td><p>The number of elements to search.</p>
 </td>
@@ -1590,7 +1590,7 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the matched item; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
@@ -1678,7 +1678,7 @@ index for a specified number of elements.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int IndexOf(T item)</code></pre>
+    <pre><code class="lang-csharp hljs">public long IndexOf(T item)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1708,7 +1708,7 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
@@ -1720,13 +1720,13 @@ to compare elements in this array.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.IndexOf(%600%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.IndexOf(%600%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L324">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32)">IndexOf(T, Int32)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int64)">IndexOf(T, Int64)</h4>
   <div class="markdown level1 summary"><p>Searches for the specified object in a range of elements of the unmanaged array, and returns
 the index of its first occurrence. The range extends from a specified
 index for a specified number of elements.</p>
@@ -1734,7 +1734,7 @@ index for a specified number of elements.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int IndexOf(T item, int startIndex)</code></pre>
+    <pre><code class="lang-csharp hljs">public long IndexOf(T item, long startIndex)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1753,7 +1753,7 @@ index for a specified number of elements.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
         <td><p>The starting index of the search.</p>
 </td>
@@ -1770,25 +1770,25 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32__remarks">Remarks</h5>
+  <h5 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int64__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method uses <see cref="!:ValueType&lt;T>.BitwiseEquals(T, T)"></see> comparer
 to compare elements in this array.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.IndexOf(%600%2CSystem.Int32%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int64_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.IndexOf(%600%2CSystem.Int64%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L310">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32,System.Collections.Generic.IEqualityComparer{`0})">IndexOf(T, Int32, IEqualityComparer&lt;T&gt;)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int64_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int64,System.Collections.Generic.IEqualityComparer{`0})">IndexOf(T, Int64, IEqualityComparer&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Searches for the specified object in a range of elements of the unmanaged array, and returns
 the index of its first occurrence. The range extends from a specified
 index for a specified number of elements.</p>
@@ -1796,7 +1796,7 @@ index for a specified number of elements.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int IndexOf(T item, int startIndex, IEqualityComparer&lt;T&gt; comparer)</code></pre>
+    <pre><code class="lang-csharp hljs">public long IndexOf(T item, long startIndex, IEqualityComparer&lt;T&gt; comparer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1815,7 +1815,7 @@ index for a specified number of elements.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
         <td><p>The starting index of the search.</p>
 </td>
@@ -1838,7 +1838,7 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
@@ -1846,13 +1846,13 @@ index for a specified number of elements.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32_System_Int32_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.IndexOf(%600%2CSystem.Int32%2CSystem.Int32%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int64_System_Int64_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.IndexOf(%600%2CSystem.Int64%2CSystem.Int64%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L289">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int32_System_Int32_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int32,System.Int32,System.Collections.Generic.IEqualityComparer{`0})">IndexOf(T, Int32, Int32, IEqualityComparer&lt;T&gt;)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_IndexOf__0_System_Int64_System_Int64_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.IndexOf(`0,System.Int64,System.Int64,System.Collections.Generic.IEqualityComparer{`0})">IndexOf(T, Int64, Int64, IEqualityComparer&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Searches for the specified object in a range of elements of the unmanaged array, and returns
 the index of its first occurrence. The range extends from a specified
 index for a specified number of elements.</p>
@@ -1860,7 +1860,7 @@ index for a specified number of elements.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int IndexOf(T item, int startIndex, int count, IEqualityComparer&lt;T&gt; comparer)</code></pre>
+    <pre><code class="lang-csharp hljs">public long IndexOf(T item, long startIndex, long count, IEqualityComparer&lt;T&gt; comparer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1879,13 +1879,13 @@ index for a specified number of elements.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
         <td><p>The starting index of the search.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">count</span></td>
         <td><p>The number of elements to search.</p>
 </td>
@@ -1908,7 +1908,7 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
@@ -1930,7 +1930,7 @@ index for a specified number of elements.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int LastIndexOf(T item)</code></pre>
+    <pre><code class="lang-csharp hljs">public long LastIndexOf(T item)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1960,7 +1960,7 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
@@ -1972,13 +1972,13 @@ to compare elements in this array.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.LastIndexOf(%600%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.LastIndexOf(%600%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L225">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32)">LastIndexOf(T, Int32)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int64_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int64)">LastIndexOf(T, Int64)</h4>
   <div class="markdown level1 summary"><p>Searches for the specified object in a range of elements of the unmanaged array, and returns
 the index of its last occurrence. The range extends from a specified
 index for a specified number of elements.</p>
@@ -1986,7 +1986,7 @@ index for a specified number of elements.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int LastIndexOf(T item, int startIndex)</code></pre>
+    <pre><code class="lang-csharp hljs">public long LastIndexOf(T item, long startIndex)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2005,7 +2005,7 @@ index for a specified number of elements.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
         <td><p>The starting index of the search.</p>
 </td>
@@ -2022,25 +2022,25 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32__remarks">Remarks</h5>
+  <h5 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int64__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method uses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.equalitycomparer-1.default#System_Collections_Generic_EqualityComparer_1_Default">Default</a> comparer
 to compare elements in this array.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.LastIndexOf(%600%2CSystem.Int32%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int64_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.LastIndexOf(%600%2CSystem.Int64%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L211">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32,System.Collections.Generic.IEqualityComparer{`0})">LastIndexOf(T, Int32, IEqualityComparer&lt;T&gt;)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int64_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int64,System.Collections.Generic.IEqualityComparer{`0})">LastIndexOf(T, Int64, IEqualityComparer&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Searches for the specified object in a range of elements of the unmanaged array, and returns
 the index of its last occurrence. The range extends from a specified
 index for a specified number of elements.</p>
@@ -2048,7 +2048,7 @@ index for a specified number of elements.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int LastIndexOf(T item, int startIndex, IEqualityComparer&lt;T&gt; comparer)</code></pre>
+    <pre><code class="lang-csharp hljs">public long LastIndexOf(T item, long startIndex, IEqualityComparer&lt;T&gt; comparer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2067,7 +2067,7 @@ index for a specified number of elements.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
         <td><p>The starting index of the search.</p>
 </td>
@@ -2090,7 +2090,7 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
@@ -2098,13 +2098,13 @@ index for a specified number of elements.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32_System_Int32_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.LastIndexOf(%600%2CSystem.Int32%2CSystem.Int32%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int64_System_Int64_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.LastIndexOf(%600%2CSystem.Int64%2CSystem.Int64%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L190">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int32_System_Int32_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int32,System.Int32,System.Collections.Generic.IEqualityComparer{`0})">LastIndexOf(T, Int32, Int32, IEqualityComparer&lt;T&gt;)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_LastIndexOf__0_System_Int64_System_Int64_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.LastIndexOf(`0,System.Int64,System.Int64,System.Collections.Generic.IEqualityComparer{`0})">LastIndexOf(T, Int64, Int64, IEqualityComparer&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Searches for the specified object in a range of elements of the unmanaged array, and returns
 the index of its last occurrence. The range extends from a specified
 index for a specified number of elements.</p>
@@ -2112,7 +2112,7 @@ index for a specified number of elements.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int LastIndexOf(T item, int startIndex, int count, IEqualityComparer&lt;T&gt; comparer)</code></pre>
+    <pre><code class="lang-csharp hljs">public long LastIndexOf(T item, long startIndex, long count, IEqualityComparer&lt;T&gt; comparer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2131,13 +2131,13 @@ index for a specified number of elements.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
         <td><p>The starting index of the search.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">count</span></td>
         <td><p>The number of elements to search.</p>
 </td>
@@ -2160,7 +2160,7 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</p>
 </td>
       </tr>
@@ -2445,19 +2445,19 @@ index for a specified number of elements.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Sort_System_Int32_System_Int32_System_Comparison__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Sort(System.Int32%2CSystem.Int32%2CSystem.Comparison%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_Sort_System_Int64_System_Int64_System_Comparison__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.Sort(System.Int64%2CSystem.Int64%2CSystem.Comparison%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L409">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Sort_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Sort_System_Int32_System_Int32_System_Comparison__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort(System.Int32,System.Int32,System.Comparison{`0})">Sort(Int32, Int32, Comparison&lt;T&gt;)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_Sort_System_Int64_System_Int64_System_Comparison__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.Sort(System.Int64,System.Int64,System.Comparison{`0})">Sort(Int64, Int64, Comparison&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Sorts the range of this array.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Sort(int startIndex, int count, Comparison&lt;T&gt; comparison)</code></pre>
+    <pre><code class="lang-csharp hljs">public void Sort(long startIndex, long count, Comparison&lt;T&gt; comparison)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2470,13 +2470,13 @@ index for a specified number of elements.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
         <td><p>The starting index of the range to sort.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">count</span></td>
         <td><p>The length of the range to sort.</p>
 </td>
@@ -2875,7 +2875,7 @@ index for a specified number of elements.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_DotNext_Runtime_InteropServices_UnmanagedArray__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Addition(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L850">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L859">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Addition_DotNext_Runtime_InteropServices_UnmanagedArray__0__System_Int32_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Addition(DotNext.Runtime.InteropServices.UnmanagedArray{`0},System.Int32)">Addition(UnmanagedArray&lt;T&gt;, Int32)</h4>
@@ -2931,7 +2931,7 @@ index for a specified number of elements.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedArray__0__DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%2CDotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L830">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L839">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedArray__0__DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray{`0},DotNext.Runtime.InteropServices.Pointer{`0})">Equality(UnmanagedArray&lt;T&gt;, Pointer&lt;T&gt;)</h4>
@@ -2987,7 +2987,7 @@ index for a specified number of elements.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedArray__0__DotNext_Runtime_InteropServices_UnmanagedArray__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%2CDotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L810">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L819">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Equality_DotNext_Runtime_InteropServices_UnmanagedArray__0__DotNext_Runtime_InteropServices_UnmanagedArray__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Equality(DotNext.Runtime.InteropServices.UnmanagedArray{`0},DotNext.Runtime.InteropServices.UnmanagedArray{`0})">Equality(UnmanagedArray&lt;T&gt;, UnmanagedArray&lt;T&gt;)</h4>
@@ -3141,7 +3141,7 @@ index for a specified number of elements.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedArray__0__DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%2CDotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L840">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L849">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedArray__0__DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray{`0},DotNext.Runtime.InteropServices.Pointer{`0})">Inequality(UnmanagedArray&lt;T&gt;, Pointer&lt;T&gt;)</h4>
@@ -3197,7 +3197,7 @@ index for a specified number of elements.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedArray__0__DotNext_Runtime_InteropServices_UnmanagedArray__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedArray%601.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D%2CDotNext.Runtime.InteropServices.UnmanagedArray%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L820">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedArray.cs/#L829">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality*"></a>
   <h4 id="DotNext_Runtime_InteropServices_UnmanagedArray_1_op_Inequality_DotNext_Runtime_InteropServices_UnmanagedArray__0__DotNext_Runtime_InteropServices_UnmanagedArray__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedArray`1.op_Inequality(DotNext.Runtime.InteropServices.UnmanagedArray{`0},DotNext.Runtime.InteropServices.UnmanagedArray{`0})">Inequality(UnmanagedArray&lt;T&gt;, UnmanagedArray&lt;T&gt;)</h4>
