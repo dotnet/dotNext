@@ -16,9 +16,14 @@
     - name: Synchronization Enhancements
       href: core/lock.md
 - name: Type Classes
-  href: concepts.md
+  href: concept.md
 - name: Advanced Reflection
-  href: reflection.md
+  href: reflection/index.md
+  items:
+    - name: Type Conversion
+      href: reflection/conversion.md
+    - name: Fast Reflection
+      href: reflection/fast.md
 - name: Metaprogramming
   href: metaprogramming/index.md
   items:

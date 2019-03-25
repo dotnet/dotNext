@@ -5,6 +5,9 @@
 
 This chapter gives quick overview of these libraries. Read [articles](./features/core/extensions.md) for closer look at all available features.
 
+> [!IMPORTANT]
+> DotNext is in early stage of development. Backward compatibility of API is not guaranteed before 1.0 version.
+
 # DotNext
 This library is the core of .NEXT which extends .NET Standard API with
   * Extension methods for .NET Standard types including generic collections
@@ -16,7 +19,7 @@ This library is the core of .NEXT which extends .NET Standard API with
   * Ad-hoc user data associated with any object
 
 # DotNext.Reflection 
-This library provides support of statically-typed and fast reflection as well as [Type Classes](https://github.com/dotnet/csharplang/issues/110). You don't need to wait C# language of version _X_ to obtain this feature.
+This library provides support of strongly-typed and fast reflection as well as [Type Classes](https://github.com/dotnet/csharplang/issues/110). You don't need to wait C# language of version _X_ to obtain this feature.
 
 # DotNext.Metaprogramming
 This library provides a rich set of tools to write and execute code on-the-fly. It extends [C# Expression Tree](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/expression-trees/) programming model with ordinary things for C# such as `foreach` loop, `for` loop, `while` loop, `using` statement and even asynchronous lambda expressions with full support of `async`/`await` semantics.
