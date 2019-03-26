@@ -37,5 +37,7 @@ namespace DotNext
         internal static string MissingMethod(string methodName, Type[] parameters, Type returnType, Type declaringType) => string.Format(resourceManager.GetString("MissingMethod"), methodName, parameters.ToString(","), returnType, declaringType);
 
         internal static string MissingProperty(string propertyName, Type propertyType, Type declaringType) => string.Format(resourceManager.GetString("MissingProperty"), propertyName, propertyType.FullName, declaringType.FullName);
+
+        internal static string ExtensionMethodExpected(MethodBase method) => string.Format(resourceManager.GetString("ExtensionMethodExpected"), method.Name);
     }
 }

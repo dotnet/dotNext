@@ -26,13 +26,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.11.4" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.3" />
     <PackageReference Include="FastMember.Signed" Version="1.4.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" />
-    <ProjectReference Include="..\DotNext\DotNext.csproj" />
+    <PackageReference Include="DotNext.Reflection" Version="0.2.0" Condition="'$(Configuration)'=='Release'" />
+    
+    <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="DotNext" Version="0.2.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
 </Project>

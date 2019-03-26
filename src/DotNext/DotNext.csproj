@@ -7,7 +7,7 @@
     <Authors>Roman Sakno</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>0.2</Version>
+    <Version>0.3.0</Version>
 	<AssemblyName>DotNext</AssemblyName>
     <PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
@@ -18,8 +18,7 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Low-level memory operations such as Memory.Equals and Memory.Compare now support 64-bit length parameter
-Built-in reader/writer lock for any reference type which is similar to monitor lock statement</PackageReleaseNotes>
+	<PackageReleaseNotes>Rich navigation through inheritance hierarchy using TypeExtensions.GetBaseTypes.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

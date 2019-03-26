@@ -264,7 +264,7 @@ namespace DotNext.Reflection
 	/// <typeparam name="V">Type of property.</typeparam>
 	public sealed class Property<V> : PropertyBase<V>, IProperty<V>
 	{
-		private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+		private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
 		private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
 		private Property(PropertyInfo property)
