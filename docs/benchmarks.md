@@ -17,7 +17,7 @@ The configuration of all benchmarks:
 | RAM | 24 GB |
 
 # Bitwise Equality
-This benchmark compares performance of [ValueType&lt;T&gt;.BitwiseEquals](../api/DotNext.ValueType-1.yml) with overloaded equality `==` operator. Testing data types: [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
+This benchmark compares performance of [ValueType&lt;T&gt;.BitwiseEquals](./api/DotNext.ValueType-1.yml) with overloaded equality `==` operator. Testing data types: [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
@@ -29,7 +29,7 @@ This benchmark compares performance of [ValueType&lt;T&gt;.BitwiseEquals](../api
 Bitwise equality method has the better performance than field-by-field equality check because `BitwiseEquals` utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD.
 
 # Array Equality
-This benchmark compares performance of [OneDimensionalArray.SequenceEqual](../api/DotNext.OneDimensionalArray.yml), [OneDimensionalArray.BitwiseEquals](../api/DotNext.OneDimensionalArray.yml) and manual equality check between two arrays using `for` loop. The benchmark is applied to the array of [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) elements.
+This benchmark compares performance of [OneDimensionalArray.SequenceEqual](./api/DotNext.OneDimensionalArray.yml), [OneDimensionalArray.BitwiseEquals](./api/DotNext.OneDimensionalArray.yml) and manual equality check between two arrays using `for` loop. The benchmark is applied to the array of [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) elements.
 
 `SequenceEqual` requires that array element type should implement [IEquatable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.iequatable-1) interface and calls `Equals(T other)` for each element.
 
@@ -45,7 +45,7 @@ This benchmark compares performance of [OneDimensionalArray.SequenceEqual](../ap
 `BtiwiseEquals` is an absolute winner for equality check between large arrays.
 
 # Bitwise Hash Code
-This benchmark compares performance of [ValueType&lt;T&gt;.BitwiseHashCode](../api/DotNext.ValueType-1.yml) and `GetHashCode` instance method for the types [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
+This benchmark compares performance of [ValueType&lt;T&gt;.BitwiseHashCode](./api/DotNext.ValueType-1.yml) and `GetHashCode` instance method for the types [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |

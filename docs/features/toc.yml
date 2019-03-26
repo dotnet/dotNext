@@ -50,5 +50,3 @@
       href: unsafe/offheap.md
     - name: Unmanaged List
       href: unsafe/list.md
-- name: Benchmarks
-  href: benchmarks.md

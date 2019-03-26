@@ -2,3 +2,5 @@
   href: features/
 - name: API Documentation
   href: api/
+- name: Benchmarks
+  href: benchmarks.md
