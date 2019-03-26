@@ -32,10 +32,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" />
-    <PackageReference Include="DotNext.Reflection" Version="0.2.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext.Reflection" Version="0.3.0" Condition="'$(Configuration)'=='Release'" />
     
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.2.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.3.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
 </Project>
