@@ -9,25 +9,6 @@ namespace DotNext
 	[Orderer(SummaryOrderPolicy.FastestToSlowest)]
 	public class BitwiseEqualityBenchmark
 	{
-		private static readonly long[] Array1 = new[]
-		{
-			10L, 20L, 50L, 90L, 54L, 90L, 100L, long.MaxValue,
-			10L, 20L, 50L, 90L, 54L, 90L, 100L, long.MaxValue,
-			10L, 20L, 50L, 90L, 54L, 90L, 100L, long.MaxValue,
-			10L, 20L, 50L, 90L, 54L, 90L, 100L, long.MaxValue,
-			10L, 20L, 50L, 90L, 54L, 90L, 100L, long.MaxValue,
-			10L, 20L, 50L, 90L, 54L, 90L, 100L, long.MaxValue,
-		};
-		private static readonly long[] Array2 = new[]
-		{
-			10L, 20L, 50L, 90L, 54L, 90L, 100L, long.MaxValue,
-			10L, 20L, 50L, 90L, 54L, 90L, 100L, long.MaxValue,
-			10L, 20L, 50L, 90L, 54L, 90L, 100L, long.MaxValue,
-			10L, 20L, 50L, 90L, 54L, 90L, 100L, long.MaxValue,
-			10L, 20L, 50L, 90L, 54L, 90L, 100L, long.MaxValue,
-			10L, 20L, 50L, 90L, 54L, 90L, 100L, 0L,
-		};
-
 		public struct BigStructure
 		{
 			public decimal X, Y, Z, C, A, B;
