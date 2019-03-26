@@ -3,6 +3,7 @@ Benchmarks
 Microbenchmarks are important part of DotNext library to prove than important features can speed up performance of your application or, at least, is not slowing down it.
 
 The configuration of all benchmarks:
+
 | Parameter | Configuration |
 | ---- | ---- |
 | Host | .NET Core 2.2.3 (CoreCLR 4.6.27414.05, CoreFX 4.6.27414.05), 64bit RyuJIT |
