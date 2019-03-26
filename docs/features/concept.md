@@ -9,7 +9,7 @@ If you are not familiar with type classes then read these articles first:
 > [!CAUTION]
 > There is no native compiler support of this feature, therefore, if you have a mistake in your concept definition it will not highlighted at compile time.
 
-The feature is based on strongly typed reflection so read [this](reflection/fast.md) document first. Starting point to discover class members is [Type&lt;T&gt;](../api/DotNext.Reflection.Type-1.yml). Reflected members are cached to speed-up performance and typed by specific delegate type. The delegate describes signature of the reflected member. All types of members are supported: constructors, fields, methods, event, properties, indexer properties.
+The feature is based on strongly typed reflection so read [this](reflection/fast.md) document first. Entry point to discover class members is [Type&lt;T&gt;](../api/DotNext.Reflection.Type-1.yml). Reflected members are cached to speed-up performance and typed by specific delegate type. The delegate describes signature of the reflected member. All types of members are supported: constructors, fields, methods, event, properties, indexer properties.
 
 # Defining Concept
 The recommended code style for the concept type is a definition of static class with restrictions expressed as static fields. Let's define type class with single instance method and single static method:
@@ -64,6 +64,60 @@ length = LengthSupport<byte[]>.GetLength(new byte[]{ 1, 2, 3 }); //length == 3
 ```
 
 Now this concept allows to obtain value of `Length` property from any object.
+
+`Require` method is used to obtain instance member from the type specified as actual generic argument for type `Type<T>`. Static member can be obtained using `RequireStatic` family of methods. `Require` and `RequireStatic` are useful in the context of concept type declaration. If target type _T_ doesn't have required member then these methods will throw one of [ConstraintViolationException](../api/DotNext.Reflection.ConstraintViolationException.yml) ancestors:
+* [MissingConstructorException](../api/DotNext.Reflection.MissingConstructorException.yml) if required constructor doesn't exist
+* [MissingMethodException](../api/DotNext.Reflection.MissingMethodException.yml) if required method or property getter/setter doesn't exist
+* [MissingFieldException](../api/DotNext.Reflection.MissingFieldException.yml) if required field doesn't exist
+* [MissingEventException](../api/DotNext.Reflection.MissingEventException.yml) if required event doesn't exist
+
+In the context of strongly typed reflection it is recommended to use alternative methods `Get` (for instance members) or `GetStatic` (for static members). These methods have same the same behavior as `Require`/`RequireStatic` but they don't throw exception. If member cannot be resolved, these methods will return **null**.
+
+# Special Delegates
+`Type<T>` and its nested classes offer a rich set of methods for members binding. These methods reflect members as well-known delegate types defined in .NET library or DotNext Reflection library. In some cases, no one of these delegates can fit the requested member. For example, overloaded method [int.TryParse](https://docs.microsoft.com/en-us/dotnet/api/system.int32.tryparse) with two parameters has **out** parameter. In this case, the supported set of delegates will not help. This issue can be resolved in two ways:
+* Use custom delegate type, as it was shown in the example above (`ToStringMethod` delegate type)
+* Use special delegates provided by DotNext Reflection library:
+    * [Function&lt;A, R&gt;](../../api/DotNext.Function-2.yml) for static methods with return type
+    * [Function&lt;T, A, R&gt;](../../api/DotNext.Function-3.yml) for instance methods with return type
+    * [Procedure&lt;A&gt;](../../api/DotNext.Procedure-1.yml) for static methods without return type
+    * [Procedure&lt;T, A&gt;](../../api/DotNext.Procedure-2.yml) for instance methods without return type
+
+These delegates able to represent the signature of any requested method and handled by `Type<T>` differently in comparison with regular delegate types.
+
+> [!NOTE]
+> ref-like structs are not supported by these delegates because it is forbidden by compiler to pass such data types as actual generic arguments
+
+These delegates accept input arguments in the form of the value type. Usually, the value type for the arguments is initialized on the stack. Therefore, all arguments will be passed through stack and .NET optimizations related to arguments passing are not possible.
+
+It is allowed to use any custom value type to pass arguments. The arguments should be represented by public instance fields. Properties and private fields will be ignored by `Type<T>`. Therefore, it is recommended to use value tuples for passing arguments. Value tuples have native compiler support in C# and VB.NET so the source code still remain readable.
+
+If parameter in the method signature is declared as **ref** our **out** then field in such structure should be of type [Ref&lt;T&gt;](../api/DotNext.Reflection.Ref-1.yml).
+
+```csharp
+using DotNext.Reflection;
+
+//reflect static method as Function
+Function<(string text, Ref<decimal> result), bool> tryParse = Type<decimal>.GetStaticMethod<(string, Ref<decimal>), bool>(nameof(decimal.TryParse));
+//allocate arguments on the stack
+(string text, Ref<decimal> result) args = default;  //or use var args = tryParse.ArgList(); with the same result
+args.text = "42";
+tryParse(args);
+decimal parsedValue = args.result;  //parsedValue == 42M
+```
+
+Let's assume that type of `text` parameter is unknown or unreachable from source code. In this case, it is possible to use **object** type with some performance overhead (but still much faster than .NET reflection):
+
+```csharp
+using DotNext.Reflection;
+
+//reflect static method as Function
+Function<(object text, Ref<decimal> result), bool> tryParse = Type<decimal>.GetStaticMethod<(object, Ref<decimal>), bool>(nameof(decimal.TryParse));
+//allocate arguments on the stack
+(object text, Ref<decimal> result) args = default;  //or use var args = tryParse.ArgList(); with the same result
+args.text = "42";
+tryParse(args);
+decimal parsedValue = args.result;  //parsedValue == 42M
+```
 
 # Reusable Concepts
 The library offers ready-to-use concept types:

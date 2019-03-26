@@ -1,6 +1,6 @@
 Fast Reflection
 ====
-Invocation of reflected members in .NET is slow. This happens because late-binding [invocation](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.methodbase.invoke) should provide type check of arguments for each call. DotNext Reflection library provides a way to invoke reflected members in strongly typed manner. It means that invocation parameters are typed and type safety is guaranteed by compiler. Moreover, this feature allows to invoke members with the same performance as they called without reflection. The reflected member can be converted into appropriate delegate instance for caching and further invocation. The reflection process are still performed dynamically and based on .NET reflection.
+Invocation of reflected members in .NET is slow. This happens because late-binding [invocation](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.methodbase.invoke) should provide type check of arguments for each call. DotNext Reflection library provides a way to invoke reflected members in strongly typed manner. It means that invocation parameters are typed and type safety is guaranteed by compiler. Moreover, this feature allows to invoke members with the same performance as they called without reflection. The reflected member can be converted into appropriate delegate instance for caching and further invocation. The binding process still performed dynamically and based on .NET reflection.
 
 [Reflector](../../api/DotNext.Reflection.Reflector.yml) class provides methods for reflecting class members. The type of delegate instance which represents reflected member describes the signature of the method or constructor. But what the developer should do if one of constructor or method parameteters has a type that is not visible from the calling code (e.g. type has **internal** visibility modifier and located in third-party library)? This issue is covered by Reflection library with help of the following special delegate types:
 * [Function&lt;A, R&gt;](../../api/DotNext.Function-2.yml) for static methods with return type
@@ -8,7 +8,7 @@ Invocation of reflected members in .NET is slow. This happens because late-bindi
 * [Procedure&lt;A&gt;](../../api/DotNext.Procedure-1.yml) for static methods without return type
 * [Procedure&lt;T, A&gt;](../../api/DotNext.Procedure-2.yml) for instance methods without return type
 
-These delegates can describe signature of arbitrary methods or constructors with a little performance cost: all arguments will passed through stack. As a result, they can be used if developer don't want to introduce a new delegate type for some untypical signatures (with **ref** or **out** parameters).
+These delegates can describe signature of arbitrary methods or constructors with a little performance cost: all arguments will passed through stack. As a result, they can be used if developer don't want to introduce a new delegate type for some untypical signatures (with **ref** or **out** parameters). 
 
 # Constructor
 Constructor can be reflected as delegate instance.
@@ -81,3 +81,26 @@ tryParse(args);
 decimal v = args.result;    //v == 42M
 ```
 _args_ value passed into _Function_  instance by reference and contains all necessary arguments in the form of value tuple. 
+
+Let's assume than type of `text` parameter is not known at compile time or unreachable from source code because the type is declared in external library and has **internal** visibility modifier. In this case, the type of such parameter can be replaced with **object** data type. Of course, it will affect performance but still be much faster than classic .NET reflection.
+```csharp
+using DotNext.Reflection;
+
+Function<(object text, decimal result), bool> tryParse = typeof(decimal).GetMethod(nameof(decimal.TryParse), new[]{typeof(string), typeof(decimal).MakeByRefType()}).Unreflect<Function<(object, decimal), bool>>();
+
+(object text, decimal result) args = tryParse.ArgList();
+args.text = "42";
+tryParse(args);
+decimal v = args.result;    //v == 42M
+```
+
+# Performance
+Invocation of members through special delegates is not a free lunch: you pay for passing arguments through the stack. But it still much faster than classic .NET Reflection. The following list describes performance impact using different approaches to reflection (from fast to slow).
+| Reflective call | Performance |
+| ---- | ---- |
+| Custom delegate type or predefined delegate type which exactly describes the signature of expected method | the same or comparable to direct call (with nanoseconds overhead) |
+| Special delegate types | x1,4 slower than direct call |
+| Special delegate types with one or more unknown parameter types (when **object** used instead of actual type) | x2/x3 slower than direct call |
+| Classic .NET Reflection | x100 slower than direct call |
+
+Read more about performance in [Benchmarks](../benchmarks.md) article.
