@@ -14,7 +14,7 @@ namespace DotNext.Reflection
     public sealed class Method<D> : MethodInfo, IMethod<D>, IEquatable<MethodInfo>
         where D : MulticastDelegate
     {
-        private const BindingFlags StaticPublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags StaticPublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags StaticNonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
         private const BindingFlags InstancePublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags InstanceNonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
@@ -43,8 +43,6 @@ namespace DotNext.Reflection
             this.method = method;
             Invoker = DelegateHelpers.CreateDelegate<D>(method);
         }
-
-        internal Method<D> OfType<T>() => method.DeclaringType.IsAssignableFrom(typeof(T)) ? this : null;
 
         /// <summary>
         /// Gets the attributes associated with this method.
@@ -300,44 +298,88 @@ namespace DotNext.Reflection
 
         private static Method<D> ReflectStatic(Type declaringType, Type[] parameters, Type returnType, string methodName, bool nonPublic)
         {
+            //lookup in declaring type
             var targetMethod = declaringType.GetMethod(methodName,
                 nonPublic ? StaticNonPublicFlags : StaticPublicFlags,
                 Type.DefaultBinder,
                 parameters,
                 Array.Empty<ParameterModifier>());
-            return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod);
+            //lookup in extension methods
+            if (targetMethod is null || returnType != targetMethod.ReturnType)
+            {
+                targetMethod = null;
+                foreach (var candidate in ExtensionRegistry.GetMethods(declaringType, MethodLookup.Static))
+                    if (candidate.Name == methodName && candidate.SignatureEquals(parameters) && candidate.ReturnType == returnType)
+                    {
+                        targetMethod = candidate;
+                        break;
+                    }
+            }
+            return targetMethod is null ? null : new Method<D>(targetMethod);
         }
 
         private static Method<D> ReflectStatic(Type declaringType, Type argumentsType, Type returnType, string methodName, bool nonPublic)
         {
             var (parameters, arglist, input) = Signature.Reflect(argumentsType);
+            //lookup in declaring type
             var targetMethod = declaringType.GetMethod(methodName,
                 nonPublic ? StaticNonPublicFlags : StaticPublicFlags,
                 Type.DefaultBinder,
                 parameters,
                 Array.Empty<ParameterModifier>());
-            return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod, arglist, new[]{ input });
+            //lookup in extension methods
+            if (targetMethod is null || returnType != targetMethod.ReturnType)
+            {
+                targetMethod = null;
+                foreach (var candidate in ExtensionRegistry.GetMethods(declaringType, MethodLookup.Static))
+                    if (candidate.Name == methodName && candidate.SignatureEquals(parameters) && candidate.ReturnType == returnType)
+                    {
+                        targetMethod = candidate;
+                        break;
+                    }
+            }
+            return targetMethod is null ? null : new Method<D>(targetMethod, arglist, new[] { input });
         }
 
 		private static Type NonRefType(Type type) => type.IsByRef ? type.GetElementType() : type;
 
 		private static Method<D> ReflectInstance(Type thisParam, Type[] parameters, Type returnType, string methodName, bool nonPublic)
         {
+            //lookup in declaring type
             var targetMethod = NonRefType(thisParam).GetMethod(methodName,
                 nonPublic ? InstanceNonPublicFlags : InstancePublicFlags,
                 Type.DefaultBinder,
                 parameters, 
                 Array.Empty<ParameterModifier>());
-
+            //lookup in extension methods
+            if (targetMethod is null || returnType != targetMethod.ReturnType)
+            {
+                targetMethod = null;
+                foreach (var candidate in ExtensionRegistry.GetMethods(thisParam, MethodLookup.Instance))
+                    if (candidate.Name == methodName && candidate.GetParameterTypes().RemoveFirst(1).SequenceEqual(parameters) && candidate.ReturnType == returnType)
+                    {
+                        targetMethod = candidate;
+                        break;
+                    }
+            }
             //this parameter can be passed as REF so handle this situation
             //first parameter should be passed by REF for structure types
-            if(targetMethod is null || returnType != targetMethod.ReturnType)
+            if (targetMethod is null)
                 return null;
-            else if(thisParam.IsByRef ^ thisParam.IsValueType)
+            else if(thisParam.IsByRef ^ NonRefType(thisParam).IsValueType)
             {
-                var thisParamDeclaration = Expression.Parameter(thisParam);
-                var parametersDeclaration = parameters.Convert(Expression.Parameter);
-                return new Method<D>(targetMethod, thisParamDeclaration, parametersDeclaration, parametersDeclaration);
+                ParameterExpression[] parametersDeclaration;
+                if(targetMethod.IsStatic)
+                {
+                    parametersDeclaration = targetMethod.GetParameterTypes().Convert(Expression.Parameter);
+                    return new Method<D>(targetMethod, parametersDeclaration, parametersDeclaration);
+                }
+                else
+                {
+                    var thisParamDeclaration = Expression.Parameter(thisParam);
+                    parametersDeclaration = parameters.Convert(Expression.Parameter);
+                    return new Method<D>(targetMethod, thisParamDeclaration, parametersDeclaration, parametersDeclaration);
+                }
             }
             else
                 return new Method<D>(targetMethod);
@@ -347,12 +389,24 @@ namespace DotNext.Reflection
         {
             var (parameters, arglist, input) = Signature.Reflect(argumentsType);
             var thisParamDeclaration = Expression.Parameter(thisParam.MakeByRefType());
+            //lookup in declaring type
             var targetMethod = thisParam.GetMethod(methodName,
                 nonPublic ? InstanceNonPublicFlags : InstancePublicFlags,
                 Type.DefaultBinder,
                 parameters, 
                 Array.Empty<ParameterModifier>());
-            return targetMethod is null || returnType != targetMethod.ReturnType ? null : new Method<D>(targetMethod, thisParamDeclaration, arglist, new[]{ input });
+            //lookup in extension methods
+            if (targetMethod is null || returnType != targetMethod.ReturnType)
+            {
+                targetMethod = null;
+                foreach (var candidate in ExtensionRegistry.GetMethods(thisParam, MethodLookup.Instance))
+                    if (candidate.Name == methodName && candidate.GetParameterTypes().RemoveFirst(1).SequenceEqual(parameters) && candidate.ReturnType == returnType)
+                    {
+                        targetMethod = candidate;
+                        break;
+                    }
+            }
+            return targetMethod is null ? null : new Method<D>(targetMethod, thisParamDeclaration, arglist, new[]{ input });
         }
 
         /// <summary>
