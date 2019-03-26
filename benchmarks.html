@@ -63,19 +63,57 @@
 <h1 id="benchmarks">Benchmarks</h1>
 
 <p>Microbenchmarks are important part of DotNext library to prove than important features can speed up performance of your application or, at least, is not slowing down it.</p>
-<p>The configuration of all benchmarks:
-| Parameter | Configuration |
-| ---- | ---- |
-| Host | .NET Core 2.2.3 (CoreCLR 4.6.27414.05, CoreFX 4.6.27414.05), 64bit RyuJIT |
-| Job | .NET Core 2.2.3 (CoreCLR 4.6.27414.05, CoreFX 4.6.27414.05), 64bit RyuJIT |
-| LaunchCount | 1 |
-| RunStrategy | Throughput |
-| OS | Ubuntu 18.04 |
-| CPU | Intel Core i7-6700HQ CPU 2.60GHz (Skylake) |
-| Number of CPUs | 1 |
-| Physical Cores | 4 |
-| Logiccal Cores | 8 |
-| RAM | 24 GB |</p>
+<p>The configuration of all benchmarks:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td>.NET Core 2.2.3 (CoreCLR 4.6.27414.05, CoreFX 4.6.27414.05), 64bit RyuJIT</td>
+</tr>
+<tr>
+<td>Job</td>
+<td>.NET Core 2.2.3 (CoreCLR 4.6.27414.05, CoreFX 4.6.27414.05), 64bit RyuJIT</td>
+</tr>
+<tr>
+<td>LaunchCount</td>
+<td>1</td>
+</tr>
+<tr>
+<td>RunStrategy</td>
+<td>Throughput</td>
+</tr>
+<tr>
+<td>OS</td>
+<td>Ubuntu 18.04</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>Intel Core i7-6700HQ CPU 2.60GHz (Skylake)</td>
+</tr>
+<tr>
+<td>Number of CPUs</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Physical Cores</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Logiccal Cores</td>
+<td>8</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>24 GB</td>
+</tr>
+</tbody>
+</table>
 <h1 id="bitwise-equality">Bitwise Equality</h1>
 <p>This benchmark compares performance of <a href="api/DotNext.ValueType-1.html">ValueType&lt;T&gt;.BitwiseEquals</a> with overloaded equality <code>==</code> operator. Testing data types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
 <table>
