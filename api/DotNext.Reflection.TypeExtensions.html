@@ -118,7 +118,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TypeExtensions_Cast_System_Type_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TypeExtensions.Cast(System.Type%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L191">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L207">View Source</a>
   </span>
   <a id="DotNext_Reflection_TypeExtensions_Cast_" data-uid="DotNext.Reflection.TypeExtensions.Cast*"></a>
   <h4 id="DotNext_Reflection_TypeExtensions_Cast_System_Type_System_Object_" data-uid="DotNext.Reflection.TypeExtensions.Cast(System.Type,System.Object)">Cast(Type, Object)</h4>
@@ -188,10 +188,72 @@ or if object is <span class="xref">null</span> and <code data-dev-comment-type="
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TypeExtensions_GetBaseTypes_System_Type_System_Boolean_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TypeExtensions.GetBaseTypes(System.Type%2CSystem.Boolean%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L28">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_TypeExtensions_GetBaseTypes_" data-uid="DotNext.Reflection.TypeExtensions.GetBaseTypes*"></a>
+  <h4 id="DotNext_Reflection_TypeExtensions_GetBaseTypes_System_Type_System_Boolean_System_Boolean_" data-uid="DotNext.Reflection.TypeExtensions.GetBaseTypes(System.Type,System.Boolean,System.Boolean)">GetBaseTypes(Type, Boolean, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Returns read-only collection of base types and, optionally, all implemented interfaces.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IEnumerable&lt;Type&gt; GetBaseTypes(this Type type, bool includeTopLevel = false, bool includeInterfaces = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="parametername">type</span></td>
+        <td><p>The type to be discovered.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">includeTopLevel</span></td>
+        <td><p><span class="xref">true</span> to return <code data-dev-comment-type="paramref" class="paramref">type</code> as first element in the collection.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">includeInterfaces</span></td>
+        <td><p><span class="xref">true</span> to include implemented interfaces; <span class="xref">false</span> to return inheriance hierarchy only.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a>&gt;</td>
+        <td><p>Read-only collection of base types and, optionally, all implemented interfaces.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TypeExtensions_GetGenericArguments_System_Type_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TypeExtensions.GetGenericArguments(System.Type%2CSystem.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L115">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L131">View Source</a>
   </span>
   <a id="DotNext_Reflection_TypeExtensions_GetGenericArguments_" data-uid="DotNext.Reflection.TypeExtensions.GetGenericArguments*"></a>
   <h4 id="DotNext_Reflection_TypeExtensions_GetGenericArguments_System_Type_System_Type_" data-uid="DotNext.Reflection.TypeExtensions.GetGenericArguments(System.Type,System.Type)">GetGenericArguments(Type, Type)</h4>
@@ -248,7 +310,7 @@ elementTypes[0] == typeof(byte); //true</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TypeExtensions_GetMethod_System_Type_System_String_System_Reflection_BindingFlags_System_Int64_System_Type___.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TypeExtensions.GetMethod(System.Type%2CSystem.String%2CSystem.Reflection.BindingFlags%2CSystem.Int64%2CSystem.Type%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L33">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Reflection_TypeExtensions_GetMethod_" data-uid="DotNext.Reflection.TypeExtensions.GetMethod*"></a>
   <h4 id="DotNext_Reflection_TypeExtensions_GetMethod_System_Type_System_String_System_Reflection_BindingFlags_System_Int64_System_Type___" data-uid="DotNext.Reflection.TypeExtensions.GetMethod(System.Type,System.String,System.Reflection.BindingFlags,System.Int64,System.Type[])">GetMethod(Type, String, BindingFlags, Int64, Type[])</h4>
@@ -325,7 +387,7 @@ elementTypes[0] == typeof(byte); //true</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TypeExtensions_GetMethod_System_Type_System_String_System_Reflection_BindingFlags_System_Type___.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TypeExtensions.GetMethod(System.Type%2CSystem.String%2CSystem.Reflection.BindingFlags%2CSystem.Type%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L65">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L81">View Source</a>
   </span>
   <a id="DotNext_Reflection_TypeExtensions_GetMethod_" data-uid="DotNext.Reflection.TypeExtensions.GetMethod*"></a>
   <h4 id="DotNext_Reflection_TypeExtensions_GetMethod_System_Type_System_String_System_Reflection_BindingFlags_System_Type___" data-uid="DotNext.Reflection.TypeExtensions.GetMethod(System.Type,System.String,System.Reflection.BindingFlags,System.Type[])">GetMethod(Type, String, BindingFlags, Type[])</h4>
@@ -393,7 +455,7 @@ elementTypes[0] == typeof(byte); //true</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TypeExtensions_GetTypeCode_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TypeExtensions.GetTypeCode(System.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L123">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L139">View Source</a>
   </span>
   <a id="DotNext_Reflection_TypeExtensions_GetTypeCode_" data-uid="DotNext.Reflection.TypeExtensions.GetTypeCode*"></a>
   <h4 id="DotNext_Reflection_TypeExtensions_GetTypeCode_System_Type_" data-uid="DotNext.Reflection.TypeExtensions.GetTypeCode(System.Type)">GetTypeCode(Type)</h4>
@@ -443,7 +505,7 @@ elementTypes[0] == typeof(byte); //true</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TypeExtensions_IsAssignableFromWithoutBoxing_System_Type_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TypeExtensions.IsAssignableFromWithoutBoxing(System.Type%2CSystem.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L178">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L194">View Source</a>
   </span>
   <a id="DotNext_Reflection_TypeExtensions_IsAssignableFromWithoutBoxing_" data-uid="DotNext.Reflection.TypeExtensions.IsAssignableFromWithoutBoxing*"></a>
   <h4 id="DotNext_Reflection_TypeExtensions_IsAssignableFromWithoutBoxing_System_Type_System_Type_" data-uid="DotNext.Reflection.TypeExtensions.IsAssignableFromWithoutBoxing(System.Type,System.Type)">IsAssignableFromWithoutBoxing(Type, Type)</h4>
@@ -509,7 +571,7 @@ typeof(object).IsAssignableFromWithoutBoxing(typeof(string));//true</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TypeExtensions_IsGenericInstanceOf_System_Type_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TypeExtensions.IsGenericInstanceOf(System.Type%2CSystem.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L100">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TypeExtensions.cs/#L116">View Source</a>
   </span>
   <a id="DotNext_Reflection_TypeExtensions_IsGenericInstanceOf_" data-uid="DotNext.Reflection.TypeExtensions.IsGenericInstanceOf*"></a>
   <h4 id="DotNext_Reflection_TypeExtensions_IsGenericInstanceOf_System_Type_System_Type_" data-uid="DotNext.Reflection.TypeExtensions.IsGenericInstanceOf(System.Type,System.Type)">IsGenericInstanceOf(Type, Type)</h4>

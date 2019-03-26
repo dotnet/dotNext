@@ -103,4 +103,4 @@ Invocation of members through special delegates is not a free lunch: you pay for
 | Special delegate types with one or more unknown parameter types (when **object** used instead of actual type) | x2/x3 slower than direct call |
 | Classic .NET Reflection | x10/x50 slower than direct call |
 
-Read more about performance in [Benchmarks](../benchmarks.md) article.
+Read more about performance in [Benchmarks](../../benchmarks.md) article.

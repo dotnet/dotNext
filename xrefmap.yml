@@ -10818,6 +10818,59 @@ references:
   fullName.vb: DotNext.Reflection.EventBase(Of D).ToString
   nameWithType: EventBase<D>.ToString
   nameWithType.vb: EventBase(Of D).ToString
+- uid: DotNext.Reflection.ExtensionRegistry
+  name: ExtensionRegistry
+  href: api/DotNext.Reflection.ExtensionRegistry.html
+  commentId: T:DotNext.Reflection.ExtensionRegistry
+  fullName: DotNext.Reflection.ExtensionRegistry
+  nameWithType: ExtensionRegistry
+- uid: DotNext.Reflection.ExtensionRegistry.RegisterInstance(System.Reflection.MethodInfo)
+  name: RegisterInstance(MethodInfo)
+  href: api/DotNext.Reflection.ExtensionRegistry.html#DotNext_Reflection_ExtensionRegistry_RegisterInstance_System_Reflection_MethodInfo_
+  commentId: M:DotNext.Reflection.ExtensionRegistry.RegisterInstance(System.Reflection.MethodInfo)
+  fullName: DotNext.Reflection.ExtensionRegistry.RegisterInstance(System.Reflection.MethodInfo)
+  nameWithType: ExtensionRegistry.RegisterInstance(MethodInfo)
+- uid: DotNext.Reflection.ExtensionRegistry.RegisterInstance*
+  name: RegisterInstance
+  href: api/DotNext.Reflection.ExtensionRegistry.html#DotNext_Reflection_ExtensionRegistry_RegisterInstance_
+  commentId: Overload:DotNext.Reflection.ExtensionRegistry.RegisterInstance
+  isSpec: "True"
+  fullName: DotNext.Reflection.ExtensionRegistry.RegisterInstance
+  nameWithType: ExtensionRegistry.RegisterInstance
+- uid: DotNext.Reflection.ExtensionRegistry.RegisterInstance``1(``0)
+  name: RegisterInstance<D>(D)
+  href: api/DotNext.Reflection.ExtensionRegistry.html#DotNext_Reflection_ExtensionRegistry_RegisterInstance__1___0_
+  commentId: M:DotNext.Reflection.ExtensionRegistry.RegisterInstance``1(``0)
+  name.vb: RegisterInstance(Of D)(D)
+  fullName: DotNext.Reflection.ExtensionRegistry.RegisterInstance<D>(D)
+  fullName.vb: DotNext.Reflection.ExtensionRegistry.RegisterInstance(Of D)(D)
+  nameWithType: ExtensionRegistry.RegisterInstance<D>(D)
+  nameWithType.vb: ExtensionRegistry.RegisterInstance(Of D)(D)
+- uid: DotNext.Reflection.ExtensionRegistry.RegisterStatic*
+  name: RegisterStatic
+  href: api/DotNext.Reflection.ExtensionRegistry.html#DotNext_Reflection_ExtensionRegistry_RegisterStatic_
+  commentId: Overload:DotNext.Reflection.ExtensionRegistry.RegisterStatic
+  isSpec: "True"
+  fullName: DotNext.Reflection.ExtensionRegistry.RegisterStatic
+  nameWithType: ExtensionRegistry.RegisterStatic
+- uid: DotNext.Reflection.ExtensionRegistry.RegisterStatic``1(System.Reflection.MethodInfo)
+  name: RegisterStatic<T>(MethodInfo)
+  href: api/DotNext.Reflection.ExtensionRegistry.html#DotNext_Reflection_ExtensionRegistry_RegisterStatic__1_System_Reflection_MethodInfo_
+  commentId: M:DotNext.Reflection.ExtensionRegistry.RegisterStatic``1(System.Reflection.MethodInfo)
+  name.vb: RegisterStatic(Of T)(MethodInfo)
+  fullName: DotNext.Reflection.ExtensionRegistry.RegisterStatic<T>(System.Reflection.MethodInfo)
+  fullName.vb: DotNext.Reflection.ExtensionRegistry.RegisterStatic(Of T)(System.Reflection.MethodInfo)
+  nameWithType: ExtensionRegistry.RegisterStatic<T>(MethodInfo)
+  nameWithType.vb: ExtensionRegistry.RegisterStatic(Of T)(MethodInfo)
+- uid: DotNext.Reflection.ExtensionRegistry.RegisterStatic``2(``1)
+  name: RegisterStatic<T, D>(D)
+  href: api/DotNext.Reflection.ExtensionRegistry.html#DotNext_Reflection_ExtensionRegistry_RegisterStatic__2___1_
+  commentId: M:DotNext.Reflection.ExtensionRegistry.RegisterStatic``2(``1)
+  name.vb: RegisterStatic(Of T, D)(D)
+  fullName: DotNext.Reflection.ExtensionRegistry.RegisterStatic<T, D>(D)
+  fullName.vb: DotNext.Reflection.ExtensionRegistry.RegisterStatic(Of T, D)(D)
+  nameWithType: ExtensionRegistry.RegisterStatic<T, D>(D)
+  nameWithType.vb: ExtensionRegistry.RegisterStatic(Of T, D)(D)
 - uid: DotNext.Reflection.Field`1
   name: Field<V>
   href: api/DotNext.Reflection.Field-1.html
@@ -17973,6 +18026,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Reflection.TypeExtensions.Cast
   nameWithType: TypeExtensions.Cast
+- uid: DotNext.Reflection.TypeExtensions.GetBaseTypes(System.Type,System.Boolean,System.Boolean)
+  name: GetBaseTypes(Type, Boolean, Boolean)
+  href: api/DotNext.Reflection.TypeExtensions.html#DotNext_Reflection_TypeExtensions_GetBaseTypes_System_Type_System_Boolean_System_Boolean_
+  commentId: M:DotNext.Reflection.TypeExtensions.GetBaseTypes(System.Type,System.Boolean,System.Boolean)
+  fullName: DotNext.Reflection.TypeExtensions.GetBaseTypes(System.Type, System.Boolean, System.Boolean)
+  nameWithType: TypeExtensions.GetBaseTypes(Type, Boolean, Boolean)
+- uid: DotNext.Reflection.TypeExtensions.GetBaseTypes*
+  name: GetBaseTypes
+  href: api/DotNext.Reflection.TypeExtensions.html#DotNext_Reflection_TypeExtensions_GetBaseTypes_
+  commentId: Overload:DotNext.Reflection.TypeExtensions.GetBaseTypes
+  isSpec: "True"
+  fullName: DotNext.Reflection.TypeExtensions.GetBaseTypes
+  nameWithType: TypeExtensions.GetBaseTypes
 - uid: DotNext.Reflection.TypeExtensions.GetGenericArguments(System.Type,System.Type)
   name: GetGenericArguments(Type, Type)
   href: api/DotNext.Reflection.TypeExtensions.html#DotNext_Reflection_TypeExtensions_GetGenericArguments_System_Type_System_Type_

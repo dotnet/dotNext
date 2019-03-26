@@ -77,10 +77,10 @@ In the context of strongly typed reflection it is recommended to use alternative
 `Type<T>` and its nested classes offer a rich set of methods for members binding. These methods reflect members as well-known delegate types defined in .NET library or DotNext Reflection library. In some cases, no one of these delegates can fit the requested member. For example, overloaded method [int.TryParse](https://docs.microsoft.com/en-us/dotnet/api/system.int32.tryparse) with two parameters has **out** parameter. In this case, the supported set of delegates will not help. This issue can be resolved in two ways:
 * Use custom delegate type, as it was shown in the example above (`ToStringMethod` delegate type)
 * Use special delegates provided by DotNext Reflection library:
-    * [Function&lt;A, R&gt;](../../api/DotNext.Function-2.yml) for static methods with return type
-    * [Function&lt;T, A, R&gt;](../../api/DotNext.Function-3.yml) for instance methods with return type
-    * [Procedure&lt;A&gt;](../../api/DotNext.Procedure-1.yml) for static methods without return type
-    * [Procedure&lt;T, A&gt;](../../api/DotNext.Procedure-2.yml) for instance methods without return type
+    * [Function&lt;A, R&gt;](../api/DotNext.Function-2.yml) for static methods with return type
+    * [Function&lt;T, A, R&gt;](../api/DotNext.Function-3.yml) for instance methods with return type
+    * [Procedure&lt;A&gt;](../api/DotNext.Procedure-1.yml) for static methods without return type
+    * [Procedure&lt;T, A&gt;](../api/DotNext.Procedure-2.yml) for instance methods without return type
 
 These delegates able to represent the signature of any requested method and handled by `Type<T>` differently in comparison with regular delegate types.
 
