@@ -366,7 +366,7 @@ namespace DotNext.Reflection
     /// <typeparam name="V">Type of field value.</typeparam>
     public sealed class Field<V> : FieldBase<V>, IField<V>
     {
-        private const BindingFlags PubicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags PubicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
         private readonly MemberGetter<V> getter;

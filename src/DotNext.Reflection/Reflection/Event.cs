@@ -236,7 +236,7 @@ namespace DotNext.Reflection
     public sealed class Event<D> : EventBase<D>, IEvent<D>
         where D : MulticastDelegate
     {
-        private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
+        private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
         private readonly Action<D> addMethod;

@@ -168,7 +168,7 @@ namespace DotNext.Reflection
                 private InstanceMethods(bool nonPublic) => this.nonPublic = nonPublic;
 
                 private protected override Reflection.Method<D> Create(string methodName) 
-                    => Reflection.Method<D>.Reflect(methodName, nonPublic)?.OfType<T>();
+                    => Reflection.Method<D>.Reflect(methodName, nonPublic);
             }
 
             private sealed class StaticMethods<D> : MemberCache<MethodInfo, Reflection.Method<D>>

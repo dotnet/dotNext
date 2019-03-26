@@ -6,16 +6,32 @@ using System.Reflection;
 
 namespace DotNext.Reflection
 {
-	/// <summary>
-	/// Various extension methods for type reflection.
-	/// </summary>
-	public static class TypeExtensions
+    /// <summary>
+    /// Various extension methods for type reflection.
+    /// </summary>
+    public static class TypeExtensions
     {
         private static bool IsGenericParameter(Type type)
         {
             if (type.IsByRef)
                 type = type.GetElementType();
             return type.IsGenericParameter;
+        }
+
+        /// <summary>
+        /// Returns read-only collection of base types and, optionally, all implemented interfaces.
+        /// </summary>
+        /// <param name="type">The type to be discovered.</param>
+        /// <param name="includeTopLevel"><see langword="true"/> to return <paramref name="type"/> as first element in the collection.</param>
+        /// <param name="includeInterfaces"><see langword="true"/> to include implemented interfaces; <see langword="false"/> to return inheriance hierarchy only.</param>
+        /// <returns>Read-only collection of base types and, optionally, all implemented interfaces.</returns>
+        public static IEnumerable<Type> GetBaseTypes(this Type type, bool includeTopLevel = false, bool includeInterfaces = true)
+        {
+            for (var lookup = includeTopLevel ? type : type.BaseType; !(lookup is null); lookup = lookup.BaseType)
+                yield return lookup;
+            if (includeInterfaces)
+                foreach (var iface in type.GetInterfaces())
+                    yield return iface;
         }
 
         /// <summary>
