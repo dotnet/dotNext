@@ -355,7 +355,7 @@ namespace DotNext.Reflection
             if (targetMethod is null || returnType != targetMethod.ReturnType)
             {
                 targetMethod = null;
-                foreach (var candidate in ExtensionRegistry.GetMethods(NonRefType(thisParam), MethodLookup.Instance))
+                foreach (var candidate in ExtensionRegistry.GetMethods(thisParam, MethodLookup.Instance))
                     if (candidate.Name == methodName && candidate.GetParameterTypes().RemoveFirst(1).SequenceEqual(parameters) && candidate.ReturnType == returnType)
                     {
                         targetMethod = candidate;
