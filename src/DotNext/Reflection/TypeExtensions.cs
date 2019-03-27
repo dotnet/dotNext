@@ -19,6 +19,29 @@ namespace DotNext.Reflection
         }
 
         /// <summary>
+        /// Determines whether the type is unmanaged value type.
+        /// </summary>
+        /// <param name="type">The type to be checked.</param>
+        /// <returns><see langword="true"/>, if the specified type is unmanaged value type; otherwise, <see langword="false"/>.</returns>
+        public static bool IsUnmanaged(this Type type)
+        {
+            if(type.IsGenericType || type.IsGenericTypeDefinition || type.IsGenericParameter)
+                return false;
+            else if(type.IsPrimitive || type.IsPointer || type.IsEnum)
+                return true;
+            else if(type.IsValueType)
+            {
+                //check all fields
+                foreach(var field in type.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
+                    if(!field.FieldType.IsUnmanaged())
+                        return false;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        /// <summary>
         /// Returns read-only collection of base types and, optionally, all implemented interfaces.
         /// </summary>
         /// <param name="type">The type to be discovered.</param>
