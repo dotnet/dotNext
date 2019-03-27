@@ -128,7 +128,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static UnmanagedMemoryStream AsStream&lt;M&gt;(this ref M memory)
-
     where M : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -195,7 +194,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseCompare&lt;M1, M2&gt;(this ref M1 first, M2 second)
-
     where M1 : struct, IUnmanagedMemory where M2 : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -274,7 +272,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool BitwiseEquals&lt;M1, M2&gt;(this ref M1 first, M2 second)
-
     where M1 : struct, IUnmanagedMemory where M2 : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -353,7 +350,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;M&gt;(this ref M memory, bool salted = true)
-
     where M : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -427,7 +423,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Clear&lt;M&gt;(this ref M memory)
-
     where M : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -494,7 +489,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long ReadFrom&lt;M&gt;(this ref M destination, byte[] source)
-
     where M : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -568,7 +562,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long ReadFrom&lt;M&gt;(this ref M destination, byte[] source, long offset, long count)
-
     where M : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -654,7 +647,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long ReadFrom&lt;M&gt;(this ref M destination, Stream source)
-
     where M : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -728,7 +720,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;long&gt; ReadFromAsync&lt;M&gt;(this ref M destination, Stream source)
-
     where M : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -802,7 +793,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static byte[] ToByteArray&lt;M&gt;(this ref M memory)
-
     where M : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -868,7 +858,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long WriteTo&lt;M&gt;(this ref M source, byte[] destination)
-
     where M : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -942,7 +931,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long WriteTo&lt;M&gt;(this ref M source, byte[] destination, long offset, long count)
-
     where M : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1028,7 +1016,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void WriteTo&lt;M&gt;(this ref M source, Stream destination)
-
     where M : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1086,7 +1073,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task WriteToAsync&lt;M&gt;(this ref M source, Stream destination)
-
     where M : struct, IUnmanagedMemory</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

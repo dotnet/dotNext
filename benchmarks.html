@@ -244,7 +244,7 @@
 </tbody>
 </table>
 <p><code>BitwiseHashCode</code> is very efficient for hashing of large value types.</p>
-<h1 id="strongly-typed-reflection">Strongly typed reflection</h1>
+<h1 id="fast-reflection">Fast Reflection</h1>
 <p>The next series of benchmarks demonstrate performance of strongly typed reflection provided by DotNext Reflection library.</p>
 <h2 id="property-getter">Property Getter</h2>
 <p>This benchmark demonstrates overhead of getting instance property value caused by different mechanisms:</p>
@@ -425,7 +425,7 @@
 </tbody>
 </table>
 <p>DotNext Reflection library offers the best result in case when delegate type exactly matches to the reflected method with small overhead measured in a few nanoseconds.</p>
-<h1 id="static-method-call">Static Method Call</h1>
+<h2 id="static-method-call">Static Method Call</h2>
 <p>This benchmarks demonstrates overhead of calling static method <code>TryParse</code> of type <strong>decimal</strong> caused by different mechanisms:</p>
 <ol>
 <li>Using strongly typed reflection from DotNext Reflection library: <code>Type&lt;decimal&gt;.Method.Get&lt;TryParseDelegate&gt;(nameof(decimal.TryParse), MethodLookup.Static)</code>. The delegate type exactly matches to the reflected method signature: <code>delegate bool TryParseDelegate(string text, out decimal result)</code></li>
