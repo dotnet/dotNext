@@ -115,7 +115,7 @@
 </tbody>
 </table>
 <h1 id="bitwise-equality">Bitwise Equality</h1>
-<p>This benchmark compares performance of <a href="api/DotNext.ValueType-1.html">ValueType&lt;T&gt;.BitwiseEquals</a> with overloaded equality <code>==</code> operator. Testing data types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.ValueType-1.html">ValueType&lt;T&gt;.BitwiseEquals</a> with overloaded equality <code>==</code> operator. Testing data types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
 <table>
 <thead>
 <tr>
@@ -154,7 +154,7 @@
 </table>
 <p>Bitwise equality method has the better performance than field-by-field equality check because <code>BitwiseEquals</code> utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD.</p>
 <h1 id="array-equality">Array Equality</h1>
-<p>This benchmark compares performance of <a href="api/DotNext.OneDimensionalArray.html">OneDimensionalArray.SequenceEqual</a>, <a href="api/DotNext.OneDimensionalArray.html">OneDimensionalArray.BitwiseEquals</a> and manual equality check between two arrays using <code>for</code> loop. The benchmark is applied to the array of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> elements.</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.OneDimensionalArray.html">OneDimensionalArray.SequenceEqual</a>, <a href="api/DotNext.OneDimensionalArray.html">OneDimensionalArray.BitwiseEquals</a> and manual equality check between two arrays using <code>for</code> loop. The benchmark is applied to the array of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> elements.</p>
 <p><code>SequenceEqual</code> requires that array element type should implement <a href="https://docs.microsoft.com/en-us/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a> interface and calls <code>Equals(T other)</code> for each element.</p>
 <table>
 <thead>
@@ -206,7 +206,7 @@
 </table>
 <p><code>BtiwiseEquals</code> is an absolute winner for equality check between large arrays.</p>
 <h1 id="bitwise-hash-code">Bitwise Hash Code</h1>
-<p>This benchmark compares performance of <a href="api/DotNext.ValueType-1.html">ValueType&lt;T&gt;.BitwiseHashCode</a> and <code>GetHashCode</code> instance method for the types <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.ValueType-1.html">ValueType&lt;T&gt;.BitwiseHashCode</a> and <code>GetHashCode</code> instance method for the types <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
 <table>
 <thead>
 <tr>
@@ -247,7 +247,7 @@
 <h1 id="fast-reflection">Fast Reflection</h1>
 <p>The next series of benchmarks demonstrate performance of strongly typed reflection provided by DotNext Reflection library.</p>
 <h2 id="property-getter">Property Getter</h2>
-<p>This benchmark demonstrates overhead of getting instance property value caused by different mechanisms:</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/PropertyGetterReflectionBenchmark.cs">This benchmark</a> demonstrates overhead of getting instance property value caused by different mechanisms:</p>
 <ol>
 <li>Using <a href="https://github.com/mgravell/fast-member">FastMember</a> library</li>
 <li>Using strongly typed reflection from DotNext Reflection library: <code>Type&lt;IndexOfCalculator&gt;.Property&lt;int&gt;.RequireGetter</code></li>
@@ -298,7 +298,7 @@
 </table>
 <p>Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.</p>
 <h2 id="instance-method-call">Instance Method Call</h2>
-<p>This benchmarks demonstrates overhead of calling instance method <code>IndexOf</code> of type <strong>string</strong> caused by different mechanisms:</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/StringMethodReflectionBenchmark.cs">This benchmarks</a> demonstrates overhead of calling instance method <code>IndexOf</code> of type <strong>string</strong> caused by different mechanisms:</p>
 <ol>
 <li>Using strongly typed reflection from DotNext Reflection library: <code>Type&lt;string&gt;.Method&lt;char, int&gt;.Require&lt;int&gt;(nameof(string.IndexOf))</code></li>
 <li>Using strongly typed reflection from DotNext Reflection library using special delegate type: <code>Type&lt;string&gt;.RequireMethod&lt;(char, int), int&gt;(nameof(string.IndexOf));</code></li>
@@ -426,7 +426,7 @@
 </table>
 <p>DotNext Reflection library offers the best result in case when delegate type exactly matches to the reflected method with small overhead measured in a few nanoseconds.</p>
 <h2 id="static-method-call">Static Method Call</h2>
-<p>This benchmarks demonstrates overhead of calling static method <code>TryParse</code> of type <strong>decimal</strong> caused by different mechanisms:</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/TryParseReflectionBenchmark.cs">This benchmarks</a> demonstrates overhead of calling static method <code>TryParse</code> of type <strong>decimal</strong> caused by different mechanisms:</p>
 <ol>
 <li>Using strongly typed reflection from DotNext Reflection library: <code>Type&lt;decimal&gt;.Method.Get&lt;TryParseDelegate&gt;(nameof(decimal.TryParse), MethodLookup.Static)</code>. The delegate type exactly matches to the reflected method signature: <code>delegate bool TryParseDelegate(string text, out decimal result)</code></li>
 <li>Using strongly typed reflection from DotNext Reflection library using special delegate type: <code>Function&lt;(string text, decimal result), bool&gt;</code></li>

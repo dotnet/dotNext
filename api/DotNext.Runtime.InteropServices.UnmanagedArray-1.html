@@ -358,6 +358,7 @@ Therefore, it's developer responsibility to release unmanaged memory using <a cl
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public UnmanagedArray&lt;U&gt; As&lt;U&gt;()
+
     where U : struct</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -1196,6 +1197,7 @@ custom equality check function.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool Equals&lt;U&gt;(UnmanagedArray&lt;U&gt; other)
+
     where U : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2573,6 +2575,7 @@ index for a specified number of elements.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Pointer&lt;U&gt; ToPointer&lt;U&gt;()
+
     where U : struct</code></pre>
   </div>
   <h5 class="returns">Returns</h5>

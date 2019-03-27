@@ -257,6 +257,7 @@ with full support of async/await feature.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task InvokeAsync&lt;D&gt;(this D delegate, Action&lt;D&gt; invoker, CancellationToken token = default(CancellationToken))
+
     where D : MulticastDelegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

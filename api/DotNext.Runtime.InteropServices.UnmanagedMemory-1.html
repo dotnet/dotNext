@@ -283,6 +283,7 @@ Therefore, it's developer responsibility to release unmanaged memory using <a cl
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public UnmanagedMemory&lt;U&gt; As&lt;U&gt;()
+
     where U : struct</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -673,6 +674,7 @@ Therefore, it's developer responsibility to release unmanaged memory using <a cl
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool Equals&lt;U&gt;(UnmanagedMemory&lt;U&gt; other)
+
     where U : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -825,6 +827,7 @@ into the memory identified by this instance.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void ReadFrom&lt;U&gt;(Pointer&lt;U&gt; source)
+
     where U : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -952,6 +955,7 @@ hardware architecture and endianess of bytes in memory.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Pointer&lt;U&gt; ToPointer&lt;U&gt;()
+
     where U : struct</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -1071,6 +1075,7 @@ another location in the memory.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void WriteTo&lt;U&gt;(Pointer&lt;U&gt; destination)
+
     where U : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1127,6 +1132,7 @@ hardware architecture and endianess of bytes in memory.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void WriteTo&lt;U&gt;(UnmanagedMemory&lt;U&gt; destination)
+
     where U : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

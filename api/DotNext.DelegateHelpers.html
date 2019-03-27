@@ -129,6 +129,7 @@ points to the same method as original delegate.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static D ChangeType&lt;D&gt;(this Delegate d)
+
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -214,6 +215,7 @@ for <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventhand
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static EventHandler&lt;O&gt; Contravariant&lt;I, O&gt;(this EventHandler&lt;I&gt; handler)
+
     where I : class where O : class, I</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -292,6 +294,7 @@ provides contravariant conversion for this delegate type.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static D CreateDelegate&lt;D&gt;(this MethodInfo method, object target = null)
+
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
