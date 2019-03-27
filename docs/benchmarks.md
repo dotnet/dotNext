@@ -57,7 +57,7 @@ This benchmark compares performance of [ValueType&lt;T&gt;.BitwiseHashCode](./ap
 
 `BitwiseHashCode` is very efficient for hashing of large value types.
 
-# Strongly typed reflection
+# Fast Reflection
 The next series of benchmarks demonstrate performance of strongly typed reflection provided by DotNext Reflection library.
 
 ## Property Getter
@@ -106,7 +106,7 @@ The benchmark uses series of different strings to run the same set of tests. Wor
 
 DotNext Reflection library offers the best result in case when delegate type exactly matches to the reflected method with small overhead measured in a few nanoseconds.
 
-# Static Method Call
+## Static Method Call
 This benchmarks demonstrates overhead of calling static method `TryParse` of type **decimal** caused by different mechanisms:
 1. Using strongly typed reflection from DotNext Reflection library: `Type<decimal>.Method.Get<TryParseDelegate>(nameof(decimal.TryParse), MethodLookup.Static)`. The delegate type exactly matches to the reflected method signature: `delegate bool TryParseDelegate(string text, out decimal result)`
 1. Using strongly typed reflection from DotNext Reflection library using special delegate type: `Function<(string text, decimal result), bool>`
