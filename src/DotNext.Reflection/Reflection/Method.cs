@@ -29,12 +29,12 @@ namespace DotNext.Reflection
         }
 
         internal Method(MethodInfo method, Expression[] args, ParameterExpression[] parameters)
-			: this(method, Expression.Lambda<D>(Expression.Call(method, args), parameters))
+			: this(method, Expression.Lambda<D>(Expression.Call(method, args), true, parameters))
         {
         }
 
 		internal Method(MethodInfo method, ParameterExpression instance, Expression[] args, ParameterExpression[] parameters)
-			: this(method, Expression.Lambda<D>(Expression.Call(instance, method, args), parameters.Insert(instance, 0)))
+			: this(method, Expression.Lambda<D>(Expression.Call(instance, method, args), true, parameters.Insert(instance, 0)))
 		{
 		}
 
