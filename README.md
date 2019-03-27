@@ -6,6 +6,7 @@
 * [Features](https://sakno.github.io/DotNext/features/core/index.html)
 * [API documentation](https://sakno.github.io/DotNext/api/DotNext.html)
 * [Benchmarks](https://sakno.github.io/DotNext/benchmarks.html)
+* [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 Philosophy of development process:
 1. All libraries in .NEXT family based on .NET Standard to be available for wide range of .NET implementations: Mono, Xamarin, .NET Core
