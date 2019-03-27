@@ -4,3 +4,5 @@
   href: api/
 - name: Benchmarks
   href: benchmarks.md
+- name: NuGet Packages
+  href: https://www.nuget.org/packages?q=DotNext
