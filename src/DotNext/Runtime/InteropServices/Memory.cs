@@ -23,7 +23,7 @@ namespace DotNext.Runtime.InteropServices
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			internal static int HashRound(int hash, int data) => (hash ^ data) * Prime;
 		}
-		private static readonly int BitwiseHashSalt = new Random().Next();
+		
 
 		/// <summary>
 		/// Represents null pointer.
@@ -340,7 +340,7 @@ namespace DotNext.Runtime.InteropServices
 					}
 					break;
 			}
-			return salted ? hashFunction(hash, BitwiseHashSalt) : hash;
+			return salted ? hashFunction(hash, RandomExtensions.BitwiseHashSalt) : hash;
 		}
 
 		/// <summary>
@@ -396,7 +396,7 @@ namespace DotNext.Runtime.InteropServices
 					}
 					break;
 			}
-			return salted ? hashFunction(hash, BitwiseHashSalt) : hash;
+			return salted ? hashFunction(hash, RandomExtensions.BitwiseHashSalt) : hash;
 		}
 		
 		/// <summary>
@@ -451,7 +451,7 @@ namespace DotNext.Runtime.InteropServices
 					}
 					break;
 			}
-			return salted ? FNV1a.HashRound(hash, BitwiseHashSalt) : hash;
+			return salted ? FNV1a.HashRound(hash, RandomExtensions.BitwiseHashSalt) : hash;
 		}
 
         /// <summary>

@@ -11,6 +11,7 @@ namespace DotNext
     /// </summary>
     public static class RandomExtensions
     {
+        internal static readonly int BitwiseHashSalt = new Random().Next();
         private static readonly ArrayPool<byte> ByteArrayPool = ArrayPool<byte>.Create(16, 50);
 
         private static string NextString(Random random, ReadOnlySpan<char> allowedChars, int length)

@@ -13,14 +13,15 @@ namespace DotNext
         /// Computes hash code for the sequence
         /// </summary>
         /// <param name="sequence">The sequence of elements.</param>
+		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>The hash code computed from each element in the sequence.</returns>
-        public static int SequenceHashCode(this IEnumerable<object> sequence)
+        public static int SequenceHashCode(this IEnumerable<object> sequence, bool salted = true)
         {
             var hashCode = -910176598;
             foreach (var item in sequence)
                 hashCode = hashCode * -1521134295 + (item is null ? 0 : item.GetHashCode());
-            return hashCode;
-        }
+            return salted ? hashCode * -1521134295 + RandomExtensions.BitwiseHashSalt : hashCode;
+		}
 
         /// <summary>
         /// Apply specified action to each collection element.

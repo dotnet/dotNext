@@ -125,7 +125,7 @@ namespace DotNext
 		/// <param name="value">A value to be hashed.</param>
 		/// <param name="hash">Initial value of the hash.</param>
 		/// <param name="hashFunction">Hashing function.</param>
-		/// <param name="salted">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Bitwise hash code.</returns>
 		public static unsafe int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
 			=> Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, hash, hashFunction, salted);

@@ -37,7 +37,7 @@ namespace DotNext
             => typeof(ValueType<>).MakeGenericType(type).GetMethod(nameof(ValueType<int>.BitwiseEquals), new[] { type, type });
 
         private static MethodInfo HashCodeMethodForValueType(Type type)
-            => typeof(ValueType<>).MakeGenericType(type).GetMethod(nameof(ValueType<int>.BitwiseHashCode), new[] { type });
+            => typeof(ValueType<>).MakeGenericType(type).GetMethod(nameof(ValueType<int>.BitwiseHashCode), new[] { type, typeof(bool) });
 
         private static MethodInfo EqualsMethodForArrayElementType(Type itemType)
             => itemType.IsValueType ?
@@ -50,10 +50,10 @@ namespace DotNext
         private static MethodInfo HashCodeMethodForArrayElementType(Type itemType)
             => itemType.IsValueType ?
                 typeof(OneDimensionalArray)
-                        .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, new Type[] { null })
+                        .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, new Type[] { null, typeof(bool) })
                         .MakeGenericMethod(itemType) :
                 typeof(Sequence)
-                        .GetMethod(nameof(Sequence.SequenceHashCode), new[] { typeof(IEnumerable<object>) });
+                        .GetMethod(nameof(Sequence.SequenceHashCode), new[] { typeof(IEnumerable<object>), typeof(bool) });
 
         private static IEnumerable<FieldInfo> GetAllFields(this Type type)
         {
@@ -94,11 +94,11 @@ namespace DotNext
                     if (field.FieldType.IsPointer || field.FieldType.IsPrimitive || field.FieldType.IsEnum)
                         condition = Expression.Equal(fieldX, fieldY);
                     else if (field.FieldType.IsValueType)
-                        condition = Expression.Call(null, EqualsMethodForValueType(field.FieldType), fieldX, fieldY);
+                        condition = Expression.Call(EqualsMethodForValueType(field.FieldType), fieldX, fieldY);
                     else if (field.FieldType.IsArray && field.FieldType.GetArrayRank() == 1)
-                        condition = Expression.Call(null, EqualsMethodForArrayElementType(field.FieldType.GetElementType()), fieldX, fieldY);
+                        condition = Expression.Call(EqualsMethodForArrayElementType(field.FieldType.GetElementType()), fieldX, fieldY);
                     else
-                        condition = Expression.Call(null, typeof(object).GetMethod(nameof(Equals), new[] { typeof(object), typeof(object) }), fieldX, fieldY);
+                        condition = Expression.Call(typeof(object).GetMethod(nameof(Equals), new[] { typeof(object), typeof(object) }), fieldX, fieldY);
                     expr = expr is null ? condition : Expression.AndAlso(expr, condition);
                 }
                 expr = expr is null ? Expression.ReferenceEqual(x, y) : Expression.OrElse(Expression.ReferenceEqual(x, y), expr);
@@ -116,23 +116,30 @@ namespace DotNext
         /// because generation process is expensive.
         /// </remarks>
         /// <typeparam name="T">The type for which hash code function should be generated.</typeparam>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Equality check function for the type <typeparamref name="T"/>.</returns>
-        public static Func<T, int> BuildGetHashCode<T>()
+        public static Func<T, int> BuildGetHashCode<T>(bool salted = true)
         {
             var type = typeof(T);
+            Expression expr;
+            var inputParam = Expression.Parameter(type);
             if (type.IsPrimitive)
                 return EqualityComparer<T>.Default.GetHashCode;
             else if (type.IsValueType)
-                return HashCodeMethodForValueType(type).CreateDelegate<Func<T, int>>();
+            {
+                expr = Expression.Call(HashCodeMethodForValueType(type), inputParam, Expression.Constant(salted));
+                return Expression.Lambda<Func<T, int>>(expr, true, inputParam).Compile();
+            }
             else if (type.IsArray && type.GetArrayRank() == 1)
-                return HashCodeMethodForArrayElementType(type.GetElementType()).CreateDelegate<Func<T, int>>();
+            {
+                expr = Expression.Call(HashCodeMethodForArrayElementType(type.GetElementType()), inputParam, Expression.Constant(salted));
+                return Expression.Lambda<Func<T, int>>(expr, true, inputParam).Compile();
+            }
             else if (type.IsClass)
             {
-                var inputParam = Expression.Parameter(type);
                 var hashCodeTemp = Expression.Parameter(typeof(int));
                 ICollection<Expression> expressions = new LinkedList<Expression>();
                 //collect all fields in the hierachy
-                var expr = default(Expression);
                 foreach (var field in type.GetAllFields())
                 {
                     expr = Expression.Field(inputParam, field);
@@ -141,9 +148,9 @@ namespace DotNext
                     else if (field.FieldType.IsPrimitive)
                         expr = Expression.Call(expr, nameof(GetHashCode), Array.Empty<Type>());
                     else if (field.FieldType.IsValueType)
-                        expr = Expression.Call(null, HashCodeMethodForValueType(field.FieldType), expr);
+                        expr = Expression.Call(HashCodeMethodForValueType(field.FieldType), expr, Expression.Constant(salted));
                     else if (field.FieldType.IsArray && field.FieldType.GetArrayRank() == 1)
-                        expr = Expression.Call(null, HashCodeMethodForArrayElementType(field.FieldType.GetElementType()), expr);
+                        expr = Expression.Call(HashCodeMethodForArrayElementType(field.FieldType.GetElementType()), expr, Expression.Constant(salted));
                     else
                     {
                         expr = Expression.Condition(
