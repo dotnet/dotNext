@@ -316,7 +316,7 @@ namespace DotNext.Runtime.InteropServices
         public IntPtr Address => new IntPtr(value);
 
         /// <summary>
-        /// Indicates that this pointer is null
+        /// Indicates that this pointer is <see langword="null"/>.
         /// </summary>
         public bool IsNull
         {

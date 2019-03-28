@@ -220,5 +220,19 @@ namespace DotNext.Runtime.InteropServices
             else
                 return first.Size.CompareTo(second.Size);
         }
+
+        /// <summary>
+		/// Gets pointer to the memory block.
+		/// </summary>
+        /// <param name="memory">Referenced memory.</param>      
+		/// <param name="offset">Zero-based byte offset.</param>
+		/// <returns>Byte located at the specified offset in the memory.</returns>
+		/// <exception cref="NullPointerException">This buffer is not allocated.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Invalid offset.</exception>    
+        public static Pointer<byte> ToPointer<M>(this ref M memory, long offset) 
+            where M : struct, IUnmanagedMemory
+            => offset >= 0 && offset < memory.Size ?
+                memory.ToPointer<byte>() + offset :
+                throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(memory.Size));
     }
 }

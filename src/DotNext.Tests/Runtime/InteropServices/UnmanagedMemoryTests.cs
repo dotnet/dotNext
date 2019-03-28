@@ -13,11 +13,13 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public void BoxUnboxTest()
         {
-            var value = UnmanagedMemory<Data>.Box(new Data { Field1 = 10, Field2 = 20 });
-            Data d = value;
-            Equal(10, d.Field1);
-            Equal(20, d.Field2);
-            value.Dispose();
+            using(var value = new UnmanagedMemory<Data>(new Data { Field1 = 10, Field2 = 20 }))
+            {
+                Data d = value;
+                Equal(10, d.Field1);
+                Equal(20, d.Field2);
+                value.Dispose();
+            }
         }
     }
 }

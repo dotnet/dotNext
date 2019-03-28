@@ -31,6 +31,16 @@ namespace DotNext.Runtime.InteropServices
 		[CLSCompliant(false)]
 		public static unsafe readonly void* NullPtr = IntPtr.Zero.ToPointer();
 
+        /// <summary>
+        /// Converts the value of this instance to a pointer of the specified type.
+        /// </summary>
+        /// <param name="source">The value to be converted into pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The typed pointer.</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static T* ToPointer<T>(this IntPtr source) where T : unmanaged => (T*)source;
+
 		/// <summary>
 		/// Reads a value of type <typeparamref name="T"/> from the given location
 		/// and adjust pointer according with size of type <typeparamref name="T"/>.

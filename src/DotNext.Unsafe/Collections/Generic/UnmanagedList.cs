@@ -64,17 +64,17 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="index">The index of the item.</param>
         /// <returns>The list item.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Index out of range.</exception>
+        /// <exception cref="IndexOutOfRangeException">Index out of range.</exception>
         public T this[int index]
         {
-            get => index >= 0 && index < count ? array[index] : throw new ArgumentOutOfRangeException(nameof(index));
+            get => index >= 0 && index < count ? array[index] : throw new IndexOutOfRangeException(ExceptionMessages.InvalidIndexValue(count));
 
             set
             {
                 if (index >= 0 && index < count)
                     array[index] = value;
                 else
-                    throw new ArgumentOutOfRangeException(nameof(index));
+                    throw new IndexOutOfRangeException(ExceptionMessages.InvalidIndexValue(count));
             }
         }
 
@@ -267,7 +267,7 @@ namespace DotNext.Collections.Generic
         public void Insert(int index, T item)
         {
             if (index < 0 || index > count)
-                throw new ArgumentOutOfRangeException(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(index), index, ExceptionMessages.InvalidIndexValue(count));
             EnsureCapacity(count + 1);
             if (index < count)
             {
@@ -320,7 +320,7 @@ namespace DotNext.Collections.Generic
         public void RemoveAt(int index)
         {
             if (index < 0 || index >= count)
-                throw new ArgumentOutOfRangeException(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(index), index, ExceptionMessages.InvalidIndexValue(count));
             var pointer = array + index + 1;
             pointer.WriteTo(pointer - 1, count - index);
             count -= 1;
@@ -351,8 +351,6 @@ namespace DotNext.Collections.Generic
         }
 
         Pointer<U> IUnmanagedMemory.ToPointer<U>() => array.ToPointer<U>();
-
-        Pointer<byte> IUnmanagedMemory.ToPointer(long offset) => array.ToPointer(offset);
 
         /// <summary>
         /// Returns deep copy of this list.

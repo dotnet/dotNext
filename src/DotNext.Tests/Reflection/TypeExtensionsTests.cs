@@ -56,8 +56,14 @@ namespace DotNext.Reflection
 
         private struct ManagedStruct
         {
-            private int value;
-            private string name;
+            internal int value;
+            internal string name;
+
+            internal ManagedStruct(int value, string name)
+            {
+                this.value = value;
+                this.name = name;
+            }
         }
 
         [Fact]

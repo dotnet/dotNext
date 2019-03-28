@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices
 {
+    using Reflection;
+
 	/// <summary>
 	/// Represents typed array allocated in the unmanaged heap.
 	/// </summary>
@@ -25,12 +26,11 @@ namespace DotNext.Runtime.InteropServices
 		/// </remarks>
 		public sealed class Handle : UnmanagedMemoryHandle<T>
 		{
-			private readonly long length;
 
 			private Handle(UnmanagedArray<T> array, bool ownsHandle)
 				: base(array, ownsHandle)
 			{
-				length = array.Length;
+				Length = array.Length;
 			}
 
 			/// <summary>
@@ -42,7 +42,8 @@ namespace DotNext.Runtime.InteropServices
             /// or <see cref="Dispose()"/> will be called directly.
             /// </remarks>
 			/// <param name="length">Array length.</param>
-			public Handle(long length)
+            /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
+			public Handle(long length, bool zeroMem = true)
 				: this(new UnmanagedArray<T>(length), true)
 			{
 
@@ -60,16 +61,28 @@ namespace DotNext.Runtime.InteropServices
 			{
 			}
 
+            private protected override UnmanagedMemoryHandle Clone() => new Handle(Conversion<Handle, UnmanagedArray<T>>.Converter(this).Copy(), true);
+
             /// <summary>
-            /// Gets a value indicating whether the unmanaged memory is released.
+            /// Obtains span object pointing to the allocated unmanaged array.
             /// </summary>
-			public override bool IsInvalid => handle == IntPtr.Zero;
+            public override Span<T> Span => new UnmanagedArray<T>(handle, Length);
+
+            /// <summary>
+            /// Gets number of elements in the unmanaged array.
+            /// </summary>
+            public long Length { get; }
+
+            /// <summary>
+            /// Gets number of bytes allocated for the unmanaged array, in bytes.
+            /// </summary>
+            public override long Size => Length * Pointer<T>.Size;
 
             /// <summary>
             /// Releases referenced unmanaged memory.
             /// </summary>
             /// <returns><see langword="true"/>, if this handle is valid; otherwise, <see langword="false"/>.</returns>
-			protected override bool ReleaseHandle() => FreeMem(handle);
+			protected override bool ReleaseHandle() => UnmanagedMemory.Release(handle);
 
 			/// <summary>
 			/// Converts handle into unmanaged array reference.
@@ -81,9 +94,9 @@ namespace DotNext.Runtime.InteropServices
 				if (handle is null)
 					return default;
 				else if (handle.IsClosed)
-					throw new ObjectDisposedException(handle.GetType().Name, ExceptionMessages.HandleClosed);
+					throw handle.HandleClosed();
 				else
-					return new UnmanagedArray<T>(handle.handle, handle.length);
+					return new UnmanagedArray<T>(handle.handle, handle.Length);
 			}
 		}
 
@@ -93,17 +106,14 @@ namespace DotNext.Runtime.InteropServices
 		/// Allocates a new array in the unmanaged memory of the specified length.
 		/// </summary>
 		/// <param name="length">Array length. Cannot be less or equal than zero.</param>
+        /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>      
 		/// <exception cref="ArgumentOutOfRangeException">Invalid length.</exception>
-		public UnmanagedArray(long length)
+		public UnmanagedArray(long length, bool zeroMem = true)
 		{
 			if (length < 0)
-				throw new ArgumentOutOfRangeException(ExceptionMessages.ArrayNegativeLength);
+				throw new ArgumentOutOfRangeException(nameof(length), length, ExceptionMessages.ArrayNegativeLength);
 			else if ((Length = length) > 0L)
-			{
-				var size = length * Pointer<T>.Size;
-                pointer = new Pointer<T>(Marshal.AllocHGlobal(new IntPtr(size)));
-				pointer.Clear(length);
-			}
+                pointer = new Pointer<T>(UnmanagedMemory.Alloc(length * Pointer<T>.Size, zeroMem));
 			else
 				pointer = Pointer<T>.Null;
 		}
@@ -443,6 +453,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="index">Index of the element.</param>
         /// <returns>Pointer to array element.</returns>
+        /// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
         public Pointer<T> ElementAt(long index)
             => index >= 0 && index < Length ?
             pointer + index :
@@ -455,7 +466,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <returns>Array element.</returns>
 		/// <exception cref="NullPointerException">This array is not allocated.</exception>
 		/// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
-		public T this[int index]
+		public T this[long index]
 		{
             get => ElementAt(index).Value;
             set
@@ -471,17 +482,6 @@ namespace DotNext.Runtime.InteropServices
         /// <typeparam name="U">The type of the pointer.</typeparam>
         /// <returns>The typed pointer.</returns>
         public Pointer<U> ToPointer<U>() where U : unmanaged => pointer.As<U>();
-
-        /// <summary>
-		/// Gets pointer to the memory block.
-		/// </summary>
-		/// <param name="offset">Zero-based byte offset.</param>
-		/// <returns>Byte located at the specified offset in the memory.</returns>
-		/// <exception cref="NullPointerException">This buffer is not allocated.</exception>
-		/// <exception cref="IndexOutOfRangeException">Invalid offset.</exception>    
-        public Pointer<byte> ToPointer(long offset) => offset >= 0 && offset < Pointer<T>.Size ?
-                pointer.As<byte>() + offset :
-                throw new IndexOutOfRangeException(ExceptionMessages.InvalidOffsetValue(Pointer<T>.Size));
 
         /// <summary>
         /// Copies elements from this array into other array. 
@@ -811,6 +811,12 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
+        /// Provides untyped access to the unmanaged memory.
+        /// </summary>
+        /// <param name="array">The unmanaged array.</param>
+        public static implicit operator UnmanagedMemory(UnmanagedArray<T> array) => new UnmanagedMemory(array.Address, Pointer<T>.Size);
+
+        /// <summary>
         /// Determines whether two unmanaged arrays point to the same memory block.
         /// </summary>
         /// <param name="first">The first unmanaged array reference to be compared.</param>
@@ -859,20 +865,12 @@ namespace DotNext.Runtime.InteropServices
 		public static Pointer<T> operator+(UnmanagedArray<T> array, int elementIndex)
 			=> array.ElementAt(elementIndex);
 
-		private static bool FreeMem(IntPtr memory)
-		{
-			if (memory == IntPtr.Zero)
-				return false;
-			Marshal.FreeHGlobal(memory);
-			return true;
-		}
-
 		/// <summary>
 		/// Releases unmanaged memory associated with the array.
 		/// </summary>
 		public void Dispose()
 		{
-			FreeMem(pointer.Address);
+			UnmanagedMemory.Release(pointer.Address);
 			this = default;
 		}
 	}
