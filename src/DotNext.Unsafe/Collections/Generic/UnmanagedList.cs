@@ -91,7 +91,10 @@ namespace DotNext.Collections.Generic
 
         long IUnmanagedMemory.Size => array.Size;
 
-        IntPtr IUnmanagedMemory.Address => array.Address;
+        /// <summary>
+        /// Gets address of the unmanaged memory.
+        /// </summary>
+        public IntPtr Address => array.Address;
 
         /// <summary>
         /// Adds a new item to this collection.
