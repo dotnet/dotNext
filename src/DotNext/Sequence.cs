@@ -9,13 +9,26 @@ namespace DotNext
 	/// </summary>
     public static class Sequence
     {
-		/// <summary>
-		/// Apply specified action to each collection element.
-		/// </summary>
-		/// <typeparam name="T">Type of elements in the collection.</typeparam>
-		/// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
-		/// <param name="action">An action to applied for each element.</param>
-		public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+        /// <summary>
+        /// Computes hash code for the sequence
+        /// </summary>
+        /// <param name="sequence">The sequence of elements.</param>
+        /// <returns>The hash code computed from each element in the sequence.</returns>
+        public static int SequenceHashCode(this IEnumerable<object> sequence)
+        {
+            var hashCode = -910176598;
+            foreach (var item in sequence)
+                hashCode = hashCode * -1521134295 + (item is null ? 0 : item.GetHashCode());
+            return hashCode;
+        }
+
+        /// <summary>
+        /// Apply specified action to each collection element.
+        /// </summary>
+        /// <typeparam name="T">Type of elements in the collection.</typeparam>
+        /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
+        /// <param name="action">An action to applied for each element.</param>
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
 		{
 			foreach (var item in collection)
 				action(item);

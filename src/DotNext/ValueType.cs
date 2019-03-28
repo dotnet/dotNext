@@ -21,10 +21,10 @@ namespace DotNext
             {
             }
 
-            bool IEqualityComparer<T>.Equals(T first, T second) => ValueType<T>.BitwiseEquals(first, second);
+            bool IEqualityComparer<T>.Equals(T first, T second) => BitwiseEquals(first, second);
 
-            int IEqualityComparer<T>.GetHashCode(T obj) => ValueType<T>.BitwiseHashCode(obj);
-            int IComparer<T>.Compare(T first, T second) => ValueType<T>.BitwiseCompare(first, second);
+            int IEqualityComparer<T>.GetHashCode(T obj) => BitwiseHashCode(obj);
+            int IComparer<T>.Compare(T first, T second) => BitwiseCompare(first, second);
         }
 
         /// <summary>
@@ -49,6 +49,10 @@ namespace DotNext
         /// <summary>
         /// Equality comparer for the value type based on its bitwise representation.
         /// </summary>
+        /// <remarks>
+        /// Use <see cref="EqualityComparerBuilder"/> instead.
+        /// </remarks>
+        [Obsolete("Use methods of EqualityComparerBuilder class")]
         public static IEqualityComparer<T> EqualityComparer
         {
             get
@@ -123,18 +127,25 @@ namespace DotNext
 		/// Computes hash code for the structure content.
 		/// </summary>
 		/// <param name="value">Value to be hashed.</param>
-		/// <param name="salted">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Content hash code.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]      
-		public static unsafe int BitwiseHashCode(T value, bool salted = true)
+		public static unsafe int BitwiseHashCode(T value, bool salted)
             => Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, salted);
-        
-		/// <summary>
-		/// Indicates that specified value type is the default value.
+
+        /// <summary>
+		/// Computes salted hash code for the structure content.
 		/// </summary>
-		/// <param name="value">Value to check.</param>
-		/// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
-		public static bool IsDefault(T value)
+		/// <param name="value">Value to be hashed.</param>
+		/// <returns>Content hash code.</returns>
+        public static int BitwiseHashCode(T value) => BitwiseHashCode(value, true);
+
+        /// <summary>
+        /// Indicates that specified value type is the default value.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
+        public static bool IsDefault(T value)
             => BitwiseEquals(value, default);
 
         /// <summary>

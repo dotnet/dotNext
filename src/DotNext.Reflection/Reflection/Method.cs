@@ -356,7 +356,7 @@ namespace DotNext.Reflection
             {
                 targetMethod = null;
                 foreach (var candidate in ExtensionRegistry.GetMethods(thisParam, MethodLookup.Instance))
-                    if (candidate.Name == methodName && candidate.GetParameterTypes().RemoveFirst(1).SequenceEqual(parameters) && candidate.ReturnType == returnType)
+                    if (candidate.Name == methodName && Enumerable.SequenceEqual(candidate.GetParameterTypes().RemoveFirst(1), parameters) && candidate.ReturnType == returnType)
                     {
                         targetMethod = candidate;
                         break;
@@ -400,7 +400,7 @@ namespace DotNext.Reflection
             {
                 targetMethod = null;
                 foreach (var candidate in ExtensionRegistry.GetMethods(thisParam, MethodLookup.Instance))
-                    if (candidate.Name == methodName && candidate.GetParameterTypes().RemoveFirst(1).SequenceEqual(parameters) && candidate.ReturnType == returnType)
+                    if (candidate.Name == methodName && Enumerable.SequenceEqual(candidate.GetParameterTypes().RemoveFirst(1), parameters) && candidate.ReturnType == returnType)
                     {
                         targetMethod = candidate;
                         break;

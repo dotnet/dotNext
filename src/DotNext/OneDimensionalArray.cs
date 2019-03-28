@@ -200,7 +200,7 @@ namespace DotNext
         /// <param name="array">The array to be hashed.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>The hash code of the array content.</returns>
-        public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
+        public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted)
             where T : unmanaged
         {
             if (array.IsNullOrEmpty())
@@ -208,6 +208,14 @@ namespace DotNext
             fixed (T* ptr = array)
                 return Memory.GetHashCode(ptr, array.LongLength * ValueType<T>.Size, salted);
         }
+
+        /// <summary>
+        /// Computes salted bitwise hash code for the array content.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="array">The array to be hashed.</param>
+        /// <returns>The hash code of the array content.</returns>
+        public static int BitwiseHashCode<T>(this T[] array) where T: unmanaged => BitwiseHashCode(array, true);
 
         /// <summary>
         /// Computes bitwise hash code for the array content
@@ -226,6 +234,29 @@ namespace DotNext
                 return hash;
             fixed (T* ptr = array)
                 return Memory.GetHashCode(ptr, array.LongLength * ValueType<T>.Size, hash, hashFunction, salted);
+        }
+
+        /// <summary>
+		/// Determines whether two arrays contain the same set of elements.
+		/// </summary>
+		/// <remarks>
+		/// This method calls <see cref="object.Equals(object, object)"/> for each element type.
+		/// </remarks>
+		/// <param name="first">First array for equality check.</param>
+		/// <param name="second">Second array for equality check.</param>
+		/// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
+        public static bool SequenceEqual(this object[] first, object[] second)
+        {
+            if (ReferenceEquals(first, second))
+                return true;
+            else if (first is null)
+                return second is null;
+            else if (second is null || first.LongLength != second.LongLength)
+                return false;
+            for (var i = 0L; i < first.LongLength; i++)
+                if (!Equals(first[i], second[i]))
+                    return false;
+            return true;
         }
 
         /// <summary>

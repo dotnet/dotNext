@@ -8,13 +8,13 @@
 	<Version>0.4.0</Version>
 	<Authors>Roman Sakno</Authors>
 	<Product>.NEXT Family of Libraries</Product>
-	<Description>Statically-typed reflection and support of conceptual types (shapes)</Description>
+	<Description>Strongly typed reflection, concept types (type classes), fast reflection</Description>
 	<Copyright>Copyright © Roman Sakno 2019</Copyright>
 	<PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
 	<PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
 	<RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
 	<RepositoryType>git</RepositoryType>
-	<PackageTags>shapes;concept;reflection;typeclass</PackageTags>
+	<PackageTags>Concept;Reflection;Typeclass</PackageTags>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
 	<PackageReleaseNotes>Dynamic polymorphism is added: it is possible to register static and instance methods for the particular type. These methods will be visible to concept types and strongly typed reflection.</PackageReleaseNotes>
   </PropertyGroup>

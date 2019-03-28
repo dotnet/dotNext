@@ -5,6 +5,26 @@ namespace DotNext
 {
     public sealed class OneDimensionalArrayTests: Assert
     {
+        public sealed class Equatable
+        {
+            private readonly string value;
+
+            public Equatable(string value) => this.value = value;
+
+            public override bool Equals(object other) => other is Equatable equ && value == equ.value;
+
+            public override int GetHashCode() => value.GetHashCode();
+        }
+
+        [Fact]
+        public void ArrayEqualityTest2()
+        {
+            var array1 = new Equatable[] { new Equatable("a"), new Equatable("b") };
+            var array2 = new Equatable[] { new Equatable("a"), new Equatable("b") };
+            True(array1.SequenceEqual(array2));
+            Equal(array1.SequenceHashCode(), array2.SequenceHashCode());
+        }
+
         [Fact]
         public void InsertTest()
         {

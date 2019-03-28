@@ -667,5 +667,8 @@ namespace DotNext.Runtime.InteropServices
         [CLSCompliant(false)]
         public unsafe static IntPtr AddressOf<T>(in T value)
 			=> new IntPtr(Unsafe.AsPointer(ref Unsafe.AsRef(in value)));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal unsafe static int PointerHashCode(void* pointer) => new IntPtr(pointer).GetHashCode();
 	}
 }

@@ -13,7 +13,7 @@ namespace DotNext.Reflection
     {
         private static bool IsGenericParameter(Type type)
         {
-            if (type.IsByRef)
+            if (type.IsByRef || type.IsArray)
                 type = type.GetElementType();
             return type.IsGenericParameter;
         }
