@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
@@ -16,9 +17,10 @@ namespace DotNext
         /// <param name="second">The second value.</param>
         /// <param name="comparer">Comparison function.</param>
         /// <returns>The smaller of two values.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Min<T>(T first, T second, Comparison<T> comparer)
             => comparer(first, second) < 0 ? first : second;
-        
+
         /// <summary>
         /// Returns the smaller of two values.
         /// </summary>
@@ -27,9 +29,10 @@ namespace DotNext
         /// <param name="second">The second value.</param>
         /// <param name="comparer">Comparison function.</param>
         /// <returns>The smaller of two values.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Min<T>(T first, T second, IComparer<T> comparer)
             => Min(first, second, comparer.Compare);
-        
+
         /// <summary>
         /// Returns the smaller of two values.
         /// </summary>
@@ -37,28 +40,31 @@ namespace DotNext
         /// <param name="first">The first value.</param>
         /// <param name="second">The second value.</param>
         /// <returns>The smaller of two values.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Min<T>(this T first, T second) where T: IComparable<T> => first.CompareTo(second) < 0 ? first : second;
-        
+
         /// <summary>
-		/// Returns the larger of two values.
-		/// </summary>
-		/// <typeparam name="T">Type of the values.</typeparam>
-		/// <param name="first">The first value.</param>
-		/// <param name="second">The second value.</param>
+        /// Returns the larger of two values.
+        /// </summary>
+        /// <typeparam name="T">Type of the values.</typeparam>
+        /// <param name="first">The first value.</param>
+        /// <param name="second">The second value.</param>
         /// <param name="comparer">Comparison function.</param>
-        /// <returns>The larger of two values.</returns>       
-		public static T Max<T>(T first, T second, Comparison<T> comparer)
+        /// <returns>The larger of two values.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Max<T>(T first, T second, Comparison<T> comparer)
             => comparer(first, second) > 0 ? first : second;
-        
+
         /// <summary>
-		/// Returns the larger of two values.
-		/// </summary>
-		/// <typeparam name="T">Type of the values.</typeparam>
-		/// <param name="first">The first value.</param>
-		/// <param name="second">The second value.</param>
+        /// Returns the larger of two values.
+        /// </summary>
+        /// <typeparam name="T">Type of the values.</typeparam>
+        /// <param name="first">The first value.</param>
+        /// <param name="second">The second value.</param>
         /// <param name="comparer">Comparison function.</param>
         /// <returns>The larger of two values.</returns>       
-		public static T Max<T>(T first, T second, IComparer<T> comparer)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Max<T>(T first, T second, IComparer<T> comparer)
             => Max(first, second, comparer.Compare);
 
         /// <summary>
@@ -68,6 +74,7 @@ namespace DotNext
 		/// <param name="first">The first value.</param>
 		/// <param name="second">The second value.</param>
         /// <returns>The larger of two values.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Max<T>(this T first, T second) where T: IComparable<T> => first.CompareTo(second) > 0 ? first : second;
     }
 }

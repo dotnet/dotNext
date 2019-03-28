@@ -95,6 +95,7 @@ namespace DotNext
 
         private readonly object owner;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal UserDataStorage(object owner)
             => this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
