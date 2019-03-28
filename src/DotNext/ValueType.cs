@@ -67,6 +67,13 @@ namespace DotNext
         /// <summary>
         /// Value comparer for the value type based on its bitwise representation.
         /// </summary>
+        /// <remarks>
+        /// This property can be replaced with the following code:
+        /// <code>
+        /// Comparer&lt;T&gt;.Create(ValueType&lt;T&gt;);
+        /// </code>
+        /// </remarks>
+        [Obsolete("Use Comparison<T> delegate created for the method BitwiseCompare")]
         public static IComparer<T> Comparer
         {
             get
