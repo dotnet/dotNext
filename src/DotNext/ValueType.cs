@@ -14,17 +14,43 @@ namespace DotNext
     public sealed class ValueType<T>: StrongBox<T>
         where T: struct
     {
-        private sealed class BitwiseComparer: IEqualityComparer<T>, IComparer<T>
+        /// <summary>
+        /// Represents bitwise comparer for value type <typeparamref name="T"/>.
+        /// </summary>
+        public sealed class BitwiseComparer : IEqualityComparer<T>, IComparer<T>
         {
-            internal static readonly BitwiseComparer Instance = new BitwiseComparer();
+            /// <summary>
+            /// Represents singleton instance of bitwise comparer.
+            /// </summary>
+            public static readonly BitwiseComparer Instance = new BitwiseComparer();
+
             private BitwiseComparer()
             {
             }
 
-            bool IEqualityComparer<T>.Equals(T first, T second) => BitwiseEquals(first, second);
+            /// <summary>
+            /// Determines whether two values are equal based on bitwise equality check.
+            /// </summary>
+            /// <param name="first">The first value to be compared.</param>
+            /// <param name="second">The second value to be compared.</param>
+            /// <returns><see langword="true"/>, if two values are equal; otherwise, <see langword="false"/>.</returns>
+            /// <seealso cref="BitwiseEquals(T, T)"/>
+            public bool Equals(T first, T second) => BitwiseEquals(first, second);
 
-            int IEqualityComparer<T>.GetHashCode(T obj) => BitwiseHashCode(obj);
-            int IComparer<T>.Compare(T first, T second) => BitwiseCompare(first, second);
+            /// <summary>
+            /// Computes bitwise hash code for the given value.
+            /// </summary>
+            /// <param name="obj">The value for which a hash code is to be returned.</param>
+            /// <returns>A hash code for the specified object.</returns>
+            public int GetHashCode(T obj) => BitwiseHashCode(obj);
+
+            /// <summary>
+            /// Performs bitwise comparison between two values.
+            /// </summary>
+            /// <param name="first">The first value to compare.</param>
+            /// <param name="second">The second value to compare.</param>
+            /// <returns>A value that indicates the relative order of the objects being compared.</returns>
+            public int Compare(T first, T second) => BitwiseCompare(first, second);
         }
 
         /// <summary>
@@ -50,7 +76,7 @@ namespace DotNext
         /// Equality comparer for the value type based on its bitwise representation.
         /// </summary>
         /// <remarks>
-        /// Use <see cref="EqualityComparerBuilder"/> instead.
+        /// Use <see cref="BitwiseComparer"/> instead.
         /// </remarks>
         [Obsolete("Use methods of EqualityComparerBuilder class")]
         public static IEqualityComparer<T> EqualityComparer

@@ -226,13 +226,12 @@ namespace DotNext.Runtime.InteropServices
         /// index for a specified number of elements.
         /// </summary>
         /// <remarks>
-        /// This method uses <see cref="EqualityComparer{T}.Default"/> comparer
-        /// to compare elements in this array.
+        /// This method uses <see cref="ValueType{T}.BitwiseComparer"/> comparer to compare elements in this array.
         /// </remarks>
         /// <param name="item">The value to locate in this array.</param>
         /// <param name="startIndex">The starting index of the search.</param>
         /// <returns>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public long LastIndexOf(T item, long startIndex) => LastIndexOf(item, startIndex, EqualityComparer<T>.Default);
+        public long LastIndexOf(T item, long startIndex) => LastIndexOf(item, startIndex, ValueType<T>.BitwiseComparer.Instance);
 
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
@@ -240,7 +239,7 @@ namespace DotNext.Runtime.InteropServices
         /// index for a specified number of elements.
         /// </summary>
         /// <remarks>
-        /// This method uses <see cref="EqualityComparer{T}.Default"/> comparer
+        /// This method uses <see cref="ValueType{T}.BitwiseComparer"/> comparer
         /// to compare elements in this array.
         /// </remarks>
         /// <param name="item">The value to locate in this array.</param>
@@ -331,7 +330,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="item">The value to locate in this array.</param>
         /// <param name="startIndex">The starting index of the search.</param>
         /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public long IndexOf(T item, long startIndex) => IndexOf(item, startIndex, EqualityComparer<T>.Default);
+        public long IndexOf(T item, long startIndex) => IndexOf(item, startIndex, ValueType<T>.BitwiseComparer.Instance);
 
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
