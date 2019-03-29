@@ -16,7 +16,7 @@
 	<RepositoryType>git</RepositoryType>
 	<PackageTags>Concept;Reflection;Typeclass</PackageTags>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Dynamic polymorphism is added: it is possible to register static and instance methods for the particular type. These methods will be visible to concept types and strongly typed reflection.</PackageReleaseNotes>
+	<PackageReleaseNotes>Enable tail call optimization for some delegate instances generated for the reflected methods.</PackageReleaseNotes>
   </PropertyGroup>
 
 

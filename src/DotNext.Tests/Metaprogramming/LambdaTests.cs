@@ -33,7 +33,18 @@ namespace DotNext.Metaprogramming
             var lambda = LambdaBuilder<Func<int, int, Task<int>>>.Build(fun =>
             {
                 UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
-                fun.Assign(fun.Result, new AsyncResultExpression(arg0 + arg1));
+                fun.Assign(fun.Result, new AsyncResultExpression(arg0 + arg1, false));
+            });
+            Equal(42, lambda.Compile().Invoke(40, 2).Result);
+        }
+
+        [Fact]
+        public void AsyncLambdaWithoutAwaitValueTaskTest()
+        {
+            var lambda = LambdaBuilder<Func<int, int, ValueTask<int>>>.Build(fun =>
+            {
+                UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
+                fun.Assign(fun.Result, new AsyncResultExpression(arg0 + arg1, true));
             });
             Equal(42, lambda.Compile().Invoke(40, 2).Result);
         }
@@ -46,6 +57,21 @@ namespace DotNext.Metaprogramming
         {
             var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
             var lambda = AsyncLambdaBuilder<Func<long, long, Task<long>>>.Build(fun =>
+            {
+                UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
+                UniversalExpression temp = fun.DeclareVariable<long>("tmp");
+                fun.Assign(temp, Expression.Call(null, sumMethod, arg0, arg1).Await());
+                fun.Return(temp + 20L.AsConst());
+            });
+            var fn = lambda.Compile();
+            Equal(35L, fn(5L, 10L).Result);
+        }
+
+        [Fact]
+        public void SimpleAsyncLambdaValueTaskTest()
+        {
+            var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            var lambda = AsyncLambdaBuilder<Func<long, long, ValueTask<long>>>.Build(fun =>
             {
                 UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
                 UniversalExpression temp = fun.DeclareVariable<long>("tmp");

@@ -18,7 +18,7 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Rich navigation through inheritance hierarchy using TypeExtensions.GetBaseTypes.</PackageReleaseNotes>
+	<PackageReleaseNotes>Introduce automatic generation of GetHashCode and Equals for custom type instead of hand-written coding of these methods to improve productivity. See EqualityComparerBuilder class.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

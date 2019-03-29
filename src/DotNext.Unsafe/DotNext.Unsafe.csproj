@@ -15,7 +15,9 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>unsafe;unmanaged;pointer</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Support of Large arrays (64-bit length)</PackageReleaseNotes>
+    <PackageReleaseNotes>Unmanaged array elements can be obtained using 64-bit index
+Introduce untyped access to the unmanaged memory. See UnmanagedMemory type.
+Fix pointer offset calculation bug in UnmanagedArray</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

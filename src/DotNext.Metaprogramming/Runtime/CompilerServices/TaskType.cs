@@ -6,12 +6,24 @@ namespace DotNext.Runtime.CompilerServices
 {
     using Reflection;
 
-    internal readonly struct TaskBuilder
+    internal readonly struct TaskType
     {
         private readonly Type resultType;
+        private readonly Type taskType;
 
-        internal TaskBuilder(Type taskType)
+        internal TaskType(Type resultType, bool isValueTask)
         {
+            IsValueTask = isValueTask;
+            this.resultType = resultType;
+            if (resultType is null || resultType == typeof(void))
+                taskType = isValueTask ? typeof(ValueTask) : typeof(Task);
+            else
+                taskType = (isValueTask ? typeof(ValueTask<>) : typeof(Task<>)).MakeGenericType(resultType);
+        }
+
+        internal TaskType(Type taskType)
+        {
+            this.taskType = taskType;
             if(taskType is null)
                 throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
             else if(taskType == typeof(ValueTask))
@@ -44,5 +56,7 @@ namespace DotNext.Runtime.CompilerServices
         internal Type ResultType => resultType ?? typeof(void);
 
         internal bool IsValueTask { get; }
+
+        public static implicit operator Type(TaskType type) => type.taskType ?? typeof(Task);
     }
 }

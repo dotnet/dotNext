@@ -33,7 +33,7 @@ namespace DotNext.Runtime.CompilerServices
                 => AwaitExpression.IsAwaiterHolder(variable) ? variable.Type.GetHashCode() : variable.GetHashCode();
         }
 
-        internal readonly TaskBuilder Task;
+        internal readonly TaskType Task;
         internal readonly IDictionary<ParameterExpression, MemberExpression> Variables;
         private readonly VisitorContext context;
         //this label indicates end of async method when successful result should be returned
@@ -43,7 +43,7 @@ namespace DotNext.Runtime.CompilerServices
 
         internal AsyncStateMachineBuilder(Type taskType, IReadOnlyList<ParameterExpression> parameters)
         {
-            Task = new TaskBuilder(taskType);
+            Task = new TaskType(taskType);
             Variables = new Dictionary<ParameterExpression, MemberExpression>(new VariableEqualityComparer());
             for (var position = 0; position < parameters.Count; position++)
             {
@@ -458,7 +458,7 @@ namespace DotNext.Runtime.CompilerServices
             //save all parameters into fields
             foreach (var parameter in parameters)
                 newBody.Add(methodBuilder.Variables[parameter].Update(stateVariable).Assign(parameter));
-            newBody.Add(methodBuilder.Task.AdjustTaskType(Expression.Call(stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start))), stateMachineMethod, stateVariable));
+            newBody.Add(methodBuilder.Task.AdjustTaskType(Expression.Call(stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start)), stateMachineMethod, stateVariable)));
             return Expression.Lambda<D>(Expression.Block(new[] { stateVariable }, newBody), true, parameters);
         }
 
