@@ -461,7 +461,7 @@ namespace DotNext.Runtime.CompilerServices
             //save all parameters into fields
             foreach (var parameter in parameters)
                 newBody.Add(methodBuilder.Variables[parameter].Update(stateVariable).Assign(parameter));
-            newBody.Add(Expression.Call(null, stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start)), stateMachineMethod, stateVariable));
+            newBody.Add(Expression.Call(stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start)), stateMachineMethod, stateVariable));
             return Expression.Lambda<D>(Expression.Block(new[] { stateVariable }, newBody), true, parameters);
         }
 
