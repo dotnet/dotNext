@@ -14,8 +14,7 @@ namespace DotNext.Runtime.CompilerServices
     /// and intended for expert-level developers.
     /// </remarks>
     /// <typeparam name="STATE">The local state of async function used to store computation state.</typeparam>
-    [CLSCompliant(false)]
-    public struct AsyncStateMachine<STATE>: IAsyncStateMachine<STATE>
+    internal struct AsyncStateMachine<STATE>: IAsyncStateMachine<STATE>
     {
         /// <summary>
         /// Represents state-transition function.
@@ -204,8 +203,7 @@ namespace DotNext.Runtime.CompilerServices
     /// </remarks>
     /// <typeparam name="STATE">The local state of async function used to store computation state.</typeparam>
     /// <typeparam name="R">Result type of asynchronous function.</typeparam>
-    [CLSCompliant(false)]
-    public struct AsyncStateMachine<STATE, R> : IAsyncStateMachine<STATE>
+    internal struct AsyncStateMachine<STATE, R> : IAsyncStateMachine<STATE>
         where STATE : struct
     {
         /// <summary>

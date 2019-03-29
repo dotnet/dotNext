@@ -8,7 +8,7 @@ namespace DotNext.Threading.Tasks
     /// Represents <see cref="Task"/> or <see cref="ValueTask"/>
     /// completed synchronously.
     /// </summary>
-    public readonly struct CompletedTask
+    internal readonly struct CompletedTask
     {
         private readonly Exception failure;
 
@@ -45,7 +45,7 @@ namespace DotNext.Threading.Tasks
     /// completed synchronously.
     /// </summary>
     /// <typeparam name="T">The type of the result produced by the task.</typeparam>
-    public readonly struct CompletedTask<T>
+    internal readonly struct CompletedTask<T>
     {
         private readonly Exception failure;
         private readonly T result;
