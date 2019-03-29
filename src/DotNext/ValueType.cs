@@ -42,6 +42,7 @@ namespace DotNext
             /// </summary>
             /// <param name="obj">The value for which a hash code is to be returned.</param>
             /// <returns>A hash code for the specified object.</returns>
+            /// <seealso cref="BitwiseHashCode(T)"/>
             public int GetHashCode(T obj) => BitwiseHashCode(obj);
 
             /// <summary>
@@ -50,6 +51,7 @@ namespace DotNext
             /// <param name="first">The first value to compare.</param>
             /// <param name="second">The second value to compare.</param>
             /// <returns>A value that indicates the relative order of the objects being compared.</returns>
+            /// <seealso cref="BitwiseCompare(T, T)"/>
             public int Compare(T first, T second) => BitwiseCompare(first, second);
         }
 
@@ -99,6 +101,7 @@ namespace DotNext
         /// Comparer&lt;T&gt;.Create(ValueType&lt;T&gt;);
         /// </code>
         /// </remarks>
+        /// <seealso cref="BitwiseComparer"/>
         [Obsolete("Use Comparison<T> delegate created for the method BitwiseCompare")]
         public static IComparer<T> Comparer
         {
