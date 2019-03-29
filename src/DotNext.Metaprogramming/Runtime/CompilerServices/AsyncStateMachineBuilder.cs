@@ -21,7 +21,6 @@ namespace DotNext.Runtime.CompilerServices
     /// </remarks>
     internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     {
-        
         private static readonly UserDataSlot<int> ParameterPositionSlot = UserDataSlot<int>.Allocate();
 
         //small optimization - reuse variable for awaiters of the same type
@@ -34,7 +33,7 @@ namespace DotNext.Runtime.CompilerServices
                 => AwaitExpression.IsAwaiterHolder(variable) ? variable.Type.GetHashCode() : variable.GetHashCode();
         }
 
-        internal readonly Type AsyncReturnType;
+        internal readonly TaskBuilder Task;
         internal readonly IDictionary<ParameterExpression, MemberExpression> Variables;
         private readonly VisitorContext context;
         //this label indicates end of async method when successful result should be returned
@@ -42,11 +41,9 @@ namespace DotNext.Runtime.CompilerServices
         //a table with labels in the beginning of async state machine
         private readonly StateTransitionTable stateSwitchTable;
 
-        internal AsyncStateMachineBuilder(Type returnType, IReadOnlyList<ParameterExpression> parameters)
+        internal AsyncStateMachineBuilder(Type taskType, IReadOnlyList<ParameterExpression> parameters)
         {
-            if (returnType is null)
-                throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
-            AsyncReturnType = returnType;
+            Task = new TaskBuilder(taskType);
             Variables = new Dictionary<ParameterExpression, MemberExpression>(new VariableEqualityComparer());
             for (var position = 0; position < parameters.Count; position++)
             {
@@ -440,7 +437,7 @@ namespace DotNext.Runtime.CompilerServices
         internal AsyncStateMachineBuilder(IReadOnlyList<ParameterExpression> parameters)
         {
             var invokeMethod = DelegateType.GetInvokeMethod<D>();
-            methodBuilder = new AsyncStateMachineBuilder(invokeMethod?.ReturnType?.GetTaskType(), parameters);
+            methodBuilder = new AsyncStateMachineBuilder(invokeMethod?.ReturnType, parameters);
         }
 
         private static LambdaExpression BuildStateMachine(Expression body, ParameterExpression stateMachine, bool tailCall)
@@ -461,7 +458,7 @@ namespace DotNext.Runtime.CompilerServices
             //save all parameters into fields
             foreach (var parameter in parameters)
                 newBody.Add(methodBuilder.Variables[parameter].Update(stateVariable).Assign(parameter));
-            newBody.Add(Expression.Call(stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start)), stateMachineMethod, stateVariable));
+            newBody.Add(methodBuilder.Task.AdjustTaskType(Expression.Call(stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start))), stateMachineMethod, stateVariable));
             return Expression.Lambda<D>(Expression.Block(new[] { stateVariable }, newBody), true, parameters);
         }
 
@@ -526,7 +523,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             body = methodBuilder.Rewrite(body);
             //build state machine type
-            stateMachine = CreateStateHolderType(methodBuilder.AsyncReturnType, methodBuilder.Variables);
+            stateMachine = CreateStateHolderType(methodBuilder.Task.ResultType, methodBuilder.Variables);
             //replace all special expressions
             body = Visit(body);
             //now we have state machine method, wrap it into lambda

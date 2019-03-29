@@ -231,7 +231,7 @@ namespace DotNext.Reflection
         {
             if(obj is null)
                 return type.IsValueType ? new InvalidCastException(ExceptionMessages.CastNullToValueType) : null;
-            else if(type.IsAssignableFrom(obj.GetType()))
+            else if(type.IsInstanceOfType(obj))
                 return obj;
             else
                 throw new InvalidCastException();
