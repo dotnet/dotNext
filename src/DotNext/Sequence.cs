@@ -10,7 +10,7 @@ namespace DotNext
     public static class Sequence
     {
         /// <summary>
-        /// Computes hash code for the sequence
+        /// Computes hash code for the sequence of objects.
         /// </summary>
         /// <param name="sequence">The sequence of elements.</param>
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
