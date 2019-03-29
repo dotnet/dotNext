@@ -33,14 +33,14 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         public STATE State;
 
-        private AsyncTaskMethodBuilder builder;
+        private AsyncValueTaskMethodBuilder builder;
         private readonly Transition transition;
         private ExceptionDispatchInfo exception;
         private ushort guardedRegionsCounter;    //number of entries into try-clause
 
         private AsyncStateMachine(Transition transition, STATE state)
         {
-            builder = AsyncTaskMethodBuilder.Create();
+            builder = AsyncValueTaskMethodBuilder.Create();
             this.transition = transition;
             State = state;
             StateId = FINAL_STATE;
@@ -177,7 +177,7 @@ namespace DotNext.Runtime.CompilerServices
             exception = null;
         }
 
-        private Task Start()
+        private ValueTask Start()
         {
             builder.Start(ref this);
             return builder.Task;
@@ -189,7 +189,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="transition">Async function which execution is controlled by state machine.</param>
         /// <param name="initialState">Initial state.</param>
         /// <returns>The task representing execution of async function.</returns>
-        public static Task Start(Transition transition, STATE initialState = default)
+        public static ValueTask Start(Transition transition, STATE initialState = default)
             => new AsyncStateMachine<STATE>(transition, initialState).Start();
 
         void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
@@ -218,7 +218,7 @@ namespace DotNext.Runtime.CompilerServices
         /// Represents internal state.
         /// </summary>
         public STATE State;
-        private AsyncTaskMethodBuilder<R> builder;
+        private AsyncValueTaskMethodBuilder<R> builder;
         private readonly Transition transition;
         private ExceptionDispatchInfo exception;
         private ushort guardedRegionsCounter;    //number of entries into try-clause
@@ -226,7 +226,7 @@ namespace DotNext.Runtime.CompilerServices
 
         private AsyncStateMachine(Transition transition, STATE state)
         {
-            builder = AsyncTaskMethodBuilder<R>.Create();
+            builder = AsyncValueTaskMethodBuilder<R>.Create();
             StateId = AsyncStateMachine<STATE>.FINAL_STATE;
             State = state;
             this.transition = transition;
@@ -312,7 +312,7 @@ namespace DotNext.Runtime.CompilerServices
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public void Rethrow() => exception?.Throw();
         
-        private Task<R> Start()
+        private ValueTask<R> Start()
         {
             builder.Start(ref this);
             return builder.Task;
@@ -324,7 +324,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="transition">Async function which execution is controlled by state machine.</param>
         /// <param name="initialState">Initial state.</param>
         /// <returns>The task representing execution of async function.</returns>
-        public static Task<R> Start(Transition transition, STATE initialState = default)
+        public static ValueTask<R> Start(Transition transition, STATE initialState = default)
             => new AsyncStateMachine<STATE, R>(transition, initialState).Start();
 
         /// <summary>

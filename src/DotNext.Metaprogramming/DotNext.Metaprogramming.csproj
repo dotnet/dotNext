@@ -47,5 +47,6 @@ Ability to add await statement</PackageReleaseNotes>
   <ItemGroup>
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext" Version="0.4.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" />
   </ItemGroup>
 </Project>
