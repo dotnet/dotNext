@@ -331,7 +331,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="item">The value to locate in this array.</param>
         /// <param name="startIndex">The starting index of the search.</param>
         /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public long IndexOf(T item, long startIndex) => IndexOf(item, startIndex, ValueType<T>.EqualityComparer);
+        public long IndexOf(T item, long startIndex) => IndexOf(item, startIndex, EqualityComparer<T>.Default);
 
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
