@@ -2,7 +2,7 @@
 A dark template for documentation generated with [DocFX](https://dotnet.github.io/docfx/).
 This is an override of the default template so you need to enable both in the `docfx.json`.
 
-![darkFX - Screenshots](./docs/images/darkfx-screenshots.png)
+![darkFX - Screenshots](./images/darkfx-screenshots.png)
 
 ## Install
 
