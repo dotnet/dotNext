@@ -18,3 +18,6 @@ This is an override of the default template so you need to enable both in the `d
         ],
     }
     ```
+    
+## Acknowledgement
+Many thanks to [ovasquez](https://github.com/ovasquez) from which I borrowed the example pages and repository structure of his [Material Theme for DocFX](https://github.com/ovasquez/docfx-material).
