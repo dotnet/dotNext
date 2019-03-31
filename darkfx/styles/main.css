@@ -1,5 +1,5 @@
 body {
-    color: #dcdccc;
+    color: #ccd5dc;
     font-family: "Open Sans",sans-serif;
     line-height: 1.5;
     font-size: 14px;
@@ -97,7 +97,7 @@ article h4 {
 }
 
 .toc .nav>li>a {
-    color: #dcdccc;
+    color: #ccd5dc;
 }
 
 .sidefilter {
@@ -127,7 +127,7 @@ article h4 {
 }
 
 .toc-filter>input:focus {
-    color: #dcdccc;
+    color: #ccd5dc;
     transition: all ease 0.25s;
 }
 
