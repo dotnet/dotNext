@@ -12,7 +12,7 @@ You can view a demo DocFX project with this template [HERE](https://steffen-wilk
 1. Download the source or the zipped file from the [releases](https://github.com/steffen-wilke/darkfx/releases).
 2. Create a `templates` folder in the root of your DocFX directory.
 3. Copy the `darkfx` folder to the `templates` folder.
-4. Update the `docfx.json` configuration to include the material template:
+4. Update the `docfx.json` configuration to include the darkfx template:
     ```json
     {
         "template": [
