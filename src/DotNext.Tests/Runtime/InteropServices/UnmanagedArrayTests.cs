@@ -4,7 +4,57 @@ using Xunit;
 namespace DotNext.Runtime.InteropServices
 {
     public sealed class UnmanagedArrayTests: Assert
-    {
+    {   
+        [Fact]
+        public void SliceTest()
+        {
+            var array = new UnmanagedArray<long>(5);
+            try
+            {
+                array[0] = 10;
+                array[1] = 20;
+                array[2] = 30;
+                array[3] = 40;
+                array[4] = 50;
+                var slice = array.Slice(1, 2);
+                Equal(2, slice.Length);
+                Equal(20, slice[0]);
+                Equal(30, slice[1]);
+                slice = array.Slice(2);
+                Equal(3, slice.Length);
+                Equal(30, slice[0]);
+                Equal(40, slice[1]);
+                Equal(50, slice[2]);
+            }
+            finally
+            {
+                array.Dispose();
+            }
+        }
+
+        [Fact]
+        public void ResizeTest()
+        {
+            var array = new UnmanagedArray<long>(5);
+            try
+            {
+                array[0] = 10;
+                array[1] = 20;
+                array[2] = 30;
+                array[3] = 40;
+                array[4] = 50;
+                Equal(50, array[4]);
+                array.Length = 2;
+                Equal(2, array.Length);
+                Equal(10, array[0]);
+                Equal(20, array[1]);
+            }
+            finally
+            {
+                array.Dispose();
+            }
+        }
+
         [Fact]
         public void BitwiseOperationsTest()
         {

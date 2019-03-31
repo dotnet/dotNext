@@ -10,7 +10,7 @@ namespace DotNext.Runtime.InteropServices
     /// <summary>
     /// Represents a block of allocated unmanaged memory of the specified size.
     /// </summary>
-    public unsafe struct UnmanagedMemory: IUnmanagedMemory, IDisposable
+    public unsafe struct UnmanagedMemory: IUnmanagedMemory, IDisposable, IEquatable<UnmanagedMemory>
     {
         /// <summary>
 		/// Represents GC-friendly reference to the unmanaged memory.
@@ -83,6 +83,8 @@ namespace DotNext.Runtime.InteropServices
             }
         }
 
+        private readonly long size;
+
         /// <summary>
         /// Represents address of the allocated memory.
         /// </summary>
@@ -91,7 +93,7 @@ namespace DotNext.Runtime.InteropServices
         internal UnmanagedMemory(IntPtr address, long size)
         {
             Address = address;
-            Size = size;
+            this.size = size;
         }
 
         /// <summary>
@@ -99,7 +101,19 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="size">The number of bytes to be allocated.</param>
         /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
-        public UnmanagedMemory(long size, bool zeroMem = true) => Address = Alloc(Size = size, zeroMem);
+        public UnmanagedMemory(long size, bool zeroMem = true)
+        {
+            Address = Alloc(this.size = size, zeroMem);
+            GC.AddMemoryPressure(size);
+        }
+
+        /// <summary>
+        /// Indicates that the memory block is empty.
+        /// </summary>
+        public bool IsEmpty
+        {
+            get => Address == IntPtr.Zero || Size == 0L;
+        }
 
         /// <summary>
 		/// Gets or sets byte in the memory at the specified zero-based offset.
@@ -117,7 +131,7 @@ namespace DotNext.Runtime.InteropServices
                 else if(offset < 0L || offset >= Size)
                     throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(Size));
                 else
-                    return *Address.ToPointer<byte>();
+                    return *(Address.ToPointer<byte>() + offset);
             }
             set
             {
@@ -126,7 +140,7 @@ namespace DotNext.Runtime.InteropServices
                 else if(offset < 0L || offset >= Size)
                     throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(Size));
                 else
-                    *Address.ToPointer<byte>() = value;
+                    *(Address.ToPointer<byte>() + offset) = value;
             }
         }
 
@@ -137,6 +151,8 @@ namespace DotNext.Runtime.InteropServices
                 Memory.ZeroMem(address, size);
             return address;
         }
+
+        internal static IntPtr Realloc(IntPtr memory, long newSize) => Marshal.ReAllocHGlobal(memory, new IntPtr(newSize));
 
         internal static bool Release(IntPtr memory)
         {
@@ -164,15 +180,6 @@ namespace DotNext.Runtime.InteropServices
         public Pointer<T> ToPointer<T>() where T: unmanaged => new Pointer<T>(Address);
 
         /// <summary>
-        /// Indicates that this pointer is <see langword="null"/>.
-        /// </summary>
-        public bool IsNull
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Address == IntPtr.Zero;
-        }
-
-        /// <summary>
         /// Creates bitwise copy of the unmanaged memory.
         /// </summary>
         /// <returns>Bitwise copy of the unmanaged memory.</returns>
@@ -186,9 +193,58 @@ namespace DotNext.Runtime.InteropServices
         object ICloneable.Clone() => Copy();
 
         /// <summary>
-        /// Gets number of allocated bytes.
+        /// Gets or sets number of allocated bytes.
         /// </summary>
-        public long Size { get; }
+        /// <remarks>
+        /// If size is changed, the contents of this memory block have been copied to the new block, and this memory block has been freed.
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is invalid.</exception>
+        public long Size
+        {
+            get => size;
+            set
+            {
+                if(value <= 0L)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                else if(value == size)
+                    return;
+                else if(IsEmpty)
+                    this = new UnmanagedMemory(value);
+                else
+                    this = new UnmanagedMemory(Realloc(Address, value), value);
+            }
+        }
+
+        /// <summary>
+        /// Determines whether this object points to the same memory block as other object.
+        /// </summary>
+        /// <param name="other">The unmanaged memory holder to be compared.</param>
+        /// <returns><see langword="true"/>, if this object points to the same memory block as other object; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Equals(UnmanagedMemory other) => Address == other.Address;
+
+        /// <summary>
+        /// Determines whether this object points to the same memory block as other object.
+        /// </summary>
+        /// <param name="other">The unmanaged memory holder to be compared.</param>
+        /// <returns><see langword="true"/>, if this object points to the same memory block as other object; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object other)
+        {
+            switch(other)
+            {
+                case UnmanagedMemory memory:
+                    return Equals(memory);
+                case IntPtr pointer:
+                    return Address == pointer;
+                default:
+                    return false;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(UnmanagedMemory first, UnmanagedMemory second) => first.Equals(second);
+
+        public static bool operator !=(UnmanagedMemory first, UnmanagedMemory second) => !first.Equals(second);
 
         /// <summary>
         /// Returns address of this memory in hexadecimal format.
@@ -208,14 +264,9 @@ namespace DotNext.Runtime.InteropServices
         public void Dispose()
         {
             Release(Address);
+            GC.RemoveMemoryPressure(Size);
             this = default;
         }
-
-        /// <summary>
-        /// Obtains address of allocated memory.
-        /// </summary>
-        /// <param name="memory">The allocated memory.</param>
-        public static implicit operator IntPtr(UnmanagedMemory memory) => memory.Address;
     }
 
     /// <summary>

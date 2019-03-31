@@ -21,5 +21,29 @@ namespace DotNext.Runtime.InteropServices
                 value.Dispose();
             }
         }
+
+        [Fact]
+        public void UntypedMemoryTest()
+        {
+            var memory = new UnmanagedMemory(10);
+            try
+            {
+                Equal(10, memory.Size);
+                Equal(0, memory[0]);
+                Equal(0, memory[9]);
+                memory[0] = 10;
+                memory[1] = 20;
+                Equal(10, memory[0]);
+                Equal(20, memory[1]);
+                memory.Size = 12;
+                Equal(12, memory.Size);
+                Equal(10, memory[0]);
+                Equal(20, memory[1]);
+            }
+            finally
+            {
+                memory.Dispose();
+            }
+        }
     }
 }

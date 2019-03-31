@@ -116,6 +116,30 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
+		/// Gets or sets pointer value at the specified position in the memory.
+		/// </summary>
+        /// <remarks>
+        /// This property doesn't check bounds of the array.      
+        /// </remarks>              
+		/// <param name="index">Element index.</param>
+		/// <returns>Array element.</returns>
+		/// <exception cref="NullPointerException">This array is not allocated.</exception>
+        public T this[long index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => value == Memory.NullPtr ? throw new NullPointerException() : *(value + index);
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
+            {
+                if(this.value == Memory.NullPtr)
+                    throw new NullPointerException();
+                else
+                    *(this.value + index) = value;
+            }
+        }
+
+        /// <summary>
         /// Swaps values between this memory location and the given memory location.
         /// </summary>
         /// <param name="other">The other memory location.</param>
@@ -571,6 +595,13 @@ namespace DotNext.Runtime.InteropServices
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator T*(Pointer<T> ptr) => ptr.value;
+        
+        /// <summary>
+        /// Obtains pointer value (address) as <see cref="IntPtr"/>.
+        /// </summary>
+        /// <param name="ptr">The pointer to be converted.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static implicit operator IntPtr(Pointer<T> ptr) => new IntPtr(ptr.value);
 
         /// <summary>
         /// Checks whether this pointer is not zero.

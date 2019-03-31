@@ -15,7 +15,7 @@ namespace DotNext.Runtime.InteropServices
 	/// Therefore, it's developer responsibility to release unmanaged memory using <see cref="IDisposable.Dispose"/> call.
     /// </remarks>
 	/// <typeparam name="T">Array element type.</typeparam>
-	public unsafe struct UnmanagedArray<T> : IUnmanagedMemory<T>, IEquatable<UnmanagedArray<T>>, IEnumerable<T>
+	public unsafe struct UnmanagedArray<T> : IEquatable<UnmanagedArray<T>>, IUnmanagedList<T>
 		where T : unmanaged
 	{
 		/// <summary>
@@ -100,6 +100,12 @@ namespace DotNext.Runtime.InteropServices
 			}
 		}
 
+        /// <summary>
+        /// Represents empty array.
+        /// </summary>
+        public static UnmanagedArray<T> Empty => default(UnmanagedArray<T>);
+        
+        private readonly long length;
 		private readonly Pointer<T> pointer;
 
 		/// <summary>
@@ -112,15 +118,19 @@ namespace DotNext.Runtime.InteropServices
 		{
 			if (length < 0)
 				throw new ArgumentOutOfRangeException(nameof(length), length, ExceptionMessages.ArrayNegativeLength);
-			else if ((Length = length) > 0L)
-                pointer = new Pointer<T>(UnmanagedMemory.Alloc(length * Pointer<T>.Size, zeroMem));
+			else if ((this.length = length) > 0L)
+            {
+                var size = length * Pointer<T>.Size;
+                pointer = new Pointer<T>(UnmanagedMemory.Alloc(size, zeroMem));
+                GC.AddMemoryPressure(size);
+            }
 			else
 				pointer = Pointer<T>.Null;
 		}
 
 		private UnmanagedArray(Pointer<T> pointer, long length)
 		{
-			Length = length;
+			this.length = length;
 			this.pointer = pointer;
 		}
 
@@ -129,10 +139,39 @@ namespace DotNext.Runtime.InteropServices
 		{
 		}
 
+        /// <summary>
+        /// Indicates that this array is empty.
+        /// </summary>
+        public bool IsEmpty
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => length == 0L || pointer == Pointer<T>.Null;
+        }
+
 		/// <summary>
-		/// Gets length of this array.
+		/// Gets or sets length of this array.
 		/// </summary>
-		public long Length { get; }
+        /// <remarks>
+        /// If length is changed then the contents of this array have been copied to the array, and this array has been freed.      
+        /// </remarks> 
+        /// <exception cref="ArgumentOutOfRangeException">The new length value is invalid.</exception>           
+		public long Length
+        {
+            get => length;
+            set
+            {
+                if(value <= 0L)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                else if(value == length)
+                    return;
+                else if(IsEmpty)
+                    this = new UnmanagedArray<T>(value);
+                else
+                    this = new UnmanagedArray<T>(UnmanagedMemory.Realloc(pointer, Pointer<T>.Size * value), value);
+            }
+        }
+
+        int IReadOnlyCollection<T>.Count => (int)Length;
 
 		/// <summary>
 		/// Size of allocated memory, in bytes.
@@ -149,6 +188,25 @@ namespace DotNext.Runtime.InteropServices
         Span<T> IUnmanagedMemory<T>.Span => this;
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="startIndex"></param>
+        /// <returns></returns>
+        public UnmanagedArray<T> Slice(long startIndex) => Slice(startIndex, Length);
+
+        public UnmanagedArray<T> Slice(long startIndex, long count)
+        {
+            if(startIndex < 0L)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            else if(count < 0L)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            else if(startIndex >= Length || count == 0L)
+                return Empty;
+            else
+                return new UnmanagedArray<T>(pointer + startIndex, count.UpperBounded(Length - startIndex));
+        }
+
+        /// <summary>
         /// Searches item matching to the given predicate in a range of elements of the unmanaged array, and returns 
         /// the index of its last occurrence. The range extends from a specified 
         /// index for a specified number of elements.
@@ -159,7 +217,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
         public long FindLast(Predicate<T> predicate, long startIndex, long count)
         {
-            if (count == 0 || Length == 0)
+            if (count == 0 || IsEmpty)
                 return -1;
             else
                 count = count.UpperBounded(Length);
@@ -199,7 +257,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</returns>
         public long LastIndexOf(T item, long startIndex, long count, IEqualityComparer<T> comparer)
         {
-            if (count == 0 || Length == 0)
+            if (count == 0 || IsEmpty)
                 return -1;
             else
                 count = count.UpperBounded(Length);
@@ -257,7 +315,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
         public long Find(Predicate<T> predicate, long startIndex, long count)
         {
-            if (count == 0 || Length == 0)
+            if (count == 0 || IsEmpty)
                 return -1;
             else
                 count = count.UpperBounded(Length);
@@ -297,7 +355,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
         public long IndexOf(T item, long startIndex, long count, IEqualityComparer<T> comparer)
         {
-            if (count == 0 || Length == 0)
+            if (count == 0 || IsEmpty)
                 return -1;
             else
                 count = count.UpperBounded(Length);
@@ -417,7 +475,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="comparison">The comparison algorithm.</param>
         public void Sort(long startIndex, long count, Comparison<T> comparison)
         {
-            if (count == 0 || Length == 0)
+            if (count == 0 || IsEmpty)
                 return;
             QuickSort(startIndex, count.UpperBounded(Length) - 1, comparison);
         }
@@ -475,6 +533,8 @@ namespace DotNext.Runtime.InteropServices
             }
 		}
 
+        T IReadOnlyList<T>.this[int index] => this[index];
+
         /// <summary>
         /// Obtains typed pointer to the unmanaged memory.
         /// </summary>
@@ -497,7 +557,7 @@ namespace DotNext.Runtime.InteropServices
 				throw new ArgumentNullException(nameof(destination));
 			else if (count < 0)
 				throw new IndexOutOfRangeException();
-			else if (destination.Length == 0 || (count + offset) >= destination.Length)
+			else if (destination.IsEmpty || (count + offset) >= destination.Length)
 				return 0;
 			pointer.WriteTo(destination.pointer + offset, count);
 			return count;
@@ -870,6 +930,7 @@ namespace DotNext.Runtime.InteropServices
 		public void Dispose()
 		{
 			UnmanagedMemory.Release(pointer.Address);
+            GC.RemoveMemoryPressure(Size);
 			this = default;
 		}
 	}

@@ -11,7 +11,7 @@ namespace DotNext.Collections.Generic
     /// Represents a strongly typed list of objects that is allocated in unmanaged memory.
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
-    public struct UnmanagedList<T>: IList<T>, IReadOnlyList<T>, IDisposable, IUnmanagedMemory<T>
+    public struct UnmanagedList<T>: IList<T>, IDisposable, IUnmanagedList<T>
         where T : unmanaged
     {
         private const int DefaultCapacity = 4;
@@ -37,6 +37,11 @@ namespace DotNext.Collections.Generic
         }
 
         /// <summary>
+        /// Indicates that this list is empty.
+        /// </summary>
+        public bool IsEmpty => array.IsEmpty || count == 0;
+
+        /// <summary>
         /// Gets capacity of this list.
         /// </summary>
         public int Capacity => (int)array.Length;
@@ -44,19 +49,7 @@ namespace DotNext.Collections.Generic
         private void EnsureCapacity(int capacity)
         {
             if(array.Length < capacity)
-            {
-                var newCapacity = array.Length == 0 ? DefaultCapacity : checked(array.Length * 2);
-                newCapacity = newCapacity.LowerBounded(capacity);
-                var newArray = new UnmanagedArray<T>(newCapacity);
-                //copy elements from existing array and, after that, release
-                //memory associated with the array
-                if (array.Length > 0)
-                {
-                    array.WriteTo(newArray);
-                    array.Dispose();
-                }
-                array = newArray;
-            }
+                array.Length = array.IsEmpty ? DefaultCapacity : checked(array.Length * 2).LowerBounded(capacity);
         }
 
         /// <summary>
@@ -334,12 +327,8 @@ namespace DotNext.Collections.Generic
         /// </summary>
         public void TrimExcess()
         {
-            if (count == 0 || array.Length == 0 || count == array.Length)
-                return;
-            var newArray = new UnmanagedArray<T>(count);
-            array.WriteTo(newArray, 0, newArray.Length);
-            array.Dispose();
-            array = newArray;
+            if (count > 0 && array.Length > 0)
+                array.Length = count;
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

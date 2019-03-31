@@ -23,7 +23,6 @@ namespace DotNext.Runtime.InteropServices
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			internal static int HashRound(int hash, int data) => (hash ^ data) * Prime;
 		}
-		
 
 		/// <summary>
 		/// Represents null pointer.
