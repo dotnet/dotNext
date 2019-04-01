@@ -88,7 +88,7 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool BitwiseEquals<U>(T first, U second)
             where U : struct
-            => Size == ValueType<U>.Size && Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), (long)Size);
+            => Size == ValueType<U>.Size && Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
 
         /// <summary>
         /// Checks bitwise equality between two values of the same value type.
@@ -102,7 +102,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool BitwiseEquals(T first, T second)
-            => Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), (long)Size);
+            => Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
 
 		/// <summary>
 		/// Computes bitwise hash code for the specified value.
@@ -159,7 +159,7 @@ namespace DotNext
         /// <param name="second">The second value to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public static unsafe int BitwiseCompare(T first, T second)
-            => Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), (long)Size);
+            => Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
 
 		/// <summary>
 		/// Compares bits of two values of the different type.
@@ -171,7 +171,7 @@ namespace DotNext
 		public static unsafe int BitwiseCompare<U>(T first, U second)
             where U: struct
             => Size == ValueType<U>.Size ? 
-					Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), (long)Size) :
+					Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size) :
 					Size.CompareTo(ValueType<U>.Size);
 
         /// <summary>

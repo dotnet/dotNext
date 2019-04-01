@@ -643,7 +643,7 @@ namespace DotNext.Runtime.InteropServices
         /// Returns address of this memory in hexadecimal format.
         /// </summary>
         /// <returns>The addres of this memory.</returns>
-		public override string ToString() => new IntPtr(pointer).ToString("X");
+		public override string ToString() => pointer.ToString();
 
         /// <summary>
         /// Computes bitwise equality between two blocks of memory.

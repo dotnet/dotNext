@@ -868,7 +868,7 @@ namespace DotNext.Runtime.InteropServices
         /// Returns hexadecimal representation of the unmanaged array address.
         /// </summary>
         /// <returns>The hexadecimal representation of the unmanaged array address.</returns>
-		public override string ToString() => new IntPtr(pointer).ToString("X");
+		public override string ToString() => pointer.ToString();
 
         /// <summary>
         /// Obtains a pointer to the unmanaged array.
