@@ -19,7 +19,7 @@ namespace DotNext
         /// <typeparam name="TO">The type of output struct.</typeparam>
         /// <seealso cref="ValueType{T}.BitCast{TO}(ref T, out TO)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void BitCast<FROM, TO>(this FROM input, out TO output)
+        public static void BitCast<FROM, TO>(this ref FROM input, out TO output)
             where FROM : unmanaged
             where TO : unmanaged
             => ValueType<FROM>.BitCast(ref input, out output);
@@ -40,7 +40,7 @@ namespace DotNext
         /// <typeparam name="TO">The type of output struct.</typeparam>
         /// <returns>Conversion result.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TO BitCast<FROM, TO>(this FROM input)
+        public static TO BitCast<FROM, TO>(this ref FROM input)
             where FROM : unmanaged
             where TO : unmanaged
         {

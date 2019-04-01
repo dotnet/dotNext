@@ -159,7 +159,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
         public static int BitwiseCompare<M1, M2>(this ref M1 first, M2 second)
             where M1 : struct, IUnmanagedMemory
-            where M2 : struct, IUnmanagedMemory
+            where M2 : IUnmanagedMemory
             => first.Size == second.Size ? first.ToPointer<byte>().BitwiseCompare(second.ToPointer<byte>(), first.Size) : first.Size.CompareTo(second.Size);
 
         /// <summary>
