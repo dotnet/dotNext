@@ -88,8 +88,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The position in the source array from which copying begins.</param>
         /// <param name="count">The number of arrays elements to be copied.</param>
         /// <returns>The actual number of copied bytes.</returns>
-        public static long ReadFrom<M>(this ref M destination, byte[] source, long offset, long count)
-            where M : struct, IUnmanagedMemory
+        public static long WriteTo<M>(this byte[] source, M destination, long offset, long count)
+            where M : IUnmanagedMemory
             => destination.ToPointer<byte>().ReadFrom(source, offset, count);
 
         /// <summary>
@@ -99,9 +99,9 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="source">The source array.</param>
         /// <param name="destination">The destination memory location.</param>
         /// <returns>The actual number of copied bytes.</returns>
-        public static long ReadFrom<M>(this ref M destination, byte[] source)
-            where M : struct, IUnmanagedMemory
-            => destination.ReadFrom(source, 0, source.LongLength.UpperBounded(destination.Size));
+        public static long WriteTo<M>(this byte[] source, M destination)
+            where M : IUnmanagedMemory
+            => source.WriteTo(destination, 0, source.LongLength.UpperBounded(destination.Size));
 
         /// <summary>
         /// Copies bytes from the stream to the given memory location.
@@ -110,8 +110,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="source">The source stream.</param>
         /// <param name="destination">The destination memory location.</param>
         /// <returns>The actual number</returns>
-        public static long ReadFrom<M>(this ref M destination, Stream source)
-            where M : struct, IUnmanagedMemory
+        public static long WriteTo<M>(this Stream source, M destination)
+            where M : IUnmanagedMemory
             => destination.ToPointer<byte>().ReadFrom(source, destination.Size);
 
         /// <summary>
@@ -121,8 +121,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="source">The source stream.</param>
         /// <param name="destination">The destination memory location.</param>
         /// <returns>The actual number</returns>
-        public static Task<long> ReadFromAsync<M>(this ref M destination, Stream source)
-            where M : struct, IUnmanagedMemory
+        public static Task<long> WriteToAsync<M>(this Stream source, M destination)
+            where M : IUnmanagedMemory
             => destination.ToPointer<byte>().ReadFromAsync(source, destination.Size);
 
         /// <summary>
