@@ -187,7 +187,11 @@ namespace DotNext.Runtime.InteropServices
 
         Span<T> IUnmanagedMemory<T>.Span => this;
 
-        
+        /// <summary>
+        /// Fills the elements of this array with a specified value.
+        /// </summary>
+        /// <param name="value">The value to assign to each element of the array.</param>
+        /// <exception cref="NullPointerException">This array is not allocated.</exception>
         public void Fill(T value) => pointer.Fill(value, length);
 
         /// <summary>

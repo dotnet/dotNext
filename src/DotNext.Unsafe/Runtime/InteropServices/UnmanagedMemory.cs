@@ -456,28 +456,7 @@ namespace DotNext.Runtime.InteropServices
 					throw new ArgumentException(ExceptionMessages.ExpectedType(typeof(T)), nameof(value));
 			}
 		}
-
-        /// <summary>
-        /// Boxes unmanaged type into unmanaged heap.
-        /// </summary>
-        /// <param name="value">A value to be placed into unmanaged memory.</param>
-        /// <returns>Embedded reference to the allocated unmanaged memory.</returns>
-        [Obsolete("Use constructor instead")]
-        public unsafe static UnmanagedMemory<T> Box(T value)
-        {
-            //allocate unmanaged memory
-            var result = new UnmanagedMemory<T>(false);
-            result.Value = value;
-            return result;
-        }
-
-        /// <summary>
-        /// Allocates unmanaged type in the unmanaged heap.
-        /// </summary>
-        /// <returns>Embedded reference to the allocated unmanaged memory.</returns>
-        [Obsolete("Use constructor instead")]
-        public static UnmanagedMemory<T> Alloc() => new UnmanagedMemory<T>(true);
-
+        
         /// <summary>
         /// Copies the value located at the memory block identified by the given pointer
         /// into the memory identified by this instance.

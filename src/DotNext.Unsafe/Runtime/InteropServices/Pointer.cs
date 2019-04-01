@@ -114,22 +114,30 @@ namespace DotNext.Runtime.InteropServices
         {
         }
 
-        public unsafe void Fill(T value, long length)
+        /// <summary>
+        /// Fills the elements of the array with a specified value.
+        /// </summary>
+        /// <param name="value">The value to assign to each element of the array.</param>
+        /// <param name="count">The length of the array.</param>
+        /// <exception cref="NullPointerException">This pointer is zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is lesst than zero.</exception>
+        public unsafe void Fill(T value, long count)
         {
             if(this.value == Memory.NullPtr)
                 throw new NullPointerException();
-            else if(length < 0)
-                throw new ArgumentOutOfRangeException(nameof(length));
-            else if(length == 0)
+            else if(count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            else if(count == 0)
                 return;
             var pointer = Address;
             do
             {
-                var count = (int)length.UpperBounded(int.MaxValue);
-                var span = new Span<T>(pointer.ToPointer(), count);
-                length -= count;
-                pointer += count;
-            } while (length > 0);
+                var actualCount = (int)count.UpperBounded(int.MaxValue);
+                var span = new Span<T>(pointer.ToPointer(), actualCount);
+                count -= actualCount;
+                pointer += actualCount;
+            } 
+            while (count > 0);
         }
 
         /// <summary>

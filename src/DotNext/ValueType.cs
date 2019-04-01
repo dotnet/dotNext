@@ -75,46 +75,6 @@ namespace DotNext
         public static readonly bool IsPrimitive = typeof(T).IsPrimitive;
 
         /// <summary>
-        /// Equality comparer for the value type based on its bitwise representation.
-        /// </summary>
-        /// <remarks>
-        /// Use <see cref="BitwiseComparer"/> instead.
-        /// </remarks>
-        [Obsolete("Use methods of EqualityComparerBuilder class")]
-        public static IEqualityComparer<T> EqualityComparer
-        {
-            get
-            {
-                if(IsPrimitive)
-                    return EqualityComparer<T>.Default;
-                else
-                    return BitwiseComparer.Instance;
-            }
-        }
-
-        /// <summary>
-        /// Value comparer for the value type based on its bitwise representation.
-        /// </summary>
-        /// <remarks>
-        /// This property can be replaced with the following code:
-        /// <code>
-        /// Comparer&lt;T&gt;.Create(ValueType&lt;T&gt;);
-        /// </code>
-        /// </remarks>
-        /// <seealso cref="BitwiseComparer"/>
-        [Obsolete("Use Comparison<T> delegate created for the method BitwiseCompare")]
-        public static IComparer<T> Comparer
-        {
-            get
-            {
-                if(IsPrimitive)
-                    return Comparer<T>.Default;
-                else
-                    return BitwiseComparer.Instance;
-            }
-        }
-
-        /// <summary>
         /// Checks bitwise equality between two values of different value types.
         /// </summary>
         /// <remarks>
