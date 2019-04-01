@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -10,7 +11,7 @@ namespace DotNext.Runtime.InteropServices
     /// <summary>
     /// Represents a block of allocated unmanaged memory of the specified size.
     /// </summary>
-    public unsafe struct UnmanagedMemory: IUnmanagedMemory, IDisposable, IEquatable<UnmanagedMemory>
+    public unsafe struct UnmanagedMemory: IUnmanagedMemory, IDisposable, IEquatable<UnmanagedMemory>, IEnumerable<byte>
     {
         /// <summary>
 		/// Represents GC-friendly reference to the unmanaged memory.
@@ -258,6 +259,16 @@ namespace DotNext.Runtime.InteropServices
         /// <returns><see langword="true"/>, if two objects point to the different blocks of unmanaged memory; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(UnmanagedMemory first, UnmanagedMemory second) => first.Address != second.Address;
+
+        /// <summary>
+        /// Gets enumerator over all bytes in the allocated memory.
+        /// </summary>
+        /// <returns>The enumerator over all bytes in the allocated memory.</returns>
+        public Pointer<byte>.Enumerator GetEnumerator() => ToPointer<byte>().GetEnumerator(Size);
+
+        IEnumerator<byte> IEnumerable<byte>.GetEnumerator() => GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary>
         /// Returns address of this memory in hexadecimal format.

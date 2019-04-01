@@ -21,15 +21,15 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Represents enumerator over raw memory.
         /// </summary>
-        public struct Enumerator: IEnumerator<T>
+        public unsafe struct Enumerator: IEnumerator<T>
         {
             private readonly long count;
             private long index;
-            private readonly Pointer<T> ptr;
+            private readonly T* ptr;
             
             object IEnumerator.Current => Current;
 
-            internal Enumerator(Pointer<T> ptr, long count)
+            internal Enumerator(T* ptr, long count)
             {
                 this.count = count;
                 this.ptr = ptr;
@@ -39,12 +39,20 @@ namespace DotNext.Runtime.InteropServices
             /// <summary>
             /// Pointer to the currently enumerating element.
             /// </summary>
-            public Pointer<T> Pointer => ptr + index;
+            public Pointer<T> Pointer
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => new Pointer<T>(ptr + index);
+            }
 
             /// <summary>
             /// Current element.
             /// </summary>
-            public T Current => Pointer.Value;
+            public T Current
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => *ptr;
+            }
 
             /// <summary>
             /// Adjust pointer.
@@ -52,7 +60,7 @@ namespace DotNext.Runtime.InteropServices
             /// <returns><see langword="true"/>, if next element is available; <see langword="false"/>, if end of sequence reached.</returns>
             public bool MoveNext()
             {
-                if (ptr.IsNull)
+                if (ptr == Memory.NullPtr)
                     return false;
                 index += 1L;
                 return index < count;
@@ -533,7 +541,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="length">A number of elements to iterate.</param>
         /// <returns>Iterator object.</returns>
-        public Enumerator GetEnumerator(long length) => new Enumerator(this, length);
+        public unsafe Enumerator GetEnumerator(long length) => new Enumerator(value, length);
 
         /// <summary>
         /// Computes bitwise equality between two blocks of memory.
