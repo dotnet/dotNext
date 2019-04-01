@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>extensions;.netstandard</PackageTags>
+    <PackageTags>extensions;.netstandard;performance;hashcode;randomstring;valuetype;delegate</PackageTags>
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>

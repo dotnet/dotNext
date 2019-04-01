@@ -187,13 +187,32 @@ namespace DotNext.Runtime.InteropServices
 
         Span<T> IUnmanagedMemory<T>.Span => this;
 
+        
+        public void Fill(T value) => pointer.Fill(value, length);
+
         /// <summary>
-        /// 
+        /// Forms a slice out of the current span that begins at a specified index.
         /// </summary>
-        /// <param name="startIndex"></param>
-        /// <returns></returns>
+        /// <remarks>
+        /// This method doesn't allocate a new array, just returns a view of the current array.
+        /// Do not call <see cref="UnmanagedArray{T}.Dispose"/> for the returned array.
+        /// </remarks>
+        /// <param name="startIndex">The index at which to begin this slice.</param>
+        /// <returns>An array that consists of all elements of the current array from <paramref name="startIndex"/> to the end of the array.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> has invalid value.</exception>
         public UnmanagedArray<T> Slice(long startIndex) => Slice(startIndex, Length);
 
+        /// <summary>
+        /// Forms a slice out of the current sarraypan starting at a specified index for a specified length.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't allocate a new array, just returns a view of the current array.
+        /// Do not call <see cref="UnmanagedArray{T}.Dispose"/> for the returned array.
+        /// </remarks>
+        /// <param name="startIndex">The index at which to begin this slice.</param>
+        /// <param name="count">The desired length for the slice.</param>
+        /// <returns>An array that consists of <paramref name="count"/> elements from the current array starting at <paramref name="startIndex"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="count"/> has invalid value.</exception>
         public UnmanagedArray<T> Slice(long startIndex, long count)
         {
             if(startIndex < 0L)

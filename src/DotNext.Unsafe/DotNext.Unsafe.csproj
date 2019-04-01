@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>unsafe;unmanaged;pointer</PackageTags>
+    <PackageTags>unsafe;unmanaged;pointer;pinvoke;interop</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
     <PackageReleaseNotes>Unmanaged array elements can be obtained using 64-bit index
 Introduce untyped access to the unmanaged memory. See UnmanagedMemory type.

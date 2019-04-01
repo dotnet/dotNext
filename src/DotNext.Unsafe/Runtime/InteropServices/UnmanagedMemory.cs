@@ -241,10 +241,23 @@ namespace DotNext.Runtime.InteropServices
             }
         }
 
+        /// <summary>
+        /// Determines whether two objects point to the same block of unmanaged memory.
+        /// </summary>
+        /// <param name="first">The first memory pointer to be compared.</param>
+        /// <param name="second">The second memory pointer to be compared.</param>
+        /// <returns><see langword="true"/>, if two objects point to the same block of unmanaged memory; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(UnmanagedMemory first, UnmanagedMemory second) => first.Equals(second);
-
-        public static bool operator !=(UnmanagedMemory first, UnmanagedMemory second) => !first.Equals(second);
+        public static bool operator ==(UnmanagedMemory first, UnmanagedMemory second) => first.Address == second.Address;
+        
+        /// <summary>
+        /// Determines whether two objects point to the different blocks of unmanaged memory.
+        /// </summary>
+        /// <param name="first">The first memory pointer to be compared.</param>
+        /// <param name="second">The second memory pointer to be compared.</param>
+        /// <returns><see langword="true"/>, if two objects point to the different blocks of unmanaged memory; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(UnmanagedMemory first, UnmanagedMemory second) => first.Address != second.Address;
 
         /// <summary>
         /// Returns address of this memory in hexadecimal format.
