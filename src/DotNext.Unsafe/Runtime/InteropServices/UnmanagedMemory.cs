@@ -148,7 +148,7 @@ namespace DotNext.Runtime.InteropServices
         {
             var address = Marshal.AllocHGlobal(new IntPtr(size));
             if(zeroMem)
-                Memory.ZeroMem(address, size);
+                Memory.ClearBits(address, size);
             return address;
         }
 

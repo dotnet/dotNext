@@ -118,7 +118,11 @@ namespace DotNext.Runtime.InteropServices
         {
             if(this.value == Memory.NullPtr)
                 throw new NullPointerException();
-            var pointer = new IntPtr(this.value);
+            else if(length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+            else if(length == 0)
+                return;
+            var pointer = Address;
             do
             {
                 var count = (int)length.UpperBounded(int.MaxValue);
@@ -173,11 +177,13 @@ namespace DotNext.Runtime.InteropServices
         /// Fill memory with zero bytes.
         /// </summary>
         /// <param name="count">Number of elements in the unmanaged array.</param>
+        /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than or equal to zero.</exception>
         public unsafe void Clear(long count)
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count < 0)
+            else if (count <= 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
             else
                 Memory.ZeroMem(value, count);
@@ -188,6 +194,8 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="destination">Destination address.</param>
         /// <param name="count">The number of elements to be copied.</param>
+        /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+        /// <exception cref="ArgumentNullException">Destination pointer is zero.</exception>
         public unsafe void WriteTo(Pointer<T> destination, long count)
         {
             if(IsNull)
@@ -206,14 +214,16 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The position in the destination array from which copying begins.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
         /// <returns>Actual number of copied elements.</returns>
+        /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> or <paramref name="offset"/> is less than zero.</exception>
         public unsafe long WriteTo(T[] destination, long offset, long count)
         {
             if (IsNull)
 				throw new NullPointerException();
-			else if (destination is null)
-				throw new ArgumentNullException(nameof(destination));
             else if (count < 0)
-				throw new IndexOutOfRangeException();
+				throw new ArgumentOutOfRangeException(nameof(count));
+            else if(offset < 0)
+                throw new ArgumentOutOfRangeException(nameof(offset));
 			else if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
 				return 0L;
 			fixed (T* dest = &destination[offset])
@@ -221,20 +231,55 @@ namespace DotNext.Runtime.InteropServices
 			return count;
         }
 
+        private static void WriteToSteam(IntPtr source, long length, Stream destination)
+		{
+			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
+			{
+				Unsafe.As<byte, IntPtr>(ref buffer[0]) = Memory.ReadUnaligned<IntPtr>(ref source);
+				destination.Write(buffer, 0, buffer.Length);
+			}
+			while(length > 0)
+			{
+				destination.WriteByte(Memory.Read<byte>(ref source));
+				length -= sizeof(byte);
+			}
+		}
+
         /// <summary>
         /// Copies bytes from the memory location identified by this pointer to the stream.
         /// </summary>
         /// <param name="destination">The destination stream.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
-        public unsafe void WriteTo(Stream destination, long count)
+        /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+        /// <exception cref="ArgumentException">The stream is not writable.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
+        public void WriteTo(Stream destination, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
-			else if (destination is null)
-				throw new ArgumentNullException(nameof(destination));
+            else if(count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            else if(!destination.CanWrite)
+				throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
+            else if(count == 0)
+                return;
 			else
-				Memory.WriteToSteam(value, count * Size, destination);
+				WriteToSteam(Address, count * Size, destination);
         }
+
+        private static async Task WriteToSteamAsync(IntPtr source, long length, Stream destination)
+		{
+			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
+			{
+				Unsafe.As<byte, IntPtr>(ref buffer[0]) = Memory.ReadUnaligned<IntPtr>(ref source);
+				await destination.WriteAsync(buffer, 0, buffer.Length);
+			}
+			while(length > 0)
+			{
+				destination.WriteByte(Memory.Read<byte>(ref source));
+				length -= sizeof(byte);
+			}
+		}
 
         /// <summary>
         /// Copies bytes from the memory location identified
@@ -243,14 +288,21 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="destination">The destination stream.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
         /// <returns>The task instance representing asynchronous state of the copying process.</returns>
-        public unsafe Task WriteToAsync(Stream destination, long count)
+        /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
+        /// <exception cref="ArgumentException">The stream is not writable.</exception>
+        public Task WriteToAsync(Stream destination, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
-			else if (destination is null)
-				throw new ArgumentNullException(nameof(destination));
+            else if(count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+			else if(!destination.CanWrite)
+				throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
+            else if(count == 0)
+                return Task.CompletedTask;
 			else
-				return Memory.WriteToSteamAsync(value, count * Size, destination);
+				return WriteToSteamAsync(Address, count * Size, destination);
         }
 
         /// <summary>
@@ -261,14 +313,16 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The position in the source array from which copying begins.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
         /// <returns>Actual number of copied elements.</returns>
+        /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> or <paramref name="offset"/> is less than zero.</exception>
         public unsafe long ReadFrom(T[] source, long offset, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
-			else if (source is null)
-				throw new ArgumentNullException(nameof(source));
             else if (count < 0L)
-				throw new IndexOutOfRangeException();
+				throw new ArgumentOutOfRangeException(nameof(count));
+            else if(offset < 0L)
+                throw new ArgumentOutOfRangeException(nameof(offset));
 			else if (source.LongLength == 0L || (count + offset) > source.LongLength)
 				return 0L;
 			fixed (T* src = &source[offset])
@@ -276,19 +330,80 @@ namespace DotNext.Runtime.InteropServices
 			return count;
 		}
 
+        private static long ReadFromStream(Stream source, IntPtr destination, long length)
+		{
+			var total = 0L;
+			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
+			{
+				var count = source.Read(buffer, 0, buffer.Length);
+				Memory.WriteUnaligned(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
+				total += count;
+				if(count < IntPtr.Size)
+					return total;
+				buffer.Initialize();
+			}
+			while(length > 0)
+			{
+				var b = source.ReadByte();
+				if(b >=0)
+				{
+					Memory.Write(ref destination, (byte)b);
+					length -= sizeof(byte);
+					total += sizeof(byte);
+				}
+				else
+					break;
+			}
+			return total;
+		}
+
         /// <summary>
         /// Copies bytes from the given stream to the memory location identified by this pointer.
         /// </summary>
         /// <param name="source">The source stream.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
-        public unsafe long ReadFrom(Stream source, long count)
+        /// <exception cref="NullPointerException">This pointer is zero.</exception>
+        /// <exception cref="ArgumentException">The stream is not readable.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
+        public long ReadFrom(Stream source, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
-			else if (source is null)
-				throw new ArgumentNullException(nameof(source));
+            else if(count < 0L)
+                throw new ArgumentOutOfRangeException(nameof(count));
+			else if(!source.CanRead)
+				throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
+            else if(count == 0L)
+                return 0L;
 			else
-				return Memory.ReadFromStream(source, value, Size * count);
+				return ReadFromStream(source, Address, Size * count);
+        }
+
+        private static async Task<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length)
+		{
+			var total = 0L;
+			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
+			{
+				var count = await source.ReadAsync(buffer, 0, buffer.Length);
+				Memory.WriteUnaligned(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
+				total += count;
+				if(count < IntPtr.Size)
+					return total;
+				buffer.Initialize();
+			}
+			while(length > 0)
+			{
+				var b = source.ReadByte();
+				if(b >=0)
+				{
+					Memory.Write(ref destination, (byte)b);
+					length -= sizeof(byte);
+					total += sizeof(byte);
+				}
+				else
+					break;
+			}
+			return total;
 		}
 
         /// <summary>
@@ -296,15 +411,22 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="source">The source stream.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
-		public unsafe Task<long> ReadFromAsync(Stream source, long count)
+        /// <exception cref="NullPointerException">This pointer is zero.</exception>
+        /// <exception cref="ArgumentException">The stream is not readable.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
+		public Task<long> ReadFromAsync(Stream source, long count)
 		{
 			if (IsNull)
 				throw new NullPointerException();
-			else if (source is null)
-				throw new ArgumentNullException(nameof(source));
+            else if(count < 0L)
+                throw new ArgumentOutOfRangeException(nameof(count));
+			else if(!source.CanRead)
+				throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
+            else if(count == 0L)
+                return Task.FromResult(0L);
 			else
-                return Memory.ReadFromStreamAsync(source, value, Size * count);
-		}
+                return ReadFromStreamAsync(source, Address, Size * count);
+        }
 
         /// <summary>
         /// Returns representation of the memory identified by this pointer in the form of the stream.
@@ -337,7 +459,11 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Gets pointer address.
         /// </summary>
-        public unsafe IntPtr Address => new IntPtr(value);
+        public unsafe IntPtr Address
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => new IntPtr(value);
+        }
 
         /// <summary>
         /// Indicates that this pointer is <see langword="null"/>.
@@ -601,7 +727,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="ptr">The pointer to be converted.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static implicit operator IntPtr(Pointer<T> ptr) => new IntPtr(ptr.value);
+        public unsafe static implicit operator IntPtr(Pointer<T> ptr) => ptr.Address;
 
         /// <summary>
         /// Obtains pointer value (address) as <see cref="UIntPtr"/>.

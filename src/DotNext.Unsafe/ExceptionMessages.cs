@@ -27,5 +27,9 @@ namespace DotNext
         internal static string TargetSizeMustBeMultipleOf => resourceManager.GetString("TargetSizeMustBeMultipleOf");
 
         internal static string ExpectedType(Type t) => string.Format(resourceManager.GetString("ExpectedType"), t.FullName);
+
+        internal static string StreamNotReadable => resourceManager.GetString("StreamNotReadable");
+
+        internal static string StreamNotWritable => resourceManager.GetString("StreamNotWritable");
     }
 }

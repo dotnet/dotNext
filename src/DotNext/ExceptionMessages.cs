@@ -11,10 +11,6 @@ namespace DotNext
         internal static string OptionalNoValue => resourceManager.GetString("OptionalNoValue");
         
         internal static string ReleasedLock => resourceManager.GetString("ReleasedLock");
-        
-        internal static string StreamNotReadable => resourceManager.GetString("StreamNotReadable");
-        
-        internal static string StreamNotWritable => resourceManager.GetString("StreamNotWritable");
 
         internal static string InvalidUserDataSlot => resourceManager.GetString("InvalidUserDataSlot");
 
