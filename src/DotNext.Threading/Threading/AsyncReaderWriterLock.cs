@@ -63,7 +63,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Task<bool> TryAcquireReadLock(CancellationToken token, TimeSpan timeout)
         {
-
+            return Task.FromResult(true);
         }
 
         protected sealed override void Dispose(bool disposing)

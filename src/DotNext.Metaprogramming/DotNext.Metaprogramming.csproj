@@ -34,10 +34,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Metaprogramming\CompoundStatementBuilder.cs~RFaf5ef17.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="ExceptionMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>

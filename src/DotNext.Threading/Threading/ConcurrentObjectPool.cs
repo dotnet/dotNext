@@ -63,7 +63,7 @@ namespace DotNext.Threading
 		public ConcurrentObjectPool(IList<T> objects)
 		{
             if (objects.Count == 0)
-                throw new ArgumentException(ExceptionMessages.CollectionIsEmpty);
+                throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
 			this.objects = new ReadOnlyCollection<T>(objects);
 			counter = -1;
 		}

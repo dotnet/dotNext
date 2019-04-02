@@ -67,7 +67,7 @@ namespace DotNext.Threading
             return inList;
         }
 
-        private async Task<bool> TryAcquire(LockNode node, CancellationToken token, TimeSpan timeout)
+        private async Task<bool> TryAcquire(LockNode node, TimeSpan timeout, CancellationToken token)
         {
             using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token, default) : new CancellationTokenSource())
             {
@@ -87,7 +87,7 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal Task<bool> TryAcquire(CancellationToken token, TimeSpan timeout)
+        internal Task<bool> TryAcquire(TimeSpan timeout, CancellationToken token)
         {
             if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
@@ -101,7 +101,7 @@ namespace DotNext.Threading
             else
             {
                 tail = new LockNode(tail);
-                return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? TryAcquire(tail, token, timeout) : tail.Task;
+                return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? TryAcquire(tail, timeout, token) : tail.Task;
             }
         }
 
