@@ -52,6 +52,7 @@ namespace DotNext.Threading
         }
 
         private LockNode head, tail;
+        private bool locked;
 
         private LockNode NewLockNode() => head is null ? head = tail = new LockNode() : tail = new LockNode(tail);
 
@@ -91,25 +92,27 @@ namespace DotNext.Threading
         {
             if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
-            else if (head is null)   //the lock was not obtained
+            else if(!locked)    //not locked
             {
-                head = tail = new LockNode();
+                locked = true;
                 return CompletedTask<bool, BooleanConst.True>.Task;
             }
             else if (timeout == TimeSpan.Zero)   //if timeout is zero fail fast
                 return CompletedTask<bool, BooleanConst.False>.Task;
+            else if(head is null)
+                head = tail = new LockNode();
             else
-            {
                 tail = new LockNode(tail);
-                return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? TryAcquire(tail, timeout, token) : tail.Task;
-            }
+            return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? TryAcquire(tail, timeout, token) : tail.Task;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         internal void Release()
         {
             var waiterTask = head;
-            if (!(waiterTask is null))
+            if(waiterTask is null)
+                locked = false;
+            else
             {
                 RemoveNode(waiterTask);
                 waiterTask.Complete();

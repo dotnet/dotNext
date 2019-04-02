@@ -10,5 +10,9 @@ namespace DotNext.Threading
         internal static string ReleasedLock => resourceManager.GetString("ReleasedLock");
 
         internal static string CollectionIsEmpty => resourceManager.GetString("CollectionIsEmpty");
+
+        internal static string NotInWriteLock => resourceManager.GetString("NotInWriteLock");
+
+        internal static string NotInReadLock => resourceManager.GetString("NotInReadLock");
     }
 }
