@@ -1,116 +1,88 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading
 {
-    public sealed class AsyncLock: Disposable
+    using Generic;
+    using Tasks;
+
+    public readonly struct AsyncLock : IDisposable
     {
-        private sealed class LockNode: TaskCompletionSource<bool>
+        private enum LockType : byte
         {
-            private LockNode previous;
-            private LockNode next;
-
-            internal LockNode() => previous = next = null;
-
-            internal LockNode(LockNode previous)
-            {
-                previous.next = this;
-                this.previous = previous;
-            }
-
-            internal void RemoveNode()
-            {
-                if(!(previous is null))
-                    previous.next = next;
-                if(!(next is null))
-                    next.previous = previous;
-                next = previous = null;
-            }
-
-            internal LockNode CleanupAndGotoNext()
-            {
-                var next = this.next;
-                this.next = this.previous = null;
-                return next;
-            }
-
-            internal LockNode Previous => previous;
-
-            internal LockNode Next => next;
-
-            internal bool IsRoot => previous is null && next is null;
-
-            internal void Complete() => SetResult(true);
+            None = 0,
+            Exclusive,
+            Semaphore
         }
 
-        private LockNode head, tail;
+        private const TaskContinuationOptions ContinuationOptions = TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion;
 
-        private LockNode NewLockNode() => head is null ? head = tail = new LockNode() : tail = new LockNode(tail);
+        private readonly object lockedObject;
+        private readonly LockType type;
+        private readonly bool owner;
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        private bool RemoveNode(LockNode node)
+        private AsyncLock(object lockedObject, LockType type, bool owner)
         {
-            var inList = ReferenceEquals(head, node) || !node.IsRoot;
-            if(ReferenceEquals(head, node))
-                head = node.Next;
-            if(ReferenceEquals(tail, node))
-                tail = node.Previous;
-            node.RemoveNode();
-            return inList;
+            this.lockedObject = lockedObject;
+            this.type = type;
+            this.owner = owner;
         }
 
-        private async Task<bool> TryAcquire(LockNode node, CancellationToken token, Timeout timeout)
+        public static AsyncLock Exclusive() => new AsyncLock(new AsyncLockOwner(), LockType.Exclusive, true);
+
+        public static AsyncLock Semaphore(SemaphoreSlim semaphore) => new AsyncLock(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), LockType.Semaphore, false);
+
+        public static AsyncLock Semaphore(int initialCount, int maxCount) => new AsyncLock(new SemaphoreSlim(initialCount, maxCount), LockType.Semaphore, true);
+
+        private static void CheckOnTimeout(Task<bool> task)
         {
-            using(var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token, default) : new CancellationTokenSource())
-            {
-                if(ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
-                {
-                    tokenSource.Cancel();   //ensure that Delay task is cancelled
-                    return true;
-                }
-            }
-            if(RemoveNode(node))
-            {
-                token.ThrowIfCancellationRequested();
-                return false;
-            }
-            else
-                return await node.Task.ConfigureAwait(false);
+            if (!task.Result)
+                throw new TimeoutException();
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        private Task<bool> TryAcquire(CancellationToken token, TimeSpan timeout)
+        public Task Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, default).ContinueWith(CheckOnTimeout, ContinuationOptions);
+
+        public Task Acquire(TimeSpan timeout) => TryAcquire(timeout).ContinueWith(CheckOnTimeout, ContinuationOptions);
+
+        public Task<bool> TryAcquire(TimeSpan timeout) => TryAcquire(timeout, default);
+
+        public Task<bool> TryAcquire(TimeSpan timeout, CancellationToken token)
         {
-            if(head is null)
+            switch(type)
             {
-                head = tail = new LockNode();
-                return Task.FromResult(true);
-            }
-            else
-            {
-                tail = new LockNode(tail);
-                return TryAcquire(tail, token, new Timeout(timeout));
+                case LockType.Exclusive:
+                    return As<AsyncLockOwner>(lockedObject).TryAcquire(timeout, token);
+                case LockType.Semaphore:
+                    return As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token);
+                default:
+                    return CompletedTask<bool, BooleanConst.False>.Task;
             }
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
+        /// <summary>
+        /// Releases acquired lock.
+        /// </summary>
         public void Release()
         {
-            var tail = this.tail;
-            RemoveNode(tail);
-            tail.Complete();
-        }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        protected override void Dispose(bool disposing)
-        {
-            if(disposing)
+            switch (type)
             {
-                for(var current = head; !(current is null); current = current.CleanupAndGotoNext())
-                    current.TrySetCanceled();
+                case LockType.Exclusive:
+                    As<AsyncLockOwner>(lockedObject).Release();
+                    return;
+                case LockType.Semaphore:
+                    As<SemaphoreSlim>(lockedObject).Release(1);
+                    return;
             }
         }
+
+        internal void DestroyUnderlyingLock()
+        {
+            if (owner)
+                (lockedObject as IDisposable)?.Dispose();
+        }
+
+        void IDisposable.Dispose() => Release();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading
 {
@@ -7,6 +8,10 @@ namespace DotNext.Threading
     /// Represents unified representation monitor lock, read lock,
     /// write lock or upgradable read lock.
     /// </summary>
+    /// <remarks>
+    /// The lock acquisition may block the caller thread.
+    /// If you're looking for non-blocking asynchronous locks then try <see cref="AsyncLock"/>.
+    /// </remarks>
     public readonly struct Lock : IDisposable, IEquatable<Lock>
     {
         private enum LockType : byte
@@ -16,17 +21,18 @@ namespace DotNext.Threading
             ReadLock,
             UpgradableReadLock,
             WriteLock,
-
             Semaphore
         }
 
         private readonly object lockedObject;
         private readonly LockType type;
+        private readonly bool owner;
 
-        private Lock(object obj, LockType type)
+        private Lock(object lockedObject, LockType type, bool owner)
         {
-            lockedObject = obj;
+            this.lockedObject = lockedObject;
             this.type = type;
+            this.owner = owner;
         }
 
         /// <summary>
@@ -34,22 +40,22 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="semaphore">The semaphore to wrap into lock object.</param>
         /// <returns>The lock representing semaphore.</returns>
-        public static Lock Semaphore(SemaphoreSlim semaphore)
-            => new Lock(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), LockType.Semaphore);
+        public static Lock Semaphore(SemaphoreSlim semaphore) => new Lock(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), LockType.Semaphore, false);
+
+        public static Lock Semaphore(int initialCount, int maxCount) => new Lock(new SemaphoreSlim(initialCount, maxCount), LockType.Semaphore, true);
 
         /// <summary>
         /// Creates monitor-based lock control object but doesn't acquire lock.
         /// </summary>
         /// <param name="obj">Monitor lock target.</param>
         /// <returns>The lock representing monitor.</returns>
-        public static Lock Monitor(object obj)
-            => new Lock(obj ?? throw new ArgumentNullException(nameof(obj)), LockType.Monitor);
+        public static Lock Monitor(object obj) => new Lock(obj ?? throw new ArgumentNullException(nameof(obj)), LockType.Monitor, false);
 
         /// <summary>
         /// Creates exclusive lock.
         /// </summary>
         /// <returns>The exclusive lock.</returns>
-        public static Lock Monitor() => Monitor(new object());
+        public static Lock Monitor() => new Lock(new object(), LockType.Monitor, true);
 
         /// <summary>
         /// Creates read lock but doesn't acquire it.
@@ -57,7 +63,7 @@ namespace DotNext.Threading
         /// <param name="rwLock">Read/write lock source.</param>
         /// <returns>Read-only lock.</returns>
         public static Lock ReadLock(ReaderWriterLockSlim rwLock)
-            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), LockType.ReadLock);
+            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), LockType.ReadLock, false);
 
         /// <summary>
         /// Creates write lock but doesn't acquire it.
@@ -65,7 +71,7 @@ namespace DotNext.Threading
         /// <param name="rwLock">Read/write lock source.</param>
         /// <returns>Write-only lock.</returns>
         public static Lock WriteLock(ReaderWriterLockSlim rwLock)
-            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), LockType.WriteLock);
+            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), LockType.WriteLock, false);
 
         /// <summary>
         /// Creates upgradable read lock but doesn't acquire.
@@ -73,7 +79,7 @@ namespace DotNext.Threading
         /// <param name="rwLock">Read/write lock source.</param>
         /// <returns>Upgradable read lock.</returns>
         public static Lock UpgradableReadLock(ReaderWriterLockSlim rwLock)
-            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), LockType.UpgradableReadLock);
+            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), LockType.UpgradableReadLock, false);
 
         /// <summary>
         /// Acquires lock.
@@ -86,16 +92,16 @@ namespace DotNext.Threading
                     System.Threading.Monitor.Enter(lockedObject);
                     return;
                 case LockType.ReadLock:
-                    ((ReaderWriterLockSlim)lockedObject).EnterReadLock();
+                    As<ReaderWriterLockSlim>(lockedObject).EnterReadLock();
                     return;
                 case LockType.WriteLock:
-                    ((ReaderWriterLockSlim)lockedObject).EnterWriteLock();
+                    As<ReaderWriterLockSlim>(lockedObject).EnterWriteLock();
                     return;
                 case LockType.UpgradableReadLock:
-                    ((ReaderWriterLockSlim)lockedObject).EnterUpgradeableReadLock();
+                    As<ReaderWriterLockSlim>(lockedObject).EnterUpgradeableReadLock();
                     return;
                 case LockType.Semaphore:
-                    ((SemaphoreSlim)lockedObject).Wait();
+                    As<SemaphoreSlim>(lockedObject).Wait();
                     return;
             }
         }
@@ -111,13 +117,13 @@ namespace DotNext.Threading
                 case LockType.Monitor:
                     return System.Threading.Monitor.TryEnter(lockedObject);
                 case LockType.ReadLock:
-                    return ((ReaderWriterLockSlim)lockedObject).TryEnterReadLock(0);
+                    return As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(0);
                 case LockType.WriteLock:
-                    return ((ReaderWriterLockSlim)lockedObject).TryEnterWriteLock(0);
+                    return As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(0);
                 case LockType.UpgradableReadLock:
-                    return ((ReaderWriterLockSlim)lockedObject).TryEnterUpgradeableReadLock(0);
+                    return As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(0);
                 case LockType.Semaphore:
-                    return ((SemaphoreSlim)lockedObject).Wait(0);
+                    return As<SemaphoreSlim>(lockedObject).Wait(0);
                 default:
                     return false;
             }
@@ -135,13 +141,13 @@ namespace DotNext.Threading
                 case LockType.Monitor:
                     return System.Threading.Monitor.TryEnter(lockedObject, timeout);
                 case LockType.ReadLock:
-                    return ((ReaderWriterLockSlim)lockedObject).TryEnterReadLock(timeout);
+                    return As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(timeout);
                 case LockType.WriteLock:
-                    return ((ReaderWriterLockSlim)lockedObject).TryEnterWriteLock(timeout);
+                    return As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(timeout);
                 case LockType.UpgradableReadLock:
-                    return ((ReaderWriterLockSlim)lockedObject).TryEnterUpgradeableReadLock(timeout);
+                    return As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(timeout);
                 case LockType.Semaphore:
-                    return ((SemaphoreSlim)lockedObject).Wait(timeout);
+                    return As<SemaphoreSlim>(lockedObject).Wait(timeout);
                 default:
                     return false;
             }
@@ -150,7 +156,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Releases acquired lock.
         /// </summary>
-        public void Dispose()
+        public void Release()
         {
             switch (type)
             {
@@ -158,29 +164,34 @@ namespace DotNext.Threading
                     System.Threading.Monitor.Exit(lockedObject);
                     return;
                 case LockType.ReadLock:
-                    ((ReaderWriterLockSlim)lockedObject).ExitReadLock();
+                    As<ReaderWriterLockSlim>(lockedObject).ExitReadLock();
                     return;
                 case LockType.WriteLock:
-                    ((ReaderWriterLockSlim)lockedObject).ExitWriteLock();
+                    As<ReaderWriterLockSlim>(lockedObject).ExitWriteLock();
                     return;
                 case LockType.UpgradableReadLock:
-                    ((ReaderWriterLockSlim)lockedObject).ExitUpgradeableReadLock();
+                    As<ReaderWriterLockSlim>(lockedObject).ExitUpgradeableReadLock();
                     return;
                 case LockType.Semaphore:
-                    ((SemaphoreSlim)lockedObject).Release();
+                    As<SemaphoreSlim>(lockedObject).Release();
                     return;
             }
         }
+
+        internal void DestroyUnderlyingLock()
+        {
+            if (owner)
+                (lockedObject as IDisposable)?.Dispose();
+        }
+
+        void IDisposable.Dispose() => Release();
 
         /// <summary>
         /// Determines whether this lock object is the same as other lock.
         /// </summary>
         /// <param name="other">Other lock to compare.</param>
         /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in Lock other) => type == other.type && Equals(lockedObject, other.lockedObject);
-
-        bool IEquatable<Lock>.Equals(Lock other) => Equals(in other);
+        public bool Equals(Lock other) => type == other.type && ReferenceEquals(lockedObject, other.lockedObject);
 
         /// <summary>
         /// Determines whether this lock object is the same as other lock.
@@ -209,7 +220,7 @@ namespace DotNext.Threading
         /// <param name="first">The first lock to compare.</param>
         /// <param name="second">The second lock to compare.</param>
         /// <returns><see langword="true"/>, if both are the same; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in Lock first, in Lock second) => first.Equals(second);
+        public static bool operator ==(in Lock first, in Lock second) => ReferenceEquals(first.lockedObject, second.lockedObject) && first.type == second.type;
 
         /// <summary>
         /// Determines whether two locks are not the same.
@@ -217,6 +228,6 @@ namespace DotNext.Threading
         /// <param name="first">The first lock to compare.</param>
         /// <param name="second">The second lock to compare.</param>
         /// <returns><see langword="true"/>, if both are not the same; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in Lock first, in Lock second) => !first.Equals(second);
+        public static bool operator !=(in Lock first, in Lock second) => !ReferenceEquals(first.lockedObject, second.lockedObject) || first.type != second.type;
     }
 }
