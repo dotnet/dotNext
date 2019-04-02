@@ -307,3 +307,22 @@ blockquote {
     background-color: #333337;
     border-color: #333337;
 }
+
+.breadcrumb>li, .pagination {
+    display: inline;
+}
+
+@media (min-width: 1600px){
+    .container {
+        width: 100%;
+    }
+    .sidefilter {
+        width: 20%;
+    }
+    .sidetoc{
+        width: 20%;
+    }
+    .article.grid-right {
+        margin-left: 21%;
+    }
+}
