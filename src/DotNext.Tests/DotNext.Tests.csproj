@@ -34,6 +34,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" />
     <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" />
+    <ProjectReference Include="..\DotNext.Threading\DotNext.Threading.csproj" />
     <ProjectReference Include="..\DotNext.Unsafe\DotNext.Unsafe.csproj" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
     <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />

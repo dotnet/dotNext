@@ -8,9 +8,9 @@ namespace DotNext.Threading
     using Generic;
     using Tasks;
 
-    public readonly struct AsyncLock : IDisposable, IEquatable<AsyncLock>
+    public struct AsyncLock : IDisposable, IEquatable<AsyncLock>
     {
-        private enum LockType : byte
+        internal enum Type : byte
         {
             None = 0,
             Exclusive,
@@ -20,30 +20,91 @@ namespace DotNext.Threading
             Semaphore
         }
 
+        /// <summary>
+        /// Represents acquired asynchronous lock.
+        /// </summary>
+        /// <remarks>
+        /// The lock can be released by calling <see cref="Dispose()"/>.
+        /// </remarks>
+        public struct Holder : IDisposable 
+        {
+            private readonly object lockedObject;
+            private readonly Type type;
+
+            internal Holder(object lockedObject, Type type)
+            {
+                this.lockedObject = lockedObject;
+                this.type = type;
+            }
+
+            /// <summary>
+            /// Releases the acquired lock.
+            /// </summary>
+            /// <remarks>
+            /// This object is not reusable after calling of this method.
+            /// </remarks>
+            public void Dispose()
+            {
+                switch (type)
+                {
+                    case Type.Exclusive:
+                        As<AsyncLockOwner>(lockedObject).Release();
+                        break;
+                    case Type.ReadLock:
+                        As<AsyncReaderWriterLock>(lockedObject).ExitReadLock();
+                        break;
+                    case Type.WriteLock:
+                        As<AsyncReaderWriterLock>(lockedObject).ExitWriteLock();
+                        break;
+                    case Type.UpgradableReadLock:
+                        As<AsyncReaderWriterLock>(lockedObject).ExitUpgradableReadLock();
+                        break;
+                    case Type.Semaphore:
+                        As<SemaphoreSlim>(lockedObject).Release(1);
+                        break;
+                }
+                this = default;
+            }
+
+            /// <summary>
+            /// Indicates that the object holds successfully acquired lock.
+            /// </summary>
+            /// <param name="holder">The lock holder.</param>
+            /// <returns><see langword="true"/>, if the object holds successfully acqured lock; otherwise, <see langword="false"/>.</returns>
+            public static bool operator true(in Holder holder) => !(holder.lockedObject is null);
+
+            /// <summary>
+            /// Indicates that the object doesn't hold the lock.
+            /// </summary>
+            /// <param name="holder">The lock holder.</param>
+            /// <returns><see langword="false"/>, if the object holds successfully acqured lock; otherwise, <see langword="true"/>.</returns>
+            public static bool operator false(in Holder holder) => holder.lockedObject is null;
+        }
+
         private const TaskContinuationOptions ContinuationOptions = TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion;
 
         private readonly object lockedObject;
-        private readonly LockType type;
+        private readonly Type type;
         private readonly bool owner;
 
-        private AsyncLock(object lockedObject, LockType type, bool owner)
+        private AsyncLock(object lockedObject, Type type, bool owner)
         {
             this.lockedObject = lockedObject;
             this.type = type;
             this.owner = owner;
         }
 
-        public static AsyncLock Exclusive() => new AsyncLock(new AsyncLockOwner(), LockType.Exclusive, true);
+        public static AsyncLock Exclusive() => new AsyncLock(new AsyncLockOwner(), Type.Exclusive, true);
 
-        public static AsyncLock Semaphore(SemaphoreSlim semaphore) => new AsyncLock(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), LockType.Semaphore, false);
+        public static AsyncLock Semaphore(SemaphoreSlim semaphore) => new AsyncLock(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), Type.Semaphore, false);
 
-        public static AsyncLock Semaphore(int initialCount, int maxCount) => new AsyncLock(new SemaphoreSlim(initialCount, maxCount), LockType.Semaphore, true);
+        public static AsyncLock Semaphore(int initialCount, int maxCount) => new AsyncLock(new SemaphoreSlim(initialCount, maxCount), Type.Semaphore, true);
 
-        public static AsyncLock ReadLock(AsyncReaderWriterLock rwLock) => new AsyncLock(rwLock, LockType.ReadLock, false);
+        public static AsyncLock ReadLock(AsyncReaderWriterLock rwLock) => new AsyncLock(rwLock, Type.ReadLock, false);
 
-        public static AsyncLock UpgradableReadLock(AsyncReaderWriterLock rwLock) => new AsyncLock(rwLock, LockType.UpgradableReadLock, false);
+        public static AsyncLock UpgradableReadLock(AsyncReaderWriterLock rwLock) => new AsyncLock(rwLock, Type.UpgradableReadLock, false);
 
-        public static AsyncLock WriteLock(AsyncReaderWriterLock rwLock) => new AsyncLock(rwLock, LockType.WriteLock, false);
+        public static AsyncLock WriteLock(AsyncReaderWriterLock rwLock) => new AsyncLock(rwLock, Type.WriteLock, false);
 
         private static void CheckOnTimeout(Task<bool> task)
         {
@@ -61,15 +122,15 @@ namespace DotNext.Threading
         {
             switch(type)
             {
-                case LockType.Exclusive:
+                case Type.Exclusive:
                     return As<AsyncLockOwner>(lockedObject).TryAcquire(timeout, token);
-                case LockType.ReadLock:
+                case Type.ReadLock:
                     return As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLock(timeout, token);
-                case LockType.UpgradableReadLock:
+                case Type.UpgradableReadLock:
                     return As<AsyncReaderWriterLock>(lockedObject).TryEnterUpgradableReadLock(timeout, token);
-                case LockType.WriteLock:
+                case Type.WriteLock:
                     return As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLock(timeout, token);
-                case LockType.Semaphore:
+                case Type.Semaphore:
                     return As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token);
                 default:
                     return CompletedTask<bool, BooleanConst.False>.Task;
@@ -77,37 +138,19 @@ namespace DotNext.Threading
         }
 
         /// <summary>
-        /// Releases acquired lock.
+        /// Destroy this lock and dispose underlying lock object if it is owned by the given lock.
         /// </summary>
-        public void Release()
-        {
-            switch (type)
-            {
-                case LockType.Exclusive:
-                    As<AsyncLockOwner>(lockedObject).Release();
-                    return;
-                case LockType.ReadLock:
-                    As<AsyncReaderWriterLock>(lockedObject).ExitReadLock();
-                    return;
-                case LockType.WriteLock:
-                    As<AsyncReaderWriterLock>(lockedObject).ExitWriteLock();
-                    return;
-                case LockType.UpgradableReadLock:
-                    As<AsyncReaderWriterLock>(lockedObject).ExitUpgradableReadLock();
-                    return;
-                case LockType.Semaphore:
-                    As<SemaphoreSlim>(lockedObject).Release(1);
-                    return;
-            }
-        }
-
-        internal void DestroyUnderlyingLock()
+        /// <remarks>
+        /// If the given lock is an owner of the underlying lock object then this method will call <see cref="IDisposable.Dispose()"/> on it;
+        /// otherwise, the underlying lock object will not be destroyed.
+        /// As a result, this lock is not usable after calling of this method.
+        /// </remarks>
+        public void Dispose()
         {
             if (owner && lockedObject is IDisposable disposable)
                 disposable.Dispose();
+            this = default;
         }
-
-        void IDisposable.Dispose() => Release();
 
         /// <summary>
         /// Determines whether this lock object is the same as other lock.
