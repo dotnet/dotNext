@@ -8,7 +8,7 @@ namespace DotNext.Threading
     using Generic;
     using Tasks;
 
-    public readonly struct AsyncLock : IDisposable
+    public readonly struct AsyncLock : IDisposable, IEquatable<AsyncLock>
     {
         private enum LockType : byte
         {
@@ -103,10 +103,61 @@ namespace DotNext.Threading
 
         internal void DestroyUnderlyingLock()
         {
-            if (owner)
-                (lockedObject as IDisposable)?.Dispose();
+            if (owner && lockedObject is IDisposable disposable)
+                disposable.Dispose();
         }
 
         void IDisposable.Dispose() => Release();
+
+        /// <summary>
+        /// Determines whether this lock object is the same as other lock.
+        /// </summary>
+        /// <param name="other">Other lock to compare.</param>
+        /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
+        public bool Equals(AsyncLock other) => type == other.type && ReferenceEquals(lockedObject, other.lockedObject) && owner == other.owner;
+
+        /// <summary>
+        /// Determines whether this lock object is the same as other lock.
+        /// </summary>
+        /// <param name="other">Other lock to compare.</param>
+        /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object other) => other is AsyncLock @lock && Equals(@lock);
+
+        /// <summary>
+        /// Computes hash code of this lock.
+        /// </summary>
+        /// <returns>The hash code of this lock.</returns>
+        public override int GetHashCode()
+        {
+            if (lockedObject is null)
+                return 0;
+            var hashCode = -549183179;
+            hashCode = hashCode * -1521134295 + lockedObject.GetHashCode();
+            hashCode = hashCode * -1521134295 + type.GetHashCode();
+            hashCode = hashCode * -1521134295 + owner.GetHashCode();
+            return hashCode;
+        }
+
+        /// <summary>
+        /// Returns actual type of this lock in the form of the string.
+        /// </summary>
+        /// <returns>The actual type of this lock.</returns>
+        public override string ToString() => type.ToString();
+
+        /// <summary>
+        /// Determines whether two locks are the same.
+        /// </summary>
+        /// <param name="first">The first lock to compare.</param>
+        /// <param name="second">The second lock to compare.</param>
+        /// <returns><see langword="true"/>, if both are the same; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(in AsyncLock first, in AsyncLock second) => ReferenceEquals(first.lockedObject, second.lockedObject) && first.type == second.type && first.owner == second.owner;
+
+        /// <summary>
+        /// Determines whether two locks are not the same.
+        /// </summary>
+        /// <param name="first">The first lock to compare.</param>
+        /// <param name="second">The second lock to compare.</param>
+        /// <returns><see langword="true"/>, if both are not the same; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(in AsyncLock first, in AsyncLock second) => !ReferenceEquals(first.lockedObject, second.lockedObject) || first.type != second.type || first.owner != second.owner;
     }
 }

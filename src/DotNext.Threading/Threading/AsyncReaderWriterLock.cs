@@ -166,6 +166,11 @@ namespace DotNext.Threading
                 return true;
             }
         }
+        
+        /// <summary>
+        /// Gets a value that indicates the recursion policy of the reader/writer lock.
+        /// </summary>
+        public LockRecursionPolicy RecursionPolicy => LockRecursionPolicy.NoRecursion;
 
         public Task<bool> TryEnterReadLock(TimeSpan timeout, CancellationToken token) => TryEnter(AcquireReadLock, ReadLockNode.CreateRegular, timeout, token);
 

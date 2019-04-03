@@ -10,7 +10,6 @@ namespace DotNext.Threading
     /// </summary>
     /// <remarks>
     /// The lock acquisition may block the caller thread.
-    /// If you're looking for non-blocking asynchronous locks then try <see cref="AsyncLock"/>.
     /// </remarks>
     public readonly struct Lock : IDisposable, IEquatable<Lock>
     {
@@ -180,8 +179,8 @@ namespace DotNext.Threading
 
         internal void DestroyUnderlyingLock()
         {
-            if (owner)
-                (lockedObject as IDisposable)?.Dispose();
+            if (owner && lockedObject is IDisposable disposable)
+                disposable.Dispose();
         }
 
         void IDisposable.Dispose() => Release();
@@ -191,7 +190,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other lock to compare.</param>
         /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(Lock other) => type == other.type && ReferenceEquals(lockedObject, other.lockedObject);
+        public bool Equals(Lock other) => type == other.type && ReferenceEquals(lockedObject, other.lockedObject) && owner == other.owner;
 
         /// <summary>
         /// Determines whether this lock object is the same as other lock.
@@ -211,8 +210,15 @@ namespace DotNext.Threading
             var hashCode = -549183179;
             hashCode = hashCode * -1521134295 + lockedObject.GetHashCode();
             hashCode = hashCode * -1521134295 + type.GetHashCode();
+            hashCode = hashCode * -1521134295 + owner.GetHashCode();
             return hashCode;
         }
+
+        /// <summary>
+        /// Returns actual type of this lock in the form of the string.
+        /// </summary>
+        /// <returns>The actual type of this lock.</returns>
+        public override string ToString() => type.ToString();
 
         /// <summary>
         /// Determines whether two locks are the same.
@@ -220,7 +226,7 @@ namespace DotNext.Threading
         /// <param name="first">The first lock to compare.</param>
         /// <param name="second">The second lock to compare.</param>
         /// <returns><see langword="true"/>, if both are the same; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in Lock first, in Lock second) => ReferenceEquals(first.lockedObject, second.lockedObject) && first.type == second.type;
+        public static bool operator ==(in Lock first, in Lock second) => ReferenceEquals(first.lockedObject, second.lockedObject) && first.type == second.type && first.owner == second.owner;
 
         /// <summary>
         /// Determines whether two locks are not the same.
@@ -228,6 +234,6 @@ namespace DotNext.Threading
         /// <param name="first">The first lock to compare.</param>
         /// <param name="second">The second lock to compare.</param>
         /// <returns><see langword="true"/>, if both are not the same; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in Lock first, in Lock second) => !ReferenceEquals(first.lockedObject, second.lockedObject) || first.type != second.type;
+        public static bool operator !=(in Lock first, in Lock second) => !ReferenceEquals(first.lockedObject, second.lockedObject) || first.type != second.type || first.owner != second.owner;
     }
 }
