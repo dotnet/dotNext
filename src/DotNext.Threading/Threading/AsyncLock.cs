@@ -100,25 +100,20 @@ namespace DotNext.Threading
 
         public static AsyncLock Semaphore(int initialCount, int maxCount) => new AsyncLock(new SemaphoreSlim(initialCount, maxCount), Type.Semaphore, true);
 
-        public static AsyncLock ReadLock(AsyncReaderWriterLock rwLock) => new AsyncLock(rwLock, Type.ReadLock, false);
+        public static AsyncLock ReadLock(AsyncReaderWriterLock rwLock, bool upgradable) 
+            => new AsyncLock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), upgradable ? Type.UpgradableReadLock : Type.ReadLock, false);
+        
+        public static AsyncLock WriteLock(AsyncReaderWriterLock rwLock) 
+            => new AsyncLock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.WriteLock, false);
 
-        public static AsyncLock UpgradableReadLock(AsyncReaderWriterLock rwLock) => new AsyncLock(rwLock, Type.UpgradableReadLock, false);
+        private static Holder CheckOnTimeout(Task<Holder> task)
+            => task.Result ? task.Result : throw new TimeoutException();
 
-        public static AsyncLock WriteLock(AsyncReaderWriterLock rwLock) => new AsyncLock(rwLock, Type.WriteLock, false);
+        public Task<Holder> Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token).ContinueWith(CheckOnTimeout, ContinuationOptions);
 
-        private static void CheckOnTimeout(Task<bool> task)
-        {
-            if (!task.Result)
-                throw new TimeoutException();
-        }
-
-        public Task Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token).ContinueWith(CheckOnTimeout, ContinuationOptions);
-
-        public Task Acquire(TimeSpan timeout) => TryAcquire(timeout).ContinueWith(CheckOnTimeout, ContinuationOptions);
-
-        public Task<bool> TryAcquire(TimeSpan timeout) => TryAcquire(timeout, default);
-
-        public Task<bool> TryAcquire(TimeSpan timeout, CancellationToken token)
+        public Task<Holder> Acquire(TimeSpan timeout) => TryAcquire(timeout).ContinueWith(CheckOnTimeout, ContinuationOptions);
+        
+        private Task<bool> TryAcquireCore(TimeSpan timeout, CancellationToken token)
         {
             switch(type)
             {
@@ -136,6 +131,11 @@ namespace DotNext.Threading
                     return CompletedTask<bool, BooleanConst.False>.Task;
             }
         }
+
+        public Task<Holder> TryAcquire(TimeSpan timeout) => TryAcquire(timeout, default);
+
+        public async Task<Holder> TryAcquire(TimeSpan timeout, CancellationToken token)
+            => await TryAcquireCore(timeout, token) ? new Holder(lockedObject, type) : default;
 
         /// <summary>
         /// Destroy this lock and dispose underlying lock object if it is owned by the given lock.

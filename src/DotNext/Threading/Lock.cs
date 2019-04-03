@@ -121,9 +121,10 @@ namespace DotNext.Threading
         /// Creates read lock but doesn't acquire it.
         /// </summary>
         /// <param name="rwLock">Read/write lock source.</param>
-        /// <returns>Read-only lock.</returns>
-        public static Lock ReadLock(ReaderWriterLockSlim rwLock)
-            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.ReadLock, false);
+        /// <param name="upgradable"><see langword="true"/> to create upgradable read lock wrapper.</param>
+        /// <returns>Reader lock.</returns>
+        public static Lock ReadLock(ReaderWriterLockSlim rwLock, bool upgradable)
+            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), upgradable ? Type.UpgradableReadLock : Type.ReadLock, false);
 
         /// <summary>
         /// Creates write lock but doesn't acquire it.
@@ -132,15 +133,7 @@ namespace DotNext.Threading
         /// <returns>Write-only lock.</returns>
         public static Lock WriteLock(ReaderWriterLockSlim rwLock)
             => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.WriteLock, false);
-
-        /// <summary>
-        /// Creates upgradable read lock but doesn't acquire.
-        /// </summary>
-        /// <param name="rwLock">Read/write lock source.</param>
-        /// <returns>Upgradable read lock.</returns>
-        public static Lock UpgradableReadLock(ReaderWriterLockSlim rwLock)
-            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.UpgradableReadLock, false);
-
+        
         /// <summary>
         /// Acquires lock.
         /// </summary>
@@ -243,6 +236,9 @@ namespace DotNext.Threading
                 return false;
             }
         }
+
+        public Holder Acquire(TimeSpan timeout) 
+            => TryAcquire() ? new Holder(lockedObject, type) : throw new TimeoutException();
 
         /// <summary>
         /// Destroy this lock and dispose underlying lock object if it is owned by the given lock.

@@ -12,7 +12,7 @@ namespace DotNext.Threading
         {
             var @lock = AsyncLock.Semaphore(0, 1);
             NotEqual("None", @lock.ToString());
-            @lock.Destroy();
+            @lock.Dispose();
             True(@lock.GetHashCode() == 0);
             Equal("None", @lock.ToString());
         }
@@ -20,19 +20,15 @@ namespace DotNext.Threading
         [Fact]
         public async Task TrivialLock()
         {
-            var @lock = AsyncLock.Exclusive();
-            try
+            using (var @lock = AsyncLock.Exclusive())
             {
-                True(await @lock.TryAcquire(TimeSpan.FromMilliseconds(10)));
+                var holder = await @lock.TryAcquire(TimeSpan.FromMilliseconds(10));
+                True(holder ? true : false);
                 False(await @lock.TryAcquire(TimeSpan.FromMilliseconds(100)));
                 await ThrowsAsync<TimeoutException>(() => @lock.Acquire(TimeSpan.FromMilliseconds(100)));
                 @lock.Release();
                 True(await @lock.TryAcquire(TimeSpan.FromMilliseconds(100)));
                 @lock.Release();
-            }
-            finally
-            {
-                @lock.Destroy();
             }
         }
 
