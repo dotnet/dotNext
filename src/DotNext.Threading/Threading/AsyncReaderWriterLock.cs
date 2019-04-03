@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
@@ -9,8 +8,16 @@ namespace DotNext.Threading
     using Generic;
     using Tasks;
 
+    /// <summary>
+    /// Represents asynchronous version of <see cref="ReaderWriterLockSlim"/>.
+    /// </summary>
+    /// <remarks>
+    /// This lock doesn't support recursion.
+    /// </remarks>
     public class AsyncReaderWriterLock : Disposable
     {
+        private const TaskContinuationOptions CheckOnTimeoutOptions = TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion;
+
         private abstract class LockNode: TaskCompletionSource<bool>
         {
             private LockNode previous;
@@ -50,19 +57,51 @@ namespace DotNext.Threading
 
         private sealed class WriteLockNode : LockNode
         {
-            internal WriteLockNode() : base() {}
-            internal WriteLockNode(LockNode previous) : base(previous){}
+            private WriteLockNode() : base() {}
+            private WriteLockNode(LockNode previous) : base(previous){}
+
+            internal static WriteLockNode Create(LockNode previous) => previous is null ? new WriteLockNode() : new WriteLockNode(previous);
         }
 
         private sealed class ReadLockNode: LockNode
         {
-            internal ReadLockNode() : base() { }
-            internal ReadLockNode(LockNode previous) : base(previous){ }
+            internal readonly bool Upgradable;
+
+            private ReadLockNode(bool upgradable) 
+                : base()
+            {
+                Upgradable = upgradable;
+            }
+
+            private ReadLockNode(LockNode previous, bool upgradable) 
+                : base(previous)
+            {
+                Upgradable = upgradable;
+            }
+
+            internal static ReadLockNode CreateRegular(LockNode previous) => previous is null ? new ReadLockNode(false) : new ReadLockNode(previous, false);
+
+            internal static ReadLockNode CreateUpgradable(LockNode previous) => previous is null ? new ReadLockNode(true) : new ReadLockNode(previous, true);
         }
 
-        private LockNode head, tail;   
-        private long readLocks;
-        private bool writeLock;
+        //describes internal state of reader/writer lock
+        private struct State
+        {
+            internal long readLocks;
+            /*
+             * writeLock = false, upgradable = false: regular read lock
+             * writeLock = true,  upgradable = true : regular write lock
+             * writeLock = false, upgradable = true : upgradable read lock
+             * writeLock = true,  upgradable = true : upgraded write lock
+             */
+            internal bool writeLock;
+            internal bool upgradable;
+        }
+
+        private delegate bool LockAcquisition(ref State state);
+
+        private LockNode head, tail;
+        private State state;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private bool RemoveNode(LockNode node)
@@ -74,6 +113,12 @@ namespace DotNext.Threading
                 tail = node.Previous;
             node.DetachNode();
             return inList;
+        }
+
+        private static void CheckOnTimeout(Task<bool> task)
+        {
+            if (!task.Result)
+                throw new TimeoutException();
         }
 
         private async Task<bool> TryAcquire(LockNode node, TimeSpan timeout, CancellationToken token)
@@ -94,83 +139,153 @@ namespace DotNext.Threading
             else
                 return await node.Task.ConfigureAwait(false);
         }
-        
+
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public Task<bool> TryEnterReadLock(TimeSpan timeout, CancellationToken token)
+        private Task<bool> TryEnter(LockAcquisition acquisition, Func<LockNode, LockNode> lockNodeFactory, TimeSpan timeout, CancellationToken token)
         {
-            if(token.IsCancellationRequested)
+            if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
-            else if(!writeLock) //no write locks
-            {
-                readLocks++;
+            else if (acquisition(ref state)) //no write locks
                 return CompletedTask<bool, BooleanConst.True>.Task;
-            }
-            else if(timeout == TimeSpan.Zero) //if timeout is zero fail fast
+            else if (timeout == TimeSpan.Zero) //if timeout is zero fail fast
                 return CompletedTask<bool, BooleanConst.False>.Task;
-            else if(head is null)
-                head = tail = new ReadLockNode();
-            else 
-                tail = new ReadLockNode(tail);
+            else if (head is null)
+                head = tail = lockNodeFactory(null);
+            else
+                tail = lockNodeFactory(tail);
             return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? TryAcquire(tail, timeout, token) : tail.Task;
         }
 
-        public Task<bool> TryEnterWriteLock(TimeSpan timeout, CancellationToken token)
+        private static bool AcquireReadLock(ref State state)
         {
-            if(token.IsCancellationRequested)
-                return Task.FromCanceled<bool>(token);
-            else if(!writeLock && readLocks == 0L)
+            if (state.writeLock)
+                return false;
+            else
             {
-                writeLock = true;
-                return CompletedTask<bool, BooleanConst.True>.Task;
+                state.readLocks++;
+                return true;
             }
-            else if(timeout == TimeSpan.Zero) //if timeout is zero fail fast
-                return CompletedTask<bool, BooleanConst.False>.Task;
-            else if(head is null)
-                head = tail = new WriteLockNode();
-            else 
-                tail = new WriteLockNode(tail);
-            return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? TryAcquire(tail, timeout, token) : tail.Task;
+        }
+
+        public Task<bool> TryEnterReadLock(TimeSpan timeout, CancellationToken token) => TryEnter(AcquireReadLock, ReadLockNode.CreateRegular, timeout, token);
+
+        public Task<bool> TryEnterReadLock(TimeSpan timeout) => TryEnterReadLock(timeout, default);
+
+        public Task EnterReadLock(CancellationToken token) => TryEnterReadLock(TimeSpan.MaxValue, token).ContinueWith(CheckOnTimeout, CheckOnTimeoutOptions);
+
+        public Task EnterReadLock(TimeSpan timeout) => TryEnterReadLock(timeout).ContinueWith(CheckOnTimeout, CheckOnTimeoutOptions);
+
+        private static bool AcquireWriteLock(ref State state)
+        {
+            if (state.writeLock || state.readLocks > 1L)
+                return false;
+            else if (state.readLocks == 0L || state.readLocks == 1L && state.upgradable)    //no readers or single upgradable read lock
+            {
+                state.writeLock = true;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public Task<bool> TryEnterWriteLock(TimeSpan timeout, CancellationToken token) => TryEnter(AcquireWriteLock, WriteLockNode.Create, timeout, token);
+
+        public Task<bool> TryEnterWriteLock(TimeSpan timeout) => TryEnterWriteLock(timeout, default);
+
+        public Task EnterWriteLock(CancellationToken token) => TryEnterWriteLock(TimeSpan.MaxValue, token).ContinueWith(CheckOnTimeout, CheckOnTimeoutOptions);
+
+        public Task EnterWriteLock(TimeSpan timeout) => TryEnterWriteLock(timeout).ContinueWith(CheckOnTimeout, CheckOnTimeoutOptions);
+
+        private static bool AcquireUpgradableReadLock(ref State state)
+        {
+            if (state.writeLock || state.upgradable)
+                return false;
+            else
+            {
+                state.readLocks++;
+                state.upgradable = true;
+                return true;
+            }
+        }
+
+        public Task<bool> TryEnterUpgradableReadLock(TimeSpan timeout, CancellationToken token) => TryEnter(AcquireUpgradableReadLock, ReadLockNode.CreateUpgradable, timeout, token);
+
+        public Task<bool> TryEnterUpgradableReadLock(TimeSpan timeout) => TryEnterUpgradableReadLock(timeout, default);
+
+        public Task EnterUpgradableReadLock(CancellationToken token) => TryEnterUpgradableReadLock(TimeSpan.MaxValue, default).ContinueWith(CheckOnTimeout, CheckOnTimeoutOptions);
+
+        public Task EnterUpgradableReadLock(TimeSpan timeout) => TryEnterUpgradableReadLock(timeout).ContinueWith(CheckOnTimeout, CheckOnTimeoutOptions);
+
+        private void ProcessReadLocks()
+        {
+            if (head is ReadLockNode readLock)
+                for (LockNode next; !(readLock is null); readLock = next as ReadLockNode)
+                {
+                    next = readLock.Next;
+                    //remove all read locks and leave upgradable read locks until first write lock
+                    if (readLock.Upgradable)
+                        if (state.upgradable)    //already in upgradable lock, leave the current node alive
+                            continue;
+                        else
+                            state.upgradable = true;    //enter upgradable read lock
+                    RemoveNode(readLock);
+                    readLock.Complete();
+                    state.readLocks += 1L;
+                }
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void ExitUpgradableReadLock()
+        {
+            if (state.writeLock || !state.upgradable)
+                throw new SynchronizationLockException(ExceptionMessages.NotInUpgradableReadLock);
+            state.upgradable = false;
+            if (--state.readLocks == 0L && head is WriteLockNode writeLock) //no more readers, write lock can be acquired
+            {
+                RemoveNode(writeLock);
+                writeLock.Complete();
+                state.writeLock = true;
+            }
+            else
+                ProcessReadLocks();
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void ExitWriteLock()
         {
-            if(!this.writeLock)
+            if (!state.writeLock)
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
-            else if(head is WriteLockNode writeLock)
+            else if (head is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
                 writeLock.Complete();
+                return;
             }
-            else if(head is ReadLockNode readLock)
-                do
-                {
-                    RemoveNode(readLock);
-                    readLock.Complete();
-                    readLocks += 1L;
-                    readLock = head as ReadLockNode;
-                } 
-                while(!(readLock is null));
-            else
-                this.writeLock = false;
+            state.writeLock = false;
+            ProcessReadLocks();
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void ExitReadLock()
         {
-            if(this.writeLock)
+            if (state.writeLock || state.readLocks == 1 && state.upgradable)
                 throw new SynchronizationLockException(ExceptionMessages.NotInReadLock);
-            else if(--readLocks == 0L && head is WriteLockNode writeLock)
+            else if (--state.readLocks == 0L && head is WriteLockNode writeLock)
             {
-                this.writeLock = true;
                 RemoveNode(writeLock);
                 writeLock.Complete();
+                state.writeLock = true;
             }
         }
 
         protected sealed override void Dispose(bool disposing)
         {
-            throw new NotImplementedException();
+            if (disposing)
+            {
+                for (var current = head; !(current is null); current = current.CleanupAndGotoNext())
+                    current.TrySetCanceled();
+                state = default;
+            }
         }
     }
 }

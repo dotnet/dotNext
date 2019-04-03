@@ -2,3 +2,4 @@ ReleasedLock=The lock is already released
 CollectionIsEmpty=Collection is empty
 NotInWriteLock=The current async flow has not entered the lock in write mode
 NotInReadLock=The current async flow has not entered the lock in read mode
+NotInUpgradableReadLock=The current async flow has not entered the lock in read mode

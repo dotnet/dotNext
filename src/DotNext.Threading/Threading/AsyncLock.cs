@@ -14,6 +14,9 @@ namespace DotNext.Threading
         {
             None = 0,
             Exclusive,
+            ReadLock,
+            UpgradableReadLock,
+            WriteLock,
             Semaphore
         }
 
@@ -36,13 +39,19 @@ namespace DotNext.Threading
 
         public static AsyncLock Semaphore(int initialCount, int maxCount) => new AsyncLock(new SemaphoreSlim(initialCount, maxCount), LockType.Semaphore, true);
 
+        public static AsyncLock ReadLock(AsyncReaderWriterLock rwLock) => new AsyncLock(rwLock, LockType.ReadLock, false);
+
+        public static AsyncLock UpgradableReadLock(AsyncReaderWriterLock rwLock) => new AsyncLock(rwLock, LockType.UpgradableReadLock, false);
+
+        public static AsyncLock WriteLock(AsyncReaderWriterLock rwLock) => new AsyncLock(rwLock, LockType.WriteLock, false);
+
         private static void CheckOnTimeout(Task<bool> task)
         {
             if (!task.Result)
                 throw new TimeoutException();
         }
 
-        public Task Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, default).ContinueWith(CheckOnTimeout, ContinuationOptions);
+        public Task Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token).ContinueWith(CheckOnTimeout, ContinuationOptions);
 
         public Task Acquire(TimeSpan timeout) => TryAcquire(timeout).ContinueWith(CheckOnTimeout, ContinuationOptions);
 
@@ -54,6 +63,12 @@ namespace DotNext.Threading
             {
                 case LockType.Exclusive:
                     return As<AsyncLockOwner>(lockedObject).TryAcquire(timeout, token);
+                case LockType.ReadLock:
+                    return As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLock(timeout, token);
+                case LockType.UpgradableReadLock:
+                    return As<AsyncReaderWriterLock>(lockedObject).TryEnterUpgradableReadLock(timeout, token);
+                case LockType.WriteLock:
+                    return As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLock(timeout, token);
                 case LockType.Semaphore:
                     return As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token);
                 default:
@@ -70,6 +85,15 @@ namespace DotNext.Threading
             {
                 case LockType.Exclusive:
                     As<AsyncLockOwner>(lockedObject).Release();
+                    return;
+                case LockType.ReadLock:
+                    As<AsyncReaderWriterLock>(lockedObject).ExitReadLock();
+                    return;
+                case LockType.WriteLock:
+                    As<AsyncReaderWriterLock>(lockedObject).ExitWriteLock();
+                    return;
+                case LockType.UpgradableReadLock:
+                    As<AsyncReaderWriterLock>(lockedObject).ExitUpgradableReadLock();
                     return;
                 case LockType.Semaphore:
                     As<SemaphoreSlim>(lockedObject).Release(1);

@@ -10,7 +10,6 @@ namespace DotNext.Threading
     public static class LockAcquisition
     {
         private static readonly UserDataSlot<ReaderWriterLockSlim> ReaderWriterLock = UserDataSlot<ReaderWriterLockSlim>.Allocate();
-        private static readonly Func<ReaderWriterLockSlim> ReaderWriterLockFactory = () => new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
         private static Lock Acquire<T>(T obj, Converter<T, Lock> locker)
             where T : class
@@ -72,7 +71,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ReaderWriterLockSlim GetReaderWriterLock<T>(this T obj)
             where T : class
-            => obj.GetUserData().GetOrSet(ReaderWriterLock, ReaderWriterLockFactory);
+            => obj.GetUserData().GetOrSet(ReaderWriterLock, () => new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion));
 
         /// <summary>
         /// Acquires read lock for the specified object.
@@ -81,7 +80,6 @@ namespace DotNext.Threading
         /// <param name="obj">The object to be locked.</param>
         /// <returns>The acquired read lock.</returns>
         public static Lock ReadLock<T>(this T obj) where T : class => obj.GetReaderWriterLock().ReadLock();
-
 
         /// <summary>
         /// Acquires read lock for the specified object.
