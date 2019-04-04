@@ -11,7 +11,7 @@ namespace DotNext.Threading
     public static class AsyncLockAcquisition
     {
         private static readonly UserDataSlot<AsyncReaderWriterLock> ReaderWriterLock = UserDataSlot<AsyncReaderWriterLock>.Allocate();
-        private static readonly UserDataSlot<AsyncLock> ExclusiveLock = UserDataSlot<AsyncLock>.Allocate();
+        private static readonly UserDataSlot<AsyncExclusiveLock> ExclusiveLock = UserDataSlot<AsyncExclusiveLock>.Allocate();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static AsyncReaderWriterLock GetReaderWriterLock<T>(this T obj)
@@ -19,9 +19,9 @@ namespace DotNext.Threading
             => obj.GetUserData().GetOrSet(ReaderWriterLock, () => new AsyncReaderWriterLock());
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static AsyncLock GetExclusiveLock<T>(this T obj)
+        private static AsyncExclusiveLock GetExclusiveLock<T>(this T obj)
             where T : class
-            => obj.GetUserData().GetOrSet(ExclusiveLock, AsyncLock.Exclusive);
+            => obj.GetUserData().GetOrSet(ExclusiveLock, () => new AsyncExclusiveLock());
 
         /// <summary>
         /// Blocks the current thread until it can enter the semaphore.
@@ -40,9 +40,13 @@ namespace DotNext.Threading
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
         public static Task<AsyncLock.Holder> AcquireLock(this SemaphoreSlim semaphore, TimeSpan timeout) => AsyncLock.Semaphore(semaphore).Acquire(timeout);
 
-        public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetExclusiveLock().Acquire(timeout);
+        public static Task<AsyncLock.Holder> AcquireLock(this AsyncExclusiveLock @lock, CancellationToken token) => AsyncLock.Exclusive(@lock).Acquire(token);
 
-        public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetExclusiveLock().Acquire(token);
+        public static Task<AsyncLock.Holder> AcquireLock(this AsyncExclusiveLock @lock, TimeSpan timeout) => AsyncLock.Exclusive(@lock).Acquire(timeout);
+
+        public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetExclusiveLock().AcquireLock(timeout);
+
+        public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetExclusiveLock().AcquireLock(token);
 
         public static Task<AsyncLock.Holder> AcquireReadLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.ReadLock(rwLock, false).Acquire(timeout);
 
