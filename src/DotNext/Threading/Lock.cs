@@ -102,6 +102,15 @@ namespace DotNext.Threading
         /// <returns>The lock representing semaphore.</returns>
         public static Lock Semaphore(SemaphoreSlim semaphore) => new Lock(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), Type.Semaphore, false);
 
+        /// <summary>
+        /// Creates semaphore-based lock but doesn't acquire lock.
+        /// </summary>
+        /// <remarks>
+        /// Constructed lock owns the semaphore instance.
+        /// </remarks>
+        /// <param name="initialCount">The initial number of requests for the semaphore that can be granted concurrently.</param>
+        /// <param name="maxCount">The maximum number of requests for the semaphore that can be granted concurrently.</param>
+        /// <returns>The lock representing semaphore.</returns>
         public static Lock Semaphore(int initialCount, int maxCount) => new Lock(new SemaphoreSlim(initialCount, maxCount), Type.Semaphore, true);
 
         /// <summary>
@@ -114,6 +123,9 @@ namespace DotNext.Threading
         /// <summary>
         /// Creates exclusive lock.
         /// </summary>
+        /// <remarks>
+        /// Constructed lock owns the object instance used as a monitor.
+        /// </remarks>
         /// <returns>The exclusive lock.</returns>
         public static Lock Monitor() => new Lock(new object(), Type.Monitor, true);
 
@@ -237,6 +249,11 @@ namespace DotNext.Threading
             }
         }
 
+        /// <summary>
+        /// Acquires lock.
+        /// </summary>
+        /// <param name="timeout">The amount of time to wait for the lock</param>
+        /// <exception cref="TimeoutException">The lock has not been acquired during the specified timeout.</exception>
         public Holder Acquire(TimeSpan timeout) 
             => TryAcquire() ? new Holder(lockedObject, type) : throw new TimeoutException();
 

@@ -75,8 +75,18 @@ namespace DotNext
         /// </summary>
         public static readonly Enum<E> MinValue;
 
+        /// <summary>
+        /// Returns an indication whether a constant with a specified value exists in a enumeration of type <typeparamref name="E"/>.
+        /// </summary>
+        /// <param name="value">The value of a constant in <typeparamref name="E"/>.</param>
+        /// <returns><see langword="true"/> if a constant in <typeparamref name="E"/> has a value equal to <paramref name="value"/>; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(E value) => mapping.ContainsKey(value);
 
+        /// <summary>
+        /// Returns an indication whether a constant with a specified name exists in a enumeration of type <typeparamref name="E"/>.
+        /// </summary>
+        /// <param name="name">The name of a constant in <typeparamref name="E"/>.</param>
+        /// <returns><see langword="true"/> if a constant in <typeparamref name="E"/> has a name equal to <paramref name="name"/>; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(string name) => mapping.ContainsKey(name);
 
         /// <summary>
@@ -86,8 +96,20 @@ namespace DotNext
         /// <returns>The enum member.</returns>
         public static Enum<E> GetMember(E value) => mapping.TryGetValue(value, out var result) ? result : new Enum<E>(value, null);
 
+        /// <summary>
+        /// Attempts to retrieve enum member which constant value is equal to the given value.
+        /// </summary>
+        /// <param name="value">Enum value.</param>
+        /// <param name="member">Enum member which constant value is equal to <paramref name="value"/>.</param>
+        /// <returns><see langword="true"/>, if there are member declared the given constant value exist; otherwise, <see langword="false"/>.</returns>
         public static bool TryGetMember(E value, out Enum<E> member) => mapping.TryGetValue(value, out member);
 
+        /// <summary>
+        /// Attempts to retrieve enum member which name is equal to the given value.
+        /// </summary>
+        /// <param name="name">The name of a constant.</param>
+        /// <param name="member">Enum member which name is equal to <paramref name="name"/>.</param>
+        /// <returns><see langword="true"/>, if there are member declared the given constant value exist; otherwise, <see langword="false"/>.</returns>
         public static bool TryGetMember(string name, out Enum<E> member)
         {
             if(Enum.TryParse<E>(name, out var value))
