@@ -89,7 +89,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">The enum value.</param>
         /// <returns>The enum member.</returns>
-        public static Enum<E> GetMember(E value) => mapping[value];
+        public static Enum<E> GetMember(E value) => mapping.TryGetValue(value, out var result) ? result : new Enum<E>(value, null);
 
         public static bool TryGetMember(E value, out Enum<E> member) => mapping.TryGetValue(value, out member);
 
@@ -164,7 +164,7 @@ namespace DotNext
         /// Converts typed enum wrapper into actual enum value.
         /// </summary>
         /// <param name="en">Enum wrapper to convert.</param>
-        public static implicit operator E(Enum<E> en) => en.Value;
+        public static implicit operator E(in Enum<E> en) => en.Value;
 
         /// <summary>
         /// Compares this enum value with other.
@@ -214,23 +214,23 @@ namespace DotNext
 
         string IFormattable.ToString(string format, IFormatProvider provider) => Value.ToString();
 
-        public static explicit operator long(Enum<E> member) => ValueTypeExtensions.ToInt64(member.Value);
+        public static explicit operator long(in Enum<E> member) => ValueTypeExtensions.ToInt64(member.Value);
 
-        public static explicit operator int(Enum<E> member) => ValueTypeExtensions.ToInt32(member.Value);
+        public static explicit operator int(in Enum<E> member) => ValueTypeExtensions.ToInt32(member.Value);
 
-        public static explicit operator byte(Enum<E> member) => ValueTypeExtensions.ToByte(member.Value);
+        public static explicit operator byte(in Enum<E> member) => ValueTypeExtensions.ToByte(member.Value);
 
-        public static explicit operator short(Enum<E> member) => ValueTypeExtensions.ToInt16(member.Value);
-
-        [CLSCompliant(false)]
-        public static explicit operator sbyte(Enum<E> member) => ValueTypeExtensions.ToSByte(member.Value);
+        public static explicit operator short(in Enum<E> member) => ValueTypeExtensions.ToInt16(member.Value);
 
         [CLSCompliant(false)]
-        public static explicit operator ulong(Enum<E> member) => ValueTypeExtensions.ToUInt64(member.Value);
+        public static explicit operator sbyte(in Enum<E> member) => ValueTypeExtensions.ToSByte(member.Value);
 
         [CLSCompliant(false)]
-        public static explicit operator uint(Enum<E> member) => ValueTypeExtensions.ToUInt32(member.Value);
+        public static explicit operator ulong(in Enum<E> member) => ValueTypeExtensions.ToUInt64(member.Value);
 
-        public static explicit operator ushort(Enum<E> member) => ValueTypeExtensions.ToUInt16(member.Value);
+        [CLSCompliant(false)]
+        public static explicit operator uint(in Enum<E> member) => ValueTypeExtensions.ToUInt32(member.Value);
+
+        public static explicit operator ushort(in Enum<E> member) => ValueTypeExtensions.ToUInt16(member.Value);
     }
 }
