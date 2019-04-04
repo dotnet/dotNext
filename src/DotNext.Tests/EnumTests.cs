@@ -15,6 +15,28 @@ namespace DotNext
         }
 
         [Fact]
+        public void ConversionToPrimitive()
+        {
+            var member = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.User);
+            Equal(1L, (long)member);
+            Equal(1, (int)member);
+            Equal(1, (short)member);
+        }
+
+        [Fact]
+        public void ConversionFromPrimitive()
+        {
+            True(Enum<EnvironmentVariableTarget>.TryGetMember(1, out var member));
+            Equal(EnvironmentVariableTarget.User, member.Value);
+            True(Enum<EnvironmentVariableTarget>.TryGetMember(1L, out member));
+            Equal(EnvironmentVariableTarget.User, member.Value);
+            True(Enum<EnvironmentVariableTarget>.TryGetMember((short)1, out member));
+            Equal(EnvironmentVariableTarget.User, member.Value);
+            True(Enum<EnvironmentVariableTarget>.TryGetMember((sbyte)1, out member));
+            Equal(EnvironmentVariableTarget.User, member.Value);
+        }
+
+        [Fact]
         public void MinMaxTest()
         {
             Equal(EnvironmentVariableTarget.Machine, Enum<EnvironmentVariableTarget>.MaxValue);

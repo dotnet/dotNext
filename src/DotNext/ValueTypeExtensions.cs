@@ -9,6 +9,15 @@ namespace DotNext
 	/// </summary>
     public static class ValueTypeExtensions
     {
+        internal static byte ToByte<T>(T value) where T : struct, IConvertible => value.ToByte(null);
+        internal static sbyte ToSByte<T>(T value) where T : struct, IConvertible => value.ToSByte(null);
+        internal static short ToInt16<T>(T value) where T : struct, IConvertible => value.ToInt16(null);
+        internal static ushort ToUInt16<T>(T value) where T : struct, IConvertible => value.ToUInt16(null);
+        internal static int ToInt32<T>(T value) where T : struct, IConvertible => value.ToInt32(null);
+        internal static uint ToUInt32<T>(T value) where T : struct, IConvertible => value.ToUInt32(null);
+        internal static long ToInt64<T>(T value) where T : struct, IConvertible => value.ToInt64(null);
+        internal static ulong ToUInt64<T>(T value) where T : struct, IConvertible => value.ToUInt64(null);
+
         /// <summary>
         /// Obtain a value of type <typeparamref name="TO"/> by 
         /// reinterpreting the object representation of <typeparamref name="FROM"/>.

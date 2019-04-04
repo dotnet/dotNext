@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 
 namespace DotNext
 {
+    using Reflection;
+
     /// <summary>
     /// Provides strongly typed way to reflect enum type.
     /// </summary>
@@ -91,7 +93,32 @@ namespace DotNext
 
         public static bool TryGetMember(E value, out Enum<E> member) => mapping.TryGetValue(value, out member);
 
-        public static bool TryGetMember(string name, out Enum<E> member) => mapping.TryGetValue(name, out member);
+        public static bool TryGetMember(string name, out Enum<E> member)
+        {
+            if(Enum.TryParse<E>(name, out var value))
+            {
+                member = new Enum<E>(value, name);
+                return true;
+            }
+            else
+            {
+                member = default;
+                return false;
+            }
+        }
+
+        public static bool TryGetMember(int value, out Enum<E> member) => TryGetMember(Conversion<int, E>.Converter(value), out member);
+        public static bool TryGetMember(long value, out Enum<E> member) => TryGetMember(Conversion<long, E>.Converter(value), out member);
+        public static bool TryGetMember(short value, out Enum<E> member) => TryGetMember(Conversion<short, E>.Converter(value), out member);
+        public static bool TryGetMember(byte value, out Enum<E> member) => TryGetMember(Conversion<byte, E>.Converter(value), out member);
+        [CLSCompliant(false)]
+        public static bool TryGetMember(sbyte value, out Enum<E> member) => TryGetMember(Conversion<sbyte, E>.Converter(value), out member);
+        [CLSCompliant(false)]
+        public static bool TryGetMember(ushort value, out Enum<E> member) => TryGetMember(Conversion<ushort, E>.Converter(value), out member);
+        [CLSCompliant(false)]
+        public static bool TryGetMember(uint value, out Enum<E> member) => TryGetMember(Conversion<uint, E>.Converter(value), out member);
+        [CLSCompliant(false)]
+        public static bool TryGetMember(ulong value, out Enum<E> member) => TryGetMember(Conversion<ulong, E>.Converter(value), out member);
 
         /// <summary>
         /// Gets enum member by its name.
@@ -109,6 +136,11 @@ namespace DotNext
         /// Gets the underlying type of the specified enumeration.
         /// </summary>
         public static Type UnderlyingType => Enum.GetUnderlyingType(typeof(E));
+
+        /// <summary>
+        /// Gets code of the underlying primitive type.
+        /// </summary>
+        public static TypeCode UnderlyingTypeCode => UnderlyingType.GetTypeCode();
 
         private readonly string name;
 
@@ -181,5 +213,24 @@ namespace DotNext
         public override string ToString() => Value.ToString();
 
         string IFormattable.ToString(string format, IFormatProvider provider) => Value.ToString();
+
+        public static explicit operator long(Enum<E> member) => ValueTypeExtensions.ToInt64(member.Value);
+
+        public static explicit operator int(Enum<E> member) => ValueTypeExtensions.ToInt32(member.Value);
+
+        public static explicit operator byte(Enum<E> member) => ValueTypeExtensions.ToByte(member.Value);
+
+        public static explicit operator short(Enum<E> member) => ValueTypeExtensions.ToInt16(member.Value);
+
+        [CLSCompliant(false)]
+        public static explicit operator sbyte(Enum<E> member) => ValueTypeExtensions.ToSByte(member.Value);
+
+        [CLSCompliant(false)]
+        public static explicit operator ulong(Enum<E> member) => ValueTypeExtensions.ToUInt64(member.Value);
+
+        [CLSCompliant(false)]
+        public static explicit operator uint(Enum<E> member) => ValueTypeExtensions.ToUInt32(member.Value);
+
+        public static explicit operator ushort(Enum<E> member) => ValueTypeExtensions.ToUInt16(member.Value);
     }
 }
