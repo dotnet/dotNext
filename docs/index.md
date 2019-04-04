@@ -34,5 +34,8 @@ This library provides a special types to work with unmanaged memory in type-safe
 * Typed unmanaged arrays
 * CLS-compliant generic pointer type for .NET languages without direct support of such type. Use this feature to work with pointers from VB.NET or F#.
 
+# DotNext.Threading
+<a href="https://www.nuget.org/packages/dotnext.threading/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.threading.svg?style=flat"></a><br/>
+A set of advanced classes for multithreaded and asynchronous programming as well as non-blocking asynchronous alternatives of [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim) and [Monitor](https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor) in the form of [AsyncReaderWriterLock](api/DotNext.Threading.AsyncReaderWriterLock.yml) class and [AsyncExclusiveLock](api/DotNext.Threading.AsyncExclusiveLock.yml) class respectively.
 
 

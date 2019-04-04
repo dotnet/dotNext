@@ -31,9 +31,6 @@ var length = str.Property(nameof(string.Length));   //"Hello, world".Length
 # DLR Integration
 The expression tree can be constructed using [dynamic](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/types/using-type-dynamic) type provided by C# programming language or similar feature in other .NET languages. As a result, expression tree looks like a true language expression or statement without method calls such as `Property()` or `Field()` for member access.
 
-> [!NOTE]
-> This type of expression tree building is supported since version 0.2 of Metaprogramming library
-
 This feature converts any dynamic expression into expression tree. The starting point is an instance of _UniversalExpression_ which can be converted into **dynamic** data type. After all necessary manipulations with expression tree it is possible to convert dynamic type into _Expression_ or _UniversalExpression_ type back again.
 
 ```csharp
