@@ -125,10 +125,11 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Gets enum member by its name.
+        /// Gets enum member by its case-sensitive name.
         /// </summary>
         /// <param name="name">The name of the enum value.</param>
         /// <returns>The enum member.</returns>
+        /// <exception cref="KeyNotFoundException">Enum member with the requested name doesn't exist in enum.</exception>
         public static Enum<E> GetMember(string name) => mapping[name];
 
         /// <summary>
