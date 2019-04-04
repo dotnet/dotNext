@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 
 namespace DotNext
 {
-    using Reflection;
+    using static Reflection.TypeExtensions;
 
     /// <summary>
     /// Provides strongly typed way to reflect enum type.
@@ -12,7 +12,7 @@ namespace DotNext
     /// <typeparam name="E">Enum type to reflect.</typeparam>
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
     public readonly struct Enum<E>: IEquatable<E>, IComparable<E>, IFormattable, IComparable<Enum<E>>
-        where E : struct, Enum
+        where E : unmanaged, Enum
     {
         private readonly struct Tuple: IEquatable<Tuple>
         {
@@ -63,7 +63,7 @@ namespace DotNext
             }
         }
 
-        private static readonly ReadOnlyDictionary<Tuple, Enum<E>> mapping;
+        private static readonly Mapping mapping = new Mapping(out MinValue, out MaxValue);
 
         /// <summary>
         /// Maximum enum value.
@@ -74,11 +74,6 @@ namespace DotNext
         /// Minimum enum value.
         /// </summary>
         public static readonly Enum<E> MinValue;
-
-        static Enum()
-        {
-            mapping = new ReadOnlyDictionary<Tuple, Enum<E>>(new Mapping(out MinValue, out MaxValue));
-        }
 
         public static bool IsDefined(E value) => mapping.ContainsKey(value);
 
@@ -106,19 +101,6 @@ namespace DotNext
                 return false;
             }
         }
-
-        public static bool TryGetMember(int value, out Enum<E> member) => TryGetMember(Conversion<int, E>.Converter(value), out member);
-        public static bool TryGetMember(long value, out Enum<E> member) => TryGetMember(Conversion<long, E>.Converter(value), out member);
-        public static bool TryGetMember(short value, out Enum<E> member) => TryGetMember(Conversion<short, E>.Converter(value), out member);
-        public static bool TryGetMember(byte value, out Enum<E> member) => TryGetMember(Conversion<byte, E>.Converter(value), out member);
-        [CLSCompliant(false)]
-        public static bool TryGetMember(sbyte value, out Enum<E> member) => TryGetMember(Conversion<sbyte, E>.Converter(value), out member);
-        [CLSCompliant(false)]
-        public static bool TryGetMember(ushort value, out Enum<E> member) => TryGetMember(Conversion<ushort, E>.Converter(value), out member);
-        [CLSCompliant(false)]
-        public static bool TryGetMember(uint value, out Enum<E> member) => TryGetMember(Conversion<uint, E>.Converter(value), out member);
-        [CLSCompliant(false)]
-        public static bool TryGetMember(ulong value, out Enum<E> member) => TryGetMember(Conversion<ulong, E>.Converter(value), out member);
 
         /// <summary>
         /// Gets enum member by its name.
@@ -213,24 +195,5 @@ namespace DotNext
         public override string ToString() => Value.ToString();
 
         string IFormattable.ToString(string format, IFormatProvider provider) => Value.ToString();
-
-        public static explicit operator long(in Enum<E> member) => ValueTypeExtensions.ToInt64(member.Value);
-
-        public static explicit operator int(in Enum<E> member) => ValueTypeExtensions.ToInt32(member.Value);
-
-        public static explicit operator byte(in Enum<E> member) => ValueTypeExtensions.ToByte(member.Value);
-
-        public static explicit operator short(in Enum<E> member) => ValueTypeExtensions.ToInt16(member.Value);
-
-        [CLSCompliant(false)]
-        public static explicit operator sbyte(in Enum<E> member) => ValueTypeExtensions.ToSByte(member.Value);
-
-        [CLSCompliant(false)]
-        public static explicit operator ulong(in Enum<E> member) => ValueTypeExtensions.ToUInt64(member.Value);
-
-        [CLSCompliant(false)]
-        public static explicit operator uint(in Enum<E> member) => ValueTypeExtensions.ToUInt32(member.Value);
-
-        public static explicit operator ushort(in Enum<E> member) => ValueTypeExtensions.ToUInt16(member.Value);
     }
 }

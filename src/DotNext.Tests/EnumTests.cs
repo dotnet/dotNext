@@ -18,22 +18,18 @@ namespace DotNext
         public void ConversionToPrimitive()
         {
             var member = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.User);
-            Equal(1L, (long)member);
-            Equal(1, (int)member);
-            Equal(1, (short)member);
+            Equal(1L, member.Value.ToInt64());
+            Equal(1, member.Value.ToInt32());
+            Equal(1, member.Value.ToInt16());
+            Equal(1, member.Value.ToByte());
         }
 
         [Fact]
         public void ConversionFromPrimitive()
         {
-            True(Enum<EnvironmentVariableTarget>.TryGetMember(1, out var member));
-            Equal(EnvironmentVariableTarget.User, member.Value);
-            True(Enum<EnvironmentVariableTarget>.TryGetMember(1L, out member));
-            Equal(EnvironmentVariableTarget.User, member.Value);
-            True(Enum<EnvironmentVariableTarget>.TryGetMember((short)1, out member));
-            Equal(EnvironmentVariableTarget.User, member.Value);
-            True(Enum<EnvironmentVariableTarget>.TryGetMember((sbyte)1, out member));
-            Equal(EnvironmentVariableTarget.User, member.Value);
+            Equal(EnvironmentVariableTarget.User, 1.ToEnum<EnvironmentVariableTarget>());
+            Equal(EnvironmentVariableTarget.User, 1L.ToEnum<EnvironmentVariableTarget>());
+            Equal(EnvironmentVariableTarget.Machine, ((byte)2).ToEnum<EnvironmentVariableTarget>());
         }
 
         [Fact]
