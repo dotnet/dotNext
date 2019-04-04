@@ -7,7 +7,16 @@ namespace DotNext.Threading
 {
     using Generic;
     using Tasks;
-
+    
+    /// <summary>
+    /// Unified representation of asynchronous exclusive lock, semaphore lock, read lock, write lock or upgradable read lock.
+    /// </summary>
+    /// <remarks>
+    /// Lock acquisition is asynchronous operation. Note that non-blocking asynchronous locks are not intersected with
+    /// their blocking alternatives except semaphore. It means that exclusive lock obtained in blocking manner doesn't
+    /// prevent acquisition of asynchronous lock obtained in non-blocking manner.
+    /// </remarks>
+    /// <seealso cref="Lock"/>
     public struct AsyncLock : IDisposable, IEquatable<AsyncLock>
     {
         internal enum Type : byte
@@ -94,17 +103,55 @@ namespace DotNext.Threading
             this.owner = owner;
         }
 
+        /// <summary>
+        /// Creates exclusive asynchronous lock but doesn't acquire it.
+        /// </summary>
+        /// <remarks>
+        /// Constructed lock owns the exclusive lock instance.
+        /// </remarks>
+        /// <returns>Exclusive asynchronous lock.</returns>
+        /// <seealso cref="AsyncExclusiveLock"/>
         public static AsyncLock Exclusive() => new AsyncLock(new AsyncExclusiveLock(), Type.Exclusive, true);
 
+        /// <summary>
+        /// Wraps exclusive lock into the unified representation of asynchronous lock.
+        /// </summary>
+        /// <param name="lock">The lock object to be wrapped.</param>
+        /// <returns>Exclusive asynchronous lock.</returns>
         public static AsyncLock Exclusive(AsyncExclusiveLock @lock) => new AsyncLock(@lock ?? throw new ArgumentNullException(nameof(@lock)), Type.Exclusive, false);
 
+        /// <summary>
+        /// Wraps semaphore instance into the unified representation of the lock.
+        /// </summary>
+        /// <param name="semaphore">The semaphore to wrap into lock object.</param>
+        /// <returns>The lock representing semaphore.</returns>
         public static AsyncLock Semaphore(SemaphoreSlim semaphore) => new AsyncLock(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), Type.Semaphore, false);
-
+        
+        /// <summary>
+        /// Creates semaphore-based lock but doesn't acquire the lock.
+        /// </summary>
+        /// <remarks>
+        /// Constructed lock owns the semaphore instance.
+        /// </remarks>
+        /// <param name="initialCount">The initial number of requests for the semaphore that can be granted concurrently.</param>
+        /// <param name="maxCount">The maximum number of requests for the semaphore that can be granted concurrently.</param>
+        /// <returns>The lock representing semaphore.</returns>
         public static AsyncLock Semaphore(int initialCount, int maxCount) => new AsyncLock(new SemaphoreSlim(initialCount, maxCount), Type.Semaphore, true);
 
+        /// <summary>
+        /// Creates read lock but doesn't acquire it.
+        /// </summary>
+        /// <param name="rwLock">Read/write lock source.</param>
+        /// <param name="upgradable"><see langword="true"/> to create upgradable read lock wrapper.</param>
+        /// <returns>Reader lock.</returns>
         public static AsyncLock ReadLock(AsyncReaderWriterLock rwLock, bool upgradable) 
             => new AsyncLock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), upgradable ? Type.UpgradableReadLock : Type.ReadLock, false);
         
+        /// <summary>
+        /// Creates write lock but doesn't acquire it.
+        /// </summary>
+        /// <param name="rwLock">Read/write lock source.</param>
+        /// <returns>Write-only lock.</returns>
         public static AsyncLock WriteLock(AsyncReaderWriterLock rwLock) 
             => new AsyncLock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.WriteLock, false);
 
@@ -114,8 +161,19 @@ namespace DotNext.Threading
             return holder ? holder : throw new TimeoutException();
         }
 
+        /// <summary>
+        /// Acquires the lock asynchronously.
+        /// </summary>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The task returning the acquired lock holder.</returns>
         public Task<Holder> Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token).ContinueWith(CheckOnTimeout, ContinuationOptions);
 
+        /// <summary>
+        /// Acquires the lock asynchronously.
+        /// </summary>
+        /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <returns>The task returning the acquired lock holder.</returns>
+        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
         public Task<Holder> Acquire(TimeSpan timeout) => TryAcquire(timeout).ContinueWith(CheckOnTimeout, ContinuationOptions);
         
         private Task<bool> TryAcquireCore(TimeSpan timeout, CancellationToken token)
@@ -137,8 +195,19 @@ namespace DotNext.Threading
             }
         }
 
+        /// <summary>
+        /// Tries to acquire the lock asynchronously.
+        /// </summary>
+        /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
         public Task<Holder> TryAcquire(TimeSpan timeout) => TryAcquire(timeout, default);
 
+        /// <summary>
+        /// Tries to acquire the lock asynchronously.
+        /// </summary>
+        /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
         public async Task<Holder> TryAcquire(TimeSpan timeout, CancellationToken token)
             => await TryAcquireCore(timeout, token) ? new Holder(lockedObject, type) : default;
 

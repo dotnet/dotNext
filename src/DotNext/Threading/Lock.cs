@@ -5,8 +5,7 @@ using static System.Runtime.CompilerServices.Unsafe;
 namespace DotNext.Threading
 {
     /// <summary>
-    /// Represents unified representation monitor lock, read lock,
-    /// write lock or upgradable read lock.
+    /// Unified representation of monitor lock, semaphore lock, read lock, write lock or upgradable read lock.
     /// </summary>
     /// <remarks>
     /// The lock acquisition may block the caller thread.
@@ -96,14 +95,14 @@ namespace DotNext.Threading
         }
 
         /// <summary>
-        /// Creates semaphore-based lock but doesn't acquire lock.
+        /// Wraps semaphore instance into the unified representation of the lock.
         /// </summary>
         /// <param name="semaphore">The semaphore to wrap into lock object.</param>
         /// <returns>The lock representing semaphore.</returns>
         public static Lock Semaphore(SemaphoreSlim semaphore) => new Lock(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), Type.Semaphore, false);
 
         /// <summary>
-        /// Creates semaphore-based lock but doesn't acquire lock.
+        /// Creates semaphore-based lock but doesn't acquire the lock.
         /// </summary>
         /// <remarks>
         /// Constructed lock owns the semaphore instance.
@@ -114,7 +113,7 @@ namespace DotNext.Threading
         public static Lock Semaphore(int initialCount, int maxCount) => new Lock(new SemaphoreSlim(initialCount, maxCount), Type.Semaphore, true);
 
         /// <summary>
-        /// Creates monitor-based lock control object but doesn't acquire lock.
+        /// Creates monitor-based lock control object but doesn't acquire the lock.
         /// </summary>
         /// <param name="obj">Monitor lock target.</param>
         /// <returns>The lock representing monitor.</returns>

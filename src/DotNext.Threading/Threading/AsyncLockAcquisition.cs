@@ -24,52 +24,164 @@ namespace DotNext.Threading
             => obj.GetUserData().GetOrSet(ExclusiveLock, () => new AsyncExclusiveLock());
 
         /// <summary>
-        /// Blocks the current thread until it can enter the semaphore.
+        /// Acquires semaphore lock asynchronously.
         /// </summary>
         /// <param name="semaphore">The semaphore.</param>
         /// <param name="token">The token that can be used to cancel lock acquisition.</param>
         /// <returns>The acquired semaphore lock.</returns>
-        public static Task<AsyncLock.Holder> AcquireLock(this SemaphoreSlim semaphore, CancellationToken token) => AsyncLock.Semaphore(semaphore).Acquire(token);
+        public static Task<AsyncLock.Holder> AcquireLockAsync(this SemaphoreSlim semaphore, CancellationToken token) => AsyncLock.Semaphore(semaphore).Acquire(token);
 
         /// <summary>
-        /// Blocks the current thread until it can enter the semaphore.
+        /// Acquires semaphore lock asynchronously.
         /// </summary>
         /// <param name="semaphore">The semaphore.</param>
         /// <param name="timeout">The amount of time to wait for the lock.</param>
         /// <returns>The acquired semaphore lock.</returns>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public static Task<AsyncLock.Holder> AcquireLock(this SemaphoreSlim semaphore, TimeSpan timeout) => AsyncLock.Semaphore(semaphore).Acquire(timeout);
+        public static Task<AsyncLock.Holder> AcquireLockAsync(this SemaphoreSlim semaphore, TimeSpan timeout) => AsyncLock.Semaphore(semaphore).Acquire(timeout);
 
+        /// <summary>
+        /// Acquires exclusive lock asynchronously.
+        /// </summary>
+        /// <param name="lock">The exclusive lock to acquire.</param>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The acquired lock holder.</returns>
         public static Task<AsyncLock.Holder> AcquireLock(this AsyncExclusiveLock @lock, CancellationToken token) => AsyncLock.Exclusive(@lock).Acquire(token);
 
+        /// <summary>
+        /// Acquires exclusive lock asynchronously.
+        /// </summary>
+        /// <param name="lock">The exclusive lock to acquire.</param>
+        /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <returns>The acquired lock holder.</returns>
+        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
         public static Task<AsyncLock.Holder> AcquireLock(this AsyncExclusiveLock @lock, TimeSpan timeout) => AsyncLock.Exclusive(@lock).Acquire(timeout);
 
+        /// <summary>
+        /// Acquires exclusive lock associated with the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to be locked.</typeparam>
+        /// <param name="obj">The object to be locked.</param>
+        /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <returns>The acquired lock holder.</returns>
+        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
         public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetExclusiveLock().AcquireLock(timeout);
 
+        /// <summary>
+        /// Acquires exclusive lock associated with the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to be locked.</typeparam>
+        /// <param name="obj">The object to be locked.</param>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The acquired lock holder.</returns>
         public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetExclusiveLock().AcquireLock(token);
 
-        public static Task<AsyncLock.Holder> AcquireReadLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.ReadLock(rwLock, false).Acquire(timeout);
+        /// <summary>
+        /// Acquires reader lock.
+        /// </summary>
+        /// <param name="rwLock">Read/write lock provider.</param>
+        /// <param name="timeout">The amount of time to wait for the lock.</param>
+        /// <returns>The acquired lock holder.</returns>
+        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+        public static Task<AsyncLock.Holder> AcquireReadLock(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.ReadLock(rwLock, false).Acquire(timeout);
 
-        public static Task<AsyncLock.Holder> AcquireReadLockAsync(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.ReadLock(rwLock, false).Acquire(token);
+        /// <summary>
+        /// Acquires reader lock.
+        /// </summary>
+        /// <param name="rwLock">Read/write lock provider.</param>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The acquired lock holder.</returns>
+        public static Task<AsyncLock.Holder> AcquireReadLock(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.ReadLock(rwLock, false).Acquire(token);
 
-        public static Task<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().AcquireReadLockAsync(timeout);
+        /// <summary>
+        /// Acquires reader lock associated with the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to be locked.</typeparam>
+        /// <param name="obj">The object to be locked.</param>
+        /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <returns>The acquired lock holder.</returns>
+        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+        public static Task<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().AcquireReadLock(timeout);
 
-        public static Task<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().AcquireReadLockAsync(token);
+        /// <summary>
+        /// Acquires reader lock associated with the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to be locked.</typeparam>
+        /// <param name="obj">The object to be locked.</param>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The acquired lock holder.</returns>
+        public static Task<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().AcquireReadLock(token);
 
-        public static Task<AsyncLock.Holder> AcquireWriteLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.WriteLock(rwLock).Acquire(timeout);
+        /// <summary>
+        /// Acquires writer lock.
+        /// </summary>
+        /// <param name="rwLock">Read/write lock provider.</param>
+        /// <param name="timeout">The amount of time to wait for the lock.</param>
+        /// <returns>The acquired lock holder.</returns>
+        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+        public static Task<AsyncLock.Holder> AcquireWriteLock(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.WriteLock(rwLock).Acquire(timeout);
 
-        public static Task<AsyncLock.Holder> AcquireWriteLockAsync(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.WriteLock(rwLock).Acquire(token);
+        /// <summary>
+        /// Acquires writer lock.
+        /// </summary>
+        /// <param name="rwLock">Read/write lock provider.</param>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The acquired lock holder.</returns>
+        public static Task<AsyncLock.Holder> AcquireWriteLock(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.WriteLock(rwLock).Acquire(token);
 
-        public static Task<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().AcquireWriteLockAsync(timeout);
+        /// <summary>
+        /// Acquires writer lock associated with the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to be locked.</typeparam>
+        /// <param name="obj">The object to be locked.</param>
+        /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <returns>The acquired lock holder.</returns>
+        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+        public static Task<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().AcquireWriteLock(timeout);
 
-        public static Task<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().AcquireWriteLockAsync(token);
+        /// <summary>
+        /// Acquires reader lock associated with the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to be locked.</typeparam>
+        /// <param name="obj">The object to be locked.</param>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The acquired lock holder.</returns>
+        public static Task<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().AcquireWriteLock(token);
 
-        public static Task<AsyncLock.Holder> AcquireUpgradableReadLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.ReadLock(rwLock, true).Acquire(timeout);
+        /// <summary>
+        /// Acquires upgradable lock.
+        /// </summary>
+        /// <param name="rwLock">Read/write lock provider.</param>
+        /// <param name="timeout">The amount of time to wait for the lock.</param>
+        /// <returns>The acquired lock holder.</returns>
+        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+        public static Task<AsyncLock.Holder> AcquireUpgradableReadLock(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.ReadLock(rwLock, true).Acquire(timeout);
 
-        public static Task<AsyncLock.Holder> AcquireUpgradableReadLockAsync(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.ReadLock(rwLock, true).Acquire(token);
+        /// <summary>
+        /// Acquires upgradable lock.
+        /// </summary>
+        /// <param name="rwLock">Read/write lock provider.</param>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The acquired lock holder.</returns>
+        public static Task<AsyncLock.Holder> AcquireUpgradableReadLock(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.ReadLock(rwLock, true).Acquire(token);
 
-        public static Task<AsyncLock.Holder> AcquireUpgradableReadLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().AcquireUpgradableReadLockAsync(timeout);
+        /// <summary>
+        /// Acquires upgradable lock associated with the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to be locked.</typeparam>
+        /// <param name="obj">The object to be locked.</param>
+        /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <returns>The acquired lock holder.</returns>
+        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+        public static Task<AsyncLock.Holder> AcquireUpgradableReadLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().AcquireUpgradableReadLock(timeout);
 
-        public static Task<AsyncLock.Holder> AcquireUpgradableReadLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().AcquireUpgradableReadLockAsync(token);
+        /// <summary>
+        /// Acquires upgradable lock associated with the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to be locked.</typeparam>
+        /// <param name="obj">The object to be locked.</param>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The acquired lock holder.</returns>
+        public static Task<AsyncLock.Holder> AcquireUpgradableReadLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().AcquireUpgradableReadLock(token);
     }
 }

@@ -93,10 +93,21 @@ namespace DotNext.Threading
                 return await node.Task.ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
+        /// </summary>
+        /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <param name="token">The token that can be used to abort lock acquisition.</param>
+        /// <returns><see langword="true"/> if the caller entered exclusive mode; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> TryAcquire(TimeSpan timeout, CancellationToken token)
         {
-            if (token.IsCancellationRequested)
+            ThrowIfDisposed();
+            if(timeout < TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException(nameof(timeout));
+            else if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
             else if(!locked)    //not locked
             {
@@ -112,17 +123,47 @@ namespace DotNext.Threading
             return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? TryAcquire(tail, timeout, token) : tail.Task;
         }
 
+        /// <summary>
+        /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
+        /// </summary>
+        /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <returns><see langword="true"/> if the caller entered exclusive mode; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryAcquire(TimeSpan timeout) => TryAcquire(timeout, default);
 
+        /// <summary>
+        /// Enters the lock in exclusive mode asynchronously.
+        /// </summary>
+        /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <returns>The task representing lock acquisition operation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
         public Task Acquire(TimeSpan timeout) => TryAcquire(timeout).ContinueWith(CheckOnTimeout, CheckOnTimeoutOptions);
 
+        /// <summary>
+        /// Enters the lock in exclusive mode asynchronously.
+        /// </summary>
+        /// <param name="token">The token that can be used to abort lock acquisition.</param>
+        /// <returns>The task representing lock acquisition operation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token).ContinueWith(CheckOnTimeout, CheckOnTimeoutOptions);
 
+        /// <summary>
+        /// Releases previously acquired exclusive lock.
+        /// </summary>
+        /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Release()
         {
+            ThrowIfDisposed();
             var waiterTask = head;
-            if(waiterTask is null)
+            if(!locked)
+                throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
+            else if(waiterTask is null)
                 locked = false;
             else
             {
@@ -131,6 +172,13 @@ namespace DotNext.Threading
             }
         }
 
+        /// <summary>
+        /// Releases all resources associated with exclusive lock.
+        /// </summary>
+        /// <remarks>
+        /// This method is not thread-safe and may not be used concurrently with other members of this instance.
+        /// </remarks>
+        /// <param name="disposing">Indicates whether the Dispose has been called directly or from Finalizer.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)

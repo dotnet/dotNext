@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 
 namespace DotNext
 {
@@ -24,6 +26,7 @@ namespace DotNext
 		/// Throws exception if this object is disposed.
 		/// </summary>
 		/// <exception cref="ObjectDisposedException">Object is disposed.</exception>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected void ThrowIfDisposed()
 		{
 			if (IsDisposed)
