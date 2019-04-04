@@ -351,5 +351,11 @@ namespace DotNext.Collections.Generic
         public UnmanagedList<T> Copy() => new UnmanagedList<T>(count, array.Copy());
 
         object ICloneable.Clone() => Copy();
+
+        /// <summary>
+        /// Provides unstructured access to the unmanaged memory utilized by the list.
+        /// </summary>
+        /// <param name="list">The list allocated in the unmanaged memory.</param>
+        public static implicit operator UnmanagedMemory(UnmanagedList list) => new UnmanagedMemory(list.Address, (long)list.count * Pointer<T>.Size);
     }
 }
