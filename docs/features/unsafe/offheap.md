@@ -1,6 +1,6 @@
 Off-Heap Allocation of Value Type
 ====
-[UnmanagedMemory](../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.yml) is a value type that represents typed pointer to the value type allocated in unmanaged memory. This type controls memory access which is limited to the size of type `T`. 
+[UnmanagedMemory&lt;T&gt;](../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.yml) is a value type that represents typed pointer to the value type allocated in unmanaged memory. This type controls memory access which is limited to the size of type `T`. 
 
 The simpliest way to understand what is `UnmanagedMemory` is to provide the following example in C:
 ```c

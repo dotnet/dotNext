@@ -1,0 +1,3 @@
+Unstructured Memory Access
+====
+[UnmanagedMemory](../../api/DotNext.Runtime.InteropServices.UnmanagedMemory.yml) in contrast to [UnmanagedMemory&lt;T&gt;](../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.yml) provides unstructured access to the allocated unmanaged memory. Unstructured access means that the allocated block of memory is not represented by some unmanaged type `T`. Instead of that, the memory is represented as a set of bytes. In spite of this, random memory access is protected by boundary checks. Every unmanaged data type 
