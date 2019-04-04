@@ -53,5 +53,29 @@ namespace DotNext.Reflection
             method = typeof(TypeExtensionsTests).GetMethod(nameof(GenericMethod), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, typeof(int));
             NotNull(method);
         }
+
+        private struct ManagedStruct
+        {
+            internal int value;
+            internal string name;
+
+            internal ManagedStruct(int value, string name)
+            {
+                this.value = value;
+                this.name = name;
+            }
+        }
+
+        [Fact]
+        public void IsUnmanagedTest()
+        {
+            True(typeof(IntPtr).IsUnmanaged());
+            True(typeof(UIntPtr).IsUnmanaged());
+            True(typeof(bool).IsUnmanaged());
+            True(typeof(Guid).IsUnmanaged());
+            True(typeof(DateTime).IsUnmanaged());
+            False(typeof(Runtime.InteropServices.Pointer<int>).IsUnmanaged());
+            False(typeof(ManagedStruct).IsUnmanaged());
+        }
     }
 }

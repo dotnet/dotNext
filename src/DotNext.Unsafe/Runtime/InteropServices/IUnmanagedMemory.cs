@@ -26,13 +26,6 @@ namespace DotNext.Runtime.InteropServices
         /// <typeparam name="T">The type of the pointer.</typeparam>
         /// <returns>The typed pointer.</returns>
         Pointer<T> ToPointer<T>() where T : unmanaged;
-
-        /// <summary>
-        /// Obtains pointer to the unmanaged memory at the specified offset in the memory.
-        /// </summary>
-        /// <param name="offset">The desired offset in the unmanaged memory.</param>
-        /// <returns>The pointer to the unmanaged memory adjusted at the specified offset.</returns>
-        Pointer<byte> ToPointer(long offset);
     }
 
     internal interface IUnmanagedMemory<T> : IUnmanagedMemory

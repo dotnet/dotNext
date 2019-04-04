@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Reflection;
 
 namespace DotNext
@@ -24,6 +24,7 @@ namespace DotNext
         /// support contravariant conversion for it. This method
         /// provides contravariant conversion for this delegate type.
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static EventHandler<O> Contravariant<I, O>(this EventHandler<I> handler)
             where I : class
             where O : class, I
@@ -37,6 +38,7 @@ namespace DotNext
         /// <param name="target">The object targeted by the delegate.</param>
         /// <returns>The delegate for the specified method.</returns>
         /// <seealso cref="MethodInfo.CreateDelegate(Type, object)"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static D CreateDelegate<D>(this MethodInfo method, object target = null)
             where D : Delegate
             => (D)method.CreateDelegate(typeof(D), target);
@@ -49,8 +51,7 @@ namespace DotNext
         /// <typeparam name="D">A new delegate type.</typeparam>
         /// <returns>A method wrapped into new delegate type.</returns>
         /// <exception cref="ArgumentException">Cannot convert delegate type.</exception>
-        public static D ChangeType<D>(this Delegate d)
-            where D : Delegate
-            => d.Method.CreateDelegate<D>(d.Target);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static D ChangeType<D>(this Delegate d) where D : Delegate => d.Method.CreateDelegate<D>(d.Target);
     }
 }

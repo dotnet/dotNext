@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 
 namespace DotNext
@@ -25,6 +26,7 @@ namespace DotNext
         /// </remarks>
         /// <param name="obj">Target object.</param>
         /// <returns>User data storage.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static UserDataStorage GetUserData<T>(this T obj)
             where T : class
             => new UserDataStorage(obj);

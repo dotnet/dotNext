@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using static Reflection.TaskType;
+    using Runtime.CompilerServices;
     using static Reflection.DelegateType;
 
     /// <summary>
@@ -21,7 +21,7 @@ namespace DotNext.Metaprogramming
         where D: Delegate
     {
         private ParameterExpression recursion;
-        private readonly Type taskType;
+        private readonly TaskType taskType;
 
         internal AsyncLambdaBuilder(CompoundStatementBuilder parent = null)
             : base(parent)
@@ -29,14 +29,14 @@ namespace DotNext.Metaprogramming
             if (typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
             var invokeMethod = GetInvokeMethod<D>();
-            taskType = invokeMethod.ReturnType;
+            taskType = new TaskType(invokeMethod.ReturnType);
             Parameters = GetParameters(invokeMethod.GetParameters());
         }
 
         /// <summary>
         /// Sets the body of lambda expression.
         /// </summary>
-        public override Expression Body { set => base.Body = new AsyncResultExpression(value); }
+        public override Expression Body { set => base.Body = new AsyncResultExpression(value, taskType); }
 
         /// <summary>
         /// Gets this lambda expression suitable for recursive call.
@@ -54,7 +54,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Return type of lambda function.
         /// </summary>
-        public override Type ReturnType => taskType.GetTaskType() ?? throw new GenericArgumentException<D>(ExceptionMessages.TaskTypeExpected, nameof(D));
+        public override Type ReturnType => taskType;
 
         /// <summary>
         /// The list lambda function parameters.
@@ -63,17 +63,14 @@ namespace DotNext.Metaprogramming
 
         internal override Expression Return(Expression result, bool addAsStatement)
         {
-            var asyncResult = new AsyncResultExpression(result);
+            var asyncResult = new AsyncResultExpression(result, taskType);
             return addAsStatement ? AddStatement(asyncResult) : asyncResult;
         }
 
         private protected override LambdaExpression Build(Expression body, bool tailCall)
         {
             if (body.Type != taskType)
-            {
-                var defaultResult = taskType == typeof(Task) ? new AsyncResultExpression() : new AsyncResultExpression(ReturnType.AsDefault());
-                body = body.AddEpilogue(true, defaultResult);
-            }
+                body = body.AddEpilogue(true, new AsyncResultExpression(taskType));
             Expression<D> lambda;
             using(var builder = new Runtime.CompilerServices.AsyncStateMachineBuilder<D>(Parameters))
             {

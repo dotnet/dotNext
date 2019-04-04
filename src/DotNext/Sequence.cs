@@ -9,13 +9,27 @@ namespace DotNext
 	/// </summary>
     public static class Sequence
     {
-		/// <summary>
-		/// Apply specified action to each collection element.
-		/// </summary>
-		/// <typeparam name="T">Type of elements in the collection.</typeparam>
-		/// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
-		/// <param name="action">An action to applied for each element.</param>
-		public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+        /// <summary>
+        /// Computes hash code for the sequence of objects.
+        /// </summary>
+        /// <param name="sequence">The sequence of elements.</param>
+		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>The hash code computed from each element in the sequence.</returns>
+        public static int SequenceHashCode(this IEnumerable<object> sequence, bool salted = true)
+        {
+            var hashCode = -910176598;
+            foreach (var item in sequence)
+                hashCode = hashCode * -1521134295 + (item is null ? 0 : item.GetHashCode());
+            return salted ? hashCode * -1521134295 + RandomExtensions.BitwiseHashSalt : hashCode;
+		}
+
+        /// <summary>
+        /// Apply specified action to each collection element.
+        /// </summary>
+        /// <typeparam name="T">Type of elements in the collection.</typeparam>
+        /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
+        /// <param name="action">An action to applied for each element.</param>
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
 		{
 			foreach (var item in collection)
 				action(item);

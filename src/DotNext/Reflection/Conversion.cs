@@ -27,7 +27,9 @@ namespace DotNext.Reflection
         {
             try
             {
-                Converter = Convert(Default(typeof(I)), typeof(O)).Method.CreateDelegate<Converter<I, O>>();
+                var inputParam = Parameter(typeof(I));
+                var convert = Convert(inputParam, typeof(O));
+                Converter = convert.Method is null ? Lambda<Converter<I, O>>(convert, inputParam).Compile() : convert.Method.CreateDelegate<Converter<I, O>>();
                 IsSupported = true;
             }
             catch (InvalidOperationException e)

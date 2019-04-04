@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.3.0</Version>
+    <Version>0.5.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Rich data types to work with unmanaged memory in CLS-compliant way</Description>
@@ -13,9 +13,11 @@
     <PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>unsafe;unmanaged;pointer</PackageTags>
+    <PackageTags>unsafe;unmanaged;pointer;pinvoke;interop</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Support of Large arrays (64-bit length)</PackageReleaseNotes>
+    <PackageReleaseNotes>Unmanaged array elements can be obtained using 64-bit index
+Introduce untyped access to the unmanaged memory. See UnmanagedMemory type.
+Fix pointer offset calculation bug in UnmanagedArray</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -35,7 +37,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.2.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.5.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
   <ItemGroup>

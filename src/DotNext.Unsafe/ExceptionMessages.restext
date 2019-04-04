@@ -8,3 +8,5 @@ InvalidIndexValue=Index should be in range [0, {0})
 InvalidOffsetValue=Offset should be in range [0, {0})
 TargetSizeMustBeMultipleOf=Target element size must be a multiple of the original element size
 ExpectedType=Value must be of type {0}
+StreamNotReadable=Stream is not readable
+StreamNotWritable=Stream is not writable

@@ -14,17 +14,45 @@ namespace DotNext
     public sealed class ValueType<T>: StrongBox<T>
         where T: struct
     {
-        private sealed class BitwiseComparer: IEqualityComparer<T>, IComparer<T>
+        /// <summary>
+        /// Represents bitwise comparer for value type <typeparamref name="T"/>.
+        /// </summary>
+        public sealed class BitwiseComparer : IEqualityComparer<T>, IComparer<T>
         {
-            internal static readonly BitwiseComparer Instance = new BitwiseComparer();
+            /// <summary>
+            /// Represents singleton instance of bitwise comparer.
+            /// </summary>
+            public static readonly BitwiseComparer Instance = new BitwiseComparer();
+
             private BitwiseComparer()
             {
             }
 
-            bool IEqualityComparer<T>.Equals(T first, T second) => ValueType<T>.BitwiseEquals(first, second);
+            /// <summary>
+            /// Determines whether two values are equal based on bitwise equality check.
+            /// </summary>
+            /// <param name="first">The first value to be compared.</param>
+            /// <param name="second">The second value to be compared.</param>
+            /// <returns><see langword="true"/>, if two values are equal; otherwise, <see langword="false"/>.</returns>
+            /// <seealso cref="BitwiseEquals(T, T)"/>
+            public bool Equals(T first, T second) => BitwiseEquals(first, second);
 
-            int IEqualityComparer<T>.GetHashCode(T obj) => ValueType<T>.BitwiseHashCode(obj);
-            int IComparer<T>.Compare(T first, T second) => ValueType<T>.BitwiseCompare(first, second);
+            /// <summary>
+            /// Computes bitwise hash code for the given value.
+            /// </summary>
+            /// <param name="obj">The value for which a hash code is to be returned.</param>
+            /// <returns>A hash code for the specified object.</returns>
+            /// <seealso cref="BitwiseHashCode(T)"/>
+            public int GetHashCode(T obj) => BitwiseHashCode(obj);
+
+            /// <summary>
+            /// Performs bitwise comparison between two values.
+            /// </summary>
+            /// <param name="first">The first value to compare.</param>
+            /// <param name="second">The second value to compare.</param>
+            /// <returns>A value that indicates the relative order of the objects being compared.</returns>
+            /// <seealso cref="BitwiseCompare(T, T)"/>
+            public int Compare(T first, T second) => BitwiseCompare(first, second);
         }
 
         /// <summary>
@@ -47,34 +75,6 @@ namespace DotNext
         public static readonly bool IsPrimitive = typeof(T).IsPrimitive;
 
         /// <summary>
-        /// Equality comparer for the value type based on its bitwise representation.
-        /// </summary>
-        public static IEqualityComparer<T> EqualityComparer
-        {
-            get
-            {
-                if(IsPrimitive)
-                    return EqualityComparer<T>.Default;
-                else
-                    return BitwiseComparer.Instance;
-            }
-        }
-
-        /// <summary>
-        /// Value comparer for the value type based on its bitwise representation.
-        /// </summary>
-        public static IComparer<T> Comparer
-        {
-            get
-            {
-                if(IsPrimitive)
-                    return Comparer<T>.Default;
-                else
-                    return BitwiseComparer.Instance;
-            }
-        }
-
-        /// <summary>
         /// Checks bitwise equality between two values of different value types.
         /// </summary>
         /// <remarks>
@@ -88,7 +88,7 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool BitwiseEquals<U>(T first, U second)
             where U : struct
-            => Size == ValueType<U>.Size && Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), (long)Size);
+            => Size == ValueType<U>.Size && Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
 
         /// <summary>
         /// Checks bitwise equality between two values of the same value type.
@@ -102,7 +102,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool BitwiseEquals(T first, T second)
-            => Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), (long)Size);
+            => Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
 
 		/// <summary>
 		/// Computes bitwise hash code for the specified value.
@@ -114,7 +114,7 @@ namespace DotNext
 		/// <param name="value">A value to be hashed.</param>
 		/// <param name="hash">Initial value of the hash.</param>
 		/// <param name="hashFunction">Hashing function.</param>
-		/// <param name="salted">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Bitwise hash code.</returns>
 		public static unsafe int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
 			=> Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, hash, hashFunction, salted);
@@ -123,18 +123,25 @@ namespace DotNext
 		/// Computes hash code for the structure content.
 		/// </summary>
 		/// <param name="value">Value to be hashed.</param>
-		/// <param name="salted">True to include randomized salt data into hashing; false to use data from memory only.</param>
+		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Content hash code.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]      
-		public static unsafe int BitwiseHashCode(T value, bool salted = true)
+		public static unsafe int BitwiseHashCode(T value, bool salted)
             => Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, salted);
-        
-		/// <summary>
-		/// Indicates that specified value type is the default value.
+
+        /// <summary>
+		/// Computes salted hash code for the structure content.
 		/// </summary>
-		/// <param name="value">Value to check.</param>
-		/// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
-		public static bool IsDefault(T value)
+		/// <param name="value">Value to be hashed.</param>
+		/// <returns>Content hash code.</returns>
+        public static int BitwiseHashCode(T value) => BitwiseHashCode(value, true);
+
+        /// <summary>
+        /// Indicates that specified value type is the default value.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
+        public static bool IsDefault(T value)
             => BitwiseEquals(value, default);
 
         /// <summary>
@@ -152,7 +159,7 @@ namespace DotNext
         /// <param name="second">The second value to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public static unsafe int BitwiseCompare(T first, T second)
-            => Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), (long)Size);
+            => Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
 
 		/// <summary>
 		/// Compares bits of two values of the different type.
@@ -164,7 +171,7 @@ namespace DotNext
 		public static unsafe int BitwiseCompare<U>(T first, U second)
             where U: struct
             => Size == ValueType<U>.Size ? 
-					Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), (long)Size) :
+					Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size) :
 					Size.CompareTo(ValueType<U>.Size);
 
         /// <summary>

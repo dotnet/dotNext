@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace DotNext
 {
-    using Reflection;
+    using static Reflection.TypeExtensions;
 
     /// <summary>
     /// Provides strongly typed way to reflect enum type.
     /// </summary>
     /// <typeparam name="E">Enum type to reflect.</typeparam>
-    public readonly struct Enum<E>: IEquatable<E>, IComparable<E>, IFormattable
-        where E : struct, Enum
+    /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
+    public readonly struct Enum<E>: IEquatable<E>, IComparable<E>, IFormattable, IComparable<Enum<E>>
+        where E : unmanaged, Enum
     {
         private readonly struct Tuple: IEquatable<Tuple>
         {
@@ -43,156 +44,148 @@ namespace DotNext
             public override int GetHashCode() => Name is null ? EqualityComparer<E>.Default.GetHashCode() : Name.GetHashCode();
         }
 
-        private abstract class Mapping : Dictionary<Tuple, (string Name, E Value)>
+        private sealed class Mapping : Dictionary<Tuple, Enum<E>>
         {
-            internal Mapping(out E min, out E max)
+            internal Mapping(out Enum<E> min, out Enum<E> max)
             {
                 var names = Enum.GetNames(typeof(E));
                 var values = (E[])Enum.GetValues(typeof(E));
                 min = max = default;
                 for (var index = 0L; index < names.LongLength; index++)
                 {
-                    (string name, E value) entry = (names[index], values[index]);
-                    Add(new Tuple(entry.name), entry);
-                    Add(new Tuple(entry.value), entry);
+                    var entry = new Enum<E>(values[index], names[index]);
+                    Add(new Tuple(entry.Name), entry);
+                    Add(new Tuple(entry.Value), entry);
                     //detect min and max
-                    min = Comparable.Min(min, entry.value, Comparer<E>.Default);
-                    max = Comparable.Max(max, entry.value, Comparer<E>.Default);
+                    min = entry.Min(min);
+                    max = entry.Max(max);
                 }
             }
         }
 
-        private abstract class NameToValueMapping: Mapping, IReadOnlyDictionary<string, E>
-        {
-            internal NameToValueMapping(out E min, out E max)
-                : base(out min, out max)
-            {
-            }
-
-            E IReadOnlyDictionary<string, E>.this[string name] => this[name].Value;
-
-            IEnumerable<string> IReadOnlyDictionary<string, E>.Keys => Keys.Select(tuple => tuple.Name);
-
-            IEnumerable<E> IReadOnlyDictionary<string, E>.Values => Values.Select(entry => entry.Value);
-
-            int IReadOnlyCollection<KeyValuePair<string, E>>.Count => Count / 2;
-
-            bool IReadOnlyDictionary<string, E>.ContainsKey(string name) => ContainsKey(name);
-
-            IEnumerator<KeyValuePair<string, E>> IEnumerable<KeyValuePair<string, E>>.GetEnumerator()
-                => Keys.Select(Conversion<Tuple, KeyValuePair<string, E>>.Converter.AsFunc()).GetEnumerator();
-            
-            bool IReadOnlyDictionary<string, E>.TryGetValue(string name, out E value)
-            {
-                if (TryGetValue(name, out var result))
-                {
-                    value = result.Value;
-                    return true;
-                }
-                else
-                {
-                    value = default;
-                    return false;
-                }
-            }
-        }
-
-        private sealed class ValueToNameMapping: NameToValueMapping, IReadOnlyDictionary<E, string>
-        {
-            internal ValueToNameMapping(out E min, out E max)
-                : base(out min, out max)
-            {
-            }
-
-            string IReadOnlyDictionary<E, string>.this[E value] => this[value].Name;
-
-            IEnumerable<E> IReadOnlyDictionary<E, string>.Keys => Keys.Select(tuple => tuple.Value);
-
-            IEnumerable<string> IReadOnlyDictionary<E, string>.Values => Values.Select(entry => entry.Name);
-
-            int IReadOnlyCollection<KeyValuePair<E, string>>.Count => Count / 2;
-
-            bool IReadOnlyDictionary<E, string>.ContainsKey(E value) => ContainsKey(value);
-
-            IEnumerator<KeyValuePair<E, string>> IEnumerable<KeyValuePair<E, string>>.GetEnumerator()
-                => Keys.Select(Conversion<Tuple, KeyValuePair<E, string>>.Converter.AsFunc()).GetEnumerator();
-
-            bool IReadOnlyDictionary<E, string>.TryGetValue(E key, out string value)
-            {
-                if (TryGetValue(key, out var result))
-                {
-                    value = result.Name;
-                    return true;
-                }
-                else
-                {
-                    value = default;
-                    return false;
-                }
-            }
-        }
-
-        private static readonly ValueToNameMapping mapping;
+        private static readonly Mapping mapping = new Mapping(out MinValue, out MaxValue);
 
         /// <summary>
         /// Maximum enum value.
         /// </summary>
-        public static readonly E MaxValue;
+        public static readonly Enum<E> MaxValue;
         
         /// <summary>
         /// Minimum enum value.
         /// </summary>
-        public static readonly E MinValue;
+        public static readonly Enum<E> MinValue;
 
-        static Enum()
+        /// <summary>
+        /// Returns an indication whether a constant with a specified value exists in a enumeration of type <typeparamref name="E"/>.
+        /// </summary>
+        /// <param name="value">The value of a constant in <typeparamref name="E"/>.</param>
+        /// <returns><see langword="true"/> if a constant in <typeparamref name="E"/> has a value equal to <paramref name="value"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool IsDefined(E value) => mapping.ContainsKey(value);
+
+        /// <summary>
+        /// Returns an indication whether a constant with a specified name exists in a enumeration of type <typeparamref name="E"/>.
+        /// </summary>
+        /// <param name="name">The name of a constant in <typeparamref name="E"/>.</param>
+        /// <returns><see langword="true"/> if a constant in <typeparamref name="E"/> has a name equal to <paramref name="name"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool IsDefined(string name) => mapping.ContainsKey(name);
+
+        /// <summary>
+        /// Gets enum member by its value.
+        /// </summary>
+        /// <param name="value">The enum value.</param>
+        /// <returns>The enum member.</returns>
+        public static Enum<E> GetMember(E value) => mapping.TryGetValue(value, out var result) ? result : new Enum<E>(value, null);
+
+        /// <summary>
+        /// Attempts to retrieve enum member which constant value is equal to the given value.
+        /// </summary>
+        /// <param name="value">Enum value.</param>
+        /// <param name="member">Enum member which constant value is equal to <paramref name="value"/>.</param>
+        /// <returns><see langword="true"/>, if there are member declared the given constant value exist; otherwise, <see langword="false"/>.</returns>
+        public static bool TryGetMember(E value, out Enum<E> member) => mapping.TryGetValue(value, out member);
+
+        /// <summary>
+        /// Attempts to retrieve enum member which name is equal to the given value.
+        /// </summary>
+        /// <param name="name">The name of a constant.</param>
+        /// <param name="member">Enum member which name is equal to <paramref name="name"/>.</param>
+        /// <returns><see langword="true"/>, if there are member declared the given constant value exist; otherwise, <see langword="false"/>.</returns>
+        public static bool TryGetMember(string name, out Enum<E> member)
         {
-            mapping = new ValueToNameMapping(out MinValue, out MaxValue);
+            if(Enum.TryParse<E>(name, out var value))
+            {
+                member = new Enum<E>(value, name);
+                return true;
+            }
+            else
+            {
+                member = default;
+                return false;
+            }
         }
+
+        /// <summary>
+        /// Gets enum member by its case-sensitive name.
+        /// </summary>
+        /// <param name="name">The name of the enum value.</param>
+        /// <returns>The enum member.</returns>
+        /// <exception cref="KeyNotFoundException">Enum member with the requested name doesn't exist in enum.</exception>
+        public static Enum<E> GetMember(string name) => mapping[name];
+
+        /// <summary>
+        /// Gets declared enum members.
+        /// </summary>
+        public static IReadOnlyCollection<Enum<E>> Members => mapping.Values;
 
         /// <summary>
         /// Gets the underlying type of the specified enumeration.
         /// </summary>
         public static Type UnderlyingType => Enum.GetUnderlyingType(typeof(E));
-        
-        /// <summary>
-        /// Gets mapping between enum value name and its actual value.
-        /// </summary>
-        public static IReadOnlyDictionary<string, E> Names => mapping;
 
         /// <summary>
-        /// Gets mapping between enum actual value and its name.
+        /// Gets code of the underlying primitive type.
         /// </summary>
-        public static IReadOnlyDictionary<E, string> Values => mapping;
+        public static TypeCode UnderlyingTypeCode => UnderlyingType.GetTypeCode();
 
-        private readonly E value;
+        private readonly string name;
 
-        private Enum(E value) => this.value = value;
+        private Enum(E value, string name)
+        {
+            Value = value;
+            this.name = name;
+        }
+
+        /// <summary>
+        /// Represents value of the enum member.
+        /// </summary>
+        public E Value { get; }
+
+        /// <summary>
+        /// Represents name of the enum member.
+        /// </summary>
+        public string Name => name ?? Value.ToString();
 
         /// <summary>
         /// Converts typed enum wrapper into actual enum value.
         /// </summary>
         /// <param name="en">Enum wrapper to convert.</param>
-        public static implicit operator E(Enum<E> en) => en.value;
-
-        /// <summary>
-        /// Wraps enum value.
-        /// </summary>
-        /// <param name="value">The value to wrap.</param>
-        public static implicit operator Enum<E>(E value) => new Enum<E>(value);
+        public static implicit operator E(in Enum<E> en) => en.Value;
 
         /// <summary>
         /// Compares this enum value with other.
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns>Comparison result.</returns>
-        public int CompareTo(E other) => Comparer<E>.Default.Compare(value, other);
+        public int CompareTo(E other) => Comparer<E>.Default.Compare(Value, other);
+
+        int IComparable<Enum<E>>.CompareTo(Enum<E> other) => CompareTo(other);
 
         /// <summary>
         /// Determines whether this value equals to the other enum value.
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns>Equality check result.</returns>
-        public bool Equals(E other) => EqualityComparer<E>.Default.Equals(value, other);
+        public bool Equals(E other) => EqualityComparer<E>.Default.Equals(Value, other);
 
         /// <summary>
         /// Determines whether this value equals to the other enum value.
@@ -216,14 +209,14 @@ namespace DotNext
         /// Gets hash code of the enum value.
         /// </summary>
         /// <returns>The hash code of the enum value.</returns>
-        public override int GetHashCode() => EqualityComparer<E>.Default.GetHashCode(value);
+        public override int GetHashCode() => EqualityComparer<E>.Default.GetHashCode(Value);
 
         /// <summary>
         /// Returns textual representation of the enum value.
         /// </summary>
         /// <returns>The textual representation of the enum value.</returns>
-        public override string ToString() => value.ToString();
+        public override string ToString() => Value.ToString();
 
-        string IFormattable.ToString(string format, IFormatProvider provider) => value.ToString();
+        string IFormattable.ToString(string format, IFormatProvider provider) => Value.ToString();
     }
 }

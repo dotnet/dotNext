@@ -1,30 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<Version>0.5.0</Version>
-	<Authors>Roman Sakno</Authors>
-	<Product>.NEXT Family of Libraries</Product>
-	<Description>Strongly typed reflection, concept types (type classes), fast reflection</Description>
-	<Copyright>Copyright © Roman Sakno 2019</Copyright>
-	<PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
-	<PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
-	<RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
-	<RepositoryType>git</RepositoryType>
-	<PackageTags>Concept;Reflection;Typeclass</PackageTags>
-	<PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Enable tail call optimization for some delegate instances generated for the reflected methods.</PackageReleaseNotes>
+    <Version>0.5.0</Version>
+    <Authors>Roman Sakno</Authors>
+    <Product>.NEXT Family of Libraries</Product>
+    <Description>Asynchronous locks and .NET threading extensions</Description>
+    <Copyright>Copyright © Roman Sakno 2019</Copyright>
+    <PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>async;lock;objectpool</PackageTags>
+    <PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
+    <PackageReleaseNotes>Asynchronous exclusive and reader/writer locks.</PackageReleaseNotes>
   </PropertyGroup>
 
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <SignAssembly>true</SignAssembly>
     <DelaySign>false</DelaySign>

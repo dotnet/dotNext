@@ -11,7 +11,7 @@ namespace DotNext.Collections.Generic
     /// Represents a strongly typed list of objects that is allocated in unmanaged memory.
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
-    public struct UnmanagedList<T>: IList<T>, IReadOnlyList<T>, IDisposable, IUnmanagedMemory<T>
+    public struct UnmanagedList<T>: IList<T>, IDisposable, IUnmanagedList<T>
         where T : unmanaged
     {
         private const int DefaultCapacity = 4;
@@ -37,6 +37,11 @@ namespace DotNext.Collections.Generic
         }
 
         /// <summary>
+        /// Indicates that this list is empty.
+        /// </summary>
+        public bool IsEmpty => array.IsEmpty || count == 0;
+
+        /// <summary>
         /// Gets capacity of this list.
         /// </summary>
         public int Capacity => (int)array.Length;
@@ -44,19 +49,7 @@ namespace DotNext.Collections.Generic
         private void EnsureCapacity(int capacity)
         {
             if(array.Length < capacity)
-            {
-                var newCapacity = array.Length == 0 ? DefaultCapacity : checked(array.Length * 2);
-                newCapacity = newCapacity.LowerBounded(capacity);
-                var newArray = new UnmanagedArray<T>(newCapacity);
-                //copy elements from existing array and, after that, release
-                //memory associated with the array
-                if (array.Length > 0)
-                {
-                    array.WriteTo(newArray);
-                    array.Dispose();
-                }
-                array = newArray;
-            }
+                array.Length = array.IsEmpty ? DefaultCapacity : checked(array.Length * 2).LowerBounded(capacity);
         }
 
         /// <summary>
@@ -64,17 +57,17 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="index">The index of the item.</param>
         /// <returns>The list item.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">Index out of range.</exception>
+        /// <exception cref="IndexOutOfRangeException">Index out of range.</exception>
         public T this[int index]
         {
-            get => index >= 0 && index < count ? array[index] : throw new ArgumentOutOfRangeException(nameof(index));
+            get => index >= 0 && index < count ? array[index] : throw new IndexOutOfRangeException(ExceptionMessages.InvalidIndexValue(count));
 
             set
             {
                 if (index >= 0 && index < count)
                     array[index] = value;
                 else
-                    throw new ArgumentOutOfRangeException(nameof(index));
+                    throw new IndexOutOfRangeException(ExceptionMessages.InvalidIndexValue(count));
             }
         }
 
@@ -91,7 +84,10 @@ namespace DotNext.Collections.Generic
 
         long IUnmanagedMemory.Size => array.Size;
 
-        IntPtr IUnmanagedMemory.Address => array.Address;
+        /// <summary>
+        /// Gets address of the unmanaged memory.
+        /// </summary>
+        public IntPtr Address => array.Address;
 
         /// <summary>
         /// Adds a new item to this collection.
@@ -200,7 +196,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="item">The object to locate in the list.</param>
         /// <returns>The zero-based index of the first occurence of the given item; otherwise, -1.</returns>
-        public int IndexOf(T item) => IndexOf(item, ValueType<T>.EqualityComparer);
+        public int IndexOf(T item) => IndexOf(item, ValueType<T>.BitwiseComparer.Instance);
 
         /// <summary>
         /// Searches item matching to the given predicate in this list, and returns 
@@ -215,7 +211,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="item">The object to locate in the list.</param>
         /// <returns>The zero-based index of the last occurence of the given item; otherwise, -1.</returns>
-        public int LastIndexOf(T item) => LastIndexOf(item, ValueType<T>.EqualityComparer);
+        public int LastIndexOf(T item) => LastIndexOf(item, ValueType<T>.BitwiseComparer.Instance);
 
         /// <summary>
         /// Searches for the specified object and returns the zero-based index of the last occurrence within the entire list.
@@ -267,7 +263,7 @@ namespace DotNext.Collections.Generic
         public void Insert(int index, T item)
         {
             if (index < 0 || index > count)
-                throw new ArgumentOutOfRangeException(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(index), index, ExceptionMessages.InvalidIndexValue(count));
             EnsureCapacity(count + 1);
             if (index < count)
             {
@@ -320,7 +316,7 @@ namespace DotNext.Collections.Generic
         public void RemoveAt(int index)
         {
             if (index < 0 || index >= count)
-                throw new ArgumentOutOfRangeException(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(index), index, ExceptionMessages.InvalidIndexValue(count));
             var pointer = array + index + 1;
             pointer.WriteTo(pointer - 1, count - index);
             count -= 1;
@@ -331,12 +327,8 @@ namespace DotNext.Collections.Generic
         /// </summary>
         public void TrimExcess()
         {
-            if (count == 0 || array.Length == 0 || count == array.Length)
-                return;
-            var newArray = new UnmanagedArray<T>(count);
-            array.WriteTo(newArray, 0, newArray.Length);
-            array.Dispose();
-            array = newArray;
+            if (count > 0 && array.Length > 0)
+                array.Length = count;
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -351,8 +343,6 @@ namespace DotNext.Collections.Generic
         }
 
         Pointer<U> IUnmanagedMemory.ToPointer<U>() => array.ToPointer<U>();
-
-        Pointer<byte> IUnmanagedMemory.ToPointer(long offset) => array.ToPointer(offset);
 
         /// <summary>
         /// Returns deep copy of this list.
