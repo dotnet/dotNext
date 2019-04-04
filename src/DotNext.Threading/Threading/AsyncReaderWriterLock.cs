@@ -132,11 +132,6 @@ namespace DotNext.Threading
                 return true;
             }
         }
-        
-        /// <summary>
-        /// Gets a value that indicates the recursion policy of the reader/writer lock.
-        /// </summary>
-        public LockRecursionPolicy RecursionPolicy => LockRecursionPolicy.NoRecursion;
 
         /// <summary>
         /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
