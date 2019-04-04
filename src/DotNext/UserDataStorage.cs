@@ -22,7 +22,7 @@ namespace DotNext
 
             internal V Get<V>(UserDataSlot<V> slot, V defaultValue)
             {
-                using (synchronizer.ReadLock())
+                using (synchronizer.AcquireReadLock())
                 {
                     return slot.GetUserData(this, defaultValue);
                 }
@@ -33,13 +33,13 @@ namespace DotNext
                 V userData;
                 //fast path - read user data if it is already exists
                 //do not use UpgradableReadLock due to performance reasons
-                using (synchronizer.ReadLock())
+                using (synchronizer.AcquireReadLock())
                 {
                     if (slot.GetUserData(this, out userData))
                         return userData;
                 }
                 //non-fast path, no user data presented
-                using (synchronizer.WriteLock())
+                using (synchronizer.AcquireWriteLock())
                 {
                     if (!slot.GetUserData(this, out userData))
                         slot.SetUserData(this, userData = valueFactory());
@@ -49,7 +49,7 @@ namespace DotNext
 
             internal bool Get<V>(UserDataSlot<V> slot, out V userData)
             {
-                using (synchronizer.ReadLock())
+                using (synchronizer.AcquireReadLock())
                 {
                     return slot.GetUserData(this, out userData);
                 }
@@ -57,7 +57,7 @@ namespace DotNext
 
             internal void Set<V>(UserDataSlot<V> slot, V userData)
             {
-                using (synchronizer.WriteLock())
+                using (synchronizer.AcquireWriteLock())
                 {
                     slot.SetUserData(this, userData);
                 }
@@ -65,7 +65,7 @@ namespace DotNext
 
             internal bool Remove<V>(UserDataSlot<V> slot)
             {
-                using (synchronizer.WriteLock())
+                using (synchronizer.AcquireWriteLock())
                 {
                     return slot.RemoveUserData(this);
                 }
@@ -74,7 +74,7 @@ namespace DotNext
             internal bool Remove<V>(UserDataSlot<V> slot, out V userData)
             {
                 //fast path if user data doesn't exist
-                using(synchronizer.ReadLock())
+                using(synchronizer.AcquireReadLock())
                 {
                     if(!slot.Contains(this))
                     {
@@ -83,7 +83,7 @@ namespace DotNext
                     }
                 }
                 //non-fast path, user data exists, so remove it
-                using(synchronizer.WriteLock())
+                using(synchronizer.AcquireWriteLock())
                 {
                     userData = slot.GetUserData(this, default);
                     return slot.RemoveUserData(this);

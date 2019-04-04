@@ -242,7 +242,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void ExitUpgradableReadLock()
         {
-            if (state.writeLock || !state.upgradable)
+            if (state.writeLock || !state.upgradable || state.readLocks == 0L)
                 throw new SynchronizationLockException(ExceptionMessages.NotInUpgradableReadLock);
             state.upgradable = false;
             if (--state.readLocks == 0L && head is WriteLockNode writeLock) //no more readers, write lock can be acquired
@@ -273,7 +273,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void ExitReadLock()
         {
-            if (state.writeLock || state.readLocks == 1 && state.upgradable)
+            if (state.writeLock || state.readLocks == 1L && state.upgradable || state.readLocks == 0L)
                 throw new SynchronizationLockException(ExceptionMessages.NotInReadLock);
             else if (--state.readLocks == 0L && head is WriteLockNode writeLock)
             {

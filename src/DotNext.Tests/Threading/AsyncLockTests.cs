@@ -33,15 +33,17 @@ namespace DotNext.Threading
             {
                 var holder = await @lock.TryAcquire(TimeSpan.Zero);
                 True(IsAlive(holder));
-                var task = Task.Factory.StartNew(async () =>
+                var task = new TaskCompletionSource<bool>();
+                ThreadPool.QueueUserWorkItem(async state =>
                 {
                     False(IsAlive(await @lock.TryAcquire(TimeSpan.FromMilliseconds(10))));
                     True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
                     (await @lock.Acquire(TimeSpan.FromHours(1))).Dispose();
-                }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                    task.SetResult(true);
+                });
                 are.WaitOne();
                 holder.Dispose();
-                await task;
+                await task.Task;
             }
         }
     }

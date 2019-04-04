@@ -23,32 +23,49 @@ namespace DotNext.Threading
             where T : class
             => obj.GetUserData().GetOrSet(ExclusiveLock, AsyncLock.Exclusive);
 
-        public static Task<AsyncLock.Holder> LockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetExclusiveLock().Acquire(timeout);
+        /// <summary>
+        /// Blocks the current thread until it can enter the semaphore.
+        /// </summary>
+        /// <param name="semaphore">The semaphore.</param>
+        /// <param name="token">The token that can be used to cancel lock acquisition.</param>
+        /// <returns>The acquired semaphore lock.</returns>
+        public static Task<AsyncLock.Holder> AcquireLock(this SemaphoreSlim semaphore, CancellationToken token) => AsyncLock.Semaphore(semaphore).Acquire(token);
 
-        public static Task<AsyncLock.Holder> LockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetExclusiveLock().Acquire(token);
+        /// <summary>
+        /// Blocks the current thread until it can enter the semaphore.
+        /// </summary>
+        /// <param name="semaphore">The semaphore.</param>
+        /// <param name="timeout">The amount of time to wait for the lock.</param>
+        /// <returns>The acquired semaphore lock.</returns>
+        /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+        public static Task<AsyncLock.Holder> AcquireLock(this SemaphoreSlim semaphore, TimeSpan timeout) => AsyncLock.Semaphore(semaphore).Acquire(timeout);
 
-        public static Task<AsyncLock.Holder> ReadLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.ReadLock(rwLock, false).Acquire(timeout);
+        public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetExclusiveLock().Acquire(timeout);
 
-        public static Task<AsyncLock.Holder> ReadLockAsync(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.ReadLock(rwLock, false).Acquire(token);
+        public static Task<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetExclusiveLock().Acquire(token);
 
-        public static Task<AsyncLock.Holder> ReadLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().ReadLockAsync(timeout);
+        public static Task<AsyncLock.Holder> AcquireReadLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.ReadLock(rwLock, false).Acquire(timeout);
 
-        public static Task<AsyncLock.Holder> ReadLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().ReadLockAsync(token);
+        public static Task<AsyncLock.Holder> AcquireReadLockAsync(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.ReadLock(rwLock, false).Acquire(token);
 
-        public static Task<AsyncLock.Holder> WriteLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.WriteLock(rwLock).Acquire(timeout);
+        public static Task<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().AcquireReadLockAsync(timeout);
 
-        public static Task<AsyncLock.Holder> WriteLockAsync(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.WriteLock(rwLock).Acquire(token);
+        public static Task<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().AcquireReadLockAsync(token);
 
-        public static Task<AsyncLock.Holder> WriteLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().WriteLockAsync(timeout);
+        public static Task<AsyncLock.Holder> AcquireWriteLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.WriteLock(rwLock).Acquire(timeout);
 
-        public static Task<AsyncLock.Holder> WriteLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().WriteLockAsync(token);
+        public static Task<AsyncLock.Holder> AcquireWriteLockAsync(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.WriteLock(rwLock).Acquire(token);
 
-        public static Task<AsyncLock.Holder> UpgradableReadLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.ReadLock(rwLock, true).Acquire(timeout);
+        public static Task<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().AcquireWriteLockAsync(timeout);
 
-        public static Task<AsyncLock.Holder> UpgradableReadLockAsync(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.ReadLock(rwLock, true).Acquire(token);
+        public static Task<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().AcquireWriteLockAsync(token);
 
-        public static Task<AsyncLock.Holder> UpgradableReadLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().UpgradableReadLockAsync(timeout);
+        public static Task<AsyncLock.Holder> AcquireUpgradableReadLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.ReadLock(rwLock, true).Acquire(timeout);
 
-        public static Task<AsyncLock.Holder> UpgradableReadLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().UpgradableReadLockAsync(token);
+        public static Task<AsyncLock.Holder> AcquireUpgradableReadLockAsync(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.ReadLock(rwLock, true).Acquire(token);
+
+        public static Task<AsyncLock.Holder> AcquireUpgradableReadLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().AcquireUpgradableReadLockAsync(timeout);
+
+        public static Task<AsyncLock.Holder> AcquireUpgradableReadLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().AcquireUpgradableReadLockAsync(token);
     }
 }

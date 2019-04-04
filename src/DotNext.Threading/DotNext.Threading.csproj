@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
@@ -35,5 +35,11 @@
   <ItemGroup>
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext" Version="0.4.0" Condition="'$(Configuration)'=='Release'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ExceptionMessages.restext">
+      <Generator></Generator>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
