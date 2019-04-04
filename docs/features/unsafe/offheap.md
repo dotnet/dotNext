@@ -26,7 +26,7 @@ struct Complex
     public double Image, Real;
 }
 
-using(var c = UnmanagedMemory<Complex>.Alloc())
+using(var c = new UnmanagedMemory<Complex>(false))
 {
     c.Ref.Image = 20;
     c.Ref.Real = 30;
@@ -42,7 +42,7 @@ struct Complex
     public double Image, Real;
 }
 
-using(var c = UnmanagedMemory<Complex>.Box(new Complex { Image = 20, Real = 30 }))
+using(var c = new UnmanagedMemory<Complex>(new Complex { Image = 20, Real = 30 }))
 {
 }
 ```
@@ -56,7 +56,7 @@ struct Complex
     public double Image, Real;
 }
 
-using(var c = UnmanagedMemory<Complex>.Box(new Complex { Image = 20, Real = 30 }))
+using(var c = new UnmanagedMemory<Complex>(new Complex { Image = 20, Real = 30 }))
 {
     Pointer<Complex> ptr = c;
     Pointer<double> pImage = c.As<double>();
