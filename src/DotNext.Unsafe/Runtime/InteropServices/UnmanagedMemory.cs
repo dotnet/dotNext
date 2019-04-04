@@ -598,7 +598,7 @@ namespace DotNext.Runtime.InteropServices
         public static implicit operator T(UnmanagedMemory<T> memory) => memory.Value;
 
         /// <summary>
-        /// Provides untyped access to the unmanaged memory.
+        /// Provides unstructured access to the unmanaged memory.
         /// </summary>
         /// <param name="memory">The memory block reference.</param>
         public static implicit operator UnmanagedMemory(UnmanagedMemory<T> memory) => new UnmanagedMemory(memory.Address, Pointer<T>.Size);

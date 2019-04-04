@@ -893,7 +893,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
-        /// Provides untyped access to the unmanaged memory.
+        /// Provides unstructured access to the unmanaged memory.
         /// </summary>
         /// <param name="array">The unmanaged array.</param>
         public static implicit operator UnmanagedMemory(UnmanagedArray<T> array) => new UnmanagedMemory(array.Address, Pointer<T>.Size);
