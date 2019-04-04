@@ -9,11 +9,13 @@ namespace DotNext.Threading
     using Tasks;
 
     /// <summary>
-    /// Represents asynchronous lock.
+    /// Represents asynchronous mutually exclusive lock.
     /// </summary>
-    internal sealed class AsyncLockOwner : Disposable
+    public sealed class AsyncExclusiveLock : Disposable
     {
-        private sealed class LockNode : TaskCompletionSource<bool>
+        private const TaskContinuationOptions CheckOnTimeoutOptions = TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion;
+
+        internal class LockNode : TaskCompletionSource<bool>
         {
             private LockNode previous;
             private LockNode next;
@@ -54,7 +56,11 @@ namespace DotNext.Threading
         private LockNode head, tail;
         private bool locked;
 
-        private LockNode NewLockNode() => head is null ? head = tail = new LockNode() : tail = new LockNode(tail);
+        private static void CheckOnTimeout(Task<bool> task)
+        {
+            if (!task.Result)
+                throw new TimeoutException();
+        }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private bool RemoveNode(LockNode node)
@@ -88,7 +94,7 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal Task<bool> TryAcquire(TimeSpan timeout, CancellationToken token)
+        public Task<bool> TryAcquire(TimeSpan timeout, CancellationToken token)
         {
             if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
@@ -106,8 +112,14 @@ namespace DotNext.Threading
             return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? TryAcquire(tail, timeout, token) : tail.Task;
         }
 
+        public Task<bool> TryAcquire(TimeSpan timeout) => TryAcquire(timeout, default);
+
+        public Task Acquire(TimeSpan timeout) => TryAcquire(timeout).ContinueWith(CheckOnTimeout, CheckOnTimeoutOptions);
+
+        public Task Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token).ContinueWith(CheckOnTimeout, CheckOnTimeoutOptions);
+
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal void Release()
+        public void Release()
         {
             var waiterTask = head;
             if(waiterTask is null)

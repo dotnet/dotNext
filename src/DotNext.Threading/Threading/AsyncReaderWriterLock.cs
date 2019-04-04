@@ -18,52 +18,15 @@ namespace DotNext.Threading
     {
         private const TaskContinuationOptions CheckOnTimeoutOptions = TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion;
 
-        private abstract class LockNode: TaskCompletionSource<bool>
-        {
-            private LockNode previous;
-            private LockNode next;
-
-            private protected LockNode(LockNode previous)
-            {
-                previous.next = this;
-                this.previous = previous;
-            }
-            
-            private protected LockNode() => previous = next = null;
-
-            internal void DetachNode()
-            {
-                if (!(previous is null))
-                    previous.next = next;
-                if (!(next is null))
-                    next.previous = previous;
-                next = previous = null;
-            }
-
-            internal LockNode CleanupAndGotoNext()
-            {
-                var next = this.next;
-                this.next = previous = null;
-                return next;
-            }
-
-            internal LockNode Previous => previous;
-
-            internal LockNode Next => next;
-
-            internal bool IsRoot => previous is null && next is null;
-            internal void Complete() => SetResult(true);
-        }
-
-        private sealed class WriteLockNode : LockNode
+        private sealed class WriteLockNode : AsyncExclusiveLock.LockNode
         {
             private WriteLockNode() : base() {}
-            private WriteLockNode(LockNode previous) : base(previous){}
+            private WriteLockNode(AsyncExclusiveLock.LockNode previous) : base(previous){}
 
-            internal static WriteLockNode Create(LockNode previous) => previous is null ? new WriteLockNode() : new WriteLockNode(previous);
+            internal static WriteLockNode Create(AsyncExclusiveLock.LockNode previous) => previous is null ? new WriteLockNode() : new WriteLockNode(previous);
         }
 
-        private sealed class ReadLockNode: LockNode
+        private sealed class ReadLockNode: AsyncExclusiveLock.LockNode
         {
             internal readonly bool Upgradable;
 
@@ -73,15 +36,15 @@ namespace DotNext.Threading
                 Upgradable = upgradable;
             }
 
-            private ReadLockNode(LockNode previous, bool upgradable) 
+            private ReadLockNode(AsyncExclusiveLock.LockNode previous, bool upgradable) 
                 : base(previous)
             {
                 Upgradable = upgradable;
             }
 
-            internal static ReadLockNode CreateRegular(LockNode previous) => previous is null ? new ReadLockNode(false) : new ReadLockNode(previous, false);
+            internal static ReadLockNode CreateRegular(AsyncExclusiveLock.LockNode previous) => previous is null ? new ReadLockNode(false) : new ReadLockNode(previous, false);
 
-            internal static ReadLockNode CreateUpgradable(LockNode previous) => previous is null ? new ReadLockNode(true) : new ReadLockNode(previous, true);
+            internal static ReadLockNode CreateUpgradable(AsyncExclusiveLock.LockNode previous) => previous is null ? new ReadLockNode(true) : new ReadLockNode(previous, true);
         }
 
         //describes internal state of reader/writer lock
@@ -100,11 +63,11 @@ namespace DotNext.Threading
 
         private delegate bool LockAcquisition(ref State state);
 
-        private LockNode head, tail;
+        private AsyncExclusiveLock.LockNode head, tail;
         private State state;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private bool RemoveNode(LockNode node)
+        private bool RemoveNode(AsyncExclusiveLock.LockNode node)
         {
             var inList = ReferenceEquals(head, node) || !node.IsRoot;
             if (ReferenceEquals(head, node))
@@ -121,7 +84,7 @@ namespace DotNext.Threading
                 throw new TimeoutException();
         }
 
-        private async Task<bool> TryAcquire(LockNode node, TimeSpan timeout, CancellationToken token)
+        private async Task<bool> TryAcquire(AsyncExclusiveLock.LockNode node, TimeSpan timeout, CancellationToken token)
         {
             using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token, default) : new CancellationTokenSource())
             {
@@ -141,7 +104,7 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private Task<bool> TryEnter(LockAcquisition acquisition, Func<LockNode, LockNode> lockNodeFactory, TimeSpan timeout, CancellationToken token)
+        private Task<bool> TryEnter(LockAcquisition acquisition, Func<AsyncExclusiveLock.LockNode, AsyncExclusiveLock.LockNode> lockNodeFactory, TimeSpan timeout, CancellationToken token)
         {
             if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
@@ -224,7 +187,7 @@ namespace DotNext.Threading
         private void ProcessReadLocks()
         {
             if (head is ReadLockNode readLock)
-                for (LockNode next; !(readLock is null); readLock = next as ReadLockNode)
+                for (AsyncExclusiveLock.LockNode next; !(readLock is null); readLock = next as ReadLockNode)
                 {
                     next = readLock.Next;
                     //remove all read locks and leave upgradable read locks until first write lock

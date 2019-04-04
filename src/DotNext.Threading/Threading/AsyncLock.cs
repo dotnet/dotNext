@@ -48,7 +48,7 @@ namespace DotNext.Threading
                 switch (type)
                 {
                     case Type.Exclusive:
-                        As<AsyncLockOwner>(lockedObject).Release();
+                        As<AsyncExclusiveLock>(lockedObject).Release();
                         break;
                     case Type.ReadLock:
                         As<AsyncReaderWriterLock>(lockedObject).ExitReadLock();
@@ -94,7 +94,7 @@ namespace DotNext.Threading
             this.owner = owner;
         }
 
-        public static AsyncLock Exclusive() => new AsyncLock(new AsyncLockOwner(), Type.Exclusive, true);
+        public static AsyncLock Exclusive() => new AsyncLock(new AsyncExclusiveLock(), Type.Exclusive, true);
 
         public static AsyncLock Semaphore(SemaphoreSlim semaphore) => new AsyncLock(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), Type.Semaphore, false);
 
@@ -121,7 +121,7 @@ namespace DotNext.Threading
             switch(type)
             {
                 case Type.Exclusive:
-                    return As<AsyncLockOwner>(lockedObject).TryAcquire(timeout, token);
+                    return As<AsyncExclusiveLock>(lockedObject).TryAcquire(timeout, token);
                 case Type.ReadLock:
                     return As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLock(timeout, token);
                 case Type.UpgradableReadLock:
