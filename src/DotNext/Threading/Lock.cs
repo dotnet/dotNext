@@ -24,7 +24,7 @@ namespace DotNext.Threading
         }
 
         /// <summary>
-        /// Represents acquired lock.
+        /// Represents acquired lock holder.
         /// </summary>
         /// <remarks>
         /// The lock can be released by calling <see cref="Dispose()"/>.

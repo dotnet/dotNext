@@ -107,7 +107,10 @@ namespace DotNext.Threading
             => new AsyncLock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.WriteLock, false);
 
         private static Holder CheckOnTimeout(Task<Holder> task)
-            => task.Result ? task.Result : throw new TimeoutException();
+        {
+            var holder = task.Result;
+            return holder ? holder : throw new TimeoutException();
+        }
 
         public Task<Holder> Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token).ContinueWith(CheckOnTimeout, ContinuationOptions);
 

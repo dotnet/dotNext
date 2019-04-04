@@ -13,14 +13,6 @@ namespace DotNext.Threading
         private static readonly UserDataSlot<AsyncReaderWriterLock> ReaderWriterLock = UserDataSlot<AsyncReaderWriterLock>.Allocate();
         private static readonly UserDataSlot<AsyncLock> ExclusiveLock = UserDataSlot<AsyncLock>.Allocate();
 
-        private static Task<AsyncLock.Holder> Acquire<T>(T obj, Converter<T, AsyncLock> locker, TimeSpan timeout)
-            where T : class
-            => locker(obj).Acquire(timeout);
-
-        private static Task<AsyncLock.Holder> Acquire<T>(T obj, Converter<T, AsyncLock> locker, CancellationToken token)
-            where T : class
-            => locker(obj).Acquire(token);
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static AsyncReaderWriterLock GetReaderWriterLock<T>(this T obj)
             where T : class
@@ -31,17 +23,32 @@ namespace DotNext.Threading
             where T : class
             => obj.GetUserData().GetOrSet(ExclusiveLock, AsyncLock.Exclusive);
 
-        public static Task<AsyncLock.Holder> LockAsync<T>(this T obj, TimeSpan timeout) where T : class => Acquire(obj, GetExclusiveLock, timeout);
+        public static Task<AsyncLock.Holder> LockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetExclusiveLock().Acquire(timeout);
 
-        public static Task<AsyncLock.Holder> LockAsync<T>(this T obj, CancellationToken token) where T : class => Acquire(obj, GetExclusiveLock, token);
+        public static Task<AsyncLock.Holder> LockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetExclusiveLock().Acquire(token);
 
-        public static Task<AsyncLock.Holder> ReadLockAsync(this AsyncReaderWriterLock @lock, TimeSpan timeout) => Acquire(@lock, AsyncLock.ReadLock, timeout);
+        public static Task<AsyncLock.Holder> ReadLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.ReadLock(rwLock, false).Acquire(timeout);
 
-        public static Task<AsyncLock.Holder> ReadLockAsync(this AsyncReaderWriterLock @lock, CancellationToken token) => Acquire(@lock, AsyncLock.ReadLock, token);
+        public static Task<AsyncLock.Holder> ReadLockAsync(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.ReadLock(rwLock, false).Acquire(token);
 
         public static Task<AsyncLock.Holder> ReadLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().ReadLockAsync(timeout);
 
         public static Task<AsyncLock.Holder> ReadLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().ReadLockAsync(token);
-        
+
+        public static Task<AsyncLock.Holder> WriteLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.WriteLock(rwLock).Acquire(timeout);
+
+        public static Task<AsyncLock.Holder> WriteLockAsync(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.WriteLock(rwLock).Acquire(token);
+
+        public static Task<AsyncLock.Holder> WriteLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().WriteLockAsync(timeout);
+
+        public static Task<AsyncLock.Holder> WriteLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().WriteLockAsync(token);
+
+        public static Task<AsyncLock.Holder> UpgradableReadLockAsync(this AsyncReaderWriterLock rwLock, TimeSpan timeout) => AsyncLock.ReadLock(rwLock, true).Acquire(timeout);
+
+        public static Task<AsyncLock.Holder> UpgradableReadLockAsync(this AsyncReaderWriterLock rwLock, CancellationToken token) => AsyncLock.ReadLock(rwLock, true).Acquire(token);
+
+        public static Task<AsyncLock.Holder> UpgradableReadLockAsync<T>(this T obj, TimeSpan timeout) where T : class => obj.GetReaderWriterLock().UpgradableReadLockAsync(timeout);
+
+        public static Task<AsyncLock.Holder> UpgradableReadLockAsync<T>(this T obj, CancellationToken token) where T : class => obj.GetReaderWriterLock().UpgradableReadLockAsync(token);
     }
 }
