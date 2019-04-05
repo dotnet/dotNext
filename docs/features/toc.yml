@@ -5,6 +5,8 @@
       href: core/userdata.md
     - name: Value Type Enhancements
       href: core/valuetype.md
+    - name: Enum Enhancements
+      href: core/enum.md
     - name: Collection Enhancements
       href: core/collections.md
     - name: Optional Type
@@ -48,5 +50,7 @@
       href: unsafe/array.md
     - name: Off-Heap Allocation of Value Type
       href: unsafe/offheap.md
+    - name: Unstructured Memory Access
+      href: unsafe/unstruct.md
     - name: Unmanaged List
       href: unsafe/list.md

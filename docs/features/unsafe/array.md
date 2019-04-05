@@ -28,6 +28,8 @@ Unmanaged array supports interoperation with managed arrays and streams.
 
 **foreach** loop is also supported because array implements [IEnumerable](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1) interface:
 ```csharp
+using DotNext.Runtime.InteropServices;
+
 using(var array = new UnmanagedArray<double>(10))
 {
     array[0] = 10;
@@ -35,6 +37,19 @@ using(var array = new UnmanagedArray<double>(10))
     foreach(var item in array)
         Console.WriteLine(item);
 }
+```
+
+The array can be resized on-the-fly. Resizing causes re-allocation of the memory with the copying of the elements from the original location. The new size of the array can be defined through `Length` property.
+
+```csharp
+using DotNext.Runtime.InteropServices;
+
+var array = new UnmanagedArray<double>(10); //array.Length == 10L
+array[0] = 10;
+array[1] = 30;
+array.Length = 20;  //causes re-allocation of the array
+var i = array[0] + array[1];    //i == 40
+array.Dispose();
 ```
 
 # Span and UnmanagedArray
