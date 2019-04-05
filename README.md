@@ -1,11 +1,11 @@
 .NEXT
 ====
 
-.NEXT (Dot Next) is a set of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime. Looking for fast comparison of array elements, async delegates, [Type Classes](https://github.com/dotnet/csharplang/issues/110), value type bitcast, metaprogramming, unmanaged data structures? You're in right place.
+.NEXT (dotNext) is a set of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime. Looking for fast comparison of array elements, async delegates, [Type Classes](https://github.com/dotnet/csharplang/issues/110), value type bitcast, metaprogramming, unmanaged data structures? You're in right place.
 
-* [Features](https://sakno.github.io/DotNext/features/core/index.html)
-* [API documentation](https://sakno.github.io/DotNext/api/DotNext.html)
-* [Benchmarks](https://sakno.github.io/DotNext/benchmarks.html)
+* [Features](https://sakno.github.io/dotNext/features/core/index.html)
+* [API documentation](https://sakno.github.io/dotNext/api/DotNext.html)
+* [Benchmarks](https://sakno.github.io/dotNext/benchmarks.html)
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 Philosophy of development process:
