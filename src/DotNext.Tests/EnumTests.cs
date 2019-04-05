@@ -15,6 +15,12 @@ namespace DotNext
         }
 
         [Fact]
+        public void Members()
+        {
+            Equal(3, Enum<EnvironmentVariableTarget>.Members.Count);
+        }
+
+        [Fact]
         public void ConversionToPrimitive()
         {
             var member = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.User);

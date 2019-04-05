@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace DotNext
 {
@@ -44,21 +43,40 @@ namespace DotNext
             public override int GetHashCode() => Name is null ? EqualityComparer<E>.Default.GetHashCode() : Name.GetHashCode();
         }
 
-        private sealed class Mapping : Dictionary<Tuple, Enum<E>>
+        private sealed class Mapping : Dictionary<Tuple, long>
         {
+            internal readonly Enum<E>[] Members;
+
             internal Mapping(out Enum<E> min, out Enum<E> max)
             {
                 var names = Enum.GetNames(typeof(E));
                 var values = (E[])Enum.GetValues(typeof(E));
+                Members = new Enum<E>[names.LongLength];
                 min = max = default;
                 for (var index = 0L; index < names.LongLength; index++)
                 {
-                    var entry = new Enum<E>(values[index], names[index]);
-                    Add(new Tuple(entry.Name), entry);
-                    Add(new Tuple(entry.Value), entry);
+                    var entry = Members[index] = new Enum<E>(values[index], names[index]);
+                    Add(entry.Name, index);
+                    base[entry.Value] = index;
                     //detect min and max
                     min = entry.Min(min);
                     max = entry.Max(max);
+                }
+            }
+
+            internal Enum<E> this[string name] => Members[base[name]];
+            
+            internal bool TryGetValue(E value, out Enum<E> member)
+            {
+                if (base.TryGetValue(value, out var index))
+                {
+                    member = Members[index];
+                    return true;
+                }
+                else
+                {
+                    member = default;
+                    return false;
                 }
             }
         }
@@ -135,7 +153,7 @@ namespace DotNext
         /// <summary>
         /// Gets declared enum members.
         /// </summary>
-        public static IReadOnlyCollection<Enum<E>> Members => mapping.Values;
+        public static IReadOnlyList<Enum<E>> Members => mapping.Members;
 
         /// <summary>
         /// Gets the underlying type of the specified enumeration.
@@ -206,10 +224,16 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Gets hash code of the enum value.
+        /// Gets hash code of the enum member.
         /// </summary>
-        /// <returns>The hash code of the enum value.</returns>
-        public override int GetHashCode() => EqualityComparer<E>.Default.GetHashCode(Value);
+        /// <returns>The hash code of the enum member.</returns>
+        public override int GetHashCode()
+        {
+            var hashCode = -1670801664;
+            hashCode = hashCode * -1521134295 + EqualityComparer<E>.Default.GetHashCode(Value);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            return hashCode;
+        }
 
         /// <summary>
         /// Returns textual representation of the enum value.

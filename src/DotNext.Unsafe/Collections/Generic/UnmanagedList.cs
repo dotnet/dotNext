@@ -356,6 +356,6 @@ namespace DotNext.Collections.Generic
         /// Provides unstructured access to the unmanaged memory utilized by the list.
         /// </summary>
         /// <param name="list">The list allocated in the unmanaged memory.</param>
-        public static implicit operator UnmanagedMemory(UnmanagedList list) => new UnmanagedMemory(list.Address, (long)list.count * Pointer<T>.Size);
+        public static implicit operator UnmanagedMemory(UnmanagedList<T> list) => new UnmanagedMemory(list.Address, (long)list.count * Pointer<T>.Size);
     }
 }
