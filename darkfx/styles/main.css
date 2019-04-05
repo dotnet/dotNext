@@ -83,7 +83,7 @@ article h4 {
 .navbar-inverse .navbar-nav>.active>a:hover {
     color: #c5c5de;
     background-color: #1e1e1e;
-    border-bottom: 3px solid #333337;
+    border-bottom: 3px solid #c5c5de;
     transition: all ease 0.25s;
 }
 
