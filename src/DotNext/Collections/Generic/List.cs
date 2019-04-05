@@ -129,12 +129,12 @@ namespace DotNext.Collections.Generic
 		/// <returns>Lazily converted read-only list.</returns>
 		public static ReadOnlyListView<I, O> Convert<I, O>(this IReadOnlyList<I> list, Converter<I, O> converter) => new ReadOnlyListView<I, O>(list, converter);
 
-		/// <summary>
-		/// Constructs read-only list with single item in it.
-		/// </summary>
-		/// <param name="item">An item to be placed into list.</param>
-		/// <typeparam name="T">Type of list items.</typeparam>
-		/// <returns>Read-only list containing single item.</returns>
-        public static IReadOnlyList<T> Singleton<T>(T item) => new SingletonList<T>(item);
+        /// <summary>
+        /// Constructs read-only list with single item in it.
+        /// </summary>
+        /// <param name="item">An item to be placed into list.</param>
+        /// <typeparam name="T">Type of list items.</typeparam>
+        /// <returns>Read-only list containing single item.</returns>
+        public static IReadOnlyList<T> Singleton<T>(T item) => new SingletonList<T> { Item1 = item };
     }
 }

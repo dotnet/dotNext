@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace DotNext.Collections.Generic
 {
-    public struct SingletonList<T>: IReadOnlyList<T>
+    internal struct SingletonList<T>: IReadOnlyList<T>
     {
-        public struct Enumerator : IEnumerator<T>
+        internal struct Enumerator : IEnumerator<T>
         {
             private bool requested;
 
@@ -28,7 +28,7 @@ namespace DotNext.Collections.Generic
             public void Reset() => requested = false;
         }
 
-        public T Item1;
+        internal T Item1;
 
         T IReadOnlyList<T>.this[int index] 
             => index == 0 ? Item1 : throw new IndexOutOfRangeException(ExceptionMessages.IndexShouldBeZero);
