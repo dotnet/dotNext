@@ -76,7 +76,7 @@ namespace DotNext.Threading
 
         private async Task<bool> TryAcquire(LockNode node, TimeSpan timeout, CancellationToken token)
         {
-            using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token, default) : new CancellationTokenSource())
+            using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
             {
                 if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
                 {
