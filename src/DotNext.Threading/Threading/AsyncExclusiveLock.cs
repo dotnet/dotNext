@@ -62,7 +62,6 @@ namespace DotNext.Threading
                 throw new TimeoutException();
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         private bool RemoveNode(LockNode node)
         {
             var inList = ReferenceEquals(head, node) || !node.IsRoot;

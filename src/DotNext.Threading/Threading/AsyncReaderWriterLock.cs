@@ -66,7 +66,6 @@ namespace DotNext.Threading
         private AsyncExclusiveLock.LockNode head, tail;
         private State state;
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         private bool RemoveNode(AsyncExclusiveLock.LockNode node)
         {
             var inList = ReferenceEquals(head, node) || !node.IsRoot;
