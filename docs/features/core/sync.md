@@ -5,7 +5,7 @@ Synchronization Enhancements
 DotNext provides unified representation of the resource lock using the following mechanisms:
 * Monitor
 * Reader lock
-* Upgradable lock
+* Upgradeable lock
 * Writer lock
 * Semaphore
 
@@ -42,7 +42,7 @@ Exclusive lock such as monitor lock may not be applicable due to performance rea
 DotNext library provides several extension methods for more granular control over synchronization for any reference type:
 * `AcquireReadLock` acquires reader lock
 * `AcquireWriteLock` acquires exclusive lock
-* `AcquireUpgradableReadLock` acquires read lock which can be upgraded to write lock
+* `AcquireUpgradeableReadLock` acquires read lock which can be upgraded to write lock
 
 These methods allow to turn any thread-unsafe object into thread-safe object with precise control of multithreading access.
 
@@ -75,7 +75,7 @@ Lock acquisition operation may blocks the caller thread. Reader/writer lock from
 * Exclusive lock
 * Reader lock
 * Writer lock
-* Upgradable lock
+* Upgradeable lock
 * Semaphore
 
 The only one synchronization object can be shared between blocking and non-blocking representations of the lock.
@@ -175,7 +175,7 @@ finally
     rwlock.ExitWriteLock();
 }
 
-await rwlock.EnterUpgradableReadLock(TimeSpan.FromSecond(2), CancellationToken.None);
+await rwlock.EnterUpgradeableReadLock(TimeSpan.FromSecond(2), CancellationToken.None);
 try
 {
     //reader stuff here

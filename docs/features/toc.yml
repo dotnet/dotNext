@@ -16,7 +16,7 @@
     - name: Generic specialization with constant values
       href: core/constgen.md
     - name: Synchronization Enhancements
-      href: core/lock.md
+      href: core/sync.md
 - name: Type Classes
   href: concept.md
 - name: Advanced Reflection
