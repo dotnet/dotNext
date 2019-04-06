@@ -37,6 +37,12 @@ namespace DotNext.Threading
         /// </remarks>
         public struct Holder : IDisposable 
         {
+            internal static readonly Func<Task<Holder>, Holder> TimeoutChecker = task =>
+            {
+                var holder = task.Result;
+                holder.ThrowIfEmpty<TimeoutException>();
+                return holder;
+            };
             private readonly object lockedObject;
             private readonly Type type;
 
@@ -44,6 +50,13 @@ namespace DotNext.Threading
             {
                 this.lockedObject = lockedObject;
                 this.type = type;
+            }
+
+            internal void ThrowIfEmpty<E>()
+                where E: Exception, new()
+            {
+                if(lockedObject is null)
+                    throw new E();
             }
 
             /// <summary>
@@ -89,8 +102,6 @@ namespace DotNext.Threading
             /// <returns><see langword="false"/>, if the object holds successfully acqured lock; otherwise, <see langword="true"/>.</returns>
             public static bool operator false(in Holder holder) => holder.lockedObject is null;
         }
-
-        private const TaskContinuationOptions ContinuationOptions = TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion;
 
         private readonly object lockedObject;
         private readonly Type type;
@@ -155,18 +166,12 @@ namespace DotNext.Threading
         public static AsyncLock WriteLock(AsyncReaderWriterLock rwLock) 
             => new AsyncLock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.WriteLock, false);
 
-        private static Holder CheckOnTimeout(Task<Holder> task)
-        {
-            var holder = task.Result;
-            return holder ? holder : throw new TimeoutException();
-        }
-
         /// <summary>
         /// Acquires the lock asynchronously.
         /// </summary>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task returning the acquired lock holder.</returns>
-        public Task<Holder> Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token).ContinueWith(CheckOnTimeout, ContinuationOptions);
+        public Task<Holder> Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token).ContinueWith(Holder.TimeoutChecker, AsyncLockHelpers.CheckOnTimeoutOptions);
 
         /// <summary>
         /// Acquires the lock asynchronously.
@@ -174,7 +179,7 @@ namespace DotNext.Threading
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <returns>The task returning the acquired lock holder.</returns>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task<Holder> Acquire(TimeSpan timeout) => TryAcquire(timeout).ContinueWith(CheckOnTimeout, ContinuationOptions);
+        public Task<Holder> Acquire(TimeSpan timeout) => TryAcquire(timeout).ContinueWith(Holder.TimeoutChecker, AsyncLockHelpers.CheckOnTimeoutOptions);
         
         private Task<bool> TryAcquireCore(TimeSpan timeout, CancellationToken token)
         {
