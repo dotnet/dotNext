@@ -125,5 +125,18 @@ namespace DotNext.Threading
 			Equal("Hello", stref.SetIfNull(() => ""));
 			Equal("Hello", stref.Value);
 		}
+
+		[Fact]
+		public void AtomicBooleanTest()
+		{
+			var value = new AtomicBoolean(false);
+			True(value.FalseToTrue());
+			False(value.FalseToTrue());
+			True(value.TrueToFalse());
+			False(value.TrueToFalse());
+			True(value.NegateAndGet());
+			True(value.GetAndNegate());
+			False(value.Value);
+		}
 	}
 }
