@@ -307,12 +307,12 @@ namespace DotNext.Runtime.InteropServices
         /// index for a specified number of elements.
         /// </summary>
         /// <remarks>
-        /// This method uses <see cref="ValueType{T}.BitwiseComparer"/> comparer to compare elements in this array.
+        /// This method uses <see cref="EqualityComparer{T}.Default"/> comparer to compare elements in this array.
         /// </remarks>
         /// <param name="item">The value to locate in this array.</param>
         /// <param name="startIndex">The starting index of the search.</param>
         /// <returns>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public long LastIndexOf(T item, long startIndex) => LastIndexOf(item, startIndex, ValueType<T>.BitwiseComparer.Instance);
+        public long LastIndexOf(T item, long startIndex) => LastIndexOf(item, startIndex, EqualityComparer<T>.Default);
 
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
@@ -320,7 +320,7 @@ namespace DotNext.Runtime.InteropServices
         /// index for a specified number of elements.
         /// </summary>
         /// <remarks>
-        /// This method uses <see cref="ValueType{T}.BitwiseComparer"/> comparer
+        /// This method uses <see cref="EqualityComparer{T}.Default"/> comparer
         /// to compare elements in this array.
         /// </remarks>
         /// <param name="item">The value to locate in this array.</param>
@@ -405,13 +405,13 @@ namespace DotNext.Runtime.InteropServices
         /// index for a specified number of elements.
         /// </summary>
         /// <remarks>
-        /// This method uses <see cref="ValueType{T}.BitwiseEquals(T, T)"/> comparer
+        /// This method uses <see cref="EqualityComparer{T}.Default"/> comparer
         /// to compare elements in this array.
         /// </remarks>
         /// <param name="item">The value to locate in this array.</param>
         /// <param name="startIndex">The starting index of the search.</param>
         /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public long IndexOf(T item, long startIndex) => IndexOf(item, startIndex, ValueType<T>.BitwiseComparer.Instance);
+        public long IndexOf(T item, long startIndex) => IndexOf(item, startIndex, EqualityComparer<T>.Default);
 
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
@@ -419,7 +419,7 @@ namespace DotNext.Runtime.InteropServices
         /// index for a specified number of elements.
         /// </summary>
         /// <remarks>
-        /// This method uses <see cref="ValueType{T}.BitwiseEquals(T, T)"/> comparer
+        /// This method uses <see cref="EqualityComparer{T}.Default"/> comparer
         /// to compare elements in this array.
         /// </remarks>
         /// <param name="item">The value to locate in this array.</param>
@@ -434,14 +434,14 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="count">The length of the range to search.</param>
         /// <param name="comparison">The comparison algorithm.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
-        public long BinarySearch(T item, long startIndex, long count, Comparison<T> comparison)
+        public long BinarySearch(T item, long startIndex, long count, IComparer<T> comparison)
         {
             count = count.UpperBounded(Length);
             count -= 1;
             while(startIndex <= count)
             {
                 var mid = (startIndex + count) / 2;
-                var cmd = comparison((pointer + mid).Value, item);
+                var cmd = comparison.Compare((pointer + mid).Value, item);
                 if (cmd < 0)
                     startIndex = mid + 1;
                 else if (cmd > 0)
@@ -458,17 +458,16 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="item">The value to locate.</param>
         /// <param name="comparison">The comparison algorithm.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
-        public long BinarySearch(T item, Comparison<T> comparison) => BinarySearch(item, 0, Length, comparison);
+        public long BinarySearch(T item, IComparer<T> comparison) => BinarySearch(item, 0, Length, comparison);
 
-        private long Partition(long startIndex, long endIndex, Comparison<T> comparison)
+        private long Partition(long startIndex, long endIndex, IComparer<T> comparison)
         {
             var pivot = (pointer + endIndex).Value;
             var i = startIndex - 1;
-
             for (var j = startIndex; j < endIndex; j++)
             {
                 var jptr = pointer + j;
-                if (comparison(jptr.Value, pivot) <= 0)
+                if (comparison.Compare(jptr.Value, pivot) <= 0)
                 {
                     i += 1;
                     (pointer + i).Swap(jptr);
@@ -480,7 +479,7 @@ namespace DotNext.Runtime.InteropServices
             return i;
         }
 
-        private void QuickSort(long startIndex, long endIndex, Comparison<T> comparison)
+        private void QuickSort(long startIndex, long endIndex, IComparer<T> comparison)
         {
             if (startIndex < endIndex)
             {
@@ -496,7 +495,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="startIndex">The starting index of the range to sort.</param>
         /// <param name="count">The length of the range to sort.</param>
         /// <param name="comparison">The comparison algorithm.</param>
-        public void Sort(long startIndex, long count, Comparison<T> comparison)
+        public void Sort(long startIndex, long count, IComparer<T> comparison)
         {
             if (count == 0 || IsEmpty)
                 return;
@@ -507,7 +506,7 @@ namespace DotNext.Runtime.InteropServices
         /// Sorts this array.
         /// </summary>
         /// <param name="comparison">The comparison logic.</param>
-        public void Sort(Comparison<T> comparison) => Sort(0, Length, comparison);
+        public void Sort(IComparer<T> comparison) => Sort(0, Length, comparison);
 
         /// <summary>
         /// Applies ascending sort of this array.
@@ -515,18 +514,18 @@ namespace DotNext.Runtime.InteropServices
         /// <remarks>
         /// This method uses QuickSort algorithm.
         /// </remarks>
-        public void Sort() => Sort(ValueType<T>.BitwiseCompare);
+        public void Sort() => Sort(Comparer<T>.Default);
 
         /// <summary>
         /// Uses a binary search algorithm to locate a specific element in the sorted array.
         /// </summary>
         /// <remarks>
-        /// This method uses <see cref="ValueType{T}.BitwiseCompare(T, T)"/> method
+        /// This method uses <see cref="Comparer{T}.Default"/> method
         /// to compare two values.
         /// </remarks>
         /// <param name="item">The value to locate.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
-        public long BinarySearch(T item) => BinarySearch(item, ValueType<T>.BitwiseCompare);
+        public long BinarySearch(T item) => BinarySearch(item, Comparer<T>.Default);
 
         /// <summary>
         /// Gets pointer to array element.

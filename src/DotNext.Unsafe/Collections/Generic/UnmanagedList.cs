@@ -196,7 +196,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="item">The object to locate in the list.</param>
         /// <returns>The zero-based index of the first occurence of the given item; otherwise, -1.</returns>
-        public int IndexOf(T item) => IndexOf(item, ValueType<T>.BitwiseComparer.Instance);
+        public int IndexOf(T item) => IndexOf(item, EqualityComparer<T>.Default);
 
         /// <summary>
         /// Searches item matching to the given predicate in this list, and returns 
@@ -211,7 +211,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="item">The object to locate in the list.</param>
         /// <returns>The zero-based index of the last occurence of the given item; otherwise, -1.</returns>
-        public int LastIndexOf(T item) => LastIndexOf(item, ValueType<T>.BitwiseComparer.Instance);
+        public int LastIndexOf(T item) => LastIndexOf(item, EqualityComparer<T>.Default);
 
         /// <summary>
         /// Searches for the specified object and returns the zero-based index of the last occurrence within the entire list.
@@ -235,25 +235,25 @@ namespace DotNext.Collections.Generic
         /// <param name="item">The value to locate.</param>
         /// <param name="comparison">The comparison algorithm.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the list.</returns>
-        public int BinarySearch(T item, Comparison<T> comparison) => (int)array.BinarySearch(item, 0, count, comparison);
+        public int BinarySearch(T item, IComparer<T> comparison) => (int)array.BinarySearch(item, 0, count, comparison);
 
         /// <summary>
         /// Uses a binary search algorithm to locate a specific element in the sorted list.
         /// </summary>
         /// <param name="item">The value to locate.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the list.</returns>
-        public int BinarySearch(T item) => (int)array.BinarySearch(item, 0, count, ValueType<T>.BitwiseCompare);
+        public int BinarySearch(T item) => (int)array.BinarySearch(item, 0, count, Comparer<T>.Default);
 
         /// <summary>
         /// Sorts the items in this list according with given comparer.
         /// </summary>
         /// <param name="comparison">The items comparison algorithm.</param>
-        public void Sort(Comparison<T> comparison) => array.Sort(0, count, comparison);
+        public void Sort(IComparer<T> comparison) => array.Sort(0, count, comparison);
 
         /// <summary>
         /// Sorts the items in this list in ascending order.
         /// </summary>
-        public void Sort() => Sort(ValueType<T>.BitwiseCompare);
+        public void Sort() => Sort(Comparer<T>.Default);
 
         /// <summary>
         /// Inserts an element into the list at the specified index.
