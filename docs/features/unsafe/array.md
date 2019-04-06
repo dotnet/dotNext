@@ -52,6 +52,18 @@ var i = array[0] + array[1];    //i == 40
 array.Dispose();
 ```
 
+Most of the methods typical to managed arrays such as searching(binary and linear search), filling and sorting are present in an unmanaged array. 
+```csharp
+using DotNext.Runtime.InteropServices;
+
+var array = new UnmanagedArray<long>(10);
+array.Fill(42L);    //set all elements of the array to 42L
+array[3] = 19L;
+array.IndexOf(19L); // == 3
+array.Sort();   //sort array
+array.Dispose();
+```
+
 # Span and UnmanagedArray
 [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type from .NET allows to work with managed arrays as well as stack-allocated memory. It is possible to work with unmanaged heap but with some boilerplate code. The following table shows differences between unmanaged array and span:
 

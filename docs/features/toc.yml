@@ -17,6 +17,15 @@
       href: core/constgen.md
     - name: Synchronization Enhancements
       href: core/sync.md
+- name: Async Locks
+  href: lock/index.md
+  items:
+    - name: Mutually Exclusive Lock
+      href: lock/exclusive.md
+    - name: Reader/Writer Lock
+      href: lock/rwlock.md
+    - name: Reset Event
+      href: lock/event.md
 - name: Type Classes
   href: concept.md
 - name: Advanced Reflection
