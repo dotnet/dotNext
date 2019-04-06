@@ -9,7 +9,7 @@ namespace DotNext.Threading
     using Tasks;
     
     /// <summary>
-    /// Unified representation of asynchronous exclusive lock, semaphore lock, read lock, write lock or upgradable read lock.
+    /// Unified representation of asynchronous exclusive lock, semaphore lock, read lock, write lock or upgradeable read lock.
     /// </summary>
     /// <remarks>
     /// Lock acquisition is asynchronous operation. Note that non-blocking asynchronous locks are not intersected with
@@ -24,7 +24,7 @@ namespace DotNext.Threading
             None = 0,
             Exclusive,
             ReadLock,
-            UpgradableReadLock,
+            UpgradeableReadLock,
             WriteLock,
             Semaphore
         }
@@ -78,8 +78,8 @@ namespace DotNext.Threading
                     case Type.WriteLock:
                         As<AsyncReaderWriterLock>(lockedObject).ExitWriteLock();
                         break;
-                    case Type.UpgradableReadLock:
-                        As<AsyncReaderWriterLock>(lockedObject).ExitUpgradableReadLock();
+                    case Type.UpgradeableReadLock:
+                        As<AsyncReaderWriterLock>(lockedObject).ExitUpgradeableReadLock();
                         break;
                     case Type.Semaphore:
                         As<SemaphoreSlim>(lockedObject).Release(1);
@@ -153,10 +153,10 @@ namespace DotNext.Threading
         /// Creates read lock but doesn't acquire it.
         /// </summary>
         /// <param name="rwLock">Read/write lock source.</param>
-        /// <param name="upgradable"><see langword="true"/> to create upgradable read lock wrapper.</param>
+        /// <param name="upgradeable"><see langword="true"/> to create upgradeable read lock wrapper.</param>
         /// <returns>Reader lock.</returns>
-        public static AsyncLock ReadLock(AsyncReaderWriterLock rwLock, bool upgradable) 
-            => new AsyncLock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), upgradable ? Type.UpgradableReadLock : Type.ReadLock, false);
+        public static AsyncLock ReadLock(AsyncReaderWriterLock rwLock, bool upgradeable) 
+            => new AsyncLock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), upgradeable ? Type.UpgradeableReadLock : Type.ReadLock, false);
         
         /// <summary>
         /// Creates write lock but doesn't acquire it.
@@ -189,8 +189,8 @@ namespace DotNext.Threading
                     return As<AsyncExclusiveLock>(lockedObject).TryAcquire(timeout, token);
                 case Type.ReadLock:
                     return As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLock(timeout, token);
-                case Type.UpgradableReadLock:
-                    return As<AsyncReaderWriterLock>(lockedObject).TryEnterUpgradableReadLock(timeout, token);
+                case Type.UpgradeableReadLock:
+                    return As<AsyncReaderWriterLock>(lockedObject).TryEnterUpgradeableReadLock(timeout, token);
                 case Type.WriteLock:
                     return As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLock(timeout, token);
                 case Type.Semaphore:

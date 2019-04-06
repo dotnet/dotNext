@@ -15,6 +15,6 @@ namespace DotNext.Threading
 
         internal static string NotInReadLock => resourceManager.GetString("NotInReadLock");
 
-        internal static string NotInUpgradableReadLock => resourceManager.GetString("NotInUpgradableReadLock");
+        internal static string NotInUpgradeableReadLock => resourceManager.GetString("NotInUpgradeableReadLock");
     }
 }
