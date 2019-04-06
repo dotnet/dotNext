@@ -25,6 +25,20 @@ namespace DotNext.Collections.Generic
             => source = list ?? throw new ArgumentNullException(nameof(list));
 
         /// <summary>
+        /// Determines the index of a specific item in this list.
+        /// </summary>
+        /// <param name="item">The object to locate in this list.</param>
+        /// <returns>The index of <paramref name="item"/> if found in the list; otherwise, -1.</returns>
+        public int IndexOf(T item) => source.IndexOf(item);
+
+        /// <summary>
+        /// Determines whether this list contains a specific value.
+        /// </summary>
+        /// <param name="item">The object to locate in this list.</param>
+        /// <returns><see langword="true"/> if <paramref name="item"/> is found in this list; otherwise, <see langword="false"/>.</returns>
+        public bool Contains(T item) => source.Contains(item);
+
+        /// <summary>
         /// Number of items in the list.
         /// </summary>
         public int Count => source.Count;

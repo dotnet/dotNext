@@ -5,7 +5,7 @@ using static System.Runtime.CompilerServices.Unsafe;
 namespace DotNext.Threading
 {
     /// <summary>
-    /// Unified representation of monitor lock, semaphore lock, read lock, write lock or upgradable read lock.
+    /// Unified representation of monitor lock, semaphore lock, read lock, write lock or upgradeable read lock.
     /// </summary>
     /// <remarks>
     /// The lock acquisition may block the caller thread.
@@ -17,7 +17,7 @@ namespace DotNext.Threading
             None = 0,
             Monitor,
             ReadLock,
-            UpgradableReadLock,
+            UpgradeableReadLock,
             WriteLock,
             Semaphore
         }
@@ -58,7 +58,7 @@ namespace DotNext.Threading
                     case Type.WriteLock:
                         As<ReaderWriterLockSlim>(lockedObject).ExitWriteLock();
                         break;
-                    case Type.UpgradableReadLock:
+                    case Type.UpgradeableReadLock:
                         As<ReaderWriterLockSlim>(lockedObject).ExitUpgradeableReadLock();
                         break;
                     case Type.Semaphore:
@@ -132,10 +132,10 @@ namespace DotNext.Threading
         /// Creates read lock but doesn't acquire it.
         /// </summary>
         /// <param name="rwLock">Read/write lock source.</param>
-        /// <param name="upgradable"><see langword="true"/> to create upgradable read lock wrapper.</param>
+        /// <param name="upgradeable"><see langword="true"/> to create upgradeable read lock wrapper.</param>
         /// <returns>Reader lock.</returns>
-        public static Lock ReadLock(ReaderWriterLockSlim rwLock, bool upgradable)
-            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), upgradable ? Type.UpgradableReadLock : Type.ReadLock, false);
+        public static Lock ReadLock(ReaderWriterLockSlim rwLock, bool upgradeable)
+            => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), upgradeable ? Type.UpgradeableReadLock : Type.ReadLock, false);
 
         /// <summary>
         /// Creates write lock but doesn't acquire it.
@@ -161,7 +161,7 @@ namespace DotNext.Threading
                 case Type.WriteLock:
                     As<ReaderWriterLockSlim>(lockedObject).EnterWriteLock();
                     break;
-                case Type.UpgradableReadLock:
+                case Type.UpgradeableReadLock:
                     As<ReaderWriterLockSlim>(lockedObject).EnterUpgradeableReadLock();
                     break;
                 case Type.Semaphore:
@@ -181,7 +181,7 @@ namespace DotNext.Threading
                     return As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(0);
                 case Type.WriteLock:
                     return As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(0);
-                case Type.UpgradableReadLock:
+                case Type.UpgradeableReadLock:
                     return As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(0);
                 case Type.Semaphore:
                     return As<SemaphoreSlim>(lockedObject).Wait(0);
@@ -219,7 +219,7 @@ namespace DotNext.Threading
                     return As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(timeout);
                 case Type.WriteLock:
                     return As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(timeout);
-                case Type.UpgradableReadLock:
+                case Type.UpgradeableReadLock:
                     return As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(timeout);
                 case Type.Semaphore:
                     return As<SemaphoreSlim>(lockedObject).Wait(timeout);

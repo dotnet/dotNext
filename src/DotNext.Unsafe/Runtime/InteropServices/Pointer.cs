@@ -51,7 +51,7 @@ namespace DotNext.Runtime.InteropServices
             public T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => *ptr;
+                get => *(ptr + index);
             }
 
             /// <summary>
@@ -499,7 +499,7 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe Pointer<U> As<U>()
             where U : unmanaged
-            => Size <= Pointer<U>.Size ? new Pointer<U>(value) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize);
+            => Size >= Pointer<U>.Size ? new Pointer<U>(value) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize);
 
         /// <summary>
         /// Converts unmanaged pointer into managed pointer.

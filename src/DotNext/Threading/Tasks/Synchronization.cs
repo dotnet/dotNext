@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace DotNext.Threading.Tasks
 {
     /// <summary>
-    /// Represents task synchronization methods.
+    /// Represents task synchronization and combination methods.
     /// </summary>
     public static class Synchronization
     {
@@ -27,7 +27,6 @@ namespace DotNext.Threading.Tasks
         /// <param name="token">Cancellation token.</param>
         /// <typeparam name="R">Type of task result.</typeparam>
         /// <returns>Task result.</returns>
-        /// <exception cref="TimeoutException">Task is not completed.</exception>
         public static R GetResult<R>(this Task<R> task, CancellationToken token)
 		{
 			task.Wait(token);

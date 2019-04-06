@@ -8,6 +8,7 @@ namespace DotNext
         [Fact]
         public void ValuesTest()
         {
+            Equal(3, Enum<EnvironmentVariableTarget>.Members.Count);
             True(Enum<EnvironmentVariableTarget>.IsDefined(nameof(EnvironmentVariableTarget.Machine)));
             Equal(EnvironmentVariableTarget.Process, Enum<EnvironmentVariableTarget>.GetMember(nameof(EnvironmentVariableTarget.Process)));
             Equal(nameof(EnvironmentVariableTarget.User), Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.User).Name);

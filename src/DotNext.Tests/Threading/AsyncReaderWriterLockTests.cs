@@ -23,19 +23,19 @@ namespace DotNext.Threading
                 True(await rwLock.TryEnterWriteLock(TimeSpan.FromMilliseconds(20)));
                 False(await rwLock.TryEnterReadLock(TimeSpan.FromMilliseconds(20)));
                 rwLock.ExitWriteLock();
-                //upgradable read lock
+                //upgradeable read lock
                 True(await rwLock.TryEnterReadLock(TimeSpan.FromMilliseconds(10)));
                 True(await rwLock.TryEnterReadLock(TimeSpan.FromMilliseconds(10)));
-                True(await rwLock.TryEnterUpgradableReadLock(TimeSpan.FromMilliseconds(20)));
+                True(await rwLock.TryEnterUpgradeableReadLock(TimeSpan.FromMilliseconds(20)));
                 False(await rwLock.TryEnterWriteLock(TimeSpan.FromMilliseconds(20)));
-                False(await rwLock.TryEnterUpgradableReadLock(TimeSpan.FromMilliseconds(20)));
-                rwLock.ExitUpgradableReadLock();
+                False(await rwLock.TryEnterUpgradeableReadLock(TimeSpan.FromMilliseconds(20)));
+                rwLock.ExitUpgradeableReadLock();
                 False(await rwLock.TryEnterWriteLock(TimeSpan.FromMilliseconds(20)));
-                True(await rwLock.TryEnterUpgradableReadLock(TimeSpan.FromMilliseconds(20)));
+                True(await rwLock.TryEnterUpgradeableReadLock(TimeSpan.FromMilliseconds(20)));
                 rwLock.ExitReadLock();
-                False(await rwLock.TryEnterUpgradableReadLock(TimeSpan.FromMilliseconds(20)));
+                False(await rwLock.TryEnterUpgradeableReadLock(TimeSpan.FromMilliseconds(20)));
                 rwLock.ExitReadLock();
-                rwLock.ExitUpgradableReadLock();
+                rwLock.ExitUpgradeableReadLock();
             }
         }
 
@@ -45,22 +45,22 @@ namespace DotNext.Threading
             using (var rwLock = new AsyncReaderWriterLock())
             {
                 Throws<SynchronizationLockException>(rwLock.ExitReadLock);
-                Throws<SynchronizationLockException>(rwLock.ExitUpgradableReadLock);
+                Throws<SynchronizationLockException>(rwLock.ExitUpgradeableReadLock);
                 Throws<SynchronizationLockException>(rwLock.ExitWriteLock);
 
                 await rwLock.EnterReadLock(TimeSpan.FromMilliseconds(10));
-                Throws<SynchronizationLockException>(rwLock.ExitUpgradableReadLock);
+                Throws<SynchronizationLockException>(rwLock.ExitUpgradeableReadLock);
                 Throws<SynchronizationLockException>(rwLock.ExitWriteLock);
                 rwLock.ExitReadLock();
 
-                await rwLock.EnterUpgradableReadLock(TimeSpan.FromMilliseconds(10));
+                await rwLock.EnterUpgradeableReadLock(TimeSpan.FromMilliseconds(10));
                 Throws<SynchronizationLockException>(rwLock.ExitReadLock);
                 Throws<SynchronizationLockException>(rwLock.ExitWriteLock);
-                rwLock.ExitUpgradableReadLock();
+                rwLock.ExitUpgradeableReadLock();
 
                 await rwLock.EnterWriteLock(TimeSpan.FromMilliseconds(10));
                 Throws<SynchronizationLockException>(rwLock.ExitReadLock);
-                Throws<SynchronizationLockException>(rwLock.ExitUpgradableReadLock);
+                Throws<SynchronizationLockException>(rwLock.ExitUpgradeableReadLock);
                 rwLock.ExitWriteLock();
             }
         }
@@ -119,10 +119,10 @@ namespace DotNext.Threading
                 var task = new TaskCompletionSource<bool>();
                 ThreadPool.QueueUserWorkItem(async state =>
                 {
-                    False(await rwLock.TryEnterUpgradableReadLock(TimeSpan.FromMilliseconds(10)));
+                    False(await rwLock.TryEnterUpgradeableReadLock(TimeSpan.FromMilliseconds(10)));
                     True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
-                    await rwLock.EnterUpgradableReadLock(TimeSpan.MaxValue);
-                    rwLock.ExitUpgradableReadLock();
+                    await rwLock.EnterUpgradeableReadLock(TimeSpan.MaxValue);
+                    rwLock.ExitUpgradeableReadLock();
                     task.SetResult(true);
                 });
                 are.WaitOne();

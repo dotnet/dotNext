@@ -57,7 +57,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <returns><see langword="true"/> if current value is modified successfully; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool FalseToTrue() => Interlocked.CompareExchange(ref value, True, False) == True;
+        public bool FalseToTrue() => Interlocked.CompareExchange(ref value, True, False) == False;
 
         /// <summary>
         /// Atomically sets <see langword="false"/> value if the
@@ -65,7 +65,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <returns><see langword="true"/> if current value is modified successfully; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TrueToFalse() => Interlocked.CompareExchange(ref value, False, True) == False;
+        public bool TrueToFalse() => Interlocked.CompareExchange(ref value, False, True) == True;
 
         private (int OldValue, int NewValue) Negate()
         {
@@ -75,7 +75,7 @@ namespace DotNext.Threading
                 oldValue = value.VolatileGet();
                 newValue = oldValue ^ True;
             } 
-            while(Interlocked.CompareExchange(ref value, newValue, oldValue) != newValue);
+            while(!value.CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
         }
 

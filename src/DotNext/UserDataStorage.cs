@@ -32,7 +32,7 @@ namespace DotNext
             {
                 V userData;
                 //fast path - read user data if it is already exists
-                //do not use UpgradableReadLock due to performance reasons
+                //do not use UpgradeableReadLock due to performance reasons
                 using (synchronizer.AcquireReadLock())
                 {
                     if (slot.GetUserData(this, out userData))

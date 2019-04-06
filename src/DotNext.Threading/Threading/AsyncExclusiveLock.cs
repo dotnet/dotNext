@@ -11,56 +11,14 @@ namespace DotNext.Threading
     /// <summary>
     /// Represents asynchronous mutually exclusive lock.
     /// </summary>
-    public sealed class AsyncExclusiveLock : Disposable
+    public sealed class AsyncExclusiveLock : AsyncLockBase
     {
-        private const TaskContinuationOptions CheckOnTimeoutOptions = TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion;
+        private volatile bool locked;
 
-        internal class LockNode : TaskCompletionSource<bool>
-        {
-            private LockNode previous;
-            private LockNode next;
-
-            internal LockNode() => previous = next = null;
-
-            internal LockNode(LockNode previous)
-            {
-                previous.next = this;
-                this.previous = previous;
-            }
-
-            internal void DetachNode()
-            {
-                if (!(previous is null))
-                    previous.next = next;
-                if (!(next is null))
-                    next.previous = previous;
-                next = previous = null;
-            }
-
-            internal LockNode CleanupAndGotoNext()
-            {
-                var next = this.next;
-                this.next = this.previous = null;
-                return next;
-            }
-
-            internal LockNode Previous => previous;
-
-            internal LockNode Next => next;
-
-            internal bool IsRoot => previous is null && next is null;
-
-            internal void Complete() => SetResult(true);
-        }
-
-        private LockNode head, tail;
-        private bool locked;
-
-        private static void CheckOnTimeout(Task<bool> task)
-        {
-            if (!task.Result)
-                throw new TimeoutException();
-        }
+        /// <summary>
+        /// Indicates that exclusive lock taken.
+        /// </summary>
+        public bool IsLockHeld => locked;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private bool RemoveNode(LockNode node)
@@ -76,7 +34,7 @@ namespace DotNext.Threading
 
         private async Task<bool> TryAcquire(LockNode node, TimeSpan timeout, CancellationToken token)
         {
-            using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token, default) : new CancellationTokenSource())
+            using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
             {
                 if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
                 {
@@ -130,7 +88,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered exclusive mode; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryAcquire(TimeSpan timeout) => TryAcquire(timeout, default);
+        public Task<bool> TryAcquire(TimeSpan timeout) => TryAcquire(timeout, CancellationToken.None);
 
         /// <summary>
         /// Enters the lock in exclusive mode asynchronously.
@@ -140,7 +98,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task Acquire(TimeSpan timeout) => TryAcquire(timeout).ContinueWith(CheckOnTimeout, CheckOnTimeoutOptions);
+        public Task Acquire(TimeSpan timeout) => TryAcquire(timeout).CheckOnTimeout();
 
         /// <summary>
         /// Enters the lock in exclusive mode asynchronously.
@@ -149,7 +107,7 @@ namespace DotNext.Threading
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token).ContinueWith(CheckOnTimeout, CheckOnTimeoutOptions);
+        public Task Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token).CheckOnTimeout();
 
         /// <summary>
         /// Releases previously acquired exclusive lock.
@@ -169,22 +127,6 @@ namespace DotNext.Threading
             {
                 RemoveNode(waiterTask);
                 waiterTask.Complete();
-            }
-        }
-
-        /// <summary>
-        /// Releases all resources associated with exclusive lock.
-        /// </summary>
-        /// <remarks>
-        /// This method is not thread-safe and may not be used concurrently with other members of this instance.
-        /// </remarks>
-        /// <param name="disposing">Indicates whether the Dispose has been called directly or from Finalizer.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                for (var current = head; !(current is null); current = current.CleanupAndGotoNext())
-                    current.TrySetCanceled();
             }
         }
     }

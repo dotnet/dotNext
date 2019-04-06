@@ -25,6 +25,13 @@ namespace DotNext.Collections.Generic
             => source = collection ?? throw new ArgumentNullException(nameof(collection));
 
         /// <summary>
+        /// Determines whether this collection contains a specific value.
+        /// </summary>
+        /// <param name="item">The object to locate in this collection.</param>
+        /// <returns><see langword="true"/> if <paramref name="item"/> is found in this collection; otherwise, <see langword="false"/>.</returns>
+        public bool Contains(T item) => source.Contains(item);
+
+        /// <summary>
         /// Count of items in the collection.
         /// </summary>
         public int Count => source.Count;
