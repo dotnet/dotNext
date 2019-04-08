@@ -148,7 +148,7 @@ namespace DotNext.Threading
         public Task<bool> Wait(TimeSpan timeout, CancellationToken token)
         {
             /*
-             * for ManualReset we perform a liitle optimization: share the same lock node between all awaiters
+             * for ManualReset we perform a little optimization: share the same lock node between all awaiters
              */
             ThrowIfDisposed();
             if(timeout < TimeSpan.Zero)
