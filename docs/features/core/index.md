@@ -188,7 +188,7 @@ array.ForEach((long index, ref string element) => {
 ```
 
 ## Insertion and Removal
-Extension methods _Insert_, _Slice_, _RemoveLast_ and _RemoveFirst_ allow to modify source array and return modified copy.
+Extension methods _Insert_, _Slice_, _RemoveLast_ and _RemoveFirst_ allow to return modified array according with semantics of chosen method:
 ```csharp
 var array = new string[] {"a", "b"};
 array = array.Insert("c", 2);   //array == new []{"a", "b", "c"}
@@ -200,10 +200,4 @@ array = array.RemoveFirst(2);   //array == new []{"c"}
 
 array = new string[]{"a", "b", "c", "d"}; 
 array = array.Slice(1, 2);      //array == new []{"b", "c"}
-```
-
-## Conversion
-Conversion of array elements:
-```csharp
-var array = (new string[] { "1", "2" }).Convert(int.Parse); //array = new int[] {1, 2}
 ```

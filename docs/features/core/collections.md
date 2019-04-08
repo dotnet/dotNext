@@ -84,6 +84,6 @@ Iteration in functional style is possible using extension method _ForEach_ which
 using System;
 using DotNext;
 
-var list = new List<string>() { "a", "b", "c" };
+IEnumerable<string> list = new[] { "a", "b", "c" };
 list.ForEach(item => Console.WriteLine(item));
 ```
