@@ -85,7 +85,7 @@ namespace DotNext
                 var x = Expression.Parameter(type);
                 var y = Expression.Parameter(type);
                 //collect all fields in the hierachy
-                var expr = default(Expression);
+                Expression expr = Expression.ReferenceNotEqual(y, Expression.Constant(null, y.Type));
                 foreach (var field in type.GetAllFields())
                 {
                     var fieldX = Expression.Field(x, field);
@@ -99,9 +99,9 @@ namespace DotNext
                         condition = Expression.Call(EqualsMethodForArrayElementType(field.FieldType.GetElementType()), fieldX, fieldY);
                     else
                         condition = Expression.Call(typeof(object).GetMethod(nameof(Equals), new[] { typeof(object), typeof(object) }), fieldX, fieldY);
-                    expr = expr is null ? condition : Expression.AndAlso(expr, condition);
+                    expr = Expression.AndAlso(expr, condition);
                 }
-                expr = expr is null ? Expression.ReferenceEqual(x, y) : Expression.OrElse(Expression.ReferenceEqual(x, y), expr);
+                expr = Expression.OrElse(Expression.ReferenceEqual(x, y), expr);
                 return Expression.Lambda<Func<T, T, bool>>(expr, false, x, y).Compile();
             }
             else

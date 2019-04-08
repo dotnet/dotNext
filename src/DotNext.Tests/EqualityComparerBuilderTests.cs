@@ -54,6 +54,7 @@ namespace DotNext
             var equality = EqualityComparerBuilder.BuildEquals<ComplexClass>();
             var obj = new ComplexClass(null, new UnsafeStruct(new IntPtr(42L), "Hello, world!"), new UnsafeStruct(new IntPtr(43L), null));
             True(equality(obj, new ComplexClass(null, new UnsafeStruct(new IntPtr(42L), "Hello, world!"), new UnsafeStruct(new IntPtr(43L), null))));
+            False(equality(obj, null));
         }
 
         [Fact]
