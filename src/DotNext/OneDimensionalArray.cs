@@ -64,16 +64,6 @@ namespace DotNext
 		/// <typeparam name="I">Type of source array elements.</typeparam>
 		/// <typeparam name="O">Type of target array elements.</typeparam>
 		/// <param name="input">Input array to be converted. Cannot be <see langword="null"/>.</param>
-		/// <param name="mapper">Mapping function. Cannot be <see langword="null"/>.</param>
-		/// <returns>Converted array.</returns>
-        public static O[] Convert<I, O>(this I[] input, Converter<I, O> mapper) => Array.ConvertAll(input, mapper);
-
-		/// <summary>
-		/// Converts each array element from one type into another.
-		/// </summary>
-		/// <typeparam name="I">Type of source array elements.</typeparam>
-		/// <typeparam name="O">Type of target array elements.</typeparam>
-		/// <param name="input">Input array to be converted. Cannot be <see langword="null"/>.</param>
 		/// <param name="mapper">Index-aware mapping function. Cannot be <see langword="null"/>.</param>
 		/// <returns>Converted array.</returns>
 		public static O[] Convert<I, O>(this I[] input, Func<long, I, O> mapper)
@@ -84,14 +74,7 @@ namespace DotNext
             return output;
 		}
 
-		/// <summary>
-		/// Allocates a new one-dimensional array, or return cached empty array.
-		/// </summary>
-		/// <typeparam name="T">Type of array elements.</typeparam>
-		/// <param name="length">Length of the array.</param>
-		/// <returns>Allocated array.</returns>
-		public static T[] New<T>(long length)
-            => length == 0L ? Array.Empty<T>() : new T[length];
+		internal static T[] New<T>(long length) => length == 0L ? Array.Empty<T>() : new T[length];
 
 		/// <summary>
 		/// Removes the specified number of elements from the beginning of the array.

@@ -371,13 +371,13 @@ namespace DotNext.Reflection
                 ParameterExpression[] parametersDeclaration;
                 if(targetMethod.IsStatic)
                 {
-                    parametersDeclaration = targetMethod.GetParameterTypes().Convert(Expression.Parameter);
+                    parametersDeclaration = Array.ConvertAll(targetMethod.GetParameterTypes(), Expression.Parameter);
                     return new Method<D>(targetMethod, parametersDeclaration, parametersDeclaration);
                 }
                 else
                 {
                     var thisParamDeclaration = Expression.Parameter(thisParam);
-                    parametersDeclaration = parameters.Convert(Expression.Parameter);
+                    parametersDeclaration = Array.ConvertAll(parameters, Expression.Parameter);
                     return new Method<D>(targetMethod, thisParamDeclaration, parametersDeclaration, parametersDeclaration);
                 }
             }
@@ -524,7 +524,7 @@ namespace DotNext.Reflection
 				if (method.SignatureEquals(parameters) && method.ReturnType == returnType)
 					if (thisParam.IsByRef ^ method.DeclaringType.IsValueType)
 					{
-						var arguments = parameters.Convert(Expression.Parameter);
+						var arguments = Array.ConvertAll(parameters, Expression.Parameter);
 						return new Method<D>(method, Expression.Parameter(thisParam), arguments, arguments);
 					}
 					else

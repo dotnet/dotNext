@@ -20,37 +20,6 @@ namespace DotNext.Threading
         /// </summary>
         public bool IsLockHeld => locked;
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        private bool RemoveNode(LockNode node)
-        {
-            var inList = ReferenceEquals(head, node) || !node.IsRoot;
-            if (ReferenceEquals(head, node))
-                head = node.Next;
-            if (ReferenceEquals(tail, node))
-                tail = node.Previous;
-            node.DetachNode();
-            return inList;
-        }
-
-        private async Task<bool> TryAcquire(LockNode node, TimeSpan timeout, CancellationToken token)
-        {
-            using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
-            {
-                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
-                {
-                    tokenSource.Cancel();   //ensure that Delay task is cancelled
-                    return true;
-                }
-            }
-            if (RemoveNode(node))
-            {
-                token.ThrowIfCancellationRequested();
-                return false;
-            }
-            else
-                return await node.Task.ConfigureAwait(false);
-        }
-
         /// <summary>
         /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
         /// </summary>
@@ -78,7 +47,7 @@ namespace DotNext.Threading
                 head = tail = new LockNode();
             else
                 tail = new LockNode(tail);
-            return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? TryAcquire(tail, timeout, token) : tail.Task;
+            return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? Wait(tail, timeout, token) : tail.Task;
         }
 
         /// <summary>

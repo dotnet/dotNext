@@ -19,7 +19,7 @@ namespace DotNext.Metaprogramming
         }
 
         private protected IReadOnlyList<ParameterExpression> GetParameters(System.Reflection.ParameterInfo[] parameters)
-            =>  OneDimensionalArray.Convert(parameters, parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
+            =>  Array.ConvertAll(parameters, parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
 
         /// <summary>
         /// Gets recursive reference to the lambda.
