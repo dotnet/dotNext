@@ -114,8 +114,7 @@ namespace DotNext.Threading
             internal volatile bool writeLock;
             internal volatile bool upgreadable;
         }
-
-        private delegate bool LockAcquisition(ref State state);
+        
         private State state;
 
         /// <summary>
