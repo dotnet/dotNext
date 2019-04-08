@@ -16,19 +16,75 @@ namespace DotNext.Threading
     /// </remarks>
     public class AsyncReaderWriterLock : AsyncLockBase
     {
-        private sealed class WriteLockNode : LockNode
+        private interface ILockManager<out N>
+            where N: LockNode
         {
-            private WriteLockNode() : base() {}
-            private WriteLockNode(LockNode previous) : base(previous){}
-
-            internal static WriteLockNode Create(LockNode previous) => previous is null ? new WriteLockNode() : new WriteLockNode(previous);
+            bool TryAcquire(ref State state);
+            N CreateNode(LockNode node);
         }
 
-        private sealed class ReadLockNode: LockNode
+        private sealed class WriteLockNode : LockNode
         {
+            internal readonly struct LockManager : ILockManager<WriteLockNode>
+            {
+                WriteLockNode ILockManager<WriteLockNode>.CreateNode(LockNode node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
+
+                bool ILockManager<WriteLockNode>.TryAcquire(ref State state)
+                {
+                    if (state.writeLock || state.readLocks > 1L)
+                        return false;
+                    else if (state.readLocks == 0L || state.readLocks == 1L && state.upgreadable)    //no readers or single upgradeable read lock
+                    {
+                        state.writeLock = true;
+                        return true;
+                    }
+                    else
+                        return false;
+                }
+            }
+
+            private WriteLockNode() : base() {}
+            private WriteLockNode(LockNode previous) : base(previous){}
+        }
+
+        private class ReadLockNode: LockNode
+        {
+            internal readonly struct LockManager : ILockManager<ReadLockNode>
+            {
+                ReadLockNode ILockManager<ReadLockNode>.CreateNode(LockNode node) => node is null ? new ReadLockNode(false) : new ReadLockNode(node, false);
+
+                bool ILockManager<ReadLockNode>.TryAcquire(ref State state)
+                {
+                    if (state.writeLock)
+                        return false;
+                    else
+                    {
+                        state.readLocks++;
+                        return true;
+                    }
+                }
+            }
+
+            internal readonly struct UpgradeableLockManager : ILockManager<ReadLockNode>
+            {
+                ReadLockNode ILockManager<ReadLockNode>.CreateNode(LockNode node) => node is null ? new ReadLockNode(true) : new ReadLockNode(node, true);
+
+                bool ILockManager<ReadLockNode>.TryAcquire(ref State state)
+                {
+                    if (state.writeLock || state.upgreadable)
+                        return false;
+                    else
+                    {
+                        state.readLocks++;
+                        state.upgreadable = true;
+                        return true;
+                    }
+                }
+            }
+
             internal readonly bool Upgradeable;
 
-            private ReadLockNode(bool upgradeable) 
+            private protected ReadLockNode(bool upgradeable) 
                 : base()
             {
                 Upgradeable = upgradeable;
@@ -83,33 +139,24 @@ namespace DotNext.Threading
         public bool IsWriteLockHeld => state.writeLock;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private Task<bool> TryEnter(LockAcquisition acquisition, Func<LockNode, LockNode> lockNodeFactory, TimeSpan timeout, CancellationToken token)
+        private Task<bool> TryEnter<M>(TimeSpan timeout, CancellationToken token)
+            where M : struct, ILockManager<LockNode>
         {
             ThrowIfDisposed();
-            if(timeout < TimeSpan.Zero)
+            var manager = new M();
+            if (timeout < TimeSpan.Zero)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             else if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
-            else if (acquisition(ref state)) //no write locks
+            else if (manager.TryAcquire(ref state)) //no write locks
                 return CompletedTask<bool, BooleanConst.True>.Task;
             else if (timeout == TimeSpan.Zero) //if timeout is zero fail fast
                 return CompletedTask<bool, BooleanConst.False>.Task;
             else if (head is null)
-                head = tail = lockNodeFactory(null);
+                head = tail = manager.CreateNode(null);
             else
-                tail = lockNodeFactory(tail);
+                tail = manager.CreateNode(tail);
             return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? Wait(tail, timeout, token) : tail.Task;
-        }
-
-        private static bool AcquireReadLock(ref State state)
-        {
-            if (state.writeLock)
-                return false;
-            else
-            {
-                state.readLocks++;
-                return true;
-            }
         }
 
         /// <summary>
@@ -120,7 +167,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered read mode; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryEnterReadLock(TimeSpan timeout, CancellationToken token) => TryEnter(AcquireReadLock, ReadLockNode.CreateRegular, timeout, token);
+        public Task<bool> TryEnterReadLock(TimeSpan timeout, CancellationToken token) => TryEnter<ReadLockNode.LockManager>(timeout, token);
 
         /// <summary>
         /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -150,19 +197,6 @@ namespace DotNext.Threading
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
         public Task EnterReadLock(TimeSpan timeout) => TryEnterReadLock(timeout).CheckOnTimeout();
 
-        private static bool AcquireWriteLock(ref State state)
-        {
-            if (state.writeLock || state.readLocks > 1L)
-                return false;
-            else if (state.readLocks == 0L || state.readLocks == 1L && state.upgreadable)    //no readers or single upgradeable read lock
-            {
-                state.writeLock = true;
-                return true;
-            }
-            else
-                return false;
-        }
-
         /// <summary>
         /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
         /// </summary>
@@ -171,7 +205,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered write mode; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryEnterWriteLock(TimeSpan timeout, CancellationToken token) => TryEnter(AcquireWriteLock, WriteLockNode.Create, timeout, token);
+        public Task<bool> TryEnterWriteLock(TimeSpan timeout, CancellationToken token) => TryEnter<WriteLockNode.LockManager>(timeout, token);
 
         /// <summary>
         /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
@@ -201,18 +235,6 @@ namespace DotNext.Threading
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
         public Task EnterWriteLock(TimeSpan timeout) => TryEnterWriteLock(timeout).CheckOnTimeout();
 
-        private static bool AcquireUpgradeableReadLock(ref State state)
-        {
-            if (state.writeLock || state.upgreadable)
-                return false;
-            else
-            {
-                state.readLocks++;
-                state.upgreadable = true;
-                return true;
-            }
-        }
-
         /// <summary>
         /// Tries to enter the lock in upgradeable mode asynchronously, with an optional time-out.
         /// </summary>
@@ -221,7 +243,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered upgradeable mode; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryEnterUpgradeableReadLock(TimeSpan timeout, CancellationToken token) => TryEnter(AcquireUpgradeableReadLock, ReadLockNode.CreateUpgradeable, timeout, token);
+        public Task<bool> TryEnterUpgradeableReadLock(TimeSpan timeout, CancellationToken token) => TryEnter<ReadLockNode.UpgradeableLockManager>(timeout, token);
 
         /// <summary>
         /// Tries to enter the lock in upgradeable mode asynchronously, with an optional time-out.
