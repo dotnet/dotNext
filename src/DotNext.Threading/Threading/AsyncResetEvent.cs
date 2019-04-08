@@ -72,9 +72,8 @@ namespace DotNext.Threading
                     return false;
                 else
                 {
-                    
                     for(var current = head; !(current is null); current = current.CleanupAndGotoNext())
-                        current.SetCanceled();
+                        current.TrySetCanceled();
                     head = tail = null;
                     return true;
                 }
