@@ -12,7 +12,6 @@ namespace DotNext
     public static class RandomExtensions
     {
         internal static readonly int BitwiseHashSalt = new Random().Next();
-        private static readonly ArrayPool<char> CharArrayPool = ArrayPool<char>.Shared;
 
         private interface IRandomCharacterGenerator
         {
