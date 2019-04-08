@@ -14,7 +14,7 @@ namespace DotNext.Reflection
         /// <param name="method">The method to reflect.</param>
         /// <returns>The array of parameter types.</returns>
 		public static Type[] GetParameterTypes(this MethodBase method)
-            => method?.GetParameters().Convert(p => p.ParameterType);
+            => method is null ? null : Array.ConvertAll(method.GetParameters(), p => p.ParameterType);
 
         /// <summary>
         /// Determines whether the method parameters have the same set of types as in given array of types.

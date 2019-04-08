@@ -13,11 +13,13 @@ namespace DotNext.Threading
             using(var resetEvent = new AsyncResetEvent(false, EventResetMode.ManualReset))
             {
                 False(resetEvent.IsSet);
-                var t = new Thread(() => 
+                var t = new Thread(() =>
                 {
                     resetEvent.Wait().Wait();
-                });
-                t.IsBackground = true;
+                })
+                {
+                    IsBackground = true
+                };
                 t.Start();
                 True(resetEvent.Set());
                 t.Join();

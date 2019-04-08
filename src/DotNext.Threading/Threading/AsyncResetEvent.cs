@@ -63,7 +63,7 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private bool RemoveNode(AsyncExclusiveLock.LockNode node)
+        private bool RemoveNode(LockNode node)
         {
             var inList = ReferenceEquals(head, node) || !node.IsRoot;
             if (ReferenceEquals(head, node))
@@ -94,7 +94,7 @@ namespace DotNext.Threading
                 }
             else if(head is null)   //is set for manual reset event
             {
-                head = tail = new AsyncExclusiveLock.LockNode();
+                head = tail = new LockNode();
                 return true;
             }
             else
@@ -119,7 +119,7 @@ namespace DotNext.Threading
             return RemoveNode(head);
         }
 
-        private async Task<bool> Wait(AsyncExclusiveLock.LockNode node, TimeSpan timeout, CancellationToken token)
+        private async Task<bool> Wait(LockNode node, TimeSpan timeout, CancellationToken token)
         {
             using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
             {

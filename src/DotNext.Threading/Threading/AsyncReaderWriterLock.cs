@@ -19,9 +19,9 @@ namespace DotNext.Threading
         private sealed class WriteLockNode : LockNode
         {
             private WriteLockNode() : base() {}
-            private WriteLockNode(AsyncExclusiveLock.LockNode previous) : base(previous){}
+            private WriteLockNode(LockNode previous) : base(previous){}
 
-            internal static WriteLockNode Create(AsyncExclusiveLock.LockNode previous) => previous is null ? new WriteLockNode() : new WriteLockNode(previous);
+            internal static WriteLockNode Create(LockNode previous) => previous is null ? new WriteLockNode() : new WriteLockNode(previous);
         }
 
         private sealed class ReadLockNode: LockNode
@@ -34,15 +34,15 @@ namespace DotNext.Threading
                 Upgradeable = upgradeable;
             }
 
-            private ReadLockNode(AsyncExclusiveLock.LockNode previous, bool upgradeable) 
+            private ReadLockNode(LockNode previous, bool upgradeable) 
                 : base(previous)
             {
                 Upgradeable = upgradeable;
             }
 
-            internal static ReadLockNode CreateRegular(AsyncExclusiveLock.LockNode previous) => previous is null ? new ReadLockNode(false) : new ReadLockNode(previous, false);
+            internal static ReadLockNode CreateRegular(LockNode previous) => previous is null ? new ReadLockNode(false) : new ReadLockNode(previous, false);
 
-            internal static ReadLockNode CreateUpgradeable(AsyncExclusiveLock.LockNode previous) => previous is null ? new ReadLockNode(true) : new ReadLockNode(previous, true);
+            internal static ReadLockNode CreateUpgradeable(LockNode previous) => previous is null ? new ReadLockNode(true) : new ReadLockNode(previous, true);
         }
 
         //describes internal state of reader/writer lock
@@ -83,7 +83,7 @@ namespace DotNext.Threading
         public bool IsWriteLockHeld => state.writeLock;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private bool RemoveNode(AsyncExclusiveLock.LockNode node)
+        private bool RemoveNode(LockNode node)
         {
             var inList = ReferenceEquals(head, node) || !node.IsRoot;
             if (ReferenceEquals(head, node))
@@ -94,7 +94,7 @@ namespace DotNext.Threading
             return inList;
         }
 
-        private async Task<bool> TryAcquire(AsyncExclusiveLock.LockNode node, TimeSpan timeout, CancellationToken token)
+        private async Task<bool> TryAcquire(LockNode node, TimeSpan timeout, CancellationToken token)
         {
             using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
             {
@@ -114,7 +114,7 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private Task<bool> TryEnter(LockAcquisition acquisition, Func<AsyncExclusiveLock.LockNode, AsyncExclusiveLock.LockNode> lockNodeFactory, TimeSpan timeout, CancellationToken token)
+        private Task<bool> TryEnter(LockAcquisition acquisition, Func<LockNode, LockNode> lockNodeFactory, TimeSpan timeout, CancellationToken token)
         {
             ThrowIfDisposed();
             if(timeout < TimeSpan.Zero)
@@ -285,7 +285,7 @@ namespace DotNext.Threading
         private void ProcessReadLocks()
         {
             if (head is ReadLockNode readLock)
-                for (AsyncExclusiveLock.LockNode next; !(readLock is null); readLock = next as ReadLockNode)
+                for (LockNode next; !(readLock is null); readLock = next as ReadLockNode)
                 {
                     next = readLock.Next;
                     //remove all read locks and leave upgradeable read locks until first write lock
