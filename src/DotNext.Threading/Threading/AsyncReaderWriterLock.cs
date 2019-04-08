@@ -95,10 +95,6 @@ namespace DotNext.Threading
             {
                 Upgradeable = upgradeable;
             }
-
-            internal static ReadLockNode CreateRegular(LockNode previous) => previous is null ? new ReadLockNode(false) : new ReadLockNode(previous, false);
-
-            internal static ReadLockNode CreateUpgradeable(LockNode previous) => previous is null ? new ReadLockNode(true) : new ReadLockNode(previous, true);
         }
 
         //describes internal state of reader/writer lock
@@ -114,7 +110,7 @@ namespace DotNext.Threading
             internal volatile bool writeLock;
             internal volatile bool upgreadable;
         }
-        
+
         private State state;
 
         /// <summary>
