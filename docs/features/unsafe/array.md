@@ -70,9 +70,9 @@ array.Dispose();
 | Feature | UnmanagedArray | Span |
 | ---- | ---- | ---- |
 | Managed array as backing store | - | + |
-| Random element access | + | - |
+| Random element access | + | + |
 | Sort | + | - |
-| Search | + | - |
+| Search | + | + |
 | Copy | + | - |
 | Interop with stream | + | - (+ since .NET Standard 2.1) |
 | Filling with zeroes | + | + |
@@ -81,3 +81,4 @@ array.Dispose();
 | Bitwise hash code | + | - |
 | Enumeration | + | + |
 | 64-bit sized unmanaged array | + | - |
+| Can be stored in the field | + | - |
