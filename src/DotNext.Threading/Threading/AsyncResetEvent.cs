@@ -16,14 +16,12 @@ namespace DotNext.Threading
     /// </remarks>
     public class AsyncResetEvent: AsyncLockBase
     {
-        /*
-         * Special lock node is always a root node and interpreted depends on the reset mode:
-         * ManualReset - if head and tail are set to this node then event in nonsignaled mode
-         * AutoReset - if head and tail are set to this node then event in signaled mode
-         */
-        private sealed class SpecialLockNode: LockNode
+        /// <summary>
+        /// Indicates that auto reset event is in signaled state.
+        /// </summary>
+        private sealed class AutoResetSignaledState: LockNode
         {
-
+            internal AutoResetSignaledState() => SetResult(true);
         }
 
         private readonly bool autoReset;
@@ -38,11 +36,11 @@ namespace DotNext.Threading
             switch(mode)
             {
                 case EventResetMode.AutoReset: 
-                    head = tail = initialState ? new SpecialLockNode() : null;
+                    head = tail = initialState ? new AutoResetSignaledState() : null;
                     autoReset = true; 
                     break;
-                case EventResetMode.ManualReset: 
-                    head = tail = initialState ? null : new SpecialLockNode();
+                case EventResetMode.ManualReset:
+                    head = tail = initialState ? null : new LockNode();
                     autoReset = false; 
                     break;
                 default: 
@@ -58,20 +56,8 @@ namespace DotNext.Threading
             get
             {
                 var head = Volatile.Read(ref this.head);
-                return autoReset ? head is SpecialLockNode : head is null;
+                return autoReset ? head is AutoResetSignaledState : head is null;
             }
-        }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        private bool RemoveNode(LockNode node)
-        {
-            var inList = ReferenceEquals(head, node) || !node.IsRoot;
-            if (ReferenceEquals(head, node))
-                head = node.Next;
-            if (ReferenceEquals(tail, node))
-                tail = node.Previous;
-            node.DetachNode();
-            return inList;
         }
 
         /// <summary>
@@ -111,31 +97,13 @@ namespace DotNext.Threading
             if(head is null)
                 if(autoReset)
                 {
-                    head = tail = new SpecialLockNode();
+                    head = tail = new AutoResetSignaledState();
                     return true;
                 }
                 else
                     return false;
+            head.Complete();    //fix deadlock issue with manual reset event
             return RemoveNode(head);
-        }
-
-        private async Task<bool> Wait(LockNode node, TimeSpan timeout, CancellationToken token)
-        {
-            using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
-            {
-                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
-                {
-                    tokenSource.Cancel();   //ensure that Delay task is cancelled
-                    return true;
-                }
-            }
-            if(RemoveNode(node))
-            {
-                token.ThrowIfCancellationRequested();
-                return false;
-            }
-            else
-                return await node.Task.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -155,7 +123,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             else if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
-            else if(autoReset ? head is SpecialLockNode : head is null)
+            else if(autoReset ? head is AutoResetSignaledState : head is null)
             {
                 head = null;
                 return CompletedTask<bool, BooleanConst.True>.Task;

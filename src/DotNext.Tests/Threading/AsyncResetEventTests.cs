@@ -25,10 +25,13 @@ namespace DotNext.Threading
                 t.Join();
                 True(resetEvent.Reset());
                 False(resetEvent.IsSet);
-                t = new Thread(() => 
+                t = new Thread(() =>
                 {
                     resetEvent.Wait().Wait();
-                });
+                })
+                {
+                    IsBackground = true
+                };
                 t.Start();
                 True(resetEvent.Set());
                 t.Join(); 
