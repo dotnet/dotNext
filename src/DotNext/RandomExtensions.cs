@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Security.Cryptography;
+using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
@@ -47,14 +48,19 @@ namespace DotNext
             }
         }
 
-        private static string NextString<R>(ref R generator, ReadOnlySpan<char> allowedChars, int length)
+        private static unsafe string NextString<R>(ref R generator, ReadOnlySpan<char> allowedChars, int length)
             where R: struct, IRandomCharacterGenerator
         {
-            //TODO: can be optimized through usage of Span<char> as a result instead of heap-allocated array
-            var result = new char[length];
-            foreach(ref char element in result.AsSpan())
+            if(length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+            else if(length == 0)
+                return "";
+            //use stack allocation for small strings
+            var result = length < 1024 ? stackalloc char[length] : new Span<char>(new char[length]);
+            foreach(ref char element in result)
                 element = generator.NextChar(allowedChars);
-            return new string(result);
+            fixed(char* ptr = result)
+                return new string(ptr, 0, length);
         }
 
         /// <summary>
@@ -64,6 +70,7 @@ namespace DotNext
         /// <param name="allowedChars">The allowed characters for the random string.</param>
         /// <param name="length">The length of the random string.</param>
         /// <returns>Randomly generated string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this Random random, ReadOnlySpan<char> allowedChars, int length)
 		{
             var generator = new RandomCharacterGenerator(random);
@@ -77,6 +84,7 @@ namespace DotNext
         /// <param name="allowedChars">The array of allowed characters for the random string.</param>
         /// <param name="length">The length of the random string.</param>
         /// <returns>Randomly generated string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
 		public static string NextString(this Random random, char[] allowedChars, int length)
             => NextString(random, new ReadOnlySpan<char>(allowedChars), length);
 
@@ -87,6 +95,7 @@ namespace DotNext
         /// <param name="allowedChars">The string of allowed characters for the random string.</param>
         /// <param name="length">The length of the random string.</param>
         /// <returns>Randomly generated string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this Random random, string allowedChars, int length)
 			=> NextString(random, allowedChars.AsSpan(), length);
 
@@ -97,6 +106,7 @@ namespace DotNext
         /// <param name="allowedChars">The allowed characters for the random string.</param>
         /// <param name="length">The length of the random string.</param>
         /// <returns>Randomly generated string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
         {
             var generator = new RNGCharacterGenerator(random);
@@ -110,6 +120,7 @@ namespace DotNext
         /// <param name="allowedChars">The array of allowed characters for the random string.</param>
         /// <param name="length">The length of the random string.</param>
         /// <returns>Randomly generated string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
 		public static string NextString(this RandomNumberGenerator random, char[] allowedChars, int length)
 			=> NextString(random, new ReadOnlySpan<char>(allowedChars), length);
 
@@ -120,6 +131,7 @@ namespace DotNext
         /// <param name="allowedChars">The string of allowed characters for the random string.</param>
         /// <param name="length">The length of the random string.</param>
         /// <returns>Randomly generated string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this RandomNumberGenerator random, string allowedChars, int length)
 			=> NextString(random, allowedChars.AsSpan(), length);
 

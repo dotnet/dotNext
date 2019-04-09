@@ -14,7 +14,7 @@ namespace DotNext.Collections.Concurrent
     /// </remarks>
     /// <typeparam name="T">The type of elements held in this collection.</typeparam>
     [Serializable]
-    public class CopyOnWriteList<T>: IReadOnlyList<T>, IList<T>
+    public class CopyOnWriteList<T>: IReadOnlyList<T>, IList<T>, ICloneable
     {
         private volatile T[] backingStore;
 
@@ -29,6 +29,22 @@ namespace DotNext.Collections.Concurrent
             foreach (var item in collection)
                 backingStore[index++] = item;
         }
+
+        private CopyOnWriteList(T[] backingStore) => this.backingStore = backingStore;
+
+        /// <summary>
+        /// Creates copy of this list.
+        /// </summary>
+        /// <returns>The copy of this list.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public CopyOnWriteList<T> Clone()
+        {
+            var newStore = new T[backingStore.LongLength];
+            backingStore.CopyTo(newStore, 0L);
+            return new CopyOnWriteList<T>(newStore);
+        }
+
+        object ICloneable.Clone() => Clone();
 
         /// <summary>
         /// Initializes a new empty list.
@@ -91,14 +107,56 @@ namespace DotNext.Collections.Concurrent
         /// </summary>
         /// <param name="item">The object to locate in this list.</param>
         /// <returns>The zero-based index of the first occurrence of <paramref name="item"/>, if found; otherwise, -1.</returns>
-        public int IndexOf(T item) => ((IList<T>)backingStore).IndexOf(item);
+        public int IndexOf(T item) => Array.IndexOf(backingStore, item);
+
+        /// <summary>
+        /// Returns the zero-based index of the last occurrence of a value in this list.
+        /// </summary>
+        /// <param name="item">The object to locate in this list.</param>
+        /// <returns>The zero-based index of the last occurrence of <paramref name="item"/>, if found; otherwise, -1.</returns>
+        public int LastIndexOf(T item) => Array.LastIndexOf(backingStore, item);
+
+        /// <summary>
+        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire list.
+        /// </summary>
+        /// <param name="match">The predicate that defines the conditions of the element to search for.</param>
+        /// <returns>The first element that matches the conditions defined by the specified predicate, if found; otherwise, the default value for type <typeparamref name="T"/>.</returns>
+        public T Find(Predicate<T> match) => Array.Find(backingStore, match);
+
+        /// <summary>
+        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the last occurrence within the entire list.
+        /// </summary>
+        /// <param name="match">The predicate that defines the conditions of the element to search for.</param>
+        /// <returns>The last element that matches the conditions defined by the specified predicate, if found; otherwise, the default value for type <typeparamref name="T"/>.</returns>
+        public T FindLast(Predicate<T> match) => Array.FindLast(backingStore, match);
+
+        /// <summary>
+        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the entire list
+        /// </summary>
+        /// <param name="match">The predicate that defines the conditions of the element to search for.</param>
+        /// <returns>The zero-based index of the first occurrence of an element that matches the conditions defined by match, if found; otherwise, -1.</returns>
+        public int FindIndex(Predicate<T> match) => Array.FindIndex(backingStore, match);
+
+        /// <summary>
+        /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the last occurrence within the entire list
+        /// </summary>
+        /// <param name="match">The predicate that defines the conditions of the element to search for.</param>
+        /// <returns>The zero-based index of the last occurrence of an element that matches the conditions defined by match, if found; otherwise, -1.</returns>
+        public int FindLastIndex(Predicate<T> match) => Array.FindLastIndex(backingStore, match);
 
         /// <summary>
         /// Determines whether an item is in this list.
         /// </summary>
         /// <param name="item">The object to locate in this list.</param>
         /// <returns><see langword="true"/>, if <paramref name="item"/> is found in this list; otherwise, <see langword="false"/>.</returns>
-        public bool Contains(T item) => ((IList<T>)backingStore).Contains(item);
+        public bool Contains(T item) => IndexOf(item) >= 0;
+
+        /// <summary>
+        ///  Determines whether this list contains elements that match the conditions defined by the specified predicate.
+        /// </summary>
+        /// <param name="match">The predicate that defines the conditions of the elements to search for.</param>
+        /// <returns><see langword="true"/> if array contains one or more elements that match the conditions defined by the specified predicate; otherwise, <see langword="false"/>.</returns>
+        public bool Exists(Predicate<T> match) => Array.Exists(backingStore, match);
 
         /// <summary>
         /// Copies the entire list to a compatible one-dimensional array, starting at the specified index of the target array.
@@ -227,8 +285,16 @@ namespace DotNext.Collections.Concurrent
         /// Gets enumerator over snapshot of this list.
         /// </summary>
         /// <returns>The enumerator over snapshot of this list.</returns>
-        public IEnumerator<T> GetEnumerator() => ((IReadOnlyList<T>)backingStore).GetEnumerator();
+        public ReadOnlySpan<T>.Enumerator GetEnumerator() => new ReadOnlySpan<T>(backingStore).GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => ((IReadOnlyList<T>)backingStore).GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => backingStore.GetEnumerator();
+
+        /// <summary>
+        /// Obtains snapshot of the underlying array in the form of the span.
+        /// </summary>
+        /// <param name="list">The list to be converted into span.</param>
+        public static explicit operator ReadOnlySpan<T>(CopyOnWriteList<T> list) => list is null ? default : new ReadOnlySpan<T>(list.backingStore);
     }
 }

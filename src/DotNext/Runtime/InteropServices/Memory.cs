@@ -13,19 +13,49 @@ namespace DotNext.Runtime.InteropServices
     /// </remarks>
 	public unsafe static class Memory
 	{
-		private static class FNV1a
-		{
-			internal const int Offset = unchecked((int)2166136261);
-			private const int Prime = 16777619;
+        private interface IHashFunction<T>
+            where T : unmanaged
+        {
+            void AddData(T data);
+            T Result { get; }
+        }
 
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			internal static int HashRound(int hash, int data) => (hash ^ data) * Prime;
-		}
+        private struct FNV1a : IHashFunction<int>
+        {
+            internal const int Offset = unchecked((int)2166136261);
+            private const int Prime = 16777619;
 
-		/// <summary>
-		/// Represents null pointer.
-		/// </summary>
-		[CLSCompliant(false)]
+            private int hash;
+
+            internal FNV1a(int initialHash) => hash = initialHash;
+
+            public int Result => hash;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void IHashFunction<int>.AddData(int data) => hash = (hash ^ data) * Prime;
+        }
+
+        private struct Int32HashFunction : IHashFunction<int>
+        {
+            private int hash;
+            private readonly Func<int, int, int> function;
+
+            internal Int32HashFunction(int hash, Func<int, int, int> function)
+            {
+                this.hash = hash;
+                this.function = function;
+            }
+
+            public int Result => hash;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void IHashFunction<int>.AddData(int data) => hash = function(hash, data);
+        }
+
+        /// <summary>
+        /// Represents null pointer.
+        /// </summary>
+        [CLSCompliant(false)]
 		public static readonly void* NullPtr = IntPtr.Zero.ToPointer();
 
         /// <summary>
@@ -146,6 +176,9 @@ namespace DotNext.Runtime.InteropServices
 				case sizeof(short):
 					hash = hashFunction(hash, ReadUnaligned<short>(ref source));
 					break;
+                case sizeof(int):
+                    hash = hashFunction(hash, ReadUnaligned<int>(ref source));
+                    break;
 				default:
 					while(length >= IntPtr.Size)
 					{
@@ -161,6 +194,34 @@ namespace DotNext.Runtime.InteropServices
 			}
 			return salted ? hashFunction(hash, RandomExtensions.BitwiseHashSalt) : hash;
 		}
+
+        private static void ComputeHashCode32<H>(IntPtr source, long length, ref H hashFunction, bool salted)
+            where H : struct, IHashFunction<int>
+        {
+            switch (length)
+            {
+                case sizeof(byte):
+                    hashFunction.AddData(ReadUnaligned<byte>(ref source));
+                    break;
+                case sizeof(short):
+                    hashFunction.AddData(ReadUnaligned<short>(ref source));
+                    break;
+                default:
+                    while (length >= sizeof(int))
+                    {
+                        hashFunction.AddData(ReadUnaligned<int>(ref source));
+                        length -= sizeof(int);
+                    }
+                    while (length > 0)
+                    {
+                        hashFunction.AddData(Read<byte>(ref source));
+                        length -= sizeof(byte);
+                    }
+                    break;
+            }
+            if (salted)
+                hashFunction.AddData(RandomExtensions.BitwiseHashSalt);
+        }
 
 		/// <summary>
 		/// Computes hash code for the block of memory, 64-bit version.
@@ -194,28 +255,9 @@ namespace DotNext.Runtime.InteropServices
 		/// <returns>Hash code of the memory block.</returns>
 		public static int GetHashCode(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
 		{
-			switch(length)
-			{
-				case sizeof(byte):
-					hash = hashFunction(hash, ReadUnaligned<byte>(ref source));
-					break;
-				case sizeof(short):
-					hash = hashFunction(hash, ReadUnaligned<short>(ref source));
-					break;
-				default:
-					while(length >= sizeof(int))
-					{
-						hash = hashFunction(hash, ReadUnaligned<int>(ref source));
-						length -= sizeof(int);
-					}
-					while(length > 0)
-					{
-						hash = hashFunction(hash, Read<byte>(ref source));
-						length -= sizeof(byte);
-					}
-					break;
-			}
-			return salted ? hashFunction(hash, RandomExtensions.BitwiseHashSalt) : hash;
+            var hashInfo = new Int32HashFunction(hash, hashFunction);
+            ComputeHashCode32(source, length, ref hashInfo, salted);
+            return hashInfo.Result;
 		}
 		
 		/// <summary>
@@ -248,29 +290,9 @@ namespace DotNext.Runtime.InteropServices
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         public static int GetHashCode(IntPtr source, long length, bool salted = true)
 		{
-			var hash = FNV1a.Offset;
-			switch(length)
-			{
-				case sizeof(byte):
-					hash = FNV1a.HashRound(FNV1a.Offset, ReadUnaligned<byte>(ref source));
-					break;
-				case sizeof(short):
-					hash = FNV1a.HashRound(FNV1a.Offset, ReadUnaligned<short>(ref source));
-					break;
-				default:
-					while(length >= sizeof(int))
-					{
-						hash = FNV1a.HashRound(hash, ReadUnaligned<int>(ref source));
-						length -= sizeof(int);
-					}
-					while(length > 0)
-					{
-						hash = FNV1a.HashRound(hash, Read<byte>(ref source));
-						length -= sizeof(byte);
-					}
-					break;
-			}
-			return salted ? FNV1a.HashRound(hash, RandomExtensions.BitwiseHashSalt) : hash;
+            var hashInfo = new FNV1a(FNV1a.Offset);
+            ComputeHashCode32(source, length, ref hashInfo, salted);
+            return hashInfo.Result;
 		}
 
         /// <summary>
