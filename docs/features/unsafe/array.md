@@ -64,6 +64,9 @@ array.Sort();   //sort array
 array.Dispose();
 ```
 
+# Volatile array access
+
+
 # Span and UnmanagedArray
 [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type from .NET allows to work with managed arrays as well as stack-allocated memory. It is possible to work with unmanaged heap but with some boilerplate code. The following table shows differences between unmanaged array and span:
 
