@@ -14,8 +14,8 @@ The library provides advanced atomic operations for the following types:
 * One-dimensional arrays
 
 Numeric types have the following atomic operations:
-* _VolatileGet_
-* _VolatileSet_
+* _VolatileRead_
+* _VolatileWrite_
 * _IncrementAndGet_ - atomic increment of the field
 * _DecrementAndGet_ - atomic decrement of the field
 * _CompareAndSet_ - atomic modification of the field based on comparison
@@ -28,9 +28,9 @@ Reference types have similar set of atomic operations except arithmetic operatio
 
 # Atomic operations for scalar types
 All atomic operations are extension methods grouped by specific target scalar types:
-* [AtomicInteger](../../api/DotNext.Threading.AtomicInteger.yml) for [int](https://docs.microsoft.com/en-us/dotnet/api/system.int32)
-* [AtomicLong](../../api/DotNext.Threading.AtomicLong.yml) for [long](https://docs.microsoft.com/en-us/dotnet/api/system.int64)
-* [AtomicFloat](../../api/DotNext.Threading.AtomicFloat.yml) for [float](https://docs.microsoft.com/en-us/dotnet/api/system.single)
+* [AtomicInteger](../../api/DotNext.Threading.AtomicInt32.yml) for [int](https://docs.microsoft.com/en-us/dotnet/api/system.int32)
+* [AtomicLong](../../api/DotNext.Threading.AtomicInt64.yml) for [long](https://docs.microsoft.com/en-us/dotnet/api/system.int64)
+* [AtomicFloat](../../api/DotNext.Threading.AtomicSingle.yml) for [float](https://docs.microsoft.com/en-us/dotnet/api/system.single)
 * [AtomicDouble](../../api/DotNext.Threading.AtomicDouble.yml) for [double](https://docs.microsoft.com/en-us/dotnet/api/system.double)
 * [AtomicReference](../../api/DotNext.Threading.AtomicReference.yml) for [reference types](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types)
 
@@ -61,6 +61,6 @@ using DotNext.Threading;
 
 var array = new double[10];
 var result = array.IncrementAndGet(2);   //2 is an index of array element to be modified
-result = array.VolatileGet(2);  //atomic read of array element
-array.VolatileSet(2, 30D);  //atomic modification of array element
+result = array.VolatileRead(2);  //atomic read of array element
+array.VolatileWrite(2, 30D);  //atomic modification of array element
 ```

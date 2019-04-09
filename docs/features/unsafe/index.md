@@ -61,11 +61,14 @@ private static void UnsafeMethod()
 }
 ```
 
-Volatile operations are fully supported for pointer of one of the following types: `long`, `int`, `byte`, `bool`, `float`, `double`, `ulong`, `uint`, `sbyte`:
+Volatile operations are fully supported by pointer of one of the following types: `long`, `int`, `byte`, `bool`, `float`, `double`, `ulong`, `uint`, `sbyte`:
 ```csharp
 using DotNext.Runtime.InteropServices;
+using DotNext.Threading;
 
 Pointer<long> ptr;
 ptr.VolatileWrite(42L);
 var i = ptr.VolatileRead();
+i = ptr.IncrementAndGetValue(); //i == 43
 ```
+See [here](../../api/DotNext.Threading.AtomicPointer.yml) for complete list of volatile operations.

@@ -64,8 +64,17 @@ array.Sort();   //sort array
 array.Dispose();
 ```
 
-# Volatile array access
+# Atomic array access
+It is possible to perform volatile reads/writes of array elements as well as more complex atomic operations. To do that, a pointer to array element should be obtained using `ElementAt` method in the array. 
 
+```csharp
+var array = new UnmanagedArray<long>(10);
+array.Fill(42L);
+var i = array.ElementAt(0).IncrementAndGetValue();  //i == 43L
+array.ElementAt(0).CompareAndSet(0L, 1L);   //false because array[0] == 43L
+```
+
+A set of atomic operations are similar to the atomic operations for primitive types described [here](../core/atomic.md). All supported atomic operations for pointer type located in [AtomicPointer](../../api/DotNext.Threading.AtomicPointer.yml) class.
 
 # Span and UnmanagedArray
 [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type from .NET allows to work with managed arrays as well as stack-allocated memory. It is possible to work with unmanaged heap but with some boilerplate code. The following table shows differences between unmanaged array and span:
@@ -85,4 +94,5 @@ array.Dispose();
 | Enumeration | + | + |
 | 64-bit sized unmanaged array | + | - |
 | Can be stored in the field | + | - |
-| Volatile operations | + | - |
+| Volatile read/write | + | - |
+| Atomic operations | + | - |
