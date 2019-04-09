@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -175,5 +176,327 @@ namespace DotNext.Runtime.InteropServices
             => offset >= 0 && offset < memory.Size ?
                 memory.ToPointer<byte>() + offset :
                 throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(memory.Size));
+        
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileWrite(this Pointer<long> pointer, long value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileWrite(this Pointer<int> pointer, int value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileWrite(this Pointer<short> pointer, short value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileWrite(this Pointer<byte> pointer, byte value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileWrite(this Pointer<bool> pointer, bool value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileWrite(this Pointer<IntPtr> pointer, IntPtr value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileWrite(this Pointer<float> pointer, float value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileWrite(this Pointer<double> pointer, double value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static void VolatileWrite(this Pointer<ulong> pointer, ulong value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static void VolatileWrite(this Pointer<uint> pointer, uint value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static void VolatileWrite(this Pointer<ushort> pointer, ushort value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static void VolatileWrite(this Pointer<sbyte> pointer, sbyte value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Writes a value to the memory location identified by the pointer . 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to write.</param>
+        /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static void VolatileWrite(this Pointer<UIntPtr> pointer, UIntPtr value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer. 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long VolatileRead(this Pointer<long> pointer) => Volatile.Read(ref pointer.Ref);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int VolatileRead(this Pointer<int> pointer) => Volatile.Read(ref pointer.Ref);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static short VolatileRead(this Pointer<short> pointer) => Volatile.Read(ref pointer.Ref);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer. 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static byte VolatileRead(this Pointer<byte> pointer) => Volatile.Read(ref pointer.Ref);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer. 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool VolatileRead(this Pointer<bool> pointer) => Volatile.Read(ref pointer.Ref);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer. 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr VolatileRead(this Pointer<IntPtr> pointer) => Volatile.Read(ref pointer.Ref);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer. 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float VolatileRead(this Pointer<float> pointer) => Volatile.Read(ref pointer.Ref);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer. 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double VolatileRead(this Pointer<double> pointer) => Volatile.Read(ref pointer.Ref);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer. 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ulong VolatileRead(this Pointer<ulong> pointer) => Volatile.Read(ref pointer.Ref);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer. 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static uint VolatileRead(this Pointer<uint> pointer) => Volatile.Read(ref pointer.Ref);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer. 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static ushort VolatileRead(this Pointer<ushort> pointer) => Volatile.Read(ref pointer.Ref);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer. 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static sbyte VolatileRead(this Pointer<sbyte> pointer) => Volatile.Read(ref pointer.Ref);
+
+        /// <summary>
+        /// Reads the value from the memory location identified by the pointer. 
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="pointer">The pointer to read.</param>
+        /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr VolatileRead(this Pointer<UIntPtr> pointer) => Volatile.Read(ref pointer.Ref);
     }
 }
