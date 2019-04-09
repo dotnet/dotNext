@@ -38,7 +38,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float VolatileGet(ref this float value) => Volatile.Read(ref value);
+        public static float VolatileRead(ref this float value) => Volatile.Read(ref value);
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -52,7 +52,7 @@ namespace DotNext.Threading
         /// all processors in the computer.
         /// </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileSet(ref this float value, float newValue)
+        public static void VolatileWrite(ref this float value, float newValue)
             => Volatile.Write(ref value, newValue);
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float SetAndGet(ref this float value, float update)
         {
-            VolatileSet(ref value, update);
+            VolatileWrite(ref value, update);
             return update;
         }
 
@@ -170,8 +170,8 @@ namespace DotNext.Threading
         /// <param name="index">The array element index.</param>
         /// <returns>The array element.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float VolatileGet(this float[] array, long index)
-            => VolatileGet(ref array[index]);
+        public static float VolatileRead(this float[] array, long index)
+            => VolatileRead(ref array[index]);
 
         /// <summary>
         /// Performs volatile write to the array element.
@@ -180,8 +180,8 @@ namespace DotNext.Threading
         /// <param name="index">The array element index.</param>
         /// <param name="value">The new value of the array element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileSet(this float[] array, long index, float value)
-            => VolatileSet(ref array[index], value);
+        public static void VolatileWrite(this float[] array, long index, float value)
+            => VolatileWrite(ref array[index], value);
 
         /// <summary>
 		/// Atomically increments the array element by one.
@@ -260,7 +260,7 @@ namespace DotNext.Threading
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float SetAndGet(this float[] array, long index, float update)
         {
-            VolatileSet(array, index, update);
+            VolatileWrite(array, index, update);
             return update;
         }
 

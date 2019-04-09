@@ -38,7 +38,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int VolatileGet(ref this int value)
+		public static int VolatileRead(ref this int value)
 			=> Volatile.Read(ref value);
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace DotNext.Threading
         /// all processors in the computer.
         /// </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void VolatileSet(ref this int value, int newValue)
+		public static void VolatileWrite(ref this int value, int newValue)
 			=> Volatile.Write(ref value, newValue);
 
         /// <summary>
@@ -174,8 +174,8 @@ namespace DotNext.Threading
         /// <param name="index">The array element index.</param>
         /// <returns>The array element.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int VolatileGet(this int[] array, long index)
-            => VolatileGet(ref array[index]);
+        public static int VolatileRead(this int[] array, long index)
+            => VolatileRead(ref array[index]);
 
         /// <summary>
         /// Performs volatile write to the array element.
@@ -184,8 +184,8 @@ namespace DotNext.Threading
         /// <param name="index">The array element index.</param>
         /// <param name="value">The new value of the array element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileSet(this int[] array, long index, int value)
-            => VolatileSet(ref array[index], value);
+        public static void VolatileWrite(this int[] array, long index, int value)
+            => VolatileWrite(ref array[index], value);
 
         /// <summary>
 		/// Atomically increments the array element by one.
@@ -264,7 +264,7 @@ namespace DotNext.Threading
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int SetAndGet(this int[] array, long index, int update)
         {
-            VolatileSet(array, index, update);
+            VolatileWrite(array, index, update);
             return update;
         }
 
