@@ -589,6 +589,19 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The value of the array element.</returns>
         public static double VolatileRead(this ref UnmanagedArray<double> array, long index)
             => array.ElementAt(index).VolatileRead();
+
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        public static bool VolatileRead(this ref UnmanagedArray<bool> array, long index)
+            => array.ElementAt(index).VolatileRead();
         
         /// <summary>
         /// Reads array element using volatile semantics.
