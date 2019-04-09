@@ -49,7 +49,7 @@ private static void UnsafeMethod()
 }
 ```
 
-The pointer can be re-interpreted with different type:
+Pointer can be re-interpreted with different type:
 ```csharp
 using DotNext.Runtime.InteropServices;
 
@@ -59,4 +59,13 @@ private static void UnsafeMethod()
 
     Pointer<uint> uptr = ptr.As<uint>();
 }
+```
+
+Volatile operations are fully supported for pointer of one of the following types: `long`, `int`, `byte`, `bool`, `float`, `double`, `ulong`, `uint`, `sbyte`:
+```csharp
+using DotNext.Runtime.InteropServices;
+
+Pointer<long> ptr;
+ptr.VolatileWrite(42L);
+var i = ptr.VolatileRead();
 ```
