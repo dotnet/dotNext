@@ -178,6 +178,180 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(memory.Size));
         
         /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        public static void VolatileWrite(this ref UnmanagedArray<long> array, long index, long value)
+            => array.ElementAt(index).VolatileWrite(value);
+        
+        /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        public static void VolatileWrite(this ref UnmanagedArray<int> array, long index, int value)
+            => array.ElementAt(index).VolatileWrite(value);
+
+        /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        public static void VolatileWrite(this ref UnmanagedArray<short> array, long index, short value)
+            => array.ElementAt(index).VolatileWrite(value);
+
+        /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        public static void VolatileWrite(this ref UnmanagedArray<byte> array, long index, byte value)
+            => array.ElementAt(index).VolatileWrite(value);
+
+        /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        public static void VolatileWrite(this ref UnmanagedArray<bool> array, long index, bool value)
+            => array.ElementAt(index).VolatileWrite(value);
+        
+        /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        public static void VolatileWrite(this ref UnmanagedArray<IntPtr> array, long index, IntPtr value)
+            => array.ElementAt(index).VolatileWrite(value);
+        
+        /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        public static void VolatileWrite(this ref UnmanagedArray<float> array, long index, float value)
+            => array.ElementAt(index).VolatileWrite(value);
+        
+        /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        public static void VolatileWrite(this ref UnmanagedArray<double> array, long index, double value)
+            => array.ElementAt(index).VolatileWrite(value);
+        
+        /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        [CLSCompliant(false)]
+        public static void VolatileWrite(this ref UnmanagedArray<ulong> array, long index, ulong value)
+            => array.ElementAt(index).VolatileWrite(value);
+        
+        /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        [CLSCompliant(false)]
+        public static void VolatileWrite(this ref UnmanagedArray<uint> array, long index, uint value)
+            => array.ElementAt(index).VolatileWrite(value);
+        
+        /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        [CLSCompliant(false)]
+        public static void VolatileWrite(this ref UnmanagedArray<ushort> array, long index, ushort value)
+            => array.ElementAt(index).VolatileWrite(value);
+        
+        /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        [CLSCompliant(false)]
+        public static void VolatileWrite(this ref UnmanagedArray<sbyte> array, long index, sbyte value)
+            => array.ElementAt(index).VolatileWrite(value);
+        
+        /// <summary>
+        /// Writes array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears before this method in the code, the processor cannot move it after this method.
+        /// </remarks>
+        /// <param name="array">The unmanaged array.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+        /// <param name="value">The value to be saved as array element.</param>
+        [CLSCompliant(false)]
+        public static void VolatileWrite(this ref UnmanagedArray<UIntPtr> array, long index, UIntPtr value)
+            => array.ElementAt(index).VolatileWrite(value);
+        
+        /// <summary>
         /// Writes a value to the memory location identified by the pointer . 
         /// </summary>
         /// <remarks>
@@ -337,6 +511,167 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static void VolatileWrite(this Pointer<UIntPtr> pointer, UIntPtr value) => Volatile.Write(ref pointer.Ref, value);
+
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        public static long VolatileRead(this ref UnmanagedArray<long> array, long index)
+            => array.ElementAt(index).VolatileRead();
+        
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        public static int VolatileRead(this ref UnmanagedArray<int> array, long index)
+            => array.ElementAt(index).VolatileRead();
+        
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        public static short VolatileRead(this ref UnmanagedArray<short> array, long index)
+            => array.ElementAt(index).VolatileRead();
+        
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        public static byte VolatileRead(this ref UnmanagedArray<byte> array, long index)
+            => array.ElementAt(index).VolatileRead();
+        
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        public static float VolatileRead(this ref UnmanagedArray<float> array, long index)
+            => array.ElementAt(index).VolatileRead();
+        
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        public static double VolatileRead(this ref UnmanagedArray<double> array, long index)
+            => array.ElementAt(index).VolatileRead();
+        
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        public static IntPtr VolatileRead(this ref UnmanagedArray<IntPtr> array, long index)
+            => array.ElementAt(index).VolatileRead();
+        
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        [CLSCompliant(false)]
+        public static ulong VolatileRead(this ref UnmanagedArray<ulong> array, long index)
+            => array.ElementAt(index).VolatileRead();
+        
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        [CLSCompliant(false)]
+        public static uint VolatileRead(this ref UnmanagedArray<uint> array, long index)
+            => array.ElementAt(index).VolatileRead();
+        
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        [CLSCompliant(false)]
+        public static ushort VolatileRead(this ref UnmanagedArray<ushort> array, long index)
+            => array.ElementAt(index).VolatileRead();
+        
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        [CLSCompliant(false)]
+        public static sbyte VolatileRead(this ref UnmanagedArray<sbyte> array, long index)
+            => array.ElementAt(index).VolatileRead();
+        
+        /// <summary>
+        /// Reads array element using volatile semantics.
+        /// </summary>
+        /// <remarks>
+        /// On systems that require it, inserts a memory barrier that prevents the processor from reordering memory operations as follows: 
+        /// If a read or write appears after this method in the code, the processor cannot move it before this method.
+        /// </remarks>
+        /// <param name="array">An unmanaged array.</param>
+        /// <param name="index">An index of element to read.</param>
+        /// <returns>The value of the array element.</returns>
+        [CLSCompliant(false)]
+        public static UIntPtr VolatileRead(this ref UnmanagedArray<UIntPtr> array, long index)
+            => array.ElementAt(index).VolatileRead();
 
         /// <summary>
         /// Reads the value from the memory location identified by the pointer. 
