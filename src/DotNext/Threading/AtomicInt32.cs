@@ -15,7 +15,7 @@ namespace DotNext.Threading
 	/// of the field even if it is not declared as volatile field.
 	/// </remarks>
 	/// <seealso cref="Interlocked"/>
-	public static class AtomicInteger
+	public static class AtomicInt32
 	{
 		private sealed class CASProvider : Constant<CAS<int>>
 		{

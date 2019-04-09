@@ -19,7 +19,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to write.</param>
         /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileWrite(this Pointer<long> pointer, long value) => AtomicLong.VolatileSet(ref pointer.Ref, value);
+        public static void VolatileWrite(this Pointer<long> pointer, long value) => AtomicInt64.VolatileSet(ref pointer.Ref, value);
 
         /// <summary>
         /// Writes a value to the memory location identified by the pointer . 
@@ -31,7 +31,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to write.</param>
         /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileWrite(this Pointer<int> pointer, int value) => AtomicInteger.VolatileSet(ref pointer.Ref, value);
+        public static void VolatileWrite(this Pointer<int> pointer, int value) => AtomicInt32.VolatileSet(ref pointer.Ref, value);
 
         /// <summary>
         /// Writes a value to the memory location identified by the pointer . 
@@ -91,7 +91,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to write.</param>
         /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileWrite(this Pointer<float> pointer, float value) => AtomicFloat.VolatileSet(ref pointer.Ref, value);
+        public static void VolatileWrite(this Pointer<float> pointer, float value) => AtomicSingle.VolatileSet(ref pointer.Ref, value);
 
         /// <summary>
         /// Writes a value to the memory location identified by the pointer . 
@@ -180,7 +180,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to read.</param>
         /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long VolatileRead(this Pointer<long> pointer) => AtomicLong.VolatileGet(ref pointer.Ref);
+        public static long VolatileRead(this Pointer<long> pointer) => AtomicInt64.VolatileGet(ref pointer.Ref);
 
         /// <summary>
         /// Reads the value from the memory location identified by the pointer.
@@ -192,7 +192,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to read.</param>
         /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int VolatileRead(this Pointer<int> pointer) => AtomicInteger.VolatileGet(ref pointer.Ref);
+        public static int VolatileRead(this Pointer<int> pointer) => AtomicInt32.VolatileGet(ref pointer.Ref);
 
         /// <summary>
         /// Reads the value from the memory location identified by the pointer.
@@ -252,7 +252,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to read.</param>
         /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float VolatileRead(this Pointer<float> pointer) => AtomicFloat.VolatileGet(ref pointer.Ref);
+        public static float VolatileRead(this Pointer<float> pointer) => AtomicSingle.VolatileGet(ref pointer.Ref);
 
         /// <summary>
         /// Reads the value from the memory location identified by the pointer. 
@@ -337,7 +337,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to the memory.</param>
         /// <returns>The incremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long IncrementValue(this Pointer<long> pointer) => AtomicLong.IncrementAndGet(ref pointer.Ref);
+        public static long IncrementValue(this Pointer<long> pointer) => AtomicInt64.IncrementAndGet(ref pointer.Ref);
 
         /// <summary>
         /// Increments a value located in the memory at the address specified by pointer and stores the result, as an atomic operation.
@@ -345,7 +345,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to the memory.</param>
         /// <returns>The incremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int IncrementValue(this Pointer<int> pointer) => AtomicInteger.IncrementAndGet(ref pointer.Ref);
+        public static int IncrementValue(this Pointer<int> pointer) => AtomicInt32.IncrementAndGet(ref pointer.Ref);
 
         /// <summary>
         /// Decrements a value located in the memory at the address specified by pointer and stores the result, as an atomic operation.
@@ -353,7 +353,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to the memory.</param>
         /// <returns>The decremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long DecrementValue(this Pointer<long> pointer) => AtomicLong.DecrementAndGet(ref pointer.Ref);
+        public static long DecrementValue(this Pointer<long> pointer) => AtomicInt64.DecrementAndGet(ref pointer.Ref);
 
         /// <summary>
         /// Decrements a value located in the memory at the address specified by pointer and stores the result, as an atomic operation.
@@ -361,7 +361,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to the memory.</param>
         /// <returns>The incremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int DecrementValue(this Pointer<int> pointer) => AtomicInteger.DecrementAndGet(ref pointer.Ref);
+        public static int DecrementValue(this Pointer<int> pointer) => AtomicInt32.DecrementAndGet(ref pointer.Ref);
 
         /// <summary>
         /// Sets a value located in the memory at the address specified by pointer to a specified value as an atomic operation.
@@ -370,7 +370,7 @@ namespace DotNext.Threading
         /// <param name="update">The value to which the memory is set.</param>
         /// <returns>The original value in the memory.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetAndSetValue(this Pointer<long> pointer, long update) => AtomicLong.GetAndSet(ref pointer.Ref, update);
+        public static long GetAndSetValue(this Pointer<long> pointer, long update) => AtomicInt64.GetAndSet(ref pointer.Ref, update);
 
         /// <summary>
         /// Sets a value located in the memory at the address specified by pointer to a specified value as an atomic operation.
@@ -379,7 +379,7 @@ namespace DotNext.Threading
         /// <param name="update">The value to which the memory is set.</param>
         /// <returns>The original value in the memory.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int GetAndSetValue(this Pointer<int> pointer, int update) => AtomicInteger.GetAndSet(ref pointer.Ref, update);
+        public static int GetAndSetValue(this Pointer<int> pointer, int update) => AtomicInt32.GetAndSet(ref pointer.Ref, update);
 
         /// <summary>
         /// Sets a value located in the memory at the address specified by pointer to a specified value as an atomic operation.
@@ -388,7 +388,7 @@ namespace DotNext.Threading
         /// <param name="update">The value to which the memory is set.</param>
         /// <returns>The original value in the memory.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float GetAndSetValue(this Pointer<float> pointer, float update) => AtomicFloat.GetAndSet(ref pointer.Ref, update);
+        public static float GetAndSetValue(this Pointer<float> pointer, float update) => AtomicSingle.GetAndSet(ref pointer.Ref, update);
 
         /// <summary>
         /// Sets a value located in the memory at the address specified by pointer to a specified value as an atomic operation.
@@ -415,7 +415,7 @@ namespace DotNext.Threading
         /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
         /// <returns>The new value stored at memory address.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int AddValue(this Pointer<int> pointer, int value) => AtomicInteger.Add(ref pointer.Ref, value);
+        public static int AddValue(this Pointer<int> pointer, int value) => AtomicInt32.Add(ref pointer.Ref, value);
 
         /// <summary>
         /// Adds two integers and replaces the first integer with the sum, as an atomic operation.
@@ -424,7 +424,7 @@ namespace DotNext.Threading
         /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
         /// <returns>The new value stored at memory address.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long AddValue(this Pointer<long> pointer, long value) => AtomicLong.Add(ref pointer.Ref, value);
+        public static long AddValue(this Pointer<long> pointer, long value) => AtomicInt64.Add(ref pointer.Ref, value);
 
         /// <summary>
         /// Compares two 64-bit signed integers for equality and, if they are equal, replaces the first value.
