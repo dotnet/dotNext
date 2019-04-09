@@ -48,6 +48,7 @@ namespace DotNext.Runtime.InteropServices
 
             public int Result => hash;
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             void IHashFunction<int>.AddData(int data) => hash = function(hash, data);
         }
 
