@@ -38,7 +38,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double VolatileGet(ref this double value) => Volatile.Read(ref value);
+        public static double VolatileRead(ref this double value) => Volatile.Read(ref value);
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -52,7 +52,7 @@ namespace DotNext.Threading
         /// all processors in the computer.
         /// </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileSet(ref this double value, double newValue)
+        public static void VolatileWrite(ref this double value, double newValue)
             => Volatile.Write(ref value, newValue);
 
         /// <summary>
@@ -88,8 +88,9 @@ namespace DotNext.Threading
         /// <param name="expected">The expected value.</param>
         /// <param name="update">The new value.</param>
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet(ref this double value, double expected, double update)
-            => Unsafe.As<double, long>(ref value).CompareAndSet(BitConverter.DoubleToInt64Bits(expected), BitConverter.DoubleToInt64Bits(update));
+            => Interlocked.CompareExchange(ref value, update, expected) == expected;
 
         /// <summary>
 		/// Modifies referenced value atomically.
@@ -110,7 +111,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double SetAndGet(ref this double value, double update)
         {
-            VolatileSet(ref value, update);
+            VolatileWrite(ref value, update);
             return update;
         }
 
@@ -169,8 +170,8 @@ namespace DotNext.Threading
         /// <param name="index">The array element index.</param>
         /// <returns>The array element.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double VolatileGet(this double[] array, long index)
-            => VolatileGet(ref array[index]);
+        public static double VolatileRead(this double[] array, long index)
+            => VolatileRead(ref array[index]);
 
         /// <summary>
         /// Performs volatile write to the array element.
@@ -179,8 +180,8 @@ namespace DotNext.Threading
         /// <param name="index">The array element index.</param>
         /// <param name="value">The new value of the array element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileSet(this double[] array, long index, double value)
-            => VolatileSet(ref array[index], value);
+        public static void VolatileWrite(this double[] array, long index, double value)
+            => VolatileWrite(ref array[index], value);
 
         /// <summary>
 		/// Atomically increments the array element by one.
@@ -259,7 +260,7 @@ namespace DotNext.Threading
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double SetAndGet(this double[] array, long index, double update)
         {
-            VolatileSet(array, index, update);
+            VolatileWrite(array, index, update);
             return update;
         }
 

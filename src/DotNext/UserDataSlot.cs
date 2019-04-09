@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DotNext
 {
-    using static Threading.AtomicLong;
+    using static Threading.AtomicInt64;
 
     internal static class UserDataSlot
     {

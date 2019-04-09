@@ -9,7 +9,7 @@ namespace DotNext.Threading
         {
             var array = new[] { "a", "b" };
             array.UpdateAndGet(1, s => s + "c");
-            Equal("bc", array.VolatileGet(1));
+            Equal("bc", array.VolatileRead(1));
         }
 
         [Fact]

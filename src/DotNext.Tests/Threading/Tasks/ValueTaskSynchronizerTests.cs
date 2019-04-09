@@ -43,19 +43,19 @@ namespace DotNext.Threading.Tasks
             var source3 = new ValueTaskCompletionSource();
             ThreadPool.QueueUserWorkItem(state => 
             {
-                box.Value.VolatileSet(1);
+                box.Value.VolatileWrite(1);
                 Thread.Sleep(50);
                 source1.Complete();
             });
             ThreadPool.QueueUserWorkItem(state => 
             {
-                box.Value.VolatileSet(2);
+                box.Value.VolatileWrite(2);
                 Thread.Sleep(200);
                 source2.Complete();
             });
             ThreadPool.QueueUserWorkItem(state => 
             {
-                box.Value.VolatileSet(3);
+                box.Value.VolatileWrite(3);
                 Thread.Sleep(150);
                 source3.Complete();
             });

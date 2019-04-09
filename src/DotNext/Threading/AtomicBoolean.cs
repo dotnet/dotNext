@@ -26,9 +26,9 @@ namespace DotNext.Threading
         public bool Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => value.VolatileGet() == True;
+            get => value.VolatileRead() == True;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => this.value.VolatileSet(value ? True: False);
+            set => this.value.VolatileWrite(value ? True: False);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace DotNext.Threading
             int oldValue, newValue;
             do
             {
-                oldValue = value.VolatileGet();
+                oldValue = value.VolatileRead();
                 newValue = oldValue ^ True;
             } 
             while(!value.CompareAndSet(oldValue, newValue));
@@ -205,7 +205,7 @@ namespace DotNext.Threading
                 case bool b:
                     return Equals(b);
                 case AtomicBoolean b:
-                    return b.value.VolatileGet() == value.VolatileGet();
+                    return b.value.VolatileRead() == value.VolatileRead();
                 default:
                     return false;
             }
