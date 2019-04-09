@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Security.Cryptography;
+using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
@@ -47,14 +48,19 @@ namespace DotNext
             }
         }
 
-        private static string NextString<R>(ref R generator, ReadOnlySpan<char> allowedChars, int length)
+        private static unsafe string NextString<R>(ref R generator, ReadOnlySpan<char> allowedChars, int length)
             where R: struct, IRandomCharacterGenerator
         {
-            //TODO: can be optimized through usage of Span<char> as a result instead of heap-allocated array
-            var result = new char[length];
-            foreach(ref char element in result.AsSpan())
+            if(length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+            else if(length == 0)
+                return "";
+            //use stack allocation for small strings
+            var result = length < 500 ? stackalloc char[length] : new Span<char>(new char[length]);
+            foreach(ref char element in result)
                 element = generator.NextChar(allowedChars);
-            return new string(result);
+            fixed(char* ptr = result)
+                return new string(ptr, 0, length);
         }
 
         /// <summary>
