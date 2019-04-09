@@ -66,7 +66,7 @@ namespace DotNext
 		/// <param name="input">Input array to be converted. Cannot be <see langword="null"/>.</param>
 		/// <param name="mapper">Index-aware mapping function. Cannot be <see langword="null"/>.</param>
 		/// <returns>Converted array.</returns>
-		public static O[] Convert<I, O>(this I[] input, Func<long, I, O> mapper)
+		public static O[] ConvertAll<I, O>(this I[] input, Func<long, I, O> mapper)
 		{
 			var output = New<O>(input.LongLength);
             for(var i = 0L; i < input.LongLength; i++)
