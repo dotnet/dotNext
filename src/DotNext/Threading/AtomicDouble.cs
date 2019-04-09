@@ -88,8 +88,9 @@ namespace DotNext.Threading
         /// <param name="expected">The expected value.</param>
         /// <param name="update">The new value.</param>
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet(ref this double value, double expected, double update)
-            => Unsafe.As<double, long>(ref value).CompareAndSet(BitConverter.DoubleToInt64Bits(expected), BitConverter.DoubleToInt64Bits(update));
+            => Interlocked.CompareExchange(ref value, update, expected) == expected;
 
         /// <summary>
 		/// Modifies referenced value atomically.
