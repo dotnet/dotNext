@@ -883,7 +883,7 @@ namespace DotNext.Runtime.InteropServices
         {
             //TODO: should be fixed if Span will support long data type
             //for length parameter
-            if (array.pointer.IsNull)
+            if (array.IsEmpty)
                 return default;
             else if (array.Length <= int.MaxValue)
                 return new Span<T>(array.pointer, (int)array.Length);
