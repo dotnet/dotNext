@@ -28,7 +28,7 @@ using(var list = new UnmanagedList<long>(10))   //initial capacity
 }
 ```
 
-It is possible to work with elements of the list using [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type:
+It is possible to work with elements of the list using [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type with one exception: you should not add, remove or insert new elements when reading or modifying elements through span. These operations may cause to re-allocation of the underlying array. As a result, the original pointer passed into [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) become invalid.
 ```csharp
 using(var list = new UnmanagedList<long>(10))   //initial capacity
 {
