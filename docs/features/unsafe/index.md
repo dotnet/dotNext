@@ -15,10 +15,11 @@ DotNext library provides rich data structures allocated in unmanaged heap (off-h
 The first feature is CLS compliant pointer data type with low-level memory manipulation methods. The second feature is a set of value types representing structured access to the off-heap memory:
 
 1. [UnmanagedArray](../../api/DotNext.Runtime.InteropServices.UnmanagedArray-1.yml) is a one-dimensional array allocated in unmanaged heap.
-1. [UnmanagedMemory](../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.yml) is an arbitrary value type allocated in unmanaged heap.
+1. [UnmanagedMemory&lt;T&gt;](../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.yml) provides structured access to the unmanaged memory.
+1. [UnmanagedMemory](../../api/DotNext.Runtime.InteropServices.UnmanagedMemory.yml) provides unstructured access to the unmanaged memory.
 1. [UnmanagedList](../../api/DotNext.Collections.Generic.UnmanagedList-1.yml) is a growable list of value types allocated in unmanaged heap. This type is equivalent of [List](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1) from .NET Base Class Library. All elements of unmanaged list are allocated in off-heap memory.
 
-All unmanaged data types are not thread-safe.
+All unmanaged data types are not thread-safe. However, unmanaged array and pointer have atomic operations. Additionally, these types are implicitly convertible into [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type.
 
 # Pointer
 C# programming language supports typed and untyped pointer data types such as _int*_ or _void*_. These types are not CLS-compliant and may not be available in other .NET programming languages. For instance, F# or VB.NET do not support pointer type and interoperation with native libraries or COM objects are limited. 

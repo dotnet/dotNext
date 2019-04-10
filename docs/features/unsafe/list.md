@@ -28,4 +28,14 @@ using(var list = new UnmanagedList<long>(10))   //initial capacity
 }
 ```
 
-It is fully compatible with
+It is possible to work with elements of the list using [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type:
+```csharp
+using(var list = new UnmanagedList<long>(10))   //initial capacity
+{
+    list.Add(10);
+    list.Add(20);
+    Span<long> span = list;
+    foreach(ref long item in span)
+        item = 0L;
+}
+```
