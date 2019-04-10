@@ -24,5 +24,8 @@ using(var list = new UnmanagedList<long>(10))   //initial capacity
     list.Add(10);
     list.Add(20);
     foreach(long item in list)
+        Console.WriteLine(item);
 }
 ```
+
+It is fully compatible with
