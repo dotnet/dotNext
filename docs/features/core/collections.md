@@ -87,3 +87,10 @@ using DotNext;
 IEnumerable<string> list = new[] { "a", "b", "c" };
 list.ForEach(item => Console.WriteLine(item));
 ```
+
+# CopyOnWriteList
+[CopyOnWriteList](../../api/DotNext.Collections.Concurrent.CopyOnWriteList.yml) is a thread-safe variant of [List](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1) in which all mutative operations (except element setter) are implemented by making a fresh copy of the underlying array.
+
+This is ordinarily too costly, but may be more efficient than alternatives when traversal operations vastly outnumber mutations, and is useful when you cannot or don't want to synchronize traversals, yet need to preclude interference among concurrent threads. The "snapshot" style enumerator method uses a reference to the state of the array at the point that the enumerator was created. The size of array never changes during the lifetime of the enumerator, so interference is impossible and the enumerator is guaranteed not to throw [InvalidOperationException](https://docs.microsoft.com/en-us/dotnet/api/system.invalidoperationexception). The enumerator will not reflect additions or removals to/from the list since the eumerator was created.
+
+All elements are permitted, including **null**.
