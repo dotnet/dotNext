@@ -30,9 +30,12 @@ This library provides a rich set of tools to write and execute code on-the-fly. 
 # DotNext.Unsafe
 <a href="https://www.nuget.org/packages/dotnext.unsafe/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.unsafe.svg?style=flat"></a><br/>
 This library provides a special types to work with unmanaged memory in type-safe manner:
-* Value types allocated in the unmanaged memory (heap)
-* Typed unmanaged arrays
+* Structured access to unmanaged memory
+* Unstructured access to unmanaged memory
+* Typed unmanaged array and list
 * CLS-compliant generic pointer type for .NET languages without direct support of such type. Use this feature to work with pointers from VB.NET or F#.
+* Volatile read and write from/to unmanaged memory
+* Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc.
 
 # DotNext.Threading
 <a href="https://www.nuget.org/packages/dotnext.threading/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.threading.svg?style=flat"></a><br/>
