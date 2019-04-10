@@ -19,7 +19,9 @@
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
 	<PackageReleaseNotes>Introduce automatic generation of GetHashCode and Equals for custom type instead of hand-written coding of these methods to improve productivity. See EqualityComparerBuilder class.
-Generic conversion methods between enum values and primitive types</PackageReleaseNotes>
+Generic conversion methods between enum values and primitive types
+Introduce concurrent collection CopyOnWriteList
+Provide API to work with generic Enums</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
