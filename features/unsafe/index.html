@@ -81,10 +81,11 @@
 <p>The first feature is CLS compliant pointer data type with low-level memory manipulation methods. The second feature is a set of value types representing structured access to the off-heap memory:</p>
 <ol>
 <li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a> is a one-dimensional array allocated in unmanaged heap.</li>
-<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html">UnmanagedMemory</a> is an arbitrary value type allocated in unmanaged heap.</li>
+<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html">UnmanagedMemory&lt;T&gt;</a> provides structured access to the unmanaged memory.</li>
+<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory.html">UnmanagedMemory</a> provides unstructured access to the unmanaged memory.</li>
 <li><a href="../../api/DotNext.Collections.Generic.UnmanagedList-1.html">UnmanagedList</a> is a growable list of value types allocated in unmanaged heap. This type is equivalent of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1">List</a> from .NET Base Class Library. All elements of unmanaged list are allocated in off-heap memory.</li>
 </ol>
-<p>All unmanaged data types are not thread-safe.</p>
+<p>All unmanaged data types are not thread-safe. However, unmanaged array and pointer have atomic operations. Additionally, these types are implicitly convertible into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type.</p>
 <h1 id="pointer">Pointer</h1>
 <p>C# programming language supports typed and untyped pointer data types such as <em>int*</em> or <em>void*</em>. These types are not CLS-compliant and may not be available in other .NET programming languages. For instance, F# or VB.NET do not support pointer type and interoperation with native libraries or COM objects are limited.</p>
 <p>DotNext offers <a href="../../api/DotNext.Runtime.InteropServices.Pointer-1.html">Pointer&lt;T&gt;</a> value type which is CLS-compliant typed pointer. This type supports pointer arithmetic as well as rich methods for memory manupulations such as copying, swapping, filling with zeroes, comparison and equality check. These methods are equivalent to C memory functions: <code>memset</code>, <code>memcmp</code> etc. Additionally, there are routines to copying bytes to/from the unmanaged memory from/to the arbitrary <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">streams</a> asynchronously. Check out API documentation for detailed information about available methods.</p>
@@ -109,7 +110,7 @@ private static void UnsafeMethod()
     ptr.WriteTo(array); //now array = new int[] { 10, 3, 50, 9 }
 }
 </code></pre>
-<p>The pointer can be re-interpreted with different type:</p>
+<p>Pointer can be re-interpreted with different type:</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
 
 private static void UnsafeMethod()
@@ -119,6 +120,16 @@ private static void UnsafeMethod()
     Pointer&lt;uint&gt; uptr = ptr.As&lt;uint&gt;();
 }
 </code></pre>
+<p>Volatile operations are fully supported by pointer of one of the following types: <code>long</code>, <code>int</code>, <code>byte</code>, <code>bool</code>, <code>float</code>, <code>double</code>, <code>ulong</code>, <code>uint</code>, <code>sbyte</code>:</p>
+<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
+using DotNext.Threading;
+
+Pointer&lt;long&gt; ptr;
+ptr.VolatileWrite(42L);
+var i = ptr.VolatileRead();
+i = ptr.IncrementAndGetValue(); //i == 43
+</code></pre>
+<p>See <a href="../../api/DotNext.Threading.AtomicPointer.html">here</a> for complete list of volatile operations.</p>
 </article>
           </div>
           
@@ -127,7 +138,7 @@ private static void UnsafeMethod()
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/docs/features/unsafe/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/unsafe/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

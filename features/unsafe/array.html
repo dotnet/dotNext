@@ -92,7 +92,9 @@ finally
 </code></pre>
 <p>Unmanaged array supports interoperation with managed arrays and streams.</p>
 <p><strong>foreach</strong> loop is also supported because array implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a> interface:</p>
-<pre><code class="lang-csharp">using(var array = new UnmanagedArray&lt;double&gt;(10))
+<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
+
+using(var array = new UnmanagedArray&lt;double&gt;(10))
 {
     array[0] = 10;
     array[1] = 30;
@@ -100,6 +102,34 @@ finally
         Console.WriteLine(item);
 }
 </code></pre>
+<p>The array can be resized on-the-fly. Resizing causes re-allocation of the memory with the copying of the elements from the original location. The new size of the array can be defined through <code>Length</code> property.</p>
+<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
+
+var array = new UnmanagedArray&lt;double&gt;(10); //array.Length == 10L
+array[0] = 10;
+array[1] = 30;
+array.Length = 20;  //causes re-allocation of the array
+var i = array[0] + array[1];    //i == 40
+array.Dispose();
+</code></pre>
+<p>Most of the methods typical to managed arrays such as searching(binary and linear search), filling and sorting are present in an unmanaged array.</p>
+<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
+
+var array = new UnmanagedArray&lt;long&gt;(10);
+array.Fill(42L);    //set all elements of the array to 42L
+array[3] = 19L;
+array.IndexOf(19L); // == 3
+array.Sort();   //sort array
+array.Dispose();
+</code></pre>
+<h1 id="atomic-array-access">Atomic array access</h1>
+<p>It is possible to perform volatile reads/writes of array elements as well as more complex atomic operations. To do that, a pointer to array element should be obtained using <code>ElementAt</code> method in the array.</p>
+<pre><code class="lang-csharp">var array = new UnmanagedArray&lt;long&gt;(10);
+array.Fill(42L);
+var i = array.ElementAt(0).IncrementAndGetValue();  //i == 43L
+array.ElementAt(0).CompareAndSet(0L, 1L);   //false because array[0] == 43L
+</code></pre>
+<p>A set of atomic operations are similar to the atomic operations for primitive types described <a href="../core/atomic.html">here</a>. All supported atomic operations for pointer type located in <a href="../../api/DotNext.Threading.AtomicPointer.html">AtomicPointer</a> class.</p>
 <h1 id="span-and-unmanagedarray">Span and UnmanagedArray</h1>
 <p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type from .NET allows to work with managed arrays as well as stack-allocated memory. It is possible to work with unmanaged heap but with some boilerplate code. The following table shows differences between unmanaged array and span:</p>
 <table>
@@ -119,7 +149,7 @@ finally
 <tr>
 <td>Random element access</td>
 <td>+</td>
-<td>-</td>
+<td>+</td>
 </tr>
 <tr>
 <td>Sort</td>
@@ -129,7 +159,7 @@ finally
 <tr>
 <td>Search</td>
 <td>+</td>
-<td>-</td>
+<td>+</td>
 </tr>
 <tr>
 <td>Copy</td>
@@ -171,6 +201,21 @@ finally
 <td>+</td>
 <td>-</td>
 </tr>
+<tr>
+<td>Can be stored in the field</td>
+<td>+</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Volatile read/write</td>
+<td>+</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Atomic operations</td>
+<td>+</td>
+<td>-</td>
+</tr>
 </tbody>
 </table>
 </article>
@@ -181,7 +226,7 @@ finally
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/docs/features/unsafe/array.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/unsafe/array.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

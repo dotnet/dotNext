@@ -211,7 +211,7 @@ array.ForEach((long index, ref string element) =&gt; {
 });
 </code></pre>
 <h2 id="insertion-and-removal">Insertion and Removal</h2>
-<p>Extension methods <em>Insert</em>, <em>Slice</em>, <em>RemoveLast</em> and <em>RemoveFirst</em> allow to modify source array and return modified copy.</p>
+<p>Extension methods <em>Insert</em>, <em>Slice</em>, <em>RemoveLast</em> and <em>RemoveFirst</em> allow to return modified array according with semantics of chosen method:</p>
 <pre><code class="lang-csharp">var array = new string[] {&quot;a&quot;, &quot;b&quot;};
 array = array.Insert(&quot;c&quot;, 2);   //array == new []{&quot;a&quot;, &quot;b&quot;, &quot;c&quot;}
 
@@ -223,10 +223,6 @@ array = array.RemoveFirst(2);   //array == new []{&quot;c&quot;}
 array = new string[]{&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;}; 
 array = array.Slice(1, 2);      //array == new []{&quot;b&quot;, &quot;c&quot;}
 </code></pre>
-<h2 id="conversion">Conversion</h2>
-<p>Conversion of array elements:</p>
-<pre><code class="lang-csharp">var array = (new string[] { &quot;1&quot;, &quot;2&quot; }).Convert(int.Parse); //array = new int[] {1, 2}
-</code></pre>
 </article>
           </div>
           
@@ -235,7 +231,7 @@ array = array.Slice(1, 2);      //array == new []{&quot;b&quot;, &quot;c&quot;}
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/docs/features/core/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/core/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

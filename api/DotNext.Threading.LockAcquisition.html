@@ -73,8 +73,7 @@
   
   <h1 id="DotNext_Threading_LockAcquisition" data-uid="DotNext.Threading.LockAcquisition" class="text-break">Class LockAcquisition
   </h1>
-  <div class="markdown level0 summary"><p>Provides a set of methods to acquire different types
-of lock.</p>
+  <div class="markdown level0 summary"><p>Provides a set of methods to acquire different types of lock.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -116,19 +115,19 @@ of lock.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_Lock_System_Threading_SemaphoreSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.Lock(System.Threading.SemaphoreSlim)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireLock_System_Threading_SemaphoreSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireLock(System.Threading.SemaphoreSlim)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L62">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L24">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_Lock_" data-uid="DotNext.Threading.LockAcquisition.Lock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_Lock_System_Threading_SemaphoreSlim_" data-uid="DotNext.Threading.LockAcquisition.Lock(System.Threading.SemaphoreSlim)">Lock(SemaphoreSlim)</h4>
+  <a id="DotNext_Threading_LockAcquisition_AcquireLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireLock_System_Threading_SemaphoreSlim_" data-uid="DotNext.Threading.LockAcquisition.AcquireLock(System.Threading.SemaphoreSlim)">AcquireLock(SemaphoreSlim)</h4>
   <div class="markdown level1 summary"><p>Blocks the current thread until it can enter the semaphore.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock Lock(this SemaphoreSlim semaphore)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireLock(this SemaphoreSlim semaphore)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -158,27 +157,27 @@ of lock.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
-        <td><p>The semaphore lock.</p>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
+        <td><p>The acquired semaphore lock.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_Lock_System_Threading_SemaphoreSlim_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.Lock(System.Threading.SemaphoreSlim%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireLock_System_Threading_SemaphoreSlim_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireLock(System.Threading.SemaphoreSlim%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L71">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L33">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_Lock_" data-uid="DotNext.Threading.LockAcquisition.Lock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_Lock_System_Threading_SemaphoreSlim_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.Lock(System.Threading.SemaphoreSlim,System.TimeSpan)">Lock(SemaphoreSlim, TimeSpan)</h4>
+  <a id="DotNext_Threading_LockAcquisition_AcquireLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireLock_System_Threading_SemaphoreSlim_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.AcquireLock(System.Threading.SemaphoreSlim,System.TimeSpan)">AcquireLock(SemaphoreSlim, TimeSpan)</h4>
   <div class="markdown level1 summary"><p>Blocks the current thread until it can enter the semaphore.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock Lock(this SemaphoreSlim semaphore, TimeSpan timeout)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireLock(this SemaphoreSlim semaphore, TimeSpan timeout)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -214,8 +213,8 @@ of lock.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
-        <td><p>The semaphore lock.</p>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
+        <td><p>The acquired semaphore lock.</p>
 </td>
       </tr>
     </tbody>
@@ -238,180 +237,19 @@ of lock.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_Lock__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.Lock%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireReadLock_System_Threading_ReaderWriterLockSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireReadLock(System.Threading.ReaderWriterLockSlim)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L41">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L40">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_Lock_" data-uid="DotNext.Threading.LockAcquisition.Lock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_Lock__1___0_" data-uid="DotNext.Threading.LockAcquisition.Lock``1(``0)">Lock&lt;T&gt;(T)</h4>
-  <div class="markdown level1 summary"><p>Acquires exclusive lock for the specified object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock Lock&lt;T&gt;(this T obj)
-
-    where T : class</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">obj</span></td>
-        <td><p>An object to be locked.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
-        <td><p>Lock control object.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Threading_LockAcquisition_Lock__1___0__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This methods acquires monitor lock and equivalent
-to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock statement</a>.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_Lock__1___0_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.Lock%60%601(%60%600%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L53">View Source</a>
-  </span>
-  <a id="DotNext_Threading_LockAcquisition_Lock_" data-uid="DotNext.Threading.LockAcquisition.Lock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_Lock__1___0_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.Lock``1(``0,System.TimeSpan)">Lock&lt;T&gt;(T, TimeSpan)</h4>
-  <div class="markdown level1 summary"><p>Acquires monitor lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock Lock&lt;T&gt;(this T obj, TimeSpan timeout)
-
-    where T : class</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">obj</span></td>
-        <td><p>The object to lock.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The amount of time to wait for the lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
-        <td><p>The lock representing acquired monitor lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>Type of object to lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
-        <td><p>The lock cannot be acquired during the specified amount of time.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_ReadLock_System_Threading_ReaderWriterLockSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.ReadLock(System.Threading.ReaderWriterLockSlim)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L102">View Source</a>
-  </span>
-  <a id="DotNext_Threading_LockAcquisition_ReadLock_" data-uid="DotNext.Threading.LockAcquisition.ReadLock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_ReadLock_System_Threading_ReaderWriterLockSlim_" data-uid="DotNext.Threading.LockAcquisition.ReadLock(System.Threading.ReaderWriterLockSlim)">ReadLock(ReaderWriterLockSlim)</h4>
+  <a id="DotNext_Threading_LockAcquisition_AcquireReadLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireReadLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireReadLock_System_Threading_ReaderWriterLockSlim_" data-uid="DotNext.Threading.LockAcquisition.AcquireReadLock(System.Threading.ReaderWriterLockSlim)">AcquireReadLock(ReaderWriterLockSlim)</h4>
   <div class="markdown level1 summary"><p>Acquires read lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock ReadLock(this ReaderWriterLockSlim rwLock)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireReadLock(this ReaderWriterLockSlim rwLock)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -441,7 +279,7 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
         <td><p>The acquired read lock.</p>
 </td>
       </tr>
@@ -449,19 +287,19 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_ReadLock_System_Threading_ReaderWriterLockSlim_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.ReadLock(System.Threading.ReaderWriterLockSlim%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireReadLock_System_Threading_ReaderWriterLockSlim_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireReadLock(System.Threading.ReaderWriterLockSlim%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L112">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L49">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_ReadLock_" data-uid="DotNext.Threading.LockAcquisition.ReadLock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_ReadLock_System_Threading_ReaderWriterLockSlim_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.ReadLock(System.Threading.ReaderWriterLockSlim,System.TimeSpan)">ReadLock(ReaderWriterLockSlim, TimeSpan)</h4>
+  <a id="DotNext_Threading_LockAcquisition_AcquireReadLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireReadLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireReadLock_System_Threading_ReaderWriterLockSlim_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.AcquireReadLock(System.Threading.ReaderWriterLockSlim,System.TimeSpan)">AcquireReadLock(ReaderWriterLockSlim, TimeSpan)</h4>
   <div class="markdown level1 summary"><p>Acquires read lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock ReadLock(this ReaderWriterLockSlim rwLock, TimeSpan timeout)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireReadLock(this ReaderWriterLockSlim rwLock, TimeSpan timeout)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -497,7 +335,7 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
         <td><p>The acquired read lock.</p>
 </td>
       </tr>
@@ -521,19 +359,19 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_ReadLock__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.ReadLock%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireReadLock%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L84">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L57">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_ReadLock_" data-uid="DotNext.Threading.LockAcquisition.ReadLock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_ReadLock__1___0_" data-uid="DotNext.Threading.LockAcquisition.ReadLock``1(``0)">ReadLock&lt;T&gt;(T)</h4>
+  <a id="DotNext_Threading_LockAcquisition_AcquireReadLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireReadLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_" data-uid="DotNext.Threading.LockAcquisition.AcquireReadLock``1(``0)">AcquireReadLock&lt;T&gt;(T)</h4>
   <div class="markdown level1 summary"><p>Acquires read lock for the specified object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock ReadLock&lt;T&gt;(this T obj)
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireReadLock&lt;T&gt;(this T obj)
 
     where T : class</code></pre>
   </div>
@@ -565,7 +403,7 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
         <td><p>The acquired read lock.</p>
 </td>
       </tr>
@@ -589,19 +427,19 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_ReadLock__1___0_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.ReadLock%60%601(%60%600%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireReadLock%60%601(%60%600%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L95">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L67">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_ReadLock_" data-uid="DotNext.Threading.LockAcquisition.ReadLock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_ReadLock__1___0_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.ReadLock``1(``0,System.TimeSpan)">ReadLock&lt;T&gt;(T, TimeSpan)</h4>
+  <a id="DotNext_Threading_LockAcquisition_AcquireReadLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireReadLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.AcquireReadLock``1(``0,System.TimeSpan)">AcquireReadLock&lt;T&gt;(T, TimeSpan)</h4>
   <div class="markdown level1 summary"><p>Acquires read lock for the specified object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock ReadLock&lt;T&gt;(this T obj, TimeSpan timeout)
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireReadLock&lt;T&gt;(this T obj, TimeSpan timeout)
 
     where T : class</code></pre>
   </div>
@@ -639,7 +477,7 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
         <td><p>The acquired read lock.</p>
 </td>
       </tr>
@@ -679,19 +517,19 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_UpgradableReadLock_System_Threading_ReaderWriterLockSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.UpgradableReadLock(System.Threading.ReaderWriterLockSlim)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock_System_Threading_ReaderWriterLockSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(System.Threading.ReaderWriterLockSlim)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L174">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L108">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_UpgradableReadLock_" data-uid="DotNext.Threading.LockAcquisition.UpgradableReadLock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_UpgradableReadLock_System_Threading_ReaderWriterLockSlim_" data-uid="DotNext.Threading.LockAcquisition.UpgradableReadLock(System.Threading.ReaderWriterLockSlim)">UpgradableReadLock(ReaderWriterLockSlim)</h4>
-  <div class="markdown level1 summary"><p>Acquires upgradable read lock.</p>
+  <a id="DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock_System_Threading_ReaderWriterLockSlim_" data-uid="DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(System.Threading.ReaderWriterLockSlim)">AcquireUpgradeableReadLock(ReaderWriterLockSlim)</h4>
+  <div class="markdown level1 summary"><p>Acquires upgradeable read lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock UpgradableReadLock(this ReaderWriterLockSlim rwLock)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireUpgradeableReadLock(this ReaderWriterLockSlim rwLock)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -721,27 +559,27 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
-        <td><p>The acquired upgradable read lock.</p>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
+        <td><p>The acquired upgradeable read lock.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_UpgradableReadLock_System_Threading_ReaderWriterLockSlim_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.UpgradableReadLock(System.Threading.ReaderWriterLockSlim%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock_System_Threading_ReaderWriterLockSlim_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(System.Threading.ReaderWriterLockSlim%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L184">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L117">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_UpgradableReadLock_" data-uid="DotNext.Threading.LockAcquisition.UpgradableReadLock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_UpgradableReadLock_System_Threading_ReaderWriterLockSlim_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.UpgradableReadLock(System.Threading.ReaderWriterLockSlim,System.TimeSpan)">UpgradableReadLock(ReaderWriterLockSlim, TimeSpan)</h4>
-  <div class="markdown level1 summary"><p>Acquires upgradable read lock.</p>
+  <a id="DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock_System_Threading_ReaderWriterLockSlim_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(System.Threading.ReaderWriterLockSlim,System.TimeSpan)">AcquireUpgradeableReadLock(ReaderWriterLockSlim, TimeSpan)</h4>
+  <div class="markdown level1 summary"><p>Acquires upgradeable read lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock UpgradableReadLock(this ReaderWriterLockSlim rwLock, TimeSpan timeout)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireUpgradeableReadLock(this ReaderWriterLockSlim rwLock, TimeSpan timeout)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -777,8 +615,8 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
-        <td><p>The acquired upgradable read lock.</p>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
+        <td><p>The acquired upgradeable read lock.</p>
 </td>
       </tr>
     </tbody>
@@ -801,19 +639,19 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.UpgradableReadLock%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L157">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L125">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_UpgradableReadLock_" data-uid="DotNext.Threading.LockAcquisition.UpgradableReadLock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_" data-uid="DotNext.Threading.LockAcquisition.UpgradableReadLock``1(``0)">UpgradableReadLock&lt;T&gt;(T)</h4>
-  <div class="markdown level1 summary"><p>Acquires upgradable read lock for the specified object.</p>
+  <a id="DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_" data-uid="DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock``1(``0)">AcquireUpgradeableReadLock&lt;T&gt;(T)</h4>
+  <div class="markdown level1 summary"><p>Acquires upgradeable read lock for the specified object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock UpgradableReadLock&lt;T&gt;(this T obj)
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireUpgradeableReadLock&lt;T&gt;(this T obj)
 
     where T : class</code></pre>
   </div>
@@ -845,8 +683,8 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
-        <td><p>The acquired upgradable read lock.</p>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
+        <td><p>The acquired upgradeable read lock.</p>
 </td>
       </tr>
     </tbody>
@@ -869,19 +707,19 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.UpgradableReadLock%60%601(%60%600%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock%60%601(%60%600%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L167">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L135">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_UpgradableReadLock_" data-uid="DotNext.Threading.LockAcquisition.UpgradableReadLock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_UpgradableReadLock__1___0_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.UpgradableReadLock``1(``0,System.TimeSpan)">UpgradableReadLock&lt;T&gt;(T, TimeSpan)</h4>
-  <div class="markdown level1 summary"><p>Acquires upgradable read lock for the specified object.</p>
+  <a id="DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock``1(``0,System.TimeSpan)">AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</h4>
+  <div class="markdown level1 summary"><p>Acquires upgradeable read lock for the specified object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock UpgradableReadLock&lt;T&gt;(this T obj, TimeSpan timeout)
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireUpgradeableReadLock&lt;T&gt;(this T obj, TimeSpan timeout)
 
     where T : class</code></pre>
   </div>
@@ -919,8 +757,8 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
-        <td><p>The acquired upgradable read lock.</p>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
+        <td><p>The acquired upgradeable read lock.</p>
 </td>
       </tr>
     </tbody>
@@ -959,19 +797,19 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_WriteLock_System_Threading_ReaderWriterLockSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.WriteLock(System.Threading.ReaderWriterLockSlim)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireWriteLock_System_Threading_ReaderWriterLockSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireWriteLock(System.Threading.ReaderWriterLockSlim)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L138">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L74">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_WriteLock_" data-uid="DotNext.Threading.LockAcquisition.WriteLock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_WriteLock_System_Threading_ReaderWriterLockSlim_" data-uid="DotNext.Threading.LockAcquisition.WriteLock(System.Threading.ReaderWriterLockSlim)">WriteLock(ReaderWriterLockSlim)</h4>
+  <a id="DotNext_Threading_LockAcquisition_AcquireWriteLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireWriteLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireWriteLock_System_Threading_ReaderWriterLockSlim_" data-uid="DotNext.Threading.LockAcquisition.AcquireWriteLock(System.Threading.ReaderWriterLockSlim)">AcquireWriteLock(ReaderWriterLockSlim)</h4>
   <div class="markdown level1 summary"><p>Acquires write lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock WriteLock(this ReaderWriterLockSlim rwLock)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireWriteLock(this ReaderWriterLockSlim rwLock)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1001,7 +839,7 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
         <td><p>The acquired write lock.</p>
 </td>
       </tr>
@@ -1009,19 +847,19 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_WriteLock_System_Threading_ReaderWriterLockSlim_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.WriteLock(System.Threading.ReaderWriterLockSlim%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireWriteLock_System_Threading_ReaderWriterLockSlim_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireWriteLock(System.Threading.ReaderWriterLockSlim%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L148">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L83">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_WriteLock_" data-uid="DotNext.Threading.LockAcquisition.WriteLock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_WriteLock_System_Threading_ReaderWriterLockSlim_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.WriteLock(System.Threading.ReaderWriterLockSlim,System.TimeSpan)">WriteLock(ReaderWriterLockSlim, TimeSpan)</h4>
+  <a id="DotNext_Threading_LockAcquisition_AcquireWriteLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireWriteLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireWriteLock_System_Threading_ReaderWriterLockSlim_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.AcquireWriteLock(System.Threading.ReaderWriterLockSlim,System.TimeSpan)">AcquireWriteLock(ReaderWriterLockSlim, TimeSpan)</h4>
   <div class="markdown level1 summary"><p>Acquires write lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock WriteLock(this ReaderWriterLockSlim rwLock, TimeSpan timeout)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireWriteLock(this ReaderWriterLockSlim rwLock, TimeSpan timeout)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1057,7 +895,7 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
         <td><p>The acquired write lock.</p>
 </td>
       </tr>
@@ -1081,19 +919,19 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_WriteLock__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.WriteLock%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireWriteLock%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L121">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L91">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_WriteLock_" data-uid="DotNext.Threading.LockAcquisition.WriteLock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_WriteLock__1___0_" data-uid="DotNext.Threading.LockAcquisition.WriteLock``1(``0)">WriteLock&lt;T&gt;(T)</h4>
+  <a id="DotNext_Threading_LockAcquisition_AcquireWriteLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireWriteLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_" data-uid="DotNext.Threading.LockAcquisition.AcquireWriteLock``1(``0)">AcquireWriteLock&lt;T&gt;(T)</h4>
   <div class="markdown level1 summary"><p>Acquires write lock for the specified object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock WriteLock&lt;T&gt;(this T obj)
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireWriteLock&lt;T&gt;(this T obj)
 
     where T : class</code></pre>
   </div>
@@ -1125,7 +963,7 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
         <td><p>The acquired write lock.</p>
 </td>
       </tr>
@@ -1149,19 +987,19 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_WriteLock__1___0_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.WriteLock%60%601(%60%600%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition.AcquireWriteLock%60%601(%60%600%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L131">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L101">View Source</a>
   </span>
-  <a id="DotNext_Threading_LockAcquisition_WriteLock_" data-uid="DotNext.Threading.LockAcquisition.WriteLock*"></a>
-  <h4 id="DotNext_Threading_LockAcquisition_WriteLock__1___0_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.WriteLock``1(``0,System.TimeSpan)">WriteLock&lt;T&gt;(T, TimeSpan)</h4>
+  <a id="DotNext_Threading_LockAcquisition_AcquireWriteLock_" data-uid="DotNext.Threading.LockAcquisition.AcquireWriteLock*"></a>
+  <h4 id="DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_" data-uid="DotNext.Threading.LockAcquisition.AcquireWriteLock``1(``0,System.TimeSpan)">AcquireWriteLock&lt;T&gt;(T, TimeSpan)</h4>
   <div class="markdown level1 summary"><p>Acquires write lock for the specified object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Lock WriteLock&lt;T&gt;(this T obj, TimeSpan timeout)
+    <pre><code class="lang-csharp hljs">public static Lock.Holder AcquireWriteLock&lt;T&gt;(this T obj, TimeSpan timeout)
 
     where T : class</code></pre>
   </div>
@@ -1199,7 +1037,7 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
+        <td><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></td>
         <td><p>The acquired write lock.</p>
 </td>
       </tr>
@@ -1245,10 +1083,10 @@ to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/ke
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/MissingPieces/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_LockAcquisition.md&amp;value=---%0Auid%3A%20DotNext.Threading.LockAcquisition%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/LockAcquisition.cs/#L10" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

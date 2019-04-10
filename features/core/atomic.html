@@ -86,8 +86,8 @@
 </ul>
 <p>Numeric types have the following atomic operations:</p>
 <ul>
-<li><em>VolatileGet</em></li>
-<li><em>VolatileSet</em></li>
+<li><em>VolatileRead</em></li>
+<li><em>VolatileWrite</em></li>
 <li><em>IncrementAndGet</em> - atomic increment of the field</li>
 <li><em>DecrementAndGet</em> - atomic decrement of the field</li>
 <li><em>CompareAndSet</em> - atomic modification of the field based on comparison</li>
@@ -100,9 +100,9 @@
 <h1 id="atomic-operations-for-scalar-types">Atomic operations for scalar types</h1>
 <p>All atomic operations are extension methods grouped by specific target scalar types:</p>
 <ul>
-<li><a href="../../api/DotNext.Threading.AtomicInteger.html">AtomicInteger</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int32">int</a></li>
-<li><a href="../../api/DotNext.Threading.AtomicLong.html">AtomicLong</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int64">long</a></li>
-<li><a href="../../api/DotNext.Threading.AtomicFloat.html">AtomicFloat</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.single">float</a></li>
+<li><a href="../../api/DotNext.Threading.AtomicInt32.html">AtomicInteger</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int32">int</a></li>
+<li><a href="../../api/DotNext.Threading.AtomicInt64.html">AtomicLong</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int64">long</a></li>
+<li><a href="../../api/DotNext.Threading.AtomicSingle.html">AtomicFloat</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.single">float</a></li>
 <li><a href="../../api/DotNext.Threading.AtomicDouble.html">AtomicDouble</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.double">double</a></li>
 <li><a href="../../api/DotNext.Threading.AtomicReference.html">AtomicReference</a> for <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types">reference types</a></li>
 </ul>
@@ -128,8 +128,8 @@ public class TestClass
 
 var array = new double[10];
 var result = array.IncrementAndGet(2);   //2 is an index of array element to be modified
-result = array.VolatileGet(2);  //atomic read of array element
-array.VolatileSet(2, 30D);  //atomic modification of array element
+result = array.VolatileRead(2);  //atomic read of array element
+array.VolatileWrite(2, 30D);  //atomic modification of array element
 </code></pre>
 </article>
           </div>
@@ -139,7 +139,7 @@ array.VolatileSet(2, 30D);  //atomic modification of array element
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/docs/features/core/atomic.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/core/atomic.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

@@ -69,7 +69,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="off-heap-allocation-of-value-type">Off-Heap Allocation of Value Type</h1>
 
-<p><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html">UnmanagedMemory</a> is a value type that represents typed pointer to the value type allocated in unmanaged memory. This type controls memory access which is limited to the size of type <code>T</code>.</p>
+<p><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html">UnmanagedMemory&lt;T&gt;</a> is a value type that represents typed pointer to the value type allocated in unmanaged memory. This type controls memory access which is limited to the size of type <code>T</code>.</p>
 <p>The simpliest way to understand what is <code>UnmanagedMemory</code> is to provide the following example in C:</p>
 <pre><code class="lang-c">#include &lt;stdlib.h&gt;
 
@@ -91,7 +91,7 @@ struct Complex
     public double Image, Real;
 }
 
-using(var c = UnmanagedMemory&lt;Complex&gt;.Alloc())
+using(var c = new UnmanagedMemory&lt;Complex&gt;(false))
 {
     c.Ref.Image = 20;
     c.Ref.Real = 30;
@@ -105,7 +105,7 @@ struct Complex
     public double Image, Real;
 }
 
-using(var c = UnmanagedMemory&lt;Complex&gt;.Box(new Complex { Image = 20, Real = 30 }))
+using(var c = new UnmanagedMemory&lt;Complex&gt;(new Complex { Image = 20, Real = 30 }))
 {
 }
 </code></pre>
@@ -117,7 +117,7 @@ struct Complex
     public double Image, Real;
 }
 
-using(var c = UnmanagedMemory&lt;Complex&gt;.Box(new Complex { Image = 20, Real = 30 }))
+using(var c = new UnmanagedMemory&lt;Complex&gt;(new Complex { Image = 20, Real = 30 }))
 {
     Pointer&lt;Complex&gt; ptr = c;
     Pointer&lt;double&gt; pImage = c.As&lt;double&gt;();
@@ -134,7 +134,7 @@ using(var c = UnmanagedMemory&lt;Complex&gt;.Box(new Complex { Image = 20, Real 
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/docs/features/unsafe/offheap.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/unsafe/offheap.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

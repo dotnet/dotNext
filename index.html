@@ -90,10 +90,16 @@ This library provides a rich set of tools to write and execute code on-the-fly. 
 <p><a href="https://www.nuget.org/packages/dotnext.unsafe/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.unsafe.svg?style=flat"></a><br>
 This library provides a special types to work with unmanaged memory in type-safe manner:</p>
 <ul>
-<li>Value types allocated in the unmanaged memory (heap)</li>
-<li>Typed unmanaged arrays</li>
+<li>Structured access to unmanaged memory</li>
+<li>Unstructured access to unmanaged memory</li>
+<li>Typed unmanaged array and list</li>
 <li>CLS-compliant generic pointer type for .NET languages without direct support of such type. Use this feature to work with pointers from VB.NET or F#.</li>
+<li>Volatile read and write from/to unmanaged memory</li>
+<li>Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc.</li>
 </ul>
+<h1 id="dotnextthreading">DotNext.Threading</h1>
+<p><a href="https://www.nuget.org/packages/dotnext.threading/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.threading.svg?style=flat"></a><br>
+A set of advanced classes for multithreaded and asynchronous programming as well as non-blocking asynchronous alternatives of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor">Monitor</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent">ManualResetEvent</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent">AutoResetEvent</a> in the form of <a href="api/DotNext.Threading.AsyncReaderWriterLock.yml">AsyncReaderWriterLock</a>, <a href="api/DotNext.Threading.AsyncExclusiveLock.yml">AsyncExclusiveLock</a> and <a href="api/DotNext.Threading.AsyncResetEvent.yml">AsyncResetEvent</a> respectively.</p>
 </article>
           </div>
           
@@ -102,7 +108,7 @@ This library provides a special types to work with unmanaged memory in type-safe
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/docs/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

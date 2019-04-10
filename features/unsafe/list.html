@@ -86,6 +86,17 @@
     list.Add(10);
     list.Add(20);
     foreach(long item in list)
+        Console.WriteLine(item);
+}
+</code></pre>
+<p>It is possible to work with elements of the list using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type with one exception: you should not add, remove or insert new elements when reading or modifying elements through span. These operations may cause to re-allocation of the underlying array. As a result, the original pointer passed into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> become invalid.</p>
+<pre><code class="lang-csharp">using(var list = new UnmanagedList&lt;long&gt;(10))   //initial capacity
+{
+    list.Add(10);
+    list.Add(20);
+    Span&lt;long&gt; span = list;
+    foreach(ref long item in span)
+        item = 0L;
 }
 </code></pre>
 </article>
@@ -96,7 +107,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/MissingPieces/blob/gh-pages/docs/features/unsafe/list.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/unsafe/list.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
