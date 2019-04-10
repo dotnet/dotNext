@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
@@ -14,6 +15,7 @@ namespace DotNext
         /// <param name="value">Value to be restricted.</param>
         /// <param name="min">Minimal range value.</param>
         /// <param name="max">Maximum range value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Clamp<T> (this T value, T min, T max) 
             where T : IComparable<T>
             => value.UpperBounded(max).LowerBounded(min);
@@ -24,16 +26,18 @@ namespace DotNext
         /// <typeparam name="T">Type of the values.</typeparam>
         /// <param name="value">The value to be restricted.</param>
         /// <param name="min">The lower bound.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T LowerBounded<T> (this T value, T min) where T : IComparable<T>
             => value.CompareTo (min) < 0 ? min : value;
 
-		/// <summary>
-		/// Restricts a <paramref name="value" /> maximum value.
-		/// </summary>
-		/// <typeparam name="T">Type of the values.</typeparam>
-		/// <param name="value">The value to be restricted.</param>
-		/// <param name="max">The upper bound.</param>
-		public static T UpperBounded<T>(this T value, T max) where T : IComparable<T>
+        /// <summary>
+        /// Restricts a <paramref name="value" /> maximum value.
+        /// </summary>
+        /// <typeparam name="T">Type of the values.</typeparam>
+        /// <param name="value">The value to be restricted.</param>
+        /// <param name="max">The upper bound.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T UpperBounded<T>(this T value, T max) where T : IComparable<T>
 			=> value.CompareTo(max) > 0 ? max : value;
 
 		/// <summary>

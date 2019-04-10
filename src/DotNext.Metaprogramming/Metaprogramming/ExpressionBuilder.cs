@@ -661,7 +661,7 @@ namespace DotNext.Metaprogramming
         {
             if (!interfaceType.IsAssignableFrom(instance.Type))
                 throw new ArgumentException(ExceptionMessages.InterfaceNotImplemented(instance.Type, interfaceType));
-            var method = interfaceType.GetMethod(methodName, arguments.Convert(arg => arg.Type));
+            var method = interfaceType.GetMethod(methodName, Array.ConvertAll(arguments, arg => arg.Type));
             return method is null ?
                 throw new MissingMethodException(ExceptionMessages.MissingMethod(methodName, interfaceType)) :
                 instance.Call(method, arguments);
@@ -956,7 +956,7 @@ namespace DotNext.Metaprogramming
         {
             if (args.LongLength == 0L)
                 return Expression.New(type);
-            var ctor = type.GetConstructor(args.Convert(arg => arg.Type));
+            var ctor = type.GetConstructor(Array.ConvertAll(args, arg => arg.Type));
             if (ctor is null)
                 throw new MissingMethodException(ExceptionMessages.MissingCtor(type));
             else

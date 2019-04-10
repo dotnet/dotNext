@@ -4,19 +4,18 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.3.0</Version>
+    <Version>0.5.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>A library for metaprogramming and dynamic code generation</Description>
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
-    <PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/sakno/dotNext/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>metaprogramming</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Support of assignment operation for array element, property, indexer property.
-Ability to add await statement</PackageReleaseNotes>
+    <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
+    <PackageReleaseNotes>Introduce support of ValueTask as return type of the dynamically generated async lambda.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -35,10 +34,6 @@ Ability to add await statement</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Metaprogramming\CompoundStatementBuilder.cs~RFaf5ef17.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="ExceptionMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
@@ -46,6 +41,7 @@ Ability to add await statement</PackageReleaseNotes>
 
   <ItemGroup>
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.2.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.5.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" />
   </ItemGroup>
 </Project>

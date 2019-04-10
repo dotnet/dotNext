@@ -9,20 +9,20 @@ namespace DotNext.Metaprogramming
         [Fact]
         public void NonVoidReturnTest()
         {
-            Expression ret = new AsyncResultExpression(90.AsConst());
-            Equal(typeof(Task<int>), ret.Type);
+            Expression ret = new AsyncResultExpression(90.AsConst(), true);
+            Equal(typeof(ValueTask<int>), ret.Type);
             ret = ret.Reduce();
-            IsAssignableFrom<MethodCallExpression>(ret);
-            Equal(typeof(Task<int>), ret.Type);
+            IsAssignableFrom<UnaryExpression>(ret);
+            Equal(typeof(ValueTask<int>), ret.Type);
         }
 
         [Fact]
         public void VoidReturnTest()
         {
-            Expression ret = new AsyncResultExpression(Expression.Block(typeof(void), 42.AsConst()));
+            Expression ret = new AsyncResultExpression(Expression.Block(typeof(void), 42.AsConst()), false);
             Equal(typeof(Task), ret.Type);
             ret = ret.Reduce();
-            IsAssignableFrom<TryExpression>(ret);
+            IsAssignableFrom<UnaryExpression>(ret);
             Equal(typeof(Task), ret.Type);
         }
     }

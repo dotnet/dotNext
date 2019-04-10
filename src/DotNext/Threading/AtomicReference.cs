@@ -98,7 +98,7 @@ namespace DotNext.Threading
         /// <param name="index">The array element index.</param>
         /// <returns>The array element.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T VolatileGet<T>(this T[] array, long index)
+        public static T VolatileRead<T>(this T[] array, long index)
             where T : class
             => Volatile.Read(ref array[index]);
 
@@ -109,7 +109,7 @@ namespace DotNext.Threading
         /// <param name="index">The array element index.</param>
         /// <param name="element">The new value of the array element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileSet<T>(this T[] array, long index, T element)
+        public static void VolatileWrite<T>(this T[] array, long index, T element)
             where T : class
             => Volatile.Write(ref array[index], element);
 
@@ -161,7 +161,7 @@ namespace DotNext.Threading
         public static T SetAndGet<T>(this T[] array, long index, T update)
             where T : class
         {
-            VolatileSet(array, index, update);
+            VolatileWrite(array, index, update);
             return update;
         }
 

@@ -37,7 +37,7 @@ namespace DotNext.Metaprogramming
             => expressions.Select(Conversion<UniversalExpression, Expression>.Converter.AsFunc());
 
         internal static Expression[] AsExpressions(UniversalExpression[] expressions)
-            => expressions.Convert(Conversion<UniversalExpression, Expression>.Converter);
+            => Array.ConvertAll(expressions, Conversion<UniversalExpression, Expression>.Converter);
 
         /// <summary>
         /// Converts universal expression into regular LINQ expression.

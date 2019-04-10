@@ -9,6 +9,23 @@ namespace DotNext
 	/// </summary>
     public static class ValueTypeExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static byte ToByte<T>(T value) where T : struct, IConvertible => value.ToByte(null);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static sbyte ToSByte<T>(T value) where T : struct, IConvertible => value.ToSByte(null);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static short ToInt16<T>(T value) where T : struct, IConvertible => value.ToInt16(null);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static ushort ToUInt16<T>(T value) where T : struct, IConvertible => value.ToUInt16(null);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int ToInt32<T>(T value) where T : struct, IConvertible => value.ToInt32(null);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static uint ToUInt32<T>(T value) where T : struct, IConvertible => value.ToUInt32(null);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static long ToInt64<T>(T value) where T : struct, IConvertible => value.ToInt64(null);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static ulong ToUInt64<T>(T value) where T : struct, IConvertible => value.ToUInt64(null);
+
         /// <summary>
         /// Obtain a value of type <typeparamref name="TO"/> by 
         /// reinterpreting the object representation of <typeparamref name="FROM"/>.
@@ -44,7 +61,7 @@ namespace DotNext
             where FROM : unmanaged
             where TO : unmanaged
         {
-            input.BitCast(out TO output);
+            ValueType<FROM>.BitCast<TO>(ref input, out var output);
             return output;
         }
 

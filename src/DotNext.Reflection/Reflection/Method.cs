@@ -29,12 +29,12 @@ namespace DotNext.Reflection
         }
 
         internal Method(MethodInfo method, Expression[] args, ParameterExpression[] parameters)
-			: this(method, Expression.Lambda<D>(Expression.Call(method, args), parameters))
+			: this(method, Expression.Lambda<D>(Expression.Call(method, args), true, parameters))
         {
         }
 
 		internal Method(MethodInfo method, ParameterExpression instance, Expression[] args, ParameterExpression[] parameters)
-			: this(method, Expression.Lambda<D>(Expression.Call(instance, method, args), parameters.Insert(instance, 0)))
+			: this(method, Expression.Lambda<D>(Expression.Call(instance, method, args), true, parameters.Insert(instance, 0)))
 		{
 		}
 
@@ -356,7 +356,7 @@ namespace DotNext.Reflection
             {
                 targetMethod = null;
                 foreach (var candidate in ExtensionRegistry.GetMethods(thisParam, MethodLookup.Instance))
-                    if (candidate.Name == methodName && candidate.GetParameterTypes().RemoveFirst(1).SequenceEqual(parameters) && candidate.ReturnType == returnType)
+                    if (candidate.Name == methodName && Enumerable.SequenceEqual(candidate.GetParameterTypes().RemoveFirst(1), parameters) && candidate.ReturnType == returnType)
                     {
                         targetMethod = candidate;
                         break;
@@ -371,13 +371,13 @@ namespace DotNext.Reflection
                 ParameterExpression[] parametersDeclaration;
                 if(targetMethod.IsStatic)
                 {
-                    parametersDeclaration = targetMethod.GetParameterTypes().Convert(Expression.Parameter);
+                    parametersDeclaration = Array.ConvertAll(targetMethod.GetParameterTypes(), Expression.Parameter);
                     return new Method<D>(targetMethod, parametersDeclaration, parametersDeclaration);
                 }
                 else
                 {
                     var thisParamDeclaration = Expression.Parameter(thisParam);
-                    parametersDeclaration = parameters.Convert(Expression.Parameter);
+                    parametersDeclaration = Array.ConvertAll(parameters, Expression.Parameter);
                     return new Method<D>(targetMethod, thisParamDeclaration, parametersDeclaration, parametersDeclaration);
                 }
             }
@@ -400,7 +400,7 @@ namespace DotNext.Reflection
             {
                 targetMethod = null;
                 foreach (var candidate in ExtensionRegistry.GetMethods(thisParam, MethodLookup.Instance))
-                    if (candidate.Name == methodName && candidate.GetParameterTypes().RemoveFirst(1).SequenceEqual(parameters) && candidate.ReturnType == returnType)
+                    if (candidate.Name == methodName && Enumerable.SequenceEqual(candidate.GetParameterTypes().RemoveFirst(1), parameters) && candidate.ReturnType == returnType)
                     {
                         targetMethod = candidate;
                         break;
@@ -524,7 +524,7 @@ namespace DotNext.Reflection
 				if (method.SignatureEquals(parameters) && method.ReturnType == returnType)
 					if (thisParam.IsByRef ^ method.DeclaringType.IsValueType)
 					{
-						var arguments = parameters.Convert(Expression.Parameter);
+						var arguments = Array.ConvertAll(parameters, Expression.Parameter);
 						return new Method<D>(method, Expression.Parameter(thisParam), arguments, arguments);
 					}
 					else

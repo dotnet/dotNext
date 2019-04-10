@@ -64,19 +64,9 @@ namespace DotNext
 		/// <typeparam name="I">Type of source array elements.</typeparam>
 		/// <typeparam name="O">Type of target array elements.</typeparam>
 		/// <param name="input">Input array to be converted. Cannot be <see langword="null"/>.</param>
-		/// <param name="mapper">Mapping function. Cannot be <see langword="null"/>.</param>
-		/// <returns>Converted array.</returns>
-        public static O[] Convert<I, O>(this I[] input, Converter<I, O> mapper) => Array.ConvertAll(input, mapper);
-
-		/// <summary>
-		/// Converts each array element from one type into another.
-		/// </summary>
-		/// <typeparam name="I">Type of source array elements.</typeparam>
-		/// <typeparam name="O">Type of target array elements.</typeparam>
-		/// <param name="input">Input array to be converted. Cannot be <see langword="null"/>.</param>
 		/// <param name="mapper">Index-aware mapping function. Cannot be <see langword="null"/>.</param>
 		/// <returns>Converted array.</returns>
-		public static O[] Convert<I, O>(this I[] input, Func<long, I, O> mapper)
+		public static O[] ConvertAll<I, O>(this I[] input, Func<long, I, O> mapper)
 		{
 			var output = New<O>(input.LongLength);
             for(var i = 0L; i < input.LongLength; i++)
@@ -84,14 +74,7 @@ namespace DotNext
             return output;
 		}
 
-		/// <summary>
-		/// Allocates a new one-dimensional array, or return cached empty array.
-		/// </summary>
-		/// <typeparam name="T">Type of array elements.</typeparam>
-		/// <param name="length">Length of the array.</param>
-		/// <returns>Allocated array.</returns>
-		public static T[] New<T>(long length)
-            => length == 0L ? Array.Empty<T>() : new T[length];
+		internal static T[] New<T>(long length) => length == 0L ? Array.Empty<T>() : new T[length];
 
 		/// <summary>
 		/// Removes the specified number of elements from the beginning of the array.
@@ -200,7 +183,7 @@ namespace DotNext
         /// <param name="array">The array to be hashed.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>The hash code of the array content.</returns>
-        public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
+        public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted)
             where T : unmanaged
         {
             if (array.IsNullOrEmpty())
@@ -208,6 +191,14 @@ namespace DotNext
             fixed (T* ptr = array)
                 return Memory.GetHashCode(ptr, array.LongLength * ValueType<T>.Size, salted);
         }
+
+        /// <summary>
+        /// Computes salted bitwise hash code for the array content.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="array">The array to be hashed.</param>
+        /// <returns>The hash code of the array content.</returns>
+        public static int BitwiseHashCode<T>(this T[] array) where T: unmanaged => BitwiseHashCode(array, true);
 
         /// <summary>
         /// Computes bitwise hash code for the array content
@@ -226,6 +217,29 @@ namespace DotNext
                 return hash;
             fixed (T* ptr = array)
                 return Memory.GetHashCode(ptr, array.LongLength * ValueType<T>.Size, hash, hashFunction, salted);
+        }
+
+        /// <summary>
+		/// Determines whether two arrays contain the same set of elements.
+		/// </summary>
+		/// <remarks>
+		/// This method calls <see cref="object.Equals(object, object)"/> for each element type.
+		/// </remarks>
+		/// <param name="first">First array for equality check.</param>
+		/// <param name="second">Second array for equality check.</param>
+		/// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
+        public static bool SequenceEqual(this object[] first, object[] second)
+        {
+            if (ReferenceEquals(first, second))
+                return true;
+            else if (first is null)
+                return second is null;
+            else if (second is null || first.LongLength != second.LongLength)
+                return false;
+            for (var i = 0L; i < first.LongLength; i++)
+                if (!Equals(first[i], second[i]))
+                    return false;
+            return true;
         }
 
         /// <summary>

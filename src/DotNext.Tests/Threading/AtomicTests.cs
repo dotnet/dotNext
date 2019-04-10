@@ -9,7 +9,7 @@ namespace DotNext.Threading
         {
             var array = new[] { "a", "b" };
             array.UpdateAndGet(1, s => s + "c");
-            Equal("bc", array.VolatileGet(1));
+            Equal("bc", array.VolatileRead(1));
         }
 
         [Fact]
@@ -124,6 +124,19 @@ namespace DotNext.Threading
 			Equal("Hello", stref.SetIfNull(() => "Hello"));
 			Equal("Hello", stref.SetIfNull(() => ""));
 			Equal("Hello", stref.Value);
+		}
+
+		[Fact]
+		public void AtomicBooleanTest()
+		{
+			var value = new AtomicBoolean(false);
+			True(value.FalseToTrue());
+			False(value.FalseToTrue());
+			True(value.TrueToFalse());
+			False(value.TrueToFalse());
+			True(value.NegateAndGet());
+			True(value.GetAndNegate());
+			False(value.Value);
 		}
 	}
 }

@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using static Threading.AtomicLong;
+    using static Threading.AtomicInt64;
 
     /// <summary>
     /// Represents basic lexical scope support.

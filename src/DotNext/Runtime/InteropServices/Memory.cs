@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -13,23 +11,62 @@ namespace DotNext.Runtime.InteropServices
     /// any safety check. Incorrect usage of them may destabilize
     /// Common Language Runtime.
     /// </remarks>
-	public static class Memory
+	public unsafe static class Memory
 	{
-		private static class FNV1a
-		{
-			internal const int Offset = unchecked((int)2166136261);
-			private const int Prime = 16777619;
+        private interface IHashFunction<T>
+            where T : unmanaged
+        {
+            void AddData(T data);
+            T Result { get; }
+        }
 
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			internal static int HashRound(int hash, int data) => (hash ^ data) * Prime;
-		}
-		private static readonly int BitwiseHashSalt = new Random().Next();
+        private struct FNV1a : IHashFunction<int>
+        {
+            internal const int Offset = unchecked((int)2166136261);
+            private const int Prime = 16777619;
 
-		/// <summary>
-		/// Represents null pointer.
-		/// </summary>
-		[CLSCompliant(false)]
-		public static unsafe readonly void* NullPtr = IntPtr.Zero.ToPointer();
+            private int hash;
+
+            internal FNV1a(int initialHash) => hash = initialHash;
+
+            public int Result => hash;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void IHashFunction<int>.AddData(int data) => hash = (hash ^ data) * Prime;
+        }
+
+        private struct Int32HashFunction : IHashFunction<int>
+        {
+            private int hash;
+            private readonly Func<int, int, int> function;
+
+            internal Int32HashFunction(int hash, Func<int, int, int> function)
+            {
+                this.hash = hash;
+                this.function = function;
+            }
+
+            public int Result => hash;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            void IHashFunction<int>.AddData(int data) => hash = function(hash, data);
+        }
+
+        /// <summary>
+        /// Represents null pointer.
+        /// </summary>
+        [CLSCompliant(false)]
+		public static readonly void* NullPtr = IntPtr.Zero.ToPointer();
+
+        /// <summary>
+        /// Converts the value of this instance to a pointer of the specified type.
+        /// </summary>
+        /// <param name="source">The value to be converted into pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The typed pointer.</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T* ToPointer<T>(this IntPtr source) where T : unmanaged => (T*)source;
 
 		/// <summary>
 		/// Reads a value of type <typeparamref name="T"/> from the given location
@@ -39,7 +76,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="source">A pointer to block of memory.</param>
 		/// <returns>Dereferenced value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public unsafe static T Read<T>(ref IntPtr source)
+		public static T Read<T>(ref IntPtr source)
 			where T : unmanaged
 		{
 			var result = Unsafe.Read<T>(source.ToPointer());
@@ -56,7 +93,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="source">A pointer to block of memory.</param>
 		/// <returns>Dereferenced value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public unsafe static T ReadUnaligned<T>(ref IntPtr source)
+		public static T ReadUnaligned<T>(ref IntPtr source)
 			where T : unmanaged
 		{
 			var result = Unsafe.ReadUnaligned<T>(source.ToPointer());
@@ -73,7 +110,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="destination">Destination address.</param>
         /// <param name="value">The value to write into the address.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public unsafe static void Write<T>(ref IntPtr destination, T value)
+		public static void Write<T>(ref IntPtr destination, T value)
 			where T : unmanaged
 		{
 			Unsafe.Write(destination.ToPointer(), value);
@@ -89,7 +126,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="destination">Destination address.</param>
         /// <param name="value">The value to write into the address.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public unsafe static void WriteUnaligned<T>(ref IntPtr destination, T value)
+		public static void WriteUnaligned<T>(ref IntPtr destination, T value)
 			where T : unmanaged
 		{
 			Unsafe.WriteUnaligned(destination.ToPointer(), value);
@@ -104,7 +141,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The number of bytes to copy from source address to destination.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		[CLSCompliant(false)]
-		public unsafe static void Copy(void* source, void* destination, long length)
+		public static void Copy(void* source, void* destination, long length)
 			=> Buffer.MemoryCopy(source, destination, length, length);
 
         /// <summary>
@@ -113,196 +150,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="source">The address of the bytes to copy.</param>
         /// <param name="destination">The target address.</param>
         /// <param name="length">The number of bytes to copy from source address to destination.</param>
-		public unsafe static void Copy(IntPtr source, IntPtr destination, long length)
+		public static void Copy(IntPtr source, IntPtr destination, long length)
 			=> Copy(source.ToPointer(), destination.ToPointer(), length);
-
-        /// <summary>
-        /// Copies specified number of bytes from stream into memory.
-        /// </summary>
-        /// <remarks>
-        /// Reading from stream is performed asynchronously.
-        /// </remarks>
-        /// <param name="source">The source of bytes.</param>
-        /// <param name="destination">The pointer to destination memory block.</param>
-        /// <param name="length">The number of bytes to copy from source stream into destination memory block.</param>
-        /// <returns>The task representing state of copy operation and returning number of bytes copied.</returns>
-		public static async Task<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length)
-		{
-			if(!source.CanRead)
-				throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
-			
-			var total = 0L;
-			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
-			{
-				var count = await source.ReadAsync(buffer, 0, buffer.Length);
-				WriteUnaligned(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
-				total += count;
-				if(count < IntPtr.Size)
-					return total;
-				buffer.Initialize();
-			}
-			while(length > 0)
-			{
-				var b = source.ReadByte();
-				if(b >=0)
-				{
-					Write(ref destination, (byte)b);
-					length -= sizeof(byte);
-					total += sizeof(byte);
-				}
-				else
-					break;
-			}
-			return total;
-		}
-
-        /// <summary>
-        /// Copies specified number of bytes from stream into memory.
-        /// </summary>
-        /// <remarks>
-        /// Reading from stream is performed asynchronously.
-        /// </remarks>
-        /// <param name="source">The source of bytes.</param>
-        /// <param name="destination">The pointer to destination memory block.</param>
-        /// <param name="length">The number of bytes to copy from source stream into destination memory block.</param>
-        /// <returns>The task representing state of copy operation and returning number of bytes copied.</returns>
-        [CLSCompliant(false)]
-		public unsafe static Task<long> ReadFromStreamAsync(Stream source, void* destination, long length)
-			=> ReadFromStreamAsync(source, new IntPtr(destination), length);
-
-        /// <summary>
-        /// Copies specified number of bytes from stream into memory.
-        /// </summary>
-        /// <remarks>
-        /// Reading from stream is performed synchronously.
-        /// </remarks>
-        /// <param name="source">The source of bytes.</param>
-        /// <param name="destination">The pointer to destination memory block.</param>
-        /// <param name="length">The number of bytes to copy from source stream into destination memory block.</param>
-        /// <returns>The number of bytes copied.</returns>
-        public static long ReadFromStream(Stream source, IntPtr destination, long length)
-		{
-			if(!source.CanRead)
-				throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
-			
-			var total = 0L;
-			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
-			{
-				var count = source.Read(buffer, 0, buffer.Length);
-				WriteUnaligned(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
-				total += count;
-				if(count < IntPtr.Size)
-					return total;
-				buffer.Initialize();
-			}
-			while(length > 0)
-			{
-				var b = source.ReadByte();
-				if(b >=0)
-				{
-					Write(ref destination, (byte)b);
-					length -= sizeof(byte);
-					total += sizeof(byte);
-				}
-				else
-					break;
-			}
-			return total;
-		}
-
-        /// <summary>
-        /// Copies specified number of bytes from stream into memory.
-        /// </summary>
-        /// <remarks>
-        /// Reading from stream is performed synchronously.
-        /// </remarks>
-        /// <param name="source">The source of bytes.</param>
-        /// <param name="destination">The pointer to destination memory block.</param>
-        /// <param name="length">The number of bytes to copy.</param>
-        /// <returns>The number of bytes copied.</returns>
-        [CLSCompliant(false)]
-		public unsafe static long ReadFromStream(Stream source, void* destination, long length)
-			=> ReadFromStream(source, new IntPtr(destination), length);
-		
-        /// <summary>
-        /// Copies specified number of bytes memory into stream.
-        /// </summary>
-        /// <remarks>
-        /// Writing to stream is performed synchronously.
-        /// </remarks>
-        /// <param name="source">The pointer to source memory block.</param>
-        /// <param name="length">The number of bytes to copy.</param>
-        /// <param name="destination">The stream to write into.</param>
-		public static void WriteToSteam(IntPtr source, long length, Stream destination)
-		{
-			if(!destination.CanWrite)
-				throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
-
-			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
-			{
-				Unsafe.As<byte, IntPtr>(ref buffer[0]) = ReadUnaligned<IntPtr>(ref source);
-				destination.Write(buffer, 0, buffer.Length);
-			}
-			while(length > 0)
-			{
-				destination.WriteByte(Read<byte>(ref source));
-				length -= sizeof(byte);
-			}
-		}
-
-        /// <summary>
-        /// Copies specified number of bytes memory into stream.
-        /// </summary>
-        /// <remarks>
-        /// Writing to stream is performed synchronously.
-        /// </remarks>
-        /// <param name="source">The pointer to source memory block.</param>
-        /// <param name="length">The number of bytes to copy.</param>
-        /// <param name="destination">The stream to write into.</param>
-        [CLSCompliant(false)]
-		public unsafe static void WriteToSteam(void* source, long length, Stream destination)
-			=> WriteToSteam(new IntPtr(source), length, destination);
-
-        /// <summary>
-        /// Copies specified number of bytes memory into stream.
-        /// </summary>
-        /// <remarks>
-        /// Writing to stream is performed asynchronously.
-        /// </remarks>
-        /// <param name="source">The pointer to source memory block.</param>
-        /// <param name="length">The number of bytes to copy.</param>
-        /// <param name="destination">The stream to write into.</param>
-        /// <returns>The task representing asynchronous state of copying.</returns>
-        public static async Task WriteToSteamAsync(IntPtr source, long length, Stream destination)
-		{
-			if(!destination.CanWrite)
-				throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
-
-			for(var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
-			{
-				Unsafe.As<byte, IntPtr>(ref buffer[0]) = ReadUnaligned<IntPtr>(ref source);
-				await destination.WriteAsync(buffer, 0, buffer.Length);
-			}
-			while(length > 0)
-			{
-				destination.WriteByte(Read<byte>(ref source));
-				length -= sizeof(byte);
-			}
-		}
-
-        /// <summary>
-        /// Copies specified number of bytes memory into stream.
-        /// </summary>
-        /// <remarks>
-        /// Writing to stream is performed asynchronously.
-        /// </remarks>
-        /// <param name="source">The pointer to source memory block.</param>
-        /// <param name="length">The number of bytes to copy.</param>
-        /// <param name="destination">The stream to write into.</param>
-        /// <returns>The task representing asynchronous state of copying.</returns>
-        [CLSCompliant(false)]
-		public unsafe static Task WriteToSteamAsync(void* source, long length, Stream destination)
-			=> WriteToSteamAsync(new IntPtr(source), length, destination);
 
 		/// <summary>
 		/// Computes hash code for the block of memory, 64-bit version.
@@ -317,7 +166,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="hashFunction">Hashing function.</param>
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
-		public static unsafe long GetHashCode(IntPtr source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
+		public static long GetHashCode(IntPtr source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
 		{
 			switch(length)
 			{
@@ -327,6 +176,9 @@ namespace DotNext.Runtime.InteropServices
 				case sizeof(short):
 					hash = hashFunction(hash, ReadUnaligned<short>(ref source));
 					break;
+                case sizeof(int):
+                    hash = hashFunction(hash, ReadUnaligned<int>(ref source));
+                    break;
 				default:
 					while(length >= IntPtr.Size)
 					{
@@ -340,8 +192,36 @@ namespace DotNext.Runtime.InteropServices
 					}
 					break;
 			}
-			return salted ? hashFunction(hash, BitwiseHashSalt) : hash;
+			return salted ? hashFunction(hash, RandomExtensions.BitwiseHashSalt) : hash;
 		}
+
+        private static void ComputeHashCode32<H>(IntPtr source, long length, ref H hashFunction, bool salted)
+            where H : struct, IHashFunction<int>
+        {
+            switch (length)
+            {
+                case sizeof(byte):
+                    hashFunction.AddData(ReadUnaligned<byte>(ref source));
+                    break;
+                case sizeof(short):
+                    hashFunction.AddData(ReadUnaligned<short>(ref source));
+                    break;
+                default:
+                    while (length >= sizeof(int))
+                    {
+                        hashFunction.AddData(ReadUnaligned<int>(ref source));
+                        length -= sizeof(int);
+                    }
+                    while (length > 0)
+                    {
+                        hashFunction.AddData(Read<byte>(ref source));
+                        length -= sizeof(byte);
+                    }
+                    break;
+            }
+            if (salted)
+                hashFunction.AddData(RandomExtensions.BitwiseHashSalt);
+        }
 
 		/// <summary>
 		/// Computes hash code for the block of memory, 64-bit version.
@@ -357,7 +237,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
-		public unsafe static long GetHashCode(void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
+		public static long GetHashCode(void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
 			=> GetHashCode(new IntPtr(source), length, hash, hashFunction, salted);
 
 		/// <summary>
@@ -375,28 +255,9 @@ namespace DotNext.Runtime.InteropServices
 		/// <returns>Hash code of the memory block.</returns>
 		public static int GetHashCode(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
 		{
-			switch(length)
-			{
-				case sizeof(byte):
-					hash = hashFunction(hash, ReadUnaligned<byte>(ref source));
-					break;
-				case sizeof(short):
-					hash = hashFunction(hash, ReadUnaligned<short>(ref source));
-					break;
-				default:
-					while(length >= sizeof(int))
-					{
-						hash = hashFunction(hash, ReadUnaligned<int>(ref source));
-						length -= sizeof(int);
-					}
-					while(length > 0)
-					{
-						hash = hashFunction(hash, Read<byte>(ref source));
-						length -= sizeof(byte);
-					}
-					break;
-			}
-			return salted ? hashFunction(hash, BitwiseHashSalt) : hash;
+            var hashInfo = new Int32HashFunction(hash, hashFunction);
+            ComputeHashCode32(source, length, ref hashInfo, salted);
+            return hashInfo.Result;
 		}
 		
 		/// <summary>
@@ -413,7 +274,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
-		public unsafe static int GetHashCode(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
+		public static int GetHashCode(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
 			=> GetHashCode(new IntPtr(source), length, hash, hashFunction, salted);
 
         /// <summary>
@@ -429,29 +290,9 @@ namespace DotNext.Runtime.InteropServices
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         public static int GetHashCode(IntPtr source, long length, bool salted = true)
 		{
-			var hash = FNV1a.Offset;
-			switch(length)
-			{
-				case sizeof(byte):
-					hash = FNV1a.HashRound(FNV1a.Offset, ReadUnaligned<byte>(ref source));
-					break;
-				case sizeof(short):
-					hash = FNV1a.HashRound(FNV1a.Offset, ReadUnaligned<short>(ref source));
-					break;
-				default:
-					while(length >= sizeof(int))
-					{
-						hash = FNV1a.HashRound(hash, ReadUnaligned<int>(ref source));
-						length -= sizeof(int);
-					}
-					while(length > 0)
-					{
-						hash = FNV1a.HashRound(hash, Read<byte>(ref source));
-						length -= sizeof(byte);
-					}
-					break;
-			}
-			return salted ? FNV1a.HashRound(hash, BitwiseHashSalt) : hash;
+            var hashInfo = new FNV1a(FNV1a.Offset);
+            ComputeHashCode32(source, length, ref hashInfo, salted);
+            return hashInfo.Result;
 		}
 
         /// <summary>
@@ -466,7 +307,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
-		public unsafe static int GetHashCode(void* source, long length, bool salted = true)
+		public static int GetHashCode(void* source, long length, bool salted = true)
 			=> GetHashCode(new IntPtr(source), length, salted);
 
         /// <summary>
@@ -478,7 +319,7 @@ namespace DotNext.Runtime.InteropServices
         /// </remarks>
         /// <param name="ptr">The pointer to the memory to be cleared.</param>
         /// <param name="length">The length of the memory to be cleared.</param>
-        public unsafe static void ZeroMem(IntPtr ptr, long length)
+        public static void ClearBits(IntPtr ptr, long length)
         {
             do
             {
@@ -495,18 +336,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer to the memory to be cleared.</param>
         /// <param name="length">The length of the memory to be cleared.</param>
         [CLSCompliant(false)]
-        public unsafe static void ZeroMem(void* ptr, long length) => ZeroMem(new IntPtr(ptr), length);
-
-        /// <summary>
-        /// Computes equality between two blocks of memory.
-        /// </summary>
-        /// <param name="first">A pointer to the first memory block.</param>
-        /// <param name="second">A pointer to the second memory block.</param>
-        /// <param name="length">Length of first and second memory blocks, in bytes.</param>
-        /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        [Obsolete("Use overloaded method with long length")]
-        public unsafe static bool Equals(void* first, void* second, int length) => Equals(first, second, (long)length);
+        public static void ZeroMem(void* ptr, long length) => ClearBits(new IntPtr(ptr), length);
 
         /// <summary>
 		/// Computes equality between two blocks of memory.
@@ -516,7 +346,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="length">Length of first and second memory blocks, in bytes.</param>
 		/// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
 		[CLSCompliant(false)]
-        public unsafe static bool Equals(void* first, void* second, long length) => Equals(new IntPtr(first), new IntPtr(second), length);
+        public static bool Equals(void* first, void* second, long length) => Equals(new IntPtr(first), new IntPtr(second), length);
 
         /// <summary>
         /// Computes equality between two blocks of memory.
@@ -525,18 +355,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="second">A pointer to the second memory block.</param>
         /// <param name="length">Length of first and second memory blocks, in bytes.</param>
         /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
-        [Obsolete("Use overloaded method with long length")]
-        public unsafe static bool Equals(IntPtr first, IntPtr second, int length)
-			=> Equals(first.ToPointer(), second.ToPointer(), length);
-
-        /// <summary>
-        /// Computes equality between two blocks of memory.
-        /// </summary>
-        /// <param name="first">A pointer to the first memory block.</param>
-        /// <param name="second">A pointer to the second memory block.</param>
-        /// <param name="length">Length of first and second memory blocks, in bytes.</param>
-        /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
-        public unsafe static bool Equals(IntPtr first, IntPtr second, long length)
+        public static bool Equals(IntPtr first, IntPtr second, long length)
         {
             if (first == second)
                 return true;
@@ -576,29 +395,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="second">The pointer to the second memory block.</param>
         /// <param name="length">The length of the first and second memory blocks.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
-        [CLSCompliant(false)]
-        [Obsolete("Use overloaded method with long length")]
-        public unsafe static int Compare(void* first, void* second, int length) => Compare(first, second, (long)length);
-
-        /// <summary>
-        /// Bitwise comparison of two memory blocks.
-        /// </summary>
-        /// <param name="first">The pointer to the first memory block.</param>
-        /// <param name="second">The pointer to the second memory block.</param>
-        /// <param name="length">The length of the first and second memory blocks.</param>
-        /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
-        [Obsolete("Use overloaded method with long length")]
-        public unsafe static int Compare(IntPtr first, IntPtr second, int length)
-			=> Compare(first.ToPointer(), second.ToPointer(), length);
-
-        /// <summary>
-        /// Bitwise comparison of two memory blocks.
-        /// </summary>
-        /// <param name="first">The pointer to the first memory block.</param>
-        /// <param name="second">The pointer to the second memory block.</param>
-        /// <param name="length">The length of the first and second memory blocks.</param>
-        /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
-        public unsafe static int Compare(IntPtr first, IntPtr second, long length)
+        public static int Compare(IntPtr first, IntPtr second, long length)
         {
             if (first == second)
                 return 0;
@@ -641,7 +438,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The length of the first and second memory blocks.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
         [CLSCompliant(false)]
-        public unsafe static int Compare(void* first, void* second, long length) => Compare(new IntPtr(first), new IntPtr(second), length);
+        public static int Compare(void* first, void* second, long length) => Compare(new IntPtr(first), new IntPtr(second), length);
 
         /// <summary>
         /// Indicates that two managed pointers are equal.
@@ -665,7 +462,10 @@ namespace DotNext.Runtime.InteropServices
         /// not the address of the object itself.
         /// </remarks>
         [CLSCompliant(false)]
-        public unsafe static IntPtr AddressOf<T>(in T value)
+        public static IntPtr AddressOf<T>(in T value)
 			=> new IntPtr(Unsafe.AsPointer(ref Unsafe.AsRef(in value)));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int PointerHashCode(void* pointer) => new IntPtr(pointer).GetHashCode();
 	}
 }

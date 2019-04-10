@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    using Threading.Tasks;
     using Runtime.CompilerServices;
-    using Reflection;
 
     /// <summary>
     /// Represents return from asynchronous lambda function.
@@ -17,18 +16,36 @@ namespace DotNext.Metaprogramming
     /// <see cref="AsyncLambdaBuilder{D}"/>
     public sealed class AsyncResultExpression: Expression
     {
+        private readonly TaskType taskType;
+        
+        internal AsyncResultExpression(Expression result, TaskType taskType)
+        {
+            this.taskType = taskType;
+            AsyncResult = result;
+        }
+
+        internal AsyncResultExpression(TaskType taskType)
+            : this(taskType.ResultType.AsDefault(), taskType)
+        {
+        }
+
         /// <summary>
         /// Constructs non-void return from asynchronous lambda function.
         /// </summary>
         /// <param name="result">An expression representing result to be returned from asynchronous lambda function.</param>
-        public AsyncResultExpression(Expression result)
-            => AsyncResult = result;
+        /// <param name="valueTask"><see langword="true"/>, to represent the result as <see cref="ValueTask"/> or <see cref="ValueTask{TResult}"/>.</param>
+        public AsyncResultExpression(Expression result, bool valueTask)
+        {
+            AsyncResult = result;
+            taskType = new TaskType(result.Type, valueTask);
+        }
 
         /// <summary>
         /// Constructs void return from asynchronous lambda function.
         /// </summary>
-        public AsyncResultExpression()
-            : this(Empty())
+        /// <param name="valueTask"><see langword="true"/>, to represent the result as <see cref="ValueTask"/>.</param>
+        public AsyncResultExpression(bool valueTask)
+            : this(Empty(), valueTask)
         {
         }
 
@@ -41,9 +58,9 @@ namespace DotNext.Metaprogramming
         /// Type of this expression.
         /// </summary>
         /// <remarks>
-        /// The type of this expression is <see cref="Task"/> or derived class.
+        /// The type of this expression is <see cref="Task"/>, <see cref="Task{TResult}"/>, <see cref="ValueTask"/> or <see cref="ValueTask{TResult}"/>.
         /// </remarks>
-        public override Type Type => AsyncResult.Type.MakeTaskType();
+        public override Type Type => taskType;
 
         /// <summary>
         /// Expression type. Always returns <see cref="ExpressionType.Extension"/>.
@@ -61,22 +78,21 @@ namespace DotNext.Metaprogramming
         /// <returns>The reduced expression.</returns>
         public override Expression Reduce()
         {
-            const BindingFlags PublicStatic = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
             Expression completedTask, failedTask;
             var catchedException = Variable(typeof(Exception));
             if (AsyncResult.Type == typeof(void))
             {
-                completedTask = Block(AsyncResult, Property(null, typeof(Task).GetProperty(nameof(Task.CompletedTask))));
-                failedTask = Call(null, typeof(Task).GetMethod(nameof(Task.FromException), PublicStatic, 0L, typeof(Exception)), catchedException);
+                completedTask = Block(AsyncResult, typeof(CompletedTask).AsDefault());
+                failedTask = typeof(CompletedTask).New(catchedException);
             }
             else
             {
-                completedTask = Call(null, typeof(Task).GetMethod(nameof(Task.FromResult), PublicStatic, 1L, new Type[] { null }).MakeGenericMethod(AsyncResult.Type), AsyncResult);
-                failedTask = Call(null, typeof(Task).GetMethod(nameof(Task.FromException), PublicStatic, 1L, typeof(Exception)).MakeGenericMethod(AsyncResult.Type), catchedException);
+                completedTask = typeof(CompletedTask<>).MakeGenericType(AsyncResult.Type).New(AsyncResult);
+                failedTask = completedTask.Type.New(catchedException);
             }
             return AsyncResult is ConstantExpression || AsyncResult is DefaultExpression ?
-                completedTask :
-                TryCatch(completedTask, Catch(catchedException, failedTask));
+                completedTask.Convert(taskType) :
+                TryCatch(completedTask, Catch(catchedException, failedTask)).Convert(taskType);
         }
 
         internal Expression Reduce(ParameterExpression stateMachine, LabelTarget endOfAsyncMethod)
@@ -97,7 +113,7 @@ namespace DotNext.Metaprogramming
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
             var expression = visitor.Visit(AsyncResult);
-            return ReferenceEquals(expression, AsyncResult) ? this : new AsyncResultExpression(expression);
+            return ReferenceEquals(expression, AsyncResult) ? this : new AsyncResultExpression(expression, taskType);
         }
     }
 }

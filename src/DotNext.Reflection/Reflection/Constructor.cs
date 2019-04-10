@@ -265,11 +265,11 @@ namespace DotNext.Reflection
         private static Constructor<D> Reflect(Type declaringType, Type[] parameters, bool nonPublic)
         {
             if (declaringType.IsValueType)
-                return new Constructor<D>(declaringType, parameters.Convert(Expression.Parameter));
+                return new Constructor<D>(declaringType, Array.ConvertAll(parameters, Expression.Parameter));
             else
             {
                 var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
-                return ctor is null ? null : new Constructor<D>(ctor, parameters.Convert(Expression.Parameter));
+                return ctor is null ? null : new Constructor<D>(ctor, Array.ConvertAll(parameters, Expression.Parameter));
             }
         }
 
@@ -278,7 +278,7 @@ namespace DotNext.Reflection
             var (parameters, arglist, input) = Signature.Reflect(argumentsType);
             //handle value type
             if(declaringType.IsValueType)
-                return new Constructor<D>(declaringType, parameters.Convert(Expression.Parameter));
+                return new Constructor<D>(declaringType, Array.ConvertAll(parameters, Expression.Parameter));
 
             var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
             return ctor is null ? null : new Constructor<D>(ctor, arglist, new[]{ input });
@@ -344,7 +344,7 @@ namespace DotNext.Reflection
 			{
 				var invokeMethod = DelegateType.GetInvokeMethod<D>();
 				return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
-					new Constructor<D>(ctor, ctor.GetParameterTypes().Convert(Expression.Parameter)) :
+					new Constructor<D>(ctor, Array.ConvertAll(ctor.GetParameterTypes(), Expression.Parameter)) :
 					null;
 			}
         }

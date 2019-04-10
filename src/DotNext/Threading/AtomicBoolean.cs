@@ -26,9 +26,9 @@ namespace DotNext.Threading
         public bool Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => value.VolatileGet() == True;
+            get => value.VolatileRead() == True;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => this.value.VolatileSet(value ? True: False);
+            set => this.value.VolatileWrite(value ? True: False);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <returns><see langword="true"/> if current value is modified successfully; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool FalseToTrue() => Interlocked.CompareExchange(ref value, True, False) == True;
+        public bool FalseToTrue() => Interlocked.CompareExchange(ref value, True, False) == False;
 
         /// <summary>
         /// Atomically sets <see langword="false"/> value if the
@@ -65,17 +65,17 @@ namespace DotNext.Threading
         /// </summary>
         /// <returns><see langword="true"/> if current value is modified successfully; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TrueToFalse() => Interlocked.CompareExchange(ref value, False, True) == False;
+        public bool TrueToFalse() => Interlocked.CompareExchange(ref value, False, True) == True;
 
         private (int OldValue, int NewValue) Negate()
         {
             int oldValue, newValue;
             do
             {
-                oldValue = value.VolatileGet();
+                oldValue = value.VolatileRead();
                 newValue = oldValue ^ True;
             } 
-            while(Interlocked.CompareExchange(ref value, newValue, oldValue) != newValue);
+            while(!value.CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
         }
 
@@ -205,7 +205,7 @@ namespace DotNext.Threading
                 case bool b:
                     return Equals(b);
                 case AtomicBoolean b:
-                    return b.value.VolatileGet() == value.VolatileGet();
+                    return b.value.VolatileRead() == value.VolatileRead();
                 default:
                     return false;
             }

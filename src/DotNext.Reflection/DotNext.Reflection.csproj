@@ -5,18 +5,18 @@
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<Version>0.3.0</Version>
+	<Version>0.5.0</Version>
 	<Authors>Roman Sakno</Authors>
 	<Product>.NEXT Family of Libraries</Product>
-	<Description>Statically-typed reflection and support of conceptual types (shapes)</Description>
+	<Description>Strongly typed reflection, concept types (type classes), fast reflection</Description>
 	<Copyright>Copyright © Roman Sakno 2019</Copyright>
-	<PackageLicenseUrl>https://github.com/sakno/DotNext/blob/master/LICENSE</PackageLicenseUrl>
-	<PackageProjectUrl>https://sakno.github.io/DotNext/</PackageProjectUrl>
-	<RepositoryUrl>https://github.com/sakno/DotNext.git</RepositoryUrl>
+	<PackageLicenseUrl>https://github.com/sakno/dotNext/blob/master/LICENSE</PackageLicenseUrl>
+	<PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
 	<RepositoryType>git</RepositoryType>
-	<PackageTags>shapes;concept;reflection;typeclass</PackageTags>
-	<PackageIconUrl>https://raw.githubusercontent.com/sakno/DotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Dynamic polymorphism is added: it is possible to register static and instance methods for the particular type. These methods will be visible to concept types and strongly typed reflection.</PackageReleaseNotes>
+	<PackageTags>Concept;Reflection;Typeclass</PackageTags>
+	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
+	<PackageReleaseNotes>Enable tail call optimization for some delegate instances generated for the reflected methods.</PackageReleaseNotes>
   </PropertyGroup>
 
 
@@ -35,7 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.3.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.5.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Security.Cryptography;
+using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
@@ -11,27 +12,69 @@ namespace DotNext
     /// </summary>
     public static class RandomExtensions
     {
-        private static readonly ArrayPool<byte> ByteArrayPool = ArrayPool<byte>.Create(16, 50);
+        internal static readonly int BitwiseHashSalt = new Random().Next();
 
-        private static string NextString(Random random, ReadOnlySpan<char> allowedChars, int length)
+        private interface IRandomCharacterGenerator
+        {
+            char NextChar(ReadOnlySpan<char> allowedChars);
+        }
+
+        private readonly struct RandomCharacterGenerator: IRandomCharacterGenerator
+        {
+            private readonly Random random;
+
+            internal RandomCharacterGenerator(Random random) => this.random = random;
+
+            char IRandomCharacterGenerator.NextChar(ReadOnlySpan<char> allowedChars) => allowedChars[random.Next(0, allowedChars.Length)];
+        }
+
+        private readonly struct RNGCharacterGenerator: IRandomCharacterGenerator
+        {
+            private readonly byte[] buffer;
+            private readonly RandomNumberGenerator random;
+
+            internal RNGCharacterGenerator(RandomNumberGenerator random)
+            {
+                this.random = random;
+                buffer = new byte[sizeof(int)];
+            }
+
+
+            char IRandomCharacterGenerator.NextChar(ReadOnlySpan<char> allowedChars)
+            {
+                random.GetBytes(buffer, 0, sizeof(int));
+                var randomNumber = Math.Abs(BitConverter.ToInt32(buffer, 0) % allowedChars.Length);   
+                return allowedChars[randomNumber];
+            }
+        }
+
+        private static unsafe string NextString<R>(ref R generator, ReadOnlySpan<char> allowedChars, int length)
+            where R: struct, IRandomCharacterGenerator
+        {
+            if(length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+            else if(length == 0)
+                return "";
+            //use stack allocation for small strings
+            var result = length < 1024 ? stackalloc char[length] : new Span<char>(new char[length]);
+            foreach(ref char element in result)
+                element = generator.NextChar(allowedChars);
+            fixed(char* ptr = result)
+                return new string(ptr, 0, length);
+        }
+
+        /// <summary>
+        /// Generates random string of the given length.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <param name="allowedChars">The allowed characters for the random string.</param>
+        /// <param name="length">The length of the random string.</param>
+        /// <returns>Randomly generated string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+        public static string NextString(this Random random, ReadOnlySpan<char> allowedChars, int length)
 		{
-			var result = new char[length];
-			foreach(ref char element in result.AsSpan())
-				element = allowedChars[random.Next(0, allowedChars.Length)];
-			return new string(result);
-		}
-	
- 		private static string NextString(RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
-		{
-			var result = new char[length];
-			using(var buffer = new ArrayRental<byte>(ByteArrayPool, sizeof(int), true))
-                foreach(ref char element in result.AsSpan())
-                {
-                    random.GetBytes(buffer, 0, sizeof(int));
-                    var randomNumber = Math.Abs(BitConverter.ToInt32(buffer, 0) % allowedChars.Length);   
-                    element = allowedChars[randomNumber];
-                }
-			return new string(result);
+            var generator = new RandomCharacterGenerator(random);
+            return NextString(ref generator, allowedChars, length);
         }
 
         /// <summary>
@@ -41,8 +84,9 @@ namespace DotNext
         /// <param name="allowedChars">The array of allowed characters for the random string.</param>
         /// <param name="length">The length of the random string.</param>
         /// <returns>Randomly generated string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
 		public static string NextString(this Random random, char[] allowedChars, int length)
-			=> NextString(random, new ReadOnlySpan<char>(allowedChars), length);
+            => NextString(random, new ReadOnlySpan<char>(allowedChars), length);
 
         /// <summary>
         /// Generates random string of the given length.
@@ -51,8 +95,23 @@ namespace DotNext
         /// <param name="allowedChars">The string of allowed characters for the random string.</param>
         /// <param name="length">The length of the random string.</param>
         /// <returns>Randomly generated string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this Random random, string allowedChars, int length)
 			=> NextString(random, allowedChars.AsSpan(), length);
+
+        /// <summary>
+        /// Generates random string of the given length.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <param name="allowedChars">The allowed characters for the random string.</param>
+        /// <param name="length">The length of the random string.</param>
+        /// <returns>Randomly generated string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
+        public static string NextString(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
+        {
+            var generator = new RNGCharacterGenerator(random);
+            return NextString(ref generator, allowedChars, length);
+        }
 
         /// <summary>
         /// Generates random string of the given length.
@@ -61,6 +120,7 @@ namespace DotNext
         /// <param name="allowedChars">The array of allowed characters for the random string.</param>
         /// <param name="length">The length of the random string.</param>
         /// <returns>Randomly generated string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
 		public static string NextString(this RandomNumberGenerator random, char[] allowedChars, int length)
 			=> NextString(random, new ReadOnlySpan<char>(allowedChars), length);
 
@@ -71,6 +131,7 @@ namespace DotNext
         /// <param name="allowedChars">The string of allowed characters for the random string.</param>
         /// <param name="length">The length of the random string.</param>
         /// <returns>Randomly generated string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this RandomNumberGenerator random, string allowedChars, int length)
 			=> NextString(random, allowedChars.AsSpan(), length);
 
@@ -93,11 +154,9 @@ namespace DotNext
         /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>].</returns>
         public static int Next(this RandomNumberGenerator random)
         {
-            using(var buffer = new ArrayRental<byte>(ByteArrayPool, sizeof(int), true))
-            {
-                random.GetBytes(buffer, 0, sizeof(int));
-                return Math.Abs(BitConverter.ToInt32(buffer, 0));
-            }
+            var buffer = new byte[sizeof(int)];
+            random.GetBytes(buffer, 0, sizeof(int));
+            return Math.Abs(BitConverter.ToInt32(buffer, 0));
         }
 
         /// <summary>
@@ -120,13 +179,11 @@ namespace DotNext
         /// <returns>Randomly generated floating-point number.</returns>
         public static double NextDouble(this RandomNumberGenerator random)
         {
-            using(var buffer = new ArrayRental<byte>(ByteArrayPool, sizeof(double), true))
-            {
-                random.GetBytes(buffer);
-                var result = Math.Abs(BitConverter.ToDouble(buffer, 0));
-                //normalize to range [0, 1)
-                return result / (result + 1D);
-            }
+            var buffer = new byte[sizeof(double)];
+            random.GetBytes(buffer);
+            var result = Math.Abs(BitConverter.ToDouble(buffer, 0));
+            //normalize to range [0, 1)
+            return result / (result + 1D);
         }
     }
 }

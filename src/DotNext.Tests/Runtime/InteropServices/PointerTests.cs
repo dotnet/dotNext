@@ -4,6 +4,8 @@ using Xunit;
 
 namespace DotNext.Runtime.InteropServices
 {
+    using Threading;
+
     public sealed class PointerTests: Assert
     {
         [Fact]
@@ -68,6 +70,24 @@ namespace DotNext.Runtime.InteropServices
             }
             Equal(2, array[0]);
             Equal(1, array[1]);
+        }
+
+        [Fact]
+        public unsafe void VolatileReadWriteTest()
+        {
+            Pointer<long> ptr = stackalloc long[3];
+            ptr.VolatileWrite(1);
+            Equal(1, ptr.Value);
+            ptr.AddValue(10);
+            Equal(11, ptr.Value);
+            Equal(11, ptr.VolatileRead());
+            ptr.DecrementValue();
+            Equal(10, ptr.Value);
+            Equal(10, ptr.VolatileRead());
+            True(ptr.CompareAndSetValue(10, 12));
+            Equal(12, ptr.Value);
+            False(ptr.CompareAndSetValue(10, 20));
+            Equal(12, ptr.Value);
         }
 
         [Fact]

@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices
 {
+    using Reflection;
+
 	/// <summary>
 	/// Represents typed array allocated in the unmanaged heap.
 	/// </summary>
@@ -14,7 +15,7 @@ namespace DotNext.Runtime.InteropServices
 	/// Therefore, it's developer responsibility to release unmanaged memory using <see cref="IDisposable.Dispose"/> call.
     /// </remarks>
 	/// <typeparam name="T">Array element type.</typeparam>
-	public unsafe struct UnmanagedArray<T> : IUnmanagedMemory<T>, IEquatable<UnmanagedArray<T>>, IEnumerable<T>
+	public unsafe struct UnmanagedArray<T> : IEquatable<UnmanagedArray<T>>, IUnmanagedList<T>
 		where T : unmanaged
 	{
 		/// <summary>
@@ -25,12 +26,11 @@ namespace DotNext.Runtime.InteropServices
 		/// </remarks>
 		public sealed class Handle : UnmanagedMemoryHandle<T>
 		{
-			private readonly long length;
 
 			private Handle(UnmanagedArray<T> array, bool ownsHandle)
 				: base(array, ownsHandle)
 			{
-				length = array.Length;
+				Length = array.Length;
 			}
 
 			/// <summary>
@@ -42,7 +42,8 @@ namespace DotNext.Runtime.InteropServices
             /// or <see cref="Dispose()"/> will be called directly.
             /// </remarks>
 			/// <param name="length">Array length.</param>
-			public Handle(long length)
+            /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
+			public Handle(long length, bool zeroMem = true)
 				: this(new UnmanagedArray<T>(length), true)
 			{
 
@@ -60,16 +61,28 @@ namespace DotNext.Runtime.InteropServices
 			{
 			}
 
+            private protected override UnmanagedMemoryHandle Clone() => new Handle(Conversion<Handle, UnmanagedArray<T>>.Converter(this).Copy(), true);
+
             /// <summary>
-            /// Gets a value indicating whether the unmanaged memory is released.
+            /// Obtains span object pointing to the allocated unmanaged array.
             /// </summary>
-			public override bool IsInvalid => handle == IntPtr.Zero;
+            public override Span<T> Span => new UnmanagedArray<T>(handle, Length);
+
+            /// <summary>
+            /// Gets number of elements in the unmanaged array.
+            /// </summary>
+            public long Length { get; }
+
+            /// <summary>
+            /// Gets number of bytes allocated for the unmanaged array, in bytes.
+            /// </summary>
+            public override long Size => Length * Pointer<T>.Size;
 
             /// <summary>
             /// Releases referenced unmanaged memory.
             /// </summary>
             /// <returns><see langword="true"/>, if this handle is valid; otherwise, <see langword="false"/>.</returns>
-			protected override bool ReleaseHandle() => FreeMem(handle);
+			protected override bool ReleaseHandle() => UnmanagedMemory.Release(handle);
 
 			/// <summary>
 			/// Converts handle into unmanaged array reference.
@@ -81,36 +94,43 @@ namespace DotNext.Runtime.InteropServices
 				if (handle is null)
 					return default;
 				else if (handle.IsClosed)
-					throw new ObjectDisposedException(handle.GetType().Name, ExceptionMessages.HandleClosed);
+					throw handle.HandleClosed();
 				else
-					return new UnmanagedArray<T>(handle.handle, handle.length);
+					return new UnmanagedArray<T>(handle.handle, handle.Length);
 			}
 		}
 
+        /// <summary>
+        /// Represents empty array.
+        /// </summary>
+        public static UnmanagedArray<T> Empty => default(UnmanagedArray<T>);
+        
+        private readonly long length;
 		private readonly Pointer<T> pointer;
 
 		/// <summary>
 		/// Allocates a new array in the unmanaged memory of the specified length.
 		/// </summary>
 		/// <param name="length">Array length. Cannot be less or equal than zero.</param>
+        /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>      
 		/// <exception cref="ArgumentOutOfRangeException">Invalid length.</exception>
-		public UnmanagedArray(long length)
+		public UnmanagedArray(long length, bool zeroMem = true)
 		{
 			if (length < 0)
-				throw new ArgumentOutOfRangeException(ExceptionMessages.ArrayNegativeLength);
-			else if ((Length = length) > 0L)
-			{
-				var size = length * Pointer<T>.Size;
-                pointer = new Pointer<T>(Marshal.AllocHGlobal(new IntPtr(size)));
-				pointer.Clear(length);
-			}
+				throw new ArgumentOutOfRangeException(nameof(length), length, ExceptionMessages.ArrayNegativeLength);
+			else if ((this.length = length) > 0L)
+            {
+                var size = length * Pointer<T>.Size;
+                pointer = new Pointer<T>(UnmanagedMemory.Alloc(size, zeroMem));
+                GC.AddMemoryPressure(size);
+            }
 			else
 				pointer = Pointer<T>.Null;
 		}
 
 		private UnmanagedArray(Pointer<T> pointer, long length)
 		{
-			Length = length;
+			this.length = length;
 			this.pointer = pointer;
 		}
 
@@ -119,10 +139,39 @@ namespace DotNext.Runtime.InteropServices
 		{
 		}
 
+        /// <summary>
+        /// Indicates that this array is empty.
+        /// </summary>
+        public bool IsEmpty
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => length == 0L || pointer == Pointer<T>.Null;
+        }
+
 		/// <summary>
-		/// Gets length of this array.
+		/// Gets or sets length of this array.
 		/// </summary>
-		public long Length { get; }
+        /// <remarks>
+        /// If length is changed then the contents of this array have been copied to the array, and this array has been freed.      
+        /// </remarks> 
+        /// <exception cref="ArgumentOutOfRangeException">The new length value is invalid.</exception>           
+		public long Length
+        {
+            get => length;
+            set
+            {
+                if(value <= 0L)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                else if(value == length)
+                    return;
+                else if(IsEmpty)
+                    this = new UnmanagedArray<T>(value);
+                else
+                    this = new UnmanagedArray<T>(UnmanagedMemory.Realloc(pointer, Pointer<T>.Size * value), value);
+            }
+        }
+
+        int IReadOnlyCollection<T>.Count => (int)Length;
 
 		/// <summary>
 		/// Size of allocated memory, in bytes.
@@ -139,6 +188,48 @@ namespace DotNext.Runtime.InteropServices
         Span<T> IUnmanagedMemory<T>.Span => this;
 
         /// <summary>
+        /// Fills the elements of this array with a specified value.
+        /// </summary>
+        /// <param name="value">The value to assign to each element of the array.</param>
+        /// <exception cref="NullPointerException">This array is not allocated.</exception>
+        public void Fill(T value) => pointer.Fill(value, length);
+
+        /// <summary>
+        /// Forms a slice out of the current span that begins at a specified index.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't allocate a new array, just returns a view of the current array.
+        /// Do not call <see cref="UnmanagedArray{T}.Dispose"/> for the returned array.
+        /// </remarks>
+        /// <param name="startIndex">The index at which to begin this slice.</param>
+        /// <returns>An array that consists of all elements of the current array from <paramref name="startIndex"/> to the end of the array.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> has invalid value.</exception>
+        public UnmanagedArray<T> Slice(long startIndex) => Slice(startIndex, Length);
+
+        /// <summary>
+        /// Forms a slice out of the current sarraypan starting at a specified index for a specified length.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't allocate a new array, just returns a view of the current array.
+        /// Do not call <see cref="UnmanagedArray{T}.Dispose"/> for the returned array.
+        /// </remarks>
+        /// <param name="startIndex">The index at which to begin this slice.</param>
+        /// <param name="count">The desired length for the slice.</param>
+        /// <returns>An array that consists of <paramref name="count"/> elements from the current array starting at <paramref name="startIndex"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="count"/> has invalid value.</exception>
+        public UnmanagedArray<T> Slice(long startIndex, long count)
+        {
+            if(startIndex < 0L)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            else if(count < 0L)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            else if(startIndex >= Length || count == 0L)
+                return Empty;
+            else
+                return new UnmanagedArray<T>(pointer + startIndex, count.UpperBounded(Length - startIndex));
+        }
+
+        /// <summary>
         /// Searches item matching to the given predicate in a range of elements of the unmanaged array, and returns 
         /// the index of its last occurrence. The range extends from a specified 
         /// index for a specified number of elements.
@@ -149,7 +240,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
         public long FindLast(Predicate<T> predicate, long startIndex, long count)
         {
-            if (count == 0 || Length == 0)
+            if (count == 0 || IsEmpty)
                 return -1;
             else
                 count = count.UpperBounded(Length);
@@ -189,7 +280,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The index of the last occurrence of value; or -1, if value doesn't exist in this array.</returns>
         public long LastIndexOf(T item, long startIndex, long count, IEqualityComparer<T> comparer)
         {
-            if (count == 0 || Length == 0)
+            if (count == 0 || IsEmpty)
                 return -1;
             else
                 count = count.UpperBounded(Length);
@@ -216,8 +307,7 @@ namespace DotNext.Runtime.InteropServices
         /// index for a specified number of elements.
         /// </summary>
         /// <remarks>
-        /// This method uses <see cref="EqualityComparer{T}.Default"/> comparer
-        /// to compare elements in this array.
+        /// This method uses <see cref="EqualityComparer{T}.Default"/> comparer to compare elements in this array.
         /// </remarks>
         /// <param name="item">The value to locate in this array.</param>
         /// <param name="startIndex">The starting index of the search.</param>
@@ -248,7 +338,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
         public long Find(Predicate<T> predicate, long startIndex, long count)
         {
-            if (count == 0 || Length == 0)
+            if (count == 0 || IsEmpty)
                 return -1;
             else
                 count = count.UpperBounded(Length);
@@ -288,7 +378,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
         public long IndexOf(T item, long startIndex, long count, IEqualityComparer<T> comparer)
         {
-            if (count == 0 || Length == 0)
+            if (count == 0 || IsEmpty)
                 return -1;
             else
                 count = count.UpperBounded(Length);
@@ -315,13 +405,13 @@ namespace DotNext.Runtime.InteropServices
         /// index for a specified number of elements.
         /// </summary>
         /// <remarks>
-        /// This method uses <see cref="ValueType{T}.BitwiseEquals(T, T)"/> comparer
+        /// This method uses <see cref="EqualityComparer{T}.Default"/> comparer
         /// to compare elements in this array.
         /// </remarks>
         /// <param name="item">The value to locate in this array.</param>
         /// <param name="startIndex">The starting index of the search.</param>
         /// <returns>The index of the first occurrence of value; or -1, if value doesn't exist in this array.</returns>
-        public long IndexOf(T item, long startIndex) => IndexOf(item, startIndex, ValueType<T>.EqualityComparer);
+        public long IndexOf(T item, long startIndex) => IndexOf(item, startIndex, EqualityComparer<T>.Default);
 
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
@@ -329,7 +419,7 @@ namespace DotNext.Runtime.InteropServices
         /// index for a specified number of elements.
         /// </summary>
         /// <remarks>
-        /// This method uses <see cref="ValueType{T}.BitwiseEquals(T, T)"/> comparer
+        /// This method uses <see cref="EqualityComparer{T}.Default"/> comparer
         /// to compare elements in this array.
         /// </remarks>
         /// <param name="item">The value to locate in this array.</param>
@@ -344,14 +434,14 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="count">The length of the range to search.</param>
         /// <param name="comparison">The comparison algorithm.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
-        public long BinarySearch(T item, long startIndex, long count, Comparison<T> comparison)
+        public long BinarySearch(T item, long startIndex, long count, IComparer<T> comparison)
         {
             count = count.UpperBounded(Length);
             count -= 1;
             while(startIndex <= count)
             {
                 var mid = (startIndex + count) / 2;
-                var cmd = comparison((pointer + mid).Value, item);
+                var cmd = comparison.Compare((pointer + mid).Value, item);
                 if (cmd < 0)
                     startIndex = mid + 1;
                 else if (cmd > 0)
@@ -368,17 +458,16 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="item">The value to locate.</param>
         /// <param name="comparison">The comparison algorithm.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
-        public long BinarySearch(T item, Comparison<T> comparison) => BinarySearch(item, 0, Length, comparison);
+        public long BinarySearch(T item, IComparer<T> comparison) => BinarySearch(item, 0, Length, comparison);
 
-        private long Partition(long startIndex, long endIndex, Comparison<T> comparison)
+        private long Partition(long startIndex, long endIndex, IComparer<T> comparison)
         {
             var pivot = (pointer + endIndex).Value;
             var i = startIndex - 1;
-
             for (var j = startIndex; j < endIndex; j++)
             {
                 var jptr = pointer + j;
-                if (comparison(jptr.Value, pivot) <= 0)
+                if (comparison.Compare(jptr.Value, pivot) <= 0)
                 {
                     i += 1;
                     (pointer + i).Swap(jptr);
@@ -390,7 +479,7 @@ namespace DotNext.Runtime.InteropServices
             return i;
         }
 
-        private void QuickSort(long startIndex, long endIndex, Comparison<T> comparison)
+        private void QuickSort(long startIndex, long endIndex, IComparer<T> comparison)
         {
             if (startIndex < endIndex)
             {
@@ -406,9 +495,9 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="startIndex">The starting index of the range to sort.</param>
         /// <param name="count">The length of the range to sort.</param>
         /// <param name="comparison">The comparison algorithm.</param>
-        public void Sort(long startIndex, long count, Comparison<T> comparison)
+        public void Sort(long startIndex, long count, IComparer<T> comparison)
         {
-            if (count == 0 || Length == 0)
+            if (count == 0 || IsEmpty)
                 return;
             QuickSort(startIndex, count.UpperBounded(Length) - 1, comparison);
         }
@@ -417,7 +506,7 @@ namespace DotNext.Runtime.InteropServices
         /// Sorts this array.
         /// </summary>
         /// <param name="comparison">The comparison logic.</param>
-        public void Sort(Comparison<T> comparison) => Sort(0, Length, comparison);
+        public void Sort(IComparer<T> comparison) => Sort(0, Length, comparison);
 
         /// <summary>
         /// Applies ascending sort of this array.
@@ -425,24 +514,25 @@ namespace DotNext.Runtime.InteropServices
         /// <remarks>
         /// This method uses QuickSort algorithm.
         /// </remarks>
-        public void Sort() => Sort(ValueType<T>.BitwiseCompare);
+        public void Sort() => Sort(Comparer<T>.Default);
 
         /// <summary>
         /// Uses a binary search algorithm to locate a specific element in the sorted array.
         /// </summary>
         /// <remarks>
-        /// This method uses <see cref="ValueType{T}.BitwiseCompare(T, T)"/> method
+        /// This method uses <see cref="Comparer{T}.Default"/> method
         /// to compare two values.
         /// </remarks>
         /// <param name="item">The value to locate.</param>
         /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
-        public long BinarySearch(T item) => BinarySearch(item, ValueType<T>.BitwiseCompare);
+        public long BinarySearch(T item) => BinarySearch(item, Comparer<T>.Default);
 
         /// <summary>
         /// Gets pointer to array element.
         /// </summary>
         /// <param name="index">Index of the element.</param>
         /// <returns>Pointer to array element.</returns>
+        /// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
         public Pointer<T> ElementAt(long index)
             => index >= 0 && index < Length ?
             pointer + index :
@@ -455,7 +545,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <returns>Array element.</returns>
 		/// <exception cref="NullPointerException">This array is not allocated.</exception>
 		/// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
-		public T this[int index]
+		public T this[long index]
 		{
             get => ElementAt(index).Value;
             set
@@ -465,23 +555,14 @@ namespace DotNext.Runtime.InteropServices
             }
 		}
 
+        T IReadOnlyList<T>.this[int index] => this[index];
+
         /// <summary>
         /// Obtains typed pointer to the unmanaged memory.
         /// </summary>
         /// <typeparam name="U">The type of the pointer.</typeparam>
         /// <returns>The typed pointer.</returns>
         public Pointer<U> ToPointer<U>() where U : unmanaged => pointer.As<U>();
-
-        /// <summary>
-		/// Gets pointer to the memory block.
-		/// </summary>
-		/// <param name="offset">Zero-based byte offset.</param>
-		/// <returns>Byte located at the specified offset in the memory.</returns>
-		/// <exception cref="NullPointerException">This buffer is not allocated.</exception>
-		/// <exception cref="IndexOutOfRangeException">Invalid offset.</exception>    
-        public Pointer<byte> ToPointer(long offset) => offset >= 0 && offset < Pointer<T>.Size ?
-                pointer.As<byte>() + offset :
-                throw new IndexOutOfRangeException(ExceptionMessages.InvalidOffsetValue(Pointer<T>.Size));
 
         /// <summary>
         /// Copies elements from this array into other array. 
@@ -498,7 +579,7 @@ namespace DotNext.Runtime.InteropServices
 				throw new ArgumentNullException(nameof(destination));
 			else if (count < 0)
 				throw new IndexOutOfRangeException();
-			else if (destination.Length == 0 || (count + offset) >= destination.Length)
+			else if (destination.IsEmpty || (count + offset) >= destination.Length)
 				return 0;
 			pointer.WriteTo(destination.pointer + offset, count);
 			return count;
@@ -786,7 +867,7 @@ namespace DotNext.Runtime.InteropServices
         /// Returns hexadecimal representation of the unmanaged array address.
         /// </summary>
         /// <returns>The hexadecimal representation of the unmanaged array address.</returns>
-		public override string ToString() => new IntPtr(pointer).ToString("X");
+		public override string ToString() => pointer.ToString();
 
         /// <summary>
         /// Obtains a pointer to the unmanaged array.
@@ -802,13 +883,19 @@ namespace DotNext.Runtime.InteropServices
         {
             //TODO: should be fixed if Span will support long data type
             //for length parameter
-            if (array.pointer.IsNull)
+            if (array.IsEmpty)
                 return default;
             else if (array.Length <= int.MaxValue)
                 return new Span<T>(array.pointer, (int)array.Length);
             else
                 return new Span<T>(array.pointer, int.MaxValue);
         }
+
+        /// <summary>
+        /// Provides unstructured access to the unmanaged memory.
+        /// </summary>
+        /// <param name="array">The unmanaged array.</param>
+        public static implicit operator UnmanagedMemory(UnmanagedArray<T> array) => new UnmanagedMemory(array.Address, Pointer<T>.Size);
 
         /// <summary>
         /// Determines whether two unmanaged arrays point to the same memory block.
@@ -859,20 +946,13 @@ namespace DotNext.Runtime.InteropServices
 		public static Pointer<T> operator+(UnmanagedArray<T> array, int elementIndex)
 			=> array.ElementAt(elementIndex);
 
-		private static bool FreeMem(IntPtr memory)
-		{
-			if (memory == IntPtr.Zero)
-				return false;
-			Marshal.FreeHGlobal(memory);
-			return true;
-		}
-
 		/// <summary>
 		/// Releases unmanaged memory associated with the array.
 		/// </summary>
 		public void Dispose()
 		{
-			FreeMem(pointer.Address);
+			UnmanagedMemory.Release(pointer.Address);
+            GC.RemoveMemoryPressure(Size);
 			this = default;
 		}
 	}

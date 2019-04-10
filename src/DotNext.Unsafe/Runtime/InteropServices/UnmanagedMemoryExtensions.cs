@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using System.IO;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -14,16 +13,7 @@ namespace DotNext.Runtime.InteropServices
         /// Creates a copy of unmanaged memory inside of managed heap.
         /// </summary>
         /// <returns>A copy of unmanaged memory in the form of byte array.</returns>
-        public static byte[] ToByteArray<M>(this ref M memory)
-            where M : struct, IUnmanagedMemory
-        {
-            if (memory.Address == IntPtr.Zero)
-                return Array.Empty<byte>();
-            var result = new byte[memory.Size];
-            fixed (byte* destination = result)
-                Memory.Copy(memory.Address.ToPointer(), destination, result.LongLength);
-            return result;
-        }
+        public static byte[] ToByteArray<M>(this ref M memory) where M : struct, IUnmanagedMemory => memory.ToPointer<byte>().ToByteArray(memory.Size);
 
         /// <summary>
 		/// Represents unmanaged memory as stream.
@@ -32,7 +22,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <returns>A stream to unmanaged memory.</returns>
         public static UnmanagedMemoryStream AsStream<M>(this ref M memory)
             where M : struct, IUnmanagedMemory
-            => memory.Address == IntPtr.Zero ? throw new NullPointerException() : new UnmanagedMemoryStream((byte*)memory.Address, memory.Size);
+            => memory.ToPointer<byte>().AsStream(memory.Size);
 
         /// <summary>
         /// Copies bytes from the memory location to the stream.
@@ -42,12 +32,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="destination">The destination stream.</param>
         public static void WriteTo<M>(this ref M source, Stream destination)
             where M : struct, IUnmanagedMemory
-        {
-            if (source.Address == IntPtr.Zero)
-                throw new NullPointerException();
-            else
-                Memory.WriteToSteam(source.Address, source.Size, destination);
-        }
+            => source.ToPointer<byte>().WriteTo(destination, source.Size);
 
         /// <summary>
         /// Copies bytes from the memory location to the stream asynchronously.
@@ -58,7 +43,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The task instance representing asynchronous state of the copying process.</returns>
         public static Task WriteToAsync<M>(this ref M source, Stream destination)
             where M : struct, IUnmanagedMemory
-            => source.Address == IntPtr.Zero ? throw new NullPointerException() : Memory.WriteToSteamAsync(source.Address, source.Size, destination);
+            => source.ToPointer<byte>().WriteToAsync(destination, source.Size);
 
         /// <summary>
         /// Copies bytes from the memory location to the managed array of bytes.
@@ -71,20 +56,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The actual number of copied bytes.</returns>
         public static long WriteTo<M>(this ref M source, byte[] destination, long offset, long count)
             where M : struct, IUnmanagedMemory
-        {
-            if (source.Address == IntPtr.Zero)
-                throw new NullPointerException();
-            else if (count < 0L)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            else if (offset < 0L)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            else if (destination.LongLength == 0L)
-                return 0L;
-            count = count.Min(destination.LongLength - offset);
-            fixed (byte* dest = &destination[offset])
-                Memory.Copy(source.Address.ToPointer(), dest, count);
-            return count;
-        }
+            => source.ToPointer<byte>().WriteTo(destination, offset, count);
 
         /// <summary>
         /// Copies bytes from the memory location to the managed array of bytes.
@@ -95,7 +67,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The actual number of copied bytes.</returns>
         public static long WriteTo<M>(this ref M source, byte[] destination)
             where M : struct, IUnmanagedMemory
-            => source.WriteTo(destination, 0L, source.Size);
+            => source.WriteTo(destination, 0, destination.LongLength.UpperBounded(source.Size));
 
         /// <summary>
 		/// Sets all bits of allocated memory to zero.
@@ -104,12 +76,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <exception cref="NullPointerException">The memory is not allocated.</exception>
         public static void Clear<M>(this ref M memory)
             where M : struct, IUnmanagedMemory
-        {
-            if (memory.Address == IntPtr.Zero)
-                throw new NullPointerException();
-            else
-                Memory.ZeroMem(memory.Address, memory.Size);
-        }
+            => memory.ToPointer<byte>().Clear(memory.Size);
 
         /// <summary>
         /// Copies bytes from the the managed array of bytes to the memory location.
@@ -120,22 +87,9 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The position in the source array from which copying begins.</param>
         /// <param name="count">The number of arrays elements to be copied.</param>
         /// <returns>The actual number of copied bytes.</returns>
-        public static long ReadFrom<M>(this ref M destination, byte[] source, long offset, long count)
-            where M : struct, IUnmanagedMemory
-        {
-            if (destination.Address == IntPtr.Zero)
-                throw new NullPointerException();
-            else if (count < 0L)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            else if (offset < 0L)
-                throw new ArgumentOutOfRangeException(nameof(offset));
-            else if (source.LongLength == 0L)
-                return 0L;
-            count = count.Min(source.LongLength - offset);
-            fixed (byte* src = &source[offset])
-                Memory.Copy(src, destination.Address.ToPointer(), count);
-            return count;
-        }
+        public static long WriteTo<M>(this byte[] source, M destination, long offset, long count)
+            where M : IUnmanagedMemory
+            => destination.ToPointer<byte>().ReadFrom(source, offset, count);
 
         /// <summary>
         /// Copies bytes from the the managed array of bytes to the given memory location.
@@ -144,9 +98,9 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="source">The source array.</param>
         /// <param name="destination">The destination memory location.</param>
         /// <returns>The actual number of copied bytes.</returns>
-        public static long ReadFrom<M>(this ref M destination, byte[] source)
-            where M : struct, IUnmanagedMemory
-            => destination.ReadFrom(source, 0L, source.LongLength);
+        public static long WriteTo<M>(this byte[] source, M destination)
+            where M : IUnmanagedMemory
+            => source.WriteTo(destination, 0, source.LongLength.UpperBounded(destination.Size));
 
         /// <summary>
         /// Copies bytes from the stream to the given memory location.
@@ -155,9 +109,9 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="source">The source stream.</param>
         /// <param name="destination">The destination memory location.</param>
         /// <returns>The actual number</returns>
-        public static long ReadFrom<M>(this ref M destination, Stream source)
-            where M : struct, IUnmanagedMemory
-            => destination.Address == IntPtr.Zero ? throw new NullPointerException() : Memory.ReadFromStream(source, destination.Address, destination.Size);
+        public static long WriteTo<M>(this Stream source, M destination)
+            where M : IUnmanagedMemory
+            => destination.ToPointer<byte>().ReadFrom(source, destination.Size);
 
         /// <summary>
         /// Copies bytes from the stream to the given memory location.
@@ -166,9 +120,9 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="source">The source stream.</param>
         /// <param name="destination">The destination memory location.</param>
         /// <returns>The actual number</returns>
-        public static Task<long> ReadFromAsync<M>(this ref M destination, Stream source)
-            where M : struct, IUnmanagedMemory
-            => destination.Address == IntPtr.Zero ? throw new NullPointerException() : Memory.ReadFromStreamAsync(source, destination.Address, destination.Size);
+        public static Task<long> WriteToAsync<M>(this Stream source, M destination)
+            where M : IUnmanagedMemory
+            => destination.ToPointer<byte>().ReadFromAsync(source, destination.Size);
 
         /// <summary>
         /// Computes bitwise equality between two blocks of memory.
@@ -181,14 +135,7 @@ namespace DotNext.Runtime.InteropServices
         public static bool BitwiseEquals<M1, M2>(this ref M1 first, M2 second)
             where M1 : struct, IUnmanagedMemory
             where M2 : struct, IUnmanagedMemory
-        {
-            if (first.Address == second.Address)
-                return true;
-            else if (first.Address == IntPtr.Zero || second.Address == IntPtr.Zero || first.Size != second.Size)
-                return false;
-            else
-                return Memory.Equals(first.Address, second.Address, first.Size);
-        }
+            => first.Size == second.Size && first.ToPointer<byte>().BitwiseEquals(second.ToPointer<byte>(), first.Size);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -199,7 +146,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Content hash code.</returns>
         public static int BitwiseHashCode<M>(this ref M memory, bool salted = true)
             where M : struct, IUnmanagedMemory
-            => memory.Address == IntPtr.Zero ? 0 : Memory.GetHashCode(memory.Address, memory.Size, salted);
+            => memory.ToPointer<byte>().BitwiseHashCode(memory.Size, salted);
 
         /// <summary>
         /// Bitwise comparison of two memory blocks.
@@ -211,14 +158,21 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
         public static int BitwiseCompare<M1, M2>(this ref M1 first, M2 second)
             where M1 : struct, IUnmanagedMemory
-            where M2 : struct, IUnmanagedMemory
-        {
-            if (first.Address == IntPtr.Zero || second.Address == IntPtr.Zero)
-                throw new NullPointerException();
-            else if (first.Size == second.Size)
-                return Memory.Compare(first.Address, second.Address, first.Size);
-            else
-                return first.Size.CompareTo(second.Size);
-        }
+            where M2 : IUnmanagedMemory
+            => first.Size == second.Size ? first.ToPointer<byte>().BitwiseCompare(second.ToPointer<byte>(), first.Size) : first.Size.CompareTo(second.Size);
+
+        /// <summary>
+		/// Gets pointer to the memory block.
+		/// </summary>
+        /// <param name="memory">Referenced memory.</param>      
+		/// <param name="offset">Zero-based byte offset.</param>
+		/// <returns>Byte located at the specified offset in the memory.</returns>
+		/// <exception cref="NullPointerException">This buffer is not allocated.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Invalid offset.</exception>    
+        public static Pointer<byte> ToPointer<M>(this ref M memory, long offset) 
+            where M : struct, IUnmanagedMemory
+            => offset >= 0 && offset < memory.Size ?
+                memory.ToPointer<byte>() + offset :
+                throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(memory.Size));
     }
 }
