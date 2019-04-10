@@ -17,6 +17,10 @@
         {
           "files": [ "**.csproj" ],
           "src": "../src/DotNext.Unsafe/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/DotNext.Threading/"
         }
       ],
       "dest": "api"

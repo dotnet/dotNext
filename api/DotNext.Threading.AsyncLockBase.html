@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class ConcurrentObjectPool&lt;T&gt;
+    <title>Class AsyncLockBase
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class ConcurrentObjectPool&lt;T&gt;
+    <meta name="title" content="Class AsyncLockBase
    | .NEXT ">
     <meta name="generator" content="docfx 2.40.7.0">
     
@@ -68,85 +68,45 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Threading.ConcurrentObjectPool`1">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.AsyncLockBase">
   
   
-  <h1 id="DotNext_Threading_ConcurrentObjectPool_1" data-uid="DotNext.Threading.ConcurrentObjectPool`1" class="text-break">Class ConcurrentObjectPool&lt;T&gt;
+  <h1 id="DotNext_Threading_AsyncLockBase" data-uid="DotNext.Threading.AsyncLockBase" class="text-break">Class AsyncLockBase
   </h1>
-  <div class="markdown level0 summary"><p>Provides concurrent object pool where
-object selection is thread-safe but not selected object.</p>
+  <div class="markdown level0 summary"><p>Represents abstract class for family of asynchronous locks.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">ConcurrentObjectPool&lt;T&gt;</span></div>
-  </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
+    <div class="level1"><span class="xref">AsyncLockBase</span></div>
+      <div class="level2"><a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a></div>
+      <div class="level2"><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></div>
+      <div class="level2"><a class="xref" href="DotNext.Threading.AsyncResetEvent.html">AsyncResetEvent</a></div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.html">DotNext.Threading</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
-  <h5 id="DotNext_Threading_ConcurrentObjectPool_1_syntax">Syntax</h5>
+  <h5 id="DotNext_Threading_AsyncLockBase_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class ConcurrentObjectPool&lt;T&gt;
-
-    where T : class</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class AsyncLockBase : Disposable</code></pre>
   </div>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>Type of objects in the pool.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="constructors">Constructors
+  <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Collections_Generic_IList__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601.%23ctor(System.Collections.Generic.IList%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockBase_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockBase.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L63">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockBase.cs/#L96">View Source</a>
   </span>
-  <a id="DotNext_Threading_ConcurrentObjectPool_1__ctor_" data-uid="DotNext.Threading.ConcurrentObjectPool`1.#ctor*"></a>
-  <h4 id="DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Collections_Generic_IList__0__" data-uid="DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Collections.Generic.IList{`0})">ConcurrentObjectPool(IList&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new object pool.</p>
+  <a id="DotNext_Threading_AsyncLockBase_Dispose_" data-uid="DotNext.Threading.AsyncLockBase.Dispose*"></a>
+  <h4 id="DotNext_Threading_AsyncLockBase_Dispose_System_Boolean_" data-uid="DotNext.Threading.AsyncLockBase.Dispose(System.Boolean)">Dispose(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Releases all resources associated with exclusive lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ConcurrentObjectPool(IList&lt;T&gt; objects)</code></pre>
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -159,79 +119,16 @@ object selection is thread-safe but not selected object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;T&gt;</td>
-        <td><span class="parametername">objects</span></td>
-        <td><p>Predefined objects to be available from the pool.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">disposing</span></td>
+        <td><p>Indicates whether the <a class="xref" href="DotNext.Threading.AsyncLockBase.html#DotNext_Threading_AsyncLockBase_Dispose_System_Boolean_">Dispose(Boolean)</a> has been called directly or from finalizer.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h3 id="fields">Fields
-  </h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1_objects.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601.objects%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L56">View Source</a>
-  </span>
-  <h4 id="DotNext_Threading_ConcurrentObjectPool_1_objects" data-uid="DotNext.Threading.ConcurrentObjectPool`1.objects">objects</h4>
-  <div class="markdown level1 summary"><p>Read-only collection of objects in this pool.</p>
+  <h5 id="DotNext_Threading_AsyncLockBase_Dispose_System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method is not thread-safe and may not be used concurrently with other members of this instance.</p>
 </div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected readonly IReadOnlyList&lt;T&gt; objects</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;T&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="methods">Methods
-  </h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1_Rent.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601.Rent%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L75">View Source</a>
-  </span>
-  <a id="DotNext_Threading_ConcurrentObjectPool_1_Rent_" data-uid="DotNext.Threading.ConcurrentObjectPool`1.Rent*"></a>
-  <h4 id="DotNext_Threading_ConcurrentObjectPool_1_Rent" data-uid="DotNext.Threading.ConcurrentObjectPool`1.Rent">Rent()</h4>
-  <div class="markdown level1 summary"><p>Select first unbusy object from pool, lock it and return it.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ConcurrentObjectPool&lt;T&gt;.Rental Rent()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.ConcurrentObjectPool-1.Rental.html">ConcurrentObjectPool.Rental</a>&lt;&gt;</td>
-        <td><p>First unbusy object locked for the caller thread.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
@@ -304,10 +201,10 @@ object selection is thread-safe but not selected object.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockBase.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockBase%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L15" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockBase.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

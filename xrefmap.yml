@@ -23690,6 +23690,838 @@ references:
   fullName.vb: DotNext.Threading.AsyncDelegate.InvokeAsync(Of T1, T2, T3, T4, T5, T6, T7, T8, T9)(System.Action(Of T1, T2, T3, T4, T5, T6, T7, T8, T9), T1, T2, T3, T4, T5, T6, T7, T8, T9, System.Threading.CancellationToken)
   nameWithType: AsyncDelegate.InvokeAsync<T1, T2, T3, T4, T5, T6, T7, T8, T9>(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>, T1, T2, T3, T4, T5, T6, T7, T8, T9, CancellationToken)
   nameWithType.vb: AsyncDelegate.InvokeAsync(Of T1, T2, T3, T4, T5, T6, T7, T8, T9)(Action(Of T1, T2, T3, T4, T5, T6, T7, T8, T9), T1, T2, T3, T4, T5, T6, T7, T8, T9, CancellationToken)
+- uid: DotNext.Threading.AsyncExclusiveLock
+  name: AsyncExclusiveLock
+  href: api/DotNext.Threading.AsyncExclusiveLock.html
+  commentId: T:DotNext.Threading.AsyncExclusiveLock
+  fullName: DotNext.Threading.AsyncExclusiveLock
+  nameWithType: AsyncExclusiveLock
+- uid: DotNext.Threading.AsyncExclusiveLock.Acquire(System.Threading.CancellationToken)
+  name: Acquire(CancellationToken)
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_Acquire_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncExclusiveLock.Acquire(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncExclusiveLock.Acquire(System.Threading.CancellationToken)
+  nameWithType: AsyncExclusiveLock.Acquire(CancellationToken)
+- uid: DotNext.Threading.AsyncExclusiveLock.Acquire(System.TimeSpan)
+  name: Acquire(TimeSpan)
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_Acquire_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncExclusiveLock.Acquire(System.TimeSpan)
+  fullName: DotNext.Threading.AsyncExclusiveLock.Acquire(System.TimeSpan)
+  nameWithType: AsyncExclusiveLock.Acquire(TimeSpan)
+- uid: DotNext.Threading.AsyncExclusiveLock.Acquire*
+  name: Acquire
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_Acquire_
+  commentId: Overload:DotNext.Threading.AsyncExclusiveLock.Acquire
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncExclusiveLock.Acquire
+  nameWithType: AsyncExclusiveLock.Acquire
+- uid: DotNext.Threading.AsyncExclusiveLock.IsLockHeld
+  name: IsLockHeld
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_IsLockHeld
+  commentId: P:DotNext.Threading.AsyncExclusiveLock.IsLockHeld
+  fullName: DotNext.Threading.AsyncExclusiveLock.IsLockHeld
+  nameWithType: AsyncExclusiveLock.IsLockHeld
+- uid: DotNext.Threading.AsyncExclusiveLock.IsLockHeld*
+  name: IsLockHeld
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_IsLockHeld_
+  commentId: Overload:DotNext.Threading.AsyncExclusiveLock.IsLockHeld
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncExclusiveLock.IsLockHeld
+  nameWithType: AsyncExclusiveLock.IsLockHeld
+- uid: DotNext.Threading.AsyncExclusiveLock.Release
+  name: Release()
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_Release
+  commentId: M:DotNext.Threading.AsyncExclusiveLock.Release
+  fullName: DotNext.Threading.AsyncExclusiveLock.Release()
+  nameWithType: AsyncExclusiveLock.Release()
+- uid: DotNext.Threading.AsyncExclusiveLock.Release*
+  name: Release
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_Release_
+  commentId: Overload:DotNext.Threading.AsyncExclusiveLock.Release
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncExclusiveLock.Release
+  nameWithType: AsyncExclusiveLock.Release
+- uid: DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan)
+  name: TryAcquire(TimeSpan)
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_TryAcquire_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan)
+  fullName: DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan)
+  nameWithType: AsyncExclusiveLock.TryAcquire(TimeSpan)
+- uid: DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan,System.Threading.CancellationToken)
+  name: TryAcquire(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_TryAcquire_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncExclusiveLock.TryAcquire(TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncExclusiveLock.TryAcquire*
+  name: TryAcquire
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_TryAcquire_
+  commentId: Overload:DotNext.Threading.AsyncExclusiveLock.TryAcquire
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncExclusiveLock.TryAcquire
+  nameWithType: AsyncExclusiveLock.TryAcquire
+- uid: DotNext.Threading.AsyncLock
+  name: AsyncLock
+  href: api/DotNext.Threading.AsyncLock.html
+  commentId: T:DotNext.Threading.AsyncLock
+  fullName: DotNext.Threading.AsyncLock
+  nameWithType: AsyncLock
+- uid: DotNext.Threading.AsyncLock.Acquire(System.Threading.CancellationToken)
+  name: Acquire(CancellationToken)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Acquire_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLock.Acquire(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncLock.Acquire(System.Threading.CancellationToken)
+  nameWithType: AsyncLock.Acquire(CancellationToken)
+- uid: DotNext.Threading.AsyncLock.Acquire(System.TimeSpan)
+  name: Acquire(TimeSpan)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Acquire_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncLock.Acquire(System.TimeSpan)
+  fullName: DotNext.Threading.AsyncLock.Acquire(System.TimeSpan)
+  nameWithType: AsyncLock.Acquire(TimeSpan)
+- uid: DotNext.Threading.AsyncLock.Acquire*
+  name: Acquire
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Acquire_
+  commentId: Overload:DotNext.Threading.AsyncLock.Acquire
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.Acquire
+  nameWithType: AsyncLock.Acquire
+- uid: DotNext.Threading.AsyncLock.Dispose
+  name: Dispose()
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Dispose
+  commentId: M:DotNext.Threading.AsyncLock.Dispose
+  fullName: DotNext.Threading.AsyncLock.Dispose()
+  nameWithType: AsyncLock.Dispose()
+- uid: DotNext.Threading.AsyncLock.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Dispose_
+  commentId: Overload:DotNext.Threading.AsyncLock.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.Dispose
+  nameWithType: AsyncLock.Dispose
+- uid: DotNext.Threading.AsyncLock.Equals(DotNext.Threading.AsyncLock)
+  name: Equals(AsyncLock)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Equals_DotNext_Threading_AsyncLock_
+  commentId: M:DotNext.Threading.AsyncLock.Equals(DotNext.Threading.AsyncLock)
+  fullName: DotNext.Threading.AsyncLock.Equals(DotNext.Threading.AsyncLock)
+  nameWithType: AsyncLock.Equals(AsyncLock)
+- uid: DotNext.Threading.AsyncLock.Equals(System.Object)
+  name: Equals(Object)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Equals_System_Object_
+  commentId: M:DotNext.Threading.AsyncLock.Equals(System.Object)
+  fullName: DotNext.Threading.AsyncLock.Equals(System.Object)
+  nameWithType: AsyncLock.Equals(Object)
+- uid: DotNext.Threading.AsyncLock.Equals*
+  name: Equals
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Equals_
+  commentId: Overload:DotNext.Threading.AsyncLock.Equals
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.Equals
+  nameWithType: AsyncLock.Equals
+- uid: DotNext.Threading.AsyncLock.Exclusive
+  name: Exclusive()
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Exclusive
+  commentId: M:DotNext.Threading.AsyncLock.Exclusive
+  fullName: DotNext.Threading.AsyncLock.Exclusive()
+  nameWithType: AsyncLock.Exclusive()
+- uid: DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncExclusiveLock)
+  name: Exclusive(AsyncExclusiveLock)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncExclusiveLock_
+  commentId: M:DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncExclusiveLock)
+  fullName: DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncExclusiveLock)
+  nameWithType: AsyncLock.Exclusive(AsyncExclusiveLock)
+- uid: DotNext.Threading.AsyncLock.Exclusive*
+  name: Exclusive
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Exclusive_
+  commentId: Overload:DotNext.Threading.AsyncLock.Exclusive
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.Exclusive
+  nameWithType: AsyncLock.Exclusive
+- uid: DotNext.Threading.AsyncLock.GetHashCode
+  name: GetHashCode()
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_GetHashCode
+  commentId: M:DotNext.Threading.AsyncLock.GetHashCode
+  fullName: DotNext.Threading.AsyncLock.GetHashCode()
+  nameWithType: AsyncLock.GetHashCode()
+- uid: DotNext.Threading.AsyncLock.GetHashCode*
+  name: GetHashCode
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_GetHashCode_
+  commentId: Overload:DotNext.Threading.AsyncLock.GetHashCode
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.GetHashCode
+  nameWithType: AsyncLock.GetHashCode
+- uid: DotNext.Threading.AsyncLock.Holder
+  name: AsyncLock.Holder
+  href: api/DotNext.Threading.AsyncLock.Holder.html
+  commentId: T:DotNext.Threading.AsyncLock.Holder
+  fullName: DotNext.Threading.AsyncLock.Holder
+  nameWithType: AsyncLock.Holder
+- uid: DotNext.Threading.AsyncLock.Holder.Dispose
+  name: Dispose()
+  href: api/DotNext.Threading.AsyncLock.Holder.html#DotNext_Threading_AsyncLock_Holder_Dispose
+  commentId: M:DotNext.Threading.AsyncLock.Holder.Dispose
+  fullName: DotNext.Threading.AsyncLock.Holder.Dispose()
+  nameWithType: AsyncLock.Holder.Dispose()
+- uid: DotNext.Threading.AsyncLock.Holder.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.AsyncLock.Holder.html#DotNext_Threading_AsyncLock_Holder_Dispose_
+  commentId: Overload:DotNext.Threading.AsyncLock.Holder.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.Holder.Dispose
+  nameWithType: AsyncLock.Holder.Dispose
+- uid: DotNext.Threading.AsyncLock.Holder.op_False(DotNext.Threading.AsyncLock.Holder@)
+  name: False(AsyncLock.Holder)
+  href: api/DotNext.Threading.AsyncLock.Holder.html#DotNext_Threading_AsyncLock_Holder_op_False_DotNext_Threading_AsyncLock_Holder__
+  commentId: M:DotNext.Threading.AsyncLock.Holder.op_False(DotNext.Threading.AsyncLock.Holder@)
+  name.vb: False(ByRef AsyncLock.Holder)
+  fullName: DotNext.Threading.AsyncLock.Holder.False(DotNext.Threading.AsyncLock.Holder)
+  fullName.vb: DotNext.Threading.AsyncLock.Holder.False(ByRef DotNext.Threading.AsyncLock.Holder)
+  nameWithType: AsyncLock.Holder.False(AsyncLock.Holder)
+  nameWithType.vb: AsyncLock.Holder.False(ByRef AsyncLock.Holder)
+- uid: DotNext.Threading.AsyncLock.Holder.op_False*
+  name: "False"
+  href: api/DotNext.Threading.AsyncLock.Holder.html#DotNext_Threading_AsyncLock_Holder_op_False_
+  commentId: Overload:DotNext.Threading.AsyncLock.Holder.op_False
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.Holder.False
+  nameWithType: AsyncLock.Holder.False
+- uid: DotNext.Threading.AsyncLock.Holder.op_True(DotNext.Threading.AsyncLock.Holder@)
+  name: True(AsyncLock.Holder)
+  href: api/DotNext.Threading.AsyncLock.Holder.html#DotNext_Threading_AsyncLock_Holder_op_True_DotNext_Threading_AsyncLock_Holder__
+  commentId: M:DotNext.Threading.AsyncLock.Holder.op_True(DotNext.Threading.AsyncLock.Holder@)
+  name.vb: True(ByRef AsyncLock.Holder)
+  fullName: DotNext.Threading.AsyncLock.Holder.True(DotNext.Threading.AsyncLock.Holder)
+  fullName.vb: DotNext.Threading.AsyncLock.Holder.True(ByRef DotNext.Threading.AsyncLock.Holder)
+  nameWithType: AsyncLock.Holder.True(AsyncLock.Holder)
+  nameWithType.vb: AsyncLock.Holder.True(ByRef AsyncLock.Holder)
+- uid: DotNext.Threading.AsyncLock.Holder.op_True*
+  name: "True"
+  href: api/DotNext.Threading.AsyncLock.Holder.html#DotNext_Threading_AsyncLock_Holder_op_True_
+  commentId: Overload:DotNext.Threading.AsyncLock.Holder.op_True
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.Holder.True
+  nameWithType: AsyncLock.Holder.True
+- uid: DotNext.Threading.AsyncLock.op_Equality(DotNext.Threading.AsyncLock@,DotNext.Threading.AsyncLock@)
+  name: Equality(AsyncLock, AsyncLock)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_op_Equality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__
+  commentId: M:DotNext.Threading.AsyncLock.op_Equality(DotNext.Threading.AsyncLock@,DotNext.Threading.AsyncLock@)
+  name.vb: Equality(ByRef AsyncLock, ByRef AsyncLock)
+  fullName: DotNext.Threading.AsyncLock.Equality(DotNext.Threading.AsyncLock, DotNext.Threading.AsyncLock)
+  fullName.vb: DotNext.Threading.AsyncLock.Equality(ByRef DotNext.Threading.AsyncLock, ByRef DotNext.Threading.AsyncLock)
+  nameWithType: AsyncLock.Equality(AsyncLock, AsyncLock)
+  nameWithType.vb: AsyncLock.Equality(ByRef AsyncLock, ByRef AsyncLock)
+- uid: DotNext.Threading.AsyncLock.op_Equality*
+  name: Equality
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_op_Equality_
+  commentId: Overload:DotNext.Threading.AsyncLock.op_Equality
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.Equality
+  nameWithType: AsyncLock.Equality
+- uid: DotNext.Threading.AsyncLock.op_Inequality(DotNext.Threading.AsyncLock@,DotNext.Threading.AsyncLock@)
+  name: Inequality(AsyncLock, AsyncLock)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_op_Inequality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__
+  commentId: M:DotNext.Threading.AsyncLock.op_Inequality(DotNext.Threading.AsyncLock@,DotNext.Threading.AsyncLock@)
+  name.vb: Inequality(ByRef AsyncLock, ByRef AsyncLock)
+  fullName: DotNext.Threading.AsyncLock.Inequality(DotNext.Threading.AsyncLock, DotNext.Threading.AsyncLock)
+  fullName.vb: DotNext.Threading.AsyncLock.Inequality(ByRef DotNext.Threading.AsyncLock, ByRef DotNext.Threading.AsyncLock)
+  nameWithType: AsyncLock.Inequality(AsyncLock, AsyncLock)
+  nameWithType.vb: AsyncLock.Inequality(ByRef AsyncLock, ByRef AsyncLock)
+- uid: DotNext.Threading.AsyncLock.op_Inequality*
+  name: Inequality
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_op_Inequality_
+  commentId: Overload:DotNext.Threading.AsyncLock.op_Inequality
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.Inequality
+  nameWithType: AsyncLock.Inequality
+- uid: DotNext.Threading.AsyncLock.ReadLock(DotNext.Threading.AsyncReaderWriterLock,System.Boolean)
+  name: ReadLock(AsyncReaderWriterLock, Boolean)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_ReadLock_DotNext_Threading_AsyncReaderWriterLock_System_Boolean_
+  commentId: M:DotNext.Threading.AsyncLock.ReadLock(DotNext.Threading.AsyncReaderWriterLock,System.Boolean)
+  fullName: DotNext.Threading.AsyncLock.ReadLock(DotNext.Threading.AsyncReaderWriterLock, System.Boolean)
+  nameWithType: AsyncLock.ReadLock(AsyncReaderWriterLock, Boolean)
+- uid: DotNext.Threading.AsyncLock.ReadLock*
+  name: ReadLock
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_ReadLock_
+  commentId: Overload:DotNext.Threading.AsyncLock.ReadLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.ReadLock
+  nameWithType: AsyncLock.ReadLock
+- uid: DotNext.Threading.AsyncLock.Semaphore(System.Int32,System.Int32)
+  name: Semaphore(Int32, Int32)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Semaphore_System_Int32_System_Int32_
+  commentId: M:DotNext.Threading.AsyncLock.Semaphore(System.Int32,System.Int32)
+  fullName: DotNext.Threading.AsyncLock.Semaphore(System.Int32, System.Int32)
+  nameWithType: AsyncLock.Semaphore(Int32, Int32)
+- uid: DotNext.Threading.AsyncLock.Semaphore(System.Threading.SemaphoreSlim)
+  name: Semaphore(SemaphoreSlim)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Semaphore_System_Threading_SemaphoreSlim_
+  commentId: M:DotNext.Threading.AsyncLock.Semaphore(System.Threading.SemaphoreSlim)
+  fullName: DotNext.Threading.AsyncLock.Semaphore(System.Threading.SemaphoreSlim)
+  nameWithType: AsyncLock.Semaphore(SemaphoreSlim)
+- uid: DotNext.Threading.AsyncLock.Semaphore*
+  name: Semaphore
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_Semaphore_
+  commentId: Overload:DotNext.Threading.AsyncLock.Semaphore
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.Semaphore
+  nameWithType: AsyncLock.Semaphore
+- uid: DotNext.Threading.AsyncLock.ToString
+  name: ToString()
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_ToString
+  commentId: M:DotNext.Threading.AsyncLock.ToString
+  fullName: DotNext.Threading.AsyncLock.ToString()
+  nameWithType: AsyncLock.ToString()
+- uid: DotNext.Threading.AsyncLock.ToString*
+  name: ToString
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_ToString_
+  commentId: Overload:DotNext.Threading.AsyncLock.ToString
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.ToString
+  nameWithType: AsyncLock.ToString
+- uid: DotNext.Threading.AsyncLock.TryAcquire(System.TimeSpan)
+  name: TryAcquire(TimeSpan)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_TryAcquire_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncLock.TryAcquire(System.TimeSpan)
+  fullName: DotNext.Threading.AsyncLock.TryAcquire(System.TimeSpan)
+  nameWithType: AsyncLock.TryAcquire(TimeSpan)
+- uid: DotNext.Threading.AsyncLock.TryAcquire(System.TimeSpan,System.Threading.CancellationToken)
+  name: TryAcquire(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_TryAcquire_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLock.TryAcquire(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncLock.TryAcquire(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncLock.TryAcquire(TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncLock.TryAcquire*
+  name: TryAcquire
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_TryAcquire_
+  commentId: Overload:DotNext.Threading.AsyncLock.TryAcquire
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.TryAcquire
+  nameWithType: AsyncLock.TryAcquire
+- uid: DotNext.Threading.AsyncLock.WriteLock(DotNext.Threading.AsyncReaderWriterLock)
+  name: WriteLock(AsyncReaderWriterLock)
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_WriteLock_DotNext_Threading_AsyncReaderWriterLock_
+  commentId: M:DotNext.Threading.AsyncLock.WriteLock(DotNext.Threading.AsyncReaderWriterLock)
+  fullName: DotNext.Threading.AsyncLock.WriteLock(DotNext.Threading.AsyncReaderWriterLock)
+  nameWithType: AsyncLock.WriteLock(AsyncReaderWriterLock)
+- uid: DotNext.Threading.AsyncLock.WriteLock*
+  name: WriteLock
+  href: api/DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_WriteLock_
+  commentId: Overload:DotNext.Threading.AsyncLock.WriteLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLock.WriteLock
+  nameWithType: AsyncLock.WriteLock
+- uid: DotNext.Threading.AsyncLockAcquisition
+  name: AsyncLockAcquisition
+  href: api/DotNext.Threading.AsyncLockAcquisition.html
+  commentId: T:DotNext.Threading.AsyncLockAcquisition
+  fullName: DotNext.Threading.AsyncLockAcquisition
+  nameWithType: AsyncLockAcquisition
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLock(DotNext.Threading.AsyncExclusiveLock,System.Threading.CancellationToken)
+  name: AcquireLock(AsyncExclusiveLock, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLock_DotNext_Threading_AsyncExclusiveLock_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireLock(DotNext.Threading.AsyncExclusiveLock,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLock(DotNext.Threading.AsyncExclusiveLock, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireLock(AsyncExclusiveLock, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLock(DotNext.Threading.AsyncExclusiveLock,System.TimeSpan)
+  name: AcquireLock(AsyncExclusiveLock, TimeSpan)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLock_DotNext_Threading_AsyncExclusiveLock_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireLock(DotNext.Threading.AsyncExclusiveLock,System.TimeSpan)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLock(DotNext.Threading.AsyncExclusiveLock, System.TimeSpan)
+  nameWithType: AsyncLockAcquisition.AcquireLock(AsyncExclusiveLock, TimeSpan)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLock*
+  name: AcquireLock
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLock_
+  commentId: Overload:DotNext.Threading.AsyncLockAcquisition.AcquireLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLock
+  nameWithType: AsyncLockAcquisition.AcquireLock
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Threading.SemaphoreSlim,System.Threading.CancellationToken)
+  name: AcquireLockAsync(SemaphoreSlim, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_System_Threading_SemaphoreSlim_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Threading.SemaphoreSlim,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Threading.SemaphoreSlim, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireLockAsync(SemaphoreSlim, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Threading.SemaphoreSlim,System.TimeSpan)
+  name: AcquireLockAsync(SemaphoreSlim, TimeSpan)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_System_Threading_SemaphoreSlim_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Threading.SemaphoreSlim,System.TimeSpan)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Threading.SemaphoreSlim, System.TimeSpan)
+  nameWithType: AsyncLockAcquisition.AcquireLockAsync(SemaphoreSlim, TimeSpan)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync*
+  name: AcquireLockAsync
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_
+  commentId: Overload:DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync
+  nameWithType: AsyncLockAcquisition.AcquireLockAsync
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.Threading.CancellationToken)
+  name: AcquireLockAsync<T>(T, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.Threading.CancellationToken)
+  name.vb: AcquireLockAsync(Of T)(T, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync<T>(T, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(Of T)(T, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireLockAsync<T>(T, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireLockAsync(Of T)(T, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.TimeSpan)
+  name: AcquireLockAsync<T>(T, TimeSpan)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.TimeSpan)
+  name.vb: AcquireLockAsync(Of T)(T, TimeSpan)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync<T>(T, System.TimeSpan)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(Of T)(T, System.TimeSpan)
+  nameWithType: AsyncLockAcquisition.AcquireLockAsync<T>(T, TimeSpan)
+  nameWithType.vb: AsyncLockAcquisition.AcquireLockAsync(Of T)(T, TimeSpan)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLock(DotNext.Threading.AsyncReaderWriterLock,System.Threading.CancellationToken)
+  name: AcquireReadLock(AsyncReaderWriterLock, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLock_DotNext_Threading_AsyncReaderWriterLock_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireReadLock(DotNext.Threading.AsyncReaderWriterLock,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLock(DotNext.Threading.AsyncReaderWriterLock, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireReadLock(AsyncReaderWriterLock, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLock(DotNext.Threading.AsyncReaderWriterLock,System.TimeSpan)
+  name: AcquireReadLock(AsyncReaderWriterLock, TimeSpan)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLock_DotNext_Threading_AsyncReaderWriterLock_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireReadLock(DotNext.Threading.AsyncReaderWriterLock,System.TimeSpan)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLock(DotNext.Threading.AsyncReaderWriterLock, System.TimeSpan)
+  nameWithType: AsyncLockAcquisition.AcquireReadLock(AsyncReaderWriterLock, TimeSpan)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLock*
+  name: AcquireReadLock
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLock_
+  commentId: Overload:DotNext.Threading.AsyncLockAcquisition.AcquireReadLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLock
+  nameWithType: AsyncLockAcquisition.AcquireReadLock
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync*
+  name: AcquireReadLockAsync
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync_
+  commentId: Overload:DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync
+  nameWithType: AsyncLockAcquisition.AcquireReadLockAsync
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.Threading.CancellationToken)
+  name: AcquireReadLockAsync<T>(T, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.Threading.CancellationToken)
+  name.vb: AcquireReadLockAsync(Of T)(T, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync<T>(T, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireReadLockAsync<T>(T, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.TimeSpan)
+  name: AcquireReadLockAsync<T>(T, TimeSpan)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.TimeSpan)
+  name.vb: AcquireReadLockAsync(Of T)(T, TimeSpan)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync<T>(T, System.TimeSpan)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, System.TimeSpan)
+  nameWithType: AsyncLockAcquisition.AcquireReadLockAsync<T>(T, TimeSpan)
+  nameWithType.vb: AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, TimeSpan)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock(DotNext.Threading.AsyncReaderWriterLock,System.Threading.CancellationToken)
+  name: AcquireUpgradeableReadLock(AsyncReaderWriterLock, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLock_DotNext_Threading_AsyncReaderWriterLock_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock(DotNext.Threading.AsyncReaderWriterLock,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock(DotNext.Threading.AsyncReaderWriterLock, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireUpgradeableReadLock(AsyncReaderWriterLock, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock(DotNext.Threading.AsyncReaderWriterLock,System.TimeSpan)
+  name: AcquireUpgradeableReadLock(AsyncReaderWriterLock, TimeSpan)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLock_DotNext_Threading_AsyncReaderWriterLock_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock(DotNext.Threading.AsyncReaderWriterLock,System.TimeSpan)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock(DotNext.Threading.AsyncReaderWriterLock, System.TimeSpan)
+  nameWithType: AsyncLockAcquisition.AcquireUpgradeableReadLock(AsyncReaderWriterLock, TimeSpan)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock*
+  name: AcquireUpgradeableReadLock
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLock_
+  commentId: Overload:DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock
+  nameWithType: AsyncLockAcquisition.AcquireUpgradeableReadLock
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync*
+  name: AcquireUpgradeableReadLockAsync
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync_
+  commentId: Overload:DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync
+  nameWithType: AsyncLockAcquisition.AcquireUpgradeableReadLockAsync
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync``1(``0,System.Threading.CancellationToken)
+  name: AcquireUpgradeableReadLockAsync<T>(T, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync``1(``0,System.Threading.CancellationToken)
+  name.vb: AcquireUpgradeableReadLockAsync(Of T)(T, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync<T>(T, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync(Of T)(T, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireUpgradeableReadLockAsync<T>(T, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireUpgradeableReadLockAsync(Of T)(T, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync``1(``0,System.TimeSpan)
+  name: AcquireUpgradeableReadLockAsync<T>(T, TimeSpan)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync``1(``0,System.TimeSpan)
+  name.vb: AcquireUpgradeableReadLockAsync(Of T)(T, TimeSpan)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync<T>(T, System.TimeSpan)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync(Of T)(T, System.TimeSpan)
+  nameWithType: AsyncLockAcquisition.AcquireUpgradeableReadLockAsync<T>(T, TimeSpan)
+  nameWithType.vb: AsyncLockAcquisition.AcquireUpgradeableReadLockAsync(Of T)(T, TimeSpan)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock(DotNext.Threading.AsyncReaderWriterLock,System.Threading.CancellationToken)
+  name: AcquireWriteLock(AsyncReaderWriterLock, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLock_DotNext_Threading_AsyncReaderWriterLock_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock(DotNext.Threading.AsyncReaderWriterLock,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock(DotNext.Threading.AsyncReaderWriterLock, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireWriteLock(AsyncReaderWriterLock, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock(DotNext.Threading.AsyncReaderWriterLock,System.TimeSpan)
+  name: AcquireWriteLock(AsyncReaderWriterLock, TimeSpan)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLock_DotNext_Threading_AsyncReaderWriterLock_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock(DotNext.Threading.AsyncReaderWriterLock,System.TimeSpan)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock(DotNext.Threading.AsyncReaderWriterLock, System.TimeSpan)
+  nameWithType: AsyncLockAcquisition.AcquireWriteLock(AsyncReaderWriterLock, TimeSpan)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock*
+  name: AcquireWriteLock
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLock_
+  commentId: Overload:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock
+  nameWithType: AsyncLockAcquisition.AcquireWriteLock
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync*
+  name: AcquireWriteLockAsync
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync_
+  commentId: Overload:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync
+  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Threading.CancellationToken)
+  name: AcquireWriteLockAsync<T>(T, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Threading.CancellationToken)
+  name.vb: AcquireWriteLockAsync(Of T)(T, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.TimeSpan)
+  name: AcquireWriteLockAsync<T>(T, TimeSpan)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.TimeSpan)
+  name.vb: AcquireWriteLockAsync(Of T)(T, TimeSpan)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, System.TimeSpan)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, System.TimeSpan)
+  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, TimeSpan)
+  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, TimeSpan)
+- uid: DotNext.Threading.AsyncLockBase
+  name: AsyncLockBase
+  href: api/DotNext.Threading.AsyncLockBase.html
+  commentId: T:DotNext.Threading.AsyncLockBase
+  fullName: DotNext.Threading.AsyncLockBase
+  nameWithType: AsyncLockBase
+- uid: DotNext.Threading.AsyncLockBase.Dispose(System.Boolean)
+  name: Dispose(Boolean)
+  href: api/DotNext.Threading.AsyncLockBase.html#DotNext_Threading_AsyncLockBase_Dispose_System_Boolean_
+  commentId: M:DotNext.Threading.AsyncLockBase.Dispose(System.Boolean)
+  fullName: DotNext.Threading.AsyncLockBase.Dispose(System.Boolean)
+  nameWithType: AsyncLockBase.Dispose(Boolean)
+- uid: DotNext.Threading.AsyncLockBase.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.AsyncLockBase.html#DotNext_Threading_AsyncLockBase_Dispose_
+  commentId: Overload:DotNext.Threading.AsyncLockBase.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncLockBase.Dispose
+  nameWithType: AsyncLockBase.Dispose
+- uid: DotNext.Threading.AsyncReaderWriterLock
+  name: AsyncReaderWriterLock
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html
+  commentId: T:DotNext.Threading.AsyncReaderWriterLock
+  fullName: DotNext.Threading.AsyncReaderWriterLock
+  nameWithType: AsyncReaderWriterLock
+- uid: DotNext.Threading.AsyncReaderWriterLock.CurrentReadCount
+  name: CurrentReadCount
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_CurrentReadCount
+  commentId: P:DotNext.Threading.AsyncReaderWriterLock.CurrentReadCount
+  fullName: DotNext.Threading.AsyncReaderWriterLock.CurrentReadCount
+  nameWithType: AsyncReaderWriterLock.CurrentReadCount
+- uid: DotNext.Threading.AsyncReaderWriterLock.CurrentReadCount*
+  name: CurrentReadCount
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_CurrentReadCount_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.CurrentReadCount
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.CurrentReadCount
+  nameWithType: AsyncReaderWriterLock.CurrentReadCount
+- uid: DotNext.Threading.AsyncReaderWriterLock.EnterReadLock(System.Threading.CancellationToken)
+  name: EnterReadLock(CancellationToken)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_EnterReadLock_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.EnterReadLock(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.EnterReadLock(System.Threading.CancellationToken)
+  nameWithType: AsyncReaderWriterLock.EnterReadLock(CancellationToken)
+- uid: DotNext.Threading.AsyncReaderWriterLock.EnterReadLock(System.TimeSpan)
+  name: EnterReadLock(TimeSpan)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_EnterReadLock_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.EnterReadLock(System.TimeSpan)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.EnterReadLock(System.TimeSpan)
+  nameWithType: AsyncReaderWriterLock.EnterReadLock(TimeSpan)
+- uid: DotNext.Threading.AsyncReaderWriterLock.EnterReadLock*
+  name: EnterReadLock
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_EnterReadLock_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.EnterReadLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.EnterReadLock
+  nameWithType: AsyncReaderWriterLock.EnterReadLock
+- uid: DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLock(System.Threading.CancellationToken)
+  name: EnterUpgradeableReadLock(CancellationToken)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_EnterUpgradeableReadLock_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLock(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLock(System.Threading.CancellationToken)
+  nameWithType: AsyncReaderWriterLock.EnterUpgradeableReadLock(CancellationToken)
+- uid: DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLock(System.TimeSpan)
+  name: EnterUpgradeableReadLock(TimeSpan)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_EnterUpgradeableReadLock_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLock(System.TimeSpan)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLock(System.TimeSpan)
+  nameWithType: AsyncReaderWriterLock.EnterUpgradeableReadLock(TimeSpan)
+- uid: DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLock*
+  name: EnterUpgradeableReadLock
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_EnterUpgradeableReadLock_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.EnterUpgradeableReadLock
+  nameWithType: AsyncReaderWriterLock.EnterUpgradeableReadLock
+- uid: DotNext.Threading.AsyncReaderWriterLock.EnterWriteLock(System.Threading.CancellationToken)
+  name: EnterWriteLock(CancellationToken)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_EnterWriteLock_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.EnterWriteLock(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.EnterWriteLock(System.Threading.CancellationToken)
+  nameWithType: AsyncReaderWriterLock.EnterWriteLock(CancellationToken)
+- uid: DotNext.Threading.AsyncReaderWriterLock.EnterWriteLock(System.TimeSpan)
+  name: EnterWriteLock(TimeSpan)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_EnterWriteLock_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.EnterWriteLock(System.TimeSpan)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.EnterWriteLock(System.TimeSpan)
+  nameWithType: AsyncReaderWriterLock.EnterWriteLock(TimeSpan)
+- uid: DotNext.Threading.AsyncReaderWriterLock.EnterWriteLock*
+  name: EnterWriteLock
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_EnterWriteLock_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.EnterWriteLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.EnterWriteLock
+  nameWithType: AsyncReaderWriterLock.EnterWriteLock
+- uid: DotNext.Threading.AsyncReaderWriterLock.ExitReadLock
+  name: ExitReadLock()
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_ExitReadLock
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.ExitReadLock
+  fullName: DotNext.Threading.AsyncReaderWriterLock.ExitReadLock()
+  nameWithType: AsyncReaderWriterLock.ExitReadLock()
+- uid: DotNext.Threading.AsyncReaderWriterLock.ExitReadLock*
+  name: ExitReadLock
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_ExitReadLock_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.ExitReadLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.ExitReadLock
+  nameWithType: AsyncReaderWriterLock.ExitReadLock
+- uid: DotNext.Threading.AsyncReaderWriterLock.ExitUpgradeableReadLock
+  name: ExitUpgradeableReadLock()
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_ExitUpgradeableReadLock
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.ExitUpgradeableReadLock
+  fullName: DotNext.Threading.AsyncReaderWriterLock.ExitUpgradeableReadLock()
+  nameWithType: AsyncReaderWriterLock.ExitUpgradeableReadLock()
+- uid: DotNext.Threading.AsyncReaderWriterLock.ExitUpgradeableReadLock*
+  name: ExitUpgradeableReadLock
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_ExitUpgradeableReadLock_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.ExitUpgradeableReadLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.ExitUpgradeableReadLock
+  nameWithType: AsyncReaderWriterLock.ExitUpgradeableReadLock
+- uid: DotNext.Threading.AsyncReaderWriterLock.ExitWriteLock
+  name: ExitWriteLock()
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_ExitWriteLock
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.ExitWriteLock
+  fullName: DotNext.Threading.AsyncReaderWriterLock.ExitWriteLock()
+  nameWithType: AsyncReaderWriterLock.ExitWriteLock()
+- uid: DotNext.Threading.AsyncReaderWriterLock.ExitWriteLock*
+  name: ExitWriteLock
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_ExitWriteLock_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.ExitWriteLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.ExitWriteLock
+  nameWithType: AsyncReaderWriterLock.ExitWriteLock
+- uid: DotNext.Threading.AsyncReaderWriterLock.IsReadLockHeld
+  name: IsReadLockHeld
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_IsReadLockHeld
+  commentId: P:DotNext.Threading.AsyncReaderWriterLock.IsReadLockHeld
+  fullName: DotNext.Threading.AsyncReaderWriterLock.IsReadLockHeld
+  nameWithType: AsyncReaderWriterLock.IsReadLockHeld
+- uid: DotNext.Threading.AsyncReaderWriterLock.IsReadLockHeld*
+  name: IsReadLockHeld
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_IsReadLockHeld_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.IsReadLockHeld
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.IsReadLockHeld
+  nameWithType: AsyncReaderWriterLock.IsReadLockHeld
+- uid: DotNext.Threading.AsyncReaderWriterLock.IsUpgradeableReadLockHeld
+  name: IsUpgradeableReadLockHeld
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_IsUpgradeableReadLockHeld
+  commentId: P:DotNext.Threading.AsyncReaderWriterLock.IsUpgradeableReadLockHeld
+  fullName: DotNext.Threading.AsyncReaderWriterLock.IsUpgradeableReadLockHeld
+  nameWithType: AsyncReaderWriterLock.IsUpgradeableReadLockHeld
+- uid: DotNext.Threading.AsyncReaderWriterLock.IsUpgradeableReadLockHeld*
+  name: IsUpgradeableReadLockHeld
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_IsUpgradeableReadLockHeld_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.IsUpgradeableReadLockHeld
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.IsUpgradeableReadLockHeld
+  nameWithType: AsyncReaderWriterLock.IsUpgradeableReadLockHeld
+- uid: DotNext.Threading.AsyncReaderWriterLock.IsWriteLockHeld
+  name: IsWriteLockHeld
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_IsWriteLockHeld
+  commentId: P:DotNext.Threading.AsyncReaderWriterLock.IsWriteLockHeld
+  fullName: DotNext.Threading.AsyncReaderWriterLock.IsWriteLockHeld
+  nameWithType: AsyncReaderWriterLock.IsWriteLockHeld
+- uid: DotNext.Threading.AsyncReaderWriterLock.IsWriteLockHeld*
+  name: IsWriteLockHeld
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_IsWriteLockHeld_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.IsWriteLockHeld
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.IsWriteLockHeld
+  nameWithType: AsyncReaderWriterLock.IsWriteLockHeld
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan)
+  name: TryEnterReadLock(TimeSpan)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan)
+  nameWithType: AsyncReaderWriterLock.TryEnterReadLock(TimeSpan)
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan,System.Threading.CancellationToken)
+  name: TryEnterReadLock(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncReaderWriterLock.TryEnterReadLock(TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock*
+  name: TryEnterReadLock
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock
+  nameWithType: AsyncReaderWriterLock.TryEnterReadLock
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock(System.TimeSpan)
+  name: TryEnterUpgradeableReadLock(TimeSpan)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLock_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock(System.TimeSpan)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock(System.TimeSpan)
+  nameWithType: AsyncReaderWriterLock.TryEnterUpgradeableReadLock(TimeSpan)
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock(System.TimeSpan,System.Threading.CancellationToken)
+  name: TryEnterUpgradeableReadLock(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLock_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncReaderWriterLock.TryEnterUpgradeableReadLock(TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock*
+  name: TryEnterUpgradeableReadLock
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLock_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock
+  nameWithType: AsyncReaderWriterLock.TryEnterUpgradeableReadLock
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan)
+  name: TryEnterWriteLock(TimeSpan)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan)
+  nameWithType: AsyncReaderWriterLock.TryEnterWriteLock(TimeSpan)
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan,System.Threading.CancellationToken)
+  name: TryEnterWriteLock(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncReaderWriterLock.TryEnterWriteLock(TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock*
+  name: TryEnterWriteLock
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock
+  nameWithType: AsyncReaderWriterLock.TryEnterWriteLock
+- uid: DotNext.Threading.AsyncResetEvent
+  name: AsyncResetEvent
+  href: api/DotNext.Threading.AsyncResetEvent.html
+  commentId: T:DotNext.Threading.AsyncResetEvent
+  fullName: DotNext.Threading.AsyncResetEvent
+  nameWithType: AsyncResetEvent
+- uid: DotNext.Threading.AsyncResetEvent.#ctor(System.Boolean,System.Threading.EventResetMode)
+  name: AsyncResetEvent(Boolean, EventResetMode)
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent__ctor_System_Boolean_System_Threading_EventResetMode_
+  commentId: M:DotNext.Threading.AsyncResetEvent.#ctor(System.Boolean,System.Threading.EventResetMode)
+  fullName: DotNext.Threading.AsyncResetEvent.AsyncResetEvent(System.Boolean, System.Threading.EventResetMode)
+  nameWithType: AsyncResetEvent.AsyncResetEvent(Boolean, EventResetMode)
+- uid: DotNext.Threading.AsyncResetEvent.#ctor*
+  name: AsyncResetEvent
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent__ctor_
+  commentId: Overload:DotNext.Threading.AsyncResetEvent.#ctor
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncResetEvent.AsyncResetEvent
+  nameWithType: AsyncResetEvent.AsyncResetEvent
+- uid: DotNext.Threading.AsyncResetEvent.IsSet
+  name: IsSet
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_IsSet
+  commentId: P:DotNext.Threading.AsyncResetEvent.IsSet
+  fullName: DotNext.Threading.AsyncResetEvent.IsSet
+  nameWithType: AsyncResetEvent.IsSet
+- uid: DotNext.Threading.AsyncResetEvent.IsSet*
+  name: IsSet
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_IsSet_
+  commentId: Overload:DotNext.Threading.AsyncResetEvent.IsSet
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncResetEvent.IsSet
+  nameWithType: AsyncResetEvent.IsSet
+- uid: DotNext.Threading.AsyncResetEvent.Reset
+  name: Reset()
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Reset
+  commentId: M:DotNext.Threading.AsyncResetEvent.Reset
+  fullName: DotNext.Threading.AsyncResetEvent.Reset()
+  nameWithType: AsyncResetEvent.Reset()
+- uid: DotNext.Threading.AsyncResetEvent.Reset*
+  name: Reset
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Reset_
+  commentId: Overload:DotNext.Threading.AsyncResetEvent.Reset
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncResetEvent.Reset
+  nameWithType: AsyncResetEvent.Reset
+- uid: DotNext.Threading.AsyncResetEvent.Set
+  name: Set()
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Set
+  commentId: M:DotNext.Threading.AsyncResetEvent.Set
+  fullName: DotNext.Threading.AsyncResetEvent.Set()
+  nameWithType: AsyncResetEvent.Set()
+- uid: DotNext.Threading.AsyncResetEvent.Set*
+  name: Set
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Set_
+  commentId: Overload:DotNext.Threading.AsyncResetEvent.Set
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncResetEvent.Set
+  nameWithType: AsyncResetEvent.Set
+- uid: DotNext.Threading.AsyncResetEvent.Wait
+  name: Wait()
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Wait
+  commentId: M:DotNext.Threading.AsyncResetEvent.Wait
+  fullName: DotNext.Threading.AsyncResetEvent.Wait()
+  nameWithType: AsyncResetEvent.Wait()
+- uid: DotNext.Threading.AsyncResetEvent.Wait(System.Threading.CancellationToken)
+  name: Wait(CancellationToken)
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Wait_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncResetEvent.Wait(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncResetEvent.Wait(System.Threading.CancellationToken)
+  nameWithType: AsyncResetEvent.Wait(CancellationToken)
+- uid: DotNext.Threading.AsyncResetEvent.Wait(System.TimeSpan)
+  name: Wait(TimeSpan)
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Wait_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncResetEvent.Wait(System.TimeSpan)
+  fullName: DotNext.Threading.AsyncResetEvent.Wait(System.TimeSpan)
+  nameWithType: AsyncResetEvent.Wait(TimeSpan)
+- uid: DotNext.Threading.AsyncResetEvent.Wait(System.TimeSpan,System.Threading.CancellationToken)
+  name: Wait(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Wait_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncResetEvent.Wait(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncResetEvent.Wait(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncResetEvent.Wait(TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncResetEvent.Wait*
+  name: Wait
+  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Wait_
+  commentId: Overload:DotNext.Threading.AsyncResetEvent.Wait
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncResetEvent.Wait
+  nameWithType: AsyncResetEvent.Wait
 - uid: DotNext.Threading.AtomicBoolean
   name: AtomicBoolean
   href: api/DotNext.Threading.AtomicBoolean.html
@@ -26396,6 +27228,103 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AtomicSingle.VolatileWrite
   nameWithType: AtomicSingle.VolatileWrite
+- uid: DotNext.Threading.ConcurrentObjectPool`1
+  name: ConcurrentObjectPool<T>
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html
+  commentId: T:DotNext.Threading.ConcurrentObjectPool`1
+  name.vb: ConcurrentObjectPool(Of T)
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T)
+  nameWithType: ConcurrentObjectPool<T>
+  nameWithType.vb: ConcurrentObjectPool(Of T)
+- uid: DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Collections.Generic.IList{`0})
+  name: ConcurrentObjectPool(IList<T>)
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Collections_Generic_IList__0__
+  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Collections.Generic.IList{`0})
+  name.vb: ConcurrentObjectPool(IList(Of T))
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.ConcurrentObjectPool(System.Collections.Generic.IList<T>)
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).ConcurrentObjectPool(System.Collections.Generic.IList(Of T))
+  nameWithType: ConcurrentObjectPool<T>.ConcurrentObjectPool(IList<T>)
+  nameWithType.vb: ConcurrentObjectPool(Of T).ConcurrentObjectPool(IList(Of T))
+- uid: DotNext.Threading.ConcurrentObjectPool`1.#ctor*
+  name: ConcurrentObjectPool
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_
+  commentId: Overload:DotNext.Threading.ConcurrentObjectPool`1.#ctor
+  isSpec: "True"
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.ConcurrentObjectPool
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).ConcurrentObjectPool
+  nameWithType: ConcurrentObjectPool<T>.ConcurrentObjectPool
+  nameWithType.vb: ConcurrentObjectPool(Of T).ConcurrentObjectPool
+- uid: DotNext.Threading.ConcurrentObjectPool`1.objects
+  name: objects
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1_objects
+  commentId: F:DotNext.Threading.ConcurrentObjectPool`1.objects
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.objects
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).objects
+  nameWithType: ConcurrentObjectPool<T>.objects
+  nameWithType.vb: ConcurrentObjectPool(Of T).objects
+- uid: DotNext.Threading.ConcurrentObjectPool`1.Rent
+  name: Rent()
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1_Rent
+  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.Rent
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Rent()
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rent()
+  nameWithType: ConcurrentObjectPool<T>.Rent()
+  nameWithType.vb: ConcurrentObjectPool(Of T).Rent()
+- uid: DotNext.Threading.ConcurrentObjectPool`1.Rent*
+  name: Rent
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1_Rent_
+  commentId: Overload:DotNext.Threading.ConcurrentObjectPool`1.Rent
+  isSpec: "True"
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Rent
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rent
+  nameWithType: ConcurrentObjectPool<T>.Rent
+  nameWithType.vb: ConcurrentObjectPool(Of T).Rent
+- uid: DotNext.Threading.ConcurrentObjectPool`1.Rental
+  name: ConcurrentObjectPool<T>.Rental
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.Rental.html
+  commentId: T:DotNext.Threading.ConcurrentObjectPool`1.Rental
+  name.vb: ConcurrentObjectPool(Of T).Rental
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Rental
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rental
+  nameWithType: ConcurrentObjectPool<T>.Rental
+  nameWithType.vb: ConcurrentObjectPool(Of T).Rental
+- uid: DotNext.Threading.ConcurrentObjectPool`1.Rental.Dispose
+  name: Dispose()
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.Rental.html#DotNext_Threading_ConcurrentObjectPool_1_Rental_Dispose
+  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.Rental.Dispose
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Rental.Dispose()
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rental.Dispose()
+  nameWithType: ConcurrentObjectPool<T>.Rental.Dispose()
+  nameWithType.vb: ConcurrentObjectPool(Of T).Rental.Dispose()
+- uid: DotNext.Threading.ConcurrentObjectPool`1.Rental.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.Rental.html#DotNext_Threading_ConcurrentObjectPool_1_Rental_Dispose_
+  commentId: Overload:DotNext.Threading.ConcurrentObjectPool`1.Rental.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Rental.Dispose
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rental.Dispose
+  nameWithType: ConcurrentObjectPool<T>.Rental.Dispose
+  nameWithType.vb: ConcurrentObjectPool(Of T).Rental.Dispose
+- uid: DotNext.Threading.ConcurrentObjectPool`1.Rental.op_Implicit(DotNext.Threading.ConcurrentObjectPool{`0}.Rental)~`0
+  name: Implicit(ConcurrentObjectPool<T>.Rental to T)
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.Rental.html#DotNext_Threading_ConcurrentObjectPool_1_Rental_op_Implicit_DotNext_Threading_ConcurrentObjectPool__0__Rental___0
+  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.Rental.op_Implicit(DotNext.Threading.ConcurrentObjectPool{`0}.Rental)~`0
+  name.vb: Widening(ConcurrentObjectPool(Of T).Rental to T)
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Rental.Implicit(DotNext.Threading.ConcurrentObjectPool<T>.Rental to T)
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rental.Widening(DotNext.Threading.ConcurrentObjectPool(Of T).Rental to T)
+  nameWithType: ConcurrentObjectPool<T>.Rental.Implicit(ConcurrentObjectPool<T>.Rental to T)
+  nameWithType.vb: ConcurrentObjectPool(Of T).Rental.Widening(ConcurrentObjectPool(Of T).Rental to T)
+- uid: DotNext.Threading.ConcurrentObjectPool`1.Rental.op_Implicit*
+  name: Implicit
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.Rental.html#DotNext_Threading_ConcurrentObjectPool_1_Rental_op_Implicit_
+  commentId: Overload:DotNext.Threading.ConcurrentObjectPool`1.Rental.op_Implicit
+  isSpec: "True"
+  name.vb: Widening
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Rental.Implicit
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rental.Widening
+  nameWithType: ConcurrentObjectPool<T>.Rental.Implicit
+  nameWithType.vb: ConcurrentObjectPool(Of T).Rental.Widening
 - uid: DotNext.Threading.Lock
   name: Lock
   href: api/DotNext.Threading.Lock.html
@@ -26915,6 +27844,146 @@ references:
   fullName.vb: DotNext.Threading.Tasks.Synchronization.WhenAll(Of T1, T2, T3, T4, T5)(System.Threading.Tasks.Task(Of T1), System.Threading.Tasks.Task(Of T2), System.Threading.Tasks.Task(Of T3), System.Threading.Tasks.Task(Of T4), System.Threading.Tasks.Task(Of T5))
   nameWithType: Synchronization.WhenAll<T1, T2, T3, T4, T5>(Task<T1>, Task<T2>, Task<T3>, Task<T4>, Task<T5>)
   nameWithType.vb: Synchronization.WhenAll(Of T1, T2, T3, T4, T5)(Task(Of T1), Task(Of T2), Task(Of T3), Task(Of T4), Task(Of T5))
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization
+  name: ValueTaskSynchronization
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html
+  commentId: T:DotNext.Threading.Tasks.ValueTaskSynchronization
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization
+  nameWithType: ValueTaskSynchronization
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  name: WhenAll(ValueTask, ValueTask)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask)
+  nameWithType: ValueTaskSynchronization.WhenAll(ValueTask, ValueTask)
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  name: WhenAll(ValueTask, ValueTask, ValueTask)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask)
+  nameWithType: ValueTaskSynchronization.WhenAll(ValueTask, ValueTask, ValueTask)
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  name: WhenAll(ValueTask, ValueTask, ValueTask, ValueTask)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask)
+  nameWithType: ValueTaskSynchronization.WhenAll(ValueTask, ValueTask, ValueTask, ValueTask)
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  name: WhenAll(ValueTask, ValueTask, ValueTask, ValueTask, ValueTask)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask)
+  nameWithType: ValueTaskSynchronization.WhenAll(ValueTask, ValueTask, ValueTask, ValueTask, ValueTask)
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll*
+  name: WhenAll
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_
+  commentId: Overload:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll
+  nameWithType: ValueTaskSynchronization.WhenAll
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll``2(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``1})
+  name: WhenAll<T1, T2>(ValueTask<T1>, ValueTask<T2>)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__2_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___1__
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll``2(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``1})
+  name.vb: WhenAll(Of T1, T2)(ValueTask(Of T1), ValueTask(Of T2))
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll<T1, T2>(System.Threading.Tasks.ValueTask<T1>, System.Threading.Tasks.ValueTask<T2>)
+  fullName.vb: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(Of T1, T2)(System.Threading.Tasks.ValueTask(Of T1), System.Threading.Tasks.ValueTask(Of T2))
+  nameWithType: ValueTaskSynchronization.WhenAll<T1, T2>(ValueTask<T1>, ValueTask<T2>)
+  nameWithType.vb: ValueTaskSynchronization.WhenAll(Of T1, T2)(ValueTask(Of T1), ValueTask(Of T2))
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll``3(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``1},System.Threading.Tasks.ValueTask{``2})
+  name: WhenAll<T1, T2, T3>(ValueTask<T1>, ValueTask<T2>, ValueTask<T3>)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__3_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___1__System_Threading_Tasks_ValueTask___2__
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll``3(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``1},System.Threading.Tasks.ValueTask{``2})
+  name.vb: WhenAll(Of T1, T2, T3)(ValueTask(Of T1), ValueTask(Of T2), ValueTask(Of T3))
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll<T1, T2, T3>(System.Threading.Tasks.ValueTask<T1>, System.Threading.Tasks.ValueTask<T2>, System.Threading.Tasks.ValueTask<T3>)
+  fullName.vb: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(Of T1, T2, T3)(System.Threading.Tasks.ValueTask(Of T1), System.Threading.Tasks.ValueTask(Of T2), System.Threading.Tasks.ValueTask(Of T3))
+  nameWithType: ValueTaskSynchronization.WhenAll<T1, T2, T3>(ValueTask<T1>, ValueTask<T2>, ValueTask<T3>)
+  nameWithType.vb: ValueTaskSynchronization.WhenAll(Of T1, T2, T3)(ValueTask(Of T1), ValueTask(Of T2), ValueTask(Of T3))
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll``4(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``1},System.Threading.Tasks.ValueTask{``2},System.Threading.Tasks.ValueTask{``3})
+  name: WhenAll<T1, T2, T3, T4>(ValueTask<T1>, ValueTask<T2>, ValueTask<T3>, ValueTask<T4>)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__4_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___1__System_Threading_Tasks_ValueTask___2__System_Threading_Tasks_ValueTask___3__
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll``4(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``1},System.Threading.Tasks.ValueTask{``2},System.Threading.Tasks.ValueTask{``3})
+  name.vb: WhenAll(Of T1, T2, T3, T4)(ValueTask(Of T1), ValueTask(Of T2), ValueTask(Of T3), ValueTask(Of T4))
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll<T1, T2, T3, T4>(System.Threading.Tasks.ValueTask<T1>, System.Threading.Tasks.ValueTask<T2>, System.Threading.Tasks.ValueTask<T3>, System.Threading.Tasks.ValueTask<T4>)
+  fullName.vb: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(Of T1, T2, T3, T4)(System.Threading.Tasks.ValueTask(Of T1), System.Threading.Tasks.ValueTask(Of T2), System.Threading.Tasks.ValueTask(Of T3), System.Threading.Tasks.ValueTask(Of T4))
+  nameWithType: ValueTaskSynchronization.WhenAll<T1, T2, T3, T4>(ValueTask<T1>, ValueTask<T2>, ValueTask<T3>, ValueTask<T4>)
+  nameWithType.vb: ValueTaskSynchronization.WhenAll(Of T1, T2, T3, T4)(ValueTask(Of T1), ValueTask(Of T2), ValueTask(Of T3), ValueTask(Of T4))
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll``5(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``1},System.Threading.Tasks.ValueTask{``2},System.Threading.Tasks.ValueTask{``3},System.Threading.Tasks.ValueTask{``4})
+  name: WhenAll<T1, T2, T3, T4, T5>(ValueTask<T1>, ValueTask<T2>, ValueTask<T3>, ValueTask<T4>, ValueTask<T5>)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__5_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___1__System_Threading_Tasks_ValueTask___2__System_Threading_Tasks_ValueTask___3__System_Threading_Tasks_ValueTask___4__
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll``5(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``1},System.Threading.Tasks.ValueTask{``2},System.Threading.Tasks.ValueTask{``3},System.Threading.Tasks.ValueTask{``4})
+  name.vb: WhenAll(Of T1, T2, T3, T4, T5)(ValueTask(Of T1), ValueTask(Of T2), ValueTask(Of T3), ValueTask(Of T4), ValueTask(Of T5))
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll<T1, T2, T3, T4, T5>(System.Threading.Tasks.ValueTask<T1>, System.Threading.Tasks.ValueTask<T2>, System.Threading.Tasks.ValueTask<T3>, System.Threading.Tasks.ValueTask<T4>, System.Threading.Tasks.ValueTask<T5>)
+  fullName.vb: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(Of T1, T2, T3, T4, T5)(System.Threading.Tasks.ValueTask(Of T1), System.Threading.Tasks.ValueTask(Of T2), System.Threading.Tasks.ValueTask(Of T3), System.Threading.Tasks.ValueTask(Of T4), System.Threading.Tasks.ValueTask(Of T5))
+  nameWithType: ValueTaskSynchronization.WhenAll<T1, T2, T3, T4, T5>(ValueTask<T1>, ValueTask<T2>, ValueTask<T3>, ValueTask<T4>, ValueTask<T5>)
+  nameWithType.vb: ValueTaskSynchronization.WhenAll(Of T1, T2, T3, T4, T5)(ValueTask(Of T1), ValueTask(Of T2), ValueTask(Of T3), ValueTask(Of T4), ValueTask(Of T5))
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  name: WhenAny(ValueTask, ValueTask)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask)
+  nameWithType: ValueTaskSynchronization.WhenAny(ValueTask, ValueTask)
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  name: WhenAny(ValueTask, ValueTask, ValueTask)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask)
+  nameWithType: ValueTaskSynchronization.WhenAny(ValueTask, ValueTask, ValueTask)
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  name: WhenAny(ValueTask, ValueTask, ValueTask, ValueTask)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask)
+  nameWithType: ValueTaskSynchronization.WhenAny(ValueTask, ValueTask, ValueTask, ValueTask)
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  name: WhenAny(ValueTask, ValueTask, ValueTask, ValueTask, ValueTask)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask, System.Threading.Tasks.ValueTask)
+  nameWithType: ValueTaskSynchronization.WhenAny(ValueTask, ValueTask, ValueTask, ValueTask, ValueTask)
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*
+  name: WhenAny
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_
+  commentId: Overload:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny
+  nameWithType: ValueTaskSynchronization.WhenAny
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})
+  name: WhenAny<R>(ValueTask<R>, ValueTask<R>)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})
+  name.vb: WhenAny(Of R)(ValueTask(Of R), ValueTask(Of R))
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny<R>(System.Threading.Tasks.ValueTask<R>, System.Threading.Tasks.ValueTask<R>)
+  fullName.vb: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(Of R)(System.Threading.Tasks.ValueTask(Of R), System.Threading.Tasks.ValueTask(Of R))
+  nameWithType: ValueTaskSynchronization.WhenAny<R>(ValueTask<R>, ValueTask<R>)
+  nameWithType.vb: ValueTaskSynchronization.WhenAny(Of R)(ValueTask(Of R), ValueTask(Of R))
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})
+  name: WhenAny<R>(ValueTask<R>, ValueTask<R>, ValueTask<R>)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})
+  name.vb: WhenAny(Of R)(ValueTask(Of R), ValueTask(Of R), ValueTask(Of R))
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny<R>(System.Threading.Tasks.ValueTask<R>, System.Threading.Tasks.ValueTask<R>, System.Threading.Tasks.ValueTask<R>)
+  fullName.vb: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(Of R)(System.Threading.Tasks.ValueTask(Of R), System.Threading.Tasks.ValueTask(Of R), System.Threading.Tasks.ValueTask(Of R))
+  nameWithType: ValueTaskSynchronization.WhenAny<R>(ValueTask<R>, ValueTask<R>, ValueTask<R>)
+  nameWithType.vb: ValueTaskSynchronization.WhenAny(Of R)(ValueTask(Of R), ValueTask(Of R), ValueTask(Of R))
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})
+  name: WhenAny<R>(ValueTask<R>, ValueTask<R>, ValueTask<R>, ValueTask<R>)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})
+  name.vb: WhenAny(Of R)(ValueTask(Of R), ValueTask(Of R), ValueTask(Of R), ValueTask(Of R))
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny<R>(System.Threading.Tasks.ValueTask<R>, System.Threading.Tasks.ValueTask<R>, System.Threading.Tasks.ValueTask<R>, System.Threading.Tasks.ValueTask<R>)
+  fullName.vb: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(Of R)(System.Threading.Tasks.ValueTask(Of R), System.Threading.Tasks.ValueTask(Of R), System.Threading.Tasks.ValueTask(Of R), System.Threading.Tasks.ValueTask(Of R))
+  nameWithType: ValueTaskSynchronization.WhenAny<R>(ValueTask<R>, ValueTask<R>, ValueTask<R>, ValueTask<R>)
+  nameWithType.vb: ValueTaskSynchronization.WhenAny(Of R)(ValueTask(Of R), ValueTask(Of R), ValueTask(Of R), ValueTask(Of R))
+- uid: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})
+  name: WhenAny<R>(ValueTask<R>, ValueTask<R>, ValueTask<R>, ValueTask<R>, ValueTask<R>)
+  href: api/DotNext.Threading.Tasks.ValueTaskSynchronization.html#DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___0__
+  commentId: M:DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``0})
+  name.vb: WhenAny(Of R)(ValueTask(Of R), ValueTask(Of R), ValueTask(Of R), ValueTask(Of R), ValueTask(Of R))
+  fullName: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny<R>(System.Threading.Tasks.ValueTask<R>, System.Threading.Tasks.ValueTask<R>, System.Threading.Tasks.ValueTask<R>, System.Threading.Tasks.ValueTask<R>, System.Threading.Tasks.ValueTask<R>)
+  fullName.vb: DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(Of R)(System.Threading.Tasks.ValueTask(Of R), System.Threading.Tasks.ValueTask(Of R), System.Threading.Tasks.ValueTask(Of R), System.Threading.Tasks.ValueTask(Of R), System.Threading.Tasks.ValueTask(Of R))
+  nameWithType: ValueTaskSynchronization.WhenAny<R>(ValueTask<R>, ValueTask<R>, ValueTask<R>, ValueTask<R>, ValueTask<R>)
+  nameWithType.vb: ValueTaskSynchronization.WhenAny(Of R)(ValueTask(Of R), ValueTask(Of R), ValueTask(Of R), ValueTask(Of R), ValueTask(Of R))
 - uid: DotNext.Threading.Timeout
   name: Timeout
   href: api/DotNext.Threading.Timeout.html
