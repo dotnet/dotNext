@@ -80,7 +80,9 @@ namespace DotNext.Collections.Generic
 
         Pointer<T> IUnmanagedMemory<T>.Pointer => array;
 
-        Span<T> IUnmanagedMemory<T>.Span => ((Span<T>)array).Slice(0, count);
+        private Span<T> Span => (Span<T>)array.Slice(0, count);
+
+        Span<T> IUnmanagedMemory<T>.Span => Span;
 
         long IUnmanagedMemory.Size => array.Size;
 
@@ -357,5 +359,11 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="list">The list allocated in the unmanaged memory.</param>
         public static implicit operator UnmanagedMemory(UnmanagedList<T> list) => new UnmanagedMemory(list.Address, (long)list.count * Pointer<T>.Size);
+
+        /// <summary>
+        /// Returns span over elements in the list.
+        /// </summary>
+        /// <param name="list">The unmanaged list to be converted into span.</param>
+        public static implicit operator Span<T>(UnmanagedList<T> list) => list.Span;
     }
 }
