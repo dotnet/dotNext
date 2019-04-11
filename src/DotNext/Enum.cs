@@ -16,13 +16,13 @@ namespace DotNext
             internal readonly string Name;
             internal readonly E Value;
             
-            internal Tuple(string name)
+            private Tuple(string name)
             {
                 Name = name;
                 Value = default;
             }
 
-            internal Tuple(E value)
+            private Tuple(E value)
             {
                 Value = value;
                 Name = default;
@@ -30,15 +30,12 @@ namespace DotNext
 
             public static implicit operator Tuple(string name) => new Tuple(name);
             public static implicit operator Tuple(E value) => new Tuple(value);
-            
-            public static implicit operator KeyValuePair<string, E>(Tuple tuple) => new KeyValuePair<string, E>(tuple.Name, tuple.Value);
-            public static implicit operator KeyValuePair<E, string>(Tuple tuple) => new KeyValuePair<E, string>(tuple.Value, tuple.Name);
 
             public bool Equals(Tuple other)
-                => Name is null ? other.Name is null && EqualityComparer<E>.Default.Equals(Value, other.Value) : Name == other.Name;
+                => Name is null ? other.Name is null && ValueTypeExtensions.ToUInt64(Value) == ValueTypeExtensions.ToUInt64(other.Value): Name == other.Name;
 
             public override bool Equals(object other) => other is Tuple t && Equals(t);
-            public override int GetHashCode() => Name is null ? EqualityComparer<E>.Default.GetHashCode() : Name.GetHashCode();
+            public override int GetHashCode() => Name is null ? Value.GetHashCode() : Name.GetHashCode();
         }
 
         private sealed class Mapping : Dictionary<Tuple, long>
@@ -201,7 +198,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns>Equality check result.</returns>
-        public bool Equals(E other) => EqualityComparer<E>.Default.Equals(Value, other);
+        public bool Equals(E other) => ValueTypeExtensions.ToUInt64(Value) == ValueTypeExtensions.ToUInt64(other);
 
         /// <summary>
         /// Determines whether this value equals to the other enum value.
