@@ -181,7 +181,7 @@ namespace DotNext
         /// <summary>
         /// Represents name of the enum member.
         /// </summary>
-        public string Name => name ?? Value.ToString();
+        public string Name => name ?? ValueTypeExtensions.ToString(Value);
 
         /// <summary>
         /// Converts typed enum wrapper into actual enum value.
@@ -239,7 +239,7 @@ namespace DotNext
         /// Returns textual representation of the enum value.
         /// </summary>
         /// <returns>The textual representation of the enum value.</returns>
-        public override string ToString() => Value.ToString();
+        public override string ToString() => ValueTypeExtensions.ToString(Value);
 
         string IFormattable.ToString(string format, IFormatProvider provider) => Value.ToString();
     }

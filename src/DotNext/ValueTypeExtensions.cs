@@ -26,6 +26,9 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static ulong ToUInt64<T>(T value) where T : struct, IConvertible => value.ToUInt64(null);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static string ToString<T>(T value) where T : struct, IConvertible => value.ToString(null);
+
         /// <summary>
         /// Obtain a value of type <typeparamref name="TO"/> by 
         /// reinterpreting the object representation of <typeparamref name="FROM"/>.
