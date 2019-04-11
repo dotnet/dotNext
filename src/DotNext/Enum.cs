@@ -3,28 +3,26 @@ using System.Collections.Generic;
 
 namespace DotNext
 {
-    using static Reflection.TypeExtensions;
-
     /// <summary>
     /// Provides strongly typed way to reflect enum type.
     /// </summary>
     /// <typeparam name="E">Enum type to reflect.</typeparam>
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
     public readonly struct Enum<E>: IEquatable<E>, IComparable<E>, IFormattable, IComparable<Enum<E>>
-        where E : unmanaged, Enum
+        where E : struct, Enum
     {
         private readonly struct Tuple: IEquatable<Tuple>
         {
             internal readonly string Name;
             internal readonly E Value;
             
-            internal Tuple(string name)
+            private Tuple(string name)
             {
                 Name = name;
                 Value = default;
             }
 
-            internal Tuple(E value)
+            private Tuple(E value)
             {
                 Value = value;
                 Name = default;
@@ -32,15 +30,12 @@ namespace DotNext
 
             public static implicit operator Tuple(string name) => new Tuple(name);
             public static implicit operator Tuple(E value) => new Tuple(value);
-            
-            public static implicit operator KeyValuePair<string, E>(Tuple tuple) => new KeyValuePair<string, E>(tuple.Name, tuple.Value);
-            public static implicit operator KeyValuePair<E, string>(Tuple tuple) => new KeyValuePair<E, string>(tuple.Value, tuple.Name);
 
             public bool Equals(Tuple other)
-                => Name is null ? other.Name is null && EqualityComparer<E>.Default.Equals(Value, other.Value) : Name == other.Name;
+                => Name is null ? other.Name is null && ValueTypeExtensions.ToUInt64(Value) == ValueTypeExtensions.ToUInt64(other.Value): Name == other.Name;
 
             public override bool Equals(object other) => other is Tuple t && Equals(t);
-            public override int GetHashCode() => Name is null ? EqualityComparer<E>.Default.GetHashCode() : Name.GetHashCode();
+            public override int GetHashCode() => Name is null ? Value.GetHashCode() : Name.GetHashCode();
         }
 
         private sealed class Mapping : Dictionary<Tuple, long>
@@ -163,7 +158,7 @@ namespace DotNext
         /// <summary>
         /// Gets code of the underlying primitive type.
         /// </summary>
-        public static TypeCode UnderlyingTypeCode => UnderlyingType.GetTypeCode();
+        public static TypeCode UnderlyingTypeCode => ValueTypeExtensions.GetTypeCode<E>();
 
         private readonly string name;
 
@@ -181,7 +176,7 @@ namespace DotNext
         /// <summary>
         /// Represents name of the enum member.
         /// </summary>
-        public string Name => name ?? Value.ToString();
+        public string Name => name ?? ValueTypeExtensions.ToString(Value);
 
         /// <summary>
         /// Converts typed enum wrapper into actual enum value.
@@ -203,7 +198,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns>Equality check result.</returns>
-        public bool Equals(E other) => EqualityComparer<E>.Default.Equals(Value, other);
+        public bool Equals(E other) => ValueTypeExtensions.ToUInt64(Value) == ValueTypeExtensions.ToUInt64(other);
 
         /// <summary>
         /// Determines whether this value equals to the other enum value.
@@ -230,8 +225,8 @@ namespace DotNext
         public override int GetHashCode()
         {
             var hashCode = -1670801664;
-            hashCode = hashCode * -1521134295 + EqualityComparer<E>.Default.GetHashCode(Value);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            hashCode = hashCode * -1521134295 + Value.GetHashCode();
+            hashCode = hashCode * -1521134295 + Name.GetHashCode();
             return hashCode;
         }
 
@@ -239,8 +234,8 @@ namespace DotNext
         /// Returns textual representation of the enum value.
         /// </summary>
         /// <returns>The textual representation of the enum value.</returns>
-        public override string ToString() => Value.ToString();
+        public override string ToString() => ValueTypeExtensions.ToString(Value);
 
-        string IFormattable.ToString(string format, IFormatProvider provider) => Value.ToString();
+        string IFormattable.ToString(string format, IFormatProvider provider) => ValueTypeExtensions.ToString(Value, format, provider);
     }
 }

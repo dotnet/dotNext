@@ -7,7 +7,7 @@
     <Authors>Roman Sakno</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>0.5.0</Version>
+    <Version>0.5.1</Version>
 	<AssemblyName>DotNext</AssemblyName>
     <PackageLicenseUrl>https://github.com/sakno/dotNext/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
@@ -18,10 +18,7 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Introduce automatic generation of GetHashCode and Equals for custom type instead of hand-written coding of these methods to improve productivity. See EqualityComparerBuilder class.
-Generic conversion methods between enum values and primitive types
-Introduce concurrent collection CopyOnWriteList
-Provide API to work with generic Enums</PackageReleaseNotes>
+	<PackageReleaseNotes>Fix bugs in Enum API</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

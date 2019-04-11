@@ -11,7 +11,7 @@ namespace DotNext
 	{
 		internal static bool IsNull(object obj) => obj is null;
 
-		internal static bool IsNotNull(object obj) => !IsNull(obj);
+        internal static bool IsNotNull(object obj) => !(obj is null);
 
         /// <summary>
         /// Provides ad-hoc approach to associate some data with the object
