@@ -9,7 +9,7 @@ namespace DotNext
     /// <typeparam name="E">Enum type to reflect.</typeparam>
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
     public readonly struct Enum<E>: IEquatable<E>, IComparable<E>, IFormattable, IComparable<Enum<E>>
-        where E : unmanaged, Enum
+        where E : struct, Enum
     {
         private readonly struct Tuple: IEquatable<Tuple>
         {
