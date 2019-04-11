@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 namespace DotNext
 {
-    using static Reflection.TypeExtensions;
-
     /// <summary>
     /// Provides strongly typed way to reflect enum type.
     /// </summary>
@@ -163,7 +161,7 @@ namespace DotNext
         /// <summary>
         /// Gets code of the underlying primitive type.
         /// </summary>
-        public static TypeCode UnderlyingTypeCode => UnderlyingType.GetTypeCode();
+        public static TypeCode UnderlyingTypeCode => ValueTypeExtensions.GetTypeCode<E>();
 
         private readonly string name;
 
@@ -230,8 +228,8 @@ namespace DotNext
         public override int GetHashCode()
         {
             var hashCode = -1670801664;
-            hashCode = hashCode * -1521134295 + EqualityComparer<E>.Default.GetHashCode(Value);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            hashCode = hashCode * -1521134295 + Value.GetHashCode();
+            hashCode = hashCode * -1521134295 + Name.GetHashCode();
             return hashCode;
         }
 
@@ -241,6 +239,6 @@ namespace DotNext
         /// <returns>The textual representation of the enum value.</returns>
         public override string ToString() => ValueTypeExtensions.ToString(Value);
 
-        string IFormattable.ToString(string format, IFormatProvider provider) => Value.ToString();
+        string IFormattable.ToString(string format, IFormatProvider provider) => ValueTypeExtensions.ToString(Value, format, provider);
     }
 }
