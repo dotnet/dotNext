@@ -37,7 +37,7 @@ namespace DotNext
 		/// <summary>
 		/// Insert a new element into array and return modified array.
 		/// </summary>
-		/// <typeparam name="T">Type of array element.</typeparam>
+		/// <typeparam name="T">Type of array elements.</typeparam>
 		/// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
 		/// <param name="element">The zero-based index at which item should be inserted.</param>
 		/// <param name="index">The object to insert. The value can be null for reference types.</param>
@@ -57,6 +57,61 @@ namespace DotNext
 				return result;
 			}
 		}
+
+		/// <summary>
+		/// Removes the element at the specified in the array and returns modified array.
+		/// </summary>
+		/// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
+		/// <param name="index">The zero-based index of the element to remove.</param>
+		/// <typeparam name="T">Type of array elements.</typeparam>
+		/// <returns>A modified array with removed element.</returns>
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is incorrect.</exception>
+		public static T[] RemoveAt<T>(this T[] array, long index)
+        {
+            if (index < 0L || index >= array.LongLength)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            else if (array.LongLength == 1L)
+                return Array.Empty<T>();
+            else
+            {
+                var newStore = new T[array.LongLength - 1L];
+                Array.Copy(array, 0L, newStore, 0L, index);
+                Array.Copy(array, index + 1L, newStore, index, array.LongLength - index - 1L);
+                return newStore;
+            }
+        }
+
+		/// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+		/// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
+        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
+		/// <param name="count">The number of elements removed from this list.</param>
+        /// <returns>A modified array with removed elements.</returns>
+		public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, out long count)
+        {
+            if (array.LongLength == 0L)
+            {
+                count = 0L;
+                return array;
+            }
+            var newLength = 0L;
+            var tempArray = new T[array.LongLength];
+            foreach (var item in array)
+                if (!match(item))
+                    tempArray[newLength++] = item;
+            count = array.LongLength - newLength;
+            if (count == 0L)
+                return array;
+            else if (newLength == 0L)
+                return Array.Empty<T>();
+            else
+            {
+                array = new T[newLength];
+                Array.Copy(tempArray, 0L, array, 0L, newLength);
+                return array;
+            }
+        }
 
 		/// <summary>
 		/// Converts each array element from one type into another.
