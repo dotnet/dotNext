@@ -2,10 +2,10 @@
 
 namespace DotNext
 {
-	public sealed class RangeTests: Assert
+	public sealed class ComparableTests: Assert
 	{
 		[Fact]
-		public void ClampTest()
+		public static void ClampTest()
 		{
 			Equal(20M, 10M.Clamp(20M, 30M));
 			Equal(25M, 25M.Clamp(20M, 30M));
@@ -13,14 +13,14 @@ namespace DotNext
 		}
 
 		[Fact]
-		public void RestrictionTest()
+		public static void RestrictionTest()
 		{
-			Equal(30M, 20M.LowerBounded(30M));
-			Equal(10M, 10M.UpperBounded(30M));
+			Equal(30M, 20M.Max(30M));
+			Equal(10M, 10M.Min(30M));
 		}
 
 		[Fact]
-		public void BetweenTest()
+		public static void BetweenTest()
 		{
 			True(15M.Between(10M, 20M));
 			False(10M.Between(10M, 20M, BoundType.Open));

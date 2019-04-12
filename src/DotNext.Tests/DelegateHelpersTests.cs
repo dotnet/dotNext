@@ -6,7 +6,7 @@ namespace DotNext
     public sealed class DelegateHelpersTests: Assert
     {
         [Fact]
-        public void ContravarianceTest()
+        public static void ContravarianceTest()
         {
             EventHandler<string> handler = null;
             EventHandler<object> dummy = (sender, args) => { };

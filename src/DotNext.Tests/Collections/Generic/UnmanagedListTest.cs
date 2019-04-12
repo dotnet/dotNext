@@ -6,7 +6,7 @@ namespace DotNext.Collections.Generic
     public sealed class UnmanagedListTest: Assert
     {
         [Fact]
-        public void AddReadTest()
+        public static void AddRead()
         {
             using (var list = new UnmanagedList<int>(10))
             {
@@ -24,7 +24,7 @@ namespace DotNext.Collections.Generic
         }
 
         [Fact]
-        public void IndexerTest()
+        public static void Indexer()
         {
             var list = new UnmanagedList<int>(10);
             try
@@ -44,7 +44,7 @@ namespace DotNext.Collections.Generic
         }
 
         [Fact]
-        public void InsertRemoveTest()
+        public static void InsertRemove()
         {
             using (var list = new UnmanagedList<int>(10))
             {
@@ -78,7 +78,7 @@ namespace DotNext.Collections.Generic
         }
 
         [Fact]
-        public void CapacityTest()
+        public static void Capacity()
         {
             using (var list = new UnmanagedList<int>(3))
             {
@@ -94,7 +94,7 @@ namespace DotNext.Collections.Generic
         }
 
         [Fact]
-        public void EnumerationTest()
+        public static void Enumeration()
         {
             using (var list = new UnmanagedList<int>(3))
             {

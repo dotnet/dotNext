@@ -36,7 +36,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public void NullableTest()
+		public static void NullableTest()
 		{
 			False(Optional<int?>.HasValue(null));
 			True(Optional<long?>.HasValue(10L));
@@ -50,7 +50,7 @@ namespace DotNext
 		/// optional test doesn't cause boxing.
 		/// </summary>
 		[Fact]
-		public void MutableStructTest()
+		public static void MutableStructTest()
 		{
 			var value = new HasContentMutableStruct();
 			Optional<HasContentMutableStruct>.HasValue(value);
@@ -59,7 +59,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public void OptionalTypeTest()
+		public static void OptionalTypeTest()
 		{
 			var intOptional = new int?(10).ToOptional();
 			True(intOptional.IsPresent);
@@ -85,7 +85,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public void StructTest()
+		public static void StructTest()
 		{
 			False(Optional<ValueTuple>.HasValue(default));
 			True(Optional<long>.HasValue(default));
@@ -96,7 +96,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public void ClassTest()
+		public static void ClassTest()
 		{
 			True(Optional<Optional<string>>.HasValue((Optional<string>)""));
 			False(Optional<string>.HasValue(default));

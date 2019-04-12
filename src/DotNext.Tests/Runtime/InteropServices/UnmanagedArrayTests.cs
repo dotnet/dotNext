@@ -6,7 +6,7 @@ namespace DotNext.Runtime.InteropServices
     public sealed class UnmanagedArrayTests: Assert
     {   
         [Fact]
-        public void SliceTest()
+        public static void SliceTest()
         {
             var array = new UnmanagedArray<long>(5);
             try
@@ -33,7 +33,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public void ResizeTest()
+        public static void ResizeTest()
         {
             var array = new UnmanagedArray<long>(5);
             try
@@ -56,7 +56,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public void BitwiseOperationsTest()
+        public static void BitwiseOperationsTest()
         {
             var array1 = new UnmanagedArray<ushort>(3);
             var array2 = new UnmanagedArray<ushort>(3);
@@ -86,7 +86,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public unsafe void ArrayInteropTest()
+        public static unsafe void ArrayInteropTest()
         {
             var array = new UnmanagedArray<ushort>(3);
             try
@@ -111,7 +111,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public void ReadWriteTest()
+        public static void ReadWriteTest()
         {
             var array = new UnmanagedArray<ushort>(3);
             try
@@ -138,7 +138,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public void EnumeratorTest()
+        public static void EnumeratorTest()
         {
             var array = new UnmanagedArray<int>(3);
             try
@@ -170,7 +170,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public void SortAndSearchTest()
+        public static void SortAndSearchTest()
         {
             var array = new UnmanagedArray<long>(3);
             try

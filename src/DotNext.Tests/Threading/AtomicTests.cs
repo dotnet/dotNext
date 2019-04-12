@@ -5,7 +5,7 @@ namespace DotNext.Threading
 	public sealed class AtomicTests : Assert
 	{
         [Fact]
-        public void AtomicArrayTest()
+        public static void AtomicArrayTest()
         {
             var array = new[] { "a", "b" };
             array.UpdateAndGet(1, s => s + "c");
@@ -13,7 +13,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public void AtomicFloatTest()
+        public static void AtomicFloatTest()
         {
             float i = 10F;
             Equal(11F, i.IncrementAndGet());
@@ -37,7 +37,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public void AtomicDoubleTest()
+        public static void AtomicDoubleTest()
         {
             double i = 10D;
             Equal(11D, i.IncrementAndGet());
@@ -61,7 +61,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-		public void AtomicIntTest()
+		public static void AtomicIntTest()
 		{
 			var i = 10;
 			Equal(11, i.IncrementAndGet());
@@ -85,7 +85,7 @@ namespace DotNext.Threading
 		}
 
 		[Fact]
-		public void AtomicLongTest()
+		public static void AtomicLongTest()
 		{
 			var i = 10L;
 			Equal(11L, i.IncrementAndGet());
@@ -109,7 +109,7 @@ namespace DotNext.Threading
 		}
 
 		[Fact]
-		public void AtomicReferenceTest()
+		public static void AtomicReferenceTest()
 		{
 			var stref = new AtomicReference<string>("");
 			Equal("", stref.Value);
@@ -127,7 +127,7 @@ namespace DotNext.Threading
 		}
 
 		[Fact]
-		public void AtomicBooleanTest()
+		public static void AtomicBooleanTest()
 		{
 			var value = new AtomicBoolean(false);
 			True(value.FalseToTrue());

@@ -8,7 +8,7 @@ namespace DotNext.Threading
     public sealed class AsyncResetEventTests: Assert
     {   
         [Fact]
-        public void ManualResetEvent()
+        public static void ManualResetEvent()
         {
             using(var resetEvent = new AsyncResetEvent(false, EventResetMode.ManualReset))
             {
@@ -40,7 +40,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public async Task SetResetForManualEvent()
+        public static async Task SetResetForManualEvent()
         {
             using (var mre = new AsyncResetEvent(false, EventResetMode.ManualReset))
             {
@@ -56,7 +56,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public async Task SetResetForAutoEvent()
+        public static async Task SetResetForAutoEvent()
         {
             using (var are = new AsyncResetEvent(false, EventResetMode.AutoReset))
             {

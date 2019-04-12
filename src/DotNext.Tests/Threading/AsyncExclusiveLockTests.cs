@@ -8,7 +8,7 @@ namespace DotNext.Threading
     public sealed class AsyncExclusiveLockTests: Assert
     {
         [Fact]
-        public async Task TrivialLock()
+        public static async Task TrivialLock()
         {
             using (var @lock = new AsyncExclusiveLock())
             {
@@ -21,7 +21,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public async Task ConcurrentLock()
+        public static async Task ConcurrentLock()
         {
             using (var are = new AutoResetEvent(false))
             using (var @lock = new AsyncExclusiveLock())

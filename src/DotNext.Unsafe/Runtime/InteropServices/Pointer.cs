@@ -140,7 +140,7 @@ namespace DotNext.Runtime.InteropServices
             var pointer = Address;
             do
             {
-                var actualCount = (int)count.UpperBounded(int.MaxValue);
+                var actualCount = (int)count.Min(int.MaxValue);
                 var span = new Span<T>(pointer.ToPointer(), actualCount);
                 count -= actualCount;
                 pointer += actualCount;

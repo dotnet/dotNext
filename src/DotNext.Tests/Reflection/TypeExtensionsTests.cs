@@ -14,7 +14,7 @@ namespace DotNext.Reflection
         }
 
 		[Fact]
-		public void DelegateSignatureTest()
+		public static void DelegateSignature()
 		{
 			var signature = DelegateType.GetInvokeMethod<Func<int, string>>();
 			NotNull(signature);
@@ -23,7 +23,7 @@ namespace DotNext.Reflection
 		}
 
         [Fact]
-        public void IsGenericInstanceOfTest()
+        public static void IsGenericInstanceOf()
         {
             True(typeof(Func<string>).IsGenericInstanceOf(typeof(Func<>)));
             False(typeof(Func<string>).IsGenericInstanceOf(typeof(Func<int>)));
@@ -32,7 +32,7 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        public void CollectionElementTest()
+        public static void CollectionElement()
         {
             Equal(typeof(string), typeof(MyList).GetItemType(out var enumerable));
             Equal(typeof(IEnumerable<string>), enumerable);
@@ -44,7 +44,7 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        public void GetGenericMethodTest()
+        public static void GetGenericMethod()
         {
             var method = typeof(Task).GetMethod(nameof(Task.FromException), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 0, typeof(Exception));
             NotNull(method);
@@ -67,7 +67,7 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        public void IsUnmanagedTest()
+        public static void IsUnmanaged()
         {
             True(typeof(IntPtr).IsUnmanaged());
             True(typeof(UIntPtr).IsUnmanaged());

@@ -35,7 +35,7 @@ namespace DotNext.Threading.Tasks
         }
 
         [Fact]
-        public async Task WhenAnyTest()
+        public static async Task WhenAny()
         {
             var box = new ValueType<int>(0);
             var source1 = new ValueTaskCompletionSource();
@@ -66,7 +66,7 @@ namespace DotNext.Threading.Tasks
         }
 
         [Fact]
-        public async Task WhenAnyWithResultTest()
+        public static async Task WhenAnyWithResult()
         {
             var source1 = new ValueTaskCompletionSource<int>();
             var source2 = new ValueTaskCompletionSource<int>();
@@ -94,7 +94,7 @@ namespace DotNext.Threading.Tasks
         }
 
         [Fact]
-        public async Task WhenAllTest()
+        public static async Task WhenAll()
         {
             var counter = new SharedCounter();
             var source1 = new ValueTaskCompletionSource();

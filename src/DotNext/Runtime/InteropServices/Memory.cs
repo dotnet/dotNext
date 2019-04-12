@@ -323,7 +323,7 @@ namespace DotNext.Runtime.InteropServices
         {
             do
             {
-                var count = (int)length.UpperBounded(int.MaxValue);
+                var count = (int)length.Min(int.MaxValue);
                 Unsafe.InitBlockUnaligned(ptr.ToPointer(), 0, (uint)count);
                 ptr += count;
                 length -= count;
@@ -374,7 +374,7 @@ namespace DotNext.Runtime.InteropServices
                 default:
                     do
                     {
-                        var count = (int)length.UpperBounded(int.MaxValue);
+                        var count = (int)length.Min(int.MaxValue);
                         if (new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceEqual(new ReadOnlySpan<byte>(second.ToPointer(), count)))
                         {
                             first += count;
@@ -415,7 +415,7 @@ namespace DotNext.Runtime.InteropServices
                     var comparison = 0;
                     do
                     {
-                        var count = (int)length.UpperBounded(int.MaxValue);
+                        var count = (int)length.Min(int.MaxValue);
                         comparison = new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceCompareTo(new ReadOnlySpan<byte>(second.ToPointer(), count));
                         if (comparison == 0)
                         {

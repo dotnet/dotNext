@@ -6,7 +6,7 @@ namespace DotNext
     public sealed class EnumTests: Assert
     {
         [Fact]
-        public void ValuesTest()
+        public static void ValuesTest()
         {
             Equal(3, Enum<EnvironmentVariableTarget>.Members.Count);
             True(Enum<EnvironmentVariableTarget>.IsDefined(nameof(EnvironmentVariableTarget.Machine)));
@@ -16,7 +16,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void ConversionToPrimitive()
+        public static void ConversionToPrimitive()
         {
             var member = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.User);
             Equal(1L, member.Value.ToInt64());
@@ -26,7 +26,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void ConversionFromPrimitive()
+        public static void ConversionFromPrimitive()
         {
             Equal(EnvironmentVariableTarget.User, 1.ToEnum<EnvironmentVariableTarget>());
             Equal(EnvironmentVariableTarget.User, 1L.ToEnum<EnvironmentVariableTarget>());
@@ -34,7 +34,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void MinMaxTest()
+        public static void MinMaxTest()
         {
             Equal(EnvironmentVariableTarget.Machine, Enum<EnvironmentVariableTarget>.MaxValue);
             Equal(EnvironmentVariableTarget.Process, Enum<EnvironmentVariableTarget>.MinValue);

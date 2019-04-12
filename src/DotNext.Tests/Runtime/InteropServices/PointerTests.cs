@@ -9,7 +9,7 @@ namespace DotNext.Runtime.InteropServices
     public sealed class PointerTests: Assert
     {
         [Fact]
-        public unsafe void BitwiseOperationsTest()
+        public static unsafe void BitwiseOperationsTest()
         {
             var array1 = new ushort[] { 1, 2, 3 };
             var array2 = new ushort[] { 1, 2, 3 };
@@ -26,7 +26,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public unsafe void StreamInteropTest()
+        public static unsafe void StreamInteropTest()
         {
             var array = new ushort[] { 1, 2, 3 };
             fixed (ushort* p = array)
@@ -40,7 +40,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public unsafe void ArrayInteropTest()
+        public static unsafe void ArrayInteropTest()
         {
             var array = new ushort[] { 1, 2, 3 };
             fixed (ushort* p = array)
@@ -57,7 +57,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public unsafe void SwapTest()
+        public static unsafe void SwapTest()
         {
             var array = new ushort[] { 1, 2 };
             fixed (ushort* p = array)
@@ -73,7 +73,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public unsafe void VolatileReadWriteTest()
+        public static unsafe void VolatileReadWriteTest()
         {
             Pointer<long> ptr = stackalloc long[3];
             ptr.VolatileWrite(1);
@@ -91,7 +91,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public unsafe void ReadWriteTest()
+        public static unsafe void ReadWriteTest()
         {
             var array = new ushort[] { 1, 2, 3 };
             fixed (ushort* p = array)

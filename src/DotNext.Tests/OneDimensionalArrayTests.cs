@@ -17,7 +17,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void ArrayEqualityTest2()
+        public static void ArrayEqualityTest2()
         {
             var array1 = new Equatable[] { new Equatable("a"), new Equatable("b") };
             var array2 = new Equatable[] { new Equatable("a"), new Equatable("b") };
@@ -26,7 +26,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void InsertTest()
+        public static void InsertTest()
         {
             int[] array = new[]{1, 2, 3};
             True(new int[]{1, 4, 2, 3}.SequenceEqual(array.Insert(4, 1)));
@@ -35,7 +35,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void ArrayEqualityTest()
+        public static void ArrayEqualityTest()
         {
             var array1 = new Guid[]{Guid.Empty, Guid.NewGuid(), Guid.NewGuid() };
             var array2 = new Guid[]{Guid.Empty, array1[1], array1[2] };
@@ -49,7 +49,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void SliceTest()
+        public static void SliceTest()
         {
             var array = new int[]{1, 2, 3, 4};
             array = array.Slice(0, 2);

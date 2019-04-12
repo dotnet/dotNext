@@ -6,7 +6,7 @@ namespace DotNext.Reflection
     public sealed class TaskTypeTests: Assert
     {
         [Fact]
-        public void ReflectTaskTypeTest()
+        public static void ReflectTaskType()
         {
             var task = typeof(Task);
             Equal(typeof(void), task.GetTaskType());

@@ -6,7 +6,7 @@ namespace DotNext
     public sealed class NumberConceptTests: Assert
     { 
         [Fact]
-        public void LongTest()
+        public static void LongTest()
         {
             var value = new Number<long>(42);
             value = value + 1;
@@ -28,7 +28,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void ByteTest()
+        public static void ByteTest()
         {
             var value = new Number<byte>(42);
             value = value + 1;
@@ -45,7 +45,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void InvalidActualTypeTest()
+        public static void InvalidActualTypeTest()
         {
             ThrowsAny<Reflection.ConstraintViolationException>(() => Reflection.Type<DateTime>.Concept<Number<DateTime>>());
         }
