@@ -184,7 +184,15 @@ namespace DotNext
 				 Expression.AndAlso(
 					Expression.ReferenceNotEqual(input, Expression.Constant(null, input.Type)),
 					hasContentPropertyExpr);
-		}
+		}		
+
+		internal static bool OptionalHasValue<T>(ref T value) where T : class, IOptional => !(value is null) && value.IsPresent;
+
+		internal static bool IsNotNull<T>(ref T value) where T : class => !(value is null);
+
+		internal static bool OptionalNullableHasValue<T>(ref T? value) where T : struct, IOptional => value.HasValue && value.Value.IsPresent;
+	
+		internal static bool NoValue<T>(ref T value) => false;
 	}
 
 	/// <summary>
@@ -199,16 +207,51 @@ namespace DotNext
 		/// <summary>
 		/// Highly optimized checker of the content.
 		/// </summary>
-		private static readonly ByRefPredicate HasValueChecker;
+		private static readonly ByRefPredicate HasValueChecker;	//null means always has value
 
 		static Optional()
 		{
 			//describes predicate parameter
-			var parameter = Expression.Parameter(typeof(T).MakeByRefType());
-			Expression checkerBody = parameter.Type.IsValueType ?
-				Optional.CheckerBodyForValueType(parameter) :
-				Optional.CheckerBodyForReferenceType(parameter);
-			HasValueChecker = Expression.Lambda<ByRefPredicate>(checkerBody, parameter).Compile();
+			// var parameter = Expression.Parameter(typeof(T).MakeByRefType());
+			// Expression checkerBody = parameter.Type.IsValueType ?
+			// 	Optional.CheckerBodyForValueType(parameter) :
+			// 	Optional.CheckerBodyForReferenceType(parameter);
+			// HasValueChecker = Expression.Lambda<ByRefPredicate>(checkerBody, parameter).Compile();
+			const BindingFlags NonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
+			var targetType = typeof(T);
+			MethodInfo checkerMethod;
+			if(targetType.IsOneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
+				checkerMethod = typeof(Optional).GetMethod(nameof(Optional.NoValue), NonPublicStatic).MakeGenericMethod(targetType);
+			else if(targetType.IsPrimitive)//primitive always has value
+			{
+				HasValueChecker = null;
+				return;
+			}
+			else if(targetType.IsValueType)
+				//value type which implements IOptional
+				if(typeof(IOptional).IsAssignableFrom(targetType))
+					checkerMethod = targetType.GetInterfaceMap(typeof(IOptional)).TargetMethods[0];
+				else
+				{
+					var nullableType = Nullable.GetUnderlyingType(targetType);
+					if(nullableType is null)	//non-nullable value type always has value
+					{
+						HasValueChecker = null;
+						return;
+					}
+					//nullable type with optional
+					else if(typeof(IOptional).IsAssignableFrom(nullableType))
+						checkerMethod = typeof(Optional).GetMethod(nameof(Optional.OptionalNullableHasValue), NonPublicStatic).MakeGenericMethod(nullableType);
+					//nullable type but not optional
+					else
+						checkerMethod = targetType.GetProperty(nameof(Nullable<int>.HasValue)).GetMethod;
+				}
+			//reference type implementing IOptional
+			else if(typeof(IOptional).IsAssignableFrom(targetType))
+				checkerMethod = typeof(Optional).GetMethod(nameof(Optional.OptionalHasValue), NonPublicStatic).MakeGenericMethod(targetType);
+			else
+				checkerMethod = typeof(Optional).GetMethod(nameof(Optional.IsNotNull), NonPublicStatic).MakeGenericMethod(targetType);
+			HasValueChecker = checkerMethod.CreateDelegate<ByRefPredicate>();
 		}
 
 		private readonly T value;
@@ -232,7 +275,7 @@ namespace DotNext
 		/// <summary>
 		/// Indicates whether the value is present.
 		/// </summary>
-		public bool IsPresent => isPresent && HasValueChecker(in value);
+		public bool IsPresent => isPresent && HasValue(value);
 
 		/// <summary>
 		/// Indicates that specified value has meaningful content.
@@ -240,7 +283,7 @@ namespace DotNext
 		/// <param name="value">The value to check.</param>
 		/// <returns>True, if value has meaningful content; otherwise, false.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasValue(in T value) => HasValueChecker(in value);
+		public static bool HasValue(in T value) => HasValueChecker is null || HasValueChecker(in value);
 
 		/// <summary>
 		/// Attempts to extract value from container if it is present.
