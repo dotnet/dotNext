@@ -17,9 +17,7 @@ namespace DotNext
         /// <param name="min">Minimal range value.</param>
         /// <param name="max">Maximum range value.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T Clamp<T> (this T value, T min, T max) 
-            where T : IComparable<T>
-            => value.Min(max).Max(min);
+        public static T Clamp<T> (this T value, T min, T max) where T : IComparable<T> => value.Min(max).Max(min);
 
         /// <summary>
 		/// Checks whether specified value is in range.
@@ -58,8 +56,7 @@ namespace DotNext
         /// <param name="comparer">Comparison function.</param>
         /// <returns>The smaller of two values.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T Min<T>(T first, T second, Comparison<T> comparer)
-            => comparer(first, second) < 0 ? first : second;
+        public static T Min<T>(T first, T second, Comparison<T> comparer) => comparer(first, second) < 0 ? first : second;
 
         /// <summary>
         /// Returns the smaller of two values.
@@ -70,8 +67,7 @@ namespace DotNext
         /// <param name="comparer">Comparison function.</param>
         /// <returns>The smaller of two values.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T Min<T>(T first, T second, IComparer<T> comparer)
-            => Min(first, second, comparer.Compare);
+        public static T Min<T>(T first, T second, IComparer<T> comparer) => comparer.Compare(first, second) < 0 ? first : second;
 
         /// <summary>
         /// Returns the smaller of two values.
@@ -105,7 +101,7 @@ namespace DotNext
         /// <returns>The larger of two values.</returns>       
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Max<T>(T first, T second, IComparer<T> comparer)
-            => Max(first, second, comparer.Compare);
+            => comparer.Compare(first, second) > 0 ? first : second;
 
         /// <summary>
 		/// Returns the larger of two values.
