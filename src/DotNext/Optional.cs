@@ -239,7 +239,7 @@ namespace DotNext
 		/// Indicates that specified value has meaningful content.
 		/// </summary>
 		/// <param name="value">The value to check.</param>
-		/// <returns>True, if value has meaningful content; otherwise, false.</returns>
+		/// <returns><see langword="true"/>, if value has meaningful content; otherwise, <see langword="false"/>.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool HasValue(in T value) => HasValueChecker is null || HasValueChecker(in value);
 
