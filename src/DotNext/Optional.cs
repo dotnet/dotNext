@@ -175,12 +175,6 @@ namespace DotNext
 
 		static Optional()
 		{
-			//describes predicate parameter
-			// var parameter = Expression.Parameter(typeof(T).MakeByRefType());
-			// Expression checkerBody = parameter.Type.IsValueType ?
-			// 	Optional.CheckerBodyForValueType(parameter) :
-			// 	Optional.CheckerBodyForReferenceType(parameter);
-			// HasValueChecker = Expression.Lambda<ByRefPredicate>(checkerBody, parameter).Compile();
 			const BindingFlags NonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
 			var targetType = typeof(T);
 			MethodInfo checkerMethod;
