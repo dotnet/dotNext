@@ -38,7 +38,7 @@ namespace DotNext
 		[Fact]
 		public static void NullableTest()
 		{
-			False(Optional<int?>.HasValue(null));
+            False(Optional<int?>.HasValue(null));
 			True(Optional<long?>.HasValue(10L));
 			False(Optional<HasContentStruct?>.HasValue(null));
 			False(Optional<HasContentStruct?>.HasValue(new HasContentStruct(false)));
