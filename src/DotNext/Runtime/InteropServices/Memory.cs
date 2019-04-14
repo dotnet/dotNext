@@ -336,7 +336,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer to the memory to be cleared.</param>
         /// <param name="length">The length of the memory to be cleared.</param>
         [CLSCompliant(false)]
-        public static void ZeroMem(void* ptr, long length) => ClearBits(new IntPtr(ptr), length);
+        public static void ClearBits(void* ptr, long length) => ClearBits(new IntPtr(ptr), length);
 
         /// <summary>
 		/// Computes equality between two blocks of memory.

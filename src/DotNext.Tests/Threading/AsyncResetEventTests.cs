@@ -10,7 +10,7 @@ namespace DotNext.Threading
         [Fact]
         public static void ManualResetEvent()
         {
-            using(var resetEvent = new AsyncResetEvent(false, EventResetMode.ManualReset))
+            using(var resetEvent = new AsyncManualResetEvent(false))
             {
                 False(resetEvent.IsSet);
                 var t = new Thread(() =>
@@ -42,7 +42,7 @@ namespace DotNext.Threading
         [Fact]
         public static async Task SetResetForManualEvent()
         {
-            using (var mre = new AsyncResetEvent(false, EventResetMode.ManualReset))
+            using (var mre = new AsyncManualResetEvent(false))
             {
                 False(await mre.Wait(TimeSpan.Zero));
                 True(mre.Set());
@@ -58,7 +58,7 @@ namespace DotNext.Threading
         [Fact]
         public static async Task SetResetForAutoEvent()
         {
-            using (var are = new AsyncResetEvent(false, EventResetMode.AutoReset))
+            using (var are = new AsyncAutoResetEvent(false))
             {
                 False(await are.Wait(TimeSpan.Zero));
                 True(are.Set());

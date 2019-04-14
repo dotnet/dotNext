@@ -5,15 +5,28 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading
 {
-    using Generic;
-    using Tasks;
-
     /// <summary>
     /// Represents asynchronous mutually exclusive lock.
     /// </summary>
-    public sealed class AsyncExclusiveLock : AsyncLockBase
+    public sealed class AsyncExclusiveLock : QueuedSynchronizer
     {
-        private volatile bool locked;
+        private readonly struct LockManager: ILockManager<bool, WaitNode>
+        {
+            bool ILockManager<bool, WaitNode>.CheckState(ref bool locked)
+            {
+                if(locked)
+                    return false;
+                else
+                {
+                    locked = true;
+                    return true;
+                }
+            }
+
+            WaitNode ILockManager<bool, WaitNode>.CreateNode(WaitNode tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+        }
+
+        private bool locked;
 
         /// <summary>
         /// Indicates that exclusive lock taken.
@@ -28,27 +41,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered exclusive mode; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public Task<bool> TryAcquire(TimeSpan timeout, CancellationToken token)
-        {
-            ThrowIfDisposed();
-            if(timeout < TimeSpan.Zero)
-                throw new ArgumentOutOfRangeException(nameof(timeout));
-            else if (token.IsCancellationRequested)
-                return Task.FromCanceled<bool>(token);
-            else if(!locked)    //not locked
-            {
-                locked = true;
-                return CompletedTask<bool, BooleanConst.True>.Task;
-            }
-            else if (timeout == TimeSpan.Zero)   //if timeout is zero fail fast
-                return CompletedTask<bool, BooleanConst.False>.Task;
-            else if(head is null)
-                head = tail = new LockNode();
-            else
-                tail = new LockNode(tail);
-            return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? Wait(tail, timeout, token) : tail.Task;
-        }
+        public Task<bool> TryAcquire(TimeSpan timeout, CancellationToken token) => Wait<bool, LockManager>(ref locked, timeout, token);
 
         /// <summary>
         /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
@@ -87,15 +80,14 @@ namespace DotNext.Threading
         public void Release()
         {
             ThrowIfDisposed();
-            var waiterTask = head;
             if(!locked)
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
-            else if(waiterTask is null)
+            else if(head is null)
                 locked = false;
             else
             {
-                RemoveNode(waiterTask);
-                waiterTask.Complete();
+                head.Complete();
+                RemoveNode(head);
             }
         }
     }

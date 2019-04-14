@@ -202,7 +202,7 @@ namespace DotNext.Runtime.InteropServices
             else if (count <= 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
             else
-                Memory.ZeroMem(value, count);
+                Memory.ClearBits(value, count);
         }
 
         /// <summary>
