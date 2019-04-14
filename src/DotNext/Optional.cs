@@ -143,15 +143,19 @@ namespace DotNext
 
     internal static class OptionalMethods
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool HasValue<T>(ref T value) where T : class, IOptional => !(value is null) && value.IsPresent;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool IsNotNull<T>(ref T value) where T : class => !(value is null);
     }
 
     internal static class NullableOptionalMethods
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool HasValue<T>(ref T? value) where T : struct, IOptional => value.HasValue && value.Value.IsPresent;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool IsNotNull<T>(ref T? value) where T : struct => value.HasValue;
     }
 
