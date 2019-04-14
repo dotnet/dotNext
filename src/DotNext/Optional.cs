@@ -162,7 +162,7 @@ namespace DotNext
     [Serializable]
 	public readonly struct Optional<T> : IOptional, IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable
 	{
-		public delegate bool ByRefPredicate(in T value);
+		private delegate bool ByRefPredicate(in T value);
 
 		/// <summary>
 		/// Highly optimized checker of the content.
