@@ -36,13 +36,17 @@ namespace DotNext.Metaprogramming
         internal GotoExpression Continue(bool addAsStatement)
         {
             var expr = Expression.Continue(continueLabel);
-            return addAsStatement ? AddStatement(expr) : expr;
+            if(addAsStatement)
+                AddStatement(expr);
+            return expr;
         }
 
         internal GotoExpression Break(bool addAsStatement)
         {
             var expr = Expression.Break(breakLabel);
-            return addAsStatement ? AddStatement(expr) : expr;
+            if(addAsStatement)
+                AddStatement(expr);
+            return expr;
         }
     }
 }

@@ -64,7 +64,9 @@ namespace DotNext.Metaprogramming
         internal override Expression Return(Expression result, bool addAsStatement)
         {
             var asyncResult = new AsyncResultExpression(result, taskType);
-            return addAsStatement ? AddStatement(asyncResult) : asyncResult;
+            if(addAsStatement)
+                AddStatement(asyncResult);
+            return asyncResult;
         }
 
         private protected override LambdaExpression Build(Expression body, bool tailCall)
