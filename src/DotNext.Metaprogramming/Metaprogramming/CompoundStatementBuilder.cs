@@ -58,13 +58,6 @@ namespace DotNext.Metaprogramming
             where B: IExpressionBuilder<E>
             => builder.Build();
 
-        internal E AddStatement<E>(E expression)
-            where E: Expression
-        {
-            statements.Add(expression);
-            return expression;
-        }
-
         internal static E Build<E, B>(B builder, Action<B> body)
             where E: Expression
             where B: IExpressionBuilder<E>
@@ -81,131 +74,114 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds no-operation instruction to this scope.
         /// </summary>
-        /// <returns>No-operation instruction.</returns>
-        public Expression Nop() => AddStatement(Expression.Empty());
+        public void Nop() => statements.Add(Expression.Empty());
 
         /// <summary>
         /// Adds assignment operation to this scope.
         /// </summary>
         /// <param name="variable">The variable to modify.</param>
         /// <param name="value">The value to be assigned to the variable.</param>
-        /// <returns>Assign operation.</returns>
-        public BinaryExpression Assign(ParameterExpression variable, UniversalExpression value)
-            => AddStatement(variable.Assign(value));
+        public void Assign(ParameterExpression variable, UniversalExpression value)
+            => statements.Add(variable.Assign(value));
 
         /// <summary>
         /// Adds assignment operation to this scope.
         /// </summary>
         /// <param name="indexer">The indexer property or array element to modify.</param>
         /// <param name="value">The value to be assigned to the member or array element.</param>
-        /// <returns>Assign operation.</returns>
-        public BinaryExpression Assign(IndexExpression indexer, UniversalExpression value)
-            => AddStatement(indexer.Assign(value));
+        public void Assign(IndexExpression indexer, UniversalExpression value)
+            => statements.Add(indexer.Assign(value));
 
         /// <summary>
         /// Adds assignment operation to this scope.
         /// </summary>
         /// <param name="member">The field or property to modify.</param>
         /// <param name="value">The value to be assigned to the member.</param>
-        /// <returns>Assign operation.</returns>
-        public BinaryExpression Assign(MemberExpression member, UniversalExpression value)
-            => AddStatement(member.Assign(value));
+        public void Assign(MemberExpression member, UniversalExpression value)
+            => statements.Add(member.Assign(value));
 
         /// <summary>
         /// Adds an expression that increments given variable by 1 and assigns the result back to the variable.
         /// </summary>
         /// <param name="variable">The variable to be modified.</param>
-        /// <returns>The expression representing increment.</returns>
-        public UnaryExpression PreIncrementAssign(ParameterExpression variable)
-            => AddStatement(variable.PreIncrementAssign());
+        public void PreIncrementAssign(ParameterExpression variable)
+            => statements.Add(variable.PreIncrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given variable followed by a subsequent increment by 1 of the original variable.
         /// </summary>
         /// <param name="variable">The variable to be modified.</param>
-        /// <returns>The expression representing increment.</returns>
-        public UnaryExpression PostIncrementAssign(ParameterExpression variable)
-            => AddStatement(variable.PostIncrementAssign());
+        public void PostIncrementAssign(ParameterExpression variable)
+            => statements.Add(variable.PostIncrementAssign());
         
         /// <summary>
         /// Adds an expression that decrements given variable by 1 and assigns the result back to the variable.
         /// </summary>
-        /// <param name="variable">The variable to be modified.</param>
-        /// <returns>The expression representing decrement.</returns>
-        public UnaryExpression PreDecrementAssign(ParameterExpression variable)
-            => AddStatement(variable.PreDecrementAssign());
+        public void PreDecrementAssign(ParameterExpression variable)
+            => statements.Add(variable.PreDecrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given variable followed by a subsequent decrement by 1 of the original variable.
         /// </summary>
         /// <param name="variable">The variable to be modified.</param>
-        /// <returns>The expression representing decrement.</returns>
-        public UnaryExpression PostDecrementAssign(ParameterExpression variable)
-            => AddStatement(variable.PostDecrementAssign());
+        public void PostDecrementAssign(ParameterExpression variable)
+            => statements.Add(variable.PostDecrementAssign());
         
         /// <summary>
         /// Adds an expression that increments given field or property by 1 and assigns the result back to the member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <returns>The expression representing increment.</returns>
-        public UnaryExpression PreIncrementAssign(MemberExpression member)
-            => AddStatement(member.PreIncrementAssign());
+        public void PreIncrementAssign(MemberExpression member)
+            => statements.Add(member.PreIncrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given field or property followed by a subsequent increment by 1 of the original member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <returns>The expression representing increment.</returns>
-        public UnaryExpression PostIncrementAssign(MemberExpression member)
-            => AddStatement(member.PostIncrementAssign());
+        public void PostIncrementAssign(MemberExpression member)
+            => statements.Add(member.PostIncrementAssign());
 
         /// <summary>
         /// Adds an expression that decrements given field or property by 1 and assigns the result back to the member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <returns>The expression representing decrement.</returns>
-        public UnaryExpression PreDecrementAssign(MemberExpression member)
-            => AddStatement(member.PreDecrementAssign());
+        public void PreDecrementAssign(MemberExpression member)
+            => statements.Add(member.PreDecrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given field or property followed by a subsequent decrement by 1 of the original member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <returns>The expression representing decrement.</returns>
-        public UnaryExpression PostDecrementAssign(MemberExpression member)
-            => AddStatement(member.PostDecrementAssign());
+        public void PostDecrementAssign(MemberExpression member)
+            => statements.Add(member.PostDecrementAssign());
         
         /// <summary>
         /// Adds an expression that increments given field or property by 1 and assigns the result back to the member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <returns>The expression representing increment.</returns>
-        public UnaryExpression PreIncrementAssign(IndexExpression member)
-            => AddStatement(member.PreIncrementAssign());
+        public void PreIncrementAssign(IndexExpression member)
+            => statements.Add(member.PreIncrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given field or property followed by a subsequent increment by 1 of the original member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <returns>The expression representing increment.</returns>
-        public UnaryExpression PostIncrementAssign(IndexExpression member)
-            => AddStatement(member.PostIncrementAssign());
+        public void PostIncrementAssign(IndexExpression member)
+            => statements.Add(member.PostIncrementAssign());
 
         /// <summary>
         /// Adds an expression that decrements given field or property by 1 and assigns the result back to the member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <returns>The expression representing decrement.</returns>
-        public UnaryExpression PreDecrementAssign(IndexExpression member)
-            => AddStatement(member.PreDecrementAssign());
+        public void PreDecrementAssign(IndexExpression member)
+            => statements.Add(member.PreDecrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given field or property followed by a subsequent decrement by 1 of the original member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <returns>The expression representing decrement.</returns>
-        public UnaryExpression PostDecrementAssign(IndexExpression member)
-            => AddStatement(member.PostDecrementAssign());
+        public void PostDecrementAssign(IndexExpression member)
+            => statements.Add(member.PostDecrementAssign());
 
         /// <summary>
         /// Adds local variable assignment operation this scope.
@@ -221,8 +197,8 @@ namespace DotNext.Metaprogramming
         /// <param name="instance"><see langword="this"/> argument.</param>
         /// <param name="instanceProperty">Instance property to be assigned.</param>
         /// <param name="value">A new value of the property.</param>
-        public void Assign(Expression instance, PropertyInfo instanceProperty, UniversalExpression value)
-            => AddStatement(Expression.Assign(Expression.Property(instance, instanceProperty), value));
+        public void Assign(UniversalExpression instance, PropertyInfo instanceProperty, UniversalExpression value)
+            => statements.Add(Expression.Assign(Expression.Property(instance, instanceProperty), value));
         
         /// <summary>
         /// Adds static property assignment.
@@ -230,7 +206,7 @@ namespace DotNext.Metaprogramming
         /// <param name="staticProperty">Static property to be assigned.</param>
         /// <param name="value">A new value of the property.</param>
         public void Assign(PropertyInfo staticProperty, UniversalExpression value)
-            => Assign(null, staticProperty, value);
+            => statements.Add(Expression.Assign(Expression.Property(null, staticProperty), value));
 
         /// <summary>
         /// Adds instance field assignment.
@@ -239,7 +215,7 @@ namespace DotNext.Metaprogramming
         /// <param name="instanceField">Instance field to be assigned.</param>
         /// <param name="value">A new value of the field.</param>
         public void Assign(UniversalExpression instance, FieldInfo instanceField, UniversalExpression value)
-            => AddStatement(Expression.Assign(Expression.Field(instance, instanceField), value));
+            => statements.Add(Expression.Assign(Expression.Field(instance, instanceField), value));
 
         /// <summary>
         /// Adds static field assignment.
@@ -247,25 +223,23 @@ namespace DotNext.Metaprogramming
         /// <param name="staticField">Static field to be assigned.</param>
         /// <param name="value">A new value of the field.</param>
         public void Assign(FieldInfo staticField, UniversalExpression value)
-            => AddStatement(Expression.Assign(Expression.Field(null, staticField), value));
+            => statements.Add(Expression.Assign(Expression.Field(null, staticField), value));
 
         /// <summary>
         /// Adds invocation statement.
         /// </summary>
         /// <param name="delegate">The expression providing delegate to be invoked.</param>
         /// <param name="arguments">Delegate invocation arguments.</param>
-        /// <returns>Invocation expression.</returns>
-        public InvocationExpression Invoke(UniversalExpression @delegate, IEnumerable<Expression> arguments)
-            => AddStatement(Expression.Invoke(@delegate, arguments));
+        public void Invoke(UniversalExpression @delegate, IEnumerable<Expression> arguments)
+            => statements.Add(Expression.Invoke(@delegate, arguments));
 
         /// <summary>
         /// Adds invocation statement.
         /// </summary>
         /// <param name="delegate">The expression providing delegate to be invoked.</param>
         /// <param name="arguments">Delegate invocation arguments.</param>
-        /// <returns>Invocation expression.</returns>
-        public InvocationExpression Invoke(UniversalExpression @delegate, params UniversalExpression[] arguments)
-            => AddStatement(@delegate.Invoke(arguments));
+        public void Invoke(UniversalExpression @delegate, params UniversalExpression[] arguments)
+            => statements.Add(@delegate.Invoke(arguments));
 
         /// <summary>
         /// Adds instance method call statement.
@@ -273,9 +247,8 @@ namespace DotNext.Metaprogramming
         /// <param name="instance"><see langword="this"/> argument.</param>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
-        /// <returns>Method call statement.</returns>
-        public MethodCallExpression Call(UniversalExpression instance, MethodInfo method, IEnumerable<Expression> arguments)
-            => AddStatement(Expression.Call(instance, method, arguments));
+        public void Call(UniversalExpression instance, MethodInfo method, IEnumerable<Expression> arguments)
+            => statements.Add(Expression.Call(instance, method, arguments));
 
         /// <summary>
         /// Adds instance method call statement.
@@ -283,8 +256,7 @@ namespace DotNext.Metaprogramming
         /// <param name="instance"><see langword="this"/> argument.</param>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
-        /// <returns>Method call statement.</returns>
-        public MethodCallExpression Call(UniversalExpression instance, MethodInfo method, params UniversalExpression[] arguments)
+        public void Call(UniversalExpression instance, MethodInfo method, params UniversalExpression[] arguments)
             => Call(instance, method, UniversalExpression.AsExpressions((IEnumerable<UniversalExpression>)arguments));
         
         /// <summary>
@@ -293,26 +265,23 @@ namespace DotNext.Metaprogramming
         /// <param name="instance"><see langword="this"/> argument.</param>
         /// <param name="methodName">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
-        /// <returns>Method call statement.</returns>
-        public Expression Call(UniversalExpression instance, string methodName, params UniversalExpression[] arguments)
-            => AddStatement<Expression>(instance.Call(methodName, arguments));
+        public void Call(UniversalExpression instance, string methodName, params UniversalExpression[] arguments)
+            => statements.Add(instance.Call(methodName, arguments));
 
         /// <summary>
         /// Adds static method call statement.,
         /// </summary>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
-        /// <returns>Method call statement.</returns>
-        public MethodCallExpression Call(MethodInfo method, IEnumerable<Expression> arguments)
-            => AddStatement(Expression.Call(null, method, arguments));
+        public void Call(MethodInfo method, IEnumerable<Expression> arguments)
+            => statements.Add(Expression.Call(null, method, arguments));
 
         /// <summary>
         /// Adds static method call statement.
         /// </summary>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
-        /// <returns>Method call statement.</returns>
-        public MethodCallExpression Call(MethodInfo method, params UniversalExpression[] arguments)
+        public void Call(MethodInfo method, params UniversalExpression[] arguments)
             => Call(method, UniversalExpression.AsExpressions((IEnumerable<UniversalExpression>)arguments));
         
         /// <summary>
@@ -346,25 +315,21 @@ namespace DotNext.Metaprogramming
         /// Adds label landing site to this scope.
         /// </summary>
         /// <param name="target">The label target.</param>
-        /// <returns>The landing site for the label.</returns>
-        public LabelExpression Label(LabelTarget target)
-            => AddStatement(Expression.Label(target));
+        public void Label(LabelTarget target) => statements.Add(Expression.Label(target));
 
         /// <summary>
         /// Adds unconditional control transfer statement to this scope.
         /// </summary>
         /// <param name="target">The label reference.</param>
         /// <param name="value">The value to be associated with the control transfer.</param>
-        /// <returns>Unconditional control transfer statement.</returns>
-        public GotoExpression Goto(LabelTarget target, UniversalExpression value)
-            => AddStatement(Expression.Goto(target, value));
+        public void Goto(LabelTarget target, UniversalExpression value)
+            => statements.Add(Expression.Goto(target, value));
 
         /// <summary>
         /// Adds unconditional control transfer statement to this scope.
         /// </summary>
         /// <param name="target">The label reference.</param>
-        /// <returns>Unconditional control transfer statement.</returns>
-        public GotoExpression Goto(LabelTarget target) => Goto(target, default);
+        public void Goto(LabelTarget target) => Goto(target, default);
 
         private bool HasVariable(string name) => variables.ContainsKey(name) || Parent != null && Parent.HasVariable(name);
         
@@ -387,20 +352,6 @@ namespace DotNext.Metaprogramming
         /// <returns>The expression representing local variable.</returns>
         public ParameterExpression DeclareVariable<T>(string name)
             => DeclareVariable(typeof(T), name);
-
-        /// <summary>
-        /// Declares and initializes local variable in the current lexical scope.
-        /// </summary>
-        /// <typeparam name="T">The type of local variable.</typeparam>
-        /// <param name="name">The name of local variable.</param>
-        /// <param name="initialValue">The initial value of the local variable.</param>
-        /// <returns>The expression representing local variable.</returns>
-        public ParameterExpression DeclareVariable<T>(string name, T initialValue)
-        {
-            var variable = DeclareVariable<T>(name);
-            Assign(variable, Expression.Constant(initialValue, typeof(T)));
-            return variable;
-        }
 
         /// <summary>
         /// Declares local variable in the current lexical scope. 
@@ -436,9 +387,7 @@ namespace DotNext.Metaprogramming
         /// Adds await operator.
         /// </summary>
         /// <param name="asyncResult">The expression representing asynchronous computing process.</param>
-        /// <returns><see langword="await"/> expression.</returns>
-        public Expression Await(UniversalExpression asyncResult)
-            => AddStatement<Expression>(asyncResult.Await());
+        public void Await(UniversalExpression asyncResult) => statements.Add(asyncResult.Await());
 
         /// <summary>
         /// Adds if-then-else statement to this scope.
