@@ -422,7 +422,10 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Loop continuation condition.</param>
         /// <param name="loop">Loop body.</param>
         public void While(UniversalExpression test, Action<WhileLoopBuider> loop)
-            => AddStatement<LoopExpression, WhileLoopBuider>(new WhileLoopBuider(test, this, true), loop);
+        {
+            using (var builder = new WhileLoopBuider(test, this, true))
+                AddStatement<LoopExpression, WhileLoopBuider>(builder, loop);
+        }
 
         /// <summary>
         /// Adds <code>do{ } while(condition);</code> loop statement.
@@ -430,7 +433,10 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Loop continuation condition.</param>
         /// <param name="loop">Loop body.</param>
         public void DoWhile(UniversalExpression test, Action<WhileLoopBuider> loop)
-            => AddStatement<LoopExpression, WhileLoopBuider>(new WhileLoopBuider(test, this, false), loop);
+        {
+            using (var builder = new WhileLoopBuider(test, this, false))
+                AddStatement<LoopExpression, WhileLoopBuider>(builder, loop);
+        }
 
         /// <summary>
         /// Adds <see langword="foreach"/> loop statement.
@@ -439,7 +445,10 @@ namespace DotNext.Metaprogramming
         /// <param name="loop">Loop body.</param>
         /// <seealso cref="ForEachLoopBuilder"/>
         public void ForEach(UniversalExpression collection, Action<ForEachLoopBuilder> loop)
-            => AddStatement<TryExpression, ForEachLoopBuilder>(new ForEachLoopBuilder(collection, this), loop);
+        {
+            using (var builder = new ForEachLoopBuilder(collection, this))
+                AddStatement<TryExpression, ForEachLoopBuilder>(builder, loop);
+        }
 
         /// <summary>
         /// Adds <see langword="for"/> loop statement.
@@ -452,7 +461,10 @@ namespace DotNext.Metaprogramming
         /// <param name="loop">Loop body.</param>
         /// <seealso cref="ForLoopBuilder"/>
         public void For(UniversalExpression initializer, Func<UniversalExpression, Expression> condition, Action<ForLoopBuilder> loop)
-            => AddStatement<LoopExpression, ForLoopBuilder>(new ForLoopBuilder(initializer, condition, this), loop);
+        {
+            using (var builder = new ForLoopBuilder(initializer, condition, this))
+                AddStatement<LoopExpression, ForLoopBuilder>(builder, loop);
+        }
         
         /// <summary>
         /// Adds generic loop statement.
@@ -460,7 +472,10 @@ namespace DotNext.Metaprogramming
         /// <param name="loop">Loop body.</param>
         /// <seealso cref="LoopBuilder"/>
         public void Loop(Action<LoopBuilder> loop)
-            => AddStatement<LoopExpression, LoopBuilder>(new LoopBuilder(this), loop);
+        {
+            using (var builder = new LoopBuilder(this))
+                AddStatement<LoopExpression, LoopBuilder>(builder, loop);
+        }
 
         /// <summary>
         /// Constructs lamdba function capturing the current lexical scope.
@@ -470,7 +485,10 @@ namespace DotNext.Metaprogramming
         /// <returns>Constructed lambda expression.</returns>
         public LambdaExpression Lambda<D>(Action<LambdaBuilder<D>> lambda)
             where D : Delegate
-            => Build<LambdaExpression, LambdaBuilder<D>>(new LambdaBuilder<D>(this), lambda);
+        {
+            using (var builder = new LambdaBuilder<D>(this))
+                return Build<LambdaExpression, LambdaBuilder<D>>(builder, lambda);
+        }
 
         /// <summary>
         /// Constructs async lambda function capturing the current lexical scope.
@@ -484,7 +502,10 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
         public LambdaExpression AsyncLambda<D>(Action<AsyncLambdaBuilder<D>> lambda)
             where D : Delegate
-            => Build<LambdaExpression, AsyncLambdaBuilder<D>>(new AsyncLambdaBuilder<D>(this), lambda);
+        {
+            using (var builder = new AsyncLambdaBuilder<D>(this))
+                return Build<LambdaExpression, AsyncLambdaBuilder<D>>(builder, lambda);
+        }
 
         /// <summary>
         /// Adds structured exception handling statement.
@@ -529,7 +550,10 @@ namespace DotNext.Metaprogramming
         /// <param name="scope">The statement body.</param>
         /// <seealso cref="WithBlockBuilder.ScopeVar"/>
         public void With(UniversalExpression expression, Action<WithBlockBuilder> scope)
-            => AddStatement<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, this), scope);
+        {
+            using (var builder = new WithBlockBuilder(expression, this))
+                AddStatement<Expression, WithBlockBuilder>(builder, scope);
+        }
 
         /// <summary>
         /// Adds <see langword="using"/> statement.
@@ -537,7 +561,10 @@ namespace DotNext.Metaprogramming
         /// <param name="expression">The expression representing disposable resource.</param>
         /// <param name="scope">The body of the statement.</param>
         public void Using(UniversalExpression expression, Action<UsingBlockBuilder> scope)
-            => AddStatement<Expression, UsingBlockBuilder>(new UsingBlockBuilder(expression, this), scope);
+        {
+            using (var builder = new UsingBlockBuilder(expression, this))
+                AddStatement<Expression, UsingBlockBuilder>(builder, scope);
+        }
 
         /// <summary>
         /// Adds <see langword="lock"/> statement.
@@ -545,7 +572,10 @@ namespace DotNext.Metaprogramming
         /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
         /// <param name="scope">Synchronized scope of code.</param>
         public void Lock(UniversalExpression syncRoot, Action<LockBuilder> scope)
-            => AddStatement<BlockExpression, LockBuilder>(new LockBuilder(syncRoot, this), scope);
+        {
+            using (var builder = new LockBuilder(syncRoot, this))
+                AddStatement<BlockExpression, LockBuilder>(builder, scope);
+        }
 
         /// <summary>
         /// Adds selection expression.

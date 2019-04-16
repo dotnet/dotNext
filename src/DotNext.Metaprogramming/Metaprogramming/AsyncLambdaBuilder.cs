@@ -109,9 +109,11 @@ namespace DotNext.Metaprogramming
         /// <returns>Asynchronous lambda function.</returns>
         public static Expression<D> Build(bool tailCall, Action<AsyncLambdaBuilder<D>> lambdaBody)
         {
-            var builder = new AsyncLambdaBuilder<D>() { TailCall = tailCall };
-            lambdaBody(builder);
-            return ((IExpressionBuilder<Expression<D>>)builder).Build();
+            using (var builder = new AsyncLambdaBuilder<D>() { TailCall = tailCall })
+            {
+                lambdaBody(builder);
+                return ((IExpressionBuilder<Expression<D>>)builder).Build();
+            }
         }
 
         /// <summary>

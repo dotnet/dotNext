@@ -32,7 +32,8 @@ namespace DotNext.Metaprogramming
         /// <returns><see langword="this"/> builder.</returns>
         public SwitchBuilder Case(IEnumerable<Expression> testValues, Action<CompoundStatementBuilder> body)
         {
-            cases.Add(Expression.SwitchCase(NewScope().Build(body), testValues));
+            using (var caseScope = NewScope())
+                cases.Add(Expression.SwitchCase(caseScope.Build(body), testValues));
             return this;
         }
 
@@ -98,7 +99,10 @@ namespace DotNext.Metaprogramming
         /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
         /// <returns><see langword="this"/> builder.</returns>
         public SwitchBuilder Default(Action<CompoundStatementBuilder> body)
-            => Default(NewScope().Build(body));
+        {
+            using (var defaultScope = NewScope())
+                return Default(defaultScope.Build(body));
+        }
 
         private protected override SwitchExpression Build()
             => Expression.Switch(ExpressionType, switchValue, defaultExpression, null, cases);
