@@ -1,6 +1,6 @@
 using System;
 
-namespace DotNext.Reflection
+namespace DotNext.Runtime.CompilerServices
 {
     /// <summary>
     /// Indicates that generic parameter is constrained with a concept.

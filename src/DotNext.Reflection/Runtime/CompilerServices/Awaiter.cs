@@ -13,7 +13,7 @@ namespace DotNext.Runtime.CompilerServices
     /// This concept doesn't provide methods to obtain task result.
     /// </remarks>
     /// <typeparam name="TAwaiter">Any type implementing awaiter pattern</typeparam>
-    public abstract class AwaiterBase<TAwaiter>: IConcept<TAwaiter>
+    public abstract class AwaiterBase<TAwaiter>
         where TAwaiter: ICriticalNotifyCompletion
     {
         private static readonly MemberGetter<TAwaiter, bool> isCompleted = Type<TAwaiter>.Property<bool>.GetGetter(nameof(TaskAwaiter.IsCompleted));
@@ -55,6 +55,7 @@ namespace DotNext.Runtime.CompilerServices
     /// <typeparam name="R">Type of asynchronous result</typeparam>
     /// <see cref="Task{TResult}"/>
     /// <seealso cref="TaskAwaiter{TResult}"/>
+    [Concept]
     public sealed class Awaiter<TAwaiter, R>: AwaiterBase<TAwaiter>
         where TAwaiter: ICriticalNotifyCompletion
     {
@@ -80,6 +81,7 @@ namespace DotNext.Runtime.CompilerServices
     /// <typeparam name="TAwaiter">Any type implementing awaiter pattern</typeparam>
     /// <seealso cref="TaskAwaiter"/>
     /// <seealso cref="Task"/>
+    [Concept]
     public sealed class Awaiter<TAwaiter>: AwaiterBase<TAwaiter>
         where TAwaiter: ICriticalNotifyCompletion
     {

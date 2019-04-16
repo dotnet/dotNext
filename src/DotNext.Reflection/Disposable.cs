@@ -5,6 +5,7 @@ using static System.Linq.Expressions.Expression;
 namespace DotNext
 {
     using Reflection;
+    using ConceptAttribute = Runtime.CompilerServices.ConceptAttribute;
 
     /// <summary>
     /// Represents dispose pattern as a concept.
@@ -15,6 +16,7 @@ namespace DotNext
     /// </remarks>
     /// <typeparam name="T">A type which implements dispose pattern.</typeparam>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
+    [Concept]
     public static class Disposable<T>
     {
         private delegate void DisposeMethod(in T instance);

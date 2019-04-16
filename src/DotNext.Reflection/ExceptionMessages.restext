@@ -13,3 +13,4 @@ MissingField=Field {0} of type {1} doesn't exist in type {2}
 MissingMethod=Method {0} with parameters [{1}] and return type {2} doesn't exist in type {3}
 MissingProperty=Property {0} of type {1} doesn't exist in type {2}
 ExtensionMethodExpected=Method {0} should be an extension method
+ConceptTypeInvalidAttribution=Concept type {0} should be marked with {1}

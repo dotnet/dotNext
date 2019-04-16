@@ -16,7 +16,7 @@
 	<RepositoryType>git</RepositoryType>
 	<PackageTags>Concept;Reflection;Typeclass</PackageTags>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Updated version of core dotNext library.</PackageReleaseNotes>
+	<PackageReleaseNotes>Introduce assertions of constraints defined by Concept Type</PackageReleaseNotes>
   </PropertyGroup>
 
 

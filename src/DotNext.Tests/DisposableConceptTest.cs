@@ -21,7 +21,7 @@ namespace DotNext
         }
 
         [Fact]
-        public static void DisposeStructTest()
+        public static void IDisposableStruct()
         {
             var s = new DisposableStruct();
             Disposable<DisposableStruct>.Dispose(s);
@@ -31,7 +31,7 @@ namespace DotNext
         }
 
         [Fact]
-        public static void DisposeStruct2Test()
+        public static void DisposePattern()
         {
             var s = new DisposableStruct2();
             Disposable<DisposableStruct2>.Dispose(s);

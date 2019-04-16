@@ -39,5 +39,7 @@ namespace DotNext
         internal static string MissingProperty(string propertyName, Type propertyType, Type declaringType) => string.Format(resourceManager.GetString("MissingProperty"), propertyName, propertyType.FullName, declaringType.FullName);
 
         internal static string ExtensionMethodExpected(MethodBase method) => string.Format(resourceManager.GetString("ExtensionMethodExpected"), method.Name);
+    
+        internal static string ConceptTypeInvalidAttribution<A>(Type conceptType) where A : Attribute => string.Format(resourceManager.GetString("ConceptTypeInvalidAttribution"), conceptType.FullName, typeof(A).FullName);
     }
 }
