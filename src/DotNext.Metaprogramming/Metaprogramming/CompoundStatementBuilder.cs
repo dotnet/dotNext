@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Metaprogramming
 {
@@ -53,11 +54,13 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public CompoundStatementBuilder Parent{ get; }
 
-        private protected E Build<E, B>(B builder) 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private protected static E Build<E, B>(B builder) 
             where E: Expression
             where B: IExpressionBuilder<E>
             => builder.Build();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static E Build<E, B>(B builder, Action<B> body)
             where E: Expression
             where B: IExpressionBuilder<E>
@@ -70,8 +73,12 @@ namespace DotNext.Metaprogramming
             where E: Expression
             where B: IExpressionBuilder<E>
             => AddStatement(Build<E, B>(builder, body));
-        
-        internal void AddStatement(Expression statement) => statements.Add(statement);
+
+        internal void AddStatement(Expression statement)
+        {
+            ThrowIfDisposed();
+            statements.Add(statement);
+        }
 
         /// <summary>
         /// Adds no-operation instruction to this scope.
@@ -601,6 +608,7 @@ namespace DotNext.Metaprogramming
 
         internal virtual Expression Build()
         {
+            ThrowIfDisposed();
             switch(statements.Count)
             {
                 case 0:
