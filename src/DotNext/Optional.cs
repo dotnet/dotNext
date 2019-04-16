@@ -171,46 +171,40 @@ namespace DotNext
 		/// <summary>
 		/// Highly optimized checker of the content.
 		/// </summary>
-		private static readonly ByRefPredicate HasValueChecker;	//null means always has value
+		private static readonly ByRefPredicate HasValueChecker; //null means always has value
 
-		static Optional()
-		{
-			const BindingFlags NonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
-			var targetType = typeof(T);
-			MethodInfo checkerMethod;
-			if(targetType.IsOneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
-				checkerMethod = typeof(Optional<T>).GetMethod(nameof(HasNoValue), NonPublicStatic);
-			else if(targetType.IsPrimitive)//primitive always has value
-			{
-				HasValueChecker = null;
-				return;
-			}
-			else if(targetType.IsValueType)
-				//value type which implements IOptional
-				if(typeof(IOptional).IsAssignableFrom(targetType))
-					checkerMethod = targetType.GetInterfaceMap(typeof(IOptional)).TargetMethods[0];
-				else
-				{
-					var nullableType = Nullable.GetUnderlyingType(targetType);
-					if(nullableType is null)	//non-nullable value type always has value
-					{
-						HasValueChecker = null;
-						return;
-					}
-					//nullable type with optional
-					else if(typeof(IOptional).IsAssignableFrom(nullableType))
-						checkerMethod = typeof(NullableOptionalMethods).GetMethod(nameof(NullableOptionalMethods.HasValue), NonPublicStatic).MakeGenericMethod(nullableType);
-					//nullable type but not optional
-					else
-						checkerMethod = typeof(NullableOptionalMethods).GetMethod(nameof(NullableOptionalMethods.IsNotNull), NonPublicStatic).MakeGenericMethod(nullableType);
+        static Optional()
+        {
+            const BindingFlags NonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
+            var targetType = typeof(T);
+            MethodInfo checkerMethod;
+            if (targetType.IsOneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
+                checkerMethod = typeof(Optional<T>).GetMethod(nameof(HasNoValue), NonPublicStatic);
+            else if (targetType.IsPrimitive)//primitive always has value
+                checkerMethod = null;
+            else if (targetType.IsValueType)
+                //value type which implements IOptional
+                if (typeof(IOptional).IsAssignableFrom(targetType))
+                    checkerMethod = targetType.GetInterfaceMap(typeof(IOptional)).TargetMethods[0];
+                else
+                {
+                    var nullableType = Nullable.GetUnderlyingType(targetType);
+                    if (nullableType is null)   //non-nullable value type always has value
+                        checkerMethod = null;
+                    //nullable type with optional
+                    else if (typeof(IOptional).IsAssignableFrom(nullableType))
+                        checkerMethod = typeof(NullableOptionalMethods).GetMethod(nameof(NullableOptionalMethods.HasValue), NonPublicStatic).MakeGenericMethod(nullableType);
+                    //nullable type but not optional
+                    else
+                        checkerMethod = typeof(NullableOptionalMethods).GetMethod(nameof(NullableOptionalMethods.IsNotNull), NonPublicStatic).MakeGenericMethod(nullableType);
                 }
-			//reference type implementing IOptional
-			else if(typeof(IOptional).IsAssignableFrom(targetType))
-				checkerMethod = typeof(OptionalMethods).GetMethod(nameof(OptionalMethods.HasValue), NonPublicStatic).MakeGenericMethod(targetType);
-			else
-				checkerMethod = typeof(OptionalMethods).GetMethod(nameof(OptionalMethods.IsNotNull), NonPublicStatic).MakeGenericMethod(targetType);
-            HasValueChecker = checkerMethod.CreateDelegate<ByRefPredicate>();
-		}
+            //reference type implementing IOptional
+            else if (typeof(IOptional).IsAssignableFrom(targetType))
+                checkerMethod = typeof(OptionalMethods).GetMethod(nameof(OptionalMethods.HasValue), NonPublicStatic).MakeGenericMethod(targetType);
+            else
+                checkerMethod = typeof(OptionalMethods).GetMethod(nameof(OptionalMethods.IsNotNull), NonPublicStatic).MakeGenericMethod(targetType);
+            HasValueChecker = checkerMethod?.CreateDelegate<ByRefPredicate>();
+        }
 
 		private readonly T value;
 		private readonly bool isPresent;
