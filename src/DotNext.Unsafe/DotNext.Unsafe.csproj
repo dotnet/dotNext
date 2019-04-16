@@ -15,11 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>unsafe;unmanaged;pointer;pinvoke;interop</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Unmanaged array elements can be obtained using 64-bit index
-Introduce untyped access to the unmanaged memory. See UnmanagedMemory type.
-Fix pointer offset calculation bug in UnmanagedArray
-Volatile read and write from/to unamanaged memory
-Atomic pointer operations</PackageReleaseNotes>
+    <PackageReleaseNotes>Improved interoperability with Span&lt;T&gt; data type</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
