@@ -12,7 +12,7 @@ using DotNext.Generic;
 
 public sealed class IntVector<SIZE> where SIZE: Constant<long>, new()
 {
-    private static readonly long Size = Constant<long>.Of<SIZE>();   //or new SIZE()
+    private static readonly long Size = new SIZE();
 
     private readonly int[] array = new int[Size];
 }

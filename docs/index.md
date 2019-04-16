@@ -12,12 +12,13 @@ This chapter gives quick overview of these libraries. Read [articles](./features
 <a href="https://www.nuget.org/packages/dotnext/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.svg?style=flat"></a><br/>
 This library is the core of .NEXT which extends .NET Standard API with
   * Extension methods for .NET Standard types including generic collections
-  * Thread-safe atomic operations to work with `int`, `long`, `bool` and reference types
+  * Thread-safe advanced atomic operations to work with `int`, `long`, `bool`, `double`, `float` and reference types
   * Unified representation of synchronization lock
   * Generic specialization with constant values
   * Generation of random strings
   * Low-level methods to work with value types
-  * Ad-hoc user data associated with any object
+  * Fast comparison of arrays
+  * Ad-hoc user data associated with arbitrary object
 
 # DotNext.Reflection
 <a href="https://www.nuget.org/packages/dotnext.reflection/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.reflection.svg?style=flat"></a><br/>
@@ -25,7 +26,7 @@ This library provides support of strongly-typed and fast reflection as well as [
 
 # DotNext.Metaprogramming
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.metaprogramming.svg?style=flat"></a><br/>
-This library provides a rich set of tools to write and execute code on-the-fly. It extends [C# Expression Tree](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/expression-trees/) programming model with ordinary things for C# such as `foreach` loop, `for` loop, `while` loop, `using` statement and even asynchronous lambda expressions with full support of `async`/`await` semantics.
+This library provides a rich set of tools to write and execute code on-the-fly. It extends [C# Expression Tree](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/expression-trees/) programming model with ordinary things for C# such as `foreach` loop, `for` loop, `while` loop, `using` statement, `lock` statement and even asynchronous lambda expressions with full support of `async`/`await` semantics.
 
 # DotNext.Unsafe
 <a href="https://www.nuget.org/packages/dotnext.unsafe/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.unsafe.svg?style=flat"></a><br/>
@@ -39,6 +40,6 @@ This library provides a special types to work with unmanaged memory in type-safe
 
 # DotNext.Threading
 <a href="https://www.nuget.org/packages/dotnext.threading/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.threading.svg?style=flat"></a><br/>
-A set of advanced classes for multithreaded and asynchronous programming as well as non-blocking asynchronous alternatives of [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim), [Monitor](https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor), [ManualResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent) and [AutoResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent) in the form of [AsyncReaderWriterLock](api/DotNext.Threading.AsyncReaderWriterLock.yml), [AsyncExclusiveLock](api/DotNext.Threading.AsyncExclusiveLock.yml) and [AsyncResetEvent](api/DotNext.Threading.AsyncResetEvent.yml) respectively.
+A set of advanced classes for multithreaded and asynchronous programming as well as non-blocking asynchronous alternatives of [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim), [Monitor](https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor), [ManualResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent), [AutoResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent) and [CountdownEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.countdownevent) in the form of [AsyncReaderWriterLock](api/DotNext.Threading.AsyncReaderWriterLock.yml), [AsyncExclusiveLock](api/DotNext.Threading.AsyncExclusiveLock.yml), [AsyncManualResetEvent](api/DotNext.Threading.AsyncManualResetEvent.yml), [AsyncAutoResetEvent](api/DotNext.Threading.AsyncAutoResetEvent.yml) and [AsyncCountdownEvent](api/DotNext.Threading.AsyncCountdownEvent.yml) respectively.
 
 
