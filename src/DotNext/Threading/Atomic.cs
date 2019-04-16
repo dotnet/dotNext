@@ -7,7 +7,7 @@ namespace DotNext.Threading
 	internal static class Atomic<T, CAS>
 		where CAS : Constant<CAS<T>>, new()
 	{
-		private static readonly CAS<T> CompareAndSet = Constant<CAS<T>>.Of<CAS>(false);
+		private static readonly CAS<T> CompareAndSet = new CAS();
 
 		internal static (T OldValue, T NewValue) Update(ref T value, Func<T, T> updater)
 		{
