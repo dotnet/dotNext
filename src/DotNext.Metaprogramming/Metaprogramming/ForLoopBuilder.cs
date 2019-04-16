@@ -7,17 +7,18 @@ namespace DotNext.Metaprogramming
     /// Represents <see langword="for"/> loop statement builder.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
-    public sealed class ForLoopBuilder: LoopBuilderBase, IExpressionBuilder<LoopExpression>
+    public sealed class ForLoopBuilder: LoopBuilderBase, IExpressionBuilder<BlockExpression>
     {
         private readonly Expression condition;
         private readonly ParameterExpression loopVar;
+        private readonly BinaryExpression assignment;
         private bool continueLabelInstalled;
         
-        internal ForLoopBuilder(Expression initialization, Func<UniversalExpression, Expression> condition, CompoundStatementBuilder parent)
+        internal ForLoopBuilder(Expression initialization, Func<UniversalExpression, Expression> condition, CompoundStatementBuilder parent = null)
             : base(parent)
         {
-            loopVar = parent.DeclareVariable(initialization.Type, NextName("loop_var"));
-            parent.Assign(loopVar, initialization);
+            loopVar = Expression.Variable(initialization.Type, "loop_var");
+            assignment = Expression.Assign(loopVar, initialization);
             this.condition = condition(LoopVar);
         }
 
@@ -35,12 +36,13 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public UniversalExpression LoopVar => loopVar;
 
-        internal override Expression Build() => Build<LoopExpression, ForLoopBuilder>(this);
+        internal override Expression Build() => Build<BlockExpression, ForLoopBuilder>(this);
 
-        LoopExpression IExpressionBuilder<LoopExpression>.Build()
+        BlockExpression IExpressionBuilder<BlockExpression>.Build()
         {
-            var body = Expression.Condition(condition, base.Build(), Expression.Goto(breakLabel), typeof(void));
-            return continueLabelInstalled ? Expression.Loop(body, breakLabel) : Expression.Loop(body, breakLabel, continueLabel);
+            Expression body = Expression.Condition(condition, base.Build(), Expression.Goto(breakLabel), typeof(void));
+            body = continueLabelInstalled ? Expression.Loop(body, breakLabel) : Expression.Loop(body, breakLabel, continueLabel);
+            return Expression.Block(typeof(void), new[] { loopVar }, assignment, body);
         }
     }
 }

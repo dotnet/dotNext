@@ -45,5 +45,9 @@ namespace DotNext
         internal static string VoidLoopExpected => resourceManager.GetString("VoidLoopExpected");
 
         internal static string FilterHasAwait => resourceManager.GetString("FilterHasAwait");
+
+        internal static string LexicalScopeIntersection => resourceManager.GetString("LexicalScopeIntersection");
+
+        internal static string OuterScopeModificationDetected = resourceManager.GetString("OuterScopeModificationDetected");
     }
 }

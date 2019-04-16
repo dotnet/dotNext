@@ -17,7 +17,7 @@ namespace DotNext.Metaprogramming
         private readonly ParameterExpression disposableVar;
         private readonly BinaryExpression assignment;
 
-        internal UsingBlockBuilder(Expression expression, CompoundStatementBuilder parent)
+        internal UsingBlockBuilder(Expression expression, CompoundStatementBuilder parent = null)
             : base(parent)
         {
             disposeMethod = expression.Type.GetDisposeMethod();

@@ -127,7 +127,7 @@ namespace DotNext.Metaprogramming
                 if (ReturnType == typeof(void))
                     return null;
                 else if (lambdaResult is null)
-                    lambdaResult = DeclareVariable(ReturnType, NextName("lambdaResult_"));
+                    DeclareVariable(lambdaResult = Expression.Variable(ReturnType, NextName("lambdaResult_")));
                 return lambdaResult;
             }
         }

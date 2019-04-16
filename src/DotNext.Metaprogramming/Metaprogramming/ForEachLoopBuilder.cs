@@ -11,55 +11,55 @@ namespace DotNext.Metaprogramming
     /// Represents <see langword="foreach"/> loop builder.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
-    public sealed class ForEachLoopBuilder: LoopBuilderBase, IExpressionBuilder<TryExpression>
+    public sealed class ForEachLoopBuilder: LoopBuilderBase, IExpressionBuilder<BlockExpression>
     {
-        private readonly ParameterExpression enumerator;
+        private readonly ParameterExpression enumeratorVar;
+        private readonly BinaryExpression enumeratorAssignment;
         private readonly MethodCallExpression moveNextCall;
-        private readonly Expression element;
 
-        internal ForEachLoopBuilder(Expression collection, CompoundStatementBuilder parent)
+        internal ForEachLoopBuilder(Expression collection, CompoundStatementBuilder parent = null)
             : base(parent)
         {
             collection.Type.GetItemType(out var enumerable);
             const string GetEnumeratorMethod = nameof(IEnumerable.GetEnumerator);
             MethodCallExpression getEnumerator;
+            const string EnumeratorVarName = "enumerator";
             if (enumerable is null)
             {
                 getEnumerator = collection.Call(GetEnumeratorMethod);
                 if (getEnumerator is null)
                     throw new ArgumentException(ExceptionMessages.EnumerablePatternExpected);
-                enumerator = parent.DeclareVariable(getEnumerator.Method.ReturnType, NextName("enumerator_"));
-                moveNextCall = enumerator.Call(nameof(IEnumerator.MoveNext));
+                enumeratorVar = Expression.Variable(getEnumerator.Method.ReturnType, EnumeratorVarName);
+                moveNextCall = enumeratorVar.Call(nameof(IEnumerator.MoveNext));
             }
             else
             {
                 getEnumerator = collection.Call(enumerable, GetEnumeratorMethod);
-                enumerator = parent.DeclareVariable(getEnumerator.Method.ReturnType, NextName("enumerator_"));
+                enumeratorVar = Expression.Variable(getEnumerator.Method.ReturnType, EnumeratorVarName);
                 //enumerator.MoveNext()
-                moveNextCall = enumerator.Call(typeof(IEnumerator), nameof(IEnumerator.MoveNext));
+                moveNextCall = enumeratorVar.Call(typeof(IEnumerator), nameof(IEnumerator.MoveNext));
             }
             //enumerator = enumerable.GetEnumerator();
-            Parent.Assign(enumerator, getEnumerator);
-            //enumerator.Current
-            element = enumerator.Property(nameof(IEnumerator.Current));
+            enumeratorAssignment = Expression.Assign(enumeratorVar, getEnumerator);
         }
 
         /// <summary>
         /// Gets collection element.
         /// </summary>
-        public UniversalExpression Element => element;
+        public UniversalExpression Element => enumeratorVar.Property(nameof(IEnumerator.Current));
 
-        internal override Expression Build() => Build<TryExpression, ForEachLoopBuilder>(this);
+        internal override Expression Build() => Build<BlockExpression, ForEachLoopBuilder>(this);
 
-        TryExpression IExpressionBuilder<TryExpression>.Build()
+        BlockExpression IExpressionBuilder<BlockExpression>.Build()
         {
             Expression loopBody = moveNextCall.Condition(base.Build(), breakLabel.Goto());
-            var disposeMethod = enumerator.Type.GetDisposeMethod();
+            var disposeMethod = enumeratorVar.Type.GetDisposeMethod();
             loopBody = loopBody.Loop(breakLabel, continueLabel);
             var @finally = disposeMethod is null ?
-                    (Expression)enumerator.AssignDefault() :
-                    Expression.Block(enumerator.Call(disposeMethod), enumerator.Assign(enumerator.Type.AsDefault()));
-            return loopBody.Finally(@finally);
+                    (Expression)enumeratorVar.AssignDefault() :
+                    Expression.Block(enumeratorVar.Call(disposeMethod), enumeratorVar.Assign(enumeratorVar.Type.AsDefault()));
+            loopBody = loopBody.Finally(@finally);
+            return Expression.Block(typeof(void), new[] { enumeratorVar }, enumeratorAssignment, loopBody);
         }
     }
 }
