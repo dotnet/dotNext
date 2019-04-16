@@ -14,9 +14,11 @@ The feature is based on strongly typed reflection so read [this](reflection/fast
 # Defining Concept
 The recommended code style for the concept type is a definition of static class with restrictions expressed as static fields. Let's define type class with single instance method and single static method:
 ```csharp
-using System.Runtime.CompilerServices;
 using DotNext.Reflection;
+using DotNext.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
+[Concept]
 public static class Parseable<T>
     where T: struct
 {
@@ -31,7 +33,9 @@ public static class Parseable<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToString(in T @this, string format) => toStringMethod(@this, format);
 }
-``` 
+```
+
+[ConceptAttribute](../api/DotNext.Runtime.CompilerServices.ConceptAttribute.yml) is required attribute that should be applied to the concept type definition.
 
 `Type<T>.Method.Require` is a method requirement declaration. In this example, type _T_ should have two methods:
 * Public static method `T Parse(string text)`
@@ -51,7 +55,9 @@ The following concept type requires to have public instance property `Length` of
 
 ```csharp
 using DotNext.Reflection;
+using DotNext.Runtime.CompilerServices;
 
+[Concept]
 public static class LengthSupport<T>
 {
     private static readonly MemberGetter<T, int> lengthProp = Type<T>.Property<int>.Require("Length");
@@ -72,6 +78,9 @@ Now this concept allows to obtain value of `Length` property from any object.
 * [MissingEventException](../api/DotNext.Reflection.MissingEventException.yml) if required event doesn't exist
 
 In the context of strongly typed reflection it is recommended to use alternative methods `Get` (for instance members) or `GetStatic` (for static members). These methods have same the same behavior as `Require`/`RequireStatic` but they don't throw exception. If member cannot be resolved, these methods will return **null**.
+
+# Applying Concept
+When concept type is declared, it can be used as a constraint for generic type parameter of class or method. [Concept](../api/DotNext.Concept.yml) class allows to apply concept type to the generic parameter and verify constraints. This type useful
 
 # Special Delegates
 `Type<T>` and its nested classes offer a rich set of methods for members binding. These methods reflect members as well-known delegate types defined in .NET library or DotNext Reflection library. In some cases, no one of these delegates can fit the requested member. For example, overloaded method [int.TryParse](https://docs.microsoft.com/en-us/dotnet/api/system.int32.tryparse) with two parameters has **out** parameter. In this case, the supported set of delegates will not help. This issue can be resolved in two ways:
