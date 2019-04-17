@@ -7,6 +7,7 @@ namespace DotNext
 {
     using Reflection;
     using Runtime.InteropServices;
+    using Runtime.CompilerServices;
 
     /// <summary>
     /// Generates hash code and equality check functions for the particular type.
@@ -15,6 +16,7 @@ namespace DotNext
     /// Automatically generated hash code and equality check functions can be used
     /// instead of manually written implementation of overridden <see cref="object.GetHashCode"/> and <see cref="object.Equals(object)"/> methods.
     /// </remarks>
+    [RuntimeFeatures(RuntimeGenericInstantiation = true, DynamicCodeCompilation = true)]
     public static class EqualityComparerBuilder
     {
         private sealed class DynamicEqualityComparer<T>: IEqualityComparer<T>

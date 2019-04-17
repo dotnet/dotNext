@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Reflection
 {
+    using Runtime.CompilerServices;
+
     /// <summary>
     /// Provides specialized reflection methods for
     /// task types. 
@@ -18,6 +20,7 @@ namespace DotNext.Reflection
         /// <returns>Returns <see cref="Task"/> if <paramref name="taskResult"/> is <see cref="Void"/>; or <see cref="Task{TResult}"/> with actual generic argument equals to <paramref name="taskResult"/>.</returns>
         /// <seealso cref="Task"/>
         /// <seealso cref="Task{TResult}"/>
+        [RuntimeFeatures(RuntimeGenericInstantiation = true)]
 		public static Type MakeTaskType(this Type taskResult)
 			=> taskResult == typeof(void) ? typeof(Task) : typeof(Task<>).MakeGenericType(taskResult);
 

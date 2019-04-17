@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 namespace DotNext
 {
 	using static Reflection.TypeExtensions;
+    using Runtime.CompilerServices;
 
 	/// <summary>
 	/// Various extension and factory methods for constructing optional value.
@@ -173,6 +174,7 @@ namespace DotNext
 		/// </summary>
 		private static readonly ByRefPredicate HasValueChecker; //null means always has value
 
+        [RuntimeFeatures(RuntimeGenericInstantiation = true)]
         static Optional()
         {
             const BindingFlags NonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
