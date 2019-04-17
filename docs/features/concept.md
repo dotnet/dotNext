@@ -82,11 +82,39 @@ In the context of strongly typed reflection it is recommended to use alternative
 # Applying Concept
 When concept type is declared, it can be used as a constraint for generic type parameter of class or method. [Concept](../api/DotNext.Runtime.CompilerServices.Concept.yml) class allows to apply concept type to the generic parameter and verify constraints, thus, _fail fast_ if actual generic argument doesn't meet to the them. [ConstraintAttribute](../api/DotNext.Runtime.CompilerServices.ConstraintAttribute.yml) indicating that the specified generic parameter is constrained with one or more concept types.
 ```csharp
-public sealed class Formatter<T>
+using DotNext.Runtime.CompilerServices;
+using System;
+
+public sealed class Formatter<[Constraint(typeof(Parseable<>))] T>
 {
-    static Formatter() => 
+    static Formatter() => Concept.Assert(typeof(Parseable<T>));
+
+    private readonly string format;
+
+    public Formatter(string fmt) => format = fmt;
+
+    public string Concat(in T first, in T second) 
+        => Parsable<T>.ToString(first, format) + Parseable<T>.ToString(second, format);
 }
+
+var formatter = new Formatter<long>();          //constraint checked here
+Console.WriteLine(formatter.Concat(1L, 2L));
 ```
+
+Here, actual type `T` must satisfy to constraints defined by `Parseable` concept type, i.e. to have one instance method and one static method. `ConstraintAttribute` is an optional attribute aimed to inform the developer that generic parameter is constrained by one or more concept types. CLR doesn't rely on this attribute as well as Roslyn compiler. `Concept.Assert` enforces verification of generic argument correctness according with concept type. There are few reasons to place assertion into static constructor:
+1. Actual generic argument is accessible from static constructor
+1. Assertion is called automatically before the first instance is created or any static members are referenced
+1. Static constructor called once
+
+Invalid generic argument causes exception of type `ConstraintViolationException`.
+
+However, assertion is optional and not recommended for use inside of generic methods. Let's remove assertion code from the static constructor. In this case, verfication will be performed only at the following line of code:
+```csharp
+var formatter = new Formatter<long>();          
+Console.WriteLine(formatter.Concat(1L, 2L));//constraint checked here
+```
+
+This is contradiction to _fail fast_ strategy because `Formatter` class can be instantiated with wrong actual generic argument.
 
 # Special Delegates
 `Type<T>` and its nested classes offer a rich set of methods for members binding. These methods reflect members as well-known delegate types defined in .NET library or DotNext Reflection library. In some cases, no one of these delegates can fit the requested member. For example, overloaded method [int.TryParse](https://docs.microsoft.com/en-us/dotnet/api/system.int32.tryparse) with two parameters has **out** parameter. In this case, the supported set of delegates will not help. This issue can be resolved in two ways:
