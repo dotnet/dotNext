@@ -13,12 +13,6 @@ namespace DotNext.Metaprogramming
         {
         }
 
-        internal Expression Build(Action<ScopeBuilder> body)
-        {
-            body(this);
-            return Build();
-        }
-
         /// <summary>
         /// Puts constant value as the result of this lexical scope.
         /// </summary>

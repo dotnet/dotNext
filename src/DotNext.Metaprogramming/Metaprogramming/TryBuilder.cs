@@ -69,7 +69,7 @@ namespace DotNext.Metaprogramming
         public TryBuilder Fault(Action<CompoundStatementBuilder> fault)
         {
             using (var faultScope = NewScope())
-                return Fault(faultScope.Build(fault));
+                return Fault(faultScope.Build<Expression, CompoundStatementBuilder>(fault));
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace DotNext.Metaprogramming
         public TryBuilder Finally(Action<CompoundStatementBuilder> @finally)
         {
             using (var finallyScope = NewScope())
-                return Finally(finallyScope.Build(@finally));
+                return Finally(finallyScope.Build<Expression, CompoundStatementBuilder>(@finally));
         }
 
         /// <summary>

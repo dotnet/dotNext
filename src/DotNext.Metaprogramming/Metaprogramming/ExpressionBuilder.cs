@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Metaprogramming
 {
@@ -11,6 +12,15 @@ namespace DotNext.Metaprogramming
     /// </summary>
     public static class ExpressionBuilder
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static E Build<E, B>(this B builder, Action<B> scope)
+            where E : Expression
+            where B: class, IExpressionBuilder<E>
+        {
+            scope(builder);
+            return builder.Build();
+        }
+
         /// <summary>
         /// Constructs unary plus expression.
         /// </summary>
@@ -984,7 +994,10 @@ namespace DotNext.Metaprogramming
         /// <see cref="WithBlockBuilder"/>
         /// <see cref="WithBlockBuilder.ScopeVar"/>
         public static Expression With(this Expression expression, Action<WithBlockBuilder> scope, CompoundStatementBuilder parent = null)
-            => CompoundStatementBuilder.Build<Expression, WithBlockBuilder>(new WithBlockBuilder(expression, parent), scope);
+        {
+            using(var builder = new WithBlockBuilder(expression, parent))
+                return builder.Build<Expression, WithBlockBuilder>(scope);
+        }
 
         /// <summary>
         /// Constructs <see langword="using"/> statement.
@@ -997,7 +1010,10 @@ namespace DotNext.Metaprogramming
         /// <param name="parent">Optional parent scope.</param>
         /// <returns><see langword="using"/> statement.</returns>
         public static Expression Using(this Expression expression, Action<UsingBlockBuilder> scope, CompoundStatementBuilder parent = null)
-            => CompoundStatementBuilder.Build<Expression, UsingBlockBuilder>(new UsingBlockBuilder(expression, parent), scope);
+        {
+            using(var builder = new UsingBlockBuilder(expression, parent))
+                return builder.Build<Expression, UsingBlockBuilder>(scope);
+        }
 
         /// <summary>
         /// Creates selection statement builder that chooses a single <see langword="switch"/> section 
@@ -1021,9 +1037,7 @@ namespace DotNext.Metaprogramming
             where D : Delegate
         {
             using (var builder = new Runtime.CompilerServices.AsyncStateMachineBuilder<D>(lambda.Parameters))
-            {
                 return builder.Build(lambda.Body, lambda.TailCall);
-            }
         }
 
         internal static Expression AddPrologue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)
@@ -1072,12 +1086,6 @@ namespace DotNext.Metaprogramming
     /// Represents compound expresssion builder.
     /// </summary>
     /// <typeparam name="E">Type of expression to be constructed.</typeparam>
-    /// <see cref="WithBlockBuilder"/>
-    /// <see cref="UsingBlockBuilder"/>
-    /// <see cref="SwitchBuilder"/>
-    /// <see cref="ForLoopBuilder"/>
-    /// <see cref="ForEachLoopBuilder"/>
-    /// <see cref="WhileLoopBuider"/>
     public abstract class ExpressionBuilder<E> : IExpressionBuilder<E>
         where E : Expression
     {
@@ -1091,16 +1099,13 @@ namespace DotNext.Metaprogramming
             this.treatAsStatement = treatAsStatement;
         }
 
-        private protected ScopeBuilder NewScope() => new ScopeBuilder(parent);
+        private protected ScopeBuilder NewScope() => NewScope(parent => new ScopeBuilder(parent));
 
         private protected B NewScope<B>(Func<CompoundStatementBuilder, B> factory)
             where B : ScopeBuilder
             => factory(parent);
 
-        private protected Type ExpressionType
-        {
-            get => expressionType ?? typeof(void);
-        }
+        private protected Type ExpressionType => expressionType ?? typeof(void);
 
         /// <summary>
         /// Changes type of the expression.
@@ -1124,9 +1129,9 @@ namespace DotNext.Metaprogramming
         public ExpressionBuilder<E> OfType<T>() => OfType(typeof(T));
 
         /// <summary>
-        /// Constructs expression and add, optionally, it to the underlying compound statement.
+        /// Constructs expression and, optionally, adds it to the underlying compound statement.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Constructed expression.</returns>
         public E End()
         {
             var expr = Build();
