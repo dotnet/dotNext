@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using static System.Runtime.ExceptionServices.ExceptionDispatchInfo;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 
@@ -20,22 +19,20 @@ namespace DotNext.Reflection
         /// <exception cref="ArgumentException"><paramref name="conceptType"/> is not marked with <see cref="ConceptAttribute"/>.</exception>
         public static void Assert(Type conceptType)
         {
-            if(!conceptType.IsDefined<ConceptAttribute>())
+            if (!conceptType.IsDefined<ConceptAttribute>())
                 throw new ArgumentException(ExceptionMessages.ConceptTypeInvalidAttribution<ConceptAttribute>(conceptType), nameof(conceptType));
             try
             {
                 //run class constructor for concept type and its parents
-                while(!(conceptType is null))
+                while (!(conceptType is null))
                 {
                     RunClassConstructor(conceptType.TypeHandle);
                     conceptType = conceptType.BaseType;
                 }
-            } 
-            catch(TypeInitializationException e)
+            }
+            catch (TypeInitializationException e) when (e.InnerException is ConstraintViolationException violation)
             {
-                if(e.InnerException is ConstraintViolationException violation)
-                    Capture(violation).Throw();
-                throw;
+                Capture(violation).Throw();
             }
         }
 
