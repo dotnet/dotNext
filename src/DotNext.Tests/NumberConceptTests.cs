@@ -3,7 +3,8 @@ using Xunit;
 
 namespace DotNext
 {
-    using Reflection;
+    using Concept = Runtime.CompilerServices.Concept;
+    using ConstraintViolationException = Reflection.ConstraintViolationException;
 
     public sealed class NumberConceptTests: Assert
     { 
