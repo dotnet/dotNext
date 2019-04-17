@@ -2,9 +2,9 @@ using System;
 using static System.Runtime.ExceptionServices.ExceptionDispatchInfo;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 
-namespace DotNext.Reflection
+namespace DotNext.Runtime.CompilerServices
 {
-    using ConceptAttribute = Runtime.CompilerServices.ConceptAttribute;
+    using Reflection;
 
     /// <summary>
     /// Provides a check of constaints defined by concept types.
@@ -37,11 +37,20 @@ namespace DotNext.Reflection
         }
 
         /// <summary>
+        /// Applies constraints described by concept type.
+        /// </summary>
+        /// <typeparam name="C">A type describing concept.</typeparam>
+        /// <exception cref="ConstraintViolationException">One or more constaints defined by concept type are violated.</exception>
+        /// <exception cref="ArgumentException"><typeparamref name="C"/> is not marked with <see cref="ConceptAttribute"/>.</exception>
+        public static void Assert<C>() => Assert(typeof(C));
+
+        /// <summary>
         /// Applies a chain of constraints described by multiple concept types.
         /// </summary>
         /// <param name="conceptType">A static type describing concept.</param>
         /// <param name="other">A set of static types describing concept.</param>
         /// <exception cref="ConstraintViolationException">Constraints defined by concept types are violated.</exception>
+        /// <exception cref="ArgumentException">One or more concept types are not marked with <see cref="ConceptAttribute"/>.</exception>
         public static void Assert(Type conceptType, params Type[] other)
         {
             Assert(conceptType);
