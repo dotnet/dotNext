@@ -16,7 +16,7 @@ namespace DotNext
     /// Automatically generated hash code and equality check functions can be used
     /// instead of manually written implementation of overridden <see cref="object.GetHashCode"/> and <see cref="object.Equals(object)"/> methods.
     /// </remarks>
-    [RuntimeFeatures(RuntimeGenericInstantiation = true, DynamicCodeCompilation = true)]
+    [RuntimeFeatures(RuntimeGenericInstantiation = true, DynamicCodeCompilation = true, PrivateReflection = true)]
     public static class EqualityComparerBuilder
     {
         private sealed class DynamicEqualityComparer<T>: IEqualityComparer<T>

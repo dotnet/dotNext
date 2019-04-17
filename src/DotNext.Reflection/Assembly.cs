@@ -2,4 +2,4 @@
 using System;
 
 [assembly: CLSCompliant(true)]
-[assembly: RuntimeFeatures(DynamicCodeCompilation = true, RuntimeGenericInstantiation = true)]
+[assembly: RuntimeFeatures(DynamicCodeCompilation = true, RuntimeGenericInstantiation = true, PrivateReflection = true)]
