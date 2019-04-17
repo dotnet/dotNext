@@ -9,7 +9,7 @@
     <Product>.NEXT Family of Libraries</Product>
     <Version>0.6.0</Version>
 	<AssemblyName>DotNext</AssemblyName>
-    <PackageLicenseUrl>https://github.com/sakno/dotNext/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
