@@ -31,8 +31,8 @@ namespace DotNext.Metaprogramming
         /// <returns><see langword="this"/> builder.</returns>
         public TryBuilder Catch(Type exceptionType, Action<CatchBuilder> @catch)
         {
-            var catchBlock = NewScope(parent => new CatchBuilder(exceptionType, parent)).Build(@catch);
-            handlers.Add(catchBlock);
+            using (var catchBlock = NewScope(parent => new CatchBuilder(exceptionType, parent)))
+                handlers.Add(catchBlock.Build(@catch));
             return this;
         }
 
@@ -67,7 +67,10 @@ namespace DotNext.Metaprogramming
         /// <param name="fault">Fault handling block.</param>
         /// <returns><see langword="this"/> builder.</returns>
         public TryBuilder Fault(Action<CompoundStatementBuilder> fault)
-            => Fault(NewScope().Build(fault));
+        {
+            using (var faultScope = NewScope())
+                return Fault(faultScope.Build(fault));
+        }
 
         /// <summary>
         /// Associates expression to be returned from structured exception handling block 
@@ -87,7 +90,10 @@ namespace DotNext.Metaprogramming
         /// <param name="finally">The block of code to be executed.</param>
         /// <returns><see langword="this"/> builder.</returns>
         public TryBuilder Finally(Action<CompoundStatementBuilder> @finally)
-            => Finally(NewScope().Build(@finally));
+        {
+            using (var finallyScope = NewScope())
+                return Finally(finallyScope.Build(@finally));
+        }
 
         /// <summary>
         /// Constructs single expression run when control leaves a <see langword="try"/> statement.

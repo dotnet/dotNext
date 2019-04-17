@@ -17,7 +17,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public void ForEachTest()
+		public static void ForEachTest()
 		{
 			IList<int> list = new List<int> { 1, 10, 20 };
 			var counter = new Counter<int>();
@@ -30,7 +30,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public void FirstOrNullTest()
+		public static void FirstOrNullTest()
 		{
 			var array = new long[0];
 			var element = array.FirstOrNull();
@@ -41,7 +41,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public void ElementAtIndex()
+		public static void ElementAtIndex()
 		{
 			var list = new LinkedList<long>();
 			list.AddLast(10);
@@ -54,7 +54,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public void SkipNullsTest()
+		public static void SkipNullsTest()
 		{
 			var list = new LinkedList<string>();
 			list.AddLast("a");
@@ -69,7 +69,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public void ToStringTest()
+		public static void ToStringTest()
 		{
 			var array = new int[] { 10, 20, 30 };
 			var str = array.ToString(":");

@@ -1,0 +1,77 @@
+using System;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace DotNext.Threading
+{
+    public sealed class AsyncCountdownEventTests: Assert
+    {   
+        [Fact]
+        public static async Task Counting()
+        {
+            using(var countdown = new AsyncCountdownEvent(4))
+            {
+                False(countdown.IsSet);
+                False(await countdown.Wait(TimeSpan.FromMilliseconds(100)));
+                
+                False(countdown.Signal()); //count == 3
+                False(countdown.IsSet);
+                False(await countdown.Wait(TimeSpan.FromMilliseconds(100)));
+                
+                True(countdown.Signal(3));
+                True(countdown.IsSet);
+                True(await countdown.Wait(TimeSpan.FromMilliseconds(40)));
+            }
+        }
+
+        [Fact]
+        public static void StateTransitions()
+        {
+            CheckStateTransitions(0, 0, false);
+            CheckStateTransitions(1, 0, false);
+            CheckStateTransitions(128, 0, false);
+            CheckStateTransitions(1024 * 1024, 0, false);
+            CheckStateTransitions(1, 1024, false);
+            CheckStateTransitions(128, 1024, false);
+            CheckStateTransitions(1024 * 1024, 1024, false);
+            CheckStateTransitions(1, 0, true);
+            CheckStateTransitions(128, 0, true);
+            CheckStateTransitions(1024 * 1024, 0, true);
+            CheckStateTransitions(1, 1024, true);
+            CheckStateTransitions(128, 1024, true);
+            CheckStateTransitions(1024 * 1024, 1024, true);
+        } 
+
+        private static void CheckStateTransitions(long initCount, long increms, bool takeAllAtOnce)
+        {
+            using(var ev = new AsyncCountdownEvent(initCount))
+            {
+                Equal(initCount, ev.InitialCount);
+
+                // Increment (optionally).
+                for (var i = 1; i < increms + 1; i++)
+                {
+                    ev.AddCount();
+                    Equal(initCount + i, ev.CurrentCount);
+                }
+
+                // Decrement until it hits 0.
+                if (takeAllAtOnce)
+                    ev.Signal(initCount + increms);
+                else
+                    for (int i = 0; i < initCount + increms; i++)
+                    {
+                        False(ev.IsSet, string.Format("  > error: latch is set after {0} signals", i));
+                        ev.Signal();
+                    }
+
+                True(ev.IsSet);
+                Equal(0, ev.CurrentCount);
+
+                // Now reset the event and check its count.
+                ev.Reset();
+                Equal(ev.InitialCount, ev.CurrentCount);
+            }
+        }
+    }
+}

@@ -140,7 +140,7 @@ namespace DotNext.Runtime.InteropServices
             var pointer = Address;
             do
             {
-                var actualCount = (int)count.UpperBounded(int.MaxValue);
+                var actualCount = (int)count.Min(int.MaxValue);
                 var span = new Span<T>(pointer.ToPointer(), actualCount);
                 count -= actualCount;
                 pointer += actualCount;
@@ -202,7 +202,7 @@ namespace DotNext.Runtime.InteropServices
             else if (count <= 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
             else
-                Memory.ZeroMem(value, count);
+                Memory.ClearBits(value, count);
         }
 
         /// <summary>

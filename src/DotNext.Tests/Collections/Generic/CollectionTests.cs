@@ -6,7 +6,7 @@ namespace DotNext.Collections.Generic
     public sealed class CollectionTests: Assert
     {
         [Fact]
-        public void ReadOnlyIndexerTest()
+        public static void ReadOnlyIndexer()
         {
             IReadOnlyList<long> array = new long[] {5L, 6L, 20L };
             Equal(20L, List.Indexer<long>.ReadOnly(array, 2));
@@ -14,7 +14,7 @@ namespace DotNext.Collections.Generic
         }
 
         [Fact]
-        public void IndexerTest()
+        public static void Indexer()
         {
             IList<long> array = new long[] { 5L, 6L, 30L };
             Equal(30L, List.Indexer<long>.Getter(array, 2));

@@ -6,7 +6,7 @@ namespace DotNext.Runtime.CompilerServices
     public sealed class ValueTupleBuilderTests: Assert
     {
         [Fact]
-        public void TupleTypeConstructionTest()
+        public static void TupleTypeConstructionTest()
         {
             var builder = new ValueTupleBuilder();
             Equal(typeof(ValueTuple), builder.Build());

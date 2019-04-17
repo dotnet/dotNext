@@ -24,25 +24,27 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Restarts execution of this loop.
         /// </summary>
-        /// <returns>An expression representing jump to the beginning of the loop.</returns>
-        public GotoExpression Continue() => Continue(true);
+        public void Continue() => Continue(true);
 
         /// <summary>
         /// Stops execution of this loop.
         /// </summary>
-        /// <returns>An expression representing jump outside of the loop.</returns>
-        public GotoExpression Break() => Break(true);
+        public void Break() => Break(true);
 
         internal GotoExpression Continue(bool addAsStatement)
         {
             var expr = Expression.Continue(continueLabel);
-            return addAsStatement ? AddStatement(expr) : expr;
+            if(addAsStatement)
+                AddStatement(expr);
+            return expr;
         }
 
         internal GotoExpression Break(bool addAsStatement)
         {
             var expr = Expression.Break(breakLabel);
-            return addAsStatement ? AddStatement(expr) : expr;
+            if(addAsStatement)
+                AddStatement(expr);
+            return expr;
         }
     }
 }

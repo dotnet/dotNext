@@ -6,7 +6,7 @@ namespace DotNext
     public sealed class PredicateTests: Assert
     {
         [Fact]
-        public void PredefinedDelegatesTest()
+        public static void PredefinedDelegatesTest()
         {
             True(Predicate.True<string>().Invoke(""));
             False(Predicate.False<int>().Invoke(0));
@@ -17,14 +17,14 @@ namespace DotNext
         }
 
         [Fact]
-        public void NegateTest()
+        public static void NegateTest()
         {
             False(Predicate.IsNull<string>().Negate().Invoke(null));
             True(Predicate.IsNull<string>().Negate().Invoke(""));
         }
 
         [Fact]
-        public void ConversionTest()
+        public static void ConversionTest()
         {
             True(Predicate.AsConverter<string>(str => str.Length == 0).Invoke(""));
             False(Predicate.AsFunc<string>(str => str.Length > 0).Invoke(""));

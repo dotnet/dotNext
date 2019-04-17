@@ -19,7 +19,7 @@ namespace DotNext.Metaprogramming
                 this.syncRoot = syncVar;
             else
             {
-                this.syncRoot = Expression.Variable(typeof(object), NextName("syncRoot_"));
+                this.syncRoot = Expression.Variable(typeof(object), "syncRoot");
                 assignment = this.syncRoot.Assign(syncRoot);
             }
         }

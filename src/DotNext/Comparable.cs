@@ -10,16 +10,42 @@ namespace DotNext
     public static class Comparable
     {
         /// <summary>
-        /// Returns the smaller of two values.
+        /// Restricts a <paramref name="value" /> in specific range.
         /// </summary>
         /// <typeparam name="T">Type of the values.</typeparam>
-        /// <param name="first">The first value.</param>
-        /// <param name="second">The second value.</param>
-        /// <param name="comparer">Comparison function.</param>
-        /// <returns>The smaller of two values.</returns>
+        /// <param name="value">Value to be restricted.</param>
+        /// <param name="min">Minimal range value.</param>
+        /// <param name="max">Maximum range value.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T Min<T>(T first, T second, Comparison<T> comparer)
-            => comparer(first, second) < 0 ? first : second;
+        public static T Clamp<T> (this T value, T min, T max) where T : IComparable<T> => value.Min(max).Max(min);
+
+        /// <summary>
+		/// Checks whether specified value is in range.
+		/// </summary>
+		/// <typeparam name="T">Type of value to check.</typeparam>
+		/// <param name="value">Value to check.</param>
+		/// <param name="left">Range left bound.</param>
+		/// <param name="right">Range right bound.</param>
+		/// <param name="boundType">Range endpoints bound type.</param>
+		/// <returns><see langword="true"/>, if <paramref name="value"/> is in its bounds.</returns>
+        public static bool Between<T>(this T value, T left, T right, BoundType boundType = BoundType.Open)
+            where T: IComparable<T>
+        {
+            int leftCmp = value.CompareTo(left), rightCmp = value.CompareTo(right);
+            switch(boundType)
+            {
+                case BoundType.Open:
+                    return leftCmp > 0 && rightCmp < 0;
+                case BoundType.LeftClosed:
+                    return leftCmp >= 0 && rightCmp < 0;
+                case BoundType.RightClosed:
+                    return leftCmp > 0 && rightCmp <= 0;
+                case BoundType.Closed:
+					return leftCmp >= 0 && rightCmp <= 0;
+                default:
+                    return false;
+            }
+        }
 
         /// <summary>
         /// Returns the smaller of two values.
@@ -30,8 +56,18 @@ namespace DotNext
         /// <param name="comparer">Comparison function.</param>
         /// <returns>The smaller of two values.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T Min<T>(T first, T second, IComparer<T> comparer)
-            => Min(first, second, comparer.Compare);
+        public static T Min<T>(T first, T second, Comparison<T> comparer) => comparer(first, second) < 0 ? first : second;
+
+        /// <summary>
+        /// Returns the smaller of two values.
+        /// </summary>
+        /// <typeparam name="T">Type of the values.</typeparam>
+        /// <param name="first">The first value.</param>
+        /// <param name="second">The second value.</param>
+        /// <param name="comparer">Comparison function.</param>
+        /// <returns>The smaller of two values.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Min<T>(T first, T second, IComparer<T> comparer) => comparer.Compare(first, second) < 0 ? first : second;
 
         /// <summary>
         /// Returns the smaller of two values.
@@ -65,7 +101,7 @@ namespace DotNext
         /// <returns>The larger of two values.</returns>       
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Max<T>(T first, T second, IComparer<T> comparer)
-            => Max(first, second, comparer.Compare);
+            => comparer.Compare(first, second) > 0 ? first : second;
 
         /// <summary>
 		/// Returns the larger of two values.

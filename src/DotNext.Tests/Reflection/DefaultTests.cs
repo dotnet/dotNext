@@ -6,7 +6,7 @@ namespace DotNext.Reflection
     public sealed class DefaultTests: Assert
     {
         [Fact]
-        public void RefTypeDefaultTest()
+        public static void RefTypeDefaultTest()
         {
             Null(Type<string>.Default);
             True(Type<string>.IsDefault(default));
@@ -14,7 +14,7 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        public void StructTypeDefaultTest()
+        public static void StructTypeDefaultTest()
         {
             var value = default(Guid);
             True(Type<Guid>.IsDefault(value));

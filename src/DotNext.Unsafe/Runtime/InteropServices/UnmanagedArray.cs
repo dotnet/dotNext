@@ -226,7 +226,7 @@ namespace DotNext.Runtime.InteropServices
             else if(startIndex >= Length || count == 0L)
                 return Empty;
             else
-                return new UnmanagedArray<T>(pointer + startIndex, count.UpperBounded(Length - startIndex));
+                return new UnmanagedArray<T>(pointer + startIndex, count.Min(Length - startIndex));
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace DotNext.Runtime.InteropServices
             if (count == 0 || IsEmpty)
                 return -1;
             else
-                count = count.UpperBounded(Length);
+                count = count.Min(Length);
             for (var index = count - 1; index >= startIndex; index--)
                 if (predicate((pointer + index).Value))
                     return index;
@@ -283,7 +283,7 @@ namespace DotNext.Runtime.InteropServices
             if (count == 0 || IsEmpty)
                 return -1;
             else
-                count = count.UpperBounded(Length);
+                count = count.Min(Length);
             for (var index = count - 1; index >= startIndex; index--)
                 if (comparer.Equals((pointer + index).Value, item))
                     return index;
@@ -341,7 +341,7 @@ namespace DotNext.Runtime.InteropServices
             if (count == 0 || IsEmpty)
                 return -1;
             else
-                count = count.UpperBounded(Length);
+                count = count.Min(Length);
             for (var index = startIndex; index < count; index++)
                 if (predicate((pointer + index).Value))
                     return index;
@@ -381,7 +381,7 @@ namespace DotNext.Runtime.InteropServices
             if (count == 0 || IsEmpty)
                 return -1;
             else
-                count = count.UpperBounded(Length);
+                count = count.Min(Length);
             for (var index = startIndex; index < count; index++)
                 if (comparer.Equals((pointer + index).Value, item))
                     return index;
@@ -436,7 +436,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The index of the item; or -1, if item doesn't exist in the array.</returns>
         public long BinarySearch(T item, long startIndex, long count, IComparer<T> comparison)
         {
-            count = count.UpperBounded(Length);
+            count = count.Min(Length);
             count -= 1;
             while(startIndex <= count)
             {
@@ -499,7 +499,7 @@ namespace DotNext.Runtime.InteropServices
         {
             if (count == 0 || IsEmpty)
                 return;
-            QuickSort(startIndex, count.UpperBounded(Length) - 1, comparison);
+            QuickSort(startIndex, count.Min(Length) - 1, comparison);
         }
 
         /// <summary>

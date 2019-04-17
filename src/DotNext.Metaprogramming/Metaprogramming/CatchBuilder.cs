@@ -31,7 +31,10 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="filter">Filter expression builder.</param>
         public void Filter(Action<CompoundStatementBuilder> filter)
-            => this.filter = new ScopeBuilder(Parent).Build(filter);
+        {
+            using (var filterScope = new ScopeBuilder(Parent))
+                this.filter = filterScope.Build(filter);
+        }
 
         internal CatchBlock Build(Action<CatchBuilder> body)
         {

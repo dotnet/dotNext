@@ -8,7 +8,7 @@ namespace DotNext.Threading
     public sealed class AsyncReaderWriterLockTests : Assert
     {
         [Fact]
-        public async Task TrivialLock()
+        public static async Task TrivialLock()
         {
             using (var rwLock = new AsyncReaderWriterLock())
             {
@@ -40,7 +40,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public async Task InvalidExits()
+        public static async Task InvalidExits()
         {
             using (var rwLock = new AsyncReaderWriterLock())
             {
@@ -66,7 +66,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public async Task WriterToWriterChain()
+        public static async Task WriterToWriterChain()
         {
             using (var are = new AutoResetEvent(false))
             using (var rwLock = new AsyncReaderWriterLock())
@@ -88,7 +88,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public async Task WriterToReaderChain()
+        public static async Task WriterToReaderChain()
         {
             using (var are = new AutoResetEvent(false))
             using (var rwLock = new AsyncReaderWriterLock())
@@ -110,7 +110,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public async Task WriterToUpgradeableReaderChain()
+        public static async Task WriterToUpgradeableReaderChain()
         {
             using (var are = new AutoResetEvent(false))
             using (var rwLock = new AsyncReaderWriterLock())

@@ -11,7 +11,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public void BoxUnboxTest()
+        public static void BoxUnboxTest()
         {
             using(var value = new UnmanagedMemory<Data>(new Data { Field1 = 10, Field2 = 20 }))
             {
@@ -23,7 +23,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public void UntypedMemoryTest()
+        public static void UntypedMemoryTest()
         {
             var memory = new UnmanagedMemory(10);
             try

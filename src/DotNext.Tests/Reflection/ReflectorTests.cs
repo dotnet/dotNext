@@ -6,7 +6,7 @@ namespace DotNext.Reflection
     public sealed class ReflectorTests: Assert
     {
 		[Fact]
-		public void ConstructorBindingTest()
+		public static void ConstructorBinding()
 		{
 			var ctor = typeof(string).GetConstructor(new[] { typeof(char), typeof(int) });
 			Func<char, int, string> reflected = ctor.Unreflect<Func<char, int, string>>();
@@ -18,7 +18,7 @@ namespace DotNext.Reflection
 		}
 
 		[Fact]
-		public void InstanceMethodBindingTest()
+		public static void InstanceMethodBinding()
 		{
 			var indexOf = typeof(string).GetMethod(nameof(string.IndexOf), new[] { typeof(char), typeof(int) });
 			Func<string, char, int, int> reflected = indexOf.Unreflect<Func<string, char, int, int>>();
@@ -30,7 +30,7 @@ namespace DotNext.Reflection
 		}
 
 		[Fact]
-		public void StaticMethodBindingTest()
+		public static void StaticMethodBinding()
 		{
 			var compare = typeof(string).GetMethod(nameof(string.Compare), new[] { typeof(string), typeof(string) });
 			var reflected = compare.Unreflect<Func<string, string, int>>();
@@ -42,7 +42,7 @@ namespace DotNext.Reflection
 		}
 
 		[Fact]
-		public void TryParseFastInvokeTest()
+		public static void TryParseFastInvoke()
 		{
 			//static
 			var method = typeof(long).GetMethod("TryParse", new[] { typeof(string), typeof(long).MakeByRefType() });
@@ -67,7 +67,7 @@ namespace DotNext.Reflection
 		}
 
 		[Fact]
-		public void ToInt32FastInvokeTest()
+		public static void ToInt32FastInvoke()
 		{
 			var method = typeof(IntPtr).GetMethod(nameof(IntPtr.ToInt32));
 			Function<object, ValueTuple, object> weakInvoker = method.Unreflect<Function<object, ValueTuple, object>>();
@@ -75,7 +75,7 @@ namespace DotNext.Reflection
 		}
 
 		[Fact]
-		public void NewIntPtrTest()
+		public static void NewIntPtr()
 		{
 			var ctor = typeof(IntPtr).GetConstructor(new[] { typeof(int) });
 			Function<ValueTuple<int>, IntPtr> factory = ctor.Unreflect<Function<ValueTuple<int>, IntPtr>>();

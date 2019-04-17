@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Collections;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -140,58 +139,31 @@ namespace DotNext
 		/// <typeparam name="T">Type of value.</typeparam>
 		/// <returns></returns>
 		public static ref readonly Optional<T> Coalesce<T>(this in Optional<T> first, in Optional<T> second) => ref first.IsPresent ? ref first : ref second;
-
-		private static PropertyInfo GetHasContentProperty(Type targetType)
-		{
-			var optionalInterface = typeof(IOptional);
-			return optionalInterface.IsAssignableFrom(targetType) ?
-				optionalInterface.GetProperty(nameof(IOptional.IsPresent)) :
-				null;
-			
-		}
-
-		private static Expression HasContentPropertyExpression(Expression input)
-		{
-			var property = GetHasContentProperty(input.Type);
-			return property is null ? null : Expression.Property(input, property);
-		}
-
-        internal static Expression CheckerBodyForValueType(Expression input)
-        {
-            if (input.Type.IsOneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
-                return Expression.Constant(false);
-            var nullableType = Nullable.GetUnderlyingType(input.Type);
-            if (nullableType is null)   //handle regular struct
-                return HasContentPropertyExpression(input) ?? Expression.Constant(true);
-            //handle nullable type
-            var hasValuePropertyExpr = Expression.Property(input,
-                input.Type.GetProperty(nameof(Nullable<int>.HasValue), typeof(bool)));
-            var valuePropertyExpr = Expression.Property(input,
-                input.Type.GetProperty(nameof(Nullable<int>.Value), nullableType));
-            //recursive call to unwind nullable chain
-            //input.HasValue && input.Value.HasContent -or- input.HasValue
-            return Expression.AndAlso(hasValuePropertyExpr, CheckerBodyForValueType(valuePropertyExpr));
-        }
-
-		internal static Expression CheckerBodyForReferenceType(ParameterExpression input)
-		{
-			//HasContent property reference
-			var hasContentPropertyExpr = HasContentPropertyExpression(input);
-			return hasContentPropertyExpr is null ?
-				 //input != null
-				 Expression.ReferenceNotEqual(input, Expression.Constant(null, input.Type)) :
-				 //input != null && input.HasContent
-				 Expression.AndAlso(
-					Expression.ReferenceNotEqual(input, Expression.Constant(null, input.Type)),
-					hasContentPropertyExpr);
-		}
 	}
 
-	/// <summary>
-	/// A container object which may or may not contain a value.
-	/// </summary>
-	/// <typeparam name="T">Type of value.</typeparam>
-	[Serializable]
+    internal static class OptionalMethods
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool HasValue<T>(ref T value) where T : class, IOptional => !(value is null) && value.IsPresent;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsNotNull<T>(ref T value) where T : class => !(value is null);
+    }
+
+    internal static class NullableOptionalMethods
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool HasValue<T>(ref T? value) where T : struct, IOptional => value.HasValue && value.Value.IsPresent;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsNotNull<T>(ref T? value) where T : struct => value.HasValue;
+    }
+
+    /// <summary>
+    /// A container object which may or may not contain a value.
+    /// </summary>
+    /// <typeparam name="T">Type of value.</typeparam>
+    [Serializable]
 	public readonly struct Optional<T> : IOptional, IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable
 	{
 		private delegate bool ByRefPredicate(in T value);
@@ -199,17 +171,40 @@ namespace DotNext
 		/// <summary>
 		/// Highly optimized checker of the content.
 		/// </summary>
-		private static readonly ByRefPredicate HasValueChecker;
+		private static readonly ByRefPredicate HasValueChecker; //null means always has value
 
-		static Optional()
-		{
-			//describes predicate parameter
-			var parameter = Expression.Parameter(typeof(T).MakeByRefType());
-			Expression checkerBody = parameter.Type.IsValueType ?
-				Optional.CheckerBodyForValueType(parameter) :
-				Optional.CheckerBodyForReferenceType(parameter);
-			HasValueChecker = Expression.Lambda<ByRefPredicate>(checkerBody, parameter).Compile();
-		}
+        static Optional()
+        {
+            const BindingFlags NonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
+            var targetType = typeof(T);
+            MethodInfo checkerMethod;
+            if (targetType.IsOneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
+                checkerMethod = typeof(Optional<T>).GetMethod(nameof(HasNoValue), NonPublicStatic);
+            else if (targetType.IsPrimitive)//primitive always has value
+                checkerMethod = null;
+            else if (targetType.IsValueType)
+                //value type which implements IOptional
+                if (typeof(IOptional).IsAssignableFrom(targetType))
+                    checkerMethod = targetType.GetInterfaceMap(typeof(IOptional)).TargetMethods[0];
+                else
+                {
+                    var nullableType = Nullable.GetUnderlyingType(targetType);
+                    if (nullableType is null)   //non-nullable value type always has value
+                        checkerMethod = null;
+                    //nullable type with optional
+                    else if (typeof(IOptional).IsAssignableFrom(nullableType))
+                        checkerMethod = typeof(NullableOptionalMethods).GetMethod(nameof(NullableOptionalMethods.HasValue), NonPublicStatic).MakeGenericMethod(nullableType);
+                    //nullable type but not optional
+                    else
+                        checkerMethod = typeof(NullableOptionalMethods).GetMethod(nameof(NullableOptionalMethods.IsNotNull), NonPublicStatic).MakeGenericMethod(nullableType);
+                }
+            //reference type implementing IOptional
+            else if (typeof(IOptional).IsAssignableFrom(targetType))
+                checkerMethod = typeof(OptionalMethods).GetMethod(nameof(OptionalMethods.HasValue), NonPublicStatic).MakeGenericMethod(targetType);
+            else
+                checkerMethod = typeof(OptionalMethods).GetMethod(nameof(OptionalMethods.IsNotNull), NonPublicStatic).MakeGenericMethod(targetType);
+            HasValueChecker = checkerMethod?.CreateDelegate<ByRefPredicate>();
+        }
 
 		private readonly T value;
 		private readonly bool isPresent;
@@ -232,15 +227,17 @@ namespace DotNext
 		/// <summary>
 		/// Indicates whether the value is present.
 		/// </summary>
-		public bool IsPresent => isPresent && HasValueChecker(in value);
+		public bool IsPresent => isPresent && HasValue(value);
 
 		/// <summary>
 		/// Indicates that specified value has meaningful content.
 		/// </summary>
 		/// <param name="value">The value to check.</param>
-		/// <returns>True, if value has meaningful content; otherwise, false.</returns>
+		/// <returns><see langword="true"/>, if value has meaningful content; otherwise, <see langword="false"/>.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool HasValue(in T value) => HasValueChecker(in value);
+		public static bool HasValue(in T value) => HasValueChecker is null || HasValueChecker(in value);
+
+        private static bool HasNoValue(ref T value) => false;
 
 		/// <summary>
 		/// Attempts to extract value from container if it is present.

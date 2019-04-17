@@ -12,12 +12,6 @@ namespace DotNext.Generic
     /// <typeparam name="T">Type of constant to be passed as generic parameter.</typeparam>
     public abstract class Constant<T>
     {
-        private static class Cache<G>
-            where G: Constant<T>, new()
-        {
-            internal static readonly T Value = new G();
-        }
-
         private readonly T Value;
 
         /// <summary>
@@ -69,15 +63,5 @@ namespace DotNext.Generic
         /// </summary>
         /// <param name="const">The constant value holder.</param>
         public static implicit operator T(Constant<T> @const) => @const.Value;
-        
-        /// <summary>
-        /// Extracts constant value from generic parameter.
-        /// </summary>
-        /// <param name="intern"><see langword="true"/> to return interned constant value; otherwise, <see langword="false"/>.</param>
-        /// <typeparam name="G">A type representing a constant value.</typeparam>
-        /// <returns>Constant value extracted from generic.</returns>
-        public static T Of<G>(bool intern = true)
-            where G: Constant<T>, new()
-            => intern ? Cache<G>.Value : new G();
     }
 }
