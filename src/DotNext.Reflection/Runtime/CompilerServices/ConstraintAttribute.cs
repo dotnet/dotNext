@@ -5,7 +5,7 @@ namespace DotNext.Runtime.CompilerServices
     /// <summary>
     /// Indicates that generic parameter is constrained with a concept.
     /// </summary>
-    [AttributeUsage(AttributeTargets.GenericParameter, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.GenericParameter, AllowMultiple = true, Inherited = true)]
     public sealed class ConstraintAttribute: Attribute
     {
         /// <summary>
