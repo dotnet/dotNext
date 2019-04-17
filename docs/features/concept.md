@@ -77,10 +77,10 @@ Now this concept allows to obtain value of `Length` property from any object.
 * [MissingFieldException](../api/DotNext.Reflection.MissingFieldException.yml) if required field doesn't exist
 * [MissingEventException](../api/DotNext.Reflection.MissingEventException.yml) if required event doesn't exist
 
-In the context of strongly typed reflection it is recommended to use alternative methods `Get` (for instance members) or `GetStatic` (for static members). These methods have same the same behavior as `Require`/`RequireStatic` but they don't throw exception. If member cannot be resolved, these methods will return **null**.
+In the context of strongly typed reflection it is recommended to use alternative methods `Get` (for instance members) or `GetStatic` (for static members). These methods have same the same behavior as `Require`/`RequireStatic` but they don't throw exception. If member cannot be resolved then these methods return **null**.
 
 # Applying Concept
-When concept type is declared, it can be used as a constraint for generic type parameter of class or method. [Concept](../api/DotNext.Concept.yml) class allows to apply concept type to the generic parameter and verify constraints. This type useful
+When concept type is declared, it can be used as a constraint for generic type parameter of class or method. [Concept](../api/DotNext.Concept.yml) class allows to apply concept type to the generic parameter and verify constraints, thus, _fail fast_ if actual generic argument doesn't meet to the them.
 
 # Special Delegates
 `Type<T>` and its nested classes offer a rich set of methods for members binding. These methods reflect members as well-known delegate types defined in .NET library or DotNext Reflection library. In some cases, no one of these delegates can fit the requested member. For example, overloaded method [int.TryParse](https://docs.microsoft.com/en-us/dotnet/api/system.int32.tryparse) with two parameters has **out** parameter. In this case, the supported set of delegates will not help. This issue can be resolved in two ways:
