@@ -19,20 +19,6 @@ namespace DotNext
             public override void GetBytes(byte[] data) => number.CopyTo(data, 0);
         }
 
-        public sealed class RandomDoubleTestData : IEnumerable<object[]>
-        {
-            public IEnumerator<object[]> GetEnumerator()
-            {
-                yield return new[] { new DummyRNG(0) };
-                yield return new[] { new DummyRNG(int.MaxValue) };
-                yield return new[] { new DummyRNG(int.MinValue) };
-                yield return new[] { new DummyRNG(-1) };
-                yield return new[] { new DummyRNG(1) };
-            }
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
-
         [Fact]
         public static void RandomInt()
         {
@@ -42,8 +28,17 @@ namespace DotNext
             }
         }
 
+        public static IEnumerable<object[]> RandomDoubleTestData()
+        {
+            yield return new[] { new DummyRNG(0) };
+            yield return new[] { new DummyRNG(int.MaxValue) };
+            yield return new[] { new DummyRNG(int.MinValue) };
+            yield return new[] { new DummyRNG(-1) };
+            yield return new[] { new DummyRNG(1) };
+        }
+
         [Theory]
-        [ClassData(typeof(RandomDoubleTestData))]
+        [MemberData(nameof(RandomDoubleTestData))]
         public static void RandomDouble(RandomNumberGenerator rng)
         {
             InRange(rng.NextDouble(), 0, 1 - double.Epsilon);
