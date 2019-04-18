@@ -6,12 +6,10 @@ namespace DotNext.VariantType
 {
     internal abstract class VariantMetaObject : DynamicMetaObject
 	{
-        private protected readonly MemberExpression ValueExpression;
-
-		private protected VariantMetaObject(Expression parameter, IVariant variant)
+		private protected VariantMetaObject(Expression parameter, IVariant variant, out MemberExpression valueExpression)
 			: base(parameter, BindingRestrictions.Empty, variant)
 		{
-            ValueExpression = Expression.Property(Expression.TypeAs(parameter, typeof(IVariant)), typeof(IVariant), nameof(IVariant.Value));
+            valueExpression = Expression.Property(Expression.TypeAs(parameter, typeof(IVariant)), typeof(IVariant), nameof(IVariant.Value));
         }
 
 		public new IVariant Value => (IVariant)base.Value;
@@ -57,26 +55,27 @@ namespace DotNext.VariantType
 		public sealed override IEnumerable<string> GetDynamicMemberNames() => VariantValue.GetDynamicMemberNames();
 	}
 
-	internal sealed class VariantImmutableMetaObject : VariantMetaObject
-	{
+    internal sealed class VariantImmutableMetaObject : VariantMetaObject
+    {
         internal VariantImmutableMetaObject(Expression parameter, IVariant variant)
-            : base(parameter, variant)
+            : base(parameter, variant, out var valueExpression)
         {
             VariantValue = variant.Value is null ?
-                new DynamicMetaObject(ValueExpression, Restrictions, null) :
-                new DynamicMetaObject(Expression.Convert(ValueExpression, variant.Value.GetType()), Restrictions, variant.Value);
+                new DynamicMetaObject(valueExpression, Restrictions, null) :
+                new DynamicMetaObject(Expression.Convert(valueExpression, variant.Value.GetType()), Restrictions, variant.Value);
         }
 
-		protected override DynamicMetaObject VariantValue { get; }
-	}
+        protected override DynamicMetaObject VariantValue { get; }
+    }
 
-	internal sealed class VariantVolatileMetaObject : VariantMetaObject
-	{
-		internal VariantVolatileMetaObject(Expression parameter, IVariant variant)
-			: base(parameter, variant)
-		{
-		}
+    internal sealed class VariantVolatileMetaObject : VariantMetaObject
+    {
+        private readonly MemberExpression ValueExpression;
+
+        internal VariantVolatileMetaObject(Expression parameter, IVariant variant)
+            : base(parameter, variant, out var valueExpression)
+            => ValueExpression = valueExpression;
 
         protected override DynamicMetaObject VariantValue => new DynamicMetaObject(ValueExpression, Restrictions, Value.Value);
-	}
+    }
 }
