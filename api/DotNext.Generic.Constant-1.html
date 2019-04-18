@@ -133,7 +133,7 @@ then it should have at least one constructor without parameters.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Generic_Constant_1__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Generic.Constant%601.%23ctor(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Generic/Constant.cs/#L27">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Generic/Constant.cs/#L21">View Source</a>
   </span>
   <a id="DotNext_Generic_Constant_1__ctor_" data-uid="DotNext.Generic.Constant`1.#ctor*"></a>
   <h4 id="DotNext_Generic_Constant_1__ctor__0_" data-uid="DotNext.Generic.Constant`1.#ctor(`0)">Constant(T)</h4>
@@ -169,7 +169,7 @@ then it should have at least one constructor without parameters.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Generic_Constant_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Generic.Constant%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Generic/Constant.cs/#L57">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Generic/Constant.cs/#L51">View Source</a>
   </span>
   <a id="DotNext_Generic_Constant_1_Equals_" data-uid="DotNext.Generic.Constant`1.Equals*"></a>
   <h4 id="DotNext_Generic_Constant_1_Equals_System_Object_" data-uid="DotNext.Generic.Constant`1.Equals(System.Object)">Equals(Object)</h4>
@@ -221,7 +221,7 @@ then it should have at least one constructor without parameters.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Generic_Constant_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Generic.Constant%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Generic/Constant.cs/#L46">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Generic/Constant.cs/#L40">View Source</a>
   </span>
   <a id="DotNext_Generic_Constant_1_GetHashCode_" data-uid="DotNext.Generic.Constant`1.GetHashCode*"></a>
   <h4 id="DotNext_Generic_Constant_1_GetHashCode" data-uid="DotNext.Generic.Constant`1.GetHashCode">GetHashCode()</h4>
@@ -252,78 +252,10 @@ then it should have at least one constructor without parameters.</p>
   <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Generic_Constant_1_Of__1_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Generic.Constant%601.Of%60%601(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Generic/Constant.cs/#L79">View Source</a>
-  </span>
-  <a id="DotNext_Generic_Constant_1_Of_" data-uid="DotNext.Generic.Constant`1.Of*"></a>
-  <h4 id="DotNext_Generic_Constant_1_Of__1_System_Boolean_" data-uid="DotNext.Generic.Constant`1.Of``1(System.Boolean)">Of&lt;G&gt;(Boolean)</h4>
-  <div class="markdown level1 summary"><p>Extracts constant value from generic parameter.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static T Of&lt;G&gt;(bool intern = true)
-
-    where G : Constant&lt;T&gt;, new()</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">intern</span></td>
-        <td><p><span class="xref">true</span> to return interned constant value; otherwise, <span class="xref">false</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>Constant value extracted from generic.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">G</span></td>
-        <td><p>A type representing a constant value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Generic_Constant_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Generic.Constant%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Generic/Constant.cs/#L36">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Generic/Constant.cs/#L30">View Source</a>
   </span>
   <a id="DotNext_Generic_Constant_1_ToString_" data-uid="DotNext.Generic.Constant`1.ToString*"></a>
   <h4 id="DotNext_Generic_Constant_1_ToString" data-uid="DotNext.Generic.Constant`1.ToString">ToString()</h4>
@@ -359,7 +291,7 @@ then it should have at least one constructor without parameters.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Generic_Constant_1_op_Implicit_DotNext_Generic_Constant__0____0.md&amp;value=---%0Auid%3A%20DotNext.Generic.Constant%601.op_Implicit(DotNext.Generic.Constant%7B%600%7D)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Generic/Constant.cs/#L71">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Generic/Constant.cs/#L65">View Source</a>
   </span>
   <a id="DotNext_Generic_Constant_1_op_Implicit_" data-uid="DotNext.Generic.Constant`1.op_Implicit*"></a>
   <h4 id="DotNext_Generic_Constant_1_op_Implicit_DotNext_Generic_Constant__0____0" data-uid="DotNext.Generic.Constant`1.op_Implicit(DotNext.Generic.Constant{`0})~`0">Implicit(Constant&lt;T&gt; to T)</h4>
@@ -404,6 +336,30 @@ then it should have at least one constructor without parameters.</p>
     </tbody>
   </table>
   <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
   <div>
       <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_AsConst__1___0_">ExpressionBuilder.AsConst&lt;T&gt;(T)</a>
   </div>

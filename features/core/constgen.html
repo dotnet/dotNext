@@ -80,7 +80,7 @@
 
 public sealed class IntVector&lt;SIZE&gt; where SIZE: Constant&lt;long&gt;, new()
 {
-    private static readonly long Size = Constant&lt;long&gt;.Of&lt;SIZE&gt;();   //or new SIZE()
+    private static readonly long Size = new SIZE();
 
     private readonly int[] array = new int[Size];
 }

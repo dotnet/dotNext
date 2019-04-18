@@ -151,7 +151,7 @@ predicate = predicate.Or(str =&gt; str.Length % 2 == 0);
 predicate = predicate.Xor(Predicate.IsNull&lt;string&gt;());
 </code></pre>
 <h1 id="comparable-data-types">Comparable data types</h1>
-<p>Related classes: <a href="../../api/DotNext.Comparable.html">Comparable</a>, <a href="../../api/DotNext.Range.html">Range</a>.</p>
+<p>Related class: <a href="../../api/DotNext.Comparable.html">Comparable</a></p>
 <h2 id="minmax-value">Min/max value</h2>
 <p>Generic methods for comparable data types:</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -159,27 +159,18 @@ predicate = predicate.Xor(Predicate.IsNull&lt;string&gt;());
 var str = &quot;ab&quot;.Max(&quot;bc&quot;); //str == &quot;bc&quot;
 str = &quot;ab&quot;.Min(&quot;bc&quot;);
 </code></pre>
-<h2 id="restrictions">Restrictions</h2>
-<p>Restricts the value using upper bound, lower bound or both.</p>
-<pre><code class="lang-csharp">using DotNext;
-
-var i = 10.UpperBounded(5); //i == 5
-i = 10.UpperBounded(11); //i == 10
-i = 10.LowerBounded(11); //i == 11
-i = 10.LowerBounded(0); // i == 10
-i = 5.Clamp(4, 10); //i == 5
-i = 5.Clamp(6, 10); //i == 6
-i = 5.Clamp(0, 4); //i == 4
-</code></pre>
 <h2 id="range-check">Range check</h2>
 <p>Checks whether the given value is in specific range.</p>
 <pre><code class="lang-csharp">using DotNext;
 
 var b = 10.Between(5, 11, BoundType.Closed); //b == true
 b = 10.Between(0, 4); //b == false
+var i = 5.Clamp(4, 10); //i == 5
+i = 5.Clamp(6, 10); //i == 6
+i = 5.Clamp(0, 4); //i == 4
 </code></pre>
 <h1 id="equality-check">Equality check</h1>
-<p>Related classes: <a href="../../api/DotNext.ObjectExtensions.html">Comparable</a>, <a href="../../api/DotNext.ValueTypeExtensions.html">Range</a>.</p>
+<p>Related classes: <a href="../../api/DotNext.ObjectExtensions.html">ObjectExtensions</a>, <a href="../../api/DotNext.ValueTypeExtensions.html">ValueTypeExtensions</a>.</p>
 <p>Extension method <em>IsOneOf</em> allows to check whether the value is equal to one of the given values.</p>
 <pre><code class="lang-csharp">using DotNext;
 

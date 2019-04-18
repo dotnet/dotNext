@@ -110,7 +110,7 @@ predicate = predicate.Xor(Predicate.IsNull<string>());
 ```
 
 # Comparable data types
-Related classes: [Comparable](../../api/DotNext.Comparable.yml), [Range](../../api/DotNext.Range.yml).
+Related class: [Comparable](../../api/DotNext.Comparable.yml)
 
 ## Min/max value
 Generic methods for comparable data types:
@@ -121,20 +121,6 @@ var str = "ab".Max("bc"); //str == "bc"
 str = "ab".Min("bc");
 ```
 
-## Restrictions
-Restricts the value using upper bound, lower bound or both.
-```csharp
-using DotNext;
-
-var i = 10.UpperBounded(5); //i == 5
-i = 10.UpperBounded(11); //i == 10
-i = 10.LowerBounded(11); //i == 11
-i = 10.LowerBounded(0); // i == 10
-i = 5.Clamp(4, 10); //i == 5
-i = 5.Clamp(6, 10); //i == 6
-i = 5.Clamp(0, 4); //i == 4
-```
-
 ## Range check
 Checks whether the given value is in specific range.
 ```csharp
@@ -142,10 +128,13 @@ using DotNext;
 
 var b = 10.Between(5, 11, BoundType.Closed); //b == true
 b = 10.Between(0, 4); //b == false
+var i = 5.Clamp(4, 10); //i == 5
+i = 5.Clamp(6, 10); //i == 6
+i = 5.Clamp(0, 4); //i == 4
 ```
 
 # Equality check
-Related classes: [Comparable](../../api/DotNext.ObjectExtensions.yml), [Range](../../api/DotNext.ValueTypeExtensions.yml).
+Related classes: [ObjectExtensions](../../api/DotNext.ObjectExtensions.yml), [ValueTypeExtensions](../../api/DotNext.ValueTypeExtensions.yml).
 
 Extension method _IsOneOf_ allows to check whether the value is equal to one of the given values.
 

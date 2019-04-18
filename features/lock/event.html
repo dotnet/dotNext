@@ -69,12 +69,12 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="async-reset-event">Async Reset Event</h1>
 
-<p><a href="../../api/DotNext.Threading.AsyncResetEvent.yml">AsyncResetEvent</a> is an asynchronous alternative to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent">ManualResetEvent</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent">AutoResetEvent</a> with the same semantics. However, it doesn't support interoperation with .NET thread pool and native code because there is no wait handle associated with an instance of event.</p>
+<p><a href="../../api/DotNext.Threading.AsyncManualResetEvent.html">AsyncManualResetEvent</a> and <a href="../../api/DotNext.Threading.AsyncAutoResetEvent.html">AsyncAutoResetEvent</a> are asynchronous alternatives to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent">ManualResetEvent</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent">AutoResetEvent</a> with the same semantics. However, it doesn't support interoperation with .NET thread pool and native code because there is no wait handle associated with an instance of event.</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
 using System;
 using System.Threading;
 
-var resetEvent = new AsyncResetEvent(false, EventResetMode.ManualReset);
+var resetEvent = new AsyncManualResetEvent(false);
 
 Task.Factory.StartNew(async () =&gt;
 {
@@ -92,7 +92,7 @@ Task.Factory.StartNew(async () =&gt;
 
 resetEvent.Set();   //allow the tasks to complete their job
 </code></pre>
-<p>This class implements the same fairness policy as well as other asynchronous locks.</p>
+<p><code>AsyncAutoResetEvent</code> respects the same fairness policy as well as other asynchronous locks. For <code>AsyncManualResetEvent</code> it is not relevant because all suspended waiters will be released when event occurred.</p>
 </article>
           </div>
           

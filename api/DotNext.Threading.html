@@ -77,8 +77,17 @@
   <div class="markdown level0 remarks"></div>
     <h3 id="classes">Classes
   </h3>
+      <h4><a class="xref" href="DotNext.Threading.AsyncAutoResetEvent.html">AsyncAutoResetEvent</a></h4>
+      <section><p>Represents asynchronous version of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.autoresetevent">AutoResetEvent</a>.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Threading.AsyncCountdownEvent.html">AsyncCountdownEvent</a></h4>
+      <section><p>Represents a synchronization primitive that is signaled when its count reaches zero.</p>
+</section>
       <h4><a class="xref" href="DotNext.Threading.AsyncDelegate.html">AsyncDelegate</a></h4>
       <section><p>Provides set of methods for asynchronous invocation of various delegates.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Threading.AsyncEvent.html">AsyncEvent</a></h4>
+      <section><p>Represents various extension methods for types implementing <a class="xref" href="DotNext.Threading.IAsyncEvent.html">IAsyncEvent</a> interface.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a></h4>
       <section><p>Represents asynchronous mutually exclusive lock.</p>
@@ -86,14 +95,11 @@
       <h4><a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html">AsyncLockAcquisition</a></h4>
       <section><p>Provides a set of methods to acquire different types of asynchronous lock.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Threading.AsyncLockBase.html">AsyncLockBase</a></h4>
-      <section><p>Represents abstract class for family of asynchronous locks.</p>
+      <h4><a class="xref" href="DotNext.Threading.AsyncManualResetEvent.html">AsyncManualResetEvent</a></h4>
+      <section><p>Represents asynchronous version of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.manualresetevent">ManualResetEvent</a>.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></h4>
       <section><p>Represents asynchronous version of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.readerwriterlockslim">ReaderWriterLockSlim</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Threading.AsyncResetEvent.html">AsyncResetEvent</a></h4>
-      <section><p>Represents asynchronous flow synchronization event.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.AtomicDouble.html">AtomicDouble</a></h4>
       <section><p>Various atomic operations for <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a> data type
@@ -124,6 +130,12 @@ object selection is thread-safe but not selected object.</p>
       <h4><a class="xref" href="DotNext.Threading.LockAcquisition.html">LockAcquisition</a></h4>
       <section><p>Provides a set of methods to acquire different types of lock.</p>
 </section>
+      <h4><a class="xref" href="DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronizer</a></h4>
+      <section><p>Provides a framework for implementing asynchronous locks and related synchronizers that rely on first-in-first-out (FIFO) wait queues.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Threading.Synchronizer.html">Synchronizer</a></h4>
+      <section><p>Provides a framework for implementing asynchronous locks and related synchronizers that doesn't rely on first-in-first-out (FIFO) wait queues.</p>
+</section>
     <h3 id="structs">Structs
   </h3>
       <h4><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></h4>
@@ -150,6 +162,17 @@ for the reference type.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.Timeout.html">Timeout</a></h4>
       <section><p>Helps to compute timeout for asynchronous operations.</p>
+</section>
+    <h3 id="interfaces">Interfaces
+  </h3>
+      <h4><a class="xref" href="DotNext.Threading.IAsyncEvent.html">IAsyncEvent</a></h4>
+      <section><p>Represents asynchronous event.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Threading.IAsyncResetEvent.html">IAsyncResetEvent</a></h4>
+      <section><p>Represents asynchronous flow synchronization event.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Threading.ISynchronizer.html">ISynchronizer</a></h4>
+      <section><p>Common interface for all synchronization primitives.</p>
 </section>
 </article>
           </div>

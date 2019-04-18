@@ -83,10 +83,6 @@
       <div class="level2"><a class="xref" href="DotNext.Runtime.CompilerServices.Awaiter-1.html">Awaiter&lt;TAwaiter&gt;</a></div>
       <div class="level2"><a class="xref" href="DotNext.Runtime.CompilerServices.Awaiter-2.html">Awaiter&lt;TAwaiter, R&gt;</a></div>
   </div>
-  <div classs="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="DotNext.Reflection.IConcept-1.html">IConcept</a>&lt;TAwaiter&gt;</div>
-  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -115,7 +111,9 @@
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Runtime_CompilerServices_AwaiterBase_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class AwaiterBase&lt;TAwaiter&gt; : IConcept&lt;TAwaiter&gt; where TAwaiter : ICriticalNotifyCompletion</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class AwaiterBase&lt;TAwaiter&gt;
+
+    where TAwaiter : ICriticalNotifyCompletion</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -268,11 +266,31 @@
       </tr>
     </tbody>
   </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="DotNext.Reflection.IConcept-1.html">IConcept&lt;T&gt;</a>
-  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
   <div>
       <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_AsConst__1___0_">ExpressionBuilder.AsConst&lt;T&gt;(T)</a>
   </div>

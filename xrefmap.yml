@@ -3107,6 +3107,38 @@ references:
   commentId: T:DotNext.Comparable
   fullName: DotNext.Comparable
   nameWithType: Comparable
+- uid: DotNext.Comparable.Between*
+  name: Between
+  href: api/DotNext.Comparable.html#DotNext_Comparable_Between_
+  commentId: Overload:DotNext.Comparable.Between
+  isSpec: "True"
+  fullName: DotNext.Comparable.Between
+  nameWithType: Comparable.Between
+- uid: DotNext.Comparable.Between``1(``0,``0,``0,DotNext.BoundType)
+  name: Between<T>(T, T, T, BoundType)
+  href: api/DotNext.Comparable.html#DotNext_Comparable_Between__1___0___0___0_DotNext_BoundType_
+  commentId: M:DotNext.Comparable.Between``1(``0,``0,``0,DotNext.BoundType)
+  name.vb: Between(Of T)(T, T, T, BoundType)
+  fullName: DotNext.Comparable.Between<T>(T, T, T, DotNext.BoundType)
+  fullName.vb: DotNext.Comparable.Between(Of T)(T, T, T, DotNext.BoundType)
+  nameWithType: Comparable.Between<T>(T, T, T, BoundType)
+  nameWithType.vb: Comparable.Between(Of T)(T, T, T, BoundType)
+- uid: DotNext.Comparable.Clamp*
+  name: Clamp
+  href: api/DotNext.Comparable.html#DotNext_Comparable_Clamp_
+  commentId: Overload:DotNext.Comparable.Clamp
+  isSpec: "True"
+  fullName: DotNext.Comparable.Clamp
+  nameWithType: Comparable.Clamp
+- uid: DotNext.Comparable.Clamp``1(``0,``0,``0)
+  name: Clamp<T>(T, T, T)
+  href: api/DotNext.Comparable.html#DotNext_Comparable_Clamp__1___0___0___0_
+  commentId: M:DotNext.Comparable.Clamp``1(``0,``0,``0)
+  name.vb: Clamp(Of T)(T, T, T)
+  fullName: DotNext.Comparable.Clamp<T>(T, T, T)
+  fullName.vb: DotNext.Comparable.Clamp(Of T)(T, T, T)
+  nameWithType: Comparable.Clamp<T>(T, T, T)
+  nameWithType.vb: Comparable.Clamp(Of T)(T, T, T)
 - uid: DotNext.Comparable.Max*
   name: Max
   href: api/DotNext.Comparable.html#DotNext_Comparable_Max_
@@ -4415,24 +4447,6 @@ references:
   fullName.vb: DotNext.Generic.Constant(Of T).GetHashCode
   nameWithType: Constant<T>.GetHashCode
   nameWithType.vb: Constant(Of T).GetHashCode
-- uid: DotNext.Generic.Constant`1.Of*
-  name: Of
-  href: api/DotNext.Generic.Constant-1.html#DotNext_Generic_Constant_1_Of_
-  commentId: Overload:DotNext.Generic.Constant`1.Of
-  isSpec: "True"
-  fullName: DotNext.Generic.Constant<T>.Of
-  fullName.vb: DotNext.Generic.Constant(Of T).Of
-  nameWithType: Constant<T>.Of
-  nameWithType.vb: Constant(Of T).Of
-- uid: DotNext.Generic.Constant`1.Of``1(System.Boolean)
-  name: Of<G>(Boolean)
-  href: api/DotNext.Generic.Constant-1.html#DotNext_Generic_Constant_1_Of__1_System_Boolean_
-  commentId: M:DotNext.Generic.Constant`1.Of``1(System.Boolean)
-  name.vb: Of(Of G)(Boolean)
-  fullName: DotNext.Generic.Constant<T>.Of<G>(System.Boolean)
-  fullName.vb: DotNext.Generic.Constant(Of T).Of(Of G)(System.Boolean)
-  nameWithType: Constant<T>.Of<G>(Boolean)
-  nameWithType.vb: Constant(Of T).Of(Of G)(Boolean)
 - uid: DotNext.Generic.Constant`1.op_Implicit(DotNext.Generic.Constant{`0})~`0
   name: Implicit(Constant<T> to T)
   href: api/DotNext.Generic.Constant-1.html#DotNext_Generic_Constant_1_op_Implicit_DotNext_Generic_Constant__0____0
@@ -5145,15 +5159,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.CatchBuilder.Exception
   nameWithType: CatchBuilder.Exception
-- uid: DotNext.Metaprogramming.CatchBuilder.Filter(System.Action{DotNext.Metaprogramming.CompoundStatementBuilder})
-  name: Filter(Action<CompoundStatementBuilder>)
-  href: api/DotNext.Metaprogramming.CatchBuilder.html#DotNext_Metaprogramming_CatchBuilder_Filter_System_Action_DotNext_Metaprogramming_CompoundStatementBuilder__
-  commentId: M:DotNext.Metaprogramming.CatchBuilder.Filter(System.Action{DotNext.Metaprogramming.CompoundStatementBuilder})
-  name.vb: Filter(Action(Of CompoundStatementBuilder))
-  fullName: DotNext.Metaprogramming.CatchBuilder.Filter(System.Action<DotNext.Metaprogramming.CompoundStatementBuilder>)
-  fullName.vb: DotNext.Metaprogramming.CatchBuilder.Filter(System.Action(Of DotNext.Metaprogramming.CompoundStatementBuilder))
-  nameWithType: CatchBuilder.Filter(Action<CompoundStatementBuilder>)
-  nameWithType.vb: CatchBuilder.Filter(Action(Of CompoundStatementBuilder))
+- uid: DotNext.Metaprogramming.CatchBuilder.Filter(System.Action{DotNext.Metaprogramming.ScopeBuilder})
+  name: Filter(Action<ScopeBuilder>)
+  href: api/DotNext.Metaprogramming.CatchBuilder.html#DotNext_Metaprogramming_CatchBuilder_Filter_System_Action_DotNext_Metaprogramming_ScopeBuilder__
+  commentId: M:DotNext.Metaprogramming.CatchBuilder.Filter(System.Action{DotNext.Metaprogramming.ScopeBuilder})
+  name.vb: Filter(Action(Of ScopeBuilder))
+  fullName: DotNext.Metaprogramming.CatchBuilder.Filter(System.Action<DotNext.Metaprogramming.ScopeBuilder>)
+  fullName.vb: DotNext.Metaprogramming.CatchBuilder.Filter(System.Action(Of DotNext.Metaprogramming.ScopeBuilder))
+  nameWithType: CatchBuilder.Filter(Action<ScopeBuilder>)
+  nameWithType.vb: CatchBuilder.Filter(Action(Of ScopeBuilder))
 - uid: DotNext.Metaprogramming.CatchBuilder.Filter*
   name: Filter
   href: api/DotNext.Metaprogramming.CatchBuilder.html#DotNext_Metaprogramming_CatchBuilder_Filter_
@@ -5173,12 +5187,12 @@ references:
   commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.Assign(DotNext.Metaprogramming.UniversalExpression,System.Reflection.FieldInfo,DotNext.Metaprogramming.UniversalExpression)
   fullName: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(DotNext.Metaprogramming.UniversalExpression, System.Reflection.FieldInfo, DotNext.Metaprogramming.UniversalExpression)
   nameWithType: CompoundStatementBuilder.Assign(UniversalExpression, FieldInfo, UniversalExpression)
-- uid: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.Expression,System.Reflection.PropertyInfo,DotNext.Metaprogramming.UniversalExpression)
-  name: Assign(Expression, PropertyInfo, UniversalExpression)
-  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_System_Linq_Expressions_Expression_System_Reflection_PropertyInfo_DotNext_Metaprogramming_UniversalExpression_
-  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.Expression,System.Reflection.PropertyInfo,DotNext.Metaprogramming.UniversalExpression)
-  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.Expression, System.Reflection.PropertyInfo, DotNext.Metaprogramming.UniversalExpression)
-  nameWithType: CompoundStatementBuilder.Assign(Expression, PropertyInfo, UniversalExpression)
+- uid: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(DotNext.Metaprogramming.UniversalExpression,System.Reflection.PropertyInfo,DotNext.Metaprogramming.UniversalExpression)
+  name: Assign(UniversalExpression, PropertyInfo, UniversalExpression)
+  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_DotNext_Metaprogramming_UniversalExpression_System_Reflection_PropertyInfo_DotNext_Metaprogramming_UniversalExpression_
+  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.Assign(DotNext.Metaprogramming.UniversalExpression,System.Reflection.PropertyInfo,DotNext.Metaprogramming.UniversalExpression)
+  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(DotNext.Metaprogramming.UniversalExpression, System.Reflection.PropertyInfo, DotNext.Metaprogramming.UniversalExpression)
+  nameWithType: CompoundStatementBuilder.Assign(UniversalExpression, PropertyInfo, UniversalExpression)
 - uid: DotNext.Metaprogramming.CompoundStatementBuilder.Assign(System.Linq.Expressions.IndexExpression,DotNext.Metaprogramming.UniversalExpression)
   name: Assign(IndexExpression, UniversalExpression)
   href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_System_Linq_Expressions_IndexExpression_DotNext_Metaprogramming_UniversalExpression_
@@ -5344,15 +5358,6 @@ references:
   fullName.vb: DotNext.Metaprogramming.CompoundStatementBuilder.DeclareVariable(Of T)(System.String)
   nameWithType: CompoundStatementBuilder.DeclareVariable<T>(String)
   nameWithType.vb: CompoundStatementBuilder.DeclareVariable(Of T)(String)
-- uid: DotNext.Metaprogramming.CompoundStatementBuilder.DeclareVariable``1(System.String,``0)
-  name: DeclareVariable<T>(String, T)
-  href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_DeclareVariable__1_System_String___0_
-  commentId: M:DotNext.Metaprogramming.CompoundStatementBuilder.DeclareVariable``1(System.String,``0)
-  name.vb: DeclareVariable(Of T)(String, T)
-  fullName: DotNext.Metaprogramming.CompoundStatementBuilder.DeclareVariable<T>(System.String, T)
-  fullName.vb: DotNext.Metaprogramming.CompoundStatementBuilder.DeclareVariable(Of T)(System.String, T)
-  nameWithType: CompoundStatementBuilder.DeclareVariable<T>(String, T)
-  nameWithType.vb: CompoundStatementBuilder.DeclareVariable(Of T)(String, T)
 - uid: DotNext.Metaprogramming.CompoundStatementBuilder.Dispose(System.Boolean)
   name: Dispose(Boolean)
   href: api/DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Dispose_System_Boolean_
@@ -7355,15 +7360,15 @@ references:
   commentId: M:DotNext.Metaprogramming.SwitchBuilder.Case(DotNext.Metaprogramming.UniversalExpression,DotNext.Metaprogramming.UniversalExpression)
   fullName: DotNext.Metaprogramming.SwitchBuilder.Case(DotNext.Metaprogramming.UniversalExpression, DotNext.Metaprogramming.UniversalExpression)
   nameWithType: SwitchBuilder.Case(UniversalExpression, UniversalExpression)
-- uid: DotNext.Metaprogramming.SwitchBuilder.Case(DotNext.Metaprogramming.UniversalExpression,System.Action{DotNext.Metaprogramming.CompoundStatementBuilder})
-  name: Case(UniversalExpression, Action<CompoundStatementBuilder>)
-  href: api/DotNext.Metaprogramming.SwitchBuilder.html#DotNext_Metaprogramming_SwitchBuilder_Case_DotNext_Metaprogramming_UniversalExpression_System_Action_DotNext_Metaprogramming_CompoundStatementBuilder__
-  commentId: M:DotNext.Metaprogramming.SwitchBuilder.Case(DotNext.Metaprogramming.UniversalExpression,System.Action{DotNext.Metaprogramming.CompoundStatementBuilder})
-  name.vb: Case(UniversalExpression, Action(Of CompoundStatementBuilder))
-  fullName: DotNext.Metaprogramming.SwitchBuilder.Case(DotNext.Metaprogramming.UniversalExpression, System.Action<DotNext.Metaprogramming.CompoundStatementBuilder>)
-  fullName.vb: DotNext.Metaprogramming.SwitchBuilder.Case(DotNext.Metaprogramming.UniversalExpression, System.Action(Of DotNext.Metaprogramming.CompoundStatementBuilder))
-  nameWithType: SwitchBuilder.Case(UniversalExpression, Action<CompoundStatementBuilder>)
-  nameWithType.vb: SwitchBuilder.Case(UniversalExpression, Action(Of CompoundStatementBuilder))
+- uid: DotNext.Metaprogramming.SwitchBuilder.Case(DotNext.Metaprogramming.UniversalExpression,System.Action{DotNext.Metaprogramming.ScopeBuilder})
+  name: Case(UniversalExpression, Action<ScopeBuilder>)
+  href: api/DotNext.Metaprogramming.SwitchBuilder.html#DotNext_Metaprogramming_SwitchBuilder_Case_DotNext_Metaprogramming_UniversalExpression_System_Action_DotNext_Metaprogramming_ScopeBuilder__
+  commentId: M:DotNext.Metaprogramming.SwitchBuilder.Case(DotNext.Metaprogramming.UniversalExpression,System.Action{DotNext.Metaprogramming.ScopeBuilder})
+  name.vb: Case(UniversalExpression, Action(Of ScopeBuilder))
+  fullName: DotNext.Metaprogramming.SwitchBuilder.Case(DotNext.Metaprogramming.UniversalExpression, System.Action<DotNext.Metaprogramming.ScopeBuilder>)
+  fullName.vb: DotNext.Metaprogramming.SwitchBuilder.Case(DotNext.Metaprogramming.UniversalExpression, System.Action(Of DotNext.Metaprogramming.ScopeBuilder))
+  nameWithType: SwitchBuilder.Case(UniversalExpression, Action<ScopeBuilder>)
+  nameWithType.vb: SwitchBuilder.Case(UniversalExpression, Action(Of ScopeBuilder))
 - uid: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable{DotNext.Metaprogramming.UniversalExpression},DotNext.Metaprogramming.UniversalExpression)
   name: Case(IEnumerable<UniversalExpression>, UniversalExpression)
   href: api/DotNext.Metaprogramming.SwitchBuilder.html#DotNext_Metaprogramming_SwitchBuilder_Case_System_Collections_Generic_IEnumerable_DotNext_Metaprogramming_UniversalExpression__DotNext_Metaprogramming_UniversalExpression_
@@ -7373,24 +7378,24 @@ references:
   fullName.vb: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable(Of DotNext.Metaprogramming.UniversalExpression), DotNext.Metaprogramming.UniversalExpression)
   nameWithType: SwitchBuilder.Case(IEnumerable<UniversalExpression>, UniversalExpression)
   nameWithType.vb: SwitchBuilder.Case(IEnumerable(Of UniversalExpression), UniversalExpression)
-- uid: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable{DotNext.Metaprogramming.UniversalExpression},System.Action{DotNext.Metaprogramming.CompoundStatementBuilder})
-  name: Case(IEnumerable<UniversalExpression>, Action<CompoundStatementBuilder>)
-  href: api/DotNext.Metaprogramming.SwitchBuilder.html#DotNext_Metaprogramming_SwitchBuilder_Case_System_Collections_Generic_IEnumerable_DotNext_Metaprogramming_UniversalExpression__System_Action_DotNext_Metaprogramming_CompoundStatementBuilder__
-  commentId: M:DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable{DotNext.Metaprogramming.UniversalExpression},System.Action{DotNext.Metaprogramming.CompoundStatementBuilder})
-  name.vb: Case(IEnumerable(Of UniversalExpression), Action(Of CompoundStatementBuilder))
-  fullName: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable<DotNext.Metaprogramming.UniversalExpression>, System.Action<DotNext.Metaprogramming.CompoundStatementBuilder>)
-  fullName.vb: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable(Of DotNext.Metaprogramming.UniversalExpression), System.Action(Of DotNext.Metaprogramming.CompoundStatementBuilder))
-  nameWithType: SwitchBuilder.Case(IEnumerable<UniversalExpression>, Action<CompoundStatementBuilder>)
-  nameWithType.vb: SwitchBuilder.Case(IEnumerable(Of UniversalExpression), Action(Of CompoundStatementBuilder))
-- uid: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable{System.Linq.Expressions.Expression},System.Action{DotNext.Metaprogramming.CompoundStatementBuilder})
-  name: Case(IEnumerable<Expression>, Action<CompoundStatementBuilder>)
-  href: api/DotNext.Metaprogramming.SwitchBuilder.html#DotNext_Metaprogramming_SwitchBuilder_Case_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__System_Action_DotNext_Metaprogramming_CompoundStatementBuilder__
-  commentId: M:DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable{System.Linq.Expressions.Expression},System.Action{DotNext.Metaprogramming.CompoundStatementBuilder})
-  name.vb: Case(IEnumerable(Of Expression), Action(Of CompoundStatementBuilder))
-  fullName: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression>, System.Action<DotNext.Metaprogramming.CompoundStatementBuilder>)
-  fullName.vb: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable(Of System.Linq.Expressions.Expression), System.Action(Of DotNext.Metaprogramming.CompoundStatementBuilder))
-  nameWithType: SwitchBuilder.Case(IEnumerable<Expression>, Action<CompoundStatementBuilder>)
-  nameWithType.vb: SwitchBuilder.Case(IEnumerable(Of Expression), Action(Of CompoundStatementBuilder))
+- uid: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable{DotNext.Metaprogramming.UniversalExpression},System.Action{DotNext.Metaprogramming.ScopeBuilder})
+  name: Case(IEnumerable<UniversalExpression>, Action<ScopeBuilder>)
+  href: api/DotNext.Metaprogramming.SwitchBuilder.html#DotNext_Metaprogramming_SwitchBuilder_Case_System_Collections_Generic_IEnumerable_DotNext_Metaprogramming_UniversalExpression__System_Action_DotNext_Metaprogramming_ScopeBuilder__
+  commentId: M:DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable{DotNext.Metaprogramming.UniversalExpression},System.Action{DotNext.Metaprogramming.ScopeBuilder})
+  name.vb: Case(IEnumerable(Of UniversalExpression), Action(Of ScopeBuilder))
+  fullName: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable<DotNext.Metaprogramming.UniversalExpression>, System.Action<DotNext.Metaprogramming.ScopeBuilder>)
+  fullName.vb: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable(Of DotNext.Metaprogramming.UniversalExpression), System.Action(Of DotNext.Metaprogramming.ScopeBuilder))
+  nameWithType: SwitchBuilder.Case(IEnumerable<UniversalExpression>, Action<ScopeBuilder>)
+  nameWithType.vb: SwitchBuilder.Case(IEnumerable(Of UniversalExpression), Action(Of ScopeBuilder))
+- uid: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable{System.Linq.Expressions.Expression},System.Action{DotNext.Metaprogramming.ScopeBuilder})
+  name: Case(IEnumerable<Expression>, Action<ScopeBuilder>)
+  href: api/DotNext.Metaprogramming.SwitchBuilder.html#DotNext_Metaprogramming_SwitchBuilder_Case_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__System_Action_DotNext_Metaprogramming_ScopeBuilder__
+  commentId: M:DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable{System.Linq.Expressions.Expression},System.Action{DotNext.Metaprogramming.ScopeBuilder})
+  name.vb: Case(IEnumerable(Of Expression), Action(Of ScopeBuilder))
+  fullName: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable<System.Linq.Expressions.Expression>, System.Action<DotNext.Metaprogramming.ScopeBuilder>)
+  fullName.vb: DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable(Of System.Linq.Expressions.Expression), System.Action(Of DotNext.Metaprogramming.ScopeBuilder))
+  nameWithType: SwitchBuilder.Case(IEnumerable<Expression>, Action<ScopeBuilder>)
+  nameWithType.vb: SwitchBuilder.Case(IEnumerable(Of Expression), Action(Of ScopeBuilder))
 - uid: DotNext.Metaprogramming.SwitchBuilder.Case*
   name: Case
   href: api/DotNext.Metaprogramming.SwitchBuilder.html#DotNext_Metaprogramming_SwitchBuilder_Case_
@@ -7404,15 +7409,15 @@ references:
   commentId: M:DotNext.Metaprogramming.SwitchBuilder.Default(DotNext.Metaprogramming.UniversalExpression)
   fullName: DotNext.Metaprogramming.SwitchBuilder.Default(DotNext.Metaprogramming.UniversalExpression)
   nameWithType: SwitchBuilder.Default(UniversalExpression)
-- uid: DotNext.Metaprogramming.SwitchBuilder.Default(System.Action{DotNext.Metaprogramming.CompoundStatementBuilder})
-  name: Default(Action<CompoundStatementBuilder>)
-  href: api/DotNext.Metaprogramming.SwitchBuilder.html#DotNext_Metaprogramming_SwitchBuilder_Default_System_Action_DotNext_Metaprogramming_CompoundStatementBuilder__
-  commentId: M:DotNext.Metaprogramming.SwitchBuilder.Default(System.Action{DotNext.Metaprogramming.CompoundStatementBuilder})
-  name.vb: Default(Action(Of CompoundStatementBuilder))
-  fullName: DotNext.Metaprogramming.SwitchBuilder.Default(System.Action<DotNext.Metaprogramming.CompoundStatementBuilder>)
-  fullName.vb: DotNext.Metaprogramming.SwitchBuilder.Default(System.Action(Of DotNext.Metaprogramming.CompoundStatementBuilder))
-  nameWithType: SwitchBuilder.Default(Action<CompoundStatementBuilder>)
-  nameWithType.vb: SwitchBuilder.Default(Action(Of CompoundStatementBuilder))
+- uid: DotNext.Metaprogramming.SwitchBuilder.Default(System.Action{DotNext.Metaprogramming.ScopeBuilder})
+  name: Default(Action<ScopeBuilder>)
+  href: api/DotNext.Metaprogramming.SwitchBuilder.html#DotNext_Metaprogramming_SwitchBuilder_Default_System_Action_DotNext_Metaprogramming_ScopeBuilder__
+  commentId: M:DotNext.Metaprogramming.SwitchBuilder.Default(System.Action{DotNext.Metaprogramming.ScopeBuilder})
+  name.vb: Default(Action(Of ScopeBuilder))
+  fullName: DotNext.Metaprogramming.SwitchBuilder.Default(System.Action<DotNext.Metaprogramming.ScopeBuilder>)
+  fullName.vb: DotNext.Metaprogramming.SwitchBuilder.Default(System.Action(Of DotNext.Metaprogramming.ScopeBuilder))
+  nameWithType: SwitchBuilder.Default(Action<ScopeBuilder>)
+  nameWithType.vb: SwitchBuilder.Default(Action(Of ScopeBuilder))
 - uid: DotNext.Metaprogramming.SwitchBuilder.Default*
   name: Default
   href: api/DotNext.Metaprogramming.SwitchBuilder.html#DotNext_Metaprogramming_SwitchBuilder_Default_
@@ -8858,15 +8863,6 @@ references:
   isSpec: "True"
   fullName: DotNext.OneDimensionalArray.BitwiseHashCode
   nameWithType: OneDimensionalArray.BitwiseHashCode
-- uid: DotNext.OneDimensionalArray.BitwiseHashCode``1(``0[])
-  name: BitwiseHashCode<T>(T[])
-  href: api/DotNext.OneDimensionalArray.html#DotNext_OneDimensionalArray_BitwiseHashCode__1___0___
-  commentId: M:DotNext.OneDimensionalArray.BitwiseHashCode``1(``0[])
-  name.vb: BitwiseHashCode(Of T)(T())
-  fullName: DotNext.OneDimensionalArray.BitwiseHashCode<T>(T[])
-  fullName.vb: DotNext.OneDimensionalArray.BitwiseHashCode(Of T)(T())
-  nameWithType: OneDimensionalArray.BitwiseHashCode<T>(T[])
-  nameWithType.vb: OneDimensionalArray.BitwiseHashCode(Of T)(T())
 - uid: DotNext.OneDimensionalArray.BitwiseHashCode``1(``0[],System.Boolean)
   name: BitwiseHashCode<T>(T[], Boolean)
   href: api/DotNext.OneDimensionalArray.html#DotNext_OneDimensionalArray_BitwiseHashCode__1___0___System_Boolean_
@@ -8949,6 +8945,38 @@ references:
   fullName.vb: DotNext.OneDimensionalArray.IsNullOrEmpty(Of T)(T())
   nameWithType: OneDimensionalArray.IsNullOrEmpty<T>(T[])
   nameWithType.vb: OneDimensionalArray.IsNullOrEmpty(Of T)(T())
+- uid: DotNext.OneDimensionalArray.RemoveAll*
+  name: RemoveAll
+  href: api/DotNext.OneDimensionalArray.html#DotNext_OneDimensionalArray_RemoveAll_
+  commentId: Overload:DotNext.OneDimensionalArray.RemoveAll
+  isSpec: "True"
+  fullName: DotNext.OneDimensionalArray.RemoveAll
+  nameWithType: OneDimensionalArray.RemoveAll
+- uid: DotNext.OneDimensionalArray.RemoveAll``1(``0[],System.Predicate{``0},System.Int64@)
+  name: RemoveAll<T>(T[], Predicate<T>, out Int64)
+  href: api/DotNext.OneDimensionalArray.html#DotNext_OneDimensionalArray_RemoveAll__1___0___System_Predicate___0__System_Int64__
+  commentId: M:DotNext.OneDimensionalArray.RemoveAll``1(``0[],System.Predicate{``0},System.Int64@)
+  name.vb: RemoveAll(Of T)(T(), Predicate(Of T), ByRef Int64)
+  fullName: DotNext.OneDimensionalArray.RemoveAll<T>(T[], System.Predicate<T>, out System.Int64)
+  fullName.vb: DotNext.OneDimensionalArray.RemoveAll(Of T)(T(), System.Predicate(Of T), ByRef System.Int64)
+  nameWithType: OneDimensionalArray.RemoveAll<T>(T[], Predicate<T>, out Int64)
+  nameWithType.vb: OneDimensionalArray.RemoveAll(Of T)(T(), Predicate(Of T), ByRef Int64)
+- uid: DotNext.OneDimensionalArray.RemoveAt*
+  name: RemoveAt
+  href: api/DotNext.OneDimensionalArray.html#DotNext_OneDimensionalArray_RemoveAt_
+  commentId: Overload:DotNext.OneDimensionalArray.RemoveAt
+  isSpec: "True"
+  fullName: DotNext.OneDimensionalArray.RemoveAt
+  nameWithType: OneDimensionalArray.RemoveAt
+- uid: DotNext.OneDimensionalArray.RemoveAt``1(``0[],System.Int64)
+  name: RemoveAt<T>(T[], Int64)
+  href: api/DotNext.OneDimensionalArray.html#DotNext_OneDimensionalArray_RemoveAt__1___0___System_Int64_
+  commentId: M:DotNext.OneDimensionalArray.RemoveAt``1(``0[],System.Int64)
+  name.vb: RemoveAt(Of T)(T(), Int64)
+  fullName: DotNext.OneDimensionalArray.RemoveAt<T>(T[], System.Int64)
+  fullName.vb: DotNext.OneDimensionalArray.RemoveAt(Of T)(T(), System.Int64)
+  nameWithType: OneDimensionalArray.RemoveAt<T>(T[], Int64)
+  nameWithType.vb: OneDimensionalArray.RemoveAt(Of T)(T(), Int64)
 - uid: DotNext.OneDimensionalArray.RemoveFirst*
   name: RemoveFirst
   href: api/DotNext.OneDimensionalArray.html#DotNext_OneDimensionalArray_RemoveFirst_
@@ -10235,76 +10263,6 @@ references:
   isSpec: "True"
   fullName: DotNext.RandomExtensions.NextString
   nameWithType: RandomExtensions.NextString
-- uid: DotNext.Range
-  name: Range
-  href: api/DotNext.Range.html
-  commentId: T:DotNext.Range
-  fullName: DotNext.Range
-  nameWithType: Range
-- uid: DotNext.Range.Between*
-  name: Between
-  href: api/DotNext.Range.html#DotNext_Range_Between_
-  commentId: Overload:DotNext.Range.Between
-  isSpec: "True"
-  fullName: DotNext.Range.Between
-  nameWithType: Range.Between
-- uid: DotNext.Range.Between``1(``0,``0,``0,DotNext.BoundType)
-  name: Between<T>(T, T, T, BoundType)
-  href: api/DotNext.Range.html#DotNext_Range_Between__1___0___0___0_DotNext_BoundType_
-  commentId: M:DotNext.Range.Between``1(``0,``0,``0,DotNext.BoundType)
-  name.vb: Between(Of T)(T, T, T, BoundType)
-  fullName: DotNext.Range.Between<T>(T, T, T, DotNext.BoundType)
-  fullName.vb: DotNext.Range.Between(Of T)(T, T, T, DotNext.BoundType)
-  nameWithType: Range.Between<T>(T, T, T, BoundType)
-  nameWithType.vb: Range.Between(Of T)(T, T, T, BoundType)
-- uid: DotNext.Range.Clamp*
-  name: Clamp
-  href: api/DotNext.Range.html#DotNext_Range_Clamp_
-  commentId: Overload:DotNext.Range.Clamp
-  isSpec: "True"
-  fullName: DotNext.Range.Clamp
-  nameWithType: Range.Clamp
-- uid: DotNext.Range.Clamp``1(``0,``0,``0)
-  name: Clamp<T>(T, T, T)
-  href: api/DotNext.Range.html#DotNext_Range_Clamp__1___0___0___0_
-  commentId: M:DotNext.Range.Clamp``1(``0,``0,``0)
-  name.vb: Clamp(Of T)(T, T, T)
-  fullName: DotNext.Range.Clamp<T>(T, T, T)
-  fullName.vb: DotNext.Range.Clamp(Of T)(T, T, T)
-  nameWithType: Range.Clamp<T>(T, T, T)
-  nameWithType.vb: Range.Clamp(Of T)(T, T, T)
-- uid: DotNext.Range.LowerBounded*
-  name: LowerBounded
-  href: api/DotNext.Range.html#DotNext_Range_LowerBounded_
-  commentId: Overload:DotNext.Range.LowerBounded
-  isSpec: "True"
-  fullName: DotNext.Range.LowerBounded
-  nameWithType: Range.LowerBounded
-- uid: DotNext.Range.LowerBounded``1(``0,``0)
-  name: LowerBounded<T>(T, T)
-  href: api/DotNext.Range.html#DotNext_Range_LowerBounded__1___0___0_
-  commentId: M:DotNext.Range.LowerBounded``1(``0,``0)
-  name.vb: LowerBounded(Of T)(T, T)
-  fullName: DotNext.Range.LowerBounded<T>(T, T)
-  fullName.vb: DotNext.Range.LowerBounded(Of T)(T, T)
-  nameWithType: Range.LowerBounded<T>(T, T)
-  nameWithType.vb: Range.LowerBounded(Of T)(T, T)
-- uid: DotNext.Range.UpperBounded*
-  name: UpperBounded
-  href: api/DotNext.Range.html#DotNext_Range_UpperBounded_
-  commentId: Overload:DotNext.Range.UpperBounded
-  isSpec: "True"
-  fullName: DotNext.Range.UpperBounded
-  nameWithType: Range.UpperBounded
-- uid: DotNext.Range.UpperBounded``1(``0,``0)
-  name: UpperBounded<T>(T, T)
-  href: api/DotNext.Range.html#DotNext_Range_UpperBounded__1___0___0_
-  commentId: M:DotNext.Range.UpperBounded``1(``0,``0)
-  name.vb: UpperBounded(Of T)(T, T)
-  fullName: DotNext.Range.UpperBounded<T>(T, T)
-  fullName.vb: DotNext.Range.UpperBounded(Of T)(T, T)
-  nameWithType: Range.UpperBounded<T>(T, T)
-  nameWithType.vb: Range.UpperBounded(Of T)(T, T)
 - uid: DotNext.Reflection
   name: DotNext.Reflection
   href: api/DotNext.Reflection.html
@@ -10509,38 +10467,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Reflection.CollectionType.GetItemType
   nameWithType: CollectionType.GetItemType
-- uid: DotNext.Reflection.ConstraintAttribute
-  name: ConstraintAttribute
-  href: api/DotNext.Reflection.ConstraintAttribute.html
-  commentId: T:DotNext.Reflection.ConstraintAttribute
-  fullName: DotNext.Reflection.ConstraintAttribute
-  nameWithType: ConstraintAttribute
-- uid: DotNext.Reflection.ConstraintAttribute.#ctor(System.Type)
-  name: ConstraintAttribute(Type)
-  href: api/DotNext.Reflection.ConstraintAttribute.html#DotNext_Reflection_ConstraintAttribute__ctor_System_Type_
-  commentId: M:DotNext.Reflection.ConstraintAttribute.#ctor(System.Type)
-  fullName: DotNext.Reflection.ConstraintAttribute.ConstraintAttribute(System.Type)
-  nameWithType: ConstraintAttribute.ConstraintAttribute(Type)
-- uid: DotNext.Reflection.ConstraintAttribute.#ctor*
-  name: ConstraintAttribute
-  href: api/DotNext.Reflection.ConstraintAttribute.html#DotNext_Reflection_ConstraintAttribute__ctor_
-  commentId: Overload:DotNext.Reflection.ConstraintAttribute.#ctor
-  isSpec: "True"
-  fullName: DotNext.Reflection.ConstraintAttribute.ConstraintAttribute
-  nameWithType: ConstraintAttribute.ConstraintAttribute
-- uid: DotNext.Reflection.ConstraintAttribute.Concept
-  name: Concept
-  href: api/DotNext.Reflection.ConstraintAttribute.html#DotNext_Reflection_ConstraintAttribute_Concept
-  commentId: P:DotNext.Reflection.ConstraintAttribute.Concept
-  fullName: DotNext.Reflection.ConstraintAttribute.Concept
-  nameWithType: ConstraintAttribute.Concept
-- uid: DotNext.Reflection.ConstraintAttribute.Concept*
-  name: Concept
-  href: api/DotNext.Reflection.ConstraintAttribute.html#DotNext_Reflection_ConstraintAttribute_Concept_
-  commentId: Overload:DotNext.Reflection.ConstraintAttribute.Concept
-  isSpec: "True"
-  fullName: DotNext.Reflection.ConstraintAttribute.Concept
-  nameWithType: ConstraintAttribute.Concept
 - uid: DotNext.Reflection.ConstraintViolationException
   name: ConstraintViolationException
   href: api/DotNext.Reflection.ConstraintViolationException.html
@@ -11140,6 +11066,55 @@ references:
   fullName.vb: DotNext.Reflection.Conversion(Of I, O).IsSupported
   nameWithType: Conversion<I, O>.IsSupported
   nameWithType.vb: Conversion(Of I, O).IsSupported
+- uid: DotNext.Reflection.CustomAttribute
+  name: CustomAttribute
+  href: api/DotNext.Reflection.CustomAttribute.html
+  commentId: T:DotNext.Reflection.CustomAttribute
+  fullName: DotNext.Reflection.CustomAttribute
+  nameWithType: CustomAttribute
+- uid: DotNext.Reflection.CustomAttribute.IsDefined*
+  name: IsDefined
+  href: api/DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined_
+  commentId: Overload:DotNext.Reflection.CustomAttribute.IsDefined
+  isSpec: "True"
+  fullName: DotNext.Reflection.CustomAttribute.IsDefined
+  nameWithType: CustomAttribute.IsDefined
+- uid: DotNext.Reflection.CustomAttribute.IsDefined``1(System.Reflection.Assembly)
+  name: IsDefined<A>(Assembly)
+  href: api/DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_Assembly_
+  commentId: M:DotNext.Reflection.CustomAttribute.IsDefined``1(System.Reflection.Assembly)
+  name.vb: IsDefined(Of A)(Assembly)
+  fullName: DotNext.Reflection.CustomAttribute.IsDefined<A>(System.Reflection.Assembly)
+  fullName.vb: DotNext.Reflection.CustomAttribute.IsDefined(Of A)(System.Reflection.Assembly)
+  nameWithType: CustomAttribute.IsDefined<A>(Assembly)
+  nameWithType.vb: CustomAttribute.IsDefined(Of A)(Assembly)
+- uid: DotNext.Reflection.CustomAttribute.IsDefined``1(System.Reflection.MemberInfo,System.Boolean)
+  name: IsDefined<A>(MemberInfo, Boolean)
+  href: api/DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_MemberInfo_System_Boolean_
+  commentId: M:DotNext.Reflection.CustomAttribute.IsDefined``1(System.Reflection.MemberInfo,System.Boolean)
+  name.vb: IsDefined(Of A)(MemberInfo, Boolean)
+  fullName: DotNext.Reflection.CustomAttribute.IsDefined<A>(System.Reflection.MemberInfo, System.Boolean)
+  fullName.vb: DotNext.Reflection.CustomAttribute.IsDefined(Of A)(System.Reflection.MemberInfo, System.Boolean)
+  nameWithType: CustomAttribute.IsDefined<A>(MemberInfo, Boolean)
+  nameWithType.vb: CustomAttribute.IsDefined(Of A)(MemberInfo, Boolean)
+- uid: DotNext.Reflection.CustomAttribute.IsDefined``1(System.Reflection.Module)
+  name: IsDefined<A>(Module)
+  href: api/DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_Module_
+  commentId: M:DotNext.Reflection.CustomAttribute.IsDefined``1(System.Reflection.Module)
+  name.vb: IsDefined(Of A)(Module)
+  fullName: DotNext.Reflection.CustomAttribute.IsDefined<A>(System.Reflection.Module)
+  fullName.vb: DotNext.Reflection.CustomAttribute.IsDefined(Of A)(System.Reflection.Module)
+  nameWithType: CustomAttribute.IsDefined<A>(Module)
+  nameWithType.vb: CustomAttribute.IsDefined(Of A)(Module)
+- uid: DotNext.Reflection.CustomAttribute.IsDefined``1(System.Reflection.ParameterInfo)
+  name: IsDefined<A>(ParameterInfo)
+  href: api/DotNext.Reflection.CustomAttribute.html#DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_ParameterInfo_
+  commentId: M:DotNext.Reflection.CustomAttribute.IsDefined``1(System.Reflection.ParameterInfo)
+  name.vb: IsDefined(Of A)(ParameterInfo)
+  fullName: DotNext.Reflection.CustomAttribute.IsDefined<A>(System.Reflection.ParameterInfo)
+  fullName.vb: DotNext.Reflection.CustomAttribute.IsDefined(Of A)(System.Reflection.ParameterInfo)
+  nameWithType: CustomAttribute.IsDefined<A>(ParameterInfo)
+  nameWithType.vb: CustomAttribute.IsDefined(Of A)(ParameterInfo)
 - uid: DotNext.Reflection.DelegateType
   name: DelegateType
   href: api/DotNext.Reflection.DelegateType.html
@@ -12667,15 +12642,6 @@ references:
   fullName.vb: DotNext.Reflection.FieldBase(Of V).ToString
   nameWithType: FieldBase<V>.ToString
   nameWithType.vb: FieldBase(Of V).ToString
-- uid: DotNext.Reflection.IConcept`1
-  name: IConcept<T>
-  href: api/DotNext.Reflection.IConcept-1.html
-  commentId: T:DotNext.Reflection.IConcept`1
-  name.vb: IConcept(Of T)
-  fullName: DotNext.Reflection.IConcept<T>
-  fullName.vb: DotNext.Reflection.IConcept(Of T)
-  nameWithType: IConcept<T>
-  nameWithType.vb: IConcept(Of T)
 - uid: DotNext.Reflection.IConstructor`1
   name: IConstructor<D>
   href: api/DotNext.Reflection.IConstructor-1.html
@@ -16522,32 +16488,6 @@ references:
   fullName.vb: DotNext.Reflection.Type(Of T).Attribute(Of A).Require
   nameWithType: Type<T>.Attribute<A>.Require
   nameWithType.vb: Type(Of T).Attribute(Of A).Require
-- uid: DotNext.Reflection.Type`1.Concept(System.Type)
-  name: Concept(Type)
-  href: api/DotNext.Reflection.Type-1.html#DotNext_Reflection_Type_1_Concept_System_Type_
-  commentId: M:DotNext.Reflection.Type`1.Concept(System.Type)
-  fullName: DotNext.Reflection.Type<T>.Concept(System.Type)
-  fullName.vb: DotNext.Reflection.Type(Of T).Concept(System.Type)
-  nameWithType: Type<T>.Concept(Type)
-  nameWithType.vb: Type(Of T).Concept(Type)
-- uid: DotNext.Reflection.Type`1.Concept*
-  name: Concept
-  href: api/DotNext.Reflection.Type-1.html#DotNext_Reflection_Type_1_Concept_
-  commentId: Overload:DotNext.Reflection.Type`1.Concept
-  isSpec: "True"
-  fullName: DotNext.Reflection.Type<T>.Concept
-  fullName.vb: DotNext.Reflection.Type(Of T).Concept
-  nameWithType: Type<T>.Concept
-  nameWithType.vb: Type(Of T).Concept
-- uid: DotNext.Reflection.Type`1.Concept``1
-  name: Concept<C>()
-  href: api/DotNext.Reflection.Type-1.html#DotNext_Reflection_Type_1_Concept__1
-  commentId: M:DotNext.Reflection.Type`1.Concept``1
-  name.vb: Concept(Of C)()
-  fullName: DotNext.Reflection.Type<T>.Concept<C>()
-  fullName.vb: DotNext.Reflection.Type(Of T).Concept(Of C)()
-  nameWithType: Type<T>.Concept<C>()
-  nameWithType.vb: Type(Of T).Concept(Of C)()
 - uid: DotNext.Reflection.Type`1.Constructor
   name: Type<T>.Constructor
   href: api/DotNext.Reflection.Type-1.Constructor.html
@@ -19499,6 +19439,105 @@ references:
   fullName.vb: DotNext.Runtime.CompilerServices.AwaiterBase(Of TAwaiter).UnsafeOnCompleted
   nameWithType: AwaiterBase<TAwaiter>.UnsafeOnCompleted
   nameWithType.vb: AwaiterBase(Of TAwaiter).UnsafeOnCompleted
+- uid: DotNext.Runtime.CompilerServices.Concept
+  name: Concept
+  href: api/DotNext.Runtime.CompilerServices.Concept.html
+  commentId: T:DotNext.Runtime.CompilerServices.Concept
+  fullName: DotNext.Runtime.CompilerServices.Concept
+  nameWithType: Concept
+- uid: DotNext.Runtime.CompilerServices.Concept.Assert(System.Type)
+  name: Assert(Type)
+  href: api/DotNext.Runtime.CompilerServices.Concept.html#DotNext_Runtime_CompilerServices_Concept_Assert_System_Type_
+  commentId: M:DotNext.Runtime.CompilerServices.Concept.Assert(System.Type)
+  fullName: DotNext.Runtime.CompilerServices.Concept.Assert(System.Type)
+  nameWithType: Concept.Assert(Type)
+- uid: DotNext.Runtime.CompilerServices.Concept.Assert(System.Type,System.Type[])
+  name: Assert(Type, Type[])
+  href: api/DotNext.Runtime.CompilerServices.Concept.html#DotNext_Runtime_CompilerServices_Concept_Assert_System_Type_System_Type___
+  commentId: M:DotNext.Runtime.CompilerServices.Concept.Assert(System.Type,System.Type[])
+  name.vb: Assert(Type, Type())
+  fullName: DotNext.Runtime.CompilerServices.Concept.Assert(System.Type, System.Type[])
+  fullName.vb: DotNext.Runtime.CompilerServices.Concept.Assert(System.Type, System.Type())
+  nameWithType: Concept.Assert(Type, Type[])
+  nameWithType.vb: Concept.Assert(Type, Type())
+- uid: DotNext.Runtime.CompilerServices.Concept.Assert*
+  name: Assert
+  href: api/DotNext.Runtime.CompilerServices.Concept.html#DotNext_Runtime_CompilerServices_Concept_Assert_
+  commentId: Overload:DotNext.Runtime.CompilerServices.Concept.Assert
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.Concept.Assert
+  nameWithType: Concept.Assert
+- uid: DotNext.Runtime.CompilerServices.Concept.Assert``1
+  name: Assert<C>()
+  href: api/DotNext.Runtime.CompilerServices.Concept.html#DotNext_Runtime_CompilerServices_Concept_Assert__1
+  commentId: M:DotNext.Runtime.CompilerServices.Concept.Assert``1
+  name.vb: Assert(Of C)()
+  fullName: DotNext.Runtime.CompilerServices.Concept.Assert<C>()
+  fullName.vb: DotNext.Runtime.CompilerServices.Concept.Assert(Of C)()
+  nameWithType: Concept.Assert<C>()
+  nameWithType.vb: Concept.Assert(Of C)()
+- uid: DotNext.Runtime.CompilerServices.ConceptAttribute
+  name: ConceptAttribute
+  href: api/DotNext.Runtime.CompilerServices.ConceptAttribute.html
+  commentId: T:DotNext.Runtime.CompilerServices.ConceptAttribute
+  fullName: DotNext.Runtime.CompilerServices.ConceptAttribute
+  nameWithType: ConceptAttribute
+- uid: DotNext.Runtime.CompilerServices.ConstraintAttribute
+  name: ConstraintAttribute
+  href: api/DotNext.Runtime.CompilerServices.ConstraintAttribute.html
+  commentId: T:DotNext.Runtime.CompilerServices.ConstraintAttribute
+  fullName: DotNext.Runtime.CompilerServices.ConstraintAttribute
+  nameWithType: ConstraintAttribute
+- uid: DotNext.Runtime.CompilerServices.ConstraintAttribute.#ctor(System.Type)
+  name: ConstraintAttribute(Type)
+  href: api/DotNext.Runtime.CompilerServices.ConstraintAttribute.html#DotNext_Runtime_CompilerServices_ConstraintAttribute__ctor_System_Type_
+  commentId: M:DotNext.Runtime.CompilerServices.ConstraintAttribute.#ctor(System.Type)
+  fullName: DotNext.Runtime.CompilerServices.ConstraintAttribute.ConstraintAttribute(System.Type)
+  nameWithType: ConstraintAttribute.ConstraintAttribute(Type)
+- uid: DotNext.Runtime.CompilerServices.ConstraintAttribute.#ctor*
+  name: ConstraintAttribute
+  href: api/DotNext.Runtime.CompilerServices.ConstraintAttribute.html#DotNext_Runtime_CompilerServices_ConstraintAttribute__ctor_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ConstraintAttribute.#ctor
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.ConstraintAttribute.ConstraintAttribute
+  nameWithType: ConstraintAttribute.ConstraintAttribute
+- uid: DotNext.Runtime.CompilerServices.ConstraintAttribute.Concept
+  name: Concept
+  href: api/DotNext.Runtime.CompilerServices.ConstraintAttribute.html#DotNext_Runtime_CompilerServices_ConstraintAttribute_Concept
+  commentId: P:DotNext.Runtime.CompilerServices.ConstraintAttribute.Concept
+  fullName: DotNext.Runtime.CompilerServices.ConstraintAttribute.Concept
+  nameWithType: ConstraintAttribute.Concept
+- uid: DotNext.Runtime.CompilerServices.ConstraintAttribute.Concept*
+  name: Concept
+  href: api/DotNext.Runtime.CompilerServices.ConstraintAttribute.html#DotNext_Runtime_CompilerServices_ConstraintAttribute_Concept_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ConstraintAttribute.Concept
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.ConstraintAttribute.Concept
+  nameWithType: ConstraintAttribute.Concept
+- uid: DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute
+  name: RuntimeFeaturesAttribute
+  href: api/DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.html
+  commentId: T:DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute
+  fullName: DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute
+  nameWithType: RuntimeFeaturesAttribute
+- uid: DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.DynamicCodeCompilation
+  name: DynamicCodeCompilation
+  href: api/DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.html#DotNext_Runtime_CompilerServices_RuntimeFeaturesAttribute_DynamicCodeCompilation
+  commentId: F:DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.DynamicCodeCompilation
+  fullName: DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.DynamicCodeCompilation
+  nameWithType: RuntimeFeaturesAttribute.DynamicCodeCompilation
+- uid: DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.PrivateReflection
+  name: PrivateReflection
+  href: api/DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.html#DotNext_Runtime_CompilerServices_RuntimeFeaturesAttribute_PrivateReflection
+  commentId: F:DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.PrivateReflection
+  fullName: DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.PrivateReflection
+  nameWithType: RuntimeFeaturesAttribute.PrivateReflection
+- uid: DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.RuntimeGenericInstantiation
+  name: RuntimeGenericInstantiation
+  href: api/DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.html#DotNext_Runtime_CompilerServices_RuntimeFeaturesAttribute_RuntimeGenericInstantiation
+  commentId: F:DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.RuntimeGenericInstantiation
+  fullName: DotNext.Runtime.CompilerServices.RuntimeFeaturesAttribute.RuntimeGenericInstantiation
+  nameWithType: RuntimeFeaturesAttribute.RuntimeGenericInstantiation
 - uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder
   name: ValueTupleBuilder
   href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.html
@@ -19703,6 +19742,12 @@ references:
   commentId: M:DotNext.Runtime.InteropServices.Memory.ClearBits(System.IntPtr,System.Int64)
   fullName: DotNext.Runtime.InteropServices.Memory.ClearBits(System.IntPtr, System.Int64)
   nameWithType: Memory.ClearBits(IntPtr, Int64)
+- uid: DotNext.Runtime.InteropServices.Memory.ClearBits(System.Void*,System.Int64)
+  name: ClearBits(Void*, Int64)
+  href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_ClearBits_System_Void__System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.Memory.ClearBits(System.Void*,System.Int64)
+  fullName: DotNext.Runtime.InteropServices.Memory.ClearBits(System.Void*, System.Int64)
+  nameWithType: Memory.ClearBits(Void*, Int64)
 - uid: DotNext.Runtime.InteropServices.Memory.ClearBits*
   name: ClearBits
   href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_ClearBits_
@@ -19908,19 +19953,6 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Memory.WriteUnaligned(Of T)(ByRef System.IntPtr, T)
   nameWithType: Memory.WriteUnaligned<T>(ref IntPtr, T)
   nameWithType.vb: Memory.WriteUnaligned(Of T)(ByRef IntPtr, T)
-- uid: DotNext.Runtime.InteropServices.Memory.ZeroMem(System.Void*,System.Int64)
-  name: ZeroMem(Void*, Int64)
-  href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_ZeroMem_System_Void__System_Int64_
-  commentId: M:DotNext.Runtime.InteropServices.Memory.ZeroMem(System.Void*,System.Int64)
-  fullName: DotNext.Runtime.InteropServices.Memory.ZeroMem(System.Void*, System.Int64)
-  nameWithType: Memory.ZeroMem(Void*, Int64)
-- uid: DotNext.Runtime.InteropServices.Memory.ZeroMem*
-  name: ZeroMem
-  href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_ZeroMem_
-  commentId: Overload:DotNext.Runtime.InteropServices.Memory.ZeroMem
-  isSpec: "True"
-  fullName: DotNext.Runtime.InteropServices.Memory.ZeroMem
-  nameWithType: Memory.ZeroMem
 - uid: DotNext.Runtime.InteropServices.NullPointerException
   name: NullPointerException
   href: api/DotNext.Runtime.InteropServices.NullPointerException.html
@@ -23493,6 +23525,87 @@ references:
   fullName.vb: DotNext.Sequence.ToString(Of T)(System.Collections.Generic.IEnumerable(Of T), System.String, System.String)
   nameWithType: Sequence.ToString<T>(IEnumerable<T>, String, String)
   nameWithType.vb: Sequence.ToString(Of T)(IEnumerable(Of T), String, String)
+- uid: DotNext.Span
+  name: Span
+  href: api/DotNext.Span.html
+  commentId: T:DotNext.Span
+  fullName: DotNext.Span
+  nameWithType: Span
+- uid: DotNext.Span.BitwiseCompare*
+  name: BitwiseCompare
+  href: api/DotNext.Span.html#DotNext_Span_BitwiseCompare_
+  commentId: Overload:DotNext.Span.BitwiseCompare
+  isSpec: "True"
+  fullName: DotNext.Span.BitwiseCompare
+  nameWithType: Span.BitwiseCompare
+- uid: DotNext.Span.BitwiseCompare``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})
+  name: BitwiseCompare<T>(ReadOnlySpan<T>, ReadOnlySpan<T>)
+  href: api/DotNext.Span.html#DotNext_Span_BitwiseCompare__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__
+  commentId: M:DotNext.Span.BitwiseCompare``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})
+  name.vb: BitwiseCompare(Of T)(ReadOnlySpan(Of T), ReadOnlySpan(Of T))
+  fullName: DotNext.Span.BitwiseCompare<T>(System.ReadOnlySpan<T>, System.ReadOnlySpan<T>)
+  fullName.vb: DotNext.Span.BitwiseCompare(Of T)(System.ReadOnlySpan(Of T), System.ReadOnlySpan(Of T))
+  nameWithType: Span.BitwiseCompare<T>(ReadOnlySpan<T>, ReadOnlySpan<T>)
+  nameWithType.vb: Span.BitwiseCompare(Of T)(ReadOnlySpan(Of T), ReadOnlySpan(Of T))
+- uid: DotNext.Span.BitwiseCompare``1(System.Span{``0},System.Span{``0})
+  name: BitwiseCompare<T>(Span<T>, Span<T>)
+  href: api/DotNext.Span.html#DotNext_Span_BitwiseCompare__1_System_Span___0__System_Span___0__
+  commentId: M:DotNext.Span.BitwiseCompare``1(System.Span{``0},System.Span{``0})
+  name.vb: BitwiseCompare(Of T)(Span(Of T), Span(Of T))
+  fullName: DotNext.Span.BitwiseCompare<T>(System.Span<T>, System.Span<T>)
+  fullName.vb: DotNext.Span.BitwiseCompare(Of T)(System.Span(Of T), System.Span(Of T))
+  nameWithType: Span.BitwiseCompare<T>(Span<T>, Span<T>)
+  nameWithType.vb: Span.BitwiseCompare(Of T)(Span(Of T), Span(Of T))
+- uid: DotNext.Span.BitwiseEquals*
+  name: BitwiseEquals
+  href: api/DotNext.Span.html#DotNext_Span_BitwiseEquals_
+  commentId: Overload:DotNext.Span.BitwiseEquals
+  isSpec: "True"
+  fullName: DotNext.Span.BitwiseEquals
+  nameWithType: Span.BitwiseEquals
+- uid: DotNext.Span.BitwiseEquals``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})
+  name: BitwiseEquals<T>(ReadOnlySpan<T>, ReadOnlySpan<T>)
+  href: api/DotNext.Span.html#DotNext_Span_BitwiseEquals__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__
+  commentId: M:DotNext.Span.BitwiseEquals``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})
+  name.vb: BitwiseEquals(Of T)(ReadOnlySpan(Of T), ReadOnlySpan(Of T))
+  fullName: DotNext.Span.BitwiseEquals<T>(System.ReadOnlySpan<T>, System.ReadOnlySpan<T>)
+  fullName.vb: DotNext.Span.BitwiseEquals(Of T)(System.ReadOnlySpan(Of T), System.ReadOnlySpan(Of T))
+  nameWithType: Span.BitwiseEquals<T>(ReadOnlySpan<T>, ReadOnlySpan<T>)
+  nameWithType.vb: Span.BitwiseEquals(Of T)(ReadOnlySpan(Of T), ReadOnlySpan(Of T))
+- uid: DotNext.Span.BitwiseEquals``1(System.Span{``0},System.Span{``0})
+  name: BitwiseEquals<T>(Span<T>, Span<T>)
+  href: api/DotNext.Span.html#DotNext_Span_BitwiseEquals__1_System_Span___0__System_Span___0__
+  commentId: M:DotNext.Span.BitwiseEquals``1(System.Span{``0},System.Span{``0})
+  name.vb: BitwiseEquals(Of T)(Span(Of T), Span(Of T))
+  fullName: DotNext.Span.BitwiseEquals<T>(System.Span<T>, System.Span<T>)
+  fullName.vb: DotNext.Span.BitwiseEquals(Of T)(System.Span(Of T), System.Span(Of T))
+  nameWithType: Span.BitwiseEquals<T>(Span<T>, Span<T>)
+  nameWithType.vb: Span.BitwiseEquals(Of T)(Span(Of T), Span(Of T))
+- uid: DotNext.Span.BitwiseHashCode*
+  name: BitwiseHashCode
+  href: api/DotNext.Span.html#DotNext_Span_BitwiseHashCode_
+  commentId: Overload:DotNext.Span.BitwiseHashCode
+  isSpec: "True"
+  fullName: DotNext.Span.BitwiseHashCode
+  nameWithType: Span.BitwiseHashCode
+- uid: DotNext.Span.BitwiseHashCode``1(System.Span{``0},System.Boolean)
+  name: BitwiseHashCode<T>(Span<T>, Boolean)
+  href: api/DotNext.Span.html#DotNext_Span_BitwiseHashCode__1_System_Span___0__System_Boolean_
+  commentId: M:DotNext.Span.BitwiseHashCode``1(System.Span{``0},System.Boolean)
+  name.vb: BitwiseHashCode(Of T)(Span(Of T), Boolean)
+  fullName: DotNext.Span.BitwiseHashCode<T>(System.Span<T>, System.Boolean)
+  fullName.vb: DotNext.Span.BitwiseHashCode(Of T)(System.Span(Of T), System.Boolean)
+  nameWithType: Span.BitwiseHashCode<T>(Span<T>, Boolean)
+  nameWithType.vb: Span.BitwiseHashCode(Of T)(Span(Of T), Boolean)
+- uid: DotNext.Span.BitwiseHashCode``1(System.Span{``0},System.Int32,System.Func{System.Int32,System.Int32,System.Int32},System.Boolean)
+  name: BitwiseHashCode<T>(Span<T>, Int32, Func<Int32, Int32, Int32>, Boolean)
+  href: api/DotNext.Span.html#DotNext_Span_BitwiseHashCode__1_System_Span___0__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_
+  commentId: M:DotNext.Span.BitwiseHashCode``1(System.Span{``0},System.Int32,System.Func{System.Int32,System.Int32,System.Int32},System.Boolean)
+  name.vb: BitwiseHashCode(Of T)(Span(Of T), Int32, Func(Of Int32, Int32, Int32), Boolean)
+  fullName: DotNext.Span.BitwiseHashCode<T>(System.Span<T>, System.Int32, System.Func<System.Int32, System.Int32, System.Int32>, System.Boolean)
+  fullName.vb: DotNext.Span.BitwiseHashCode(Of T)(System.Span(Of T), System.Int32, System.Func(Of System.Int32, System.Int32, System.Int32), System.Boolean)
+  nameWithType: Span.BitwiseHashCode<T>(Span<T>, Int32, Func<Int32, Int32, Int32>, Boolean)
+  nameWithType.vb: Span.BitwiseHashCode(Of T)(Span(Of T), Int32, Func(Of Int32, Int32, Int32), Boolean)
 - uid: DotNext.StringExtensions
   name: StringExtensions
   href: api/DotNext.StringExtensions.html
@@ -23557,6 +23670,232 @@ references:
   commentId: N:DotNext.Threading
   fullName: DotNext.Threading
   nameWithType: DotNext.Threading
+- uid: DotNext.Threading.AsyncAutoResetEvent
+  name: AsyncAutoResetEvent
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html
+  commentId: T:DotNext.Threading.AsyncAutoResetEvent
+  fullName: DotNext.Threading.AsyncAutoResetEvent
+  nameWithType: AsyncAutoResetEvent
+- uid: DotNext.Threading.AsyncAutoResetEvent.#ctor(System.Boolean)
+  name: AsyncAutoResetEvent(Boolean)
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent__ctor_System_Boolean_
+  commentId: M:DotNext.Threading.AsyncAutoResetEvent.#ctor(System.Boolean)
+  fullName: DotNext.Threading.AsyncAutoResetEvent.AsyncAutoResetEvent(System.Boolean)
+  nameWithType: AsyncAutoResetEvent.AsyncAutoResetEvent(Boolean)
+- uid: DotNext.Threading.AsyncAutoResetEvent.#ctor*
+  name: AsyncAutoResetEvent
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent__ctor_
+  commentId: Overload:DotNext.Threading.AsyncAutoResetEvent.#ctor
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncAutoResetEvent.AsyncAutoResetEvent
+  nameWithType: AsyncAutoResetEvent.AsyncAutoResetEvent
+- uid: DotNext.Threading.AsyncAutoResetEvent.DotNext#Threading#IAsyncEvent#Signal
+  name: IAsyncEvent.Signal()
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_DotNext_Threading_IAsyncEvent_Signal
+  commentId: M:DotNext.Threading.AsyncAutoResetEvent.DotNext#Threading#IAsyncEvent#Signal
+  name.vb: DotNext.Threading.IAsyncEvent.Signal()
+  fullName: DotNext.Threading.AsyncAutoResetEvent.DotNext.Threading.IAsyncEvent.Signal()
+  nameWithType: AsyncAutoResetEvent.IAsyncEvent.Signal()
+  nameWithType.vb: AsyncAutoResetEvent.DotNext.Threading.IAsyncEvent.Signal()
+- uid: DotNext.Threading.AsyncAutoResetEvent.DotNext#Threading#IAsyncEvent#Signal*
+  name: IAsyncEvent.Signal
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_DotNext_Threading_IAsyncEvent_Signal_
+  commentId: Overload:DotNext.Threading.AsyncAutoResetEvent.DotNext#Threading#IAsyncEvent#Signal
+  isSpec: "True"
+  name.vb: DotNext.Threading.IAsyncEvent.Signal
+  fullName: DotNext.Threading.AsyncAutoResetEvent.DotNext.Threading.IAsyncEvent.Signal
+  nameWithType: AsyncAutoResetEvent.IAsyncEvent.Signal
+  nameWithType.vb: AsyncAutoResetEvent.DotNext.Threading.IAsyncEvent.Signal
+- uid: DotNext.Threading.AsyncAutoResetEvent.DotNext#Threading#IAsyncResetEvent#ResetMode
+  name: IAsyncResetEvent.ResetMode
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_DotNext_Threading_IAsyncResetEvent_ResetMode
+  commentId: P:DotNext.Threading.AsyncAutoResetEvent.DotNext#Threading#IAsyncResetEvent#ResetMode
+  name.vb: DotNext.Threading.IAsyncResetEvent.ResetMode
+  fullName: DotNext.Threading.AsyncAutoResetEvent.DotNext.Threading.IAsyncResetEvent.ResetMode
+  nameWithType: AsyncAutoResetEvent.IAsyncResetEvent.ResetMode
+  nameWithType.vb: AsyncAutoResetEvent.DotNext.Threading.IAsyncResetEvent.ResetMode
+- uid: DotNext.Threading.AsyncAutoResetEvent.DotNext#Threading#IAsyncResetEvent#ResetMode*
+  name: IAsyncResetEvent.ResetMode
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_DotNext_Threading_IAsyncResetEvent_ResetMode_
+  commentId: Overload:DotNext.Threading.AsyncAutoResetEvent.DotNext#Threading#IAsyncResetEvent#ResetMode
+  isSpec: "True"
+  name.vb: DotNext.Threading.IAsyncResetEvent.ResetMode
+  fullName: DotNext.Threading.AsyncAutoResetEvent.DotNext.Threading.IAsyncResetEvent.ResetMode
+  nameWithType: AsyncAutoResetEvent.IAsyncResetEvent.ResetMode
+  nameWithType.vb: AsyncAutoResetEvent.DotNext.Threading.IAsyncResetEvent.ResetMode
+- uid: DotNext.Threading.AsyncAutoResetEvent.IsSet
+  name: IsSet
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_IsSet
+  commentId: P:DotNext.Threading.AsyncAutoResetEvent.IsSet
+  fullName: DotNext.Threading.AsyncAutoResetEvent.IsSet
+  nameWithType: AsyncAutoResetEvent.IsSet
+- uid: DotNext.Threading.AsyncAutoResetEvent.IsSet*
+  name: IsSet
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_IsSet_
+  commentId: Overload:DotNext.Threading.AsyncAutoResetEvent.IsSet
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncAutoResetEvent.IsSet
+  nameWithType: AsyncAutoResetEvent.IsSet
+- uid: DotNext.Threading.AsyncAutoResetEvent.Reset
+  name: Reset()
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_Reset
+  commentId: M:DotNext.Threading.AsyncAutoResetEvent.Reset
+  fullName: DotNext.Threading.AsyncAutoResetEvent.Reset()
+  nameWithType: AsyncAutoResetEvent.Reset()
+- uid: DotNext.Threading.AsyncAutoResetEvent.Reset*
+  name: Reset
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_Reset_
+  commentId: Overload:DotNext.Threading.AsyncAutoResetEvent.Reset
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncAutoResetEvent.Reset
+  nameWithType: AsyncAutoResetEvent.Reset
+- uid: DotNext.Threading.AsyncAutoResetEvent.Set
+  name: Set()
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_Set
+  commentId: M:DotNext.Threading.AsyncAutoResetEvent.Set
+  fullName: DotNext.Threading.AsyncAutoResetEvent.Set()
+  nameWithType: AsyncAutoResetEvent.Set()
+- uid: DotNext.Threading.AsyncAutoResetEvent.Set*
+  name: Set
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_Set_
+  commentId: Overload:DotNext.Threading.AsyncAutoResetEvent.Set
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncAutoResetEvent.Set
+  nameWithType: AsyncAutoResetEvent.Set
+- uid: DotNext.Threading.AsyncAutoResetEvent.Wait(System.TimeSpan,System.Threading.CancellationToken)
+  name: Wait(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_Wait_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncAutoResetEvent.Wait(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncAutoResetEvent.Wait(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncAutoResetEvent.Wait(TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncAutoResetEvent.Wait*
+  name: Wait
+  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_Wait_
+  commentId: Overload:DotNext.Threading.AsyncAutoResetEvent.Wait
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncAutoResetEvent.Wait
+  nameWithType: AsyncAutoResetEvent.Wait
+- uid: DotNext.Threading.AsyncCountdownEvent
+  name: AsyncCountdownEvent
+  href: api/DotNext.Threading.AsyncCountdownEvent.html
+  commentId: T:DotNext.Threading.AsyncCountdownEvent
+  fullName: DotNext.Threading.AsyncCountdownEvent
+  nameWithType: AsyncCountdownEvent
+- uid: DotNext.Threading.AsyncCountdownEvent.#ctor(System.Int64)
+  name: AsyncCountdownEvent(Int64)
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent__ctor_System_Int64_
+  commentId: M:DotNext.Threading.AsyncCountdownEvent.#ctor(System.Int64)
+  fullName: DotNext.Threading.AsyncCountdownEvent.AsyncCountdownEvent(System.Int64)
+  nameWithType: AsyncCountdownEvent.AsyncCountdownEvent(Int64)
+- uid: DotNext.Threading.AsyncCountdownEvent.#ctor*
+  name: AsyncCountdownEvent
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent__ctor_
+  commentId: Overload:DotNext.Threading.AsyncCountdownEvent.#ctor
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncCountdownEvent.AsyncCountdownEvent
+  nameWithType: AsyncCountdownEvent.AsyncCountdownEvent
+- uid: DotNext.Threading.AsyncCountdownEvent.AddCount
+  name: AddCount()
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_AddCount
+  commentId: M:DotNext.Threading.AsyncCountdownEvent.AddCount
+  fullName: DotNext.Threading.AsyncCountdownEvent.AddCount()
+  nameWithType: AsyncCountdownEvent.AddCount()
+- uid: DotNext.Threading.AsyncCountdownEvent.AddCount(System.Int64)
+  name: AddCount(Int64)
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_AddCount_System_Int64_
+  commentId: M:DotNext.Threading.AsyncCountdownEvent.AddCount(System.Int64)
+  fullName: DotNext.Threading.AsyncCountdownEvent.AddCount(System.Int64)
+  nameWithType: AsyncCountdownEvent.AddCount(Int64)
+- uid: DotNext.Threading.AsyncCountdownEvent.AddCount*
+  name: AddCount
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_AddCount_
+  commentId: Overload:DotNext.Threading.AsyncCountdownEvent.AddCount
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncCountdownEvent.AddCount
+  nameWithType: AsyncCountdownEvent.AddCount
+- uid: DotNext.Threading.AsyncCountdownEvent.CurrentCount
+  name: CurrentCount
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_CurrentCount
+  commentId: P:DotNext.Threading.AsyncCountdownEvent.CurrentCount
+  fullName: DotNext.Threading.AsyncCountdownEvent.CurrentCount
+  nameWithType: AsyncCountdownEvent.CurrentCount
+- uid: DotNext.Threading.AsyncCountdownEvent.CurrentCount*
+  name: CurrentCount
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_CurrentCount_
+  commentId: Overload:DotNext.Threading.AsyncCountdownEvent.CurrentCount
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncCountdownEvent.CurrentCount
+  nameWithType: AsyncCountdownEvent.CurrentCount
+- uid: DotNext.Threading.AsyncCountdownEvent.InitialCount
+  name: InitialCount
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_InitialCount
+  commentId: P:DotNext.Threading.AsyncCountdownEvent.InitialCount
+  fullName: DotNext.Threading.AsyncCountdownEvent.InitialCount
+  nameWithType: AsyncCountdownEvent.InitialCount
+- uid: DotNext.Threading.AsyncCountdownEvent.InitialCount*
+  name: InitialCount
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_InitialCount_
+  commentId: Overload:DotNext.Threading.AsyncCountdownEvent.InitialCount
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncCountdownEvent.InitialCount
+  nameWithType: AsyncCountdownEvent.InitialCount
+- uid: DotNext.Threading.AsyncCountdownEvent.Reset
+  name: Reset()
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_Reset
+  commentId: M:DotNext.Threading.AsyncCountdownEvent.Reset
+  fullName: DotNext.Threading.AsyncCountdownEvent.Reset()
+  nameWithType: AsyncCountdownEvent.Reset()
+- uid: DotNext.Threading.AsyncCountdownEvent.Reset(System.Int64)
+  name: Reset(Int64)
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_Reset_System_Int64_
+  commentId: M:DotNext.Threading.AsyncCountdownEvent.Reset(System.Int64)
+  fullName: DotNext.Threading.AsyncCountdownEvent.Reset(System.Int64)
+  nameWithType: AsyncCountdownEvent.Reset(Int64)
+- uid: DotNext.Threading.AsyncCountdownEvent.Reset*
+  name: Reset
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_Reset_
+  commentId: Overload:DotNext.Threading.AsyncCountdownEvent.Reset
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncCountdownEvent.Reset
+  nameWithType: AsyncCountdownEvent.Reset
+- uid: DotNext.Threading.AsyncCountdownEvent.Signal
+  name: Signal()
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_Signal
+  commentId: M:DotNext.Threading.AsyncCountdownEvent.Signal
+  fullName: DotNext.Threading.AsyncCountdownEvent.Signal()
+  nameWithType: AsyncCountdownEvent.Signal()
+- uid: DotNext.Threading.AsyncCountdownEvent.Signal(System.Int64)
+  name: Signal(Int64)
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_Signal_System_Int64_
+  commentId: M:DotNext.Threading.AsyncCountdownEvent.Signal(System.Int64)
+  fullName: DotNext.Threading.AsyncCountdownEvent.Signal(System.Int64)
+  nameWithType: AsyncCountdownEvent.Signal(Int64)
+- uid: DotNext.Threading.AsyncCountdownEvent.Signal*
+  name: Signal
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_Signal_
+  commentId: Overload:DotNext.Threading.AsyncCountdownEvent.Signal
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncCountdownEvent.Signal
+  nameWithType: AsyncCountdownEvent.Signal
+- uid: DotNext.Threading.AsyncCountdownEvent.TryAddCount
+  name: TryAddCount()
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_TryAddCount
+  commentId: M:DotNext.Threading.AsyncCountdownEvent.TryAddCount
+  fullName: DotNext.Threading.AsyncCountdownEvent.TryAddCount()
+  nameWithType: AsyncCountdownEvent.TryAddCount()
+- uid: DotNext.Threading.AsyncCountdownEvent.TryAddCount(System.Int64)
+  name: TryAddCount(Int64)
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_TryAddCount_System_Int64_
+  commentId: M:DotNext.Threading.AsyncCountdownEvent.TryAddCount(System.Int64)
+  fullName: DotNext.Threading.AsyncCountdownEvent.TryAddCount(System.Int64)
+  nameWithType: AsyncCountdownEvent.TryAddCount(Int64)
+- uid: DotNext.Threading.AsyncCountdownEvent.TryAddCount*
+  name: TryAddCount
+  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent_TryAddCount_
+  commentId: Overload:DotNext.Threading.AsyncCountdownEvent.TryAddCount
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncCountdownEvent.TryAddCount
+  nameWithType: AsyncCountdownEvent.TryAddCount
 - uid: DotNext.Threading.AsyncDelegate
   name: AsyncDelegate
   href: api/DotNext.Threading.AsyncDelegate.html
@@ -23690,6 +24029,37 @@ references:
   fullName.vb: DotNext.Threading.AsyncDelegate.InvokeAsync(Of T1, T2, T3, T4, T5, T6, T7, T8, T9)(System.Action(Of T1, T2, T3, T4, T5, T6, T7, T8, T9), T1, T2, T3, T4, T5, T6, T7, T8, T9, System.Threading.CancellationToken)
   nameWithType: AsyncDelegate.InvokeAsync<T1, T2, T3, T4, T5, T6, T7, T8, T9>(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>, T1, T2, T3, T4, T5, T6, T7, T8, T9, CancellationToken)
   nameWithType.vb: AsyncDelegate.InvokeAsync(Of T1, T2, T3, T4, T5, T6, T7, T8, T9)(Action(Of T1, T2, T3, T4, T5, T6, T7, T8, T9), T1, T2, T3, T4, T5, T6, T7, T8, T9, CancellationToken)
+- uid: DotNext.Threading.AsyncEvent
+  name: AsyncEvent
+  href: api/DotNext.Threading.AsyncEvent.html
+  commentId: T:DotNext.Threading.AsyncEvent
+  fullName: DotNext.Threading.AsyncEvent
+  nameWithType: AsyncEvent
+- uid: DotNext.Threading.AsyncEvent.Wait(DotNext.Threading.IAsyncEvent)
+  name: Wait(IAsyncEvent)
+  href: api/DotNext.Threading.AsyncEvent.html#DotNext_Threading_AsyncEvent_Wait_DotNext_Threading_IAsyncEvent_
+  commentId: M:DotNext.Threading.AsyncEvent.Wait(DotNext.Threading.IAsyncEvent)
+  fullName: DotNext.Threading.AsyncEvent.Wait(DotNext.Threading.IAsyncEvent)
+  nameWithType: AsyncEvent.Wait(IAsyncEvent)
+- uid: DotNext.Threading.AsyncEvent.Wait(DotNext.Threading.IAsyncEvent,System.Threading.CancellationToken)
+  name: Wait(IAsyncEvent, CancellationToken)
+  href: api/DotNext.Threading.AsyncEvent.html#DotNext_Threading_AsyncEvent_Wait_DotNext_Threading_IAsyncEvent_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncEvent.Wait(DotNext.Threading.IAsyncEvent,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncEvent.Wait(DotNext.Threading.IAsyncEvent, System.Threading.CancellationToken)
+  nameWithType: AsyncEvent.Wait(IAsyncEvent, CancellationToken)
+- uid: DotNext.Threading.AsyncEvent.Wait(DotNext.Threading.IAsyncEvent,System.TimeSpan)
+  name: Wait(IAsyncEvent, TimeSpan)
+  href: api/DotNext.Threading.AsyncEvent.html#DotNext_Threading_AsyncEvent_Wait_DotNext_Threading_IAsyncEvent_System_TimeSpan_
+  commentId: M:DotNext.Threading.AsyncEvent.Wait(DotNext.Threading.IAsyncEvent,System.TimeSpan)
+  fullName: DotNext.Threading.AsyncEvent.Wait(DotNext.Threading.IAsyncEvent, System.TimeSpan)
+  nameWithType: AsyncEvent.Wait(IAsyncEvent, TimeSpan)
+- uid: DotNext.Threading.AsyncEvent.Wait*
+  name: Wait
+  href: api/DotNext.Threading.AsyncEvent.html#DotNext_Threading_AsyncEvent_Wait_
+  commentId: Overload:DotNext.Threading.AsyncEvent.Wait
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncEvent.Wait
+  nameWithType: AsyncEvent.Wait
 - uid: DotNext.Threading.AsyncExclusiveLock
   name: AsyncExclusiveLock
   href: api/DotNext.Threading.AsyncExclusiveLock.html
@@ -24203,25 +24573,85 @@ references:
   fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, System.TimeSpan)
   nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, TimeSpan)
   nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, TimeSpan)
-- uid: DotNext.Threading.AsyncLockBase
-  name: AsyncLockBase
-  href: api/DotNext.Threading.AsyncLockBase.html
-  commentId: T:DotNext.Threading.AsyncLockBase
-  fullName: DotNext.Threading.AsyncLockBase
-  nameWithType: AsyncLockBase
-- uid: DotNext.Threading.AsyncLockBase.Dispose(System.Boolean)
-  name: Dispose(Boolean)
-  href: api/DotNext.Threading.AsyncLockBase.html#DotNext_Threading_AsyncLockBase_Dispose_System_Boolean_
-  commentId: M:DotNext.Threading.AsyncLockBase.Dispose(System.Boolean)
-  fullName: DotNext.Threading.AsyncLockBase.Dispose(System.Boolean)
-  nameWithType: AsyncLockBase.Dispose(Boolean)
-- uid: DotNext.Threading.AsyncLockBase.Dispose*
-  name: Dispose
-  href: api/DotNext.Threading.AsyncLockBase.html#DotNext_Threading_AsyncLockBase_Dispose_
-  commentId: Overload:DotNext.Threading.AsyncLockBase.Dispose
+- uid: DotNext.Threading.AsyncManualResetEvent
+  name: AsyncManualResetEvent
+  href: api/DotNext.Threading.AsyncManualResetEvent.html
+  commentId: T:DotNext.Threading.AsyncManualResetEvent
+  fullName: DotNext.Threading.AsyncManualResetEvent
+  nameWithType: AsyncManualResetEvent
+- uid: DotNext.Threading.AsyncManualResetEvent.#ctor(System.Boolean)
+  name: AsyncManualResetEvent(Boolean)
+  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent__ctor_System_Boolean_
+  commentId: M:DotNext.Threading.AsyncManualResetEvent.#ctor(System.Boolean)
+  fullName: DotNext.Threading.AsyncManualResetEvent.AsyncManualResetEvent(System.Boolean)
+  nameWithType: AsyncManualResetEvent.AsyncManualResetEvent(Boolean)
+- uid: DotNext.Threading.AsyncManualResetEvent.#ctor*
+  name: AsyncManualResetEvent
+  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent__ctor_
+  commentId: Overload:DotNext.Threading.AsyncManualResetEvent.#ctor
   isSpec: "True"
-  fullName: DotNext.Threading.AsyncLockBase.Dispose
-  nameWithType: AsyncLockBase.Dispose
+  fullName: DotNext.Threading.AsyncManualResetEvent.AsyncManualResetEvent
+  nameWithType: AsyncManualResetEvent.AsyncManualResetEvent
+- uid: DotNext.Threading.AsyncManualResetEvent.DotNext#Threading#IAsyncEvent#Signal
+  name: IAsyncEvent.Signal()
+  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent_DotNext_Threading_IAsyncEvent_Signal
+  commentId: M:DotNext.Threading.AsyncManualResetEvent.DotNext#Threading#IAsyncEvent#Signal
+  name.vb: DotNext.Threading.IAsyncEvent.Signal()
+  fullName: DotNext.Threading.AsyncManualResetEvent.DotNext.Threading.IAsyncEvent.Signal()
+  nameWithType: AsyncManualResetEvent.IAsyncEvent.Signal()
+  nameWithType.vb: AsyncManualResetEvent.DotNext.Threading.IAsyncEvent.Signal()
+- uid: DotNext.Threading.AsyncManualResetEvent.DotNext#Threading#IAsyncEvent#Signal*
+  name: IAsyncEvent.Signal
+  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent_DotNext_Threading_IAsyncEvent_Signal_
+  commentId: Overload:DotNext.Threading.AsyncManualResetEvent.DotNext#Threading#IAsyncEvent#Signal
+  isSpec: "True"
+  name.vb: DotNext.Threading.IAsyncEvent.Signal
+  fullName: DotNext.Threading.AsyncManualResetEvent.DotNext.Threading.IAsyncEvent.Signal
+  nameWithType: AsyncManualResetEvent.IAsyncEvent.Signal
+  nameWithType.vb: AsyncManualResetEvent.DotNext.Threading.IAsyncEvent.Signal
+- uid: DotNext.Threading.AsyncManualResetEvent.DotNext#Threading#IAsyncResetEvent#ResetMode
+  name: IAsyncResetEvent.ResetMode
+  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent_DotNext_Threading_IAsyncResetEvent_ResetMode
+  commentId: P:DotNext.Threading.AsyncManualResetEvent.DotNext#Threading#IAsyncResetEvent#ResetMode
+  name.vb: DotNext.Threading.IAsyncResetEvent.ResetMode
+  fullName: DotNext.Threading.AsyncManualResetEvent.DotNext.Threading.IAsyncResetEvent.ResetMode
+  nameWithType: AsyncManualResetEvent.IAsyncResetEvent.ResetMode
+  nameWithType.vb: AsyncManualResetEvent.DotNext.Threading.IAsyncResetEvent.ResetMode
+- uid: DotNext.Threading.AsyncManualResetEvent.DotNext#Threading#IAsyncResetEvent#ResetMode*
+  name: IAsyncResetEvent.ResetMode
+  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent_DotNext_Threading_IAsyncResetEvent_ResetMode_
+  commentId: Overload:DotNext.Threading.AsyncManualResetEvent.DotNext#Threading#IAsyncResetEvent#ResetMode
+  isSpec: "True"
+  name.vb: DotNext.Threading.IAsyncResetEvent.ResetMode
+  fullName: DotNext.Threading.AsyncManualResetEvent.DotNext.Threading.IAsyncResetEvent.ResetMode
+  nameWithType: AsyncManualResetEvent.IAsyncResetEvent.ResetMode
+  nameWithType.vb: AsyncManualResetEvent.DotNext.Threading.IAsyncResetEvent.ResetMode
+- uid: DotNext.Threading.AsyncManualResetEvent.Reset
+  name: Reset()
+  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent_Reset
+  commentId: M:DotNext.Threading.AsyncManualResetEvent.Reset
+  fullName: DotNext.Threading.AsyncManualResetEvent.Reset()
+  nameWithType: AsyncManualResetEvent.Reset()
+- uid: DotNext.Threading.AsyncManualResetEvent.Reset*
+  name: Reset
+  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent_Reset_
+  commentId: Overload:DotNext.Threading.AsyncManualResetEvent.Reset
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncManualResetEvent.Reset
+  nameWithType: AsyncManualResetEvent.Reset
+- uid: DotNext.Threading.AsyncManualResetEvent.Set
+  name: Set()
+  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent_Set
+  commentId: M:DotNext.Threading.AsyncManualResetEvent.Set
+  fullName: DotNext.Threading.AsyncManualResetEvent.Set()
+  nameWithType: AsyncManualResetEvent.Set()
+- uid: DotNext.Threading.AsyncManualResetEvent.Set*
+  name: Set
+  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent_Set_
+  commentId: Overload:DotNext.Threading.AsyncManualResetEvent.Set
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncManualResetEvent.Set
+  nameWithType: AsyncManualResetEvent.Set
 - uid: DotNext.Threading.AsyncReaderWriterLock
   name: AsyncReaderWriterLock
   href: api/DotNext.Threading.AsyncReaderWriterLock.html
@@ -24433,95 +24863,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock
   nameWithType: AsyncReaderWriterLock.TryEnterWriteLock
-- uid: DotNext.Threading.AsyncResetEvent
-  name: AsyncResetEvent
-  href: api/DotNext.Threading.AsyncResetEvent.html
-  commentId: T:DotNext.Threading.AsyncResetEvent
-  fullName: DotNext.Threading.AsyncResetEvent
-  nameWithType: AsyncResetEvent
-- uid: DotNext.Threading.AsyncResetEvent.#ctor(System.Boolean,System.Threading.EventResetMode)
-  name: AsyncResetEvent(Boolean, EventResetMode)
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent__ctor_System_Boolean_System_Threading_EventResetMode_
-  commentId: M:DotNext.Threading.AsyncResetEvent.#ctor(System.Boolean,System.Threading.EventResetMode)
-  fullName: DotNext.Threading.AsyncResetEvent.AsyncResetEvent(System.Boolean, System.Threading.EventResetMode)
-  nameWithType: AsyncResetEvent.AsyncResetEvent(Boolean, EventResetMode)
-- uid: DotNext.Threading.AsyncResetEvent.#ctor*
-  name: AsyncResetEvent
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent__ctor_
-  commentId: Overload:DotNext.Threading.AsyncResetEvent.#ctor
-  isSpec: "True"
-  fullName: DotNext.Threading.AsyncResetEvent.AsyncResetEvent
-  nameWithType: AsyncResetEvent.AsyncResetEvent
-- uid: DotNext.Threading.AsyncResetEvent.IsSet
-  name: IsSet
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_IsSet
-  commentId: P:DotNext.Threading.AsyncResetEvent.IsSet
-  fullName: DotNext.Threading.AsyncResetEvent.IsSet
-  nameWithType: AsyncResetEvent.IsSet
-- uid: DotNext.Threading.AsyncResetEvent.IsSet*
-  name: IsSet
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_IsSet_
-  commentId: Overload:DotNext.Threading.AsyncResetEvent.IsSet
-  isSpec: "True"
-  fullName: DotNext.Threading.AsyncResetEvent.IsSet
-  nameWithType: AsyncResetEvent.IsSet
-- uid: DotNext.Threading.AsyncResetEvent.Reset
-  name: Reset()
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Reset
-  commentId: M:DotNext.Threading.AsyncResetEvent.Reset
-  fullName: DotNext.Threading.AsyncResetEvent.Reset()
-  nameWithType: AsyncResetEvent.Reset()
-- uid: DotNext.Threading.AsyncResetEvent.Reset*
-  name: Reset
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Reset_
-  commentId: Overload:DotNext.Threading.AsyncResetEvent.Reset
-  isSpec: "True"
-  fullName: DotNext.Threading.AsyncResetEvent.Reset
-  nameWithType: AsyncResetEvent.Reset
-- uid: DotNext.Threading.AsyncResetEvent.Set
-  name: Set()
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Set
-  commentId: M:DotNext.Threading.AsyncResetEvent.Set
-  fullName: DotNext.Threading.AsyncResetEvent.Set()
-  nameWithType: AsyncResetEvent.Set()
-- uid: DotNext.Threading.AsyncResetEvent.Set*
-  name: Set
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Set_
-  commentId: Overload:DotNext.Threading.AsyncResetEvent.Set
-  isSpec: "True"
-  fullName: DotNext.Threading.AsyncResetEvent.Set
-  nameWithType: AsyncResetEvent.Set
-- uid: DotNext.Threading.AsyncResetEvent.Wait
-  name: Wait()
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Wait
-  commentId: M:DotNext.Threading.AsyncResetEvent.Wait
-  fullName: DotNext.Threading.AsyncResetEvent.Wait()
-  nameWithType: AsyncResetEvent.Wait()
-- uid: DotNext.Threading.AsyncResetEvent.Wait(System.Threading.CancellationToken)
-  name: Wait(CancellationToken)
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Wait_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncResetEvent.Wait(System.Threading.CancellationToken)
-  fullName: DotNext.Threading.AsyncResetEvent.Wait(System.Threading.CancellationToken)
-  nameWithType: AsyncResetEvent.Wait(CancellationToken)
-- uid: DotNext.Threading.AsyncResetEvent.Wait(System.TimeSpan)
-  name: Wait(TimeSpan)
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Wait_System_TimeSpan_
-  commentId: M:DotNext.Threading.AsyncResetEvent.Wait(System.TimeSpan)
-  fullName: DotNext.Threading.AsyncResetEvent.Wait(System.TimeSpan)
-  nameWithType: AsyncResetEvent.Wait(TimeSpan)
-- uid: DotNext.Threading.AsyncResetEvent.Wait(System.TimeSpan,System.Threading.CancellationToken)
-  name: Wait(TimeSpan, CancellationToken)
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Wait_System_TimeSpan_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncResetEvent.Wait(System.TimeSpan,System.Threading.CancellationToken)
-  fullName: DotNext.Threading.AsyncResetEvent.Wait(System.TimeSpan, System.Threading.CancellationToken)
-  nameWithType: AsyncResetEvent.Wait(TimeSpan, CancellationToken)
-- uid: DotNext.Threading.AsyncResetEvent.Wait*
-  name: Wait
-  href: api/DotNext.Threading.AsyncResetEvent.html#DotNext_Threading_AsyncResetEvent_Wait_
-  commentId: Overload:DotNext.Threading.AsyncResetEvent.Wait
-  isSpec: "True"
-  fullName: DotNext.Threading.AsyncResetEvent.Wait
-  nameWithType: AsyncResetEvent.Wait
 - uid: DotNext.Threading.AtomicBoolean
   name: AtomicBoolean
   href: api/DotNext.Threading.AtomicBoolean.html
@@ -27325,6 +27666,102 @@ references:
   fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rental.Widening
   nameWithType: ConcurrentObjectPool<T>.Rental.Implicit
   nameWithType.vb: ConcurrentObjectPool(Of T).Rental.Widening
+- uid: DotNext.Threading.IAsyncEvent
+  name: IAsyncEvent
+  href: api/DotNext.Threading.IAsyncEvent.html
+  commentId: T:DotNext.Threading.IAsyncEvent
+  fullName: DotNext.Threading.IAsyncEvent
+  nameWithType: IAsyncEvent
+- uid: DotNext.Threading.IAsyncEvent.IsSet
+  name: IsSet
+  href: api/DotNext.Threading.IAsyncEvent.html#DotNext_Threading_IAsyncEvent_IsSet
+  commentId: P:DotNext.Threading.IAsyncEvent.IsSet
+  fullName: DotNext.Threading.IAsyncEvent.IsSet
+  nameWithType: IAsyncEvent.IsSet
+- uid: DotNext.Threading.IAsyncEvent.IsSet*
+  name: IsSet
+  href: api/DotNext.Threading.IAsyncEvent.html#DotNext_Threading_IAsyncEvent_IsSet_
+  commentId: Overload:DotNext.Threading.IAsyncEvent.IsSet
+  isSpec: "True"
+  fullName: DotNext.Threading.IAsyncEvent.IsSet
+  nameWithType: IAsyncEvent.IsSet
+- uid: DotNext.Threading.IAsyncEvent.Reset
+  name: Reset()
+  href: api/DotNext.Threading.IAsyncEvent.html#DotNext_Threading_IAsyncEvent_Reset
+  commentId: M:DotNext.Threading.IAsyncEvent.Reset
+  fullName: DotNext.Threading.IAsyncEvent.Reset()
+  nameWithType: IAsyncEvent.Reset()
+- uid: DotNext.Threading.IAsyncEvent.Reset*
+  name: Reset
+  href: api/DotNext.Threading.IAsyncEvent.html#DotNext_Threading_IAsyncEvent_Reset_
+  commentId: Overload:DotNext.Threading.IAsyncEvent.Reset
+  isSpec: "True"
+  fullName: DotNext.Threading.IAsyncEvent.Reset
+  nameWithType: IAsyncEvent.Reset
+- uid: DotNext.Threading.IAsyncEvent.Signal
+  name: Signal()
+  href: api/DotNext.Threading.IAsyncEvent.html#DotNext_Threading_IAsyncEvent_Signal
+  commentId: M:DotNext.Threading.IAsyncEvent.Signal
+  fullName: DotNext.Threading.IAsyncEvent.Signal()
+  nameWithType: IAsyncEvent.Signal()
+- uid: DotNext.Threading.IAsyncEvent.Signal*
+  name: Signal
+  href: api/DotNext.Threading.IAsyncEvent.html#DotNext_Threading_IAsyncEvent_Signal_
+  commentId: Overload:DotNext.Threading.IAsyncEvent.Signal
+  isSpec: "True"
+  fullName: DotNext.Threading.IAsyncEvent.Signal
+  nameWithType: IAsyncEvent.Signal
+- uid: DotNext.Threading.IAsyncEvent.Wait(System.TimeSpan,System.Threading.CancellationToken)
+  name: Wait(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.IAsyncEvent.html#DotNext_Threading_IAsyncEvent_Wait_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.IAsyncEvent.Wait(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.IAsyncEvent.Wait(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: IAsyncEvent.Wait(TimeSpan, CancellationToken)
+- uid: DotNext.Threading.IAsyncEvent.Wait*
+  name: Wait
+  href: api/DotNext.Threading.IAsyncEvent.html#DotNext_Threading_IAsyncEvent_Wait_
+  commentId: Overload:DotNext.Threading.IAsyncEvent.Wait
+  isSpec: "True"
+  fullName: DotNext.Threading.IAsyncEvent.Wait
+  nameWithType: IAsyncEvent.Wait
+- uid: DotNext.Threading.IAsyncResetEvent
+  name: IAsyncResetEvent
+  href: api/DotNext.Threading.IAsyncResetEvent.html
+  commentId: T:DotNext.Threading.IAsyncResetEvent
+  fullName: DotNext.Threading.IAsyncResetEvent
+  nameWithType: IAsyncResetEvent
+- uid: DotNext.Threading.IAsyncResetEvent.ResetMode
+  name: ResetMode
+  href: api/DotNext.Threading.IAsyncResetEvent.html#DotNext_Threading_IAsyncResetEvent_ResetMode
+  commentId: P:DotNext.Threading.IAsyncResetEvent.ResetMode
+  fullName: DotNext.Threading.IAsyncResetEvent.ResetMode
+  nameWithType: IAsyncResetEvent.ResetMode
+- uid: DotNext.Threading.IAsyncResetEvent.ResetMode*
+  name: ResetMode
+  href: api/DotNext.Threading.IAsyncResetEvent.html#DotNext_Threading_IAsyncResetEvent_ResetMode_
+  commentId: Overload:DotNext.Threading.IAsyncResetEvent.ResetMode
+  isSpec: "True"
+  fullName: DotNext.Threading.IAsyncResetEvent.ResetMode
+  nameWithType: IAsyncResetEvent.ResetMode
+- uid: DotNext.Threading.ISynchronizer
+  name: ISynchronizer
+  href: api/DotNext.Threading.ISynchronizer.html
+  commentId: T:DotNext.Threading.ISynchronizer
+  fullName: DotNext.Threading.ISynchronizer
+  nameWithType: ISynchronizer
+- uid: DotNext.Threading.ISynchronizer.HasWaiters
+  name: HasWaiters
+  href: api/DotNext.Threading.ISynchronizer.html#DotNext_Threading_ISynchronizer_HasWaiters
+  commentId: P:DotNext.Threading.ISynchronizer.HasWaiters
+  fullName: DotNext.Threading.ISynchronizer.HasWaiters
+  nameWithType: ISynchronizer.HasWaiters
+- uid: DotNext.Threading.ISynchronizer.HasWaiters*
+  name: HasWaiters
+  href: api/DotNext.Threading.ISynchronizer.html#DotNext_Threading_ISynchronizer_HasWaiters_
+  commentId: Overload:DotNext.Threading.ISynchronizer.HasWaiters
+  isSpec: "True"
+  fullName: DotNext.Threading.ISynchronizer.HasWaiters
+  nameWithType: ISynchronizer.HasWaiters
 - uid: DotNext.Threading.Lock
   name: Lock
   href: api/DotNext.Threading.Lock.html
@@ -27716,6 +28153,104 @@ references:
   fullName.vb: DotNext.Threading.LockAcquisition.AcquireWriteLock(Of T)(T, System.TimeSpan)
   nameWithType: LockAcquisition.AcquireWriteLock<T>(T, TimeSpan)
   nameWithType.vb: LockAcquisition.AcquireWriteLock(Of T)(T, TimeSpan)
+- uid: DotNext.Threading.QueuedSynchronizer
+  name: QueuedSynchronizer
+  href: api/DotNext.Threading.QueuedSynchronizer.html
+  commentId: T:DotNext.Threading.QueuedSynchronizer
+  fullName: DotNext.Threading.QueuedSynchronizer
+  nameWithType: QueuedSynchronizer
+- uid: DotNext.Threading.QueuedSynchronizer.Dispose(System.Boolean)
+  name: Dispose(Boolean)
+  href: api/DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_
+  commentId: M:DotNext.Threading.QueuedSynchronizer.Dispose(System.Boolean)
+  fullName: DotNext.Threading.QueuedSynchronizer.Dispose(System.Boolean)
+  nameWithType: QueuedSynchronizer.Dispose(Boolean)
+- uid: DotNext.Threading.QueuedSynchronizer.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_
+  commentId: Overload:DotNext.Threading.QueuedSynchronizer.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.QueuedSynchronizer.Dispose
+  nameWithType: QueuedSynchronizer.Dispose
+- uid: DotNext.Threading.QueuedSynchronizer.DotNext#Threading#ISynchronizer#HasWaiters
+  name: ISynchronizer.HasWaiters
+  href: api/DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_DotNext_Threading_ISynchronizer_HasWaiters
+  commentId: P:DotNext.Threading.QueuedSynchronizer.DotNext#Threading#ISynchronizer#HasWaiters
+  name.vb: DotNext.Threading.ISynchronizer.HasWaiters
+  fullName: DotNext.Threading.QueuedSynchronizer.DotNext.Threading.ISynchronizer.HasWaiters
+  nameWithType: QueuedSynchronizer.ISynchronizer.HasWaiters
+  nameWithType.vb: QueuedSynchronizer.DotNext.Threading.ISynchronizer.HasWaiters
+- uid: DotNext.Threading.QueuedSynchronizer.DotNext#Threading#ISynchronizer#HasWaiters*
+  name: ISynchronizer.HasWaiters
+  href: api/DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_DotNext_Threading_ISynchronizer_HasWaiters_
+  commentId: Overload:DotNext.Threading.QueuedSynchronizer.DotNext#Threading#ISynchronizer#HasWaiters
+  isSpec: "True"
+  name.vb: DotNext.Threading.ISynchronizer.HasWaiters
+  fullName: DotNext.Threading.QueuedSynchronizer.DotNext.Threading.ISynchronizer.HasWaiters
+  nameWithType: QueuedSynchronizer.ISynchronizer.HasWaiters
+  nameWithType.vb: QueuedSynchronizer.DotNext.Threading.ISynchronizer.HasWaiters
+- uid: DotNext.Threading.Synchronizer
+  name: Synchronizer
+  href: api/DotNext.Threading.Synchronizer.html
+  commentId: T:DotNext.Threading.Synchronizer
+  fullName: DotNext.Threading.Synchronizer
+  nameWithType: Synchronizer
+- uid: DotNext.Threading.Synchronizer.Dispose(System.Boolean)
+  name: Dispose(Boolean)
+  href: api/DotNext.Threading.Synchronizer.html#DotNext_Threading_Synchronizer_Dispose_System_Boolean_
+  commentId: M:DotNext.Threading.Synchronizer.Dispose(System.Boolean)
+  fullName: DotNext.Threading.Synchronizer.Dispose(System.Boolean)
+  nameWithType: Synchronizer.Dispose(Boolean)
+- uid: DotNext.Threading.Synchronizer.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.Synchronizer.html#DotNext_Threading_Synchronizer_Dispose_
+  commentId: Overload:DotNext.Threading.Synchronizer.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.Synchronizer.Dispose
+  nameWithType: Synchronizer.Dispose
+- uid: DotNext.Threading.Synchronizer.DotNext#Threading#ISynchronizer#HasWaiters
+  name: ISynchronizer.HasWaiters
+  href: api/DotNext.Threading.Synchronizer.html#DotNext_Threading_Synchronizer_DotNext_Threading_ISynchronizer_HasWaiters
+  commentId: P:DotNext.Threading.Synchronizer.DotNext#Threading#ISynchronizer#HasWaiters
+  name.vb: DotNext.Threading.ISynchronizer.HasWaiters
+  fullName: DotNext.Threading.Synchronizer.DotNext.Threading.ISynchronizer.HasWaiters
+  nameWithType: Synchronizer.ISynchronizer.HasWaiters
+  nameWithType.vb: Synchronizer.DotNext.Threading.ISynchronizer.HasWaiters
+- uid: DotNext.Threading.Synchronizer.DotNext#Threading#ISynchronizer#HasWaiters*
+  name: ISynchronizer.HasWaiters
+  href: api/DotNext.Threading.Synchronizer.html#DotNext_Threading_Synchronizer_DotNext_Threading_ISynchronizer_HasWaiters_
+  commentId: Overload:DotNext.Threading.Synchronizer.DotNext#Threading#ISynchronizer#HasWaiters
+  isSpec: "True"
+  name.vb: DotNext.Threading.ISynchronizer.HasWaiters
+  fullName: DotNext.Threading.Synchronizer.DotNext.Threading.ISynchronizer.HasWaiters
+  nameWithType: Synchronizer.ISynchronizer.HasWaiters
+  nameWithType.vb: Synchronizer.DotNext.Threading.ISynchronizer.HasWaiters
+- uid: DotNext.Threading.Synchronizer.IsSet
+  name: IsSet
+  href: api/DotNext.Threading.Synchronizer.html#DotNext_Threading_Synchronizer_IsSet
+  commentId: P:DotNext.Threading.Synchronizer.IsSet
+  fullName: DotNext.Threading.Synchronizer.IsSet
+  nameWithType: Synchronizer.IsSet
+- uid: DotNext.Threading.Synchronizer.IsSet*
+  name: IsSet
+  href: api/DotNext.Threading.Synchronizer.html#DotNext_Threading_Synchronizer_IsSet_
+  commentId: Overload:DotNext.Threading.Synchronizer.IsSet
+  isSpec: "True"
+  fullName: DotNext.Threading.Synchronizer.IsSet
+  nameWithType: Synchronizer.IsSet
+- uid: DotNext.Threading.Synchronizer.Wait(System.TimeSpan,System.Threading.CancellationToken)
+  name: Wait(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.Synchronizer.html#DotNext_Threading_Synchronizer_Wait_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Synchronizer.Wait(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Synchronizer.Wait(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: Synchronizer.Wait(TimeSpan, CancellationToken)
+- uid: DotNext.Threading.Synchronizer.Wait*
+  name: Wait
+  href: api/DotNext.Threading.Synchronizer.html#DotNext_Threading_Synchronizer_Wait_
+  commentId: Overload:DotNext.Threading.Synchronizer.Wait
+  isSpec: "True"
+  fullName: DotNext.Threading.Synchronizer.Wait
+  nameWithType: Synchronizer.Wait
 - uid: DotNext.Threading.Tasks
   name: DotNext.Threading.Tasks
   href: api/DotNext.Threading.Tasks.html

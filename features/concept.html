@@ -82,9 +82,11 @@
 <p>The feature is based on strongly typed reflection so read <a href="reflection/fast.html">this</a> document first. Entry point to discover class members is <a href="../api/DotNext.Reflection.Type-1.html">Type&lt;T&gt;</a>. Reflected members are cached to speed-up performance and typed by specific delegate type. The delegate describes signature of the reflected member. All types of members are supported: constructors, fields, methods, event, properties, indexer properties.</p>
 <h1 id="defining-concept">Defining Concept</h1>
 <p>The recommended code style for the concept type is a definition of static class with restrictions expressed as static fields. Let's define type class with single instance method and single static method:</p>
-<pre><code class="lang-csharp">using System.Runtime.CompilerServices;
-using DotNext.Reflection;
+<pre><code class="lang-csharp">using DotNext.Reflection;
+using DotNext.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
+[Concept]
 public static class Parseable&lt;T&gt;
     where T: struct
 {
@@ -100,6 +102,7 @@ public static class Parseable&lt;T&gt;
     public static string ToString(in T @this, string format) =&gt; toStringMethod(@this, format);
 }
 </code></pre>
+<p><a href="../api/DotNext.Runtime.CompilerServices.ConceptAttribute.html">ConceptAttribute</a> is required attribute that should be applied to the concept type definition.</p>
 <p><code>Type&lt;T&gt;.Method.Require</code> is a method requirement declaration. In this example, type <em>T</em> should have two methods:</p>
 <ul>
 <li>Public static method <code>T Parse(string text)</code></li>
@@ -113,7 +116,9 @@ string str = Parseable&lt;int&gt;.ToString(i, &quot;X&quot;); //str == &quot;0x7
 <p>The concept type allows to call static and instance members of type passed into generic parameter when it is not possible to predict actual generic argument.</p>
 <p>The following concept type requires to have public instance property <code>Length</code> of type <code>int</code>.</p>
 <pre><code class="lang-csharp">using DotNext.Reflection;
+using DotNext.Runtime.CompilerServices;
 
+[Concept]
 public static class LengthSupport&lt;T&gt;
 {
     private static readonly MemberGetter&lt;T, int&gt; lengthProp = Type&lt;T&gt;.Property&lt;int&gt;.Require(&quot;Length&quot;);
@@ -132,7 +137,39 @@ length = LengthSupport&lt;byte[]&gt;.GetLength(new byte[]{ 1, 2, 3 }); //length 
 <li><a href="../api/DotNext.Reflection.MissingFieldException.html">MissingFieldException</a> if required field doesn't exist</li>
 <li><a href="../api/DotNext.Reflection.MissingEventException.html">MissingEventException</a> if required event doesn't exist</li>
 </ul>
-<p>In the context of strongly typed reflection it is recommended to use alternative methods <code>Get</code> (for instance members) or <code>GetStatic</code> (for static members). These methods have same the same behavior as <code>Require</code>/<code>RequireStatic</code> but they don't throw exception. If member cannot be resolved, these methods will return <strong>null</strong>.</p>
+<p>In the context of strongly typed reflection it is recommended to use alternative methods <code>Get</code> (for instance members) or <code>GetStatic</code> (for static members). These methods have same the same behavior as <code>Require</code>/<code>RequireStatic</code> but they don't throw exception. If member cannot be resolved then these methods return <strong>null</strong>.</p>
+<h1 id="applying-concept">Applying Concept</h1>
+<p>When concept type is declared, it can be used as a constraint for generic type parameter of class or method. <a href="../api/DotNext.Runtime.CompilerServices.Concept.html">Concept</a> class allows to apply concept type to the generic parameter and verify constraints, thus, <em>fail fast</em> if actual generic argument doesn't meet to the them. <a href="../api/DotNext.Runtime.CompilerServices.ConstraintAttribute.html">ConstraintAttribute</a> indicating that the specified generic parameter is constrained with one or more concept types.</p>
+<pre><code class="lang-csharp">using DotNext.Runtime.CompilerServices;
+using System;
+
+public sealed class Formatter&lt;[Constraint(typeof(Parseable&lt;&gt;))] T&gt;
+{
+    static Formatter() =&gt; Concept.Assert(typeof(Parseable&lt;T&gt;));
+
+    private readonly string format;
+
+    public Formatter(string fmt) =&gt; format = fmt;
+
+    public string Concat(in T first, in T second) 
+        =&gt; Parsable&lt;T&gt;.ToString(first, format) + Parseable&lt;T&gt;.ToString(second, format);
+}
+
+var formatter = new Formatter&lt;long&gt;();          //constraint checked here
+Console.WriteLine(formatter.Concat(1L, 2L));
+</code></pre>
+<p>Here, actual type <code>T</code> must satisfy to constraints defined by <code>Parseable</code> concept type, i.e. to have one instance method and one static method. <code>ConstraintAttribute</code> is an optional attribute aimed to inform the developer that generic parameter is constrained by one or more concept types. CLR doesn't rely on this attribute as well as Roslyn compiler. <code>Concept.Assert</code> enforces verification of generic argument correctness according with concept type. There are few reasons to place assertion into static constructor:</p>
+<ol>
+<li>Actual generic argument is accessible from static constructor</li>
+<li>Assertion is called automatically before the first instance is created or any static members are referenced</li>
+<li>Static constructor called once</li>
+</ol>
+<p>Invalid generic argument causes exception of type <code>ConstraintViolationException</code>.</p>
+<p>However, assertion is optional and not recommended for use inside of generic methods. Let's remove assertion code from the static constructor. In this case, verfication will be performed only at the following line of code:</p>
+<pre><code class="lang-csharp">var formatter = new Formatter&lt;long&gt;();          
+Console.WriteLine(formatter.Concat(1L, 2L));//constraint checked here
+</code></pre>
+<p>This is contradiction to <em>fail fast</em> strategy because <code>Formatter</code> class can be instantiated with wrong actual generic argument.</p>
 <h1 id="special-delegates">Special Delegates</h1>
 <p><code>Type&lt;T&gt;</code> and its nested classes offer a rich set of methods for members binding. These methods reflect members as well-known delegate types defined in .NET library or DotNext Reflection library. In some cases, no one of these delegates can fit the requested member. For example, overloaded method <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int32.tryparse">int.TryParse</a> with two parameters has <strong>out</strong> parameter. In this case, the supported set of delegates will not help. This issue can be resolved in two ways:</p>
 <ul>

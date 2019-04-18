@@ -146,7 +146,7 @@
       <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_System_String_DotNext_Metaprogramming_UniversalExpression_">CompoundStatementBuilder.Assign(String, UniversalExpression)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_System_Linq_Expressions_Expression_System_Reflection_PropertyInfo_DotNext_Metaprogramming_UniversalExpression_">CompoundStatementBuilder.Assign(Expression, PropertyInfo, UniversalExpression)</a>
+      <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_DotNext_Metaprogramming_UniversalExpression_System_Reflection_PropertyInfo_DotNext_Metaprogramming_UniversalExpression_">CompoundStatementBuilder.Assign(UniversalExpression, PropertyInfo, UniversalExpression)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Assign_System_Reflection_PropertyInfo_DotNext_Metaprogramming_UniversalExpression_">CompoundStatementBuilder.Assign(PropertyInfo, UniversalExpression)</a>
@@ -201,9 +201,6 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_DeclareVariable__1_System_String_">CompoundStatementBuilder.DeclareVariable&lt;T&gt;(String)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_DeclareVariable__1_System_String___0_">CompoundStatementBuilder.DeclareVariable&lt;T&gt;(String, T)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_DeclareVariable_System_Type_System_String_">CompoundStatementBuilder.DeclareVariable(Type, String)</a>
@@ -276,7 +273,7 @@
   <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
   <h5 id="DotNext_Metaprogramming_AsyncLambdaBuilder_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class AsyncLambdaBuilder&lt;D&gt; : LambdaBuilder, IExpressionBuilder&lt;Expression&lt;D&gt;&gt; where D : Delegate</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class AsyncLambdaBuilder&lt;D&gt; : LambdaBuilder, IExpressionBuilder&lt;Expression&gt;, IExpressionBuilder&lt;Expression&lt;D&gt;&gt; where D : Delegate</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -438,7 +435,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_AsyncLambdaBuilder_1_Build_System_Action_DotNext_Metaprogramming_AsyncLambdaBuilder__0___.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.AsyncLambdaBuilder%601.Build(System.Action%7BDotNext.Metaprogramming.AsyncLambdaBuilder%7B%600%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncLambdaBuilder.cs/#L120">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncLambdaBuilder.cs/#L124">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_AsyncLambdaBuilder_1_Build_" data-uid="DotNext.Metaprogramming.AsyncLambdaBuilder`1.Build*"></a>
   <h4 id="DotNext_Metaprogramming_AsyncLambdaBuilder_1_Build_System_Action_DotNext_Metaprogramming_AsyncLambdaBuilder__0___" data-uid="DotNext.Metaprogramming.AsyncLambdaBuilder`1.Build(System.Action{DotNext.Metaprogramming.AsyncLambdaBuilder{`0}})">Build(Action&lt;AsyncLambdaBuilder&lt;D&gt;&gt;)</h4>
@@ -488,7 +485,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_AsyncLambdaBuilder_1_Build_System_Boolean_System_Action_DotNext_Metaprogramming_AsyncLambdaBuilder__0___.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.AsyncLambdaBuilder%601.Build(System.Boolean%2CSystem.Action%7BDotNext.Metaprogramming.AsyncLambdaBuilder%7B%600%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncLambdaBuilder.cs/#L108">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncLambdaBuilder.cs/#L110">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_AsyncLambdaBuilder_1_Build_" data-uid="DotNext.Metaprogramming.AsyncLambdaBuilder`1.Build*"></a>
   <h4 id="DotNext_Metaprogramming_AsyncLambdaBuilder_1_Build_System_Boolean_System_Action_DotNext_Metaprogramming_AsyncLambdaBuilder__0___" data-uid="DotNext.Metaprogramming.AsyncLambdaBuilder`1.Build(System.Boolean,System.Action{DotNext.Metaprogramming.AsyncLambdaBuilder{`0}})">Build(Boolean, Action&lt;AsyncLambdaBuilder&lt;D&gt;&gt;)</h4>
@@ -544,7 +541,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_AsyncLambdaBuilder_1_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.AsyncLambdaBuilder%601.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncLambdaBuilder.cs/#L93">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/AsyncLambdaBuilder.cs/#L95">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_AsyncLambdaBuilder_1_Dispose_" data-uid="DotNext.Metaprogramming.AsyncLambdaBuilder`1.Dispose*"></a>
   <h4 id="DotNext_Metaprogramming_AsyncLambdaBuilder_1_Dispose_System_Boolean_" data-uid="DotNext.Metaprogramming.AsyncLambdaBuilder`1.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -576,6 +573,30 @@
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html#DotNext_Metaprogramming_CompoundStatementBuilder_Dispose_System_Boolean_">CompoundStatementBuilder.Dispose(Boolean)</a></div>
   <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
   <div>
       <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_AsConst__1___0_">ExpressionBuilder.AsConst&lt;T&gt;(T)</a>
   </div>
