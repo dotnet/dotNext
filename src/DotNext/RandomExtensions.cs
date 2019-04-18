@@ -1,12 +1,8 @@
 using System;
-using System.Buffers;
 using System.Security.Cryptography;
-using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
-    using Buffers;
-
     /// <summary>
     /// Provides random data generation.
     /// </summary>
@@ -171,8 +167,7 @@ namespace DotNext
                     throw new ArgumentOutOfRangeException(nameof(trueProbability));
 
         /// <summary>
-        /// Returns a random floating-point number that is greater than
-        /// in range [0, 1).
+        /// Returns a random floating-point number that is in range [0, 1).
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
         /// <returns>Randomly generated floating-point number.</returns>
