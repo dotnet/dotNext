@@ -6,7 +6,7 @@ namespace DotNext.Metaprogramming
     /// Represents <see langword="With"/> statement builder. 
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
-    public sealed class WithBlockBuilder: ScopeBuilder, IExpressionBuilder<Expression>
+    public sealed class WithBlockBuilder: ScopeBuilder
     {
         private readonly ParameterExpression scopeVar;
         private readonly BinaryExpression assignment;
@@ -28,9 +28,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public UniversalExpression ScopeVar => scopeVar;
 
-        internal override Expression Build() => Build<Expression, WithBlockBuilder>(this);
-
-        Expression IExpressionBuilder<Expression>.Build()
+        internal override Expression Build()
         {
             var body = base.Build();
             if (!(assignment is null))
