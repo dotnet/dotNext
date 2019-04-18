@@ -566,7 +566,16 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe int BitwiseHashCode(long count, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode(value, count * Size, salted);
+            => IsNull ? 0 : Memory.GetHashCode32(value, count * Size, salted);
+        
+        /// <summary>
+        /// Computes 64-bit hash code for the block of memory identified by this pointer.
+        /// </summary>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Content hash code.</returns>
+        public unsafe long BitwiseHashCode64(long count, bool salted = true)
+            => IsNull ? 0L : Memory.GetHashCode64(value, count * Size, salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -577,7 +586,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode(value, count * Size, hash, hashFunction, salted);
+            => IsNull ? 0 : Memory.GetHashCode32(value, count * Size, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -587,8 +596,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">The custom hash function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
-        public unsafe long BitwiseHashCode(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode(value, count * Size, hash, hashFunction, salted);
+        public unsafe long BitwiseHashCode64(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
+            => IsNull ? 0 : Memory.GetHashCode64(value, count * Size, hash, hashFunction, salted);
 
         /// <summary>
         /// Bitwise comparison of two memory blocks.

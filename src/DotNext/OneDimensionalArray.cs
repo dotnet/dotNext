@@ -237,7 +237,7 @@ namespace DotNext
         /// <typeparam name="T">The type of array elements.</typeparam>
         /// <param name="array">The array to be hashed.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>The hash code of the array content.</returns>
+        /// <returns>32-bit hash code of the array content.</returns>
         public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
             where T : unmanaged
         {
@@ -274,13 +274,29 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>64-bit hash code of the array content.</returns>
-        public static unsafe long BitwiseHashCode<T>(this T[] array, long hash, Func<long, long, long> hashFunction, bool salted = true)
+        public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
         {
             if (array.IsNullOrEmpty())
                 return hash;
             fixed (T* ptr = array)
                 return Memory.GetHashCode64(ptr, array.LongLength * ValueType<T>.Size, hash, hashFunction, salted);
+        }
+
+		/// <summary>
+        /// Computes bitwise hash code for the array content.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="array">The array to be hashed.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>64-bit hash code of the array content.</returns>
+        public static unsafe long BitwiseHashCode64<T>(this T[] array, bool salted = true)
+            where T : unmanaged
+        {
+            if (array.IsNullOrEmpty())
+                return 0;
+            fixed (T* ptr = array)
+                return Memory.GetHashCode64(ptr, array.LongLength * ValueType<T>.Size, salted);
         }
 
         /// <summary>
