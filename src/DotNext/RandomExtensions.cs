@@ -179,9 +179,7 @@ namespace DotNext
         /// <returns>Randomly generated floating-point number.</returns>
         public static double NextDouble(this RandomNumberGenerator random)
         {
-            var buffer = new byte[sizeof(double)];
-            random.GetBytes(buffer);
-            var result = Math.Abs(BitConverter.ToDouble(buffer, 0));
+            double result = random.Next();
             //normalize to range [0, 1)
             return result / (result + 1D);
         }
