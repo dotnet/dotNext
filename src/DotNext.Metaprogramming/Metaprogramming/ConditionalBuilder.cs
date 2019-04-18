@@ -27,7 +27,7 @@ namespace DotNext.Metaprogramming
         public ConditionalBuilder Then(Action<ScopeBuilder> branch)
         {
             using (var scope = NewScope())
-                return Then(scope.Build(branch));
+                return Then(scope.Build<Expression, ScopeBuilder>(branch));
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace DotNext.Metaprogramming
         public ConditionalBuilder Else(Action<ScopeBuilder> branch)
         {
             using (var scope = NewScope())
-                return Else(scope.Build(branch));
+                return Else(scope.Build<Expression, ScopeBuilder>(branch));
         }
 
         /// <summary>

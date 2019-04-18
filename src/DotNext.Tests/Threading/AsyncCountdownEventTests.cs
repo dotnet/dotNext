@@ -24,25 +24,21 @@ namespace DotNext.Threading
             }
         }
 
-        [Fact]
-        public static void StateTransitions()
-        {
-            CheckStateTransitions(0, 0, false);
-            CheckStateTransitions(1, 0, false);
-            CheckStateTransitions(128, 0, false);
-            CheckStateTransitions(1024 * 1024, 0, false);
-            CheckStateTransitions(1, 1024, false);
-            CheckStateTransitions(128, 1024, false);
-            CheckStateTransitions(1024 * 1024, 1024, false);
-            CheckStateTransitions(1, 0, true);
-            CheckStateTransitions(128, 0, true);
-            CheckStateTransitions(1024 * 1024, 0, true);
-            CheckStateTransitions(1, 1024, true);
-            CheckStateTransitions(128, 1024, true);
-            CheckStateTransitions(1024 * 1024, 1024, true);
-        } 
-
-        private static void CheckStateTransitions(long initCount, long increms, bool takeAllAtOnce)
+        [Theory]
+        [InlineData(0L, 0L, false)]
+        [InlineData(1L, 0L, false)]
+        [InlineData(128L, 0L, false)]
+        [InlineData(1024L * 1024L, 0L, false)]
+        [InlineData(1L, 1024L, false)]
+        [InlineData(128L, 1024L, false)]
+        [InlineData(1024L * 1024, 1024L, false)]
+        [InlineData(1, 0, true)]
+        [InlineData(128, 0, true)]
+        [InlineData(1024 * 1024, 0, true)]
+        [InlineData(1, 1024, true)]
+        [InlineData(128, 1024, true)]
+        [InlineData(1024 * 1024, 1024, true)]
+        public static void CheckStateTransitions(long initCount, long increms, bool takeAllAtOnce)
         {
             using(var ev = new AsyncCountdownEvent(initCount))
             {

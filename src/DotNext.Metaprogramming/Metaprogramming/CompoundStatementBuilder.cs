@@ -12,7 +12,7 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents basic lexical scope support.
     /// </summary>
-    public abstract class CompoundStatementBuilder: Disposable
+    public abstract class CompoundStatementBuilder: Disposable, IExpressionBuilder<Expression>
     {
         private readonly IDictionary<string, ParameterExpression> variables;
         private readonly ICollection<Expression> statements;
@@ -72,21 +72,12 @@ namespace DotNext.Metaprogramming
             where B: IExpressionBuilder<E>
             => builder.Build();
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static E Build<E, B>(B builder, Action<B> body)
-            where E: Expression
-            where B: IExpressionBuilder<E>
-        {
-            body(builder);
-            return builder.Build();
-        }
-
         private void AddStatement<B>(Func<CompoundStatementBuilder, B> factory, Action<B> body)
-            where B : IExpressionBuilder<Expression>, IDisposable
+            where B : class, IExpressionBuilder<Expression>, IDisposable
         {
             Expression statement;
             using (var builder = factory(this))
-                statement = Build<Expression, B>(builder, body);
+                statement = builder.Build<Expression, B>(body);
             AddStatement(statement);
         }
 
@@ -600,7 +591,7 @@ namespace DotNext.Metaprogramming
             ThrowIfDisposed();
             ThrowIfWrongScope();
             using (var builder = new LambdaBuilder<D>(this))
-                return Build<LambdaExpression, LambdaBuilder<D>>(builder, lambda);
+                return builder.Build<LambdaExpression, LambdaBuilder<D>>(lambda);
         }
 
         /// <summary>
@@ -621,7 +612,7 @@ namespace DotNext.Metaprogramming
             ThrowIfDisposed();
             ThrowIfWrongScope();
             using (var builder = new AsyncLambdaBuilder<D>(this))
-                return Build<LambdaExpression, AsyncLambdaBuilder<D>>(builder, lambda);
+                return builder.Build<LambdaExpression, AsyncLambdaBuilder<D>>(lambda);
         }
 
         /// <summary>
@@ -644,7 +635,7 @@ namespace DotNext.Metaprogramming
         {
             Expression tryBlock;
             using (var tryScope = new ScopeBuilder(this))
-                tryBlock = tryScope.Build(scope);
+                tryBlock = tryScope.Build<Expression, ScopeBuilder>(scope);
             return Try(tryBlock);
         }
 
@@ -676,7 +667,7 @@ namespace DotNext.Metaprogramming
         {
             Expression statement;
             using (var scopeBuilder = new ScopeBuilder(this))
-                statement = scopeBuilder.Build(scope);
+                statement = scopeBuilder.Build<Expression, ScopeBuilder>(scope);
             AddStatement(statement);
         }
 
@@ -757,6 +748,8 @@ namespace DotNext.Metaprogramming
                     return Expression.Block(variables.Values, statements);
             }
         }
+
+        Expression IExpressionBuilder<Expression>.Build() => Build();
 
         /// <summary>
         /// Releases all resources associated with this builder.

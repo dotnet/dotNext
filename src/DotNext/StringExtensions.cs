@@ -37,13 +37,13 @@ namespace DotNext
 			return new string(chars);
 		}
 
-		/// <summary>
+        /// <summary>
         /// Compares two string using <see cref="StringComparison.OrdinalIgnoreCase" />.
         /// </summary>
-        /// <param name="strA">String A (can be null).</param>
-		/// <param name="strB">Stirng B (can be null).</param>
-		/// <returns><see langword="true"/>, if the first string is equal to the second string; otherwise, <see langword="false"/>.</returns>
-		public static bool IsEqualIgnoreCase (this string strA, string strB)
+        /// <param name="strA">String A. Can be <see langword="null"/>.</param>
+        /// <param name="strB">String B. Can be <see langword="null"/>.</param>
+        /// <returns><see langword="true"/>, if the first string is equal to the second string; otherwise, <see langword="false"/>.</returns>
+        public static bool IsEqualIgnoreCase (this string strA, string strB)
 			=> string.Compare (strA, strB, StringComparison.OrdinalIgnoreCase) == 0;
 
         /// <summary>

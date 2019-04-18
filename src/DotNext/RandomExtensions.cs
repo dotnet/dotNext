@@ -1,12 +1,8 @@
 using System;
-using System.Buffers;
 using System.Security.Cryptography;
-using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
-    using Buffers;
-
     /// <summary>
     /// Provides random data generation.
     /// </summary>
@@ -39,11 +35,10 @@ namespace DotNext
                 buffer = new byte[sizeof(int)];
             }
 
-
             char IRandomCharacterGenerator.NextChar(ReadOnlySpan<char> allowedChars)
             {
                 random.GetBytes(buffer, 0, sizeof(int));
-                var randomNumber = Math.Abs(BitConverter.ToInt32(buffer, 0) % allowedChars.Length);   
+                var randomNumber = (BitConverter.ToInt32(buffer, 0) & int.MaxValue) % allowedChars.Length;
                 return allowedChars[randomNumber];
             }
         }
@@ -156,7 +151,7 @@ namespace DotNext
         {
             var buffer = new byte[sizeof(int)];
             random.GetBytes(buffer, 0, sizeof(int));
-            return Math.Abs(BitConverter.ToInt32(buffer, 0));
+            return BitConverter.ToInt32(buffer, 0) & int.MaxValue;  //remove sign bit. Abs function may cause OverflowException
         }
 
         /// <summary>
@@ -172,16 +167,13 @@ namespace DotNext
                     throw new ArgumentOutOfRangeException(nameof(trueProbability));
 
         /// <summary>
-        /// Returns a random floating-point number that is greater than
-        /// in range [0, 1).
+        /// Returns a random floating-point number that is in range [0, 1).
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
         /// <returns>Randomly generated floating-point number.</returns>
         public static double NextDouble(this RandomNumberGenerator random)
         {
-            var buffer = new byte[sizeof(double)];
-            random.GetBytes(buffer);
-            var result = Math.Abs(BitConverter.ToDouble(buffer, 0));
+            double result = random.Next();
             //normalize to range [0, 1)
             return result / (result + 1D);
         }
