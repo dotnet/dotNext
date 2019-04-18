@@ -28,6 +28,8 @@
       href: lock/rwlock.md
     - name: Reset Event
       href: lock/event.md
+    - name: Countdown Latch
+      href: lock/counter.md
 - name: Type Classes
   href: concept.md
 - name: Advanced Reflection
