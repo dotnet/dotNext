@@ -3,10 +3,13 @@ using Xunit;
 
 namespace DotNext
 {
+    using Concept = Runtime.CompilerServices.Concept;
+    using ConstraintViolationException = Reflection.ConstraintViolationException;
+
     public sealed class NumberConceptTests: Assert
     { 
         [Fact]
-        public void LongTest()
+        public static void ApplyConceptToLong()
         {
             var value = new Number<long>(42);
             value = value + 1;
@@ -28,7 +31,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void ByteTest()
+        public static void ApplyConceptToByte()
         {
             var value = new Number<byte>(42);
             value = value + 1;
@@ -39,15 +42,10 @@ namespace DotNext
             Equal(84, value);
         }
 
-        private readonly struct InvalidNumber
-        {
-
-        }
-
         [Fact]
-        public void InvalidActualTypeTest()
+        public static void InvalidActualType()
         {
-            ThrowsAny<Reflection.ConstraintViolationException>(() => Reflection.Type<DateTime>.Concept<Number<DateTime>>());
+            ThrowsAny<ConstraintViolationException>(() => Concept.Assert(typeof(Number<DateTime>)));
         }
     }
 }

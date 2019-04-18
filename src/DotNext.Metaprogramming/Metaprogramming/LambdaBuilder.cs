@@ -55,15 +55,13 @@ namespace DotNext.Metaprogramming
         /// this lambda function having non-<see langword="void"/> return type.
         /// </summary>
         /// <param name="result">The value to be returned from the lambda function.</param>
-        /// <returns><see langword="return"/> instruction.</returns>
-        public sealed override Expression Return(UniversalExpression result) => Return(result, true);
+        public sealed override void Return(UniversalExpression result) => Return(result, true);
 
         /// <summary>
         /// Constructs <see langword="return"/> instruction to return from
         /// underlying lambda function having <see langword="void"/> return type.
         /// </summary>
-        /// <returns><see langword="return"/> instruction.</returns>
-        public sealed override Expression Return() => Return(true);
+        public sealed override void Return() => Return(true);
 
         /// <summary>
         /// <see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.
@@ -129,7 +127,7 @@ namespace DotNext.Metaprogramming
                 if (ReturnType == typeof(void))
                     return null;
                 else if (lambdaResult is null)
-                    lambdaResult = DeclareVariable(ReturnType, NextName("lambdaResult_"));
+                    DeclareVariable(lambdaResult = Expression.Variable(ReturnType, NextName("lambdaResult_")));
                 return lambdaResult;
             }
         }
@@ -151,7 +149,9 @@ namespace DotNext.Metaprogramming
             if (returnLabel is null)
                 returnLabel = Expression.Label("leave");
             result = ReturnType == typeof(void) ? (Expression)returnLabel.Return() : Expression.Block(Expression.Assign(Result, result), returnLabel.Return());
-            return addAsStatement ? AddStatement(result) : result;
+            if(addAsStatement)
+                AddStatement(result);
+            return result;
         }
 
         private protected override LambdaExpression Build(Expression body, bool tailCall)
@@ -208,9 +208,11 @@ namespace DotNext.Metaprogramming
         /// <returns>Constructed lambda expression.</returns>
         public static Expression<D> Build(bool tailCall, Action<LambdaBuilder<D>> lambdaBody)
         {
-            var builder = new LambdaBuilder<D>() { TailCall = tailCall };
-            lambdaBody(builder);
-            return ((IExpressionBuilder<Expression<D>>)builder).Build();
+            using (var builder = new LambdaBuilder<D>() { TailCall = tailCall })
+            {
+                lambdaBody(builder);
+                return ((IExpressionBuilder<Expression<D>>)builder).Build();
+            }
         }
 
         /// <summary>

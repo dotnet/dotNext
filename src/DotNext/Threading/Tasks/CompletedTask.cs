@@ -13,9 +13,8 @@ namespace DotNext.Threading.Tasks
         where C: Constant<T>, new()
     {
         /// <summary>
-        /// Represents the completed task containing a value passed as constant through <typeparamref name="C"/> generic
-        /// parameter.
+        /// Represents the completed task containing a value passed as constant through <typeparamref name="C"/> generic parameter.
         /// </summary>
-        public static readonly Task<T> Task = System.Threading.Tasks.Task.FromResult(Constant<T>.Of<C>(false));
+        public static readonly Task<T> Task = System.Threading.Tasks.Task.FromResult<T>(new C());
     }
 }

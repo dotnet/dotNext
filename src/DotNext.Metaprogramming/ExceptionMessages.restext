@@ -17,3 +17,5 @@ VoidSwitchExpected=Switch-case expression must of type Void
 VoidLoopExpected=Loop expression should be of type Void
 LeavingFinallyClause=Control cannot leave the body of a finally clause
 FilterHasAwait=Filter of catch block cannot have await expressions
+LexicalScopeIntersection=Two lexical scopes cannot have the same parent scope in the same time
+OuterScopeModificationDetected=Cannot add statement or declare local variable in the outer lexical scope

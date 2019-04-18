@@ -49,7 +49,7 @@ namespace DotNext.Collections.Generic
         private void EnsureCapacity(int capacity)
         {
             if(array.Length < capacity)
-                array.Length = array.IsEmpty ? DefaultCapacity : checked(array.Length * 2).LowerBounded(capacity);
+                array.Length = array.IsEmpty ? DefaultCapacity : checked(array.Length * 2).Max(capacity);
         }
 
         /// <summary>

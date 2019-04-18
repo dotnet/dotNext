@@ -4,16 +4,13 @@ using System.Linq.Expressions;
 
 namespace DotNext.VariantType
 {
-	internal abstract class VariantMetaObject : DynamicMetaObject
+    internal abstract class VariantMetaObject : DynamicMetaObject
 	{
-		private protected VariantMetaObject(Expression parameter, IVariant variant)
+		private protected VariantMetaObject(Expression parameter, IVariant variant, out MemberExpression valueExpression)
 			: base(parameter, BindingRestrictions.Empty, variant)
 		{
-			
-		}
-
-		protected static DynamicMetaObject CreateActualMetaObject(Expression parameter, IVariant variant)
-			=> Create(variant.Value, Expression.Property(Expression.TypeAs(parameter, typeof(IVariant)), typeof(IVariant), nameof(IVariant.Value)));
+            valueExpression = Expression.Property(Expression.TypeAs(parameter, typeof(IVariant)), typeof(IVariant), nameof(IVariant.Value));
+        }
 
 		public new IVariant Value => (IVariant)base.Value;
 
@@ -43,8 +40,8 @@ namespace DotNext.VariantType
 		public sealed override DynamicMetaObject BindInvoke(InvokeBinder binder, DynamicMetaObject[] args)
 			=> VariantValue.BindInvoke(binder, args);
 
-		public sealed override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args)
-			=> VariantValue.BindInvokeMember(binder, args);
+        public sealed override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args)
+            => VariantValue.BindInvokeMember(binder, args);
 
 		public sealed override DynamicMetaObject BindSetIndex(SetIndexBinder binder, DynamicMetaObject[] indexes, DynamicMetaObject value)
 			=> VariantValue.BindSetIndex(binder, indexes, value);
@@ -55,28 +52,30 @@ namespace DotNext.VariantType
 		public sealed override DynamicMetaObject BindUnaryOperation(UnaryOperationBinder binder)
 			=> VariantValue.BindUnaryOperation(binder);
 
-		public sealed override IEnumerable<string> GetDynamicMemberNames()
-			=> VariantValue.GetDynamicMemberNames();
+		public sealed override IEnumerable<string> GetDynamicMemberNames() => VariantValue.GetDynamicMemberNames();
 	}
 
-	internal sealed class VariantImmutableMetaObject : VariantMetaObject
-	{
-		internal VariantImmutableMetaObject(Expression parameter, IVariant variant)
-			: base(parameter, variant)
-		{
-			VariantValue = CreateActualMetaObject(parameter, variant);
-		}
+    internal sealed class VariantImmutableMetaObject : VariantMetaObject
+    {
+        internal VariantImmutableMetaObject(Expression parameter, IVariant variant)
+            : base(parameter, variant, out var valueExpression)
+        {
+            VariantValue = variant.Value is null ?
+                new DynamicMetaObject(valueExpression, Restrictions, null) :
+                new DynamicMetaObject(Expression.Convert(valueExpression, variant.Value.GetType()), Restrictions, variant.Value);
+        }
 
-		protected override DynamicMetaObject VariantValue { get; }
-	}
+        protected override DynamicMetaObject VariantValue { get; }
+    }
 
-	internal sealed class VariantVolatileMetaObject : VariantMetaObject
-	{
-		internal VariantVolatileMetaObject(Expression parameter, IVariant variant)
-			: base(parameter, variant)
-		{
-		}
+    internal sealed class VariantVolatileMetaObject : VariantMetaObject
+    {
+        private readonly MemberExpression ValueExpression;
 
-		protected override DynamicMetaObject VariantValue => CreateActualMetaObject(Expression, Value);
-	}
+        internal VariantVolatileMetaObject(Expression parameter, IVariant variant)
+            : base(parameter, variant, out var valueExpression)
+            => ValueExpression = valueExpression;
+
+        protected override DynamicMetaObject VariantValue => new DynamicMetaObject(ValueExpression, Restrictions, Value.Value);
+    }
 }

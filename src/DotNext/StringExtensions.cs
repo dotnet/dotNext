@@ -18,8 +18,8 @@ namespace DotNext
 		/// </code>
 		/// </example>
 		/// <param name="str">A string to check.</param>
-		/// <param name="alt">Alternative </param>
-		/// <returns>Original or alternative </returns>
+		/// <param name="alt">Alternative string to be returned if original string is <see langword="null"/> or empty.</param>
+		/// <returns>Original or alternative string.</returns>
 		public static string IfNullOrEmpty(this string str, string alt)
             => string.IsNullOrEmpty(str) ? alt : str;
 
@@ -37,13 +37,13 @@ namespace DotNext
 			return new string(chars);
 		}
 
-		/// <summary>
+        /// <summary>
         /// Compares two string using <see cref="StringComparison.OrdinalIgnoreCase" />.
         /// </summary>
-        /// <param name="strA">String A (can be null).</param>
-		/// <param name="strB">Stirng B (can be null).</param>
-		/// <returns><see langword="true"/>, if the first string is equal to the second string; otherwise, <see langword="false"/>.</returns>
-		public static bool IsEqualIgnoreCase (this string strA, string strB)
+        /// <param name="strA">String A. Can be <see langword="null"/>.</param>
+        /// <param name="strB">String B. Can be <see langword="null"/>.</param>
+        /// <returns><see langword="true"/>, if the first string is equal to the second string; otherwise, <see langword="false"/>.</returns>
+        public static bool IsEqualIgnoreCase (this string strA, string strB)
 			=> string.Compare (strA, strB, StringComparison.OrdinalIgnoreCase) == 0;
 
         /// <summary>

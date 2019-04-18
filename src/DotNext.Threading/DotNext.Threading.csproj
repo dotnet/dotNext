@@ -3,19 +3,18 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.5.0</Version>
+    <Version>0.6.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Asynchronous locks and .NET threading extensions</Description>
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
-    <PackageLicenseUrl>https://github.com/sakno/dotNext/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>async;lock;objectpool</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Asynchronous exclusive and reader/writer locks
-Asynchronous auto and manual reset event</PackageReleaseNotes>
+    <PackageReleaseNotes>Introduce AsyncCountdownEvent as asynchronous version of CountdownEvent from standard library</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -34,7 +33,7 @@ Asynchronous auto and manual reset event</PackageReleaseNotes>
 
   <ItemGroup>
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.5.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.6.0" Condition="'$(Configuration)'=='Release'" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" />
   </ItemGroup>
 

@@ -7,7 +7,7 @@ namespace DotNext.Runtime.CompilerServices
     public sealed class AwaitableTests: Assert
     {
         [Fact]
-        public void TaskWithResultTest()
+        public static void TaskWithResultTest()
         {
             var task = Task<long>.Factory.StartNew(() => 42);
             task.Wait();
@@ -24,7 +24,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [Fact]
-        public void TaskWithoutResultTest()
+        public static void TaskWithoutResultTest()
         {
             var holder = new ValueHolder();
             var task = Task.Factory.StartNew(holder.ChangeValue);

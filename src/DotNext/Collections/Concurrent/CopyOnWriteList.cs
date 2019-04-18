@@ -171,21 +171,6 @@ namespace DotNext.Collections.Concurrent
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Clear() => backingStore = Array.Empty<T>();
 
-        private static T[] RemoveAt(T[] backingStore, long index)
-        {
-            if (index < 0L || index >= backingStore.LongLength)
-                throw new ArgumentOutOfRangeException(nameof(index));
-            else if (backingStore.LongLength == 1L)
-                return Array.Empty<T>();
-            else
-            {
-                var newStore = new T[backingStore.LongLength - 1L];
-                Array.Copy(backingStore, 0L, newStore, 0L, index);
-                Array.Copy(backingStore, index + 1L, newStore, index, backingStore.LongLength - index - 1L);
-                return newStore;
-            }
-        }
-
         /// <summary>
         /// Removes the element at the specified index of this list.
         /// </summary>
@@ -195,7 +180,7 @@ namespace DotNext.Collections.Concurrent
         /// <param name="index">The zero-based index of the element to remove.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is incorrect.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void RemoveAt(long index) => backingStore = RemoveAt(backingStore, index);
+        public void RemoveAt(long index) => backingStore = backingStore.RemoveAt(index);
 
         /// <summary>
         /// Removes the first occurrence of an item from this list.
@@ -218,16 +203,6 @@ namespace DotNext.Collections.Concurrent
                 return false;
         }
 
-        private static T[] Insert(T[] backingStore, long index, T item)
-        {
-            if (index < 0L || index > backingStore.LongLength)
-                throw new ArgumentOutOfRangeException(nameof(index));
-            var newStore = new T[backingStore.LongLength + 1L];
-            Array.Copy(backingStore, 0L, newStore, 0L, index);
-            Array.Copy(backingStore, index, newStore, index + 1L, backingStore.LongLength - index);
-            return newStore;
-        }
-
         /// <summary>
         /// Inserts an element into this list at the specified index.
         /// </summary>
@@ -238,32 +213,7 @@ namespace DotNext.Collections.Concurrent
         /// <param name="item">The object to insert.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is incorrect.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Insert(long index, T item) => backingStore = Insert(backingStore, index, item);
-
-        private static T[] RemoveAll(T[] backingStore, Predicate<T> match, out long count)
-        {
-            if (backingStore.LongLength == 0L)
-            {
-                count = 0L;
-                return backingStore;
-            }
-            var newLength = 0L;
-            var tempArray = new T[backingStore.LongLength];
-            foreach (var item in backingStore)
-                if (!match(item))
-                    tempArray[newLength++] = item;
-            count = backingStore.LongLength - newLength;
-            if (count == 0L)
-                return backingStore;
-            else if (newLength == 0L)
-                return Array.Empty<T>();
-            else
-            {
-                backingStore = new T[newLength];
-                Array.Copy(tempArray, 0L, backingStore, 0L, newLength);
-                return backingStore;
-            }
-        }
+        public void Insert(long index, T item) => backingStore = backingStore.Insert(item, index);
 
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
@@ -273,7 +223,7 @@ namespace DotNext.Collections.Concurrent
         [MethodImpl(MethodImplOptions.Synchronized)]
         public long RemoveAll(Predicate<T> match)
         {
-            backingStore = RemoveAll(backingStore, match, out var count);
+            backingStore = backingStore.RemoveAll(match, out var count);
             return count;
         }
 

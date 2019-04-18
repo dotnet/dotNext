@@ -48,7 +48,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void ClassWithInnerArrayComparer()
+        public static void ClassWithInnerArrayComparer()
         {
             var hashCode = EqualityComparerBuilder.BuildGetHashCode<ComplexClass>();
             var equality = EqualityComparerBuilder.BuildEquals<ComplexClass>();
@@ -58,7 +58,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void StructArrayComparer()
+        public static void StructArrayComparer()
         {
             var hashCode = EqualityComparerBuilder.BuildGetHashCode<UnsafeStruct[]>();
             var equality = EqualityComparerBuilder.BuildEquals<UnsafeStruct[]>();
@@ -68,7 +68,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void UnsafeClassComparer()
+        public static void UnsafeClassComparer()
         {
             var hashCode = EqualityComparerBuilder.BuildGetHashCode<UnsafeClass>();
             var equality = EqualityComparerBuilder.BuildEquals<UnsafeClass>();
@@ -78,7 +78,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void ArrayOfRefTypeComparer()
+        public static void ArrayOfRefTypeComparer()
         {
             var hashCode = EqualityComparerBuilder.BuildGetHashCode<string[]>();
             var equality = EqualityComparerBuilder.BuildEquals<string[]>();
@@ -88,7 +88,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void LongEqualityComparer()
+        public static void LongEqualityComparer()
         {
             var hashCode = EqualityComparerBuilder.BuildGetHashCode<long>();
             var equality = EqualityComparerBuilder.BuildEquals<long>();
@@ -97,7 +97,7 @@ namespace DotNext
         }
 
         [Fact]
-        public void GuidEqualityComparer()
+        public static void GuidEqualityComparer()
         {
             var hashCode = EqualityComparerBuilder.BuildGetHashCode<Guid>();
             var equality = EqualityComparerBuilder.BuildEquals<Guid>();

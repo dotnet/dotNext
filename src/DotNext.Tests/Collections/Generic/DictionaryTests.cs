@@ -6,7 +6,7 @@ namespace DotNext.Collections.Generic
 	public sealed class DictionaryTests: Assert
 	{
         [Fact]
-        public void ReadOnlyIndexerTest()
+        public static void ReadOnlyIndexer()
         {
             IReadOnlyDictionary<string, int> dict = new Dictionary<string, int>()
             {
@@ -18,7 +18,7 @@ namespace DotNext.Collections.Generic
         }
 
         [Fact]
-        public void IndexerTest()
+        public static void Indexer()
         {
             IDictionary<string, int> dict = new Dictionary<string, int>()
             {

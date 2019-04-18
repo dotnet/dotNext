@@ -9,16 +9,17 @@ namespace DotNext.Metaprogramming
     public sealed class WithBlockBuilder: ScopeBuilder, IExpressionBuilder<Expression>
     {
         private readonly ParameterExpression scopeVar;
+        private readonly BinaryExpression assignment;
 
-        internal WithBlockBuilder(Expression expression, CompoundStatementBuilder parent)
+        internal WithBlockBuilder(Expression expression, CompoundStatementBuilder parent = null)
             : base(parent)
         {
             if(expression is ParameterExpression variable)
                 scopeVar = variable;
             else
             {
-                scopeVar = DeclareVariable(expression.Type, NextName("block_var_"));
-                Assign(scopeVar, expression);
+                scopeVar = Expression.Variable(expression.Type, "scopeVar");
+                assignment = Expression.Assign(scopeVar, expression);
             }
         }
 
@@ -27,6 +28,14 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public UniversalExpression ScopeVar => scopeVar;
 
-        Expression IExpressionBuilder<Expression>.Build() => Build();
+        internal override Expression Build() => Build<Expression, WithBlockBuilder>(this);
+
+        Expression IExpressionBuilder<Expression>.Build()
+        {
+            var body = base.Build();
+            if (!(assignment is null))
+                body = Expression.Block(typeof(void), new[] { scopeVar }, assignment, body);
+            return body;
+        }
     }
 }

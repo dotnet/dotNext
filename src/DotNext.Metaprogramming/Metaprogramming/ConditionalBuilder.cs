@@ -25,7 +25,10 @@ namespace DotNext.Metaprogramming
         /// <param name="branch">Branch builder.</param>
         /// <returns>Conditional expression builder.</returns>
         public ConditionalBuilder Then(Action<ScopeBuilder> branch)
-            => Then(NewScope().Build(branch));
+        {
+            using (var scope = NewScope())
+                return Then(scope.Build<Expression, ScopeBuilder>(branch));
+        }
 
         /// <summary>
         /// Constructs positive branch of the conditional expression.
@@ -44,7 +47,10 @@ namespace DotNext.Metaprogramming
         /// <param name="branch">Branch builder.</param>
         /// <returns>Conditional expression builder.</returns>
         public ConditionalBuilder Else(Action<ScopeBuilder> branch)
-            => Else(NewScope().Build(branch));
+        {
+            using (var scope = NewScope())
+                return Else(scope.Build<Expression, ScopeBuilder>(branch));
+        }
 
         /// <summary>
         /// Constructs negative branch of the conditional expression.

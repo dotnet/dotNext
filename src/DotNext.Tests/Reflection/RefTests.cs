@@ -5,7 +5,7 @@ namespace DotNext.Reflection
     public sealed class RefTests: Assert
     {
         [Fact]
-        public void ReferenceEqualityTest()
+        public static void ReferenceEquality()
         {
             Ref<int> ref1 = 10;
             Ref<int> ref2 = 20;

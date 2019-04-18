@@ -30,8 +30,11 @@ namespace DotNext.Metaprogramming
         /// Filter expression cannot have <see langword="await"/> expressions.
         /// </remarks>
         /// <param name="filter">Filter expression builder.</param>
-        public void Filter(Action<CompoundStatementBuilder> filter)
-            => this.filter = new ScopeBuilder(Parent).Build(filter);
+        public void Filter(Action<ScopeBuilder> filter)
+        {
+            using (var filterScope = new ScopeBuilder(Parent))
+                this.filter = filterScope.Build<Expression, ScopeBuilder>(filter);
+        }
 
         internal CatchBlock Build(Action<CatchBuilder> body)
         {

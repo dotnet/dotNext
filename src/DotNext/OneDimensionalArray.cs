@@ -37,7 +37,7 @@ namespace DotNext
 		/// <summary>
 		/// Insert a new element into array and return modified array.
 		/// </summary>
-		/// <typeparam name="T">Type of array element.</typeparam>
+		/// <typeparam name="T">Type of array elements.</typeparam>
 		/// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
 		/// <param name="element">The zero-based index at which item should be inserted.</param>
 		/// <param name="index">The object to insert. The value can be null for reference types.</param>
@@ -57,6 +57,61 @@ namespace DotNext
 				return result;
 			}
 		}
+
+		/// <summary>
+		/// Removes the element at the specified in the array and returns modified array.
+		/// </summary>
+		/// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
+		/// <param name="index">The zero-based index of the element to remove.</param>
+		/// <typeparam name="T">Type of array elements.</typeparam>
+		/// <returns>A modified array with removed element.</returns>
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is incorrect.</exception>
+		public static T[] RemoveAt<T>(this T[] array, long index)
+        {
+            if (index < 0L || index >= array.LongLength)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            else if (array.LongLength == 1L)
+                return Array.Empty<T>();
+            else
+            {
+                var newStore = new T[array.LongLength - 1L];
+                Array.Copy(array, 0L, newStore, 0L, index);
+                Array.Copy(array, index + 1L, newStore, index, array.LongLength - index - 1L);
+                return newStore;
+            }
+        }
+
+		/// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+		/// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
+        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
+		/// <param name="count">The number of elements removed from this list.</param>
+        /// <returns>A modified array with removed elements.</returns>
+		public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, out long count)
+        {
+            if (array.LongLength == 0L)
+            {
+                count = 0L;
+                return array;
+            }
+            var newLength = 0L;
+            var tempArray = new T[array.LongLength];
+            foreach (var item in array)
+                if (!match(item))
+                    tempArray[newLength++] = item;
+            count = array.LongLength - newLength;
+            if (count == 0L)
+                return array;
+            else if (newLength == 0L)
+                return Array.Empty<T>();
+            else
+            {
+                array = new T[newLength];
+                Array.Copy(tempArray, 0L, array, 0L, newLength);
+                return array;
+            }
+        }
 
 		/// <summary>
 		/// Converts each array element from one type into another.
@@ -165,8 +220,8 @@ namespace DotNext
 		public static unsafe bool BitwiseEquals<T>(this T[] first, T[] second)
 			where T: unmanaged
 		{
-			if(first is null)
-				return second is null;
+			if(first is null || second is null)
+				return ReferenceEquals(first, second);
 			else if(first.LongLength != second.LongLength)
 				return false;
 			else if(first.LongLength == 0)
@@ -183,7 +238,7 @@ namespace DotNext
         /// <param name="array">The array to be hashed.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>The hash code of the array content.</returns>
-        public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted)
+        public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
             where T : unmanaged
         {
             if (array.IsNullOrEmpty())
@@ -193,16 +248,7 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Computes salted bitwise hash code for the array content.
-        /// </summary>
-        /// <typeparam name="T">The type of array elements.</typeparam>
-        /// <param name="array">The array to be hashed.</param>
-        /// <returns>The hash code of the array content.</returns>
-        public static int BitwiseHashCode<T>(this T[] array) where T: unmanaged => BitwiseHashCode(array, true);
-
-        /// <summary>
-        /// Computes bitwise hash code for the array content
-        /// and custom hash function.
+        /// Computes bitwise hash code for the array content using custom hash function.
         /// </summary>
         /// <typeparam name="T">The type of array elements.</typeparam>
         /// <param name="array">The array to be hashed.</param>
@@ -225,8 +271,8 @@ namespace DotNext
 		/// <remarks>
 		/// This method calls <see cref="object.Equals(object, object)"/> for each element type.
 		/// </remarks>
-		/// <param name="first">First array for equality check.</param>
-		/// <param name="second">Second array for equality check.</param>
+		/// <param name="first">The first array to compare.</param>
+		/// <param name="second">The second array to compare.</param>
 		/// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
         public static bool SequenceEqual(this object[] first, object[] second)
         {
@@ -252,7 +298,11 @@ namespace DotNext
         public static unsafe int BitwiseCompare<T>(this T[] first, T[] second)
             where T : unmanaged
         {
-            if (first.LongLength != second.LongLength)
+			if(first is null)
+				return second is null ? 0 : -1;
+			else if(second is null)
+				return 1;
+            else if (first.LongLength != second.LongLength)
                 return first.LongLength.CompareTo(second.LongLength);
             fixed (T* firstPtr = first, secondPtr = second)
                 return Memory.Compare(firstPtr, secondPtr, first.LongLength * ValueType<T>.Size);

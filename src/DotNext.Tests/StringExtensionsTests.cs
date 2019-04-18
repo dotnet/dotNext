@@ -7,7 +7,7 @@ namespace DotNext
 	public sealed class StringExtensionsTests: Assert
 	{
 		[Fact]
-		public void IfNullOrEmptyTest()
+		public static void IfNullOrEmptyTest()
 		{
 			Equal("a", "".IfNullOrEmpty("a"));
 			Equal("a", default(string).IfNullOrEmpty("a"));
@@ -15,7 +15,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public void RandomStringTest()
+		public static void RandomStringTest()
 		{
 			const string AllowedChars = "abcd123456789";
 			var rnd = new Random();
@@ -29,14 +29,14 @@ namespace DotNext
 		}
 
         [Fact]
-        public void ReverseTest()
+        public static void ReverseTest()
         {
             Equal("cba", "abc".Reverse());
             Equal("", "".Reverse());
         }
 
         [Fact]
-        public void TrimLengthTest()
+        public static void TrimLengthTest()
         {
             Equal("ab", "abcd".TrimLength(2));
         }

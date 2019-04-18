@@ -19,7 +19,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public void InvokeEventHandlerTest()
+        public static void InvokeEventHandlerTest()
         {
             var acc = new Accumulator();
             Action action = acc.IncBy1;

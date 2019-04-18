@@ -67,7 +67,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The actual number of copied bytes.</returns>
         public static long WriteTo<M>(this ref M source, byte[] destination)
             where M : struct, IUnmanagedMemory
-            => source.WriteTo(destination, 0, destination.LongLength.UpperBounded(source.Size));
+            => source.WriteTo(destination, 0, destination.LongLength.Min(source.Size));
 
         /// <summary>
 		/// Sets all bits of allocated memory to zero.
@@ -100,7 +100,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The actual number of copied bytes.</returns>
         public static long WriteTo<M>(this byte[] source, M destination)
             where M : IUnmanagedMemory
-            => source.WriteTo(destination, 0, source.LongLength.UpperBounded(destination.Size));
+            => source.WriteTo(destination, 0, source.LongLength.Min(destination.Size));
 
         /// <summary>
         /// Copies bytes from the stream to the given memory location.

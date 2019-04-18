@@ -6,7 +6,14 @@ namespace DotNext.VariantType
     public sealed class VariantTests: Assert
     {   
         [Fact]
-        public void DynamicTest()
+        public static void DynamicNull()
+        {
+            dynamic variant = default(Variant<string, Uri>);
+            True(variant == null);
+        }
+
+        [Fact]
+        public static void DynamicVariant()
         {
             Variant<string, Uri> variant = "Hello, world!";
             dynamic d = variant;

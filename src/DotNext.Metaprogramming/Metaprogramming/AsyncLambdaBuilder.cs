@@ -64,7 +64,9 @@ namespace DotNext.Metaprogramming
         internal override Expression Return(Expression result, bool addAsStatement)
         {
             var asyncResult = new AsyncResultExpression(result, taskType);
-            return addAsStatement ? AddStatement(asyncResult) : asyncResult;
+            if(addAsStatement)
+                AddStatement(asyncResult);
+            return asyncResult;
         }
 
         private protected override LambdaExpression Build(Expression body, bool tailCall)
@@ -107,9 +109,11 @@ namespace DotNext.Metaprogramming
         /// <returns>Asynchronous lambda function.</returns>
         public static Expression<D> Build(bool tailCall, Action<AsyncLambdaBuilder<D>> lambdaBody)
         {
-            var builder = new AsyncLambdaBuilder<D>() { TailCall = tailCall };
-            lambdaBody(builder);
-            return ((IExpressionBuilder<Expression<D>>)builder).Build();
+            using (var builder = new AsyncLambdaBuilder<D>() { TailCall = tailCall })
+            {
+                lambdaBody(builder);
+                return ((IExpressionBuilder<Expression<D>>)builder).Build();
+            }
         }
 
         /// <summary>

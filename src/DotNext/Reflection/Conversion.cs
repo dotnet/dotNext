@@ -3,12 +3,15 @@ using static System.Linq.Expressions.Expression;
 
 namespace DotNext.Reflection
 {
+    using Runtime.CompilerServices;
+
     /// <summary>
     /// Provides access to implicit or explicit type conversion
     /// operator between two types.
     /// </summary>
     /// <typeparam name="I">Source type to convert.</typeparam>
     /// <typeparam name="O">Type of conversion result.</typeparam>
+    [RuntimeFeatures(DynamicCodeCompilation = true)]
     public static class Conversion<I, O>
     {
         /// <summary>

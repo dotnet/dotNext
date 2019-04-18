@@ -30,9 +30,10 @@ namespace DotNext.Metaprogramming
         /// <param name="testValues">A list of test values.</param>
         /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
         /// <returns><see langword="this"/> builder.</returns>
-        public SwitchBuilder Case(IEnumerable<Expression> testValues, Action<CompoundStatementBuilder> body)
+        public SwitchBuilder Case(IEnumerable<Expression> testValues, Action<ScopeBuilder> body)
         {
-            cases.Add(Expression.SwitchCase(NewScope().Build(body), testValues));
+            using (var caseScope = NewScope())
+                cases.Add(Expression.SwitchCase(caseScope.Build<Expression, ScopeBuilder>(body), testValues));
             return this;
         }
 
@@ -56,7 +57,7 @@ namespace DotNext.Metaprogramming
         /// <param name="testValues">A list of test values.</param>
         /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
         /// <returns><see langword="this"/> builder.</returns>
-        public SwitchBuilder Case(IEnumerable<UniversalExpression> testValues, Action<CompoundStatementBuilder> body)
+        public SwitchBuilder Case(IEnumerable<UniversalExpression> testValues, Action<ScopeBuilder> body)
             => Case(UniversalExpression.AsExpressions(testValues), body);
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Single test value.</param>
         /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
         /// <returns><see langword="this"/> builder.</returns>
-        public SwitchBuilder Case(UniversalExpression test, Action<CompoundStatementBuilder> body)
+        public SwitchBuilder Case(UniversalExpression test, Action<ScopeBuilder> body)
             => Case(Sequence.Singleton((Expression)test), body);
 
         /// <summary>
@@ -97,8 +98,11 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
         /// <returns><see langword="this"/> builder.</returns>
-        public SwitchBuilder Default(Action<CompoundStatementBuilder> body)
-            => Default(NewScope().Build(body));
+        public SwitchBuilder Default(Action<ScopeBuilder> body)
+        {
+            using (var defaultScope = NewScope())
+                return Default(defaultScope.Build<Expression, ScopeBuilder>(body));
+        }
 
         private protected override SwitchExpression Build()
             => Expression.Switch(ExpressionType, switchValue, defaultExpression, null, cases);
