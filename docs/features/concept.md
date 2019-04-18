@@ -7,7 +7,7 @@ If you are not familiar with type classes then read these articles first:
 * [Type Classes](https://en.wikipedia.org/wiki/Type_class) on Wikipedia
 
 > [!CAUTION]
-> There is no native compiler support of this feature, therefore, if you have a mistake in your concept definition it will not highlighted at compile time.
+> Due to lack of native compiler support of this feature, any mistake in definition of concept type will not be highlighted at compile time.
 
 The feature is based on strongly typed reflection so read [this](reflection/fast.md) document first. Entry point to discover class members is [Type&lt;T&gt;](../api/DotNext.Reflection.Type-1.yml). Reflected members are cached to speed-up performance and typed by specific delegate type. The delegate describes signature of the reflected member. All types of members are supported: constructors, fields, methods, event, properties, indexer properties.
 
