@@ -12,7 +12,7 @@ This chapter gives quick overview of these libraries. Read [articles](./features
 <a href="https://www.nuget.org/packages/dotnext/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.svg?style=flat"></a><br/>
 This library is the core of .NEXT which extends .NET Standard API with
   * Extension methods for .NET Standard types including generic collections
-  * Enum API to work with generic **enum** types
+  * Enum API to work with arbitrary **enum** types
   * Thread-safe advanced atomic operations to work with **int**, **long**, **bool**, **double**, **float** and reference types
   * Unified representation of synchronization lock
   * Generic specialization with constant values
