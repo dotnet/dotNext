@@ -39,11 +39,10 @@ namespace DotNext
                 buffer = new byte[sizeof(int)];
             }
 
-
             char IRandomCharacterGenerator.NextChar(ReadOnlySpan<char> allowedChars)
             {
                 random.GetBytes(buffer, 0, sizeof(int));
-                var randomNumber = Math.Abs(BitConverter.ToInt32(buffer, 0) % allowedChars.Length);   
+                var randomNumber = (BitConverter.ToInt32(buffer, 0) & int.MaxValue) % allowedChars.Length;
                 return allowedChars[randomNumber];
             }
         }
@@ -156,7 +155,7 @@ namespace DotNext
         {
             var buffer = new byte[sizeof(int)];
             random.GetBytes(buffer, 0, sizeof(int));
-            return Math.Abs(BitConverter.ToInt32(buffer, 0));
+            return BitConverter.ToInt32(buffer, 0) & int.MaxValue;  //remove sign bit. Abs function may cause OverflowException
         }
 
         /// <summary>
