@@ -117,7 +117,7 @@ namespace DotNext
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Bitwise hash code.</returns>
 		public static unsafe int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
-			=> Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, hash, hashFunction, salted);
+			=> Memory.GetHashCode32(Unsafe.AsPointer(ref value), Size, hash, hashFunction, salted);
 
 		/// <summary>
 		/// Computes hash code for the structure content.
@@ -127,7 +127,7 @@ namespace DotNext
 		/// <returns>Content hash code.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]      
 		public static unsafe int BitwiseHashCode(T value, bool salted)
-            => Memory.GetHashCode(Unsafe.AsPointer(ref value), Size, salted);
+            => Memory.GetHashCode32(Unsafe.AsPointer(ref value), Size, salted);
 
         /// <summary>
 		/// Computes salted hash code for the structure content.
