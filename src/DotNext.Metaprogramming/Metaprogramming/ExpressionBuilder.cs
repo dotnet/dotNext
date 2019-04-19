@@ -1089,21 +1089,13 @@ namespace DotNext.Metaprogramming
     public abstract class ExpressionBuilder<E> : IExpressionBuilder<E>
         where E : Expression
     {
-        private readonly CompoundStatementBuilder parent;
         private readonly bool treatAsStatement;
         private Type expressionType;
 
-        private protected ExpressionBuilder(CompoundStatementBuilder parent, bool treatAsStatement)
+        private protected ExpressionBuilder(bool treatAsStatement)
         {
-            this.parent = parent;
             this.treatAsStatement = treatAsStatement;
         }
-
-        private protected ScopeBuilder NewScope() => NewScope(parent => new ScopeBuilder(parent));
-
-        private protected B NewScope<B>(Func<CompoundStatementBuilder, B> factory)
-            where B : ScopeBuilder
-            => factory(parent);
 
         private protected Type ExpressionType => expressionType ?? typeof(void);
 
@@ -1136,7 +1128,7 @@ namespace DotNext.Metaprogramming
         {
             var expr = Build();
             if (treatAsStatement)
-                parent.AddStatement(expr);
+                CompoundStatementBuilder.Current.AddStatement(expr);
             return expr;
         }
 

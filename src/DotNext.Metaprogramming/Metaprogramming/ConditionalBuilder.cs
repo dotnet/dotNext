@@ -12,8 +12,8 @@ namespace DotNext.Metaprogramming
         private Expression ifTrue;
         private Expression ifFalse;
 
-        internal ConditionalBuilder(Expression test, CompoundStatementBuilder parent, bool treatAsStatement)
-            : base(parent, treatAsStatement)
+        internal ConditionalBuilder(Expression test, bool treatAsStatement)
+            : base(treatAsStatement)
         {
             this.test = test;
             ifTrue = ifFalse = Expression.Empty();
@@ -26,7 +26,7 @@ namespace DotNext.Metaprogramming
         /// <returns>Conditional expression builder.</returns>
         public ConditionalBuilder Then(Action<ScopeBuilder> branch)
         {
-            using (var scope = NewScope())
+            using (var scope = new ScopeBuilder())
                 return Then(scope.Build<Expression, ScopeBuilder>(branch));
         }
 

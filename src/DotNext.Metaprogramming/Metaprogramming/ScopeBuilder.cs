@@ -8,8 +8,7 @@ namespace DotNext.Metaprogramming
     /// </summary>
     public class ScopeBuilder : CompoundStatementBuilder
     {
-        internal ScopeBuilder(CompoundStatementBuilder parent)
-            : base(parent)
+        internal ScopeBuilder()
         {
         }
 

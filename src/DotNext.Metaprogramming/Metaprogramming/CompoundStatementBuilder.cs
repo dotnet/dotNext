@@ -12,39 +12,35 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents basic lexical scope support.
     /// </summary>
-    public abstract class CompoundStatementBuilder: Disposable, IExpressionBuilder<Expression>
+    public abstract class CompoundStatementBuilder : IDisposable, IExpressionBuilder<Expression>
     {
+        private static CompoundStatementBuilder current;
+
         private readonly IDictionary<string, ParameterExpression> variables;
         private readonly ICollection<Expression> statements;
         private long nameGenerator;
-        private bool hasChild;
 
-        private protected CompoundStatementBuilder(CompoundStatementBuilder parent = null)
+        private protected CompoundStatementBuilder()
         {
-            Parent = parent;
-            parent?.SendToBack();//indicates that parent scope has opened inner scope
             variables = new Dictionary<string, ParameterExpression>();
             statements = new LinkedList<Expression>();
+            Parent = current;
+            current = this;
         }
 
-        private void SendToBack()
+        private protected static B FindScope<B>()
+            where B : CompoundStatementBuilder
         {
-            if (hasChild)
-                throw new InvalidOperationException(ExceptionMessages.LexicalScopeIntersection);
-            else
-                hasChild = true;
-        }
-
-        private void BringToFront() => hasChild = false;
-        
-        private protected B FindScope<B>()
-            where B: CompoundStatementBuilder
-        {
-            for (var current = this; !(current is null); current = current.Parent)
+            for (var current = CompoundStatementBuilder.current; !(current is null); current = current.Parent)
                 if (current is B scope)
                     return scope;
             return null;
         }
+
+        /// <summary>
+        /// Gets curremt lexical scope.
+        /// </summary>
+        public static CompoundStatementBuilder Current => current ?? throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
 
         internal string NextName(string prefix) => Parent is null ? prefix + nameGenerator.IncrementAndGet() : Parent.NextName(prefix);
 
@@ -64,12 +60,12 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Represents parent scope.
         /// </summary>
-        public CompoundStatementBuilder Parent{ get; }
+        public CompoundStatementBuilder Parent { get; }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private protected static E Build<E, B>(B builder) 
-            where E: Expression
-            where B: IExpressionBuilder<E>
+        private protected static E Build<E, B>(B builder)
+            where E : Expression
+            where B : IExpressionBuilder<E>
             => builder.Build();
 
         private void AddStatement<B>(Func<CompoundStatementBuilder, B> factory, Action<B> body)
@@ -81,173 +77,128 @@ namespace DotNext.Metaprogramming
             AddStatement(statement);
         }
 
-        //it is possible to add statement only if the current scope doesn't have opened inner scope
-        private protected void ThrowIfWrongScope()
-        {
-            if (hasChild)
-                throw new InvalidOperationException(ExceptionMessages.OuterScopeModificationDetected);
-        }
-
-        internal void AddStatement(Expression statement)
-        {
-            ThrowIfDisposed();
-            ThrowIfWrongScope();
-            statements.Add(statement);
-        }
+        internal void AddStatement(Expression statement) => statements.Add(statement);
 
         /// <summary>
         /// Adds no-operation instruction to this scope.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Nop() => AddStatement(Expression.Empty());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Nop() => Current.AddStatement(Expression.Empty());
 
         /// <summary>
         /// Adds assignment operation to this scope.
         /// </summary>
         /// <param name="variable">The variable to modify.</param>
         /// <param name="value">The value to be assigned to the variable.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Assign(ParameterExpression variable, UniversalExpression value)
-            => AddStatement(variable.Assign(value));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Assign(ParameterExpression variable, UniversalExpression value) => Current.AddStatement(variable.Assign(value));
 
         /// <summary>
         /// Adds assignment operation to this scope.
         /// </summary>
         /// <param name="indexer">The indexer property or array element to modify.</param>
         /// <param name="value">The value to be assigned to the member or array element.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Assign(IndexExpression indexer, UniversalExpression value)
-            => AddStatement(indexer.Assign(value));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Assign(IndexExpression indexer, UniversalExpression value) => Current.AddStatement(indexer.Assign(value));
 
         /// <summary>
         /// Adds assignment operation to this scope.
         /// </summary>
         /// <param name="member">The field or property to modify.</param>
         /// <param name="value">The value to be assigned to the member.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Assign(MemberExpression member, UniversalExpression value)
-            => AddStatement(member.Assign(value));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Assign(MemberExpression member, UniversalExpression value) => Current.AddStatement(member.Assign(value));
 
         /// <summary>
         /// Adds an expression that increments given variable by 1 and assigns the result back to the variable.
         /// </summary>
         /// <param name="variable">The variable to be modified.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void PreIncrementAssign(ParameterExpression variable)
-            => AddStatement(variable.PreIncrementAssign());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void PreIncrementAssign(ParameterExpression variable) => Current.AddStatement(variable.PreIncrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given variable followed by a subsequent increment by 1 of the original variable.
         /// </summary>
         /// <param name="variable">The variable to be modified.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void PostIncrementAssign(ParameterExpression variable)
-            => AddStatement(variable.PostIncrementAssign());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void PostIncrementAssign(ParameterExpression variable) => Current.AddStatement(variable.PostIncrementAssign());
 
         /// <summary>
         /// Adds an expression that decrements given variable by 1 and assigns the result back to the variable.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void PreDecrementAssign(ParameterExpression variable)
-            => AddStatement(variable.PreDecrementAssign());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void PreDecrementAssign(ParameterExpression variable) => Current.AddStatement(variable.PreDecrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given variable followed by a subsequent decrement by 1 of the original variable.
         /// </summary>
         /// <param name="variable">The variable to be modified.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void PostDecrementAssign(ParameterExpression variable)
-            => AddStatement(variable.PostDecrementAssign());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void PostDecrementAssign(ParameterExpression variable) => Current.AddStatement(variable.PostDecrementAssign());
 
         /// <summary>
         /// Adds an expression that increments given field or property by 1 and assigns the result back to the member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void PreIncrementAssign(MemberExpression member)
-            => AddStatement(member.PreIncrementAssign());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void PreIncrementAssign(MemberExpression member) => Current.AddStatement(member.PreIncrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given field or property followed by a subsequent increment by 1 of the original member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void PostIncrementAssign(MemberExpression member)
-            => AddStatement(member.PostIncrementAssign());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public void PostIncrementAssign(MemberExpression member) => Current.AddStatement(member.PostIncrementAssign());
 
         /// <summary>
         /// Adds an expression that decrements given field or property by 1 and assigns the result back to the member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void PreDecrementAssign(MemberExpression member)
-            => AddStatement(member.PreDecrementAssign());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public void PreDecrementAssign(MemberExpression member) => Current.AddStatement(member.PreDecrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given field or property followed by a subsequent decrement by 1 of the original member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void PostDecrementAssign(MemberExpression member)
-            => AddStatement(member.PostDecrementAssign());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void PostDecrementAssign(MemberExpression member) => Current.AddStatement(member.PostDecrementAssign());
 
         /// <summary>
         /// Adds an expression that increments given field or property by 1 and assigns the result back to the member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void PreIncrementAssign(IndexExpression member)
-            => AddStatement(member.PreIncrementAssign());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void PreIncrementAssign(IndexExpression member) => Current.AddStatement(member.PreIncrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given field or property followed by a subsequent increment by 1 of the original member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void PostIncrementAssign(IndexExpression member)
-            => AddStatement(member.PostIncrementAssign());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void PostIncrementAssign(IndexExpression member) => Current.AddStatement(member.PostIncrementAssign());
 
         /// <summary>
         /// Adds an expression that decrements given field or property by 1 and assigns the result back to the member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void PreDecrementAssign(IndexExpression member)
-            => AddStatement(member.PreDecrementAssign());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void PreDecrementAssign(IndexExpression member) => Current.AddStatement(member.PreDecrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given field or property followed by a subsequent decrement by 1 of the original member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void PostDecrementAssign(IndexExpression member)
-            => AddStatement(member.PostDecrementAssign());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void PostDecrementAssign(IndexExpression member) => Current.AddStatement(member.PostDecrementAssign());
 
         /// <summary>
         /// Adds local variable assignment operation this scope.
         /// </summary>
         /// <param name="variableName">The name of the declared local variable.</param>
         /// <param name="value">The value to be assigned to the local variable.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Assign(string variableName, UniversalExpression value)
-            => Assign(this[variableName], value);
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Assign(string variableName, UniversalExpression value) => Assign(Current[variableName], value);
 
         /// <summary>
         /// Adds instance property assignment.
@@ -255,20 +206,18 @@ namespace DotNext.Metaprogramming
         /// <param name="instance"><see langword="this"/> argument.</param>
         /// <param name="instanceProperty">Instance property to be assigned.</param>
         /// <param name="value">A new value of the property.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Assign(UniversalExpression instance, PropertyInfo instanceProperty, UniversalExpression value)
-            => AddStatement(Expression.Assign(Expression.Property(instance, instanceProperty), value));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Assign(UniversalExpression instance, PropertyInfo instanceProperty, UniversalExpression value)
+            => Current.AddStatement(Expression.Assign(Expression.Property(instance, instanceProperty), value));
 
         /// <summary>
         /// Adds static property assignment.
         /// </summary>
         /// <param name="staticProperty">Static property to be assigned.</param>
         /// <param name="value">A new value of the property.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Assign(PropertyInfo staticProperty, UniversalExpression value)
-            => AddStatement(Expression.Assign(Expression.Property(null, staticProperty), value));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Assign(PropertyInfo staticProperty, UniversalExpression value)
+            => Current.AddStatement(Expression.Assign(Expression.Property(null, staticProperty), value));
 
         /// <summary>
         /// Adds instance field assignment.
@@ -276,40 +225,34 @@ namespace DotNext.Metaprogramming
         /// <param name="instance"><see langword="this"/> argument.</param>
         /// <param name="instanceField">Instance field to be assigned.</param>
         /// <param name="value">A new value of the field.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Assign(UniversalExpression instance, FieldInfo instanceField, UniversalExpression value)
-            => AddStatement(Expression.Assign(Expression.Field(instance, instanceField), value));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Assign(UniversalExpression instance, FieldInfo instanceField, UniversalExpression value)
+            => Current.AddStatement(Expression.Assign(Expression.Field(instance, instanceField), value));
 
         /// <summary>
         /// Adds static field assignment.
         /// </summary>
         /// <param name="staticField">Static field to be assigned.</param>
         /// <param name="value">A new value of the field.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Assign(FieldInfo staticField, UniversalExpression value)
-            => AddStatement(Expression.Assign(Expression.Field(null, staticField), value));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Assign(FieldInfo staticField, UniversalExpression value)
+            => Current.AddStatement(Expression.Assign(Expression.Field(null, staticField), value));
 
         /// <summary>
         /// Adds invocation statement.
         /// </summary>
         /// <param name="delegate">The expression providing delegate to be invoked.</param>
         /// <param name="arguments">Delegate invocation arguments.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Invoke(UniversalExpression @delegate, IEnumerable<Expression> arguments)
-            => AddStatement(Expression.Invoke(@delegate, arguments));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Invoke(UniversalExpression @delegate, IEnumerable<Expression> arguments) => Current.AddStatement(Expression.Invoke(@delegate, arguments));
 
         /// <summary>
         /// Adds invocation statement.
         /// </summary>
         /// <param name="delegate">The expression providing delegate to be invoked.</param>
         /// <param name="arguments">Delegate invocation arguments.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Invoke(UniversalExpression @delegate, params UniversalExpression[] arguments)
-            => AddStatement(@delegate.Invoke(arguments));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Invoke(UniversalExpression @delegate, params UniversalExpression[] arguments) => Current.AddStatement(@delegate.Invoke(arguments));
 
         /// <summary>
         /// Adds instance method call statement.
@@ -317,10 +260,9 @@ namespace DotNext.Metaprogramming
         /// <param name="instance"><see langword="this"/> argument.</param>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Call(UniversalExpression instance, MethodInfo method, IEnumerable<Expression> arguments)
-            => AddStatement(Expression.Call(instance, method, arguments));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Call(UniversalExpression instance, MethodInfo method, IEnumerable<Expression> arguments)
+            => Current.AddStatement(Expression.Call(instance, method, arguments));
 
         /// <summary>
         /// Adds instance method call statement.
@@ -328,9 +270,8 @@ namespace DotNext.Metaprogramming
         /// <param name="instance"><see langword="this"/> argument.</param>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Call(UniversalExpression instance, MethodInfo method, params UniversalExpression[] arguments)
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Call(UniversalExpression instance, MethodInfo method, params UniversalExpression[] arguments)
             => Call(instance, method, UniversalExpression.AsExpressions((IEnumerable<UniversalExpression>)arguments));
 
         /// <summary>
@@ -339,29 +280,26 @@ namespace DotNext.Metaprogramming
         /// <param name="instance"><see langword="this"/> argument.</param>
         /// <param name="methodName">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Call(UniversalExpression instance, string methodName, params UniversalExpression[] arguments)
-            => AddStatement(instance.Call(methodName, arguments));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Call(UniversalExpression instance, string methodName, params UniversalExpression[] arguments)
+            => Current.AddStatement(instance.Call(methodName, arguments));
 
         /// <summary>
         /// Adds static method call statement.,
         /// </summary>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Call(MethodInfo method, IEnumerable<Expression> arguments)
-            => AddStatement(Expression.Call(null, method, arguments));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Call(MethodInfo method, IEnumerable<Expression> arguments)
+            => Current.AddStatement(Expression.Call(null, method, arguments));
 
         /// <summary>
         /// Adds static method call statement.
         /// </summary>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Call(MethodInfo method, params UniversalExpression[] arguments)
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Call(MethodInfo method, params UniversalExpression[] arguments)
             => Call(method, UniversalExpression.AsExpressions((IEnumerable<UniversalExpression>)arguments));
 
         /// <summary>
@@ -370,9 +308,8 @@ namespace DotNext.Metaprogramming
         /// <param name="type">The type of landing site.</param>
         /// <param name="name">The optional name of the label.</param>
         /// <returns>Declared label.</returns>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public LabelTarget Label(Type type, string name = null)
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static LabelTarget Label(Type type, string name = null)
         {
             var target = Expression.Label(type, name);
             Label(target);
@@ -385,46 +322,40 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="T">The type of landing site.</typeparam>
         /// <param name="name">The optional name of the label.</param>
         /// <returns>Declared label.</returns>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public LabelTarget Label<T>(string name = null) => Label(typeof(T), name);
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static LabelTarget Label<T>(string name = null) => Label(typeof(T), name);
 
         /// <summary>
         /// Declares label in the current scope.
         /// </summary>
         /// <returns>Declared label.</returns>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public LabelTarget Label() => Label(typeof(void));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static LabelTarget Label() => Label(typeof(void));
 
         /// <summary>
         /// Adds label landing site to this scope.
         /// </summary>
         /// <param name="target">The label target.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Label(LabelTarget target) => AddStatement(Expression.Label(target));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Label(LabelTarget target) => Current.AddStatement(Expression.Label(target));
 
         /// <summary>
         /// Adds unconditional control transfer statement to this scope.
         /// </summary>
         /// <param name="target">The label reference.</param>
         /// <param name="value">The value to be associated with the control transfer.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Goto(LabelTarget target, UniversalExpression value)
-            => AddStatement(Expression.Goto(target, value));
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Goto(LabelTarget target, UniversalExpression value) => Current.AddStatement(Expression.Goto(target, value));
 
         /// <summary>
         /// Adds unconditional control transfer statement to this scope.
         /// </summary>
         /// <param name="target">The label reference.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Goto(LabelTarget target) => Goto(target, default);
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Goto(LabelTarget target) => Goto(target, default);
 
         private bool HasVariable(string name) => variables.ContainsKey(name) || Parent != null && Parent.HasVariable(name);
-        
+
         /// <summary>
         /// Gets declared local variable in the current or parent scope.
         /// </summary>
@@ -442,10 +373,8 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="T">The type of local variable.</typeparam>
         /// <param name="name">The name of local variable.</param>
         /// <returns>The expression representing local variable.</returns>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public ParameterExpression DeclareVariable<T>(string name)
-            => DeclareVariable(typeof(T), name);
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static ParameterExpression DeclareVariable<T>(string name) => DeclareVariable(typeof(T), name);
 
         /// <summary>
         /// Declares local variable in the current lexical scope. 
@@ -453,14 +382,11 @@ namespace DotNext.Metaprogramming
         /// <param name="variableType">The type of local variable.</param>
         /// <param name="name">The name of local variable.</param>
         /// <returns>The expression representing local variable.</returns>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public ParameterExpression DeclareVariable(Type variableType, string name)
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static ParameterExpression DeclareVariable(Type variableType, string name)
         {
-            ThrowIfDisposed();
-            ThrowIfWrongScope();
             var variable = Expression.Variable(variableType, name);
-            DeclareVariable(variable);
+            Current.DeclareVariable(variable);
             return variable;
         }
 
@@ -474,9 +400,8 @@ namespace DotNext.Metaprogramming
         /// <param name="name">The name of the variable.</param>
         /// <param name="init">Initialization expression.</param>
         /// <returns>The expression representing local variable.</returns>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public ParameterExpression DeclareVariable(string name, UniversalExpression init)
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static ParameterExpression DeclareVariable(string name, UniversalExpression init)
         {
             var variable = DeclareVariable(init.Type, name);
             Assign(variable, init);
@@ -487,9 +412,8 @@ namespace DotNext.Metaprogramming
         /// Adds await operator.
         /// </summary>
         /// <param name="asyncResult">The expression representing asynchronous computing process.</param>
-        /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public void Await(UniversalExpression asyncResult) => AddStatement(asyncResult.Await());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Await(UniversalExpression asyncResult) => Current.AddStatement(asyncResult.Await());
 
         /// <summary>
         /// Adds if-then-else statement to this scope.
@@ -498,8 +422,7 @@ namespace DotNext.Metaprogramming
         /// <returns>Conditional statement builder.</returns>
         /// <exception cref="ObjectDisposedException">This lexical scope is closed.</exception>
         /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
-        public ConditionalBuilder If(UniversalExpression test)
-            => new ConditionalBuilder(test, this, true);
+        public static ConditionalBuilder If(UniversalExpression test) => new ConditionalBuilder(test, true);
 
         /// <summary>
         /// Adds if-then statement to this scope.
@@ -735,12 +658,12 @@ namespace DotNext.Metaprogramming
         internal virtual Expression Build()
         {
             ThrowIfDisposed();
-            switch(statements.Count)
+            switch (statements.Count)
             {
                 case 0:
                     return Expression.Empty();
                 case 1:
-                    if(variables.Count == 0 && statements.Count == 1)
+                    if (variables.Count == 0 && statements.Count == 1)
                         return statements.First();
                     else
                         goto default;
@@ -751,18 +674,11 @@ namespace DotNext.Metaprogramming
 
         Expression IExpressionBuilder<Expression>.Build() => Build();
 
-        /// <summary>
-        /// Releases all resources associated with this builder.
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/>, if this method is called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer.</param>
-        protected override void Dispose(bool disposing)
+        void IDisposable.Dispose()
         {
-            if(disposing)
-            {
-                variables.Clear();
-                statements.Clear();
-                Parent?.BringToFront();
-            }
+            variables.Clear();
+            statements.Clear();
+            current = Parent;
         }
     }
 }
