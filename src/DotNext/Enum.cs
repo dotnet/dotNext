@@ -8,6 +8,7 @@ namespace DotNext
     /// </summary>
     /// <typeparam name="E">Enum type to reflect.</typeparam>
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
+    [Serializable]
     public readonly struct Enum<E>: IEquatable<E>, IComparable<E>, IFormattable, IComparable<Enum<E>>
         where E : struct, Enum
     {
