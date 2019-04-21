@@ -11,9 +11,9 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents lambda function builder.
     /// </summary>
-    public abstract class LambdaBuilder: CompoundStatementBuilder
+    public abstract class LambdaBuilder: LexicalScope
     {
-        private protected LambdaBuilder(CompoundStatementBuilder parent = null)
+        private protected LambdaBuilder(LexicalScope parent = null)
             : base(parent)
         {
         }
@@ -81,7 +81,7 @@ namespace DotNext.Metaprogramming
         private ParameterExpression lambdaResult;
         private LabelTarget returnLabel;
 
-        internal LambdaBuilder(CompoundStatementBuilder parent = null)
+        internal LambdaBuilder(LexicalScope parent = null)
             : base(parent)
         {
             if (typeof(D).IsAbstract)

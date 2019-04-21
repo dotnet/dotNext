@@ -10,41 +10,36 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents <see langword="using"/> statement builder.
     /// </summary>
-    /// <see href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">USING statement</see>
-    public sealed class UsingBlockBuilder: ScopeBuilder
+    /// 
+    internal sealed class UsingBlockBuilder: ScopeBuilder, IExpressionBuilder<Expression>
     {
         private readonly MethodInfo disposeMethod;
-        private readonly ParameterExpression disposableVar;
+        internal readonly ParameterExpression Resource;
         private readonly BinaryExpression assignment;
 
-        internal UsingBlockBuilder(Expression expression, CompoundStatementBuilder parent = null)
+        internal UsingBlockBuilder(Expression expression, LexicalScope parent = null)
             : base(parent)
         {
             disposeMethod = expression.Type.GetDisposeMethod();
             if (disposeMethod is null)
                 throw new ArgumentNullException(ExceptionMessages.DisposePatternExpected(expression.Type));
             else if (expression is ParameterExpression variable)
-                disposableVar = variable;
+                Resource = variable;
             else
             {
-                disposableVar = Expression.Variable(expression.Type, NextName("disposable_"));
-                assignment = disposableVar.Assign(expression);
+                Resource = Expression.Variable(expression.Type, "resource");
+                assignment = Resource.Assign(expression);
             }
         }
 
-        /// <summary>
-        /// Gets disposable resource attached to this statement.
-        /// </summary>
-        public UniversalExpression DisposableVar => disposableVar;
-
-        internal override Expression Build()
+        public new Expression Build()
         {
-            Expression @finally = disposableVar.Call(disposeMethod);
-            @finally = Expression.Block(typeof(void), @finally, disposableVar.AssignDefault());
+            Expression @finally = Resource.Call(disposeMethod);
+            @finally = Expression.Block(typeof(void), @finally, Resource.AssignDefault());
             @finally = base.Build().Finally(@finally);
             return assignment is null ?
                 @finally :
-                Expression.Block(typeof(void), Sequence.Singleton(disposableVar), assignment, @finally);
+                Expression.Block(typeof(void), Sequence.Singleton(Resource), assignment, @finally);
         }
     }
 }

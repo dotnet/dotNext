@@ -10,7 +10,7 @@ namespace DotNext.Metaprogramming
     {
         private Expression filter;
 
-        internal CatchBuilder(Type exceptionType, CompoundStatementBuilder parent)
+        internal CatchBuilder(Type exceptionType, LexicalScope parent)
             : base(parent)
         {
             Exception = Expression.Variable(exceptionType, "e");

@@ -910,7 +910,7 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Test expression.</param>
         /// <param name="parent">Parent lexical scope.</param>
         /// <returns>Conditional expression builder.</returns>
-        public static ConditionalBuilder Condition(this Expression test, CompoundStatementBuilder parent = null)
+        public static ConditionalBuilder Condition(this Expression test, LexicalScope parent = null)
             => new ConditionalBuilder(test, parent, false);
 
         /// <summary>
@@ -979,7 +979,7 @@ namespace DotNext.Metaprogramming
         /// <param name="expression"><see langword="try"/> block.</param>
         /// <param name="parent">The parent lexical scope.</param>
         /// <returns>Structured exception handling statement builder.</returns>
-        public static TryBuilder Try(this Expression expression, CompoundStatementBuilder parent = null)
+        public static TryBuilder Try(this Expression expression, LexicalScope parent = null)
             => new TryBuilder(expression, parent, false);
 
         /// <summary>
@@ -993,7 +993,7 @@ namespace DotNext.Metaprogramming
         /// <returns>Construct code block.</returns>
         /// <see cref="WithBlockBuilder"/>
         /// <see cref="WithBlockBuilder.ScopeVar"/>
-        public static Expression With(this Expression expression, Action<WithBlockBuilder> scope, CompoundStatementBuilder parent = null)
+        public static Expression With(this Expression expression, Action<WithBlockBuilder> scope, LexicalScope parent = null)
         {
             using(var builder = new WithBlockBuilder(expression, parent))
                 return builder.Build<Expression, WithBlockBuilder>(scope);
@@ -1009,7 +1009,7 @@ namespace DotNext.Metaprogramming
         /// <param name="scope">The body of <see langword="using"/> statement.</param>
         /// <param name="parent">Optional parent scope.</param>
         /// <returns><see langword="using"/> statement.</returns>
-        public static Expression Using(this Expression expression, Action<UsingBlockBuilder> scope, CompoundStatementBuilder parent = null)
+        public static Expression Using(this Expression expression, Action<UsingBlockBuilder> scope, LexicalScope parent = null)
         {
             using(var builder = new UsingBlockBuilder(expression, parent))
                 return builder.Build<Expression, UsingBlockBuilder>(scope);
@@ -1022,7 +1022,7 @@ namespace DotNext.Metaprogramming
         /// <param name="switchValue">The value to be matched with provided candidates.</param>
         /// <param name="parent">Optional parent scope.</param>
         /// <returns><see langword="switch"/> statement builder.</returns>
-        public static SwitchBuilder Switch(this Expression switchValue, CompoundStatementBuilder parent = null)
+        public static SwitchBuilder Switch(this Expression switchValue, LexicalScope parent = null)
             => new SwitchBuilder(switchValue, parent, false);
 
         /// <summary>
@@ -1092,10 +1092,7 @@ namespace DotNext.Metaprogramming
         private readonly bool treatAsStatement;
         private Type expressionType;
 
-        private protected ExpressionBuilder(bool treatAsStatement)
-        {
-            this.treatAsStatement = treatAsStatement;
-        }
+        private protected ExpressionBuilder(bool treatAsStatement) => this.treatAsStatement = treatAsStatement;
 
         private protected Type ExpressionType => expressionType ?? typeof(void);
 
@@ -1128,7 +1125,7 @@ namespace DotNext.Metaprogramming
         {
             var expr = Build();
             if (treatAsStatement)
-                CompoundStatementBuilder.Current.AddStatement(expr);
+                CodeGenerator.CurrentScope.AddStatement(expr);
             return expr;
         }
 

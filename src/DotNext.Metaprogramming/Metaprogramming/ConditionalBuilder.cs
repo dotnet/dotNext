@@ -24,10 +24,14 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="branch">Branch builder.</param>
         /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Then(Action<ScopeBuilder> branch)
+        public ConditionalBuilder Then(Action branch)
         {
             using (var scope = new ScopeBuilder())
-                return Then(scope.Build<Expression, ScopeBuilder>(branch));
+            {
+                branch();
+                ifTrue = scope.Build();
+            }
+            return this;
         }
 
         /// <summary>
@@ -46,10 +50,14 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="branch">Branch builder.</param>
         /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Else(Action<ScopeBuilder> branch)
+        public ConditionalBuilder Else(Action branch)
         {
-            using (var scope = NewScope())
-                return Else(scope.Build<Expression, ScopeBuilder>(branch));
+            using (var scope = new ScopeBuilder())
+            {
+                branch();
+                ifFalse = scope.Build();
+            }
+            return this;
         }
 
         /// <summary>

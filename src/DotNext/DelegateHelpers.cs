@@ -52,6 +52,18 @@ namespace DotNext
         /// <returns>A method wrapped into new delegate type.</returns>
         /// <exception cref="ArgumentException">Cannot convert delegate type.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static D ChangeType<D>(this Delegate d) where D : Delegate => d.Method.CreateDelegate<D>(d.Target);
+        public static D ChangeType<D>(this Delegate d) where D : Delegate => d.Method.CreateDelegate<D>(d.Target); 
+
+        /// <summary>
+        /// Converts parameterless action into parametrized action.
+        /// </summary>
+        /// <param name="action">Parameterless action to convert.</param>
+        /// <typeparam name="T">Type of the first parameter.</typeparam>
+        /// <returns>Parametrized action.</returns>
+        public static Action<T> Parametrize<T>(this Action action) => arg => action();
+
+        public static Action<T1, T2> Parametrize<T1, T2>(this Action<T1> action) => (arg1, arg2) => action(arg1);
+
+        public static Action<T2, T1> Permute<T1, T2>(this Action<T1, T2> action) => (arg2, arg1) => action(arg1, arg2);
     }
 }

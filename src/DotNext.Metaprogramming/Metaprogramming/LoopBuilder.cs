@@ -6,17 +6,15 @@ namespace DotNext.Metaprogramming
     /// Represents generic loop builder.
     /// </summary>
     /// <remarks>
-    /// This loop is equvalent to <code>while(true){ }</code>
+    /// This loop is equvalent to <c>while(true){ }</c>
     /// </remarks>
-    public sealed class LoopBuilder : LoopBuilderBase, IExpressionBuilder<LoopExpression>
+    internal sealed class LoopBuilder : LoopBuilderBase, IExpressionBuilder<LoopExpression>
     {
-        internal LoopBuilder(CompoundStatementBuilder parent)
+        internal LoopBuilder(LexicalScope parent)
             : base(parent)
         {
         }
 
-        LoopExpression IExpressionBuilder<LoopExpression>.Build() => base.Build().Loop(breakLabel, continueLabel);
-
-        internal override Expression Build() => Build<LoopExpression, LoopBuilder>(this);
+        public new LoopExpression Build() => base.Build().Loop(breakLabel, continueLabel);
     }
 }

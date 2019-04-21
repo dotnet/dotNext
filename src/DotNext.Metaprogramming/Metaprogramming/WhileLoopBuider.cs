@@ -5,21 +5,19 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents <see langword="while"/> loop builder.
     /// </summary>
-    public sealed class WhileLoopBuider: LoopBuilderBase, IExpressionBuilder<LoopExpression>
+    internal sealed class WhileLoopBuider: LoopBuilderBase, IExpressionBuilder<LoopExpression>
     {
         private readonly Expression test;
         private readonly bool conditionFirst;
 
-        internal WhileLoopBuider(Expression test, CompoundStatementBuilder parent, bool checkConditionFirst)
+        internal WhileLoopBuider(Expression test, LexicalScope parent, bool checkConditionFirst)
             : base(parent)
         {
             this.test = test;
             conditionFirst = checkConditionFirst;
         }
 
-        internal override Expression Build() => Build<LoopExpression, WhileLoopBuider>(this);
-
-        LoopExpression IExpressionBuilder<LoopExpression>.Build()
+        public new LoopExpression Build()
         {
             Expression loopBody;
             LoopExpression loopExpr;

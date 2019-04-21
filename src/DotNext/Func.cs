@@ -57,5 +57,7 @@ namespace DotNext
         /// <returns>A delegate of type <see cref="Converter{I, O}"/> referencing the same method as original delegate.</returns>
         public static Converter<I, O> AsConverter<I, O>(this Func<I, O> function)
             => function.ChangeType<Converter<I, O>>();
+
+        public static Func<T, R> Parametrize<T, R>(this Func<R> function) => arg => function();
     }
 }

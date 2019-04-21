@@ -7,17 +7,13 @@ namespace DotNext.Metaprogramming
     using static Reflection.DisposableType;
     using static Reflection.CollectionType;
 
-    /// <summary>
-    /// Represents <see langword="foreach"/> loop builder.
-    /// </summary>
-    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
-    public sealed class ForEachLoopBuilder: LoopBuilderBase, IExpressionBuilder<BlockExpression>
+    internal sealed class ForEachLoopBuilder: LoopBuilderBase, IExpressionBuilder<BlockExpression>
     {
         private readonly ParameterExpression enumeratorVar;
         private readonly BinaryExpression enumeratorAssignment;
         private readonly MethodCallExpression moveNextCall;
 
-        internal ForEachLoopBuilder(Expression collection, CompoundStatementBuilder parent = null)
+        internal ForEachLoopBuilder(Expression collection, LexicalScope parent = null)
             : base(parent)
         {
             collection.Type.GetItemType(out var enumerable);
@@ -43,14 +39,9 @@ namespace DotNext.Metaprogramming
             enumeratorAssignment = Expression.Assign(enumeratorVar, getEnumerator);
         }
 
-        /// <summary>
-        /// Gets collection element.
-        /// </summary>
-        public UniversalExpression Element => enumeratorVar.Property(nameof(IEnumerator.Current));
+        internal MemberExpression Element => Expression.Property(enumeratorVar, nameof(IEnumerator.Current));
 
-        internal override Expression Build() => Build<BlockExpression, ForEachLoopBuilder>(this);
-
-        BlockExpression IExpressionBuilder<BlockExpression>.Build()
+        public new BlockExpression Build()
         {
             Expression loopBody = moveNextCall.Condition(base.Build(), breakLabel.Goto());
             var disposeMethod = enumeratorVar.Type.GetDisposeMethod();

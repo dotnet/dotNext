@@ -2,37 +2,28 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    /// <summary>
-    /// Represents <see langword="With"/> statement builder. 
-    /// </summary>
-    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
-    public sealed class WithBlockBuilder: ScopeBuilder
+    internal sealed class WithBlockBuilder: ScopeBuilder, IExpressionBuilder<Expression>
     {
-        private readonly ParameterExpression scopeVar;
+        internal readonly ParameterExpression Variable;
         private readonly BinaryExpression assignment;
 
-        internal WithBlockBuilder(Expression expression, CompoundStatementBuilder parent = null)
+        internal WithBlockBuilder(Expression expression, LexicalScope parent = null)
             : base(parent)
         {
             if(expression is ParameterExpression variable)
-                scopeVar = variable;
+                Variable = variable;
             else
             {
-                scopeVar = Expression.Variable(expression.Type, "scopeVar");
-                assignment = Expression.Assign(scopeVar, expression);
+                Variable = Expression.Variable(expression.Type, "scopeVar");
+                assignment = Expression.Assign(Variable, expression);
             }
         }
 
-        /// <summary>
-        /// Represents implictly referenced value in this scope.
-        /// </summary>
-        public UniversalExpression ScopeVar => scopeVar;
-
-        internal override Expression Build()
+        public new Expression Build()
         {
             var body = base.Build();
             if (!(assignment is null))
-                body = Expression.Block(typeof(void), new[] { scopeVar }, assignment, body);
+                body = Expression.Block(typeof(void), new[] { Variable }, assignment, body);
             return body;
         }
     }

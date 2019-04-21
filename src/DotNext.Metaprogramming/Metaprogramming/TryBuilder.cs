@@ -15,7 +15,7 @@ namespace DotNext.Metaprogramming
         private Expression finallyBlock;
         private readonly ICollection<CatchBlock> handlers;
 
-        internal TryBuilder(Expression tryBlock, CompoundStatementBuilder parent, bool treatAsStatement)
+        internal TryBuilder(Expression tryBlock, LexicalScope parent, bool treatAsStatement)
             : base(parent, treatAsStatement)
         {
             this.tryBlock = tryBlock;
@@ -66,10 +66,10 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="fault">Fault handling block.</param>
         /// <returns><see langword="this"/> builder.</returns>
-        public TryBuilder Fault(Action<CompoundStatementBuilder> fault)
+        public TryBuilder Fault(Action<LexicalScope> fault)
         {
             using (var faultScope = NewScope())
-                return Fault(faultScope.Build<Expression, CompoundStatementBuilder>(fault));
+                return Fault(faultScope.Build<Expression, LexicalScope>(fault));
         }
 
         /// <summary>
@@ -89,10 +89,10 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="finally">The block of code to be executed.</param>
         /// <returns><see langword="this"/> builder.</returns>
-        public TryBuilder Finally(Action<CompoundStatementBuilder> @finally)
+        public TryBuilder Finally(Action<LexicalScope> @finally)
         {
             using (var finallyScope = NewScope())
-                return Finally(finallyScope.Build<Expression, CompoundStatementBuilder>(@finally));
+                return Finally(finallyScope.Build<Expression, LexicalScope>(@finally));
         }
 
         /// <summary>
