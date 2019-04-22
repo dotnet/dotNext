@@ -34,7 +34,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Gets lambda parameters.
         /// </summary>
-        public abstract IReadOnlyList<ParameterExpression> Parameters { get; }
+        internal abstract IReadOnlyList<ParameterExpression> Parameters { get; }
 
         internal abstract Expression Return(Expression result);
 
@@ -87,7 +87,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Gets lambda parameters.
         /// </summary>
-        public override IReadOnlyList<ParameterExpression> Parameters { get; }
+        internal override IReadOnlyList<ParameterExpression> Parameters { get; }
 
         private ParameterExpression Result
         {
@@ -117,7 +117,7 @@ namespace DotNext.Metaprogramming
                 body(context, Result);
         }
 
-        public Expression<D> Build()
+        public new Expression<D> Build()
         {
             var body = base.Build();
             var instructions = new LinkedList<Expression>();

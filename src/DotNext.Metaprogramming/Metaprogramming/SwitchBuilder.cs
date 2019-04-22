@@ -15,8 +15,8 @@ namespace DotNext.Metaprogramming
         private readonly ICollection<SwitchCase> cases;
         private Expression defaultExpression;
 
-        internal SwitchBuilder(ScopeBuilder builder, Expression expression, bool treatAsStatement)
-            : base(builder, treatAsStatement)
+        internal SwitchBuilder(ScopeBuilder builder, Expression expression)
+            : base(builder)
         {
             cases = new LinkedList<SwitchCase>();
             defaultExpression = Expression.Empty();
@@ -62,24 +62,6 @@ namespace DotNext.Metaprogramming
         /// <param name="body">The expression to be returned from selection statement.</param>
         /// <returns><see langword="this"/> builder.</returns>
         public SwitchBuilder Case(Expression test, Expression body) => Case(Sequence.Singleton(test), body);
-
-        /// <summary>
-        /// Specifies a pattern to compare to the match the constant
-        /// and expression to be returned if matching is successful.
-        /// </summary>
-        /// <param name="value">Expected constant value.</param>
-        /// <param name="body">The expression to be returned from selection statement.</param>
-        /// <returns><see langword="this"/> builder.</returns>
-        public SwitchBuilder Case(string value, Expression body) => Case(value.AsConst(), body);
-
-        /// <summary>
-        /// Specifies a pattern to compare to the match the constant
-        /// and action to be executed if matching is successful.
-        /// </summary>
-        /// <param name="value">Expected constant value.</param>
-        /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
-        /// <returns><see langword="this"/> builder.</returns>
-        public SwitchBuilder Case(string value, Action body) => Case(value.AsConst(), body);
 
         /// <summary>
         /// Specifies the switch section to execute if the match expression

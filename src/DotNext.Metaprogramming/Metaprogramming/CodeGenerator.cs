@@ -38,7 +38,7 @@ namespace DotNext.Metaprogramming
                     return target;
             return null;
         }
-
+        
         private static void AddStatement<D, S, F>(F factory, D body)
             where D : Delegate
             where S : LexicalScope, IExpressionBuilder<Expression>, ICompoundStatement<D>
@@ -66,10 +66,18 @@ namespace DotNext.Metaprogramming
             return statement;
         }
 
+        private static B TreatAsStatement<E, B>(this B builder)
+            where E : Expression
+            where B : ExpressionBuilder<E>
+        {
+            builder.Constructed += CurrentScope.AddStatement;
+            return builder;
+        }
+
         /// <summary>
         /// Gets curremt lexical scope.
         /// </summary>
-        internal static LexicalScope CurrentScope => current ?? throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
+        private static LexicalScope CurrentScope => current ?? throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
 
         /// <summary>
         /// Obtains local variable declared in the current or outer lexical scope.
@@ -410,13 +418,16 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Await(Expression asyncResult) => CurrentScope.AddStatement(asyncResult.Await());
 
+        internal static ConditionalBuilder MakeConditional(Expression test) => new ConditionalBuilder(MakeScope, test);
+
         /// <summary>
         /// Adds if-then-else statement to this scope.
         /// </summary>
         /// <param name="test">Test expression.</param>
         /// <returns>Conditional statement builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static ConditionalBuilder If(Expression test) => new ConditionalBuilder(MakeScope, test, true);
+        public static ConditionalBuilder If(Expression test) 
+            => MakeConditional(test).TreatAsStatement<ConditionalExpression, ConditionalBuilder>();
 
         /// <summary>
         /// Adds if-then statement to this scope.
@@ -504,7 +515,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression, LoopCookie> body)
-            => AddStatement<Action<MemberExpression, LoopCookie>, ForEachLoopScope, ForEachLoopScopeFactory>(new ForEachLoopScopeFactory(), body);
+            => AddStatement<Action<MemberExpression, LoopCookie>, ForEachLoopScope, ForEachLoopScopeFactory>(new ForEachLoopScopeFactory(collection), body);
         
         /// <summary>
         /// Adds <see langword="foreach"/> loop statement.
@@ -611,6 +622,12 @@ namespace DotNext.Metaprogramming
             UsingBlockScope ILexicalScopeFactory<UsingBlockScope>.CreateScope(LexicalScope parent) => new UsingBlockScope(resource, parent);
         }
 
+        internal static Expression MakeUsing(Expression resource, Action<ParameterExpression> body)
+            => Build<Expression, Action<ParameterExpression>, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(resource), body);
+        
+        internal static Expression MakeUsing(Expression resource, Action body)
+            => Build<Expression, Action, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(resource), body);
+
         /// <summary>
         /// Adds <see langword="using"/> statement.
         /// </summary>
@@ -619,7 +636,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action<ParameterExpression> body)
-            => AddStatement<Action<ParameterExpression>, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(), body);
+            => AddStatement<Action<ParameterExpression>, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(resource), body);
 
         /// <summary>
         /// Adds <see langword="using"/> statement.
@@ -629,7 +646,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action body)
-            => AddStatement<Action, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(), body);
+            => AddStatement<Action, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(resource), body);
         
         private readonly struct LockScopeFactory: ILexicalScopeFactory<LockScope>
         {
@@ -639,6 +656,12 @@ namespace DotNext.Metaprogramming
 
             LockScope ILexicalScopeFactory<LockScope>.CreateScope(LexicalScope parent) => new LockScope(syncRoot, parent);
         }
+
+        internal static BlockExpression MakeLock(Expression syncRoot, Action<ParameterExpression> body)
+            => Build<BlockExpression, Action<ParameterExpression>, LockScope, LockScopeFactory>(new LockScopeFactory(syncRoot), body);
+        
+        internal static BlockExpression MakeLock(Expression syncRoot, Action body)
+            => Build<BlockExpression, Action, LockScope, LockScopeFactory>(new LockScopeFactory(syncRoot), body);
 
         /// <summary>
         /// Adds <see langword="lock"/> statement.
@@ -669,6 +692,9 @@ namespace DotNext.Metaprogramming
             WithBlockScope ILexicalScopeFactory<WithBlockScope>.CreateScope(LexicalScope parent) => new WithBlockScope(expression, parent);
         }
 
+        internal static Expression MakeWith(Expression expression, Action<ParameterExpression> body)
+            => Build<Expression, Action<ParameterExpression>, WithBlockScope, WithBlockScopeFactory>(new WithBlockScopeFactory(expression), body);
+
         /// <summary>
         /// Constructs compound statement hat repeatedly refer to a single object or 
         /// structure so that the statements can use a simplified syntax when accessing members 
@@ -680,6 +706,34 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
         public static void With(Expression expression, Action<ParameterExpression> body)
             => AddStatement<Action<ParameterExpression>, WithBlockScope, WithBlockScopeFactory>(new WithBlockScopeFactory(expression), body);
+
+        internal static SwitchBuilder MakeSwitch(Expression switchValue) => new SwitchBuilder(MakeScope, switchValue);
+
+        /// <summary>
+        /// Adds selection expression.
+        /// </summary>
+        /// <param name="switchValue">The value to be handled by the selection expression.</param>
+        /// <returns>Selection expression builder.</returns>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static SwitchBuilder Switch(Expression switchValue) => MakeSwitch(switchValue).TreatAsStatement<SwitchExpression, SwitchBuilder>();
+
+        internal static TryBuilder MakeTry(Expression body) => new TryBuilder(MakeScope, body);
+
+        /// <summary>
+        /// Adds structured exception handling statement.
+        /// </summary>
+        /// <param name="body"><see langword="try"/> block.</param>
+        /// <returns>Structured exception handling builder.</returns>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static TryBuilder Try(Expression body) => MakeTry(body).TreatAsStatement<TryExpression, TryBuilder>();
+
+        /// <summary>
+        /// Adds structured exception handling statement.
+        /// </summary>
+        /// <param name="scope"><see langword="try"/> block builder.</param>
+        /// <returns>Structured exception handling builder.</returns>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static TryBuilder Try(Action scope) => Try(MakeScope(scope));
 
         private readonly struct LocalScopeFactory: ILexicalScopeFactory<LocalScope>
         {
@@ -747,7 +801,7 @@ namespace DotNext.Metaprogramming
         }
 
         private readonly struct LambdaScopeFactory<D>: ILexicalScopeFactory<LambdaScope<D>>
-            where D : MulticastDelegate
+            where D : Delegate
         {
             private readonly bool tailCall;
 
@@ -764,7 +818,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
         public static Expression<D> Lambda<D>(bool tailCall, Action<LambdaContext> body)
-            where D : MulticastDelegate
+            where D : Delegate
             => Build<Expression<D>, Action<LambdaContext>, LambdaScope<D>, LambdaScopeFactory<D>>(new LambdaScopeFactory<D>(tailCall), body);
 
         /// <summary>
@@ -775,7 +829,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
         public static Expression<D> Lambda<D>(bool tailCall, Action<LambdaContext, ParameterExpression> body)
-            where D : MulticastDelegate
+            where D : Delegate
             => Build<Expression<D>, Action<LambdaContext, ParameterExpression>, LambdaScope<D>, LambdaScopeFactory<D>>(new LambdaScopeFactory<D>(tailCall), body);
 
         /// <summary>
@@ -785,7 +839,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
         public static Expression<D> Lambda<D>(Action<LambdaContext> body)
-            where D : MulticastDelegate
+            where D : Delegate
             => Lambda<D>(false, body);
         
         /// <summary>
@@ -795,7 +849,27 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
         public static Expression<D> Lambda<D>(Action<LambdaContext, ParameterExpression> body)
-            where D : MulticastDelegate
+            where D : Delegate
             => Lambda<D>(false, body);
+        
+        private readonly struct AsyncLambdaScopeFactory<D>: ILexicalScopeFactory<AsyncLambdaScope<D>>
+            where D : Delegate
+        {
+            AsyncLambdaScope<D> ILexicalScopeFactory<AsyncLambdaScope<D>>.CreateScope(LexicalScope parent) => new AsyncLambdaScope<D>(parent);
+        }
+        
+        /// <summary>
+        /// Constructs async lambda function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        /// <seealso cref="AwaitExpression"/>
+        /// <seealso cref="AsyncResultExpression"/>
+        /// <seealso cref="AsyncLambdaScope{D}"/>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
+        public static Expression<D> AsyncLambda<D>(Action<LambdaContext> body)
+            where D : Delegate
+            => Build<Expression<D>, Action<LambdaContext>, AsyncLambdaScope<D>, AsyncLambdaScopeFactory<D>>(new AsyncLambdaScopeFactory<D>(), body);
     }
 }

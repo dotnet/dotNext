@@ -13,7 +13,7 @@ namespace DotNext.Metaprogramming
     /// <remarks>
     /// This expression turns async state machine into final state.
     /// </remarks>
-    /// <see cref="AsyncLambdaBuilder{D}"/>
+    /// <see cref="AsyncLambdaScope{D}"/>
     public sealed class AsyncResultExpression: Expression
     {
         private readonly TaskType taskType;

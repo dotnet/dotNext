@@ -899,10 +899,8 @@ namespace DotNext.Metaprogramming
         /// Creates conditional expression builder.
         /// </summary>
         /// <param name="test">Test expression.</param>
-        /// <param name="parent">Parent lexical scope.</param>
         /// <returns>Conditional expression builder.</returns>
-        public static ConditionalBuilder Condition(this Expression test, LexicalScope parent = null)
-            => new ConditionalBuilder(test, parent, false);
+        public static ConditionalBuilder Condition(this Expression test) => CodeGenerator.MakeConditional(test);
 
         /// <summary>
         /// Constructs a <see langword="try"/> block with a <see langword="finally"/> block without <see langword="catch"/> block.
@@ -968,10 +966,8 @@ namespace DotNext.Metaprogramming
         /// Creates structured exception handling statement builder.
         /// </summary>
         /// <param name="expression"><see langword="try"/> block.</param>
-        /// <param name="parent">The parent lexical scope.</param>
         /// <returns>Structured exception handling statement builder.</returns>
-        public static TryBuilder Try(this Expression expression, LexicalScope parent = null)
-            => new TryBuilder(expression, parent, false);
+        public static TryBuilder Try(this Expression expression) => CodeGenerator.MakeTry(expression);
 
         /// <summary>
         /// Constructs compound statement hat repeatedly refer to a single object or 
@@ -979,16 +975,10 @@ namespace DotNext.Metaprogramming
         /// of the object or structure.
         /// </summary>
         /// <param name="expression">An expression to be captured by scope.</param>
-        /// <param name="scope">The scope statements builder.</param>
-        /// <param name="parent">Parent lexical scope.</param>
+        /// <param name="body">The scope body.</param>
         /// <returns>Construct code block.</returns>
-        /// <see cref="WithBlockScope"/>
-        /// <see cref="WithBlockScope.ScopeVar"/>
-        public static Expression With(this Expression expression, Action<WithBlockScope> scope, LexicalScope parent = null)
-        {
-            using(var builder = new WithBlockScope(expression, parent))
-                return builder.Build<Expression, WithBlockScope>(scope);
-        }
+        public static Expression With(this Expression expression, Action<ParameterExpression> body)
+            => CodeGenerator.MakeWith(expression, body);
 
         /// <summary>
         /// Constructs <see langword="using"/> statement.
@@ -996,25 +986,35 @@ namespace DotNext.Metaprogramming
         /// <remarks>
         /// The equivalent code is <code>using(var obj = expression){ }</code>.
         /// </remarks>
-        /// <param name="expression">The expression representing disposable resource.</param>
-        /// <param name="scope">The body of <see langword="using"/> statement.</param>
-        /// <param name="parent">Optional parent scope.</param>
+        /// <param name="resource">The expression representing disposable resource.</param>
+        /// <param name="body">The body of <see langword="using"/> statement.</param>
         /// <returns><see langword="using"/> statement.</returns>
-        public static Expression Using(this Expression expression, Action<UsingBlockScope> scope, LexicalScope parent = null)
-        {
-            using(var builder = new UsingBlockScope(expression, parent))
-                return builder.Build<Expression, UsingBlockScope>(scope);
-        }
+        public static Expression Using(this Expression resource, Action<ParameterExpression> body)
+            => CodeGenerator.MakeUsing(resource, body);
+        
+        /// <summary>
+        /// Constructs <see langword="using"/> statement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>using(var obj = expression){ }</code>.
+        /// </remarks>
+        /// <param name="resource">The expression representing disposable resource.</param>
+        /// <param name="body">The body of <see langword="using"/> statement.</param>
+        /// <returns><see langword="using"/> statement.</returns>
+        public static Expression Using(this Expression resource, Action body)
+            => CodeGenerator.MakeUsing(resource, body);
 
         /// <summary>
         /// Creates selection statement builder that chooses a single <see langword="switch"/> section 
         /// to execute from a list of candidates based on a pattern match with the match expression.
         /// </summary>
         /// <param name="switchValue">The value to be matched with provided candidates.</param>
-        /// <param name="parent">Optional parent scope.</param>
         /// <returns><see langword="switch"/> statement builder.</returns>
-        public static SwitchBuilder Switch(this Expression switchValue, LexicalScope parent = null)
-            => new SwitchBuilder(switchValue, parent, false);
+        public static SwitchBuilder Switch(this Expression switchValue) => CodeGenerator.MakeSwitch(switchValue);
+
+        public static BlockExpression Lock(this Expression syncRoot, Action<ParameterExpression> body) => CodeGenerator.MakeLock(syncRoot, body); 
+
+        public static BlockExpression Lock(this Expression syncRoot, Action body) => CodeGenerator.MakeLock(syncRoot, body);
 
         /// <summary>
         /// Transforms async lambda function into read-to-compile function.
@@ -1086,11 +1086,9 @@ namespace DotNext.Metaprogramming
         private readonly bool treatAsStatement;
         private Type expressionType;
 
-        private protected ExpressionBuilder(ScopeBuilder builder, bool treatAsStatement)
-        {
-            this.treatAsStatement = treatAsStatement;
-            this.builder = builder;
-        }
+        private protected ExpressionBuilder(ScopeBuilder builder) => this.builder = builder;
+
+        internal event Action<E> Constructed;
 
         private protected Type ExpressionType => expressionType ?? typeof(void);
 
@@ -1122,8 +1120,7 @@ namespace DotNext.Metaprogramming
         public E End()
         {
             var expr = Build();
-            if (treatAsStatement)
-                CodeGenerator.CurrentScope.AddStatement(expr);
+            Constructed?.Invoke(expr);
             return expr;
         }
 

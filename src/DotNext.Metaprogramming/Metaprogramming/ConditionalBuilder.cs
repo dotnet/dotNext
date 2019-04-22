@@ -12,8 +12,8 @@ namespace DotNext.Metaprogramming
         private Expression ifTrue;
         private Expression ifFalse;
 
-        internal ConditionalBuilder(ScopeBuilder builder, Expression test, bool treatAsStatement)
-            : base(builder, treatAsStatement)
+        internal ConditionalBuilder(ScopeBuilder builder, Expression test)
+            : base(builder)
         {
             this.test = test;
             ifTrue = ifFalse = Expression.Empty();
