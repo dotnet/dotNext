@@ -17,4 +17,5 @@ VoidSwitchExpected=Switch-case expression must of type Void
 VoidLoopExpected=Loop expression should be of type Void
 LeavingFinallyClause=Control cannot leave the body of a finally clause
 FilterHasAwait=Filter of catch block cannot have await expressions
-OutOfLexicalScope=Statement construction method can be called within lexical scope only 
+OutOfLexicalScope=Statement construction method can be called within lexical scope only
+LoopNotAvailable=Continue/break transfer control must be placed inside of loop

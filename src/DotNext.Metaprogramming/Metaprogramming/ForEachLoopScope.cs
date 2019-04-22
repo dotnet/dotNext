@@ -7,13 +7,13 @@ namespace DotNext.Metaprogramming
     using static Reflection.DisposableType;
     using static Reflection.CollectionType;
 
-    internal sealed class ForEachLoopBuilder: LoopBuilderBase, IExpressionBuilder<BlockExpression>
+    internal sealed class ForEachLoopScope: LoopBuilderBase, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<MemberExpression, LoopCookie>>, ICompoundStatement<Action<MemberExpression>>
     {
         private readonly ParameterExpression enumeratorVar;
         private readonly BinaryExpression enumeratorAssignment;
         private readonly MethodCallExpression moveNextCall;
 
-        internal ForEachLoopBuilder(Expression collection, LexicalScope parent = null)
+        internal ForEachLoopScope(Expression collection, LexicalScope parent = null)
             : base(parent)
         {
             collection.Type.GetItemType(out var enumerable);
@@ -39,18 +39,26 @@ namespace DotNext.Metaprogramming
             enumeratorAssignment = Expression.Assign(enumeratorVar, getEnumerator);
         }
 
-        internal MemberExpression Element => Expression.Property(enumeratorVar, nameof(IEnumerator.Current));
+        private MemberExpression Element => Expression.Property(enumeratorVar, nameof(IEnumerator.Current));
 
         public new BlockExpression Build()
         {
-            Expression loopBody = moveNextCall.Condition(base.Build(), breakLabel.Goto());
+            Expression loopBody = moveNextCall.Condition(base.Build(), BreakLabel.Goto());
             var disposeMethod = enumeratorVar.Type.GetDisposeMethod();
-            loopBody = loopBody.Loop(breakLabel, continueLabel);
+            loopBody = loopBody.Loop(BreakLabel, ContinueLabel);
             var @finally = disposeMethod is null ?
                     (Expression)enumeratorVar.AssignDefault() :
                     Expression.Block(enumeratorVar.Call(disposeMethod), enumeratorVar.Assign(enumeratorVar.Type.AsDefault()));
             loopBody = loopBody.Finally(@finally);
             return Expression.Block(typeof(void), new[] { enumeratorVar }, enumeratorAssignment, loopBody);
         }
+
+        void ICompoundStatement<Action<MemberExpression, LoopCookie>>.ConstructBody(Action<MemberExpression, LoopCookie> body)
+        {
+            using (var cookie = new LoopCookie(this))
+                body(Element, cookie);
+        }
+
+        void ICompoundStatement<Action<MemberExpression>>.ConstructBody(Action<MemberExpression> body) => body(Element);
     }
 }

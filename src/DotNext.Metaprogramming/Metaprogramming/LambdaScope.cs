@@ -11,12 +11,11 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents lambda function builder.
     /// </summary>
-    public abstract class LambdaBuilder: LexicalScope
+    internal abstract class LambdaScope: LexicalScope, ICompoundStatement<Action<LambdaContext>>
     {
-        private protected LambdaBuilder(LexicalScope parent = null)
-            : base(parent)
-        {
-        }
+        private protected bool tailCall;
+
+        private protected LambdaScope(LexicalScope parent, bool tailCall) : base(parent) => this.tailCall = tailCall;
 
         private protected IReadOnlyList<ParameterExpression> GetParameters(System.Reflection.ParameterInfo[] parameters)
             =>  Array.ConvertAll(parameters, parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
@@ -42,47 +41,28 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public abstract IReadOnlyList<ParameterExpression> Parameters { get; }
 
-        private protected abstract LambdaExpression Build(Expression body, bool tailCall);
+        internal abstract Expression Return(Expression result);
 
-        internal sealed override Expression Build() => Build(base.Build(), TailCall);
-
-        internal abstract Expression Return(Expression result, bool addAsStatement);
-
-        internal Expression Return(bool addAsStatement) => Return(ReturnType.AsDefault(), addAsStatement);
-
-        /// <summary>
-        /// Constructs <see langword="return"/> instruction to return from
-        /// this lambda function having non-<see langword="void"/> return type.
-        /// </summary>
-        /// <param name="result">The value to be returned from the lambda function.</param>
-        public sealed override void Return(UniversalExpression result) => Return(result, true);
-
-        /// <summary>
-        /// Constructs <see langword="return"/> instruction to return from
-        /// underlying lambda function having <see langword="void"/> return type.
-        /// </summary>
-        public sealed override void Return() => Return(true);
-
-        /// <summary>
-        /// <see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.
-        /// </summary>
-        private protected bool TailCall { private get; set; }
-       
+        void ICompoundStatement<Action<LambdaContext>>.ConstructBody(Action<LambdaContext> body)
+        {
+            using (var context = new LambdaContext(this))
+                body(context);
+        }
     }
 
     /// <summary>
     /// Represents lambda function builder.
     /// </summary>
     /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
-    public sealed class LambdaBuilder<D>: LambdaBuilder, IExpressionBuilder<Expression<D>>
+    internal sealed class LambdaScope<D>: LambdaScope, IExpressionBuilder<Expression<D>>
         where D: Delegate
     {
         private ParameterExpression recursion;
         private ParameterExpression lambdaResult;
         private LabelTarget returnLabel;
 
-        internal LambdaBuilder(LexicalScope parent = null)
-            : base(parent)
+        internal LambdaScope(LexicalScope parent = null, bool tailCall = false)
+            : base(parent, tailCall)
         {
             if (typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
@@ -127,35 +107,24 @@ namespace DotNext.Metaprogramming
                 if (ReturnType == typeof(void))
                     return null;
                 else if (lambdaResult is null)
-                    DeclareVariable(lambdaResult = Expression.Variable(ReturnType, NextName("lambdaResult_")));
+                    DeclareVariable(lambdaResult = Expression.Variable(ReturnType, "result"));
                 return lambdaResult;
             }
         }
 
-        /// <summary>
-        /// Sets body of lambda expression as single expression.
-        /// </summary>
-        public sealed override Expression Body
-        {
-            set
-            {
-                returnLabel = null;
-                base.Body = value;
-            }
-        }
-
-        internal override Expression Return(Expression result, bool addAsStatement)
+        internal override Expression Return(Expression result)
         {
             if (returnLabel is null)
                 returnLabel = Expression.Label("leave");
+            if (result is null)
+                result = ReturnType.AsDefault();
             result = ReturnType == typeof(void) ? (Expression)returnLabel.Return() : Expression.Block(Expression.Assign(Result, result), returnLabel.Return());
-            if(addAsStatement)
-                AddStatement(result);
             return result;
         }
 
-        private protected override LambdaExpression Build(Expression body, bool tailCall)
+        public Expression<D> Build()
         {
+            var body = base.Build();
             var instructions = new LinkedList<Expression>();
             IEnumerable<ParameterExpression> locals;
             if (body is BlockExpression block)
@@ -177,50 +146,18 @@ namespace DotNext.Metaprogramming
             body = Expression.Block(locals, instructions);
             //build lambda expression
             if (!(recursion is null))
-                body = Expression.Block(Sequence.Singleton(recursion), 
-                    Expression.Assign(recursion, Expression.Lambda<D>(body, tailCall, Parameters)), 
+                body = Expression.Block(Sequence.Singleton(recursion),
+                    Expression.Assign(recursion, Expression.Lambda<D>(body, tailCall, Parameters)),
                     Expression.Invoke(recursion, Parameters));
             return Expression.Lambda<D>(body, tailCall, Parameters);
         }
 
-        Expression<D> IExpressionBuilder<Expression<D>>.Build() => (Expression<D>)Build();
-
-        /// <summary>
-        /// Releases all resources associated with this builder.
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/>, if this method is called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer.</param>
-        protected override void Dispose(bool disposing)
+        public override void Dispose()
         {
-            if (disposing)
-            {
-                lambdaResult = null;
-                returnLabel = null;
-                recursion = null;
-            }
-            base.Dispose(disposing);
+            lambdaResult = null;
+            returnLabel = null;
+            recursion = null;
+            base.Dispose();
         }
-
-        /// <summary>
-        /// Constructs lambda expression from expression tree.
-        /// </summary>
-        /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
-        /// <param name="lambdaBody">Lambda expression builder.</param>
-        /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Build(bool tailCall, Action<LambdaBuilder<D>> lambdaBody)
-        {
-            using (var builder = new LambdaBuilder<D>() { TailCall = tailCall })
-            {
-                lambdaBody(builder);
-                return ((IExpressionBuilder<Expression<D>>)builder).Build();
-            }
-        }
-
-        /// <summary>
-        /// Constructs lambda expression from expression tree.
-        /// </summary>
-        /// <param name="lambdaBody">Lambda expression builder.</param>
-        /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Build(Action<LambdaBuilder<D>> lambdaBody)
-            => Build(false, lambdaBody);
     }
 }

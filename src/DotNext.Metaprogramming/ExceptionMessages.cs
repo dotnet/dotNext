@@ -47,5 +47,7 @@ namespace DotNext
         internal static string FilterHasAwait => resourceManager.GetString("FilterHasAwait");
 
         internal static string OutOfLexicalScope => resourceManager.GetString("OutOfLexicalScope");
+
+        internal static string LoopNotAvailable => resourceManager.GetString("LoopNotAvailable");
     }
 }

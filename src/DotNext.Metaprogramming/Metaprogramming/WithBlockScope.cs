@@ -1,29 +1,32 @@
+using System;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class WithBlockBuilder: ScopeBuilder, IExpressionBuilder<Expression>
+    internal sealed class WithBlockScope: LexicalScope, IExpressionBuilder<Expression>, ICompoundStatement<Action<ParameterExpression>>
     {
-        internal readonly ParameterExpression Variable;
+        private readonly ParameterExpression variable;
         private readonly BinaryExpression assignment;
 
-        internal WithBlockBuilder(Expression expression, LexicalScope parent = null)
+        internal WithBlockScope(Expression expression, LexicalScope parent = null)
             : base(parent)
         {
             if(expression is ParameterExpression variable)
-                Variable = variable;
+                this.variable = variable;
             else
             {
-                Variable = Expression.Variable(expression.Type, "scopeVar");
-                assignment = Expression.Assign(Variable, expression);
+                this.variable = Expression.Variable(expression.Type, "scopeVar");
+                assignment = Expression.Assign(this.variable, expression);
             }
         }
+
+        void ICompoundStatement<Action<ParameterExpression>>.ConstructBody(Action<ParameterExpression> body) => body(variable);
 
         public new Expression Build()
         {
             var body = base.Build();
             if (!(assignment is null))
-                body = Expression.Block(typeof(void), new[] { Variable }, assignment, body);
+                body = Expression.Block(typeof(void), new[] { variable }, assignment, body);
             return body;
         }
     }

@@ -12,15 +12,6 @@ namespace DotNext.Metaprogramming
     /// </summary>
     public static class ExpressionBuilder
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static E Build<E, B>(this B builder, Action<B> scope)
-            where E : Expression
-            where B: class, IExpressionBuilder<E>
-        {
-            scope(builder);
-            return builder.Build();
-        }
-
         /// <summary>
         /// Constructs unary plus expression.
         /// </summary>
@@ -991,12 +982,12 @@ namespace DotNext.Metaprogramming
         /// <param name="scope">The scope statements builder.</param>
         /// <param name="parent">Parent lexical scope.</param>
         /// <returns>Construct code block.</returns>
-        /// <see cref="WithBlockBuilder"/>
-        /// <see cref="WithBlockBuilder.ScopeVar"/>
-        public static Expression With(this Expression expression, Action<WithBlockBuilder> scope, LexicalScope parent = null)
+        /// <see cref="WithBlockScope"/>
+        /// <see cref="WithBlockScope.ScopeVar"/>
+        public static Expression With(this Expression expression, Action<WithBlockScope> scope, LexicalScope parent = null)
         {
-            using(var builder = new WithBlockBuilder(expression, parent))
-                return builder.Build<Expression, WithBlockBuilder>(scope);
+            using(var builder = new WithBlockScope(expression, parent))
+                return builder.Build<Expression, WithBlockScope>(scope);
         }
 
         /// <summary>
@@ -1009,10 +1000,10 @@ namespace DotNext.Metaprogramming
         /// <param name="scope">The body of <see langword="using"/> statement.</param>
         /// <param name="parent">Optional parent scope.</param>
         /// <returns><see langword="using"/> statement.</returns>
-        public static Expression Using(this Expression expression, Action<UsingBlockBuilder> scope, LexicalScope parent = null)
+        public static Expression Using(this Expression expression, Action<UsingBlockScope> scope, LexicalScope parent = null)
         {
-            using(var builder = new UsingBlockBuilder(expression, parent))
-                return builder.Build<Expression, UsingBlockBuilder>(scope);
+            using(var builder = new UsingBlockScope(expression, parent))
+                return builder.Build<Expression, UsingBlockScope>(scope);
         }
 
         /// <summary>

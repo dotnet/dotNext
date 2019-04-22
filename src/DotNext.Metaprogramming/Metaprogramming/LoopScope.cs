@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
@@ -8,13 +9,19 @@ namespace DotNext.Metaprogramming
     /// <remarks>
     /// This loop is equvalent to <c>while(true){ }</c>
     /// </remarks>
-    internal sealed class LoopBuilder : LoopBuilderBase, IExpressionBuilder<LoopExpression>
+    internal sealed class LoopScope : LoopBuilderBase, IExpressionBuilder<LoopExpression>, ICompoundStatement<Action<LoopCookie>>
     {
-        internal LoopBuilder(LexicalScope parent)
+        internal LoopScope(LexicalScope parent)
             : base(parent)
         {
         }
 
-        public new LoopExpression Build() => base.Build().Loop(breakLabel, continueLabel);
+        public new LoopExpression Build() => base.Build().Loop(BreakLabel, ContinueLabel);
+
+        void ICompoundStatement<Action<LoopCookie>>.ConstructBody(Action<LoopCookie> body)
+        {
+            using (var cookie = new LoopCookie(this))
+                body(cookie);
+        }
     }
 }

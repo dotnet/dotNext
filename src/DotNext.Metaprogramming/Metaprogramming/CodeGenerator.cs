@@ -13,14 +13,58 @@ namespace DotNext.Metaprogramming
         [ThreadStatic]
         private static LexicalScope current;
 
-        private static S PushScope<S>(Func<LexicalScope, S> factory) where S : LexicalScope
+        private interface ILexicalScopeFactory<out S>
+            where S : LexicalScope
         {
-            var scope = factory(current);
+            S CreateScope(LexicalScope parent);
+        }
+
+        private static S PushScope<F, S>(F factory)
+            where S : LexicalScope
+            where F : struct, ILexicalScopeFactory<S>
+        {
+            var scope = factory.CreateScope(current);
             current = scope;
             return scope;
         }
 
         private static void PopScope() => current = current?.Parent;
+
+        private static S FindScope<S>()
+            where S : LexicalScope
+        {
+            for (var current = CodeGenerator.current; !(current is null); current = current?.Parent)
+                if (current is S target)
+                    return target;
+            return null;
+        }
+
+        private static void AddStatement<D, S, F>(F factory, D body)
+            where D : Delegate
+            where S : LexicalScope, IExpressionBuilder<Expression>, ICompoundStatement<D>
+            where F : struct, ILexicalScopeFactory<S>
+            => CurrentScope.AddStatement(Build<Expression, D, S, F>(factory, body));
+
+        private static E Build<E, D, S, F>(F factory, D body)
+            where D : Delegate
+            where E : Expression
+            where S : LexicalScope, IExpressionBuilder<E>, ICompoundStatement<D>
+            where F : struct, ILexicalScopeFactory<S>
+        {
+            var scope = PushScope<F, S>(factory);
+            E statement;
+            try
+            {
+                scope.ConstructBody(body);
+                statement = scope.Build();
+            }
+            finally
+            {
+                PopScope();
+                scope.Dispose();
+            }
+            return statement;
+        }
 
         /// <summary>
         /// Gets curremt lexical scope.
@@ -300,20 +344,23 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Label(LabelTarget target) => CurrentScope.AddStatement(Expression.Label(target));
 
+        private static void Goto(LabelTarget target, Expression value, GotoExpressionKind kind)
+            => CurrentScope.AddStatement(Expression.MakeGoto(kind, target, value, value?.Type ?? typeof(void)));
+
         /// <summary>
         /// Adds unconditional control transfer statement to this scope.
         /// </summary>
         /// <param name="target">The label reference.</param>
         /// <param name="value">The value to be associated with the control transfer.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Goto(LabelTarget target, Expression value) => CurrentScope.AddStatement(Expression.Goto(target, value));
+        public static void Goto(LabelTarget target, Expression value) => Goto(target, value, GotoExpressionKind.Goto);
 
         /// <summary>
         /// Adds unconditional control transfer statement to this scope.
         /// </summary>
         /// <param name="target">The label reference.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Goto(LabelTarget target) => Goto(target, default);
+        public static void Goto(LabelTarget target) => Goto(target, null);
 
         /// <summary>
         /// Declares local variable in the current lexical scope.
@@ -389,37 +436,21 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void IfThenElse(Expression test, Action ifTrue, Action ifFalse)
             => If(test).Then(ifTrue).Else(ifFalse).End();
-        
-        private static void AddStatement<S>(Func<LexicalScope, S> factory, Action<S> scopeHandler)
-            where S : LexicalScope, IExpressionBuilder<Expression>
-            => CurrentScope.AddStatement(Build<S, Expression>(factory, scopeHandler));
 
-        private static E Build<S, E>(Func<LexicalScope, S> factory,  Action<S> scopeHandler)
-            where E: Expression
-            where S : LexicalScope, IExpressionBuilder<E>
+        private readonly struct WhileLoopFactory: ILexicalScopeFactory<WhileLoopScope>
         {
-            var scope = PushScope(factory);
-            E statement;
-            try
+            private readonly bool checkConditionFirst;
+            private readonly Expression test;
+
+            internal WhileLoopFactory(Expression test, bool checkConditionFirst)
             {
-                scopeHandler(scope);
-                statement = scope.Build();
+                this.checkConditionFirst = checkConditionFirst;
+                this.test = test;
             }
-            finally
-            {
-                PopScope();
-                scope.Dispose();
-            }
-            return statement;
+
+            WhileLoopScope ILexicalScopeFactory<WhileLoopScope>.CreateScope(LexicalScope parent) => new WhileLoopScope(test, parent, checkConditionFirst);
         }
 
-        private static void While(Expression test, bool checkConditionFirst, Action<LoopCookie> body)
-            => AddStatement(parent => new WhileLoopBuider(test, parent, checkConditionFirst), scope => 
-            {
-                using(var cookie = new LoopCookie(scope))
-                    body(cookie);
-            });
-        
         /// <summary>
         /// Adds <see langword="while"/> loop statement.
         /// </summary>
@@ -427,8 +458,8 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void While(Expression test, Action<LoopCookie> body)
-            => While(test, true, body);
-        
+            => AddStatement<Action<LoopCookie>, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, true), body);
+
         /// <summary>
         /// Adds <see langword="while"/> loop statement.
         /// </summary>
@@ -436,8 +467,8 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void While(Expression test, Action body)
-            => While(test, body.Parametrize<LoopCookie>());
-        
+            => AddStatement<Action, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, true), body);
+
         /// <summary>
         /// Adds <c>do{ } while(condition);</c> loop statement.
         /// </summary>
@@ -445,8 +476,8 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void DoWhile(Expression test, Action<LoopCookie> body)
-            => While(test, false, body);
-        
+            => AddStatement<Action<LoopCookie>, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, false), body);
+
         /// <summary>
         /// Adds <c>do{ } while(condition);</c> loop statement.
         /// </summary>
@@ -454,7 +485,16 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void DoWhile(Expression test, Action body)
-            => DoWhile(test, body.Parametrize<LoopCookie>());
+            => AddStatement<Action, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, false), body);
+        
+        private readonly struct ForEachLoopScopeFactory: ILexicalScopeFactory<ForEachLoopScope>
+        {
+            private readonly Expression collection;
+
+            internal ForEachLoopScopeFactory(Expression collection) => this.collection = collection;
+
+            ForEachLoopScope ILexicalScopeFactory<ForEachLoopScope>.CreateScope(LexicalScope parent) => new ForEachLoopScope(collection, parent);
+        }
 
         /// <summary>
         /// Adds <see langword="foreach"/> loop statement.
@@ -464,11 +504,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression, LoopCookie> body)
-            => AddStatement(parent => new ForEachLoopBuilder(collection, parent), scope => 
-            {
-                using(var cookie = new LoopCookie(scope))
-                    body(scope.Element, cookie);
-            });
+            => AddStatement<Action<MemberExpression, LoopCookie>, ForEachLoopScope, ForEachLoopScopeFactory>(new ForEachLoopScopeFactory(), body);
         
         /// <summary>
         /// Adds <see langword="foreach"/> loop statement.
@@ -479,27 +515,35 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression> body)
             => ForEach(collection, body.Parametrize<MemberExpression, LoopCookie>());
-        
-        /// <summary>
-        /// Adds <see langword="for"/> loop statement.
-        /// </summary>
-        /// <remarks>
-        /// This builder constructs the statement equivalent to <c>for(var i = initializer; condition; iter){ body; }</c>
-        /// </remarks>
-        /// <param name="initializer">Loop variable initialization expression.</param>
-        /// <param name="condition">Loop continuation condition.</param>
-        /// <param name="iteration">Iteration statements.</param>
-        /// <param name="body">Loop body.</param>
-        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
-        public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action<LoopCookie> body)
-            => AddStatement(parent => new ForLoopBuilder(initializer, condition, parent), scope => 
+
+        private readonly struct ForLoopScopeFactory : ILexicalScopeFactory<ForLoopScope>
+        {
+            private readonly Expression initializer;
+            private readonly Func<ParameterExpression, Expression> condition;
+
+            internal ForLoopScopeFactory(Expression initializer, Func<ParameterExpression, Expression> condition)
             {
-                using(var cookie = new LoopCookie(scope))
-                    body(cookie);
-                scope.StartIterationCode();
-                iteration(scope.LoopVar);
-            });
+                this.initializer = initializer;
+                this.condition = condition;
+            }
+
+            ForLoopScope ILexicalScopeFactory<ForLoopScope>.CreateScope(LexicalScope parent) => new ForLoopScope(initializer, condition, parent);
+        }
+
+        /// <summary>
+        /// Adds <see langword="for"/> loop statement.
+        /// </summary>
+        /// <remarks>
+        /// This builder constructs the statement equivalent to <c>for(var i = initializer; condition; iter){ body; }</c>
+        /// </remarks>
+        /// <param name="initializer">Loop variable initialization expression.</param>
+        /// <param name="condition">Loop continuation condition.</param>
+        /// <param name="iteration">Iteration statements.</param>
+        /// <param name="body">Loop body.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
+        public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopCookie> body)
+            => AddStatement<Action<ForLoopScope>, ForLoopScope, ForLoopScopeFactory>(new ForLoopScopeFactory(initializer, condition), scope => scope.ConstructBody(body, iteration));
         
         /// <summary>
         /// Adds <see langword="for"/> loop statement.
@@ -513,9 +557,14 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
-        public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action body)
-            => For(initializer, condition, iteration, body.Parametrize<LoopCookie>());
-        
+        public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action<ParameterExpression> body)
+            => AddStatement<Action<ForLoopScope>, ForLoopScope, ForLoopScopeFactory>(new ForLoopScopeFactory(initializer, condition), scope => scope.ConstructBody(body, iteration));
+
+        private readonly struct LoopScopeFactory : ILexicalScopeFactory<LoopScope>
+        {
+            LoopScope ILexicalScopeFactory<LoopScope>.CreateScope(LexicalScope parent) => new LoopScope(parent);
+        }
+
         /// <summary>
         /// Adds generic loop statement.
         /// </summary>
@@ -524,19 +573,15 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Loop(Action<LoopCookie> body) 
-            => AddStatement(parent => new LoopBuilder(parent), scope => 
-            {
-                using(var cookie = new LoopCookie(scope))
-                    body(cookie);
-            });
-        
+        public static void Loop(Action<LoopCookie> body)
+            => AddStatement<Action<LoopCookie>, LoopScope, LoopScopeFactory>(new LoopScopeFactory(), body);
+
         /// <summary>
         /// Adds generic loop statement.
         /// </summary>
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Loop(Action body) => Loop(body.Parametrize<LoopCookie>());
+        public static void Loop(Action body) => AddStatement<Action, LoopScope, LoopScopeFactory>(new LoopScopeFactory(), body);
 
         /// <summary>
         /// Adds <see langword="throw"/> statement to the compound statement.
@@ -553,6 +598,20 @@ namespace DotNext.Metaprogramming
         public static void Throw<E>() where E : Exception, new() => Throw(Expression.New(typeof(E).GetConstructor(Array.Empty<Type>())));
 
         /// <summary>
+        /// Adds re-throw expression into this scope if it or its parent is <see cref="CatchBuilder"/>.
+        /// </summary>
+        public static void Rethrow() => CurrentScope.AddStatement(Expression.Rethrow());
+
+        private readonly struct UsingBlockScopeFactory: ILexicalScopeFactory<UsingBlockScope>
+        {
+            private readonly Expression resource;
+
+            internal UsingBlockScopeFactory(Expression resource) => this.resource = resource;
+
+            UsingBlockScope ILexicalScopeFactory<UsingBlockScope>.CreateScope(LexicalScope parent) => new UsingBlockScope(resource, parent);
+        }
+
+        /// <summary>
         /// Adds <see langword="using"/> statement.
         /// </summary>
         /// <param name="resource">The expression representing disposable resource.</param>
@@ -560,8 +619,8 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action<ParameterExpression> body)
-            => AddStatement(parent => new UsingBlockBuilder(resource, parent), scope => body(scope.Resource));
-        
+            => AddStatement<Action<ParameterExpression>, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(), body);
+
         /// <summary>
         /// Adds <see langword="using"/> statement.
         /// </summary>
@@ -570,28 +629,46 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action body)
-            => Using(resource, body.Parametrize<ParameterExpression>());
+            => AddStatement<Action, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(), body);
+        
+        private readonly struct LockScopeFactory: ILexicalScopeFactory<LockScope>
+        {
+            private readonly Expression syncRoot;
+
+            internal LockScopeFactory(Expression syncRoot) => this.syncRoot = syncRoot;
+
+            LockScope ILexicalScopeFactory<LockScope>.CreateScope(LexicalScope parent) => new LockScope(syncRoot, parent);
+        }
 
         /// <summary>
         /// Adds <see langword="lock"/> statement.
         /// </summary>
         /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
         /// <param name="body">Synchronized scope of code.</param>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
         public static void Lock(Expression syncRoot, Action<ParameterExpression> body)
-            => AddStatement(parent => new LockBuilder(syncRoot, parent), scope => body(scope.SyncRoot));
-        
+            => AddStatement<Action<ParameterExpression>, LockScope, LockScopeFactory>(new LockScopeFactory(syncRoot), body);
+
         /// <summary>
         /// Adds <see langword="lock"/> statement.
         /// </summary>
         /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
         /// <param name="body">Synchronized scope of code.</param>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
         public static void Lock(Expression syncRoot, Action body)
-            => Lock(syncRoot, body.Parametrize<ParameterExpression>());
-        
+            => AddStatement<Action, LockScope, LockScopeFactory>(new LockScopeFactory(syncRoot), body);
+
+        private readonly struct WithBlockScopeFactory: ILexicalScopeFactory<WithBlockScope>
+        {
+            private readonly Expression expression;
+
+            internal WithBlockScopeFactory(Expression expression) => this.expression = expression;
+
+            WithBlockScope ILexicalScopeFactory<WithBlockScope>.CreateScope(LexicalScope parent) => new WithBlockScope(expression, parent);
+        }
+
         /// <summary>
         /// Constructs compound statement hat repeatedly refer to a single object or 
         /// structure so that the statements can use a simplified syntax when accessing members 
@@ -599,9 +676,121 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="expression">The implicitly referenced object.</param>
         /// <param name="body">The statement body.</param>
-        /// <exception cref="InvalidOperationException">Attempts to call this method for the outer scope from the inner scope.</exception>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
-        public static void With(UniversalExpression expression, Action<ParameterExpression> body)
-            => AddStatement(parent => new WithBlockBuilder(expression, parent), scope => body(scope.Variable));
+        public static void With(Expression expression, Action<ParameterExpression> body)
+            => AddStatement<Action<ParameterExpression>, WithBlockScope, WithBlockScopeFactory>(new WithBlockScopeFactory(expression), body);
+
+        private static LabelTarget ContinueLabel(LoopBuilderBase scope) => scope.ContinueLabel;
+
+        private static LabelTarget BreakLabel(LoopBuilderBase scope) => scope.BreakLabel;
+
+        private static void Goto(LoopCookie loop, Func<LoopBuilderBase, LabelTarget> labelFactory, GotoExpressionKind kind)
+        {
+            if (loop.TryGetScope(out var scope))
+                Goto(labelFactory(scope), null, kind);
+            else
+                throw new ArgumentException(ExceptionMessages.LoopNotAvailable, nameof(loop));
+        }
+
+        private static void Goto(Func<LoopBuilderBase, LabelTarget> labelFactory, GotoExpressionKind kind)
+        {
+            var loop = FindScope<LoopBuilderBase>() ?? throw new InvalidOperationException(ExceptionMessages.LoopNotAvailable);
+            Goto(labelFactory(loop), null, kind);
+        }
+
+        /// <summary>
+        /// Restarts execution of the loop.
+        /// </summary>
+        /// <param name="loop">The loop reference.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Continue(LoopCookie loop) => Goto(loop, ContinueLabel, GotoExpressionKind.Continue);
+
+        /// <summary>
+        /// Restarts execution of the entire loop.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Continue() => Goto(ContinueLabel, GotoExpressionKind.Continue);
+
+        /// <summary>
+        /// Stops execution the specified loop.
+        /// </summary>
+        /// <param name="loop">The loop reference.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Break(LoopCookie loop) => Goto(loop, BreakLabel, GotoExpressionKind.Break);
+
+        /// <summary>
+        /// Stops execution of the entire loop.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void Break() => Goto(BreakLabel, GotoExpressionKind.Break);
+
+        /// <summary>
+        /// Adds <see langword="return"/> instruction to return from
+        /// underlying lambda function having non-<see langword="void"/>
+        /// return type.
+        /// </summary>
+        /// <param name="result">Optional value to be returned from the lambda function.</param>
+        /// <exception cref="InvalidOperationException">This method is not called from within body of lambda function.</exception>
+        public static void Return(Expression result = null)
+        {
+            var lambda = FindScope<LambdaScope>() ?? throw new InvalidOperationException(ExceptionMessages.CallFromLambdaExpected);
+            CurrentScope.AddStatement(lambda.Return(result));
+        }
+
+        private readonly struct LambdaScopeFactory<D>: ILexicalScopeFactory<LambdaScope<D>>
+            where D : MulticastDelegate
+        {
+            private readonly bool tailCall;
+
+            internal LambdaScopeFactory(bool tailCall) => this.tailCall = tailCall;
+
+            LambdaScope<D> ILexicalScopeFactory<LambdaScope<D>>.CreateScope(LexicalScope parent) => new LambdaScope<D>(parent, tailCall);
+        }
+
+        /// <summary>
+        /// Constructs lamdba function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        public static Expression<D> Lambda<D>(bool tailCall, Action<LambdaContext> body)
+            where D : MulticastDelegate
+            => Build<Expression<D>, Action<LambdaContext>, LambdaScope<D>, LambdaScopeFactory<D>>(new LambdaScopeFactory<D>(tailCall), body);
+
+        /// <summary>
+        /// Constructs lamdba function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        public static Expression<D> Lambda<D>(bool tailCall, Action<LambdaContext, ParameterExpression> body)
+            where D : MulticastDelegate
+        {
+            var lambda = PushScope(parent => new LambdaScope<D>(parent, tailCall));
+            var context = new LambdaContext(lambda);
+            try
+            {
+                body(context, lambda.Result);
+                return lambda.Build();
+            }
+            finally
+            {
+                context.Dispose();
+                lambda.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Constructs lamdba function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        public static Expression<D> Lambda<D>(Action<IReadOnlyList<ParameterExpression>> body)
+            where D : MulticastDelegate
+            => Lambda<D>(false, body);
     }
 }

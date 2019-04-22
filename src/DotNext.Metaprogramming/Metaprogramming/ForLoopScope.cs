@@ -3,33 +3,42 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class ForLoopBuilder: LoopBuilderBase, IExpressionBuilder<BlockExpression>
+    internal sealed class ForLoopScope: LoopBuilderBase, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<ForLoopScope>>
     {
         private readonly Expression condition;
-        internal readonly ParameterExpression LoopVar;
+        private readonly ParameterExpression loopVar;
         private readonly BinaryExpression assignment;
-        private bool continueLabelInstalled;
-        
-        internal ForLoopBuilder(Expression initialization, Func<ParameterExpression, Expression> condition, LexicalScope parent = null)
+
+        internal ForLoopScope(Expression initialization, Func<ParameterExpression, Expression> condition, LexicalScope parent = null)
             : base(parent)
         {
-            LoopVar = Expression.Variable(initialization.Type, "loop_var");
-            assignment = Expression.Assign(LoopVar, initialization);
-            this.condition = condition(LoopVar);
+            loopVar = Expression.Variable(initialization.Type, "loop_var");
+            assignment = Expression.Assign(loopVar, initialization);
+            this.condition = condition(loopVar);
         }
 
-        internal void StartIterationCode()
+        internal void ConstructBody(Action<ParameterExpression, LoopCookie> body, Action<ParameterExpression> iteration)
         {
-            if(continueLabelInstalled)
-                throw new InvalidOperationException();
-            AddStatement(Expression.Label(continueLabel));
+            using (var cookie = new LoopCookie(this))
+                body(loopVar, cookie);
+            AddStatement(Expression.Label(ContinueLabel));
+            iteration(loopVar);
+        }
+
+        internal void ConstructBody(Action<ParameterExpression> body, Action<ParameterExpression> iteration)
+        {
+            body(loopVar);
+            AddStatement(Expression.Label(ContinueLabel));
+            iteration(loopVar);
         }
         
         public new BlockExpression Build()
         {
-            Expression body = Expression.Condition(condition, base.Build(), Expression.Goto(breakLabel), typeof(void));
-            body = continueLabelInstalled ? Expression.Loop(body, breakLabel) : Expression.Loop(body, breakLabel, continueLabel);
-            return Expression.Block(typeof(void), new[] { LoopVar }, assignment, body);
+            Expression body = Expression.Condition(condition, base.Build(), Expression.Goto(BreakLabel), typeof(void));
+            body = Expression.Loop(body, BreakLabel);
+            return Expression.Block(typeof(void), new[] { loopVar }, assignment, body);
         }
+
+        void ICompoundStatement<Action<ForLoopScope>>.ConstructBody(Action<ForLoopScope> body) => body(this);
     }
 }

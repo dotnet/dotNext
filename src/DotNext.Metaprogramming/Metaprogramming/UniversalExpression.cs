@@ -558,9 +558,9 @@ namespace DotNext.Metaprogramming
         /// <param name="scope">The scope statements builder.</param>
         /// <param name="parent">Parent lexical scope.</param>
         /// <returns>Construct code block.</returns>
-        /// <see cref="WithBlockBuilder"/>
-        /// <see cref="WithBlockBuilder.ScopeVar"/>
-        public UniversalExpression With(Action<WithBlockBuilder> scope, LexicalScope parent = null) => expression.With(scope, parent);
+        /// <see cref="WithBlockScope"/>
+        /// <see cref="WithBlockScope.ScopeVar"/>
+        public UniversalExpression With(Action<WithBlockScope> scope, LexicalScope parent = null) => expression.With(scope, parent);
 
         /// <summary>
         /// Constructs <see langword="using"/> statement.
@@ -571,7 +571,7 @@ namespace DotNext.Metaprogramming
         /// <param name="scope">The body of <see langword="using"/> statement.</param>
         /// <param name="parent">Optional parent scope.</param>
         /// <returns><see langword="using"/> statement.</returns>
-        public UniversalExpression Using(Action<UsingBlockBuilder> scope, LexicalScope parent)
+        public UniversalExpression Using(Action<UsingBlockScope> scope, LexicalScope parent)
             => expression.Using(scope, parent);
 
         /// <summary>

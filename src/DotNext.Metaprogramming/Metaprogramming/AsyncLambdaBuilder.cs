@@ -17,7 +17,7 @@ namespace DotNext.Metaprogramming
     /// <typeparam name="D">Type of delegate representing lambda signature.</typeparam>
     /// <see cref="Task"/>
     /// <see cref="Task{TResult}"/>
-    public sealed class AsyncLambdaBuilder<D>: LambdaBuilder, IExpressionBuilder<Expression<D>>
+    internal sealed class AsyncLambdaBuilder<D>: LambdaScope, IExpressionBuilder<Expression<D>>
         where D: Delegate
     {
         private ParameterExpression recursion;
