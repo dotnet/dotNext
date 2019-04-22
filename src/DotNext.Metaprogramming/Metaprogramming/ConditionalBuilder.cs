@@ -12,8 +12,8 @@ namespace DotNext.Metaprogramming
         private Expression ifTrue;
         private Expression ifFalse;
 
-        internal ConditionalBuilder(Expression test, bool treatAsStatement)
-            : base(treatAsStatement)
+        internal ConditionalBuilder(ScopeBuilder builder, Expression test, bool treatAsStatement)
+            : base(builder, treatAsStatement)
         {
             this.test = test;
             ifTrue = ifFalse = Expression.Empty();
@@ -24,22 +24,14 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="branch">Branch builder.</param>
         /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Then(Action branch)
-        {
-            using (var scope = new ScopeBuilder())
-            {
-                branch();
-                ifTrue = scope.Build();
-            }
-            return this;
-        }
+        public ConditionalBuilder Then(Action branch) => Then(builder(branch));
 
         /// <summary>
         /// Constructs positive branch of the conditional expression.
         /// </summary>
         /// <param name="branch">An expression representing positive branch.</param>
         /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Then(UniversalExpression branch)
+        public ConditionalBuilder Then(Expression branch)
         {
             ifTrue = branch;
             return this;
@@ -50,22 +42,14 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="branch">Branch builder.</param>
         /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Else(Action branch)
-        {
-            using (var scope = new ScopeBuilder())
-            {
-                branch();
-                ifFalse = scope.Build();
-            }
-            return this;
-        }
+        public ConditionalBuilder Else(Action branch) => Else(builder(branch));
 
         /// <summary>
         /// Constructs negative branch of the conditional expression.
         /// </summary>
         /// <param name="branch">An expression representing negative branch.</param>
         /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Else(UniversalExpression branch)
+        public ConditionalBuilder Else(Expression branch)
         {
             ifFalse = branch;
             return this;

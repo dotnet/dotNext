@@ -416,7 +416,7 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Test expression.</param>
         /// <returns>Conditional statement builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static ConditionalBuilder If(Expression test) => new ConditionalBuilder(test, true);
+        public static ConditionalBuilder If(Expression test) => new ConditionalBuilder(MakeScope, test, true);
 
         /// <summary>
         /// Adds if-then statement to this scope.
@@ -681,6 +681,14 @@ namespace DotNext.Metaprogramming
         public static void With(Expression expression, Action<ParameterExpression> body)
             => AddStatement<Action<ParameterExpression>, WithBlockScope, WithBlockScopeFactory>(new WithBlockScopeFactory(expression), body);
 
+        private readonly struct LocalScopeFactory: ILexicalScopeFactory<LocalScope>
+        {
+            LocalScope ILexicalScopeFactory<LocalScope>.CreateScope(LexicalScope parent) => new LocalScope(parent);
+        }
+        
+        private static Expression MakeScope(Action body)
+            => Build<Expression, Action, LocalScope, LocalScopeFactory>(new LocalScopeFactory(), body);
+
         private static LabelTarget ContinueLabel(LoopBuilderBase scope) => scope.ContinueLabel;
 
         private static LabelTarget BreakLabel(LoopBuilderBase scope) => scope.BreakLabel;
@@ -768,20 +776,7 @@ namespace DotNext.Metaprogramming
         /// <returns>Constructed lambda expression.</returns>
         public static Expression<D> Lambda<D>(bool tailCall, Action<LambdaContext, ParameterExpression> body)
             where D : MulticastDelegate
-        {
-            var lambda = PushScope(parent => new LambdaScope<D>(parent, tailCall));
-            var context = new LambdaContext(lambda);
-            try
-            {
-                body(context, lambda.Result);
-                return lambda.Build();
-            }
-            finally
-            {
-                context.Dispose();
-                lambda.Dispose();
-            }
-        }
+            => Build<Expression<D>, Action<LambdaContext, ParameterExpression>, LambdaScope<D>, LambdaScopeFactory<D>>(new LambdaScopeFactory<D>(tailCall), body);
 
         /// <summary>
         /// Constructs lamdba function capturing the current lexical scope.
@@ -789,7 +784,17 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(Action<IReadOnlyList<ParameterExpression>> body)
+        public static Expression<D> Lambda<D>(Action<LambdaContext> body)
+            where D : MulticastDelegate
+            => Lambda<D>(false, body);
+        
+        /// <summary>
+        /// Constructs lamdba function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        public static Expression<D> Lambda<D>(Action<LambdaContext, ParameterExpression> body)
             where D : MulticastDelegate
             => Lambda<D>(false, body);
     }

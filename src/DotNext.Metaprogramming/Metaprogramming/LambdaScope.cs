@@ -26,15 +26,10 @@ namespace DotNext.Metaprogramming
         /// <remarks>
         /// This property can be used to make recursive calls.
         /// </remarks>
-        public abstract Expression Self
+        internal abstract Expression Self
         {
             get;
         }
-
-        /// <summary>
-        /// Gets return type of the lambda function.
-        /// </summary>
-        public abstract Type ReturnType { get; }
 
         /// <summary>
         /// Gets lambda parameters.
@@ -54,12 +49,14 @@ namespace DotNext.Metaprogramming
     /// Represents lambda function builder.
     /// </summary>
     /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
-    internal sealed class LambdaScope<D>: LambdaScope, IExpressionBuilder<Expression<D>>
+    internal sealed class LambdaScope<D>: LambdaScope, IExpressionBuilder<Expression<D>>, ICompoundStatement<Action<LambdaContext, ParameterExpression>>
         where D: Delegate
     {
         private ParameterExpression recursion;
         private ParameterExpression lambdaResult;
         private LabelTarget returnLabel;
+
+        private readonly Type returnType;
 
         internal LambdaScope(LexicalScope parent = null, bool tailCall = false)
             : base(parent, tailCall)
@@ -68,7 +65,7 @@ namespace DotNext.Metaprogramming
                 throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
             var invokeMethod = GetInvokeMethod<D>();
             Parameters = GetParameters(invokeMethod.GetParameters());
-            ReturnType = invokeMethod.ReturnType;
+            returnType = invokeMethod.ReturnType;
         }
 
         /// <summary>
@@ -77,7 +74,7 @@ namespace DotNext.Metaprogramming
         /// <remarks>
         /// This property can be used to make recursive calls.
         /// </remarks>
-        public override Expression Self
+        internal override Expression Self
         {
             get
             {
@@ -92,22 +89,14 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public override IReadOnlyList<ParameterExpression> Parameters { get; }
 
-        /// <summary>
-        /// Gets return type of the lambda function.
-        /// </summary>
-        public override Type ReturnType { get; }
-
-        /// <summary>
-        /// Gets lambda function result holder.
-        /// </summary>
-        public ParameterExpression Result
+        private ParameterExpression Result
         {
             get
             {
-                if (ReturnType == typeof(void))
+                if (returnType == typeof(void))
                     return null;
                 else if (lambdaResult is null)
-                    DeclareVariable(lambdaResult = Expression.Variable(ReturnType, "result"));
+                    DeclareVariable(lambdaResult = Expression.Variable(returnType, "result"));
                 return lambdaResult;
             }
         }
@@ -117,9 +106,15 @@ namespace DotNext.Metaprogramming
             if (returnLabel is null)
                 returnLabel = Expression.Label("leave");
             if (result is null)
-                result = ReturnType.AsDefault();
-            result = ReturnType == typeof(void) ? (Expression)returnLabel.Return() : Expression.Block(Expression.Assign(Result, result), returnLabel.Return());
+                result = returnType.AsDefault();
+            result = returnType == typeof(void) ? (Expression)returnLabel.Return() : Expression.Block(Expression.Assign(Result, result), returnLabel.Return());
             return result;
+        }
+
+        void ICompoundStatement<Action<LambdaContext, ParameterExpression>>.ConstructBody(Action<LambdaContext, ParameterExpression> body)
+        {
+            using(var context = new LambdaContext(this))
+                body(context, Result);
         }
 
         public Expression<D> Build()
@@ -140,7 +135,9 @@ namespace DotNext.Metaprogramming
             if (!(returnLabel is null))
                 instructions.AddLast(returnLabel.LandingSite());
             //last instruction should be always a result of a function
-            if (!(lambdaResult is null))
+            if(lambdaResult is null)
+                instructions.AddLast(returnType.AsDefault());
+            else
                 instructions.AddLast(lambdaResult);
             //rewrite body
             body = Expression.Block(locals, instructions);

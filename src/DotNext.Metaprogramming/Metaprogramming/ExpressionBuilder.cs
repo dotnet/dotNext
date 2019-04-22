@@ -1080,10 +1080,17 @@ namespace DotNext.Metaprogramming
     public abstract class ExpressionBuilder<E> : IExpressionBuilder<E>
         where E : Expression
     {
+        internal delegate Expression ScopeBuilder(Action body);
+
+        private protected readonly ScopeBuilder builder;
         private readonly bool treatAsStatement;
         private Type expressionType;
 
-        private protected ExpressionBuilder(bool treatAsStatement) => this.treatAsStatement = treatAsStatement;
+        private protected ExpressionBuilder(ScopeBuilder builder, bool treatAsStatement)
+        {
+            this.treatAsStatement = treatAsStatement;
+            this.builder = builder;
+        }
 
         private protected Type ExpressionType => expressionType ?? typeof(void);
 

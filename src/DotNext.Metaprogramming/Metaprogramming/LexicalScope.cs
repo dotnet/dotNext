@@ -8,16 +8,13 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents basic lexical scope support.
     /// </summary>
-    internal class LexicalScope : LinkedList<Expression>, IDisposable, ICompoundStatement<Action>
+    internal abstract class LexicalScope : LinkedList<Expression>, IDisposable, ICompoundStatement<Action>
     {
         private readonly Dictionary<string, ParameterExpression> variables = new Dictionary<string, ParameterExpression>();
 
         internal readonly LexicalScope Parent;
 
-        internal LexicalScope(LexicalScope parent = null)
-        {
-            Parent = parent;
-        }
+        private protected LexicalScope(LexicalScope parent) => Parent = parent;
 
         void ICompoundStatement<Action>.ConstructBody(Action body) => body();
 
