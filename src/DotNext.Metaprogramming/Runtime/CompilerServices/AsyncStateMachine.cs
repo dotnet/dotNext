@@ -149,6 +149,7 @@ namespace DotNext.Runtime.CompilerServices
                 //perform cleanup after releasing all suspended tasks
                 guardedRegionsCounter = 0;
                 exception = null;
+                State = default;
             }
         }
 
@@ -380,6 +381,7 @@ namespace DotNext.Runtime.CompilerServices
                 guardedRegionsCounter = 0;
                 exception = null;
                 result = default;
+                State = default;
             }
         }
 
