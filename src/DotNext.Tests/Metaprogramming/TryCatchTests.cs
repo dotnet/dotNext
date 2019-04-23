@@ -18,7 +18,6 @@ namespace DotNext.Metaprogramming
                 Assign(result, true.Const());
                 Try((U)arg1 / arg2)
                     .Fault(() => Assign(result, false.Const()))
-                    .OfType<bool>()
                     .End();
             })
             .Compile();

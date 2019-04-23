@@ -135,12 +135,10 @@ namespace DotNext.Metaprogramming
             if (!(returnLabel is null))
                 instructions.AddLast(returnLabel.LandingSite());
             //last instruction should be always a result of a function
-            if(lambdaResult is null)
-                instructions.AddLast(returnType.Default());
-            else
+            if (!(lambdaResult is null))
                 instructions.AddLast(lambdaResult);
             //rewrite body
-            body = Expression.Block(locals, instructions);
+            body = Expression.Block(returnType, locals, instructions);
             //build lambda expression
             if (!(recursion is null))
                 body = Expression.Block(Sequence.Singleton(recursion),

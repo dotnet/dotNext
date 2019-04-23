@@ -68,7 +68,7 @@ namespace DotNext.Metaprogramming
                 var arg = (U)fun[0];
                 DoWhile(arg > 0L, () =>
                 {
-                    Assign(result, arg + fun[0]);
+                    Assign(result, arg + result);
                     Assign((ParameterExpression)arg, arg - 1L);
                 });
             })
