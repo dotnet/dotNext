@@ -29,12 +29,12 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void SwitchOverString()
         {
-            var lambda = LambdaBuilder<Func<string, int>>.Build(fun =>
+            var lambda = Lambda<Func<string, int>>(fun =>
             {
-                fun.Switch(fun.Parameters[0])
-                    .Case("Zero", 0)
-                    .Case("One", 1)
-                    .Default(int.MaxValue)
+                Switch(fun[0])
+                    .Case("Zero".Const(), 0.Const())
+                    .Case("One".Const(), 1.Const())
+                    .Default(int.MaxValue.Const())
                     .OfType<int>()
                     .End();
             })
