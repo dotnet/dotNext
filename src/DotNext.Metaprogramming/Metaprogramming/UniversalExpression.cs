@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Dynamic;
 
 namespace DotNext.Metaprogramming
 {
-    using Reflection;
-
     /// <summary>
     /// Represents any expression with full support
     /// of overloaded operators and conversion from
@@ -18,20 +14,27 @@ namespace DotNext.Metaprogramming
     /// <remarks>
     /// This class is intended for expression building purposes only.
     /// </remarks>
-    public readonly struct UniversalExpression: IExpressionBuilder<Expression>, IDynamicMetaObjectProvider
+    public readonly struct UniversalExpression : IExpressionBuilder<Expression>, IDynamicMetaObjectProvider
     {
         private readonly Expression expression;
 
         /// <summary>
-        /// Wraps regular LINQ expression into universal expression.
+        /// Wraps regular Expression Tree node into universal expression.
         /// </summary>
         /// <param name="expr">An expression to be wrapped.</param>
-        public UniversalExpression(Expression expr) => expression = expr;
+        private UniversalExpression(Expression expr) => expression = expr;
 
         /// <summary>
         /// Gets the static type of this expression.
         /// </summary>
         public Type Type => expression?.Type ?? typeof(void);
+
+        /// <summary>
+        /// Wraps regular Expression Tree node into universal expression.
+        /// </summary>
+        /// <param name="expr">An expression to be wrapped.</param>
+        /// <returns>Universal expression representing original expression.</returns>
+        public static explicit operator UniversalExpression(Expression expr) => new UniversalExpression(expr);
 
         /// <summary>
         /// Converts universal expression into regular LINQ expression.
@@ -41,10 +44,6 @@ namespace DotNext.Metaprogramming
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UniversalExpression Transform(Converter<Expression, Expression> converter) => new UniversalExpression(converter(expression ?? Expression.Empty()));
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private UniversalExpression Transform(UniversalExpression other, Func<Expression, Expression, Expression> converter) 
-            => new UniversalExpression(converter(expression ?? Expression.Empty(), other));
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UniversalExpression Transform<T>(Func<Expression, T, Expression> converter, T arg)
@@ -62,89 +61,89 @@ namespace DotNext.Metaprogramming
         /// Constructs constant value of <see cref="long"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
-        public static implicit operator UniversalExpression(long value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(long value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="ulong"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
         [CLSCompliant(false)]
-        public static implicit operator UniversalExpression(ulong value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(ulong value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="int"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
-        public static implicit operator UniversalExpression(int value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(int value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="uint"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
         [CLSCompliant(false)]
-        public static implicit operator UniversalExpression(uint value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(uint value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="short"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
-        public static implicit operator UniversalExpression(short value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(short value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="ushort"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
         [CLSCompliant(false)]
-        public static implicit operator UniversalExpression(ushort value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(ushort value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="byte"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
-        public static implicit operator UniversalExpression(byte value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(byte value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="sbyte"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
         [CLSCompliant(false)]
-        public static implicit operator UniversalExpression(sbyte value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(sbyte value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="bool"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
-        public static implicit operator UniversalExpression(bool value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(bool value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="string"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
-        public static implicit operator UniversalExpression(string value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(string value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="decimal"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
-        public static implicit operator UniversalExpression(decimal value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(decimal value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="float"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
-        public static implicit operator UniversalExpression(float value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(float value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="double"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
-        public static implicit operator UniversalExpression(double value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(double value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Constructs constant value of <see cref="char"/> type.
         /// </summary>
         /// <param name="value">The constant value.</param>
-        public static implicit operator UniversalExpression(char value) => new UniversalExpression(value.AsConst());
+        public static implicit operator UniversalExpression(char value) => new UniversalExpression(value.Const());
 
         /// <summary>
         /// Logical NOT expression.
@@ -180,7 +179,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator +(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.Add);
+        public static UniversalExpression operator +(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.Add, right.expression);
+
+        /// <summary>
+        /// Binary arithmetic addition expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator +(UniversalExpression left, Expression right) 
+            => left.Transform(ExpressionBuilder.Add, right);
 
         /// <summary>
         /// Binary arithmetic subtraction expression.
@@ -188,7 +197,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator -(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.Subtract);
+        public static UniversalExpression operator -(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.Subtract, right.expression);
+
+        /// <summary>
+        /// Binary arithmetic subtraction expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator -(UniversalExpression left, Expression right) 
+            => left.Transform(ExpressionBuilder.Subtract, right);
 
         /// <summary>
         /// "greater than" numeric comparison.
@@ -196,7 +215,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator >(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.GreaterThan);
+        public static UniversalExpression operator >(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.GreaterThan, right.expression);
+
+        /// <summary>
+        /// "greater than" numeric comparison.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator >(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.GreaterThan, right);
 
         /// <summary>
         /// "greater than or equal" numeric comparison.
@@ -204,7 +233,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator >=(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.GreaterThanOrEqual);
+        public static UniversalExpression operator >=(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.GreaterThanOrEqual, right.expression);
+
+        /// <summary>
+        /// "greater than or equal" numeric comparison.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator >=(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.GreaterThanOrEqual, right);
 
         /// <summary>
         /// "less than" numeric comparison.
@@ -212,7 +251,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator <(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.LessThan);
+        public static UniversalExpression operator <(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.LessThan, right.expression);
+
+        /// <summary>
+        /// "less than" numeric comparison.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator <(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.LessThan, right);
 
         /// <summary>
         /// "less than or equal" numeric comparison.
@@ -220,7 +269,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator <=(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.LessThanOrEqual);
+        public static UniversalExpression operator <=(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.LessThanOrEqual, right.expression);
+
+        /// <summary>
+        /// "less than or equal" numeric comparison.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator <=(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.LessThanOrEqual, right);
 
         /// <summary>
         /// Binary arithmetic multiplication expression.
@@ -228,7 +287,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator *(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.Multiply);
+        public static UniversalExpression operator *(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.Multiply, right.expression);
+
+        /// <summary>
+        /// Binary arithmetic multiplication expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator *(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.Multiply, right);
 
         /// <summary>
         /// Binary arithmetic division expression.
@@ -236,7 +305,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator /(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.Divide);
+        public static UniversalExpression operator /(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.Divide, right.expression);
+
+        /// <summary>
+        /// Binary arithmetic division expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator /(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.Divide, right);
 
         /// <summary>
         /// Binary logical OR expression.
@@ -244,7 +323,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator |(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.Or);
+        public static UniversalExpression operator |(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.Or, right.expression);
+
+        /// <summary>
+        /// Binary logical OR expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator |(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.Or, right);
 
         /// <summary>
         /// Binary logical AND expression.
@@ -252,7 +341,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator &(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.And);
+        public static UniversalExpression operator &(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.And, right.expression);
+
+        /// <summary>
+        /// Binary logical AND expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator &(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.And, right);
 
         /// <summary>
         /// Binary logical exclusive OR expression.
@@ -260,7 +359,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator ^(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.Xor);
+        public static UniversalExpression operator ^(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.Xor, right.expression);
+
+        /// <summary>
+        /// Binary logical exclusive OR expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator ^(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.Xor, right);
 
         /// <summary>
         /// Equality comparison.
@@ -268,7 +377,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator ==(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.Equal);
+        public static UniversalExpression operator ==(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.Equal, right.expression);
+
+        /// <summary>
+        /// Equality comparison.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator ==(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.Equal, right);
 
         /// <summary>
         /// Inequality comparison.
@@ -276,7 +395,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator !=(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.NotEqual);
+        public static UniversalExpression operator !=(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.NotEqual, right.expression);
+
+        /// <summary>
+        /// Inequality comparison.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator !=(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.NotEqual, right);
 
         /// <summary>
         /// Arithmetic remainder expression.
@@ -284,7 +413,17 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator %(UniversalExpression left, UniversalExpression right) => left.Transform(right, ExpressionBuilder.Modulo);
+        public static UniversalExpression operator %(UniversalExpression left, UniversalExpression right) 
+            => left.Transform(ExpressionBuilder.Modulo, right.expression);
+
+        /// <summary>
+        /// Arithmetic remainder expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        public static UniversalExpression operator %(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.Modulo, right);
 
         /// <summary>
         /// Bitwise right-shift expression.
@@ -292,7 +431,8 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator >>(UniversalExpression left, int right) => left.Transform(right, ExpressionBuilder.RightShift);
+        public static UniversalExpression operator >>(UniversalExpression left, int right)
+            => left.Transform(ExpressionBuilder.RightShift, Expression.Constant(right));
 
         /// <summary>
         /// Bitwise left-shift expression.
@@ -300,7 +440,8 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator <<(UniversalExpression left, int right) => left.Transform(right, ExpressionBuilder.LeftShift);
+        public static UniversalExpression operator <<(UniversalExpression left, int right)
+            => left.Transform(ExpressionBuilder.LeftShift, Expression.Constant(right));
 
         /// <summary>
         /// Constructs raising a number to a power expression.
@@ -310,7 +451,17 @@ namespace DotNext.Metaprogramming
         /// <returns>Binary expression.</returns>
         [SpecialName]
         public static UniversalExpression op_Exponent(UniversalExpression left, UniversalExpression right)
-            => left.Transform(right, ExpressionBuilder.Power);
+            => left.Transform(ExpressionBuilder.Power, right.expression);
+
+        /// <summary>
+        /// Constructs raising a number to a power expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        [SpecialName]
+        public static UniversalExpression op_Exponent(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.Power, right);
 
         /// <summary>
         /// Bitwise left-shift expression.
@@ -320,7 +471,17 @@ namespace DotNext.Metaprogramming
         /// <returns>Binary expression.</returns>
         [SpecialName]
         public static UniversalExpression op_LeftShift(UniversalExpression left, UniversalExpression right)
-            => left.Transform(right, ExpressionBuilder.LeftShift);
+            => left.Transform(ExpressionBuilder.LeftShift, right.expression);
+
+        /// <summary>
+        /// Bitwise left-shift expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        [SpecialName]
+        public static UniversalExpression op_LeftShift(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.LeftShift, right);
 
         /// <summary>
         /// Bitwise right-shift expression.
@@ -330,7 +491,17 @@ namespace DotNext.Metaprogramming
         /// <returns>Binary expression.</returns>
         [SpecialName]
         public static UniversalExpression op_RightShift(UniversalExpression left, UniversalExpression right)
-            => left.Transform(right, ExpressionBuilder.RightShift);
+            => left.Transform(ExpressionBuilder.RightShift, right.expression);
+
+        /// <summary>
+        /// Bitwise right-shift expression.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns>Binary expression.</returns>
+        [SpecialName]
+        public static UniversalExpression op_RightShift(UniversalExpression left, Expression right)
+            => left.Transform(ExpressionBuilder.RightShift, right);
 
         /// <summary>
         /// Constructs suspension point in the execution of the lambda function until the awaited task completes.
@@ -392,12 +563,28 @@ namespace DotNext.Metaprogramming
         public UniversalExpression OrElse(Expression other) => Transform(ExpressionBuilder.OrElse, other);
 
         /// <summary>
+        /// Binary expression that represents a conditional
+        /// OR operation that evaluates the second operand only if the this expression evaluates to <see langword="false"/>.
+        /// </summary>
+        /// <param name="other">The second operand.</param>
+        /// <returns>Binary expression.</returns>
+        public UniversalExpression OrElse(UniversalExpression other) => OrElse(other.expression);
+
+        /// <summary>
         /// Constructs binary expression that represents a conditional
         /// AND operation that evaluates the second operand only if the this expression evaluates to <see langword="true"/>.
         /// </summary>
         /// <param name="other">The second operand.</param>
         /// <returns>Binary expression.</returns>
         public UniversalExpression AndAlso(Expression other) => Transform(ExpressionBuilder.AndAlso, other);
+
+        /// <summary>
+        /// Constructs binary expression that represents a conditional
+        /// AND operation that evaluates the second operand only if the this expression evaluates to <see langword="true"/>.
+        /// </summary>
+        /// <param name="other">The second operand.</param>
+        /// <returns>Binary expression.</returns>
+        public UniversalExpression AndAlso(UniversalExpression other) => AndAlso(other.expression);
 
         /// <summary>
         /// Explicit unboxing.
@@ -529,8 +716,8 @@ namespace DotNext.Metaprogramming
         /// <param name="ifFalse">Negative branch.</param>
         /// <param name="type">The type of conditional expression. Default is <see langword="void"/>.</param>
         /// <returns>Conditional expression.</returns>
-        public UniversalExpression Condition(Expression ifTrue = null, Expression ifFalse = null, Type type = null) 
-            => expression.Condition(ifTrue, ifFalse, type);
+        public UniversalExpression Condition(Expression ifTrue = null, Expression ifFalse = null, Type type = null)
+            => new UniversalExpression(expression.Condition(ifTrue, ifFalse, type));
 
         /// <summary>
         /// Constructs conditional expression.
@@ -540,27 +727,23 @@ namespace DotNext.Metaprogramming
         /// <param name="ifFalse">Negative branch.</param>
         /// <returns>Conditional expression.</returns>
         public UniversalExpression Condition<R>(Expression ifTrue, Expression ifFalse)
-            => expression.Condition<R>(ifTrue, ifFalse);
+            => new UniversalExpression(expression.Condition<R>(ifTrue, ifFalse));
 
         /// <summary>
         /// Creates conditional expression builder.
         /// </summary>
-        /// <param name="parent">Parent lexical scope.</param>
         /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Condition(LexicalScope parent = null)
-            => expression.Condition(parent);
+        public ConditionalBuilder Condition() => ExpressionBuilder.Condition(expression);
 
         /// <summary>
         /// Constructs compound statement hat repeatedly refer to a single object or 
         /// structure so that the statements can use a simplified syntax when accessing members 
         /// of the object or structure.
         /// </summary>
-        /// <param name="scope">The scope statements builder.</param>
-        /// <param name="parent">Parent lexical scope.</param>
+        /// <param name="body">The scope statements builder.</param>
         /// <returns>Construct code block.</returns>
-        /// <see cref="WithBlockScope"/>
-        /// <see cref="WithBlockScope.ScopeVar"/>
-        public UniversalExpression With(Action<WithBlockScope> scope, LexicalScope parent = null) => expression.With(scope, parent);
+        public UniversalExpression With(Action<ParameterExpression> body) 
+            => new UniversalExpression(ExpressionBuilder.With(expression, body));
 
         /// <summary>
         /// Constructs <see langword="using"/> statement.
@@ -568,27 +751,50 @@ namespace DotNext.Metaprogramming
         /// <remarks>
         /// The equivalent code is <code>using(var obj = expression){ }</code>.
         /// </remarks>
-        /// <param name="scope">The body of <see langword="using"/> statement.</param>
-        /// <param name="parent">Optional parent scope.</param>
+        /// <param name="body">The body of <see langword="using"/> statement.</param>
         /// <returns><see langword="using"/> statement.</returns>
-        public UniversalExpression Using(Action<UsingBlockScope> scope, LexicalScope parent)
-            => expression.Using(scope, parent);
+        public UniversalExpression Using(Action<ParameterExpression> body)
+            => new UniversalExpression(ExpressionBuilder.Using(expression, body));
+
+        /// <summary>
+        /// Constructs <see langword="using"/> statement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>using(var obj = expression){ }</code>.
+        /// </remarks>
+        /// <param name="body">The body of <see langword="using"/> statement.</param>
+        /// <returns><see langword="using"/> statement.</returns>
+        public UniversalExpression Using(Action body)
+            => new UniversalExpression(ExpressionBuilder.Using(expression, body));
 
         /// <summary>
         /// Creates selection statement builder that chooses a single <see langword="switch"/> section 
         /// to execute from a list of candidates based on a pattern match with the match expression.
         /// </summary>
-        /// <param name="parent">Optional parent scope.</param>
         /// <returns><see langword="switch"/> statement builder.</returns>
-        public SwitchBuilder Switch(LexicalScope parent = null)
-            => expression.Switch(parent);
+        public SwitchBuilder Switch() => ExpressionBuilder.Switch(expression);
 
         /// <summary>
         /// Creates structured exception handling statement builder.
         /// </summary>
-        /// <param name="parent">The parent lexical scope.</param>
         /// <returns>Structured exception handling statement builder.</returns>
-        public TryBuilder Try(LexicalScope parent = null) => expression.Try(parent);
+        public TryBuilder Try() => ExpressionBuilder.Try(expression);
+
+        /// <summary>
+        /// Constructs <see langword="lock"/> expression.
+        /// </summary>
+        /// <param name="body">Synchronized scope of code.</param>
+        /// <returns>Constructed lock statement.</returns>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
+        public BlockExpression Lock(Action<ParameterExpression> body) => ExpressionBuilder.Lock(expression, body);
+
+        /// <summary>
+        /// Constructs <see langword="lock"/> expression.
+        /// </summary>
+        /// <param name="body">Synchronized scope of code.</param>
+        /// <returns>Constructed lock statement.</returns>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
+        public BlockExpression Lock(Action body) => ExpressionBuilder.Lock(expression, body);
 
         /// <summary>
         /// Constructs <see langword="throw"/> statement.

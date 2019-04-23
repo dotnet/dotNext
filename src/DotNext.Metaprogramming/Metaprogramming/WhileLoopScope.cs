@@ -3,9 +3,6 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    /// <summary>
-    /// Represents <see langword="while"/> loop builder.
-    /// </summary>
     internal sealed class WhileLoopScope: LoopBuilderBase, IExpressionBuilder<LoopExpression>, ICompoundStatement<Action<LoopCookie>>
     {
         private readonly Expression test;

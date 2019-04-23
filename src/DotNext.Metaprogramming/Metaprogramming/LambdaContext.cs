@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 namespace DotNext.Metaprogramming
 {
     /// <summary>
-    /// Represents lambda context.
+    /// Represents lambda construction context.
     /// </summary>
     public readonly struct LambdaContext: IReadOnlyList<ParameterExpression>, IDisposable
     {
@@ -38,6 +38,10 @@ namespace DotNext.Metaprogramming
 
         void IDisposable.Dispose() => Dispose();
 
+        /// <summary>
+        /// Returns expression representing lambda function itself for recursive calls.
+        /// </summary>
+        /// <param name="context">The lambda construction context.</param>
         public static implicit operator Expression(LambdaContext context) => context.scope.TryGetTarget(out var scope) ? scope.Self : null;
     }
 }

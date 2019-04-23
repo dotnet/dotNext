@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using static System.Threading.Thread;
 
 namespace DotNext.Metaprogramming
 {
@@ -436,7 +436,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The assignee.</param>
         /// <returns>Binary expression.</returns>
         public static BinaryExpression AssignDefault(this ParameterExpression left)
-            => left.Assign(left.Type.AsDefault());
+            => left.Assign(left.Type.Default());
 
         /// <summary>
         /// Constructs assignment expression.
@@ -447,7 +447,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The assignee.</param>
         /// <returns>Binary expression.</returns>
         public static BinaryExpression AssignDefault(this MemberExpression left)
-            => left.Assign(left.Type.AsDefault());
+            => left.Assign(left.Type.Default());
 
         /// <summary>
         /// Constructs assignment expression.
@@ -458,7 +458,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The assignee.</param>
         /// <returns>Binary expression.</returns>
         public static BinaryExpression AssignDefault(this IndexExpression left)
-            => left.Assign(left.Type.AsDefault());
+            => left.Assign(left.Type.Default());
 
         /// <summary>
         /// Constructs assignment expression.
@@ -930,7 +930,7 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="T">The type of constant.</typeparam>
         /// <param name="value">The constant value.</param>
         /// <returns></returns>
-        public static ConstantExpression AsConst<T>(this T value) => Expression.Constant(value, typeof(T));
+        public static ConstantExpression Const<T>(this T value) => Expression.Constant(value, typeof(T));
 
         /// <summary>
         /// Constructs type default value supplier.
@@ -940,7 +940,7 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="type">The target type.</param>
         /// <returns>The type default value expression.</returns>
-        public static DefaultExpression AsDefault(this Type type) => Expression.Default(type);
+        public static DefaultExpression Default(this Type type) => Expression.Default(type);
 
         /// <summary>
         /// Constructs type instantiation expression.
@@ -1012,8 +1012,22 @@ namespace DotNext.Metaprogramming
         /// <returns><see langword="switch"/> statement builder.</returns>
         public static SwitchBuilder Switch(this Expression switchValue) => CodeGenerator.MakeSwitch(switchValue);
 
-        public static BlockExpression Lock(this Expression syncRoot, Action<ParameterExpression> body) => CodeGenerator.MakeLock(syncRoot, body); 
+        /// <summary>
+        /// Constructs <see langword="lock"/> expression.
+        /// </summary>
+        /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
+        /// <param name="body">Synchronized scope of code.</param>
+        /// <returns>Constructed lock statement.</returns>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
+        public static BlockExpression Lock(this Expression syncRoot, Action<ParameterExpression> body) => CodeGenerator.MakeLock(syncRoot, body);
 
+        /// <summary>
+        /// Constructs <see langword="lock"/> expression.
+        /// </summary>
+        /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
+        /// <param name="body">Synchronized scope of code.</param>
+        /// <returns>Constructed lock statement.</returns>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
         public static BlockExpression Lock(this Expression syncRoot, Action body) => CodeGenerator.MakeLock(syncRoot, body);
 
         /// <summary>
@@ -1076,6 +1090,10 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents compound expresssion builder.
     /// </summary>
+    /// <remarks>
+    /// Any derived expression builder is not thread-safe and event cannot
+    /// be shared between threads.
+    /// </remarks>
     /// <typeparam name="E">Type of expression to be constructed.</typeparam>
     public abstract class ExpressionBuilder<E> : IExpressionBuilder<E>
         where E : Expression
@@ -1083,10 +1101,20 @@ namespace DotNext.Metaprogramming
         internal delegate Expression ScopeBuilder(Action body);
 
         private protected readonly ScopeBuilder builder;
-        private readonly bool treatAsStatement;
         private Type expressionType;
+        private readonly int ownerThread;
 
-        private protected ExpressionBuilder(ScopeBuilder builder) => this.builder = builder;
+        private protected ExpressionBuilder(ScopeBuilder builder)
+        {
+            this.builder = builder;
+            ownerThread = CurrentThread.ManagedThreadId;
+        }
+
+        private protected void VerifyCaller()
+        {
+            if (ownerThread != CurrentThread.ManagedThreadId)
+                throw new InvalidOperationException();
+        }
 
         internal event Action<E> Constructed;
 
@@ -1102,6 +1130,7 @@ namespace DotNext.Metaprogramming
         /// <returns>This builder.</returns>
         public ExpressionBuilder<E> OfType(Type expressionType)
         {
+            VerifyCaller();
             this.expressionType = expressionType;
             return this;
         }
@@ -1119,6 +1148,7 @@ namespace DotNext.Metaprogramming
         /// <returns>Constructed expression.</returns>
         public E End()
         {
+            VerifyCaller();
             var expr = Build();
             Constructed?.Invoke(expr);
             return expr;

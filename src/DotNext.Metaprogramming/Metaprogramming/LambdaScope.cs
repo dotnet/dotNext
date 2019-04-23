@@ -106,7 +106,7 @@ namespace DotNext.Metaprogramming
             if (returnLabel is null)
                 returnLabel = Expression.Label("leave");
             if (result is null)
-                result = returnType.AsDefault();
+                result = returnType.Default();
             result = returnType == typeof(void) ? (Expression)returnLabel.Return() : Expression.Block(Expression.Assign(Result, result), returnLabel.Return());
             return result;
         }
@@ -136,7 +136,7 @@ namespace DotNext.Metaprogramming
                 instructions.AddLast(returnLabel.LandingSite());
             //last instruction should be always a result of a function
             if(lambdaResult is null)
-                instructions.AddLast(returnType.AsDefault());
+                instructions.AddLast(returnType.Default());
             else
                 instructions.AddLast(lambdaResult);
             //rewrite body

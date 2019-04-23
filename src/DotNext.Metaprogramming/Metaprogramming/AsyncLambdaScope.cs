@@ -50,13 +50,13 @@ namespace DotNext.Metaprogramming
 
         internal override Expression Return(Expression result) => new AsyncResultExpression(result, taskType);
 
-        public Expression<D> Build()
+        public new Expression<D> Build()
         {
             var body = base.Build();
             if (body.Type != taskType)
                 body = body.AddEpilogue(true, new AsyncResultExpression(taskType));
             Expression<D> lambda;
-            using(var builder = new Runtime.CompilerServices.AsyncStateMachineBuilder<D>(Parameters))
+            using(var builder = new AsyncStateMachineBuilder<D>(Parameters))
             {
                 lambda = builder.Build(body, tailCall);
             }

@@ -7,9 +7,9 @@ namespace DotNext.Metaprogramming
     public sealed class TaskExpressionTests: Assert
     {
         [Fact]
-        public void NonVoidReturnTest()
+        public static void NonVoidReturn()
         {
-            Expression ret = new AsyncResultExpression(90.AsConst(), true);
+            Expression ret = new AsyncResultExpression(90.Const(), true);
             Equal(typeof(ValueTask<int>), ret.Type);
             ret = ret.Reduce();
             IsAssignableFrom<UnaryExpression>(ret);
@@ -17,9 +17,9 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void VoidReturnTest()
+        public static void VoidReturn()
         {
-            Expression ret = new AsyncResultExpression(Expression.Block(typeof(void), 42.AsConst()), false);
+            Expression ret = new AsyncResultExpression(Expression.Block(typeof(void), 42.Const()), false);
             Equal(typeof(Task), ret.Type);
             ret = ret.Reduce();
             IsAssignableFrom<UnaryExpression>(ret);

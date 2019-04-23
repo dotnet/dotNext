@@ -41,6 +41,7 @@ namespace DotNext.Metaprogramming
         /// <returns><see langword="this"/> builder.</returns>
         public SwitchBuilder Case(IEnumerable<Expression> testValues, Expression body)
         {
+            VerifyCaller();
             cases.Add(Expression.SwitchCase(body, testValues));
             return this;
         }
@@ -71,6 +72,7 @@ namespace DotNext.Metaprogramming
         /// <returns><see langword="this"/> builder.</returns>
         public SwitchBuilder Default(Expression body)
         {
+            VerifyCaller();
             defaultExpression = body;
             return this;
         }

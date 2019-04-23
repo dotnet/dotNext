@@ -405,7 +405,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             ICollection<SwitchCase> cases = new LinkedList<SwitchCase>();
             foreach (var (state, label) in stateSwitchTable)
-                cases.Add(Expression.SwitchCase(label.MakeGoto(), state.AsConst()));
+                cases.Add(Expression.SwitchCase(label.MakeGoto(), state.Const()));
             return Expression.Switch(new StateIdExpression(), Expression.Empty(), null, cases);
         }
 

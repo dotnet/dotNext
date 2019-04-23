@@ -33,6 +33,7 @@ namespace DotNext.Metaprogramming
         /// <returns>Conditional expression builder.</returns>
         public ConditionalBuilder Then(Expression branch)
         {
+            VerifyCaller();
             ifTrue = branch;
             return this;
         }
@@ -51,6 +52,7 @@ namespace DotNext.Metaprogramming
         /// <returns>Conditional expression builder.</returns>
         public ConditionalBuilder Else(Expression branch)
         {
+            VerifyCaller();
             ifFalse = branch;
             return this;
         }

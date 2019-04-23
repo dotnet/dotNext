@@ -4,10 +4,6 @@ using System.Threading;
 
 namespace DotNext.Metaprogramming
 {
-    /// <summary>
-    /// Represents statement which acquires the mutual-exclusion lock for a given object, executes a statement block, and then releases the lock. 
-    /// </summary>
-    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
     internal sealed class LockScope: LexicalScope, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<ParameterExpression>>
     {
         private readonly ParameterExpression syncRoot;

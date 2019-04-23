@@ -48,7 +48,7 @@ namespace DotNext.Metaprogramming
             loopBody = loopBody.Loop(BreakLabel, ContinueLabel);
             var @finally = disposeMethod is null ?
                     (Expression)enumeratorVar.AssignDefault() :
-                    Expression.Block(enumeratorVar.Call(disposeMethod), enumeratorVar.Assign(enumeratorVar.Type.AsDefault()));
+                    Expression.Block(enumeratorVar.Call(disposeMethod), enumeratorVar.Assign(enumeratorVar.Type.Default()));
             loopBody = loopBody.Finally(@finally);
             return Expression.Block(typeof(void), new[] { enumeratorVar }, enumeratorAssignment, loopBody);
         }

@@ -61,7 +61,7 @@ namespace DotNext.Metaprogramming
                 UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
                 UniversalExpression temp = fun.DeclareVariable<long>("tmp");
                 fun.Assign(temp, Expression.Call(null, sumMethod, arg0, arg1).Await());
-                fun.Return(temp + 20L.AsConst());
+                fun.Return(temp + 20L.Const());
             });
             var fn = lambda.Compile();
             Equal(35L, fn(5L, 10L).Result);
@@ -76,7 +76,7 @@ namespace DotNext.Metaprogramming
                 UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
                 UniversalExpression temp = fun.DeclareVariable<long>("tmp");
                 fun.Assign(temp, Expression.Call(null, sumMethod, arg0, arg1).Await());
-                fun.Return(temp + 20L.AsConst());
+                fun.Return(temp + 20L.Const());
             });
             var fn = lambda.Compile();
             Equal(35L, fn(5L, 10L).Result);
@@ -90,11 +90,11 @@ namespace DotNext.Metaprogramming
             {
                 UniversalExpression arg = fun.Parameters[0];
                 fun.If(arg > 10L)
-                    .Then(then => then.Return(Expression.Call(null, sumMethod, arg, 10L.AsConst()).Await()))
+                    .Then(then => then.Return(Expression.Call(null, sumMethod, arg, 10L.Const()).Await()))
                     .Else(@else =>
                     {
                         var local = @else.DeclareVariable<long>("myVar");
-                        @else.Assign(local, Expression.Call(null, sumMethod, arg, 90L.AsConst()).Await());
+                        @else.Assign(local, Expression.Call(null, sumMethod, arg, 90L.Const()).Await());
                         @else.Return(local);
                     })
                     .End();

@@ -206,6 +206,13 @@ namespace DotNext.Metaprogramming
         public static void PostDecrementAssign(IndexExpression member) => CurrentScope.AddStatement(member.PostDecrementAssign());
 
         /// <summary>
+        /// Adds constant as in-place statement.
+        /// </summary>
+        /// <typeparam name="T">The type of the constant.</typeparam>
+        /// <param name="value">The value to be placed as statement.</param>
+        public static void InPlaceValue<T>(T value) => CurrentScope.AddStatement(value.Const());
+
+        /// <summary>
         /// Adds local variable assignment operation this scope.
         /// </summary>
         /// <param name="variableName">The name of the declared local variable.</param>
@@ -525,7 +532,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression> body)
-            => ForEach(collection, body.Parametrize<MemberExpression, LoopCookie>());
+            => AddStatement<Action<MemberExpression>, ForEachLoopScope, ForEachLoopScopeFactory>(new ForEachLoopScopeFactory(collection), body);
 
         private readonly struct ForLoopScopeFactory : ILexicalScopeFactory<ForLoopScope>
         {

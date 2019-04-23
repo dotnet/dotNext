@@ -32,6 +32,7 @@ namespace DotNext.Metaprogramming
         /// <returns><see langword="this"/> builder.</returns>
         public TryBuilder Catch(Type exceptionType, Func<ParameterExpression, Expression> filter, Action<ParameterExpression> handler)
         {
+            VerifyCaller();
             var exception = Expression.Variable(exceptionType, "e");
             handlers.Add(Expression.MakeCatchBlock(exceptionType, exception, builder(() => handler(exception)), filter?.Invoke(exception)));
             return this;
@@ -54,6 +55,27 @@ namespace DotNext.Metaprogramming
         public TryBuilder Catch<E>(Action<ParameterExpression> handler) where E : Exception => Catch(typeof(E), handler);
 
         /// <summary>
+        /// Constructs exception handling section.
+        /// </summary>
+        /// <param name="exceptionType">Expected exception.</param>
+        /// <param name="handler">Exception handling block.</param>
+        /// <returns><see langword="this"/> builder.</returns>
+        public TryBuilder Catch(Type exceptionType, Action handler)
+        {
+            VerifyCaller();
+            handlers.Add(Expression.Catch(exceptionType, builder(handler)));
+            return this;
+        }
+
+        /// <summary>
+        /// Constructs exception handling section.
+        /// </summary>
+        /// <typeparam name="E">Expected exception.</typeparam>
+        /// <param name="handler">Exception handling block.</param>
+        /// <returns><see langword="this"/> builder.</returns>
+        public TryBuilder Catch<E>(Action handler) where E : Exception => Catch(typeof(E), handler);
+
+        /// <summary>
         /// Constructs block of code which will be executed in case
         /// of any exception.
         /// </summary>
@@ -69,6 +91,7 @@ namespace DotNext.Metaprogramming
         /// <returns><see langword="this"/> builder.</returns>
         public TryBuilder Fault(Expression fault)
         {
+            VerifyCaller();
             faultBlock = fault;
             return this;
         }
@@ -87,6 +110,7 @@ namespace DotNext.Metaprogramming
         /// <returns><see langword="this"/> builder.</returns>
         public TryBuilder Finally(Expression @finally)
         {
+            VerifyCaller();
             finallyBlock = @finally;
             return this;
         }

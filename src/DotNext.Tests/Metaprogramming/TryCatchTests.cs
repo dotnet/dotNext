@@ -4,17 +4,21 @@ using Xunit;
 
 namespace DotNext.Metaprogramming
 {
+    using static CodeGenerator;
+    using U = UniversalExpression;
+
     public sealed class TryCatchTests: Assert
     {
         [Fact]
-        public void DivisionByZeroTest()
+        public static void Fault()
         {
-            var lambda = LambdaBuilder<Func<long, long, bool>>.Build(fun =>
+            var lambda = Lambda<Func<long, long, bool>>((fun, result) =>
             {
-                UniversalExpression param1 = fun.Parameters[0], param2 = fun.Parameters[1];
-                fun.Assign(fun.Result, true);
-                fun.Try(param1 / param2)
-                    .Fault(fault => fault.Assign(fun.Result, false))
+                U param1 = (U)fun[0], param2 = (U)fun[1];
+                Assign(result, true.Const());
+                Try(param1 / param2)
+                    .Fault(() => Assign(result, false.Const()))
+                    .OfType<bool>()
                     .End();
             })
             .Compile();
@@ -23,14 +27,14 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void DivisionByZeroTest2()
+        public static void Catch()
         {
-            var lambda = LambdaBuilder<Func<long, long, bool>>.Build(fun =>
+            var lambda = Lambda<Func<long, long, bool>>((fun, result) =>
             {
-                UniversalExpression param1 = fun.Parameters[0], param2 = fun.Parameters[1];
-                fun.Assign(fun.Result, true);
-                fun.Try(param1 / param2)
-                    .Catch<DivideByZeroException>(@catch => @catch.Assign(fun.Result, false))
+                U param1 = (U)fun[0], param2 = (U)fun[1];
+                Assign(result, true.Const());
+                Try(param1 / param2)
+                    .Catch<DivideByZeroException>(() => Assign(result, false.Const()))
                     .End();
             })
             .Compile();
@@ -40,15 +44,15 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void DivisionByZeroTest3()
+        public static void ReturnFromCatch()
         {
-            var lambda = LambdaBuilder<Func<long, long, bool>>.Build(fun =>
+            var lambda = Lambda<Func<long, long, bool>>((fun, result) =>
             {
-                UniversalExpression param1 = fun.Parameters[0], param2 = fun.Parameters[1];
-                fun.Try(param1 / param2)
-                    .Catch<DivideByZeroException>(@catch => @catch.Return(false))
+                U param1 = (U)fun[0], param2 = (U)fun[1];
+                Try(param1 / param2)
+                    .Catch<DivideByZeroException>(() => Return(false.Const()))
                     .End();
-                fun.Return(true);
+                Return(true.Const());
             })
             .Compile();
 
@@ -57,13 +61,13 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void DivisionByZeroTest4()
+        public static void CatchWithFilter()
         {
-            var lambda = LambdaBuilder<Func<long, long, bool>>.Build(fun =>
+            var lambda = Lambda<Func<long, long, bool>>(fun =>
             {
-                UniversalExpression param1 = fun.Parameters[0], param2 = fun.Parameters[1];
-                fun.Try(Expression.Block(param1 / param2, true.AsConst()))
-                    .Catch(typeof(Exception), e => e.InstanceOf<DivideByZeroException>(), e => false)
+                U param1 = (U)fun[0], param2 = (U)fun[1];
+                Try(Expression.Block(param1 / param2, true.Const()))
+                    .Catch(typeof(Exception), e => e.InstanceOf<DivideByZeroException>(), e => InPlaceValue(false))
                     .OfType<bool>()
                     .End();
             })

@@ -18,8 +18,8 @@ namespace DotNext.Metaprogramming
         private static readonly MethodInfo PropertyMethod = typeof(Expression).GetMethod(nameof(Expression.Property), new[] { typeof(Expression), typeof(string), typeof(Expression[]) });
         private static readonly MethodInfo ActivateMethod = typeof(ExpressionBuilder).GetMethod(nameof(ExpressionBuilder.New), new[] { typeof(Expression), typeof(Expression[]) });
 
-        private static readonly ConstantExpression ItemName = "Item".AsConst();
-        private static readonly ConstantExpression ConvertOperator = ExpressionType.Convert.AsConst();
+        private static readonly ConstantExpression ItemName = "Item".Const();
+        private static readonly ConstantExpression ConvertOperator = ExpressionType.Convert.Const();
 
         internal MetaExpression(Expression binding, IExpressionBuilder<Expression> builder)
             : base(binding, BindingRestrictions.GetTypeRestriction(binding, builder.GetType()), builder)
@@ -38,7 +38,7 @@ namespace DotNext.Metaprogramming
             else if (typeof(Expression).IsAssignableFrom(arg.LimitType))
                 return arg.Expression;
             else
-                return Expression.Constant(arg.Value, arg.LimitType).AsConst();
+                return Expression.Constant(arg.Value, arg.LimitType).Const();
         }
 
         private Expression PrepareExpression()
@@ -47,14 +47,14 @@ namespace DotNext.Metaprogramming
         public override DynamicMetaObject BindUnaryOperation(UnaryOperationBinder binder)
         {
             var binding = PrepareExpression();
-            binding = Expression.Call(MakeUnaryMethod, binder.Operation.AsConst(), binding, default(Type).AsConst());
+            binding = Expression.Call(MakeUnaryMethod, binder.Operation.Const(), binding, default(Type).Const());
             return new MetaExpression(binding, Restrictions);
         }
 
         public override DynamicMetaObject BindSetMember(SetMemberBinder binder, DynamicMetaObject value)
         {
             var binding = PrepareExpression();
-            binding = Expression.Call(PropertyOrFieldMethod, binding, binder.Name.AsConst());
+            binding = Expression.Call(PropertyOrFieldMethod, binding, binder.Name.Const());
             binding = Expression.Call(AssignMethod, binding, ToExpression(value));
             return new MetaExpression(binding, Restrictions);
         }
@@ -69,7 +69,7 @@ namespace DotNext.Metaprogramming
         public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args)
         {
             var binding = PrepareExpression();
-            binding = Expression.Call(CallMethod, binding, binder.Name.AsConst(), Expression.NewArrayInit(typeof(Expression), args.Select(ToExpression)));
+            binding = Expression.Call(CallMethod, binding, binder.Name.Const(), Expression.NewArrayInit(typeof(Expression), args.Select(ToExpression)));
             return new MetaExpression(binding, Restrictions);
         }
 
@@ -91,14 +91,14 @@ namespace DotNext.Metaprogramming
         public override DynamicMetaObject BindGetMember(GetMemberBinder binder)
         {
             var binding = PrepareExpression();
-            binding = Expression.Call(PropertyOrFieldMethod, binding, binder.Name.AsConst());
+            binding = Expression.Call(PropertyOrFieldMethod, binding, binder.Name.Const());
             return new MetaExpression(binding, Restrictions);
         }
 
         public override DynamicMetaObject BindBinaryOperation(BinaryOperationBinder binder, DynamicMetaObject arg)
         {
             var left = PrepareExpression();
-            left = Expression.Call(MakeBinaryMethod, binder.Operation.AsConst(), left, ToExpression(arg));
+            left = Expression.Call(MakeBinaryMethod, binder.Operation.Const(), left, ToExpression(arg));
             return new MetaExpression(left, Restrictions);
         }
 
@@ -111,7 +111,7 @@ namespace DotNext.Metaprogramming
                 return new DynamicMetaObject(typeof(UniversalExpression).New(binding), Restrictions);
             else
             {
-                binding = Expression.Call(MakeUnaryMethod, ConvertOperator, binding, binder.Type.AsConst());
+                binding = Expression.Call(MakeUnaryMethod, ConvertOperator, binding, binder.Type.Const());
                 return new MetaExpression(binding, Restrictions);
             }
         }

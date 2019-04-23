@@ -10,8 +10,6 @@ namespace DotNext
 
         internal static string AbstractDelegate => resourceManager.GetString("AbstractDelegate");
 
-        internal static string TaskTypeExpected => resourceManager.GetString("TaskTypeExpected");
-
         internal static string MissingGetAwaiterMethod(Type t) => string.Format(resourceManager.GetString("MissingGetAwaiterMethod"), t.FullName);
         
         internal static string MissingGetResultMethod(Type t) => string.Format(resourceManager.GetString("MissingGetResultMethod"), t.FullName);
@@ -27,8 +25,6 @@ namespace DotNext
         internal static string EnumerablePatternExpected => resourceManager.GetString("EnumerablePatternExpected");
 
         internal static string CallFromLambdaExpected => resourceManager.GetString("CallFromLambdaExpected");
-
-        internal static string ParameterExpected => resourceManager.GetString("ParameterExpected");
 
         internal static string DisposePatternExpected(Type t) => string.Format(resourceManager.GetString("DisposePatternExpected"), t.FullName);
 

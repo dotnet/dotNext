@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-
     /// <summary>
     /// Represents basic lexical scope support.
     /// </summary>

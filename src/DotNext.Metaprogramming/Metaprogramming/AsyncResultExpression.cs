@@ -13,7 +13,7 @@ namespace DotNext.Metaprogramming
     /// <remarks>
     /// This expression turns async state machine into final state.
     /// </remarks>
-    /// <see cref="AsyncLambdaScope{D}"/>
+    /// <seealso cref="CodeGenerator.AsyncLambda{D}(Action{LambdaContext})"/>
     public sealed class AsyncResultExpression: Expression
     {
         private readonly TaskType taskType;
@@ -25,7 +25,7 @@ namespace DotNext.Metaprogramming
         }
 
         internal AsyncResultExpression(TaskType taskType)
-            : this(taskType.ResultType.AsDefault(), taskType)
+            : this(taskType.ResultType.Default(), taskType)
         {
         }
 
@@ -82,7 +82,7 @@ namespace DotNext.Metaprogramming
             var catchedException = Variable(typeof(Exception));
             if (AsyncResult.Type == typeof(void))
             {
-                completedTask = Block(AsyncResult, typeof(CompletedTask).AsDefault());
+                completedTask = Block(AsyncResult, typeof(CompletedTask).Default());
                 failedTask = typeof(CompletedTask).New(catchedException);
             }
             else
