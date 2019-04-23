@@ -30,6 +30,11 @@ namespace DotNext.Metaprogramming
         public Type Type => expression?.Type ?? typeof(void);
 
         /// <summary>
+        /// Gets the node type of this expression.
+        /// </summary>
+        public ExpressionType NodeType => expression is null ? ExpressionType.Default : expression.NodeType;
+
+        /// <summary>
         /// Wraps regular Expression Tree node into universal expression.
         /// </summary>
         /// <param name="expr">An expression to be wrapped.</param>
