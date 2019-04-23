@@ -14,7 +14,7 @@ namespace DotNext.Runtime.CompilerServices
             Receiver = receiver;
         }
         
-        public override Expression Reduce() => true.AsConst();
+        public override Expression Reduce() => true.Const();
         public override Type Type => typeof(bool);
 
         internal override Expression Reduce(ParameterExpression stateMachine)

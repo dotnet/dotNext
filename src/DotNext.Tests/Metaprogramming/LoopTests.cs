@@ -1,8 +1,12 @@
 using System;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace DotNext.Metaprogramming
 {
+    using static CodeGenerator;
+    using U = UniversalExpression;
+
     public sealed class LoopTests: Assert
     {
         public struct CustomEnumerator
@@ -29,13 +33,13 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void CustomForEachTest()
+        public static void CustomForEach()
         {
-            var sum = LambdaBuilder<Func<CustomEnumerable, int>>.Build(fun =>
+            var sum = Lambda<Func<CustomEnumerable, int>>((fun, result) =>
             {
-                fun.ForEach(fun.Parameters[0], loop =>
+                ForEach(fun[0], item =>
                 {
-                    loop.Assign(fun.Result, fun.Result + loop.Element);
+                    Assign(result, (U)result + item);
                 });
             })
             .Compile();
@@ -43,13 +47,13 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void ArrayForEachTest()
+        public static void ArrayForEach()
         {
-            var sum = LambdaBuilder<Func<long[], long>>.Build(fun =>
+            var sum = Lambda<Func<long[], long>>((fun, result) =>
             {
-                fun.ForEach(fun.Parameters[0], loop =>
+                ForEach(fun[0], item =>
                 {
-                    loop.Assign(fun.Result, fun.Result + loop.Element);
+                    Assign(result, (U)result + item);
                 });
             })
             .Compile();
@@ -57,15 +61,15 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void SumTest()
+        public static void DoWhileLoop()
         {
-            var sum = LambdaBuilder<Func<long, long>>.Build(fun =>
+            var sum = Lambda<Func<long, long>>((fun, result) =>
             {
-                UniversalExpression arg = fun.Parameters[0];
-                fun.DoWhile(arg > 0L, loop =>
+                var arg = (U)fun[0];
+                DoWhile(arg > 0L, () =>
                 {
-                    loop.Assign(fun.Result, fun.Result + arg);
-                    loop.Assign(arg, arg - 1L);
+                    Assign(result, arg + fun[0]);
+                    Assign((ParameterExpression)arg, arg - 1L);
                 });
             })
             .Compile();
@@ -73,16 +77,14 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void Sum2Test()
+        public static void ForLoop()
         {
-            var sum = LambdaBuilder<Func<long, long>>.Build(fun =>
+            var sum = Lambda<Func<long, long>>((fun, result) =>
             {
-                UniversalExpression arg = fun.Parameters[0];
-                fun.For(0L, i => i < arg, loop =>
+                var arg = (U)fun[0];
+                For(0L.Const(), i => (U)i < arg, PostIncrementAssign, loopVar =>
                 {
-                    loop.Assign(fun.Result, fun.Result + (UniversalExpression)loop.LoopVar);
-                    loop.StartIteratorBlock();
-                    loop.Assign(loop.LoopVar, loop.LoopVar + (UniversalExpression)1L);
+                    Assign(result, (U)result + loopVar);
                 });
             })
             .Compile();
@@ -90,16 +92,16 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void FactorialTest()
+        public static void FactorialUsingWhile()
         {
-            var factorial = LambdaBuilder<Func<long, long>>.Build(fun => 
+            var factorial = Lambda<Func<long, long>>((fun, result) =>
             {
-                UniversalExpression arg = fun.Parameters[0];
-                fun.Assign(fun.Result, 1L);
-                fun.While(arg > 1L, loop =>
+                var arg = (U)fun[0];
+                Assign(result, 1L.Const());
+                While(arg > 1L, () =>
                 {
-                    loop.Assign(fun.Result, fun.Result * arg);
-                    loop.Assign(arg, arg - 1L);
+                    Assign(result, (U)result * arg);
+                    Assign((ParameterExpression)arg, arg - 1L);
                 });
             })
             .Compile();
@@ -107,21 +109,21 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void Factorial2Test()
+        public static void Factorial()
         {
-            var factorial = LambdaBuilder<Func<long, long>>.Build(fun =>
+            var factorial = Lambda<Func<long, long>>((fun, result) =>
             {
-                UniversalExpression arg = fun.Parameters[0];
-                fun.Assign(fun.Result, 1L);
-                fun.Loop(loop =>
+                var arg = (U)fun[0];
+                Assign(result, 1L.Const());
+                Loop(() =>
                 {
-                    loop.If(arg > 1L)
-                        .Then(then =>
+                    If(arg > 1L)
+                        .Then(() =>
                         {
-                            then.Assign(fun.Result, fun.Result * arg);
-                            then.Assign(arg, arg - 1L);
+                            Assign(result, (U)result * arg);
+                            Assign((ParameterExpression)arg, arg - 1L);
                         })
-                        .Else(@else => @else.Break(loop))
+                        .Else(Break)
                         .End();
                 });
             })

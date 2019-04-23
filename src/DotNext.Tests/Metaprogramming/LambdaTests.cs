@@ -7,6 +7,9 @@ using Xunit;
 
 namespace DotNext.Metaprogramming
 {
+    using U = UniversalExpression;
+    using static CodeGenerator;
+
     public sealed class LambdaTests: Assert
     {   
         private static long Fact(long value)
@@ -15,12 +18,12 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void RecursionTest()
+        public static void Recursion()
         {
-            var fact = LambdaBuilder<Func<long, long>>.Build(fun => 
+            var fact = Lambda<Func<long, long>>(fun => 
             {
-                UniversalExpression arg = fun.Parameters[0];
-                fun.If(arg > 1L).Then(arg * fun.Self.Invoke(arg - 1L)).Else(arg).OfType<long>().End();
+                var arg = (U)fun[0];
+                If(arg > 1L).Then(arg * fun.Invoke(arg - 1L)).Else(arg).OfType<long>().End();
             })
             .Compile();
             Equal(120, Fact(5));
@@ -28,23 +31,23 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void AsyncLambdaWithoutAwaitTest()
+        public static void AsyncLambdaWithoutAwait()
         {
-            var lambda = LambdaBuilder<Func<int, int, Task<int>>>.Build(fun =>
+            var lambda = Lambda<Func<int, int, Task<int>>>((fun, result) =>
             {
-                UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
-                fun.Assign(fun.Result, new AsyncResultExpression(arg0 + arg1, false));
+                var (arg1, arg2) = fun;
+                Assign(result, new AsyncResultExpression((U)arg1 + arg2, false));
             });
             Equal(42, lambda.Compile().Invoke(40, 2).Result);
         }
 
         [Fact]
-        public void AsyncLambdaWithoutAwaitValueTaskTest()
+        public static void AsyncLambdaWithoutAwaitValueTask()
         {
-            var lambda = LambdaBuilder<Func<int, int, ValueTask<int>>>.Build(fun =>
+            var lambda = Lambda<Func<int, int, ValueTask<int>>>((fun, result) =>
             {
-                UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
-                fun.Assign(fun.Result, new AsyncResultExpression(arg0 + arg1, true));
+                var (arg1, arg2) = fun;
+                Assign(result, new AsyncResultExpression((U)arg1 + arg2, true));
             });
             Equal(42, lambda.Compile().Invoke(40, 2).Result);
         }
@@ -53,49 +56,49 @@ namespace DotNext.Metaprogramming
             => Task.FromResult(x + y);
 
         [Fact]
-        public void SimpleAsyncLambdaTest()
+        public static void SimpleAsyncLambda()
         {
             var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-            var lambda = AsyncLambdaBuilder<Func<long, long, Task<long>>>.Build(fun =>
+            var lambda = AsyncLambda<Func<long, long, Task<long>>>(fun =>
             {
-                UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
-                UniversalExpression temp = fun.DeclareVariable<long>("tmp");
-                fun.Assign(temp, Expression.Call(null, sumMethod, arg0, arg1).Await());
-                fun.Return(temp + 20L.AsConst());
+                var (arg1, arg2) = fun;
+                var temp = DeclareVariable<long>("tmp");
+                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await());
+                Return((U)temp + 20L);
             });
             var fn = lambda.Compile();
             Equal(35L, fn(5L, 10L).Result);
         }
 
         [Fact]
-        public void SimpleAsyncLambdaValueTaskTest()
+        public static void SimpleAsyncLambdaValueTask()
         {
             var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-            var lambda = AsyncLambdaBuilder<Func<long, long, ValueTask<long>>>.Build(fun =>
+            var lambda = AsyncLambda<Func<long, long, ValueTask<long>>>(fun =>
             {
-                UniversalExpression arg0 = fun.Parameters[0], arg1 = fun.Parameters[1];
-                UniversalExpression temp = fun.DeclareVariable<long>("tmp");
-                fun.Assign(temp, Expression.Call(null, sumMethod, arg0, arg1).Await());
-                fun.Return(temp + 20L.AsConst());
+                var (arg1, arg2) = fun;
+                var temp = DeclareVariable<long>("tmp");
+                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await());
+                Return((U)temp + 20L);
             });
             var fn = lambda.Compile();
             Equal(35L, fn(5L, 10L).Result);
         }
 
         [Fact]
-        public void AsyncLambdaWithConditionalTest()
+        public static void AsyncLambdaWithConditional()
         {
             var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-            var lambda = AsyncLambdaBuilder<Func<long, Task<long>>>.Build(fun =>
+            var lambda = AsyncLambda<Func<long, Task<long>>>(fun =>
             {
-                UniversalExpression arg = fun.Parameters[0];
-                fun.If(arg > 10L)
-                    .Then(then => then.Return(Expression.Call(null, sumMethod, arg, 10L.AsConst()).Await()))
-                    .Else(@else =>
+                var arg = (U)fun[0];
+                If(arg > 10L)
+                    .Then(() => Return(Expression.Call(null, sumMethod, arg, 10L.Const()).Await()))
+                    .Else(() =>
                     {
-                        var local = @else.DeclareVariable<long>("myVar");
-                        @else.Assign(local, Expression.Call(null, sumMethod, arg, 90L.AsConst()).Await());
-                        @else.Return(local);
+                        var local = DeclareVariable<long>("myVar");
+                        Assign(local, Expression.Call(null, sumMethod, arg, 90L.Const()).Await());
+                        Return(local);
                     })
                     .End();
             });
@@ -105,18 +108,18 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void TryFinallyAsyncTest()
+        public static void TryFinallyAsync()
         {
             var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-            var lambda = AsyncLambdaBuilder<Func<long[], Task<long>>>.Build(fun =>
+            var lambda = AsyncLambda<Func<long[], Task<long>>>(fun =>
             {
-                var result = fun.DeclareVariable<long>("accumulator");
-                fun.ForEach(fun.Parameters[0], loop =>
+                var result = DeclareVariable<long>("accumulator");
+                ForEach(fun[0], item =>
                 {
-                    loop.If(loop.Element == 0L).Then(then => then.Break(loop)).End();
-                    loop.Assign(result, Expression.Call(null, sumMethod, result, loop.Element).Await());
+                    If((U)item == 0L).Then(Break).End();
+                    Assign(result, Expression.Call(null, sumMethod, result, item).Await());
                 });
-                fun.Return(result);
+                Return(result);
             });
             var fn = lambda.Compile();
             Equal(15L, fn(new[] { 3L, 2L, 10L }).Result);
@@ -124,19 +127,19 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void TryCatchAsyncLambdaTest()
+        public static void TryCatchAsyncLambdaTest()
         {
             var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-            var lambda = AsyncLambdaBuilder<Func<long, Task<long>>>.Build(fun =>
+            var lambda = AsyncLambda<Func<long, Task<long>>>(fun =>
             {
-                UniversalExpression arg = fun.Parameters[0];
-                fun.Try(block =>
+                var arg = (U)fun[0];
+                Try(() =>
                 {
-                    block.If(arg < 0L).Then(then => then.Throw<InvalidOperationException>()).End();
-                    block.If(arg > 10L).Then(then => then.Throw<ArgumentException>()).Else(@else => @else.Return(arg)).End();
+                    If(arg < 0L).Then(Throw<InvalidOperationException>).End();
+                    If(arg > 10L).Then(Throw<ArgumentException>).Else(() => Return(arg)).End();
                 })
-                .Catch<ArgumentException>(@catch => @catch.Return(-42L))
-                .Catch<InvalidOperationException>(@catch => @catch.Rethrow())
+                .Catch<ArgumentException>(() => Return(ExpressionBuilder.Const(-42L)))
+                .Catch<InvalidOperationException>(Rethrow)
                 .End();
             });
             var fn = lambda.Compile();
@@ -147,17 +150,13 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void LeaveAsyncTryCatchTest()
+        public static void LeaveAsyncTryCatchTest()
         {
-            var lambda = AsyncLambdaBuilder<Func<long[], Task<string>>>.Build(body =>
+            var lambda = AsyncLambda<Func<long[], Task<string>>>(fun =>
             {
-                var array = body.Parameters[0];
-                body.For(0, i => i < array.ArrayLength(), loop =>
+                For(0.Const(), i => (U)i < fun[0].ArrayLength(), PostIncrementAssign, i =>
                 {
-                    loop.Using(typeof(MemoryStream).New(), @using =>
-                    {
-                        @using.Break(loop);
-                    });
+                    Using(typeof(MemoryStream).New(), Break);
                 });
             });
             var fn = lambda.Compile();

@@ -3,17 +3,20 @@ using Xunit;
 
 namespace DotNext.Metaprogramming
 {
+    using static CodeGenerator;
+    using U = UniversalExpression;
+
     public sealed class SwitchTests: Assert
     {
         [Fact]
         public static void IntConversion()
         {
-            var lambda = LambdaBuilder<Func<int, string>>.Build(fun =>
+            var lambda = Lambda<Func<int, string>>(fun =>
             {
-                fun.Switch(fun.Parameters[0])
-                    .Case(0, "Zero")
-                    .Case(1, "One")
-                    .Default("Unknown")
+                Switch(fun[0])
+                    .Case(0.Const(), "Zero".Const())
+                    .Case(1.Const(), "One".Const())
+                    .Default("Unknown".Const())
                     .OfType<string>()
                     .End();
             })

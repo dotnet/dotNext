@@ -7,17 +7,13 @@ namespace DotNext.Metaprogramming
     using static Reflection.DisposableType;
     using static Reflection.CollectionType;
 
-    /// <summary>
-    /// Represents <see langword="foreach"/> loop builder.
-    /// </summary>
-    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
-    public sealed class ForEachLoopBuilder: LoopBuilderBase, IExpressionBuilder<BlockExpression>
+    internal sealed class ForEachLoopScope: LoopScopeBase, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<MemberExpression, LoopContext>>, ICompoundStatement<Action<MemberExpression>>
     {
         private readonly ParameterExpression enumeratorVar;
         private readonly BinaryExpression enumeratorAssignment;
         private readonly MethodCallExpression moveNextCall;
 
-        internal ForEachLoopBuilder(Expression collection, CompoundStatementBuilder parent = null)
+        internal ForEachLoopScope(Expression collection, LexicalScope parent = null)
             : base(parent)
         {
             collection.Type.GetItemType(out var enumerable);
@@ -43,23 +39,26 @@ namespace DotNext.Metaprogramming
             enumeratorAssignment = Expression.Assign(enumeratorVar, getEnumerator);
         }
 
-        /// <summary>
-        /// Gets collection element.
-        /// </summary>
-        public UniversalExpression Element => enumeratorVar.Property(nameof(IEnumerator.Current));
+        private MemberExpression Element => Expression.Property(enumeratorVar, nameof(IEnumerator.Current));
 
-        internal override Expression Build() => Build<BlockExpression, ForEachLoopBuilder>(this);
-
-        BlockExpression IExpressionBuilder<BlockExpression>.Build()
+        public new BlockExpression Build()
         {
-            Expression loopBody = moveNextCall.Condition(base.Build(), breakLabel.Goto());
+            Expression loopBody = moveNextCall.Condition(base.Build(), BreakLabel.Goto());
             var disposeMethod = enumeratorVar.Type.GetDisposeMethod();
-            loopBody = loopBody.Loop(breakLabel, continueLabel);
+            loopBody = loopBody.Loop(BreakLabel, ContinueLabel);
             var @finally = disposeMethod is null ?
                     (Expression)enumeratorVar.AssignDefault() :
-                    Expression.Block(enumeratorVar.Call(disposeMethod), enumeratorVar.Assign(enumeratorVar.Type.AsDefault()));
+                    Expression.Block(enumeratorVar.Call(disposeMethod), enumeratorVar.Assign(enumeratorVar.Type.Default()));
             loopBody = loopBody.Finally(@finally);
             return Expression.Block(typeof(void), new[] { enumeratorVar }, enumeratorAssignment, loopBody);
         }
+
+        void ICompoundStatement<Action<MemberExpression, LoopContext>>.ConstructBody(Action<MemberExpression, LoopContext> body)
+        {
+            using (var cookie = new LoopContext(this))
+                body(Element, cookie);
+        }
+
+        void ICompoundStatement<Action<MemberExpression>>.ConstructBody(Action<MemberExpression> body) => body(Element);
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using static System.Threading.Thread;
 
 namespace DotNext.Metaprogramming
 {
@@ -12,15 +12,6 @@ namespace DotNext.Metaprogramming
     /// </summary>
     public static class ExpressionBuilder
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static E Build<E, B>(this B builder, Action<B> scope)
-            where E : Expression
-            where B: class, IExpressionBuilder<E>
-        {
-            scope(builder);
-            return builder.Build();
-        }
-
         /// <summary>
         /// Constructs unary plus expression.
         /// </summary>
@@ -445,7 +436,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The assignee.</param>
         /// <returns>Binary expression.</returns>
         public static BinaryExpression AssignDefault(this ParameterExpression left)
-            => left.Assign(left.Type.AsDefault());
+            => left.Assign(left.Type.Default());
 
         /// <summary>
         /// Constructs assignment expression.
@@ -456,7 +447,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The assignee.</param>
         /// <returns>Binary expression.</returns>
         public static BinaryExpression AssignDefault(this MemberExpression left)
-            => left.Assign(left.Type.AsDefault());
+            => left.Assign(left.Type.Default());
 
         /// <summary>
         /// Constructs assignment expression.
@@ -467,7 +458,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The assignee.</param>
         /// <returns>Binary expression.</returns>
         public static BinaryExpression AssignDefault(this IndexExpression left)
-            => left.Assign(left.Type.AsDefault());
+            => left.Assign(left.Type.Default());
 
         /// <summary>
         /// Constructs assignment expression.
@@ -908,10 +899,8 @@ namespace DotNext.Metaprogramming
         /// Creates conditional expression builder.
         /// </summary>
         /// <param name="test">Test expression.</param>
-        /// <param name="parent">Parent lexical scope.</param>
         /// <returns>Conditional expression builder.</returns>
-        public static ConditionalBuilder Condition(this Expression test, CompoundStatementBuilder parent = null)
-            => new ConditionalBuilder(test, parent, false);
+        public static ConditionalBuilder Condition(this Expression test) => CodeGenerator.MakeConditional(test);
 
         /// <summary>
         /// Constructs a <see langword="try"/> block with a <see langword="finally"/> block without <see langword="catch"/> block.
@@ -941,7 +930,7 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="T">The type of constant.</typeparam>
         /// <param name="value">The constant value.</param>
         /// <returns></returns>
-        public static ConstantExpression AsConst<T>(this T value) => Expression.Constant(value, typeof(T));
+        public static ConstantExpression Const<T>(this T value) => Expression.Constant(value, typeof(T));
 
         /// <summary>
         /// Constructs type default value supplier.
@@ -951,7 +940,7 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="type">The target type.</param>
         /// <returns>The type default value expression.</returns>
-        public static DefaultExpression AsDefault(this Type type) => Expression.Default(type);
+        public static DefaultExpression Default(this Type type) => Expression.Default(type);
 
         /// <summary>
         /// Constructs type instantiation expression.
@@ -977,10 +966,8 @@ namespace DotNext.Metaprogramming
         /// Creates structured exception handling statement builder.
         /// </summary>
         /// <param name="expression"><see langword="try"/> block.</param>
-        /// <param name="parent">The parent lexical scope.</param>
         /// <returns>Structured exception handling statement builder.</returns>
-        public static TryBuilder Try(this Expression expression, CompoundStatementBuilder parent = null)
-            => new TryBuilder(expression, parent, false);
+        public static TryBuilder Try(this Expression expression) => CodeGenerator.MakeTry(expression);
 
         /// <summary>
         /// Constructs compound statement hat repeatedly refer to a single object or 
@@ -988,16 +975,10 @@ namespace DotNext.Metaprogramming
         /// of the object or structure.
         /// </summary>
         /// <param name="expression">An expression to be captured by scope.</param>
-        /// <param name="scope">The scope statements builder.</param>
-        /// <param name="parent">Parent lexical scope.</param>
+        /// <param name="body">The scope body.</param>
         /// <returns>Construct code block.</returns>
-        /// <see cref="WithBlockBuilder"/>
-        /// <see cref="WithBlockBuilder.ScopeVar"/>
-        public static Expression With(this Expression expression, Action<WithBlockBuilder> scope, CompoundStatementBuilder parent = null)
-        {
-            using(var builder = new WithBlockBuilder(expression, parent))
-                return builder.Build<Expression, WithBlockBuilder>(scope);
-        }
+        public static Expression With(this Expression expression, Action<ParameterExpression> body)
+            => CodeGenerator.MakeWith(expression, body);
 
         /// <summary>
         /// Constructs <see langword="using"/> statement.
@@ -1005,25 +986,49 @@ namespace DotNext.Metaprogramming
         /// <remarks>
         /// The equivalent code is <code>using(var obj = expression){ }</code>.
         /// </remarks>
-        /// <param name="expression">The expression representing disposable resource.</param>
-        /// <param name="scope">The body of <see langword="using"/> statement.</param>
-        /// <param name="parent">Optional parent scope.</param>
+        /// <param name="resource">The expression representing disposable resource.</param>
+        /// <param name="body">The body of <see langword="using"/> statement.</param>
         /// <returns><see langword="using"/> statement.</returns>
-        public static Expression Using(this Expression expression, Action<UsingBlockBuilder> scope, CompoundStatementBuilder parent = null)
-        {
-            using(var builder = new UsingBlockBuilder(expression, parent))
-                return builder.Build<Expression, UsingBlockBuilder>(scope);
-        }
+        public static Expression Using(this Expression resource, Action<ParameterExpression> body)
+            => CodeGenerator.MakeUsing(resource, body);
+        
+        /// <summary>
+        /// Constructs <see langword="using"/> statement.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>using(var obj = expression){ }</code>.
+        /// </remarks>
+        /// <param name="resource">The expression representing disposable resource.</param>
+        /// <param name="body">The body of <see langword="using"/> statement.</param>
+        /// <returns><see langword="using"/> statement.</returns>
+        public static Expression Using(this Expression resource, Action body)
+            => CodeGenerator.MakeUsing(resource, body);
 
         /// <summary>
         /// Creates selection statement builder that chooses a single <see langword="switch"/> section 
         /// to execute from a list of candidates based on a pattern match with the match expression.
         /// </summary>
         /// <param name="switchValue">The value to be matched with provided candidates.</param>
-        /// <param name="parent">Optional parent scope.</param>
         /// <returns><see langword="switch"/> statement builder.</returns>
-        public static SwitchBuilder Switch(this Expression switchValue, CompoundStatementBuilder parent = null)
-            => new SwitchBuilder(switchValue, parent, false);
+        public static SwitchBuilder Switch(this Expression switchValue) => CodeGenerator.MakeSwitch(switchValue);
+
+        /// <summary>
+        /// Constructs <see langword="lock"/> expression.
+        /// </summary>
+        /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
+        /// <param name="body">Synchronized scope of code.</param>
+        /// <returns>Constructed lock statement.</returns>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
+        public static BlockExpression Lock(this Expression syncRoot, Action<ParameterExpression> body) => CodeGenerator.MakeLock(syncRoot, body);
+
+        /// <summary>
+        /// Constructs <see langword="lock"/> expression.
+        /// </summary>
+        /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
+        /// <param name="body">Synchronized scope of code.</param>
+        /// <returns>Constructed lock statement.</returns>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
+        public static BlockExpression Lock(this Expression syncRoot, Action body) => CodeGenerator.MakeLock(syncRoot, body);
 
         /// <summary>
         /// Transforms async lambda function into read-to-compile function.
@@ -1085,25 +1090,33 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents compound expresssion builder.
     /// </summary>
+    /// <remarks>
+    /// Any derived expression builder is not thread-safe and event cannot
+    /// be shared between threads.
+    /// </remarks>
     /// <typeparam name="E">Type of expression to be constructed.</typeparam>
     public abstract class ExpressionBuilder<E> : IExpressionBuilder<E>
         where E : Expression
     {
-        private readonly CompoundStatementBuilder parent;
-        private readonly bool treatAsStatement;
-        private Type expressionType;
+        internal delegate Expression ScopeBuilder(Action body);
 
-        private protected ExpressionBuilder(CompoundStatementBuilder parent, bool treatAsStatement)
+        private protected readonly ScopeBuilder builder;
+        private Type expressionType;
+        private readonly int ownerThread;
+
+        private protected ExpressionBuilder(ScopeBuilder builder)
         {
-            this.parent = parent;
-            this.treatAsStatement = treatAsStatement;
+            this.builder = builder;
+            ownerThread = CurrentThread.ManagedThreadId;
         }
 
-        private protected ScopeBuilder NewScope() => NewScope(parent => new ScopeBuilder(parent));
+        private protected void VerifyCaller()
+        {
+            if (ownerThread != CurrentThread.ManagedThreadId)
+                throw new InvalidOperationException();
+        }
 
-        private protected B NewScope<B>(Func<CompoundStatementBuilder, B> factory)
-            where B : ScopeBuilder
-            => factory(parent);
+        internal event Action<E> Constructed;
 
         private protected Type ExpressionType => expressionType ?? typeof(void);
 
@@ -1117,6 +1130,7 @@ namespace DotNext.Metaprogramming
         /// <returns>This builder.</returns>
         public ExpressionBuilder<E> OfType(Type expressionType)
         {
+            VerifyCaller();
             this.expressionType = expressionType;
             return this;
         }
@@ -1134,9 +1148,9 @@ namespace DotNext.Metaprogramming
         /// <returns>Constructed expression.</returns>
         public E End()
         {
+            VerifyCaller();
             var expr = Build();
-            if (treatAsStatement)
-                parent.AddStatement(expr);
+            Constructed?.Invoke(expr);
             return expr;
         }
 

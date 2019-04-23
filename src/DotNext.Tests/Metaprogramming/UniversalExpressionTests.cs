@@ -13,7 +13,7 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void UnaryOperatorTest()
+        public static void UnaryOperator()
         {
             dynamic expr = (UniversalExpression)10;
             expr = -expr;
@@ -22,7 +22,7 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void BinaryOperatorTest()
+        public static void BinaryOperator()
         {
             dynamic expr = (UniversalExpression)10;
             expr = expr + 20;
@@ -31,7 +31,7 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void CallTest()
+        public static void Call()
         {
             dynamic expr = (UniversalExpression)"Hello, world";
             expr = expr.IndexOf('e');
@@ -40,7 +40,7 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void MemberTest()
+        public static void Member()
         {
             dynamic expr = (UniversalExpression)"Hello, world";
             expr = expr.Length;
@@ -49,41 +49,30 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public void SetMemberTest()
+        public static void SetMember()
         {
-            dynamic expr = new UniversalExpression(new MyClass() { Field = null }.AsConst());
+            dynamic expr = (UniversalExpression)new MyClass() { Field = null }.Const();
             expr = expr.Field = "value";
             Expression staticExpr = expr;
             IsAssignableFrom<BinaryExpression>(staticExpr);
         }
 
         [Fact]
-        public void IndexerTest()
+        public static void Indexer()
         {
-            dynamic expr = new UniversalExpression(new[] { 1, 2 }.AsConst<IList<int>>());
+            dynamic expr = (UniversalExpression)new[] { 1, 2 }.Const<IList<int>>();
             expr = expr[0];
             Expression staticExpr = expr;
             IsAssignableFrom<IndexExpression>(staticExpr);
         }
 
         [Fact]
-        public void InvokeTest()
+        public static void Invoke()
         {
-            dynamic expr = new UniversalExpression(new Action<string>(Console.WriteLine).AsConst());
+            dynamic expr = (UniversalExpression)new Action<string>(Console.WriteLine).Const();
             expr = expr("Hello, world");
             Expression staticExpr = expr;
             IsAssignableFrom<InvocationExpression>(staticExpr);
-        }
-
-        [Fact]
-        public void NewExpression()
-        {
-            var lambda = LambdaBuilder<Func<Type, char[], object>>.Build(fun =>
-            {
-                fun.Body = fun.Parameters[0].New(fun.Parameters[1]);
-            }).Compile();
-            var str = lambda(typeof(string), new char[] { 'a', 'b' });
-            Equal("ab", str);
         }
     }
 }
