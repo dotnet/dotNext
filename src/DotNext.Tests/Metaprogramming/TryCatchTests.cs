@@ -14,9 +14,9 @@ namespace DotNext.Metaprogramming
         {
             var lambda = Lambda<Func<long, long, bool>>((fun, result) =>
             {
-                U param1 = (U)fun[0], param2 = (U)fun[1];
+                var (arg1, arg2) = fun;
                 Assign(result, true.Const());
-                Try(param1 / param2)
+                Try((U)arg1 / arg2)
                     .Fault(() => Assign(result, false.Const()))
                     .OfType<bool>()
                     .End();
@@ -31,9 +31,9 @@ namespace DotNext.Metaprogramming
         {
             var lambda = Lambda<Func<long, long, bool>>((fun, result) =>
             {
-                U param1 = (U)fun[0], param2 = (U)fun[1];
+                var (arg1, arg2) = fun;
                 Assign(result, true.Const());
-                Try(param1 / param2)
+                Try((U)arg1 / arg2)
                     .Catch<DivideByZeroException>(() => Assign(result, false.Const()))
                     .End();
             })
@@ -48,8 +48,8 @@ namespace DotNext.Metaprogramming
         {
             var lambda = Lambda<Func<long, long, bool>>((fun, result) =>
             {
-                U param1 = (U)fun[0], param2 = (U)fun[1];
-                Try(param1 / param2)
+                var (arg1, arg2) = fun;
+                Try((U)arg1 / arg2)
                     .Catch<DivideByZeroException>(() => Return(false.Const()))
                     .End();
                 Return(true.Const());
@@ -65,8 +65,8 @@ namespace DotNext.Metaprogramming
         {
             var lambda = Lambda<Func<long, long, bool>>(fun =>
             {
-                U param1 = (U)fun[0], param2 = (U)fun[1];
-                Try(Expression.Block(param1 / param2, true.Const()))
+                var (arg1, arg2) = fun;
+                Try(Expression.Block((U)arg1 / arg2, true.Const()))
                     .Catch(typeof(Exception), e => e.InstanceOf<DivideByZeroException>(), e => InPlaceValue(false))
                     .OfType<bool>()
                     .End();

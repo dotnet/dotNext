@@ -7,7 +7,7 @@ namespace DotNext.Metaprogramming
     using static Reflection.DisposableType;
     using static Reflection.CollectionType;
 
-    internal sealed class ForEachLoopScope: LoopBuilderBase, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<MemberExpression, LoopCookie>>, ICompoundStatement<Action<MemberExpression>>
+    internal sealed class ForEachLoopScope: LoopScopeBase, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<MemberExpression, LoopContext>>, ICompoundStatement<Action<MemberExpression>>
     {
         private readonly ParameterExpression enumeratorVar;
         private readonly BinaryExpression enumeratorAssignment;
@@ -53,9 +53,9 @@ namespace DotNext.Metaprogramming
             return Expression.Block(typeof(void), new[] { enumeratorVar }, enumeratorAssignment, loopBody);
         }
 
-        void ICompoundStatement<Action<MemberExpression, LoopCookie>>.ConstructBody(Action<MemberExpression, LoopCookie> body)
+        void ICompoundStatement<Action<MemberExpression, LoopContext>>.ConstructBody(Action<MemberExpression, LoopContext> body)
         {
-            using (var cookie = new LoopCookie(this))
+            using (var cookie = new LoopContext(this))
                 body(Element, cookie);
         }
 

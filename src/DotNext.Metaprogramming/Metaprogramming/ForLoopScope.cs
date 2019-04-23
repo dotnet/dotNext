@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class ForLoopScope: LoopBuilderBase, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<ForLoopScope>>
+    internal sealed class ForLoopScope: LoopScopeBase, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<ForLoopScope>>
     {
         private readonly Expression condition;
         private readonly ParameterExpression loopVar;
@@ -17,9 +17,9 @@ namespace DotNext.Metaprogramming
             this.condition = condition(loopVar);
         }
 
-        internal void ConstructBody(Action<ParameterExpression, LoopCookie> body, Action<ParameterExpression> iteration)
+        internal void ConstructBody(Action<ParameterExpression, LoopContext> body, Action<ParameterExpression> iteration)
         {
-            using (var cookie = new LoopCookie(this))
+            using (var cookie = new LoopContext(this))
                 body(loopVar, cookie);
             AddStatement(Expression.Label(ContinueLabel));
             iteration(loopVar);

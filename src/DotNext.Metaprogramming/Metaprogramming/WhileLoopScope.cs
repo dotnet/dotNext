@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class WhileLoopScope: LoopBuilderBase, IExpressionBuilder<LoopExpression>, ICompoundStatement<Action<LoopCookie>>
+    internal sealed class WhileLoopScope: LoopScopeBase, IExpressionBuilder<LoopExpression>, ICompoundStatement<Action<LoopContext>>
     {
         private readonly Expression test;
         private readonly bool conditionFirst;
@@ -33,10 +33,10 @@ namespace DotNext.Metaprogramming
             return loopExpr;
         }
 
-        void ICompoundStatement<Action<LoopCookie>>.ConstructBody(Action<LoopCookie> body)
+        void ICompoundStatement<Action<LoopContext>>.ConstructBody(Action<LoopContext> body)
         {
-            using (var cookie = new LoopCookie(this))
-                body(cookie);
+            using (var context = new LoopContext(this))
+                body(context);
         }
     }
 }

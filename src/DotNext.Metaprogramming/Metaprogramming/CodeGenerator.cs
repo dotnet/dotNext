@@ -475,8 +475,8 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Loop continuation condition.</param>
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void While(Expression test, Action<LoopCookie> body)
-            => AddStatement<Action<LoopCookie>, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, true), body);
+        public static void While(Expression test, Action<LoopContext> body)
+            => AddStatement<Action<LoopContext>, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, true), body);
 
         /// <summary>
         /// Adds <see langword="while"/> loop statement.
@@ -493,8 +493,8 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Loop continuation condition.</param>
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void DoWhile(Expression test, Action<LoopCookie> body)
-            => AddStatement<Action<LoopCookie>, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, false), body);
+        public static void DoWhile(Expression test, Action<LoopContext> body)
+            => AddStatement<Action<LoopContext>, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, false), body);
 
         /// <summary>
         /// Adds <c>do{ } while(condition);</c> loop statement.
@@ -521,8 +521,8 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
-        public static void ForEach(Expression collection, Action<MemberExpression, LoopCookie> body)
-            => AddStatement<Action<MemberExpression, LoopCookie>, ForEachLoopScope, ForEachLoopScopeFactory>(new ForEachLoopScopeFactory(collection), body);
+        public static void ForEach(Expression collection, Action<MemberExpression, LoopContext> body)
+            => AddStatement<Action<MemberExpression, LoopContext>, ForEachLoopScope, ForEachLoopScopeFactory>(new ForEachLoopScopeFactory(collection), body);
         
         /// <summary>
         /// Adds <see langword="foreach"/> loop statement.
@@ -560,7 +560,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
-        public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopCookie> body)
+        public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopContext> body)
             => AddStatement<Action<ForLoopScope>, ForLoopScope, ForLoopScopeFactory>(new ForLoopScopeFactory(initializer, condition), scope => scope.ConstructBody(body, iteration));
         
         /// <summary>
@@ -591,8 +591,8 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Loop(Action<LoopCookie> body)
-            => AddStatement<Action<LoopCookie>, LoopScope, LoopScopeFactory>(new LoopScopeFactory(), body);
+        public static void Loop(Action<LoopContext> body)
+            => AddStatement<Action<LoopContext>, LoopScope, LoopScopeFactory>(new LoopScopeFactory(), body);
 
         /// <summary>
         /// Adds generic loop statement.
@@ -616,7 +616,7 @@ namespace DotNext.Metaprogramming
         public static void Throw<E>() where E : Exception, new() => Throw(Expression.New(typeof(E).GetConstructor(Array.Empty<Type>())));
 
         /// <summary>
-        /// Adds re-throw expression into this scope if it or its parent is <see cref="CatchBuilder"/>.
+        /// Adds re-throw statement.
         /// </summary>
         public static void Rethrow() => CurrentScope.AddStatement(Expression.Rethrow());
 
@@ -750,11 +750,11 @@ namespace DotNext.Metaprogramming
         private static Expression MakeScope(Action body)
             => Build<Expression, Action, LocalScope, LocalScopeFactory>(new LocalScopeFactory(), body);
 
-        private static LabelTarget ContinueLabel(LoopBuilderBase scope) => scope.ContinueLabel;
+        private static LabelTarget ContinueLabel(LoopScopeBase scope) => scope.ContinueLabel;
 
-        private static LabelTarget BreakLabel(LoopBuilderBase scope) => scope.BreakLabel;
+        private static LabelTarget BreakLabel(LoopScopeBase scope) => scope.BreakLabel;
 
-        private static void Goto(LoopCookie loop, Func<LoopBuilderBase, LabelTarget> labelFactory, GotoExpressionKind kind)
+        private static void Goto(LoopContext loop, Func<LoopScopeBase, LabelTarget> labelFactory, GotoExpressionKind kind)
         {
             if (loop.TryGetScope(out var scope))
                 Goto(labelFactory(scope), null, kind);
@@ -762,9 +762,9 @@ namespace DotNext.Metaprogramming
                 throw new ArgumentException(ExceptionMessages.LoopNotAvailable, nameof(loop));
         }
 
-        private static void Goto(Func<LoopBuilderBase, LabelTarget> labelFactory, GotoExpressionKind kind)
+        private static void Goto(Func<LoopScopeBase, LabelTarget> labelFactory, GotoExpressionKind kind)
         {
-            var loop = FindScope<LoopBuilderBase>() ?? throw new InvalidOperationException(ExceptionMessages.LoopNotAvailable);
+            var loop = FindScope<LoopScopeBase>() ?? throw new InvalidOperationException(ExceptionMessages.LoopNotAvailable);
             Goto(labelFactory(loop), null, kind);
         }
 
@@ -773,7 +773,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="loop">The loop reference.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Continue(LoopCookie loop) => Goto(loop, ContinueLabel, GotoExpressionKind.Continue);
+        public static void Continue(LoopContext loop) => Goto(loop, ContinueLabel, GotoExpressionKind.Continue);
 
         /// <summary>
         /// Restarts execution of the entire loop.
@@ -786,7 +786,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="loop">The loop reference.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Break(LoopCookie loop) => Goto(loop, BreakLabel, GotoExpressionKind.Break);
+        public static void Break(LoopContext loop) => Goto(loop, BreakLabel, GotoExpressionKind.Break);
 
         /// <summary>
         /// Stops execution of the entire loop.

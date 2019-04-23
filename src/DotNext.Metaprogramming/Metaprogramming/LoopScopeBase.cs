@@ -7,16 +7,16 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents abstract class for loop statement builders.
     /// </summary>
-    internal abstract class LoopBuilderBase : LexicalScope
+    internal abstract class LoopScopeBase : LexicalScope
     {
         private static long loopCount = 0L;
         internal protected readonly LabelTarget BreakLabel;
         internal protected readonly LabelTarget ContinueLabel;
 
-        private protected LoopBuilderBase(LexicalScope parent)
+        private protected LoopScopeBase(LexicalScope parent)
             : base(parent)
         {
-            var loopCount = LoopBuilderBase.loopCount.IncrementAndGet();
+            var loopCount = LoopScopeBase.loopCount.IncrementAndGet();
             BreakLabel = Expression.Label(typeof(void), "break_" + loopCount);
             ContinueLabel = Expression.Label(typeof(void), "continue" + loopCount);
         }

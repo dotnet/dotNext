@@ -9,7 +9,7 @@ namespace DotNext.Metaprogramming
     /// <remarks>
     /// This loop is equvalent to <c>while(true){ }</c>
     /// </remarks>
-    internal sealed class LoopScope : LoopBuilderBase, IExpressionBuilder<LoopExpression>, ICompoundStatement<Action<LoopCookie>>
+    internal sealed class LoopScope : LoopScopeBase, IExpressionBuilder<LoopExpression>, ICompoundStatement<Action<LoopContext>>
     {
         internal LoopScope(LexicalScope parent)
             : base(parent)
@@ -18,9 +18,9 @@ namespace DotNext.Metaprogramming
 
         public new LoopExpression Build() => base.Build().Loop(BreakLabel, ContinueLabel);
 
-        void ICompoundStatement<Action<LoopCookie>>.ConstructBody(Action<LoopCookie> body)
+        void ICompoundStatement<Action<LoopContext>>.ConstructBody(Action<LoopContext> body)
         {
-            using (var cookie = new LoopCookie(this))
+            using (var cookie = new LoopContext(this))
                 body(cookie);
         }
     }
