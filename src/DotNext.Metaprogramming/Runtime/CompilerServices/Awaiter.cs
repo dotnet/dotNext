@@ -6,9 +6,9 @@ namespace DotNext.Runtime.CompilerServices
     internal static class Awaiter<TAwaiter>
         where TAwaiter : INotifyCompletion
     {
-        internal delegate bool IsCompletedChecker(ref TAwaiter awaiter);
+        internal delegate bool IsCompletedGetter(ref TAwaiter awaiter);
 
-        internal static readonly IsCompletedChecker IsCompleted;
+        internal static readonly IsCompletedGetter IsCompleted;
 
         private static bool NotCompleted(ref TAwaiter awaiter) => false;
 
@@ -18,12 +18,12 @@ namespace DotNext.Runtime.CompilerServices
             var isCompletedProperty = awaiterType.GetProperty(nameof(TaskAwaiter.IsCompleted), typeof(bool));
             if (isCompletedProperty is null)
                 IsCompleted = NotCompleted;
-            else if (awaiterType.IsValueType)
-                IsCompleted = isCompletedProperty.GetMethod.CreateDelegate<IsCompletedChecker>();
+            else if(awaiterType.IsValueType)
+                IsCompleted = isCompletedProperty.GetMethod.CreateDelegate<IsCompletedGetter>();
             else
             {
                 var awaiterParam = Parameter(awaiterType.MakeByRefType());
-                IsCompleted = Lambda<IsCompletedChecker>(Property(awaiterParam, isCompletedProperty), true, awaiterParam).Compile();
+                IsCompleted = Lambda<IsCompletedGetter>(Property(awaiterParam, isCompletedProperty), true, awaiterParam).Compile();
             }
         }
     }

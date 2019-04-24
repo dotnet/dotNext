@@ -159,7 +159,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <typeparam name="TAwaiter">Type of asynchronous control flow object.</typeparam>
         /// <param name="awaiter">Asynchronous result obtained from another method to await.</param>
         /// <param name="stateId">A new state identifier.</param>
-        /// <returns><see langword="true"/> if awaiter is completed successfully; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if awaiter is completed synchronously; otherwise, <see langword="false"/>.</returns>
         public bool MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
             where TAwaiter : INotifyCompletion
         {
@@ -351,7 +351,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <typeparam name="TAwaiter">Type of asynchronous control flow object.</typeparam>
         /// <param name="awaiter">Asynchronous result obtained from another method to await.</param>
         /// <param name="stateId">A new state identifier.</param>
-        /// <returns><see langword="true"/> if awaiter is completed successfully; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if awaiter is completed synchronously; otherwise, <see langword="false"/>.</returns>
         public bool MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
             where TAwaiter : INotifyCompletion
         {
