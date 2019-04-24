@@ -146,7 +146,7 @@ namespace DotNext.Runtime.CompilerServices
                     builder.SetResult();
                 else
                     builder.SetException(exception.SourceException);
-                //perform cleanup after releasing all suspended tasks
+                //perform cleanup after resuming of all suspended tasks
                 guardedRegionsCounter = 0;
                 exception = null;
                 State = default;
@@ -373,7 +373,7 @@ namespace DotNext.Runtime.CompilerServices
                     builder.SetResult(result);
                 else
                     builder.SetException(exception.SourceException);
-                //perform cleanup after releasing all suspended tasks
+                //perform cleanup after resuming of all suspended tasks
                 guardedRegionsCounter = 0;
                 exception = null;
                 result = default;
