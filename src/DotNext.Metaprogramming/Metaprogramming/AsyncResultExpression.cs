@@ -99,10 +99,9 @@ namespace DotNext.Metaprogramming
         {
             //if state machine is non-void then use Result property
             var resultProperty = stateMachine.Type.GetProperty(nameof(AsyncStateMachine<ValueTuple, int>.Result));
-            if (!(resultProperty is null))
-                return Block(Property(stateMachine, resultProperty).Assign(AsyncResult), endOfAsyncMethod.Return());
-            //else, just call Complete method
-            return Block(AsyncResult, stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Complete)), endOfAsyncMethod.Return());
+            return resultProperty is null ?
+                Block(AsyncResult, stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Complete)), endOfAsyncMethod.Return()) :
+                Block(Property(stateMachine, resultProperty).Assign(AsyncResult), endOfAsyncMethod.Return());
         }
 
         /// <summary>

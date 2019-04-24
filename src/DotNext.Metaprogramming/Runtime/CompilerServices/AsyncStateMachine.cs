@@ -172,11 +172,7 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public void Complete()
-        {
-            StateId = FINAL_STATE;
-            exception = null;
-        }
+        public void Complete() => StateId = FINAL_STATE;
 
         private ValueTask Start()
         {
