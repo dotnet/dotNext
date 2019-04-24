@@ -85,8 +85,7 @@ namespace DotNext.Metaprogramming
         internal MethodCallExpression Reduce(ParameterExpression awaiterHolder, uint state, LabelTarget stateLabel, LabelTarget returnLabel, CodeInsertionPoint prologue)
         {
             prologue(Assign(awaiterHolder, GetAwaiter));
-            prologue(new MoveNextExpression(awaiterHolder, state));
-            prologue(Return(returnLabel));
+            prologue(Condition(new MoveNextExpression(awaiterHolder, state), Empty(), Return(returnLabel), typeof(void)));
             prologue(stateLabel.LandingSite());
             return awaiterHolder.Call(GetResultMethod);
         }

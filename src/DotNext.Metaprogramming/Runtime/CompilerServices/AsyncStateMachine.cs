@@ -161,13 +161,18 @@ namespace DotNext.Runtime.CompilerServices
         /// <typeparam name="TAwaiter">Type of asynchronous control flow object.</typeparam>
         /// <param name="awaiter">Asynchronous result obtained from another method to await.</param>
         /// <param name="stateId">A new state identifier.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
+        /// <returns><see langword="true"/> if awaiter is completed successfully; otherwise, <see langword="false"/>.</returns>
+        public bool MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
             where TAwaiter: INotifyCompletion
         {
             StateId = stateId;
-            if(!Awaiter<TAwaiter>.IsCompleted(ref awaiter))
+            if(Awaiter<TAwaiter>.IsCompleted(ref awaiter))
+                return true;
+            else
+            {
                 builder.AwaitOnCompleted(ref awaiter, ref this);
+                return false;
+            }
         }
 
         /// <summary>
@@ -347,13 +352,18 @@ namespace DotNext.Runtime.CompilerServices
         /// <typeparam name="TAwaiter">Type of asynchronous control flow object.</typeparam>
         /// <param name="awaiter">Asynchronous result obtained from another method to await.</param>
         /// <param name="stateId">A new state identifier.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
+        /// <returns><see langword="true"/> if awaiter is completed successfully; otherwise, <see langword="false"/>.</returns>
+        public bool MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
             where TAwaiter : INotifyCompletion
         {
             StateId = stateId;
-            if(!Awaiter<TAwaiter>.IsCompleted(ref awaiter))
+            if(Awaiter<TAwaiter>.IsCompleted(ref awaiter))
+                return true;
+            else
+            {
                 builder.AwaitOnCompleted(ref awaiter, ref this);
+                return false;
+            }
         }
 
         void IAsyncStateMachine.MoveNext()

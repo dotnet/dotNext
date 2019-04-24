@@ -19,7 +19,7 @@ namespace DotNext.Runtime.CompilerServices
             this.awaiter = awaiter;
         }
 
-        public override Type Type => typeof(void);
+        public override Type Type => typeof(bool);
         public override Expression Reduce() => awaiter;
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {

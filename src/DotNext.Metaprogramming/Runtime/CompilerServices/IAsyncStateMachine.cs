@@ -12,7 +12,7 @@ namespace DotNext.Runtime.CompilerServices
     {
         STATE State { get; }
         uint StateId { get; }
-        void MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
+        bool MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
             where TAwaiter : INotifyCompletion;
         void Rethrow();
         bool HasNoException { get; }
