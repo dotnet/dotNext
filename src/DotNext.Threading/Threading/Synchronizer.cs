@@ -51,6 +51,18 @@ namespace DotNext.Threading
             return false;
         }
 
+        private static async Task<bool> Wait(WaitNode node, CancellationToken token)
+        {
+            using (var tracker = new CancelableTaskCompletionSource<bool>(ref token))
+                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, tracker.Task).ConfigureAwait(false)))
+                    return true;
+                else
+                {
+                    token.ThrowIfCancellationRequested();
+                    return false;
+                }
+        }
+
         /// <summary>
         /// Suspends the caller until this event is set.
         /// </summary>
@@ -64,16 +76,18 @@ namespace DotNext.Threading
         public Task<bool> Wait(TimeSpan timeout, CancellationToken token)
         {
             ThrowIfDisposed();
-            if(timeout < TimeSpan.Zero)
+            if (timeout < TimeSpan.Zero)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             else if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
-            else if(node is null)
+            else if (node is null)
                 return CompletedTask<bool, BooleanConst.True>.Task;
             else if (timeout == TimeSpan.Zero)   //if timeout is zero fail fast
                 return CompletedTask<bool, BooleanConst.False>.Task;
-            else 
-                return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? Wait(node, timeout, token) : node.Task;
+            else if (timeout == TimeSpan.MaxValue)
+                return token.CanBeCanceled ? Wait(node, token) : node.Task;
+            else
+                return Wait(node, timeout, token);
         }
 
         /// <summary>

@@ -55,7 +55,6 @@ namespace DotNext.Threading
         }
 
         private protected interface ILockManager<STATE, out N>
-            where STATE: struct
             where N : WaitNode
         {
             bool CheckState(ref STATE state); //if true then Wait method can be completed synchronously; otherwise, false.
@@ -102,9 +101,22 @@ namespace DotNext.Threading
                 return await node.Task.ConfigureAwait(false);
         }
 
+        private async Task<bool> Wait(WaitNode node, CancellationToken token)
+        {
+            using (var tracker = new CancelableTaskCompletionSource<bool>(ref token))
+                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, tracker.Task).ConfigureAwait(false)))
+                    return true;
+            if (RemoveNode(node))
+            {
+                token.ThrowIfCancellationRequested();
+                return false;
+            }
+            else
+                return await node.Task.ConfigureAwait(false);
+        }
+
         [MethodImpl(MethodImplOptions.Synchronized)]
         private protected Task<bool> Wait<STATE, M>(ref STATE state, TimeSpan timeout, CancellationToken token)
-            where STATE : struct
             where M : struct, ILockManager<STATE, WaitNode>
         {
             ThrowIfDisposed();
@@ -121,7 +133,9 @@ namespace DotNext.Threading
                 head = tail = manager.CreateNode(null);
             else 
                 tail = manager.CreateNode(tail);
-            return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? Wait(tail, timeout, token) : tail.Task;
+            return timeout == TimeSpan.MaxValue ?
+                (token.CanBeCanceled ? Wait(tail, token) : tail.Task) :
+                Wait(tail, timeout, token);
         }
 
         /// <summary>
