@@ -113,6 +113,7 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         public bool Reset() => Reset(InitialCount);
 
+
         /// <summary>
         /// Resets the <see cref="InitialCount"/> property to a specified value.
         /// </summary>
@@ -136,6 +137,26 @@ namespace DotNext.Threading
                 return false;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal bool Signal(long signalCount, bool autoReset)
+        {
+            ThrowIfDisposed();
+            if (signalCount < 1L)
+                throw new ArgumentOutOfRangeException(nameof(signalCount));
+            var node = this.node as CounterNode;
+            if (node is null) //already in signaled state
+                return false;
+            else if (node.Count == 0L || signalCount > node.Count)
+                throw new InvalidOperationException();
+            else if (node.Signal(signalCount))   //complete all awaiters
+            {
+                this.node = node = autoReset ? new CounterNode(InitialCount) : null;
+                return true;
+            }
+            else
+                return false;
+        }
+
         /// <summary>
         /// Registers multiple signals with this object, decrementing the value of <see cref="CurrentCount"/> by the specified amount.
         /// </summary>
@@ -144,25 +165,7 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="signalCount"/> is less than 1.</exception>
         /// <exception cref="InvalidOperationException">The current instance is already set; or <paramref name="signalCount"/> is greater than <see cref="CurrentCount"/>.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool Signal(long signalCount)
-        {
-            ThrowIfDisposed();
-            if(signalCount < 1L)
-                throw new ArgumentOutOfRangeException(nameof(signalCount));
-            var node = this.node as CounterNode;
-            if(node is null) //already in signaled state
-                return false;
-            else if(node.Count == 0L || signalCount > node.Count)
-                throw new InvalidOperationException();
-            else if(node.Signal(signalCount))   //complete all awaiters
-            {
-                this.node = node = null;
-                return true;
-            }
-            else
-                return false;
-        }
+        public bool Signal(long signalCount) => Signal(signalCount, false);
 
         /// <summary>
         /// Registers multiple signals with this object, decrementing the value of <see cref="CurrentCount"/> by one.

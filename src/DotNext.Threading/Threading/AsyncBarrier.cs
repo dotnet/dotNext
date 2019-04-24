@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,90 +8,71 @@ namespace DotNext.Threading
     using Tasks;
     using Generic;
 
-    public class AsyncBarrier : Synchronizer, IAsyncEvent
+    public class AsyncBarrier : Disposable, IAsyncEvent
     {
         private long participants;
         private long currentPhase;
-        private long remaining;
-        private Dictionary<long, CancelableTaskCompletionSource<bool>> phaseHandlers;
+        private readonly AsyncCountdownEvent countdown;
+
+        bool IAsyncEvent.IsSet => countdown.IsSet;
+
+        bool ISynchronizer.HasWaiters => !countdown.IsSet;
 
         public AsyncBarrier(long participantCount)
         {
             participants = participantCount;
+            countdown = new AsyncCountdownEvent(participants);
         }
 
-        protected virtual void PostPhase()
+        protected virtual void PostPhase(long phase)
         {
-            if (!(phaseHandlers is null) && phaseHandlers.TryGetValue(currentPhase, out var source))
-                source.TrySetResult(true);
+
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public long AddParticipants(long participantCount)
         {
-            if (participantCount < 0)
-                throw new ArgumentOutOfRangeException(nameof(participantCount));
             ThrowIfDisposed();
-            participants += participantCount;
-            remaining += participantCount;
-            if (node is null)
-                node = new WaitNode();
-            return currentPhase;
+            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+                if (countdown.TryAddCount(participantCount))
+                {
+                    participants.Add(participantCount);
+                    return currentPhase;
+                }
         }
 
         public long AddParticipant() => AddParticipants(1L);
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        bool IAsyncEvent.Reset()
+        public void RemoveParticipants(long participantCount)
         {
-            ThrowIfDisposed();
-            if (node is null || node.TrySetCanceled())
+            if (participantCount < 0L && participantCount > participants)
+                throw new ArgumentOutOfRangeException(nameof(participantCount));
+            countdown.Signal(participantCount);
+            participants.Add(-participantCount);
+        }
+
+        public void RemoveParticipant() => RemoveParticipants(1L);
+
+        public Task<bool> SignalAndWait(TimeSpan timeout, CancellationToken token)
+        {
+            if (countdown.Signal(1L, true))
             {
-                remaining = participants;
-                node = new WaitNode();
-                return true;
+                PostPhase(currentPhase.Add(1L));
+                return CompletedTask<bool, BooleanConst.True>.Task;
             }
             else
-                return false;
+                return Wait(timeout, token);
         }
 
+        bool IAsyncEvent.Reset() => countdown.Reset();
 
-        private bool Signal()
+        bool IAsyncEvent.Signal() => countdown.Signal();
+
+        public Task<bool> Wait(TimeSpan timeout, CancellationToken token) => countdown.Wait(timeout, token);
+
+        protected override void Dispose(bool disposing)
         {
-            ThrowIfDisposed();
-            switch (remaining)
-            {
-                case 0L:
-                    throw new InvalidOperationException();
-                case 1L:
-                    remaining = 0;
-                    node?.Complete();
-                    PostPhase();
-                    remaining = participants;
-                    node = new WaitNode();
-                    return true;
-                default:
-                    remaining -= 1L;
-                    return false;
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        bool IAsyncEvent.Signal() => Signal();
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public Task<bool> SignalAndWait(TimeSpan timeout, CancellationToken token)
-            => Signal() ? CompletedTask<bool, BooleanConst.True>.Task : Wait(timeout, token);
-
-        
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public Task<bool> WaitForPhase(long phaseNumber, TimeSpan timeout, CancellationToken token)
-        {
-            ThrowIfDisposed();
-            if (phaseNumber <= currentPhase)
-                return CompletedTask<bool, BooleanConst.True>.Task;
-            
+            if (disposing)
+                countdown.Dispose();
         }
     }
 }
