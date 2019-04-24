@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace DotNext.Threading
 {
@@ -57,15 +58,8 @@ namespace DotNext.Threading
         /// </summary>
         public long CurrentCount => node is CounterNode counter ? counter.Count : 0L;
 
-        /// <summary>
-        /// Attempts to increment the current count by a specified value.
-        /// </summary>
-        /// <param name="signalCount">The value by which to increase <see cref="CurrentCount"/>.</param>
-        /// <returns><see langword="true"/> if the increment succeeded; if <see cref="CurrentCount"/> is already at zero this will return <see langword="false"/>.</returns>
-        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="signalCount"/> is less than zero.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool TryAddCount(long signalCount)
+        internal bool TryAddCount(long signalCount, bool autoReset)
         {
             ThrowIfDisposed();
             if(signalCount < 0)
@@ -75,9 +69,23 @@ namespace DotNext.Threading
                 counter.AddCount(signalCount);
                 return true;
             }
+            else if(autoReset)
+            {
+                node = new CounterNode(signalCount);
+                return true;
+            }
             else
                 return false;
         }
+
+        /// <summary>
+        /// Attempts to increment the current count by a specified value.
+        /// </summary>
+        /// <param name="signalCount">The value by which to increase <see cref="CurrentCount"/>.</param>
+        /// <returns><see langword="true"/> if the increment succeeded; if <see cref="CurrentCount"/> is already at zero this will return <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="signalCount"/> is less than zero.</exception>
+        public bool TryAddCount(long signalCount) => TryAddCount(signalCount, false);
 
         /// <summary>
         /// Attempts to increment the current count by one.

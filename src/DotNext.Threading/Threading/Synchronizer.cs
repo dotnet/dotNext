@@ -90,6 +90,8 @@ namespace DotNext.Threading
                 return Wait(node, timeout, token);
         }
 
+        
+
         /// <summary>
         /// Releases all resources associated with exclusive lock.
         /// </summary>

@@ -24,6 +24,12 @@ namespace DotNext.Threading
             countdown = new AsyncCountdownEvent(participants);
         }
 
+        public long CurrentPhaseNumber => currentPhase.VolatileRead();
+
+        public long ParticipantCount => participants.VolatileRead();
+
+        public long ParticipantsRemaining => countdown.CurrentCount;
+
         protected virtual void PostPhase(long phase)
         {
 
@@ -32,21 +38,18 @@ namespace DotNext.Threading
         public long AddParticipants(long participantCount)
         {
             ThrowIfDisposed();
-            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
-                if (countdown.TryAddCount(participantCount))
-                {
-                    participants.Add(participantCount);
-                    return currentPhase;
-                }
+            countdown.TryAddCount(participantCount, true);  //always returns true if autoReset==true
+            participants.Add(participantCount);
+            return currentPhase;
         }
 
         public long AddParticipant() => AddParticipants(1L);
 
         public void RemoveParticipants(long participantCount)
         {
-            if (participantCount < 0L && participantCount > participants)
+            if (participantCount < 0L || participantCount > ParticipantsRemaining)
                 throw new ArgumentOutOfRangeException(nameof(participantCount));
-            countdown.Signal(participantCount);
+            countdown.Signal(participantCount, false);
             participants.Add(-participantCount);
         }
 
@@ -54,7 +57,9 @@ namespace DotNext.Threading
 
         public Task<bool> SignalAndWait(TimeSpan timeout, CancellationToken token)
         {
-            if (countdown.Signal(1L, true))
+            if(ParticipantCount == 0L)
+                throw new InvalidOperationException();
+            else if (countdown.Signal(1L, true))
             {
                 PostPhase(currentPhase.Add(1L));
                 return CompletedTask<bool, BooleanConst.True>.Task;
@@ -62,6 +67,12 @@ namespace DotNext.Threading
             else
                 return Wait(timeout, token);
         }
+
+        public Task SignalAndWait(CancellationToken token) => SignalAndWait(TimeSpan.MaxValue, token);
+
+        public Task<bool> SignalAndWait(TimeSpan timeout) => SignalAndWait(timeout, CancellationToken.None);
+
+        public Task SignalAndWait() => SignalAndWait(TimeSpan.MaxValue);
 
         bool IAsyncEvent.Reset() => countdown.Reset();
 
@@ -73,6 +84,7 @@ namespace DotNext.Threading
         {
             if (disposing)
                 countdown.Dispose();
+            participants = currentPhase = 0L;
         }
     }
 }

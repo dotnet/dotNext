@@ -6,6 +6,8 @@ using System.Runtime.ConstrainedExecution;
 
 namespace DotNext.Runtime.CompilerServices
 {
+    
+
     /// <summary>
     /// Provides manual control over asynchronous state machine.
     /// </summary>
@@ -161,10 +163,11 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="stateId">A new state identifier.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
-            where TAwaiter: ICriticalNotifyCompletion
+            where TAwaiter: INotifyCompletion
         {
             StateId = stateId;
-            builder.AwaitUnsafeOnCompleted(ref awaiter, ref this);
+            if(!Awaiter<TAwaiter>.IsCompleted(ref awaiter))
+                builder.AwaitOnCompleted(ref awaiter, ref this);
         }
 
         /// <summary>
@@ -346,10 +349,11 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="stateId">A new state identifier.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
-            where TAwaiter : ICriticalNotifyCompletion
+            where TAwaiter : INotifyCompletion
         {
             StateId = stateId;
-            builder.AwaitUnsafeOnCompleted(ref awaiter, ref this);
+            if(!Awaiter<TAwaiter>.IsCompleted(ref awaiter))
+                builder.AwaitOnCompleted(ref awaiter, ref this);
         }
 
         void IAsyncStateMachine.MoveNext()

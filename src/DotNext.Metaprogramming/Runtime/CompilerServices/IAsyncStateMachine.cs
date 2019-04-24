@@ -13,7 +13,7 @@ namespace DotNext.Runtime.CompilerServices
         STATE State { get; }
         uint StateId { get; }
         void MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
-            where TAwaiter : ICriticalNotifyCompletion;
+            where TAwaiter : INotifyCompletion;
         void Rethrow();
         bool HasNoException { get; }
         void EnterGuardedCode(uint newState);
