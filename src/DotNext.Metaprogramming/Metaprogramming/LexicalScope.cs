@@ -35,7 +35,7 @@ namespace DotNext.Metaprogramming
                         return First.Value;
                     goto default;
                 default:
-                    return Expression.Block(typeof(void), variables.Values, this);
+                    return Expression.Block(variables.Values, this);
             }
         }
 

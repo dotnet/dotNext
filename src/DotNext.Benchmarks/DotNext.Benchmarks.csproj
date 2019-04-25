@@ -31,11 +31,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" Condition="'$(Configuration)'=='Debug'"/>
+    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext.Reflection" Version="0.8.0" Condition="'$(Configuration)'=='Release'" />
     
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext" Version="0.8.0" Condition="'$(Configuration)'=='Release'" />
+
+    <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="DotNext.Metaprogramming" Version="0.8.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
 </Project>

@@ -162,5 +162,19 @@ namespace DotNext.Metaprogramming
             var fn = lambda.Compile();
             Null(fn(new[] { 1L }).Result);
         }
+
+        [Fact]
+        public static async Task AwaitStatements()
+        {
+            var lambda = AsyncLambda<Func<Task<int>>>(fun =>
+            {
+                var result = DeclareVariable("result", "42".Const());
+                Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Const()));
+                Assign(result, result.Concat("3".Const()));
+                Await(typeof(Task).CallStatic(nameof(Task.Delay), 100.Const()));
+                Return(typeof(int).CallStatic(nameof(int.Parse), result));
+            }).Compile();
+            Equal(423, await lambda());
+        }
     }
 }

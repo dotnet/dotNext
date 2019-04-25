@@ -116,6 +116,18 @@ namespace DotNext.Metaprogramming
         public static BinaryExpression Add(this Expression left, Expression right)
             => Expression.Add(left, right);
 
+        private static MethodCallExpression Concat(Expression[] strings)
+            => CallStatic(typeof(string), nameof(string.Concat), Expression.NewArrayInit(typeof(string), strings));
+
+        /// <summary>
+        /// Constructs string concatenation expression.
+        /// </summary>
+        /// <param name="first">The first string to concatenate.</param>
+        /// <param name="other">Other strings to concatenate.</param>
+        /// <returns>An expression presenting concatenation.</returns>
+        public static MethodCallExpression Concat(this Expression first, params Expression[] other)
+            => Concat(other.Insert(first, 0L));
+
         /// <summary>
         /// Constructs binary arithmetic subtraction expression.
         /// </summary>
@@ -647,6 +659,8 @@ namespace DotNext.Metaprogramming
         public static MethodCallExpression Call(this Expression instance, string methodName, params Expression[] arguments)
             => instance.Call(instance.Type, methodName, arguments);
 
+        private static Type GetType(Expression expr) => expr.Type;
+
         /// <summary>
         /// Constructs interface or base class method call expression.
         /// </summary>
@@ -662,10 +676,25 @@ namespace DotNext.Metaprogramming
         {
             if (!interfaceType.IsAssignableFrom(instance.Type))
                 throw new ArgumentException(ExceptionMessages.InterfaceNotImplemented(instance.Type, interfaceType));
-            var method = interfaceType.GetMethod(methodName, Array.ConvertAll(arguments, arg => arg.Type));
+            var method = interfaceType.GetMethod(methodName, Array.ConvertAll(arguments, GetType));
             return method is null ?
                 throw new MissingMethodException(ExceptionMessages.MissingMethod(methodName, interfaceType)) :
                 instance.Call(method, arguments);
+        }
+
+        /// <summary>
+        /// Constructs static method call.
+        /// </summary>
+        /// <param name="type">The type that declares static method.</param>
+        /// <param name="methodName">The name of the static method.</param>
+        /// <param name="arguments">The arguments to be passed into static method.</param>
+        /// <returns>An expression representing static method call.</returns>
+        public static MethodCallExpression CallStatic(this Type type, string methodName, params Expression[] arguments)
+        {
+            var method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Array.ConvertAll(arguments, GetType), Array.Empty<ParameterModifier>());
+            return method is null ?
+                throw new MissingMethodException(ExceptionMessages.MissingMethod(methodName, type)) :
+                Expression.Call(method, arguments);
         }
 
         /// <summary>

@@ -323,6 +323,26 @@ namespace DotNext.Metaprogramming
             => Call(method, (IEnumerable<Expression>)arguments);
 
         /// <summary>
+        /// Adds static method call.
+        /// </summary>
+        /// <param name="type">The type that declares static method.</param>
+        /// <param name="methodName">The name of the static method.</param>
+        /// <param name="arguments">The arguments to be passed into static method.</param>
+        /// <returns>An expression representing static method call.</returns>
+        public static void CallStatic(Type type, string methodName, params Expression[] arguments)
+            => CurrentScope.AddStatement(type.CallStatic(methodName, arguments));
+
+        /// <summary>
+        /// Constructs static method call.
+        /// </summary>
+        /// <typeparam name="T">The type that declares static method.</typeparam>
+        /// <param name="methodName">The name of the static method.</param>
+        /// <param name="arguments">The arguments to be passed into static method.</param>
+        /// <returns>An expression representing static method call.</returns>
+        public static void CallStatic<T>(string methodName, params Expression[] arguments)
+            => CallStatic(typeof(T), methodName, arguments);
+
+        /// <summary>
         /// Declares label of the specified type.
         /// </summary>
         /// <param name="type">The type of landing site.</param>

@@ -694,6 +694,13 @@ namespace DotNext.Metaprogramming
         public UniversalExpression Field(string fieldName) => Transform(ExpressionBuilder.Field, fieldName);
 
         /// <summary>
+        /// Constructs string concatenation expression.
+        /// </summary>
+        /// <param name="other">Other strings to concatenate.</param>
+        /// <returns>An expression presenting concatenation.</returns>
+        public UniversalExpression Concat(params Expression[] other) => Transform(ExpressionBuilder.Concat, other);
+
+        /// <summary>
         /// Constructs loop statement which has a body equal to this expression.
         /// </summary>
         /// <param name="break">Optional loop break label which will installed automatically.</param>

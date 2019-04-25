@@ -74,5 +74,13 @@ namespace DotNext.Metaprogramming
             Expression staticExpr = expr;
             IsAssignableFrom<InvocationExpression>(staticExpr);
         }
+
+        [Fact]
+        public static void Concatenation()
+        {
+            UniversalExpression expr = "Hello";
+            expr = expr.Concat(", ".Const(), "world!".Const());
+            Equal(ExpressionType.Call, expr.NodeType);
+        }
     }
 }
