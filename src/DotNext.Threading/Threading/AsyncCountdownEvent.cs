@@ -24,7 +24,7 @@ namespace DotNext.Threading
 
             internal bool Signal(long value)
             {
-                if((count -= value) == 0L)
+                if((count -= value) <= 0L)
                 {
                     Complete();
                     return true;

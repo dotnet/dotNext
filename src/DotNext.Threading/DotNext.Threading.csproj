@@ -14,7 +14,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>async;lock;objectpool</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Introduce AsyncCountdownEvent as asynchronous version of CountdownEvent from standard library</PackageReleaseNotes>
+    <PackageReleaseNotes>AsyncBarrier is introduced as asynchronous version of Barrier from .NET standard library
+Reduced memory consumption caused by Wait operations</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 

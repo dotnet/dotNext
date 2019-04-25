@@ -6,8 +6,6 @@ using System.Runtime.ConstrainedExecution;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    
-
     /// <summary>
     /// Provides manual control over asynchronous state machine.
     /// </summary>
@@ -166,6 +164,7 @@ namespace DotNext.Runtime.CompilerServices
             where TAwaiter: INotifyCompletion
         {
             StateId = stateId;
+            //avoid boxing of this state machine through continuation action if awaiter is completed already
             if(Awaiter<TAwaiter>.IsCompleted(ref awaiter))
                 return true;
             else
@@ -357,7 +356,8 @@ namespace DotNext.Runtime.CompilerServices
             where TAwaiter : INotifyCompletion
         {
             StateId = stateId;
-            if(Awaiter<TAwaiter>.IsCompleted(ref awaiter))
+            //avoid boxing of this state machine through continuation action if awaiter is completed already
+            if (Awaiter<TAwaiter>.IsCompleted(ref awaiter))
                 return true;
             else
             {

@@ -1,13 +1,22 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
-    using Tasks;
-    using Generic;
-
+    /// <summary>
+    /// Enables multiple tasks to cooperatively work on an algorithm in parallel through multiple phases.
+    /// </summary>
+    /// <remarks>
+    /// This is asynchronous version of <see cref="Barrier"/> with small differences:
+    /// <list type="bullet">
+    /// <item>Post-phase action is presented by virtual method <see cref="PostPhase(long)"/>.</item>
+    /// <item>It it possible to wait for phase completion without signal</item>
+    /// <item>It is possible to signal without waiting of phase completion</item>
+    /// <item>Post-phase action is asynchronous</item>
+    /// <item>Number of phases is limited by <see cref="long"/> data type</item>
+    /// </list>
+    /// </remarks>
     public class AsyncBarrier : Disposable, IAsyncEvent
     {
         private long participants;
@@ -18,23 +27,48 @@ namespace DotNext.Threading
 
         bool ISynchronizer.HasWaiters => !countdown.IsSet;
 
+        /// <summary>
+        /// Initializes a new Barrier withe given number of participating tasks.
+        /// </summary>
+        /// <param name="participantCount">The number of participating tasks.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="participantCount"/> is less than 0.</exception>
         public AsyncBarrier(long participantCount)
         {
+            if (participantCount < 0)
+                throw new ArgumentOutOfRangeException(nameof(participantCount));
             participants = participantCount;
             countdown = new AsyncCountdownEvent(participants);
         }
 
+        /// <summary>
+        /// Gets the number of the barrier's current phase.
+        /// </summary>
         public long CurrentPhaseNumber => currentPhase.VolatileRead();
 
+        /// <summary>
+        /// Gets the total number of participants in the barrier.
+        /// </summary>
         public long ParticipantCount => participants.VolatileRead();
 
+        /// <summary>
+        /// Gets the number of participants in the barrier that haven't yet signaled in the current phase.
+        /// </summary>
         public long ParticipantsRemaining => countdown.CurrentCount;
 
-        protected virtual void PostPhase(long phase)
-        {
+        /// <summary>
+        /// The action to be executed after each phase.
+        /// </summary>
+        /// <param name="phase">The current phase number.</param>
+        /// <returns>A task representing post-phase asynchronous execution.</returns>
+        protected virtual Task PostPhase(long phase) => Task.CompletedTask;
 
-        }
-
+        /// <summary>
+        /// Notifies this barrier that there will be additional participants.
+        /// </summary>
+        /// <param name="participantCount">The number of additional participants to add to the barrier.</param>
+        /// <returns>The phase number of the barrier in which the new participants will first participate.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="participantCount"/> is less than 0.</exception>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         public long AddParticipants(long participantCount)
         {
             ThrowIfDisposed();
@@ -43,43 +77,107 @@ namespace DotNext.Threading
             return currentPhase;
         }
 
+        /// <summary>
+        /// Notifies this barrier that there will be additional participant.
+        /// </summary>
+        /// <returns>The phase number of the barrier in which the new participants will first participate.</returns>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         public long AddParticipant() => AddParticipants(1L);
 
+        /// <summary>
+        /// Notifies this barrier that there will be fewer participants.
+        /// </summary>
+        /// <remarks>
+        /// This method may resume all tasks suspended by <see cref="Wait(TimeSpan, CancellationToken)"/>
+        /// and <see cref="SignalAndWait(TimeSpan, CancellationToken)"/> methods.
+        /// </remarks>
+        /// <param name="participantCount">The number of additional participants to remove from the barrier.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="participantCount"/> less than 1 or greater that <see cref="ParticipantsRemaining"/>.</exception>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         public void RemoveParticipants(long participantCount)
         {
-            if (participantCount < 0L || participantCount > ParticipantsRemaining)
+            if (participantCount > ParticipantsRemaining)
                 throw new ArgumentOutOfRangeException(nameof(participantCount));
             countdown.Signal(participantCount, false);
             participants.Add(-participantCount);
         }
 
+        /// <summary>
+        /// Notifies this barrier that there will be one less participant.
+        /// </summary>
+        /// <remarks>
+        /// This method may resume all tasks suspended by <see cref="Wait(TimeSpan, CancellationToken)"/>
+        /// and <see cref="SignalAndWait(TimeSpan, CancellationToken)"/> methods.
+        /// </remarks>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         public void RemoveParticipant() => RemoveParticipants(1L);
 
-        public Task<bool> SignalAndWait(TimeSpan timeout, CancellationToken token)
+        /// <summary>
+        /// Signals that a participant has reached the barrier and waits 
+        /// for all other participants to reach the barrier as well.
+        /// </summary>
+        /// <param name="timeout">The time to wait for phase completion.</param>
+        /// <param name="token">The token that can be used to cancel the waiting operation.</param>
+        /// <returns><see langword="true"/> if all other participants reached the barrier; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+        public async Task<bool> SignalAndWait(TimeSpan timeout, CancellationToken token)
         {
-            if(ParticipantCount == 0L)
+            if (ParticipantCount == 0L)
                 throw new InvalidOperationException();
             else if (countdown.Signal(1L, true))
             {
-                PostPhase(currentPhase.Add(1L));
-                return CompletedTask<bool, BooleanConst.True>.Task;
+                await PostPhase(currentPhase.Add(1L));
+                return true;
             }
             else
-                return Wait(timeout, token);
+                return await Wait(timeout, token);
         }
 
+        /// <summary>
+        /// Signals that a participant has reached the barrier and waits 
+        /// for all other participants to reach the barrier as well.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the waiting operation.</param>
+        /// <returns>The task representing waiting operation.</returns>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         public Task SignalAndWait(CancellationToken token) => SignalAndWait(TimeSpan.MaxValue, token);
 
+        /// <summary>
+        /// Signals that a participant has reached the barrier and waits 
+        /// for all other participants to reach the barrier as well.
+        /// </summary>
+        /// <param name="timeout">The time to wait for phase completion.</param>
+        /// <returns><see langword="true"/> if all other participants reached the barrier; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         public Task<bool> SignalAndWait(TimeSpan timeout) => SignalAndWait(timeout, CancellationToken.None);
 
+        /// <summary>
+        /// Signals that a participant has reached the barrier and waits 
+        /// for all other participants to reach the barrier as well.
+        /// </summary>
+        /// <returns>The task representing waiting operation.</returns>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         public Task SignalAndWait() => SignalAndWait(TimeSpan.MaxValue);
 
         bool IAsyncEvent.Reset() => countdown.Reset();
 
         bool IAsyncEvent.Signal() => countdown.Signal();
 
+        /// <summary>
+        /// Waits for all other participants to reach the barrier.
+        /// </summary>
+        /// <param name="timeout">The time to wait for phase completion.</param>
+        /// <param name="token">The token that can be used to cancel the waiting operation.</param>
+        /// <returns><see langword="true"/> if all other participants reached the barrier; otherwise, <see langword="false"/>.</returns>
         public Task<bool> Wait(TimeSpan timeout, CancellationToken token) => countdown.Wait(timeout, token);
 
+        /// <summary>
+        /// Releases all resources associated with this barrier.
+        /// </summary>
+        /// <remarks>
+        /// This method is not thread-safe and may not be used concurrently with other members of this instance.
+        /// </remarks>
+        /// <param name="disposing">Indicates whether the <see cref="Dispose(bool)"/> has been called directly or from finalizer.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)

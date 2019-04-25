@@ -15,7 +15,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>metaprogramming</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Fixed correctness of code generation</PackageReleaseNotes>
+    <PackageReleaseNotes>Introduced new metaprogramming model with is not backward compatible with previous versions of this library but much more simplier and convenient.
+Improved performance of code generated for async lambda, especially, state machine boxing prevention.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
