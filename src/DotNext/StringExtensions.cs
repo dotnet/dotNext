@@ -23,19 +23,21 @@ namespace DotNext
 		public static string IfNullOrEmpty(this string str, string alt)
             => string.IsNullOrEmpty(str) ? alt : str;
 
-		/// <summary>
-		/// Reverse string characters.
-		/// </summary>
-		/// <param name="str">The string to reverse.</param>
-		/// <returns>The string with inversed orded of characters.</returns>
-		public static string Reverse(this string str)
-		{
-			if(str.Length == 0)
-				return str;
-			var chars = str.ToCharArray();
-			Array.Reverse(chars);
-			return new string(chars);
-		}
+        /// <summary>
+        /// Reverse string characters.
+        /// </summary>
+        /// <param name="str">The string to reverse.</param>
+        /// <returns>The string with inversed orded of characters.</returns>
+        public static unsafe string Reverse(this string str)
+        {
+            if (str.Length == 0)
+                return str;
+            var result = str.Length < 1024 ? stackalloc char[str.Length] : new Span<char>(new char[str.Length]);
+            str.AsSpan().CopyTo(result);
+            result.Reverse();
+            fixed (char* ptr = result)
+                return new string(ptr, 0, result.Length);
+        }
 
         /// <summary>
         /// Compares two string using <see cref="StringComparison.OrdinalIgnoreCase" />.
