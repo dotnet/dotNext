@@ -413,10 +413,10 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="value">The value to be placed into unmanaged memory.</param>
         public UnmanagedMemory(T value)
-        {
-            pointer = new Pointer<T>(UnmanagedMemory.Alloc(Pointer<T>.Size, false));
-            pointer.Value = value;
-        }
+            => pointer = new Pointer<T>(UnmanagedMemory.Alloc(Pointer<T>.Size, false))
+            {
+                Value = value
+            };
 
         /// <summary>
         /// Obtains typed pointer to the unmanaged memory.
