@@ -155,7 +155,7 @@ namespace DotNext.Collections.Generic
         /// <param name="output">The destination of the elements copied from this list.</param>
         /// <param name="arrayIndex">The index in <paramref name="output"/> at which copying begins.</param>
         public void CopyTo(UnmanagedArray<T> output, int arrayIndex)
-            => CopyTo(output, 0, count);
+            => CopyTo(output, arrayIndex, count);
 
         /// <summary>
         /// Allocates a new array and copies items from this list

@@ -157,7 +157,7 @@ namespace DotNext.Threading
                 throw new InvalidOperationException();
             else if (node.Signal(signalCount))   //complete all awaiters
             {
-                this.node = node = autoReset ? new CounterNode(InitialCount) : null;
+                this.node = autoReset ? new CounterNode(InitialCount) : null;
                 return true;
             }
             else

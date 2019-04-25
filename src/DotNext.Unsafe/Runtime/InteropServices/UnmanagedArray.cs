@@ -44,7 +44,7 @@ namespace DotNext.Runtime.InteropServices
             /// <param name="length">Array length.</param>
             /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
             public Handle(long length, bool zeroMem = true)
-                : this(new UnmanagedArray<T>(length), true)
+                : this(new UnmanagedArray<T>(length, zeroMem), true)
             {
 
             }
@@ -103,7 +103,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Represents empty array.
         /// </summary>
-        public static UnmanagedArray<T> Empty => default(UnmanagedArray<T>);
+        public static UnmanagedArray<T> Empty => default;
 
         private readonly long length;
         private readonly Pointer<T> pointer;

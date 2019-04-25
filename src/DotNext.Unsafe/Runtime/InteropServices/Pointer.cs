@@ -142,6 +142,7 @@ namespace DotNext.Runtime.InteropServices
             {
                 var actualCount = (int)count.Min(int.MaxValue);
                 var span = new Span<T>(pointer.ToPointer(), actualCount);
+                span.Fill(value);
                 count -= actualCount;
                 pointer += actualCount;
             }

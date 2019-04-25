@@ -89,6 +89,14 @@ namespace DotNext
             => new Number<T>(UnaryPlus(operand));
 
         /// <summary>
+        /// Arithmetic unary minus operation.
+        /// </summary>
+        /// <param name="operand">Unary minus operand.</param>
+        /// <returns>The result of unary minus operation.</returns>
+        public static Number<T> operator -(Number<T> operand)
+            => new Number<T>(UnaryMinus(operand));
+
+        /// <summary>
         /// Arithmetic addition operation.
         /// </summary>
         /// <param name="left">The left operand.</param>

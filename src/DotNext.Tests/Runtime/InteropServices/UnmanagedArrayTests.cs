@@ -189,5 +189,16 @@ namespace DotNext.Runtime.InteropServices
                 array.Dispose();
             }
         }
+
+        [Fact]
+        public static void FillElements()
+        {
+            using (var array = new UnmanagedArray<long>(3))
+            {
+                Equal(0, array[0]);
+                array.Fill(42L);
+                Equal(42L, array[0]);
+            }
+        }
     }
 }
