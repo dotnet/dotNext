@@ -28,7 +28,7 @@ namespace DotNext.Metaprogramming
                 var result = DeclareVariable("result", "42".Const());
                 Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Const()));
                 Assign(result, result.Concat("3".Const()));
-                Await(typeof(Task).CallStatic(nameof(Task.Delay), 100.Const()));
+                Await(typeof(Task).CallStatic(nameof(Task.Delay), 1.Const()));
                 Return(typeof(int).CallStatic(nameof(int.Parse), result));
             }).Compile();
         }
@@ -42,7 +42,7 @@ namespace DotNext.Metaprogramming
             var result = "42";
             await Task.Delay(0);
             result += "3";
-            await Task.Delay(100);
+            await Task.Delay(1);
             return int.Parse(result);
         }
     }
