@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
@@ -8,8 +7,8 @@ namespace DotNext.Metaprogramming
     using Runtime.CompilerServices;
     using static Reflection.DelegateType;
 
-    internal sealed class AsyncLambdaScope<D>: LambdaScope, IExpressionBuilder<Expression<D>>, ICompoundStatement<Action<LambdaContext>>
-        where D: Delegate
+    internal sealed class AsyncLambdaScope<D> : LambdaScope, IExpressionBuilder<Expression<D>>, ICompoundStatement<Action<LambdaContext>>
+        where D : Delegate
     {
         private ParameterExpression recursion;
         private readonly TaskType taskType;
@@ -26,7 +25,7 @@ namespace DotNext.Metaprogramming
 
         void ICompoundStatement<Action<LambdaContext>>.ConstructBody(Action<LambdaContext> body)
         {
-            using(var context = new LambdaContext(this))
+            using (var context = new LambdaContext(this))
                 body(context);
         }
 
@@ -56,7 +55,7 @@ namespace DotNext.Metaprogramming
             if (body.Type != taskType)
                 body = body.AddEpilogue(true, new AsyncResultExpression(taskType));
             Expression<D> lambda;
-            using(var builder = new AsyncStateMachineBuilder<D>(Parameters))
+            using (var builder = new AsyncStateMachineBuilder<D>(Parameters))
             {
                 lambda = builder.Build(body, tailCall);
             }

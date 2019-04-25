@@ -1,12 +1,12 @@
 ﻿using System;
-using MethodInfo = System.Reflection.MethodInfo;
 using System.Linq.Expressions;
+using MethodInfo = System.Reflection.MethodInfo;
 
 namespace DotNext.Metaprogramming
 {
     using static Reflection.DisposableType;
 
-    internal sealed class UsingBlockScope: LexicalScope, IExpressionBuilder<Expression>, ICompoundStatement<Action<ParameterExpression>>
+    internal sealed class UsingBlockScope : LexicalScope, IExpressionBuilder<Expression>, ICompoundStatement<Action<ParameterExpression>>
     {
         private readonly MethodInfo disposeMethod;
         private readonly ParameterExpression resource;

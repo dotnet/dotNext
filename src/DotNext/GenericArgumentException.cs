@@ -6,7 +6,7 @@ namespace DotNext
     /// The exception that is thrown when one of the generic arguments 
     /// provided to a type is not valid.
     /// </summary>
-    public class GenericArgumentException: ArgumentException
+    public class GenericArgumentException : ArgumentException
     {
         /// <summary>
         /// Initializes a new exception.
@@ -31,16 +31,16 @@ namespace DotNext
     /// provided to a type is not valid.
     /// </summary>
     /// <typeparam name="G">Captured generic argument treated as invalid.</typeparam>
-	public class GenericArgumentException<G>: GenericArgumentException
-	{
+	public class GenericArgumentException<G> : GenericArgumentException
+    {
         /// <summary>
         /// Initializes a new exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="paramName">The name of generic parameter.</param>
 		public GenericArgumentException(string message, string paramName = "")
-			: base(typeof(G), message, paramName)
-		{
-		}
-	}
+            : base(typeof(G), message, paramName)
+        {
+        }
+    }
 }

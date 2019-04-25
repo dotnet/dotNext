@@ -74,16 +74,16 @@ namespace DotNext
             internal bool Remove<V>(UserDataSlot<V> slot, out V userData)
             {
                 //fast path if user data doesn't exist
-                using(synchronizer.AcquireReadLock())
+                using (synchronizer.AcquireReadLock())
                 {
-                    if(!slot.Contains(this))
+                    if (!slot.Contains(this))
                     {
                         userData = default;
                         return false;
                     }
                 }
                 //non-fast path, user data exists, so remove it
-                using(synchronizer.AcquireWriteLock())
+                using (synchronizer.AcquireWriteLock())
                 {
                     userData = slot.GetUserData(this, default);
                     return slot.RemoveUserData(this);
@@ -192,7 +192,7 @@ namespace DotNext
         public bool Remove<V>(UserDataSlot<V> slot, out V userData)
         {
             var storage = GetStorage(false);
-            if(storage is null)
+            if (storage is null)
             {
                 userData = default;
                 return false;
@@ -220,7 +220,7 @@ namespace DotNext
         /// </summary>
         /// <returns>The textual representation of this storage.</returns>
         public override string ToString() => owner.ToString();
-        
+
         /// <summary>
         /// Determines whether two storages are for the same object.
         /// </summary>

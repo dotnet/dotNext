@@ -5,9 +5,9 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Metaprogramming.ExpressionBuilder;
     using VariantType;
     using static Collections.Generic.Collection;
+    using static Metaprogramming.ExpressionBuilder;
 
     /// <summary>
     /// Represents statement.
@@ -68,7 +68,7 @@ namespace DotNext.Runtime.CompilerServices
 
         internal static Expression Wrap(Expression expr)
         {
-            switch(expr)
+            switch (expr)
             {
                 case TryExpression seh:
                     return seh;

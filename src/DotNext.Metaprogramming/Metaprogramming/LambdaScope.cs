@@ -11,14 +11,14 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents lambda function builder.
     /// </summary>
-    internal abstract class LambdaScope: LexicalScope, ICompoundStatement<Action<LambdaContext>>
+    internal abstract class LambdaScope : LexicalScope, ICompoundStatement<Action<LambdaContext>>
     {
         private protected bool tailCall;
 
         private protected LambdaScope(LexicalScope parent, bool tailCall) : base(parent) => this.tailCall = tailCall;
 
         private protected IReadOnlyList<ParameterExpression> GetParameters(System.Reflection.ParameterInfo[] parameters)
-            =>  Array.ConvertAll(parameters, parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
+            => Array.ConvertAll(parameters, parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
 
         /// <summary>
         /// Gets recursive reference to the lambda.
@@ -49,8 +49,8 @@ namespace DotNext.Metaprogramming
     /// Represents lambda function builder.
     /// </summary>
     /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
-    internal sealed class LambdaScope<D>: LambdaScope, IExpressionBuilder<Expression<D>>, ICompoundStatement<Action<LambdaContext, ParameterExpression>>
-        where D: Delegate
+    internal sealed class LambdaScope<D> : LambdaScope, IExpressionBuilder<Expression<D>>, ICompoundStatement<Action<LambdaContext, ParameterExpression>>
+        where D : Delegate
     {
         private ParameterExpression recursion;
         private ParameterExpression lambdaResult;
@@ -113,7 +113,7 @@ namespace DotNext.Metaprogramming
 
         void ICompoundStatement<Action<LambdaContext, ParameterExpression>>.ConstructBody(Action<LambdaContext, ParameterExpression> body)
         {
-            using(var context = new LambdaContext(this))
+            using (var context = new LambdaContext(this))
                 body(context, Result);
         }
 

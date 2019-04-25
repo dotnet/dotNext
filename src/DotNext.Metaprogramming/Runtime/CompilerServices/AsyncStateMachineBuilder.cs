@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using static System.Linq.Enumerable;
 using System.Linq.Expressions;
+using static System.Linq.Enumerable;
 
 namespace DotNext.Runtime.CompilerServices
 {
     using Metaprogramming;
     using Reflection;
-    using static Collections.Generic.Collection;
     using static Collections.Generic.Dictionary;
 
     /// <summary>
@@ -64,7 +63,7 @@ namespace DotNext.Runtime.CompilerServices
                where position >= 0
                orderby position ascending
                select candidate;
-        
+
         private ParameterExpression NewStateSlot(Type type)
             => NewStateSlot(() => Expression.Variable(type));
 
@@ -238,7 +237,7 @@ namespace DotNext.Runtime.CompilerServices
 
         private static bool IsAssignment(BinaryExpression binary)
         {
-            switch(binary.NodeType)
+            switch (binary.NodeType)
             {
                 case ExpressionType.Assign:
                 case ExpressionType.AddAssign:
@@ -307,21 +306,21 @@ namespace DotNext.Runtime.CompilerServices
             => context.Rewrite(node, base.VisitConstant);
 
         private Expression RewriteCallable<E>(E node, Expression[] arguments, Converter<E, Expression> visitor, Func<E, Expression[], E> updater)
-            where E: Expression
+            where E : Expression
         {
             var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
             var newNode = visitor(node);
-            if(newNode is E)
+            if (newNode is E)
                 node = (E)newNode;
             else
                 return newNode;
             var hasAwait = false;
-            for(var i = arguments.LongLength - 1L; i >= 0L; i--)
+            for (var i = arguments.LongLength - 1L; i >= 0L; i--)
             {
                 ref Expression arg = ref arguments[i];
-                if(ExpressionAttributes.Get(arg).ContainsAwait)
+                if (ExpressionAttributes.Get(arg).ContainsAwait)
                     hasAwait = true;
-                else if(hasAwait)
+                else if (hasAwait)
                 {
                     var tempVar = NewStateSlot(arg.Type);
                     codeInsertionPoint(Expression.Assign(tempVar, arg));
@@ -342,19 +341,19 @@ namespace DotNext.Runtime.CompilerServices
 
         protected override Expression VisitInvocation(InvocationExpression node)
             => context.Rewrite(node, n => RewriteCallable(n, n.Arguments.ToArray(), base.VisitInvocation, UpdateArguments));
-        
+
         private static IndexExpression UpdateArguments(IndexExpression node, IReadOnlyCollection<Expression> arguments)
             => node.Update(node.Object, arguments);
 
         protected override Expression VisitIndex(IndexExpression node)
             => context.Rewrite(node, n => RewriteCallable(n, n.Arguments.ToArray(), base.VisitIndex, UpdateArguments));
-        
+
         private static NewExpression UpdateArguments(NewExpression node, IReadOnlyCollection<Expression> arguments)
             => node.Update(arguments);
 
         protected override Expression VisitNew(NewExpression node)
             => context.Rewrite(node, n => RewriteCallable(n, n.Arguments.ToArray(), base.VisitNew, UpdateArguments));
-        
+
         private static NewArrayExpression UpdateArguments(NewArrayExpression node, IReadOnlyCollection<Expression> arguments)
             => node.Update(arguments);
 
@@ -389,7 +388,7 @@ namespace DotNext.Runtime.CompilerServices
 
         protected override Expression VisitUnary(UnaryExpression node)
         {
-            switch(node.NodeType)
+            switch (node.NodeType)
             {
                 case ExpressionType.Throw:
                     if (node.Operand is null)
@@ -419,7 +418,7 @@ namespace DotNext.Runtime.CompilerServices
             => Rewrite(body is BlockExpression block ?
                 new Statement(Expression.Block(typeof(void), block.Variables, block.Expressions)) :
                 new Statement(body));
-        
+
         public void Dispose()
         {
             Variables.Clear();
@@ -428,9 +427,9 @@ namespace DotNext.Runtime.CompilerServices
         }
     }
 
-    internal sealed class AsyncStateMachineBuilder<D>: ExpressionVisitor, IDisposable
-        where D: Delegate
-    {   
+    internal sealed class AsyncStateMachineBuilder<D> : ExpressionVisitor, IDisposable
+        where D : Delegate
+    {
         private readonly AsyncStateMachineBuilder methodBuilder;
         private ParameterExpression stateMachine;
 

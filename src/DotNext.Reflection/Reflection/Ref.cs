@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
-using System.Security;
 using System.Runtime.CompilerServices;
+using System.Security;
 
 namespace DotNext.Reflection
 {
@@ -12,7 +12,7 @@ namespace DotNext.Reflection
 
         internal static bool Reflect(Type byRefType, out Type underlyingType, out FieldInfo valueField)
         {
-            if(Is(byRefType))
+            if (Is(byRefType))
             {
                 underlyingType = byRefType.GetGenericArguments()[0];
                 valueField = byRefType.GetField("Value", BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance);
@@ -42,7 +42,7 @@ namespace DotNext.Reflection
     /// </remarks>
     /// <typeparam name="T">Referenced type.</typeparam>
     [SecuritySafeCritical]
-    public struct Ref<T>: IStrongBox
+    public struct Ref<T> : IStrongBox
     {
         /// <summary>
         /// Gets or sets value.
@@ -75,18 +75,18 @@ namespace DotNext.Reflection
         /// <param name="first">The first reference.</param>
         /// <param name="second">The second reference.</param>
         /// <returns>True, if both references are equal.</returns>
-        public static bool operator==(in Ref<T> first, in Ref<T> second)
+        public static bool operator ==(in Ref<T> first, in Ref<T> second)
             => AreSame(in first.Value, in second.Value);
-        
+
         /// <summary>
         /// Identifies that two references point to different locations.
         /// </summary>
         /// <param name="first">The first reference.</param>
         /// <param name="second">The second reference.</param>
         /// <returns>True, if both references are not equal.</returns>
-        public static bool operator!=(in Ref<T> first, in Ref<T> second)
+        public static bool operator !=(in Ref<T> first, in Ref<T> second)
             => !AreSame(in first.Value, in second.Value);
-        
+
         /// <summary>
         /// Converts this reference into unmanaged address.
         /// </summary>

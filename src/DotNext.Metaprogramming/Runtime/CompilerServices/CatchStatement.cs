@@ -14,7 +14,7 @@ namespace DotNext.Runtime.CompilerServices
             : base(handler.Body, faultLabel)
         {
             var recovery = new RecoverFromExceptionExpression(handler.Variable is null ? Variable(handler.Test, "e") : handler.Variable);
-            filter = handler.Filter is null ? (Expression)recovery: recovery.AndAlso(handler.Filter);
+            filter = handler.Filter is null ? (Expression)recovery : recovery.AndAlso(handler.Filter);
             ExceptionVar = recovery.Receiver;
         }
 

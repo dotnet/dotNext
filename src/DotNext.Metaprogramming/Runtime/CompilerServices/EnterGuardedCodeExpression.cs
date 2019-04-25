@@ -11,7 +11,7 @@ namespace DotNext.Runtime.CompilerServices
             : base(stateId)
         {
         }
-        
+
         public override Type Type => typeof(void);
 
         public override Expression Reduce() => Empty();

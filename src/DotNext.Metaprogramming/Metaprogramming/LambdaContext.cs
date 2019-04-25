@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using static System.Linq.Enumerable;
 using System.Linq.Expressions;
+using static System.Linq.Enumerable;
 
 namespace DotNext.Metaprogramming
 {
     /// <summary>
     /// Represents lambda construction context.
     /// </summary>
-    public readonly struct LambdaContext: IReadOnlyList<ParameterExpression>, IDisposable
+    public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisposable
     {
         private readonly WeakReference<LambdaScope> scope;
 
@@ -29,7 +29,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arg2">The expression representing the second argument.</param>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2)
         {
-            if(this.scope.TryGetTarget(out var scope))
+            if (this.scope.TryGetTarget(out var scope))
             {
                 arg1 = scope.Parameters[0];
                 arg2 = scope.Parameters[1];
@@ -46,7 +46,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arg3">The expression representing the third argument.</param>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3)
         {
-            if(this.scope.TryGetTarget(out var scope))
+            if (this.scope.TryGetTarget(out var scope))
             {
                 arg1 = scope.Parameters[0];
                 arg2 = scope.Parameters[1];
@@ -65,7 +65,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arg4">The expression representing the fourth argument.</param>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4)
         {
-            if(this.scope.TryGetTarget(out var scope))
+            if (this.scope.TryGetTarget(out var scope))
             {
                 arg1 = scope.Parameters[0];
                 arg2 = scope.Parameters[1];
@@ -86,7 +86,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arg5">The expression representing the fifth argument.</param>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5)
         {
-            if(this.scope.TryGetTarget(out var scope))
+            if (this.scope.TryGetTarget(out var scope))
             {
                 arg1 = scope.Parameters[0];
                 arg2 = scope.Parameters[1];
@@ -109,7 +109,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arg6">The expression representing the sixth argument.</param>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6)
         {
-            if(this.scope.TryGetTarget(out var scope))
+            if (this.scope.TryGetTarget(out var scope))
             {
                 arg1 = scope.Parameters[0];
                 arg2 = scope.Parameters[1];
@@ -134,7 +134,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arg7">The expression representing the seventh argument.</param>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7)
         {
-            if(this.scope.TryGetTarget(out var scope))
+            if (this.scope.TryGetTarget(out var scope))
             {
                 arg1 = scope.Parameters[0];
                 arg2 = scope.Parameters[1];
@@ -161,7 +161,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arg8">The expression representing the eighth argument.</param>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7, out ParameterExpression arg8)
         {
-            if(this.scope.TryGetTarget(out var scope))
+            if (this.scope.TryGetTarget(out var scope))
             {
                 arg1 = scope.Parameters[0];
                 arg2 = scope.Parameters[1];
@@ -190,7 +190,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arg9">The expression representing the ninth argument.</param>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7, out ParameterExpression arg8, out ParameterExpression arg9)
         {
-            if(this.scope.TryGetTarget(out var scope))
+            if (this.scope.TryGetTarget(out var scope))
             {
                 arg1 = scope.Parameters[0];
                 arg2 = scope.Parameters[1];
@@ -221,7 +221,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arg10">The expression representing the ninth argument.</param>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7, out ParameterExpression arg8, out ParameterExpression arg9, out ParameterExpression arg10)
         {
-            if(this.scope.TryGetTarget(out var scope))
+            if (this.scope.TryGetTarget(out var scope))
             {
                 arg1 = scope.Parameters[0];
                 arg2 = scope.Parameters[1];
@@ -254,7 +254,7 @@ namespace DotNext.Metaprogramming
             get => this.scope.TryGetTarget(out var scope) ? scope.Parameters.Count : 0;
         }
 
-        private IEnumerator<ParameterExpression> GetEnumerator() 
+        private IEnumerator<ParameterExpression> GetEnumerator()
             => (this.scope.TryGetTarget(out var scope) ? scope.Parameters : Empty<ParameterExpression>()).GetEnumerator();
 
         IEnumerator<ParameterExpression> IEnumerable<ParameterExpression>.GetEnumerator() => GetEnumerator();

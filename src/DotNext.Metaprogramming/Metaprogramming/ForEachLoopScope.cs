@@ -4,10 +4,10 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using static Reflection.DisposableType;
     using static Reflection.CollectionType;
+    using static Reflection.DisposableType;
 
-    internal sealed class ForEachLoopScope: LoopScopeBase, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<MemberExpression, LoopContext>>, ICompoundStatement<Action<MemberExpression>>
+    internal sealed class ForEachLoopScope : LoopScopeBase, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<MemberExpression, LoopContext>>, ICompoundStatement<Action<MemberExpression>>
     {
         private readonly ParameterExpression enumeratorVar;
         private readonly BinaryExpression enumeratorAssignment;

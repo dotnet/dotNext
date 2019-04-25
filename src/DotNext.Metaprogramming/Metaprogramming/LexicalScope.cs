@@ -23,7 +23,7 @@ namespace DotNext.Metaprogramming
 
         internal void DeclareVariable(ParameterExpression variable)
             => variables.Add(variable.Name, variable);
-            
+
         private protected Expression Build()
         {
             switch (Count)

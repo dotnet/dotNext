@@ -21,7 +21,7 @@ namespace DotNext.Reflection
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
         /// <returns>The reflected method; or <see langword="null"/> if method doesn't exist.</returns>
         public static Reflection.Method<Function<A, R>> GetStaticMethod<A, R>(string methodName, bool nonPublic = false)
-            where A: struct
+            where A : struct
             => Method.Get<Function<A, R>>(methodName, MethodLookup.Static, nonPublic);
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace DotNext.Reflection
         /// <returns>The reflected method.</returns>
         /// <exception cref="MissingMethodException">The method doesn't exist.</exception>
         public static Reflection.Method<Function<A, R>> RequireStaticMethod<A, R>(string methodName, bool nonPublic = false)
-            where A: struct
+            where A : struct
             => GetStaticMethod<A, R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, A, R>(methodName);
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace DotNext.Reflection
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
         /// <returns>The reflected method; or <see langword="null"/> if method doesn't exist.</returns>
         public static Reflection.Method<Function<T, A, R>> GetMethod<A, R>(string methodName, bool nonPublic = false)
-            where A: struct
+            where A : struct
             => Method.Get<Function<T, A, R>>(methodName, MethodLookup.Instance, nonPublic);
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace DotNext.Reflection
         /// <returns>The reflected method.</returns>
         /// <exception cref="MissingMethodException">The method doesn't exist.</exception>
         public static Reflection.Method<Function<T, A, R>> RequireMethod<A, R>(string methodName, bool nonPublic = false)
-            where A: struct
+            where A : struct
             => GetMethod<A, R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, A, R>(methodName);
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace DotNext.Reflection
         public static class Method
         {
             private sealed class InstanceMethods<D> : MemberCache<MethodInfo, Reflection.Method<D>>
-                where D: MulticastDelegate
+                where D : MulticastDelegate
             {
                 internal static readonly InstanceMethods<D> Public = new InstanceMethods<D>(false);
                 internal static readonly InstanceMethods<D> NonPublic = new InstanceMethods<D>(true);
@@ -167,19 +167,19 @@ namespace DotNext.Reflection
                 private readonly bool nonPublic;
                 private InstanceMethods(bool nonPublic) => this.nonPublic = nonPublic;
 
-                private protected override Reflection.Method<D> Create(string methodName) 
+                private protected override Reflection.Method<D> Create(string methodName)
                     => Reflection.Method<D>.Reflect(methodName, nonPublic);
             }
 
             private sealed class StaticMethods<D> : MemberCache<MethodInfo, Reflection.Method<D>>
-                where D: MulticastDelegate
+                where D : MulticastDelegate
             {
                 internal static readonly StaticMethods<D> Public = new StaticMethods<D>(false);
                 internal static readonly StaticMethods<D> NonPublic = new StaticMethods<D>(true);
                 private readonly bool nonPublic;
                 private StaticMethods(bool nonPublic) => this.nonPublic = nonPublic;
 
-                private protected override Reflection.Method<D> Create(string methodName) 
+                private protected override Reflection.Method<D> Create(string methodName)
                     => Reflection.Method<D>.Reflect<T>(methodName, nonPublic);
             }
 
@@ -198,10 +198,10 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
             public static Reflection.Method<D> Get<D>(string methodName, MethodLookup methodType, bool nonPublic = false)
-                where D: MulticastDelegate
+                where D : MulticastDelegate
             {
                 MemberCache<MethodInfo, Reflection.Method<D>> cache;
-                switch(methodType)
+                switch (methodType)
                 {
                     case MethodLookup.Static:
                         cache = nonPublic ? StaticMethods<D>.NonPublic : StaticMethods<D>.Public;
@@ -231,7 +231,7 @@ namespace DotNext.Reflection
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
             public static Reflection.Method<D> Require<D>(string methodName, MethodLookup methodType, bool nonPublic = false)
-                where D: MulticastDelegate
+                where D : MulticastDelegate
                 => Get<D>(methodName, methodType, nonPublic) ?? throw MissingMethodException.Create<T, D>(methodName);
 
             /// <summary>
@@ -314,7 +314,7 @@ namespace DotNext.Reflection
             public static Reflection.Method<Func<R>> RequireStatic<R>(string methodName, bool nonPublic = false)
                 => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<R>>(methodName);
         }
-        
+
         /// <summary>
         /// Provides access to methods with single parameter declared in type <typeparamref name="T"/>.
         /// </summary>
@@ -357,7 +357,7 @@ namespace DotNext.Reflection
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
             public static Reflection.Method<Action<P>> RequireStatic(string methodName, bool nonPublic = false)
-                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P>>( methodName);
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P>>(methodName);
 
             /// <summary>
             /// Reflects instance method with single parameter as delegate type <see cref="Func{T, P, R}"/>.
@@ -445,7 +445,7 @@ namespace DotNext.Reflection
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
             public static Reflection.Method<Action<P1, P2>> RequireStatic(string methodName, bool nonPublic = false)
-                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2>>( methodName);
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2>>(methodName);
 
             /// <summary>
             /// Reflects instance method with two parameters as delegate type <see cref="Func{T, P1, P2, R}"/>.
@@ -534,7 +534,7 @@ namespace DotNext.Reflection
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
             public static Reflection.Method<Action<P1, P2, P3>> RequireStatic(string methodName, bool nonPublic = false)
-                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2, P3>>( methodName);
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2, P3>>(methodName);
 
             /// <summary>
             /// Reflects instance method with three parameters as delegate type <see cref="Func{T, P1, P2, P3, R}"/>.

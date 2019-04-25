@@ -9,14 +9,14 @@ namespace DotNext
     /// <typeparam name="E">Enum type to reflect.</typeparam>
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
     [Serializable]
-    public readonly struct Enum<E>: IEquatable<E>, IComparable<E>, IFormattable, IComparable<Enum<E>>
+    public readonly struct Enum<E> : IEquatable<E>, IComparable<E>, IFormattable, IComparable<Enum<E>>
         where E : struct, Enum
     {
-        private readonly struct Tuple: IEquatable<Tuple>
+        private readonly struct Tuple : IEquatable<Tuple>
         {
             internal readonly string Name;
             internal readonly E Value;
-            
+
             private Tuple(string name)
             {
                 Name = name;
@@ -33,7 +33,7 @@ namespace DotNext
             public static implicit operator Tuple(E value) => new Tuple(value);
 
             public bool Equals(Tuple other)
-                => Name is null ? other.Name is null && ValueTypeExtensions.ToUInt64(Value) == ValueTypeExtensions.ToUInt64(other.Value): Name == other.Name;
+                => Name is null ? other.Name is null && ValueTypeExtensions.ToUInt64(Value) == ValueTypeExtensions.ToUInt64(other.Value) : Name == other.Name;
 
             public override bool Equals(object other) => other is Tuple t && Equals(t);
             public override int GetHashCode() => Name is null ? Value.GetHashCode() : Name.GetHashCode();
@@ -61,7 +61,7 @@ namespace DotNext
             }
 
             internal Enum<E> this[string name] => Members[base[name]];
-            
+
             internal bool TryGetValue(E value, out Enum<E> member)
             {
                 if (base.TryGetValue(value, out var index))
@@ -83,7 +83,7 @@ namespace DotNext
         /// Maximum enum value.
         /// </summary>
         public static readonly Enum<E> MaxValue;
-        
+
         /// <summary>
         /// Minimum enum value.
         /// </summary>
@@ -126,7 +126,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if there are member declared the given constant value exist; otherwise, <see langword="false"/>.</returns>
         public static bool TryGetMember(string name, out Enum<E> member)
         {
-            if(Enum.TryParse<E>(name, out var value))
+            if (Enum.TryParse<E>(name, out var value))
             {
                 member = new Enum<E>(value, name);
                 return true;
@@ -208,7 +208,7 @@ namespace DotNext
         /// <returns>Equality check result.</returns>
         public override bool Equals(object other)
         {
-            switch(other)
+            switch (other)
             {
                 case Enum<E> en:
                     return Equals(en);

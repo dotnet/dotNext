@@ -19,7 +19,7 @@ namespace DotNext.Reflection
 
                 internal static UnaryOperator<T, R> GetOrCreate(UnaryOperator @operator, OperatorLookup lookup)
                 {
-                    switch(lookup)
+                    switch (lookup)
                     {
                         case OperatorLookup.Predefined:
                             return Instance.GetOrCreate(new Reflection.Operator.Kind(@operator, false));
@@ -88,7 +88,7 @@ namespace DotNext.Reflection
 
                 internal static BinaryOperator<T, U, R> GetOrCreate(BinaryOperator @operator, OperatorLookup lookup)
                 {
-                    switch(lookup)
+                    switch (lookup)
                     {
                         case OperatorLookup.Predefined:
                             return Instance.GetOrCreate(new Reflection.Operator.Kind(@operator, false));

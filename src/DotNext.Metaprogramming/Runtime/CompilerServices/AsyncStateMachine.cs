@@ -1,8 +1,8 @@
 using System;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 using System.Runtime.ConstrainedExecution;
+using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -14,7 +14,7 @@ namespace DotNext.Runtime.CompilerServices
     /// and intended for expert-level developers.
     /// </remarks>
     /// <typeparam name="STATE">The local state of async function used to store computation state.</typeparam>
-    internal struct AsyncStateMachine<STATE>: IAsyncStateMachine<STATE>
+    internal struct AsyncStateMachine<STATE> : IAsyncStateMachine<STATE>
     {
         /// <summary>
         /// Represents state-transition function.
@@ -82,7 +82,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             StateId = previousState;
             guardedRegionsCounter -= 1;
-            
+
         }
 
         /// <summary>
@@ -161,11 +161,11 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="stateId">A new state identifier.</param>
         /// <returns><see langword="true"/> if awaiter is completed successfully; otherwise, <see langword="false"/>.</returns>
         public bool MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
-            where TAwaiter: INotifyCompletion
+            where TAwaiter : INotifyCompletion
         {
             StateId = stateId;
             //avoid boxing of this state machine through continuation action if awaiter is completed already
-            if(Awaiter<TAwaiter>.IsCompleted(ref awaiter))
+            if (Awaiter<TAwaiter>.IsCompleted(ref awaiter))
                 return true;
             else
             {
@@ -314,7 +314,7 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public void Rethrow() => exception?.Throw();
-        
+
         private ValueTask<R> Start()
         {
             builder.Start(ref this);

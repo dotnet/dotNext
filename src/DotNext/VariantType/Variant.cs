@@ -4,18 +4,18 @@ using Expression = System.Linq.Expressions.Expression;
 
 namespace DotNext.VariantType
 {
-	/// <summary>
-	/// Represents value that can be one of two possible types.
-	/// </summary>
+    /// <summary>
+    /// Represents value that can be one of two possible types.
+    /// </summary>
     /// <remarks>
     /// Variant data type is fully compatible with <see langword="dynamic"/>
     /// keyword and late binding.
     /// </remarks>
-	/// <typeparam name="T1">First possible type.</typeparam>
-	/// <typeparam name="T2">Second possible type.</typeparam>
-	public readonly struct Variant<T1, T2>: IEquatable<Variant<T1, T2>>, IVariant
-        where T1: class
-        where T2: class
+    /// <typeparam name="T1">First possible type.</typeparam>
+    /// <typeparam name="T2">Second possible type.</typeparam>
+    public readonly struct Variant<T1, T2> : IEquatable<Variant<T1, T2>>, IVariant
+        where T1 : class
+        where T2 : class
     {
         private readonly object Value;
 
@@ -32,22 +32,22 @@ namespace DotNext.VariantType
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
         public Variant(T2 value) => Value = value;
-        
+
         /// <summary>
         /// Indicates that this container stores non-<see langword="null"/> value.
         /// </summary>
-		public bool IsPresent => !(Value is null);
+        public bool IsPresent => !(Value is null);
 
-		object IVariant.Value => Value;
+        object IVariant.Value => Value;
 
-		/// <summary>
-		/// Interprets stored value as <typeparamref name="T1"/>.
-		/// </summary>
+        /// <summary>
+        /// Interprets stored value as <typeparamref name="T1"/>.
+        /// </summary>
         public Optional<T1> First => (Value as T1).EmptyIfNull();
 
-		/// <summary>
-		/// Interprets stored value as <typeparamref name="T2"/>.
-		/// </summary>
+        /// <summary>
+        /// Interprets stored value as <typeparamref name="T2"/>.
+        /// </summary>
         public Optional<T2> Second => (Value as T2).EmptyIfNull();
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace DotNext.VariantType
         /// <returns>Conversion result; or <see cref="Optional{T}.Empty"/> if stored value is <see langword="null"/>.</returns>
         public Optional<R> Convert<R>(Converter<T1, R> mapper1, Converter<T2, R> mapper2)
         {
-            switch(Value)
+            switch (Value)
             {
                 case T1 first: return mapper1(first);
                 case T2 second: return mapper2(second);
@@ -76,10 +76,10 @@ namespace DotNext.VariantType
         /// <param name="mapper2">The converter for the second possible type.</param>
         /// <returns>The variant value converted from this variant value.</returns>
         public Variant<U1, U2> Convert<U1, U2>(Converter<T1, U1> mapper1, Converter<T2, U2> mapper2)
-            where U1: class
-            where U2: class
+            where U1 : class
+            where U2 : class
         {
-            switch(Value)
+            switch (Value)
             {
                 case T1 first: return new Variant<U1, U2>(mapper1(first));
                 case T2 second: return new Variant<U1, U2>(mapper2(second));
@@ -134,7 +134,7 @@ namespace DotNext.VariantType
             => Equals(Value, other.Value);
 
         bool IEquatable<Variant<T1, T2>>.Equals(Variant<T1, T2> other) => Equals(other);
-        
+
         /// <summary>
         /// Determines whether the two variant values are equal.
         /// </summary>
@@ -145,7 +145,7 @@ namespace DotNext.VariantType
         /// <param name="first">The first value to compare.</param>
         /// <param name="second">The second value to compare.</param>
         /// <returns><see langword="true"/>, if variant values are equal; otherwise, <see langword="false"/>.</returns>
-        public static bool operator==(Variant<T1, T2> first, Variant<T1, T2> second) => first.Equals(second);
+        public static bool operator ==(Variant<T1, T2> first, Variant<T1, T2> second) => first.Equals(second);
 
         /// <summary>
         /// Determines whether the two variant values are not equal.
@@ -157,7 +157,7 @@ namespace DotNext.VariantType
         /// <param name="first">The first value to compare.</param>
         /// <param name="second">The second value to compare.</param>
         /// <returns><see langword="true"/>, if variant values are not equal; otherwise, <see langword="false"/>.</returns>
-        public static bool operator!=(Variant<T1, T2> first, Variant<T1, T2> second) => !first.Equals(second);
+        public static bool operator !=(Variant<T1, T2> first, Variant<T1, T2> second) => !first.Equals(second);
 
         /// <summary>
         /// Indicates that variant value is non-<see langword="null"/> value.
@@ -183,7 +183,7 @@ namespace DotNext.VariantType
         /// Computes hash code for the stored value.
         /// </summary>
         /// <returns>The hash code of the stored value.</returns>
-        public override int GetHashCode() => Value is null ? 0: Value.GetHashCode();
+        public override int GetHashCode() => Value is null ? 0 : Value.GetHashCode();
 
         /// <summary>
         /// Determines whether stored value is equal to the given value.
@@ -193,8 +193,8 @@ namespace DotNext.VariantType
         public override bool Equals(object other)
             => other is IVariant variant ? Equals(Value, variant.Value) : Equals(Value, other);
 
-		DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
-			=> new VariantImmutableMetaObject(parameter, this);
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+            => new VariantImmutableMetaObject(parameter, this);
     }
 
     /// <summary>
@@ -207,14 +207,14 @@ namespace DotNext.VariantType
     /// <typeparam name="T1">First possible type.</typeparam>
     /// <typeparam name="T2">Second possible type.</typeparam>
     /// <typeparam name="T3">Third possible type.</typeparam>
-    public readonly struct Variant<T1, T2, T3>: IVariant, IEquatable<Variant<T1, T2, T3>>
-		where T1: class
-		where T2: class
-		where T3: class
-	{
-		private readonly object Value;
+    public readonly struct Variant<T1, T2, T3> : IVariant, IEquatable<Variant<T1, T2, T3>>
+        where T1 : class
+        where T2 : class
+        where T3 : class
+    {
+        private readonly object Value;
 
-		private Variant(object value) => Value = value;
+        private Variant(object value) => Value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T1"/>.
@@ -234,22 +234,22 @@ namespace DotNext.VariantType
         /// <param name="value">The value to be placed into variant container.</param>
         public Variant(T3 value) => Value = value;
 
-		private static Variant<T1, T2, T3> Create<V>(V variant)
-			where V: struct, IVariant
-			=> new Variant<T1, T2, T3>(variant.Value);
+        private static Variant<T1, T2, T3> Create<V>(V variant)
+            where V : struct, IVariant
+            => new Variant<T1, T2, T3>(variant.Value);
 
         /// <summary>
         /// Indicates that this container stores non-<see langword="null"/> value.
         /// </summary>
         public bool IsPresent => !(Value is null);
 
-		/// <summary>
-		/// Change order of type parameters.
-		/// </summary>
-		/// <returns>A copy of variant value with changed order of type parameters.</returns>
-		public Variant<T3, T1, T2> Permute() => new Variant<T3, T1, T2>(Value);
+        /// <summary>
+        /// Change order of type parameters.
+        /// </summary>
+        /// <returns>A copy of variant value with changed order of type parameters.</returns>
+        public Variant<T3, T1, T2> Permute() => new Variant<T3, T1, T2>(Value);
 
-		object IVariant.Value => Value;
+        object IVariant.Value => Value;
 
         /// <summary>
         /// Determines whether the value stored in this variant
@@ -335,7 +335,7 @@ namespace DotNext.VariantType
         /// </summary>
         /// <param name="variant">The variant value to be converted.</param>
         public static implicit operator Variant<T1, T2, T3>(Variant<T1, T2> variant)
-			=> Create(variant);
+            => Create(variant);
 
         /// <summary>
         /// Indicates that variant value is non-<see langword="null"/> value.
@@ -371,9 +371,9 @@ namespace DotNext.VariantType
         public override bool Equals(object other)
             => other is IVariant variant ? Equals(Value, variant.Value) : Equals(Value, other);
 
-		DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
-			=> new VariantImmutableMetaObject(parameter, this);
-	}
+        DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+            => new VariantImmutableMetaObject(parameter, this);
+    }
 
     /// <summary>
 	/// Represents value that can be one of three possible types.
@@ -390,7 +390,7 @@ namespace DotNext.VariantType
         where T1 : class
         where T2 : class
         where T3 : class
-        where T4: class
+        where T4 : class
     {
         private readonly object Value;
 

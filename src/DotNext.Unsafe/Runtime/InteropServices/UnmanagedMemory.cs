@@ -11,7 +11,7 @@ namespace DotNext.Runtime.InteropServices
     /// <summary>
     /// Represents a block of allocated unmanaged memory of the specified size.
     /// </summary>
-    public unsafe struct UnmanagedMemory: IUnmanagedMemory, IDisposable, IEquatable<UnmanagedMemory>, IEnumerable<byte>
+    public unsafe struct UnmanagedMemory : IUnmanagedMemory, IDisposable, IEquatable<UnmanagedMemory>, IEnumerable<byte>
     {
         /// <summary>
 		/// Represents GC-friendly reference to the unmanaged memory.
@@ -19,7 +19,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <remarks>
 		/// Unmanaged memory allocated using handle can be reclaimed by GC automatically.
 		/// </remarks>
-        public sealed class Handle: UnmanagedMemoryHandle
+        public sealed class Handle : UnmanagedMemoryHandle
         {
             private Handle(UnmanagedMemory memory, bool ownsHandle)
                 : base(memory, ownsHandle)
@@ -75,9 +75,9 @@ namespace DotNext.Runtime.InteropServices
 			/// <exception cref="ObjectDisposedException">Handle is closed.</exception>
             public static implicit operator UnmanagedMemory(Handle handle)
             {
-                if(handle is null)
+                if (handle is null)
                     return default;
-                else if(handle.IsClosed)
+                else if (handle.IsClosed)
                     throw handle.HandleClosed();
                 else
                     return new UnmanagedMemory(handle.handle, handle.Size);
@@ -127,18 +127,18 @@ namespace DotNext.Runtime.InteropServices
         {
             get
             {
-                if(Address == IntPtr.Zero)
+                if (Address == IntPtr.Zero)
                     throw new NullPointerException();
-                else if(offset < 0L || offset >= Size)
+                else if (offset < 0L || offset >= Size)
                     throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(Size));
                 else
                     return *(Address.ToPointer<byte>() + offset);
             }
             set
             {
-                if(Address == IntPtr.Zero)
+                if (Address == IntPtr.Zero)
                     throw new NullPointerException();
-                else if(offset < 0L || offset >= Size)
+                else if (offset < 0L || offset >= Size)
                     throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(Size));
                 else
                     *(Address.ToPointer<byte>() + offset) = value;
@@ -148,7 +148,7 @@ namespace DotNext.Runtime.InteropServices
         internal static IntPtr Alloc(long size, bool zeroMem)
         {
             var address = Marshal.AllocHGlobal(new IntPtr(size));
-            if(zeroMem)
+            if (zeroMem)
                 Memory.ClearBits(address, size);
             return address;
         }
@@ -157,28 +157,28 @@ namespace DotNext.Runtime.InteropServices
 
         internal static bool Release(IntPtr memory)
         {
-            if(memory == IntPtr.Zero)
+            if (memory == IntPtr.Zero)
                 return false;
             Marshal.FreeHGlobal(memory);
             return true;
         }
 
         IntPtr IUnmanagedMemory.Address => Address;
-        
+
         /// <summary>
         /// Returns pointer to unmanaged memory in the form of managed pointer to type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type of managed pointer.</typeparam>
         /// <returns>Managed typed pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T AsRef<T>() where T: unmanaged => ref Unsafe.AsRef<T>(Address.ToPointer());
+        public ref T AsRef<T>() where T : unmanaged => ref Unsafe.AsRef<T>(Address.ToPointer());
 
         /// <summary>
         /// Obtains typed unmanaged pointer to the allocated memory.
         /// </summary>
         /// <typeparam name="T">The type of unmanaged pointer.</typeparam>
         /// <returns>The unmanaged pointer.</returns>
-        public Pointer<T> ToPointer<T>() where T: unmanaged => new Pointer<T>(Address);
+        public Pointer<T> ToPointer<T>() where T : unmanaged => new Pointer<T>(Address);
 
         /// <summary>
         /// Creates bitwise copy of the unmanaged memory.
@@ -205,11 +205,11 @@ namespace DotNext.Runtime.InteropServices
             get => size;
             set
             {
-                if(value <= 0L)
+                if (value <= 0L)
                     throw new ArgumentOutOfRangeException(nameof(value));
-                else if(value == size)
+                else if (value == size)
                     return;
-                else if(IsEmpty)
+                else if (IsEmpty)
                     this = new UnmanagedMemory(value);
                 else
                     this = new UnmanagedMemory(Realloc(Address, value), value);
@@ -231,7 +231,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns><see langword="true"/>, if this object points to the same memory block as other object; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
-            switch(other)
+            switch (other)
             {
                 case UnmanagedMemory memory:
                     return Equals(memory);
@@ -250,7 +250,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns><see langword="true"/>, if two objects point to the same block of unmanaged memory; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(UnmanagedMemory first, UnmanagedMemory second) => first.Address == second.Address;
-        
+
         /// <summary>
         /// Determines whether two objects point to the different blocks of unmanaged memory.
         /// </summary>
@@ -301,21 +301,21 @@ namespace DotNext.Runtime.InteropServices
 	/// Therefore, it's developer responsibility to release unmanaged memory using <see cref="IDisposable.Dispose"/> call.
     /// </remarks>
     /// <typeparam name="T">Type to be allocated in the unmanaged heap.</typeparam>
-    public unsafe struct UnmanagedMemory<T>: IUnmanagedMemory<T>, IStrongBox, IEquatable<UnmanagedMemory<T>>
-        where T: unmanaged
+    public unsafe struct UnmanagedMemory<T> : IUnmanagedMemory<T>, IStrongBox, IEquatable<UnmanagedMemory<T>>
+        where T : unmanaged
     {
-		/// <summary>
-		/// Represents GC-friendly reference to the unmanaged memory.
-		/// </summary>
-		/// <remarks>
-		/// Unmanaged memory allocated using handle can be reclaimed by GC automatically.
-		/// </remarks>
-		public sealed class Handle : UnmanagedMemoryHandle<T>
-		{
-			private Handle(UnmanagedMemory<T> buffer, bool ownsHandle)
-				: base(buffer, ownsHandle)
-			{
-			}
+        /// <summary>
+        /// Represents GC-friendly reference to the unmanaged memory.
+        /// </summary>
+        /// <remarks>
+        /// Unmanaged memory allocated using handle can be reclaimed by GC automatically.
+        /// </remarks>
+        public sealed class Handle : UnmanagedMemoryHandle<T>
+        {
+            private Handle(UnmanagedMemory<T> buffer, bool ownsHandle)
+                : base(buffer, ownsHandle)
+            {
+            }
 
             /// <summary>
             /// Allocates a new unmanaged memory and associate it
@@ -328,9 +328,9 @@ namespace DotNext.Runtime.InteropServices
             /// </remarks>
             /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
             public Handle(bool zeroMem = true)
-				: this(new UnmanagedMemory<T>(zeroMem), true)
-			{
-			}
+                : this(new UnmanagedMemory<T>(zeroMem), true)
+            {
+            }
 
             /// <summary>
             /// Allocates a new unmanaged memory and associate it with handle.
@@ -342,9 +342,9 @@ namespace DotNext.Runtime.InteropServices
             /// </remarks>
             /// <param name="value">A value to be placed into unmanaged memory.</param>
             public Handle(T value)
-				: this(new UnmanagedMemory<T>(value), true)
-			{
-			}
+                : this(new UnmanagedMemory<T>(value), true)
+            {
+            }
 
             /// <summary>
             /// Initializes a new handle for the given unmanaged memory.
@@ -354,9 +354,9 @@ namespace DotNext.Runtime.InteropServices
             /// </remarks>
             /// <param name="buffer">Already allocated memory.</param>
 			public Handle(UnmanagedMemory<T> buffer)
-				: this(buffer, false)
-			{
-			}
+                : this(buffer, false)
+            {
+            }
 
             /// <summary>
             /// Obtains span object pointing to the allocated unmanaged memory.
@@ -376,27 +376,27 @@ namespace DotNext.Runtime.InteropServices
             /// <returns><see langword="true"/>, if this handle is valid; otherwise, <see langword="false"/>.</returns>
 			protected override bool ReleaseHandle() => UnmanagedMemory.Release(handle);
 
-			/// <summary>
-			/// Converts handle into unmanaged buffer structure.
-			/// </summary>
-			/// <param name="handle">Handle to convert.</param>
-			/// <exception cref="ObjectDisposedException">Handle is closed.</exception>
-			public static implicit operator UnmanagedMemory<T>(Handle handle)
-			{
-				if (handle is null)
-					return default;
-				else if (handle.IsClosed)
-					throw handle.HandleClosed();
-				else
-					return new UnmanagedMemory<T>(handle.handle);
-			}
-		}
+            /// <summary>
+            /// Converts handle into unmanaged buffer structure.
+            /// </summary>
+            /// <param name="handle">Handle to convert.</param>
+            /// <exception cref="ObjectDisposedException">Handle is closed.</exception>
+            public static implicit operator UnmanagedMemory<T>(Handle handle)
+            {
+                if (handle is null)
+                    return default;
+                else if (handle.IsClosed)
+                    throw handle.HandleClosed();
+                else
+                    return new UnmanagedMemory<T>(handle.handle);
+            }
+        }
 
         private Pointer<T> pointer;
 
         private UnmanagedMemory(Pointer<T> pointer)
             => this.pointer = pointer;
-        
+
         private UnmanagedMemory(IntPtr pointer)
             : this(new Pointer<T>(pointer))
         {
@@ -433,7 +433,7 @@ namespace DotNext.Runtime.InteropServices
         /// Gets address of the unmanaged memory.
         /// </summary>
         public IntPtr Address => pointer.Address;
-        
+
         /// <summary>
         /// Converts unmanaged pointer into managed pointer.
         /// </summary>
@@ -451,23 +451,23 @@ namespace DotNext.Runtime.InteropServices
         /// Gets or sets value stored in unmanaged memory.
         /// </summary>
         public T Value
-		{
+        {
             get => pointer.Value;
             set => pointer.Value = value;
-		}
+        }
 
-		object IStrongBox.Value
-		{
-			get => pointer.IsNull ? null : (object)Value;
-			set
-			{
-				if (value is T typedVal)
-					Value = typedVal;
-				else
-					throw new ArgumentException(ExceptionMessages.ExpectedType(typeof(T)), nameof(value));
-			}
-		}
-        
+        object IStrongBox.Value
+        {
+            get => pointer.IsNull ? null : (object)Value;
+            set
+            {
+                if (value is T typedVal)
+                    Value = typedVal;
+                else
+                    throw new ArgumentException(ExceptionMessages.ExpectedType(typeof(T)), nameof(value));
+            }
+        }
+
         /// <summary>
         /// Copies the value located at the memory block identified by the given pointer
         /// into the memory identified by this instance.
@@ -480,7 +480,7 @@ namespace DotNext.Runtime.InteropServices
         /// <typeparam name="U">The type of the value located at source memory block.</typeparam>
         /// <param name="source">The source memory block.</param>
         public void ReadFrom<U>(Pointer<U> source)
-            where U: unmanaged
+            where U : unmanaged
             => new UnmanagedMemory<U>(source).WriteTo(pointer);
 
         /// <summary>
@@ -495,7 +495,7 @@ namespace DotNext.Runtime.InteropServices
         /// <typeparam name="U">The type indicating size of the destination memory block.</typeparam>
         /// <param name="destination">The destination memory block.</param>
         public void WriteTo<U>(Pointer<U> destination)
-            where U: unmanaged
+            where U : unmanaged
             => pointer.As<byte>().WriteTo(destination.As<byte>(), Math.Min(Pointer<T>.Size, Pointer<U>.Size));
 
         /// <summary>
@@ -517,7 +517,7 @@ namespace DotNext.Runtime.InteropServices
         /// <typeparam name="U">The type indicating size of the destination memory block.</typeparam>
         /// <param name="destination">The destination memory block.</param>
         public void WriteTo<U>(UnmanagedMemory<U> destination)
-            where U: unmanaged
+            where U : unmanaged
             => WriteTo(destination.pointer);
 
         /// <summary>
@@ -526,51 +526,51 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>A boxed copy in the managed heap.</returns>
         public StrongBox<T> CopyToManagedHeap() => new StrongBox<T>(Value);
 
-		/// <summary>
-		/// Creates bitwise copy of unmanaged buffer.
-		/// </summary>
-		/// <returns>Bitwise copy of unmanaged buffer.</returns>
+        /// <summary>
+        /// Creates bitwise copy of unmanaged buffer.
+        /// </summary>
+        /// <returns>Bitwise copy of unmanaged buffer.</returns>
         public UnmanagedMemory<T> Copy()
             => pointer.IsNull ? this : new UnmanagedMemory<T>(Value);
 
         object ICloneable.Clone() => Copy();
 
-		/// <summary>
-		/// Reinterprets reference to the unmanaged buffer.
-		/// </summary>
-		/// <remarks>
-		/// Type <typeparamref name="U"/> should be of the same size or less than type <typeparamref name="U"/>.
-		/// </remarks>
-		/// <typeparam name="U">New buffer type.</typeparam>
-		/// <returns>Reinterpreted reference pointing to the same memory as original buffer.</returns>
-		/// <exception cref="GenericArgumentException{U}">Target type should be of the same size or less than original type.</exception>
-		public UnmanagedMemory<U> As<U>() 
-            where U: unmanaged
-            => new UnmanagedMemory<U>(pointer.As<U>());
-        
         /// <summary>
-		/// Gets or sets byte in the memory at the specified zero-based offset.
-		/// </summary>
-		/// <param name="offset">Offset of the requested byte.</param>
-		/// <returns>The byte value from the memory.</returns>
-		/// <exception cref="NullPointerException">This memory is not allocated.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Invalid offset.</exception>
+        /// Reinterprets reference to the unmanaged buffer.
+        /// </summary>
+        /// <remarks>
+        /// Type <typeparamref name="U"/> should be of the same size or less than type <typeparamref name="U"/>.
+        /// </remarks>
+        /// <typeparam name="U">New buffer type.</typeparam>
+        /// <returns>Reinterpreted reference pointing to the same memory as original buffer.</returns>
+        /// <exception cref="GenericArgumentException{U}">Target type should be of the same size or less than original type.</exception>
+        public UnmanagedMemory<U> As<U>()
+            where U : unmanaged
+            => new UnmanagedMemory<U>(pointer.As<U>());
+
+        /// <summary>
+        /// Gets or sets byte in the memory at the specified zero-based offset.
+        /// </summary>
+        /// <param name="offset">Offset of the requested byte.</param>
+        /// <returns>The byte value from the memory.</returns>
+        /// <exception cref="NullPointerException">This memory is not allocated.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Invalid offset.</exception>
         public byte this[long offset]
         {
             get
             {
-                if(Address == IntPtr.Zero)
+                if (Address == IntPtr.Zero)
                     throw new NullPointerException();
-                else if(offset < 0L || offset >= Pointer<T>.Size)
+                else if (offset < 0L || offset >= Pointer<T>.Size)
                     throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(Pointer<T>.Size));
                 else
                     return *Address.ToPointer<byte>();
             }
             set
             {
-                if(Address == IntPtr.Zero)
+                if (Address == IntPtr.Zero)
                     throw new NullPointerException();
-                else if(offset < 0L || offset >= Pointer<T>.Size)
+                else if (offset < 0L || offset >= Pointer<T>.Size)
                     throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(Pointer<T>.Size));
                 else
                     *Address.ToPointer<byte>() = value;
@@ -612,7 +612,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="other">The pointer to be compared.</param>
         /// <returns><see langword="true"/>, if this pointer represents the same memory location as other pointer; otherwise, <see langword="false"/>.</returns>
         public bool Equals<U>(UnmanagedMemory<U> other)
-            where U: unmanaged
+            where U : unmanaged
             => pointer.Equals(other.pointer);
 
         bool IEquatable<UnmanagedMemory<T>>.Equals(UnmanagedMemory<T> other) => Equals(other);
@@ -630,7 +630,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns><see langword="true"/>, if this pointer represents the same memory location as other pointer; otherwise, <see langword="false"/>.</returns>
 		public override bool Equals(object other)
         {
-            switch(other)
+            switch (other)
             {
                 case IntPtr pointer:
                     return this.pointer.Address == pointer;
@@ -693,7 +693,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="first">The first pointer to be compared.</param>
         /// <param name="second">The second pointer to be compared.</param>
         /// <returns><see langword="true"/>, if the first pointer represents the different memory location as the second pointer; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(UnmanagedMemory<T> first, UnmanagedMemory<T> second) => first.pointer != second.pointer;
 
         /// <summary>
@@ -702,7 +702,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="first">The first pointer to be compared.</param>
         /// <param name="second">The second pointer to be compared.</param>
         /// <returns><see langword="true"/>, if the first pointer represents the same memory location as the second pointer; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(UnmanagedMemory<T> first, Pointer<T> second) => first.pointer == second;
 
         /// <summary>

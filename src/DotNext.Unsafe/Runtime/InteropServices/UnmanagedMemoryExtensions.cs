@@ -1,6 +1,6 @@
 using System;
-using System.Threading.Tasks;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -180,7 +180,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <returns>Byte located at the specified offset in the memory.</returns>
 		/// <exception cref="NullPointerException">This buffer is not allocated.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Invalid offset.</exception>    
-        public static Pointer<byte> ToPointer<M>(this ref M memory, long offset) 
+        public static Pointer<byte> ToPointer<M>(this ref M memory, long offset)
             where M : struct, IUnmanagedMemory
             => offset >= 0 && offset < memory.Size ?
                 memory.ToPointer<byte>() + offset :

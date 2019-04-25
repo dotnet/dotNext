@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Dynamic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Linq.Expressions;
-using System.Dynamic;
 
 namespace DotNext.Metaprogramming
 {
@@ -46,10 +46,10 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="view">Universal expression to be converted.</param>
         public static implicit operator Expression(UniversalExpression view) => view.expression ?? Expression.Empty();
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UniversalExpression Transform(Converter<Expression, Expression> converter) => new UniversalExpression(converter(expression ?? Expression.Empty()));
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UniversalExpression Transform<T>(Func<Expression, T, Expression> converter, T arg)
             => new UniversalExpression(converter(expression ?? Expression.Empty(), arg));
@@ -57,11 +57,11 @@ namespace DotNext.Metaprogramming
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UniversalExpression Transform<T1, T2>(Func<Expression, T1, T2, Expression> converter, T1 arg1, T2 arg2)
             => new UniversalExpression(converter(expression ?? Expression.Empty(), arg1, arg2));
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private UniversalExpression Transform<T1, T2, T3>(Func<Expression, T1, T2, T3, Expression> converter, T1 arg1, T2 arg2, T3 arg3)
             => new UniversalExpression(converter(expression ?? Expression.Empty(), arg1, arg2, arg3));
-        
+
         /// <summary>
         /// Constructs constant value of <see cref="long"/> type.
         /// </summary>
@@ -170,7 +170,7 @@ namespace DotNext.Metaprogramming
         /// <param name="expr">The operand.</param>
         /// <returns>Unary expression.</returns>
         public static UniversalExpression operator +(UniversalExpression expr) => expr.Transform(ExpressionBuilder.UnaryPlus);
-        
+
         /// <summary>
         /// Unary minus.
         /// </summary>
@@ -184,7 +184,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator +(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator +(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.Add, right.expression);
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator +(UniversalExpression left, Expression right) 
+        public static UniversalExpression operator +(UniversalExpression left, Expression right)
             => left.Transform(ExpressionBuilder.Add, right);
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator -(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator -(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.Subtract, right.expression);
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator -(UniversalExpression left, Expression right) 
+        public static UniversalExpression operator -(UniversalExpression left, Expression right)
             => left.Transform(ExpressionBuilder.Subtract, right);
 
         /// <summary>
@@ -220,7 +220,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator >(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator >(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.GreaterThan, right.expression);
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator >=(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator >=(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.GreaterThanOrEqual, right.expression);
 
         /// <summary>
@@ -256,7 +256,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator <(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator <(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.LessThan, right.expression);
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator <=(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator <=(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.LessThanOrEqual, right.expression);
 
         /// <summary>
@@ -292,7 +292,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator *(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator *(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.Multiply, right.expression);
 
         /// <summary>
@@ -310,7 +310,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator /(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator /(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.Divide, right.expression);
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator |(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator |(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.Or, right.expression);
 
         /// <summary>
@@ -346,7 +346,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator &(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator &(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.And, right.expression);
 
         /// <summary>
@@ -364,7 +364,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator ^(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator ^(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.Xor, right.expression);
 
         /// <summary>
@@ -382,7 +382,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator ==(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator ==(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.Equal, right.expression);
 
         /// <summary>
@@ -400,7 +400,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator !=(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator !=(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.NotEqual, right.expression);
 
         /// <summary>
@@ -418,7 +418,7 @@ namespace DotNext.Metaprogramming
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
-        public static UniversalExpression operator %(UniversalExpression left, UniversalExpression right) 
+        public static UniversalExpression operator %(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.Modulo, right.expression);
 
         /// <summary>
@@ -610,7 +610,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="arguments">Invocation arguments.</param>
         /// <returns>Invocation expression.</returns>
-        public UniversalExpression Invoke(params Expression[] arguments)=> Transform(ExpressionBuilder.Invoke, arguments);
+        public UniversalExpression Invoke(params Expression[] arguments) => Transform(ExpressionBuilder.Invoke, arguments);
 
         /// <summary>
         /// Constructs array element access expression.
@@ -648,7 +648,7 @@ namespace DotNext.Metaprogramming
         /// <param name="methodName">The name of the method in the interface or base class to be called.</param>
         /// <param name="arguments">The method arguments.</param>
         /// <returns>The method call expression.</returns>
-        public UniversalExpression Call(Type interfaceType, string methodName, params Expression[] arguments) 
+        public UniversalExpression Call(Type interfaceType, string methodName, params Expression[] arguments)
             => Transform(ExpressionBuilder.Call, interfaceType, methodName, arguments);
 
         /// <summary>
@@ -667,7 +667,7 @@ namespace DotNext.Metaprogramming
         /// <param name="propertyName">The name of the instance property or indexer.</param>
         /// <param name="indicies">Indexer indicies.</param>
         /// <returns>Property access expression.</returns>
-        public UniversalExpression Property(Type interfaceType, string propertyName, params Expression[] indicies) 
+        public UniversalExpression Property(Type interfaceType, string propertyName, params Expression[] indicies)
             => Transform(ExpressionBuilder.Property, interfaceType, propertyName, indicies);
 
         /// <summary>
@@ -676,7 +676,7 @@ namespace DotNext.Metaprogramming
         /// <param name="propertyName">The name of the instance property or indexer.</param>
         /// <param name="indicies">Indexer indicies.</param>
         /// <returns>Property access expression.</returns>
-        public UniversalExpression Property(string propertyName, params Expression[] indicies) 
+        public UniversalExpression Property(string propertyName, params Expression[] indicies)
             => Transform(ExpressionBuilder.Property, propertyName, indicies);
 
         /// <summary>
@@ -754,7 +754,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="body">The scope statements builder.</param>
         /// <returns>Construct code block.</returns>
-        public UniversalExpression With(Action<ParameterExpression> body) 
+        public UniversalExpression With(Action<ParameterExpression> body)
             => new UniversalExpression(ExpressionBuilder.With(expression, body));
 
         /// <summary>
@@ -828,7 +828,7 @@ namespace DotNext.Metaprogramming
         /// <returns><see langword="true"/>, if both expressions are equal; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
-            switch(other)
+            switch (other)
             {
                 case Expression expr:
                     return Equals(expression, expr);

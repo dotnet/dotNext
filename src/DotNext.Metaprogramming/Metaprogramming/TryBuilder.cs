@@ -8,7 +8,7 @@ namespace DotNext.Metaprogramming
     /// Represents structured exception handling statement.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch">try-catch statement</seealso>
-    public sealed class TryBuilder: ExpressionBuilder<TryExpression>
+    public sealed class TryBuilder : ExpressionBuilder<TryExpression>
     {
         private readonly Expression tryBlock;
         private Expression faultBlock;

@@ -1,13 +1,13 @@
 using System;
-using System.Threading;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace DotNext.Threading
 {
     /// <summary>
     /// Represents asynchronous version of <see cref="ManualResetEvent"/>.
     /// </summary>
-    public class AsyncManualResetEvent: Synchronizer, IAsyncResetEvent
+    public class AsyncManualResetEvent : Synchronizer, IAsyncResetEvent
     {
         /// <summary>
         /// Initializes a new asynchronous reset event in the specified state.
@@ -29,9 +29,9 @@ namespace DotNext.Threading
         public bool Set()
         {
             ThrowIfDisposed();
-            if(node is null)    //already in signaled state
+            if (node is null)    //already in signaled state
                 return false;
-            else if(node.TrySetResult(true))
+            else if (node.TrySetResult(true))
             {
                 node = null;
                 return true;
@@ -49,7 +49,7 @@ namespace DotNext.Threading
         public bool Reset()
         {
             ThrowIfDisposed();
-            if(node is null)
+            if (node is null)
             {
                 node = new WaitNode();
                 return true;

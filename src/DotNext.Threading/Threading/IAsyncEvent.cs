@@ -7,7 +7,7 @@ namespace DotNext.Threading
     /// <summary>
     /// Represents asynchronous event.
     /// </summary>
-    public interface IAsyncEvent: ISynchronizer, IDisposable
+    public interface IAsyncEvent : ISynchronizer, IDisposable
     {
         /// <summary>
         /// Determines whether this event in signaled state.

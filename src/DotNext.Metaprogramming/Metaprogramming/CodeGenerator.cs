@@ -38,7 +38,7 @@ namespace DotNext.Metaprogramming
                     return target;
             return null;
         }
-        
+
         private static void AddStatement<D, S, F>(F factory, D body)
             where D : Delegate
             where S : LexicalScope, IExpressionBuilder<Expression>, ICompoundStatement<D>
@@ -86,8 +86,8 @@ namespace DotNext.Metaprogramming
         /// <returns>Declared local variable; or <see langword="null"/>, if there is no declared local variable with the given name.</returns>
         public static ParameterExpression Variable(string name)
         {
-            for(var current = CodeGenerator.current; !(current is null); current = current?.Parent)
-                if(current.Variables.TryGetValue(name, out var variable))
+            for (var current = CodeGenerator.current; !(current is null); current = current?.Parent)
+                if (current.Variables.TryGetValue(name, out var variable))
                     return variable;
             return null;
         }
@@ -453,7 +453,7 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Test expression.</param>
         /// <returns>Conditional statement builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static ConditionalBuilder If(Expression test) 
+        public static ConditionalBuilder If(Expression test)
             => MakeConditional(test).TreatAsStatement<ConditionalExpression, ConditionalBuilder>();
 
         /// <summary>
@@ -475,7 +475,7 @@ namespace DotNext.Metaprogramming
         public static void IfThenElse(Expression test, Action ifTrue, Action ifFalse)
             => If(test).Then(ifTrue).Else(ifFalse).End();
 
-        private readonly struct WhileLoopFactory: ILexicalScopeFactory<WhileLoopScope>
+        private readonly struct WhileLoopFactory : ILexicalScopeFactory<WhileLoopScope>
         {
             private readonly bool checkConditionFirst;
             private readonly Expression test;
@@ -524,8 +524,8 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void DoWhile(Expression test, Action body)
             => AddStatement<Action, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, false), body);
-        
-        private readonly struct ForEachLoopScopeFactory: ILexicalScopeFactory<ForEachLoopScope>
+
+        private readonly struct ForEachLoopScopeFactory : ILexicalScopeFactory<ForEachLoopScope>
         {
             private readonly Expression collection;
 
@@ -543,7 +543,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression, LoopContext> body)
             => AddStatement<Action<MemberExpression, LoopContext>, ForEachLoopScope, ForEachLoopScopeFactory>(new ForEachLoopScopeFactory(collection), body);
-        
+
         /// <summary>
         /// Adds <see langword="foreach"/> loop statement.
         /// </summary>
@@ -582,7 +582,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
         public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopContext> body)
             => AddStatement<Action<ForLoopScope>, ForLoopScope, ForLoopScopeFactory>(new ForLoopScopeFactory(initializer, condition), scope => scope.ConstructBody(body, iteration));
-        
+
         /// <summary>
         /// Adds <see langword="for"/> loop statement.
         /// </summary>
@@ -640,7 +640,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public static void Rethrow() => CurrentScope.AddStatement(Expression.Rethrow());
 
-        private readonly struct UsingBlockScopeFactory: ILexicalScopeFactory<UsingBlockScope>
+        private readonly struct UsingBlockScopeFactory : ILexicalScopeFactory<UsingBlockScope>
         {
             private readonly Expression resource;
 
@@ -651,7 +651,7 @@ namespace DotNext.Metaprogramming
 
         internal static Expression MakeUsing(Expression resource, Action<ParameterExpression> body)
             => Build<Expression, Action<ParameterExpression>, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(resource), body);
-        
+
         internal static Expression MakeUsing(Expression resource, Action body)
             => Build<Expression, Action, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(resource), body);
 
@@ -674,8 +674,8 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action body)
             => AddStatement<Action, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(resource), body);
-        
-        private readonly struct LockScopeFactory: ILexicalScopeFactory<LockScope>
+
+        private readonly struct LockScopeFactory : ILexicalScopeFactory<LockScope>
         {
             private readonly Expression syncRoot;
 
@@ -686,7 +686,7 @@ namespace DotNext.Metaprogramming
 
         internal static BlockExpression MakeLock(Expression syncRoot, Action<ParameterExpression> body)
             => Build<BlockExpression, Action<ParameterExpression>, LockScope, LockScopeFactory>(new LockScopeFactory(syncRoot), body);
-        
+
         internal static BlockExpression MakeLock(Expression syncRoot, Action body)
             => Build<BlockExpression, Action, LockScope, LockScopeFactory>(new LockScopeFactory(syncRoot), body);
 
@@ -710,7 +710,7 @@ namespace DotNext.Metaprogramming
         public static void Lock(Expression syncRoot, Action body)
             => AddStatement<Action, LockScope, LockScopeFactory>(new LockScopeFactory(syncRoot), body);
 
-        private readonly struct WithBlockScopeFactory: ILexicalScopeFactory<WithBlockScope>
+        private readonly struct WithBlockScopeFactory : ILexicalScopeFactory<WithBlockScope>
         {
             private readonly Expression expression;
 
@@ -762,11 +762,11 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Try(Action scope) => Try(MakeScope(scope));
 
-        private readonly struct LocalScopeFactory: ILexicalScopeFactory<LocalScope>
+        private readonly struct LocalScopeFactory : ILexicalScopeFactory<LocalScope>
         {
             LocalScope ILexicalScopeFactory<LocalScope>.CreateScope(LexicalScope parent) => new LocalScope(parent);
         }
-        
+
         private static Expression MakeScope(Action body)
             => Build<Expression, Action, LocalScope, LocalScopeFactory>(new LocalScopeFactory(), body);
 
@@ -827,7 +827,7 @@ namespace DotNext.Metaprogramming
             CurrentScope.AddStatement(lambda.Return(result));
         }
 
-        private readonly struct LambdaScopeFactory<D>: ILexicalScopeFactory<LambdaScope<D>>
+        private readonly struct LambdaScopeFactory<D> : ILexicalScopeFactory<LambdaScope<D>>
             where D : Delegate
         {
             private readonly bool tailCall;
@@ -868,7 +868,7 @@ namespace DotNext.Metaprogramming
         public static Expression<D> Lambda<D>(Action<LambdaContext> body)
             where D : Delegate
             => Lambda<D>(false, body);
-        
+
         /// <summary>
         /// Constructs lamdba function capturing the current lexical scope.
         /// </summary>
@@ -878,13 +878,13 @@ namespace DotNext.Metaprogramming
         public static Expression<D> Lambda<D>(Action<LambdaContext, ParameterExpression> body)
             where D : Delegate
             => Lambda<D>(false, body);
-        
-        private readonly struct AsyncLambdaScopeFactory<D>: ILexicalScopeFactory<AsyncLambdaScope<D>>
+
+        private readonly struct AsyncLambdaScopeFactory<D> : ILexicalScopeFactory<AsyncLambdaScope<D>>
             where D : Delegate
         {
             AsyncLambdaScope<D> ILexicalScopeFactory<AsyncLambdaScope<D>>.CreateScope(LexicalScope parent) => new AsyncLambdaScope<D>(parent);
         }
-        
+
         /// <summary>
         /// Constructs async lambda function capturing the current lexical scope.
         /// </summary>

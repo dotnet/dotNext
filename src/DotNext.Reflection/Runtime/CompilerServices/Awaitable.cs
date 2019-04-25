@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -13,7 +13,7 @@ namespace DotNext.Runtime.CompilerServices
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">TAP</seealso>
     [Concept]
     public static class Awaitable<T, [Constraint(typeof(Awaiter<>))] TAwaiter>
-        where TAwaiter: ICriticalNotifyCompletion
+        where TAwaiter : ICriticalNotifyCompletion
     {
         private static readonly Operator<T, TAwaiter> getAwaiter = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance);
 

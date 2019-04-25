@@ -326,7 +326,7 @@ namespace DotNext.Metaprogramming
         /// <returns>Unary expression.</returns>
         public static UnaryExpression PostIncrementAssign(this ParameterExpression operand)
             => Expression.PostIncrementAssign(operand);
-        
+
         /// <summary>
         /// Constructs an expression that decrements given expression by 1 and assigns the result back to the expression.
         /// </summary>
@@ -370,7 +370,7 @@ namespace DotNext.Metaprogramming
         /// <returns>Unary expression.</returns>
         public static UnaryExpression PostIncrementAssign(this MemberExpression operand)
             => Expression.PostIncrementAssign(operand);
-        
+
         /// <summary>
         /// Constructs an expression that decrements given expression by 1 and assigns the result back to the expression.
         /// </summary>
@@ -426,7 +426,7 @@ namespace DotNext.Metaprogramming
         /// <returns>Binary expression.</returns>
         public static BinaryExpression Assign(this ParameterExpression left, Expression value)
             => Expression.Assign(left, value);
-        
+
         /// <summary>
         /// Constructs assignment expression.
         /// </summary>
@@ -1020,7 +1020,7 @@ namespace DotNext.Metaprogramming
         /// <returns><see langword="using"/> statement.</returns>
         public static Expression Using(this Expression resource, Action<ParameterExpression> body)
             => CodeGenerator.MakeUsing(resource, body);
-        
+
         /// <summary>
         /// Constructs <see langword="using"/> statement.
         /// </summary>

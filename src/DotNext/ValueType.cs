@@ -11,8 +11,8 @@ namespace DotNext
     /// </summary>
     /// <typeparam name="T">Value type.</typeparam>
 	[Serializable]
-    public sealed class ValueType<T>: StrongBox<T>
-        where T: struct
+    public sealed class ValueType<T> : StrongBox<T>
+        where T : struct
     {
         /// <summary>
         /// Represents bitwise comparer for value type <typeparamref name="T"/>.
@@ -59,19 +59,19 @@ namespace DotNext
         /// Size of value type, in bytes.
         /// </summary>
         public static int Size
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => Unsafe.SizeOf<T>();
-		}
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => Unsafe.SizeOf<T>();
+        }
 
         /// <summary>
         /// Default value of type <typeparamref name="T"/>.
         /// </summary>
         public static T Default => default;
 
-		/// <summary>
-		/// Indicates that value type is primitive type.
-		/// </summary>
+        /// <summary>
+        /// Indicates that value type is primitive type.
+        /// </summary>
         public static readonly bool IsPrimitive = typeof(T).IsPrimitive;
 
         /// <summary>
@@ -104,29 +104,29 @@ namespace DotNext
         public static unsafe bool BitwiseEquals(T first, T second)
             => Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
 
-		/// <summary>
-		/// Computes bitwise hash code for the specified value.
-		/// </summary>
-		/// <remarks>
-		/// This method doesn't use <see cref="object.GetHashCode"/>
-		/// even if it is overridden by value type.
-		/// </remarks>
-		/// <param name="value">A value to be hashed.</param>
-		/// <param name="hash">Initial value of the hash.</param>
-		/// <param name="hashFunction">Hashing function.</param>
-		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-		/// <returns>Bitwise hash code.</returns>
-		public static unsafe int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
-			=> Memory.GetHashCode32(Unsafe.AsPointer(ref value), Size, hash, hashFunction, salted);
+        /// <summary>
+        /// Computes bitwise hash code for the specified value.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't use <see cref="object.GetHashCode"/>
+        /// even if it is overridden by value type.
+        /// </remarks>
+        /// <param name="value">A value to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Bitwise hash code.</returns>
+        public static unsafe int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            => Memory.GetHashCode32(Unsafe.AsPointer(ref value), Size, hash, hashFunction, salted);
 
-		/// <summary>
-		/// Computes hash code for the structure content.
-		/// </summary>
-		/// <param name="value">Value to be hashed.</param>
-		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-		/// <returns>Content hash code.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]      
-		public static unsafe int BitwiseHashCode(T value, bool salted)
+        /// <summary>
+        /// Computes hash code for the structure content.
+        /// </summary>
+        /// <param name="value">Value to be hashed.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Content hash code.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe int BitwiseHashCode(T value, bool salted)
             => Memory.GetHashCode32(Unsafe.AsPointer(ref value), Size, salted);
 
         /// <summary>
@@ -161,18 +161,18 @@ namespace DotNext
         public static unsafe int BitwiseCompare(T first, T second)
             => Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
 
-		/// <summary>
-		/// Compares bits of two values of the different type.
-		/// </summary>
-		/// <typeparam name="U">Type of the second value.</typeparam>
-		/// <param name="first">The first value to compare.</param>
-		/// <param name="second">The second value to compare.</param>
-		/// <returns>A value that indicates the relative order of the objects being compared.</returns>
-		public static unsafe int BitwiseCompare<U>(T first, U second)
-            where U: struct
-            => Size == ValueType<U>.Size ? 
-					Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size) :
-					Size.CompareTo(ValueType<U>.Size);
+        /// <summary>
+        /// Compares bits of two values of the different type.
+        /// </summary>
+        /// <typeparam name="U">Type of the second value.</typeparam>
+        /// <param name="first">The first value to compare.</param>
+        /// <param name="second">The second value to compare.</param>
+        /// <returns>A value that indicates the relative order of the objects being compared.</returns>
+        public static unsafe int BitwiseCompare<U>(T first, U second)
+            where U : struct
+            => Size == ValueType<U>.Size ?
+                    Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size) :
+                    Size.CompareTo(ValueType<U>.Size);
 
         /// <summary>
         /// Obtain a value of type <typeparamref name="TO"/> by 
@@ -192,7 +192,7 @@ namespace DotNext
             where TO : unmanaged
         {
             if (Size >= ValueType<TO>.Size)
-                output = Unsafe.As<T, TO>(ref input); 
+                output = Unsafe.As<T, TO>(ref input);
             else
             {
                 output = default;
@@ -205,15 +205,15 @@ namespace DotNext
         /// </summary>
         /// <param name="value">A struct to be placed onto heap.</param>
         public ValueType(T value)
-			: base(value)
-		{
-		}
+            : base(value)
+        {
+        }
 
-		/// <summary>
-		/// Gets pinnable reference to the boxed value.
-		/// </summary>
-		/// <returns>Pinnnable reference.</returns>
-		public ref T GetPinnableReference() => ref Value;
+        /// <summary>
+        /// Gets pinnable reference to the boxed value.
+        /// </summary>
+        /// <returns>Pinnnable reference.</returns>
+        public ref T GetPinnableReference() => ref Value;
 
         /// <summary>
         /// Unbox value type.

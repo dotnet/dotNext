@@ -1,6 +1,6 @@
 using System;
-using static System.Runtime.ExceptionServices.ExceptionDispatchInfo;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
+using static System.Runtime.ExceptionServices.ExceptionDispatchInfo;
 
 namespace DotNext.Runtime.CompilerServices
 {

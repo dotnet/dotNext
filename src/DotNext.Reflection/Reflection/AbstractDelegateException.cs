@@ -2,12 +2,12 @@
 
 namespace DotNext.Reflection
 {
-	internal sealed class AbstractDelegateException<D>: GenericArgumentException<D>
-		where D: Delegate
-	{
-		internal AbstractDelegateException()
-			: base(ExceptionMessages.AbstractDelegate)
-		{
-		}
-	}
+    internal sealed class AbstractDelegateException<D> : GenericArgumentException<D>
+        where D : Delegate
+    {
+        internal AbstractDelegateException()
+            : base(ExceptionMessages.AbstractDelegate)
+        {
+        }
+    }
 }

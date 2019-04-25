@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DotNext
 {
     using Reflection;
-    using Runtime.InteropServices;
     using Runtime.CompilerServices;
+    using Runtime.InteropServices;
 
     /// <summary>
     /// Generates hash code and equality check functions for the particular type.
@@ -19,7 +19,7 @@ namespace DotNext
     [RuntimeFeatures(RuntimeGenericInstantiation = true, DynamicCodeCompilation = true, PrivateReflection = true)]
     public static class EqualityComparerBuilder
     {
-        private sealed class DynamicEqualityComparer<T>: IEqualityComparer<T>
+        private sealed class DynamicEqualityComparer<T> : IEqualityComparer<T>
         {
             private readonly Func<T, T, bool> equality;
             private readonly Func<T, int> hashCode;
@@ -29,7 +29,7 @@ namespace DotNext
                 equality = BuildEquals<T>();
                 hashCode = BuildGetHashCode<T>();
             }
-            
+
             bool IEqualityComparer<T>.Equals(T x, T y) => equality(x, y);
 
             int IEqualityComparer<T>.GetHashCode(T obj) => hashCode(obj);

@@ -1,6 +1,4 @@
-using System;
 using System.Reflection;
-using static System.Linq.Expressions.Expression;
 
 namespace DotNext.Reflection
 {
@@ -21,7 +19,7 @@ namespace DotNext.Reflection
                 private InstanceFields(bool nonPublic) => this.nonPublic = nonPublic;
 
                 private protected override Field<T, V> Create(string fieldName)
-                    => Field<T, V>.Reflect(fieldName, nonPublic); 
+                    => Field<T, V>.Reflect(fieldName, nonPublic);
             }
 
             private sealed class StaticFields : MemberCache<FieldInfo, Reflection.Field<V>>
@@ -33,7 +31,7 @@ namespace DotNext.Reflection
                 private StaticFields(bool nonPublic) => this.nonPublic = nonPublic;
 
                 private protected override Reflection.Field<V> Create(string fieldName)
-                    => Reflection.Field<V>.Reflect<T>(fieldName, nonPublic); 
+                    => Reflection.Field<V>.Reflect<T>(fieldName, nonPublic);
             }
 
             /// <summary>
@@ -55,7 +53,7 @@ namespace DotNext.Reflection
             public static Field<T, V> Require(string fieldName, bool nonPublic = false)
                 => Get(fieldName, nonPublic) ?? throw MissingFieldException.Create<T, V>(fieldName);
 
-             /// <summary>
+            /// <summary>
             /// Gets static field.
             /// </summary>
             /// <param name="fieldName">Name of field.</param>

@@ -17,7 +17,7 @@ namespace DotNext
         /// <param name="min">Minimal range value.</param>
         /// <param name="max">Maximum range value.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T Clamp<T> (this T value, T min, T max) where T : IComparable<T> => value.Min(max).Max(min);
+        public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> => value.Min(max).Max(min);
 
         /// <summary>
 		/// Checks whether specified value is in range.
@@ -29,10 +29,10 @@ namespace DotNext
 		/// <param name="boundType">Range endpoints bound type.</param>
 		/// <returns><see langword="true"/>, if <paramref name="value"/> is in its bounds.</returns>
         public static bool Between<T>(this T value, T left, T right, BoundType boundType = BoundType.Open)
-            where T: IComparable<T>
+            where T : IComparable<T>
         {
             int leftCmp = value.CompareTo(left), rightCmp = value.CompareTo(right);
-            switch(boundType)
+            switch (boundType)
             {
                 case BoundType.Open:
                     return leftCmp > 0 && rightCmp < 0;
@@ -41,7 +41,7 @@ namespace DotNext
                 case BoundType.RightClosed:
                     return leftCmp > 0 && rightCmp <= 0;
                 case BoundType.Closed:
-					return leftCmp >= 0 && rightCmp <= 0;
+                    return leftCmp >= 0 && rightCmp <= 0;
                 default:
                     return false;
             }
@@ -77,7 +77,7 @@ namespace DotNext
         /// <param name="second">The second value.</param>
         /// <returns>The smaller of two values.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T Min<T>(this T first, T second) where T: IComparable<T> => first.CompareTo(second) < 0 ? first : second;
+        public static T Min<T>(this T first, T second) where T : IComparable<T> => first.CompareTo(second) < 0 ? first : second;
 
         /// <summary>
         /// Returns the larger of two values.
@@ -111,6 +111,6 @@ namespace DotNext
 		/// <param name="second">The second value.</param>
         /// <returns>The larger of two values.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T Max<T>(this T first, T second) where T: IComparable<T> => first.CompareTo(second) > 0 ? first : second;
+        public static T Max<T>(this T first, T second) where T : IComparable<T> => first.CompareTo(second) > 0 ? first : second;
     }
 }

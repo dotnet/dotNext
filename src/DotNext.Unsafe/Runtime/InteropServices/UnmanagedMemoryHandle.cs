@@ -6,7 +6,7 @@ namespace DotNext.Runtime.InteropServices
     /// <summary>
     /// Represents handle of allocated unmanaged memory.
     /// </summary>
-    public abstract class UnmanagedMemoryHandle: SafeHandle, IUnmanagedMemory, IEquatable<UnmanagedMemoryHandle>
+    public abstract class UnmanagedMemoryHandle : SafeHandle, IUnmanagedMemory, IEquatable<UnmanagedMemoryHandle>
     {
         private protected UnmanagedMemoryHandle(IUnmanagedMemory memory, bool ownsHandle)
             : base(IntPtr.Zero, ownsHandle)

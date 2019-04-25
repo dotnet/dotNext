@@ -5,7 +5,7 @@ namespace DotNext.Runtime.CompilerServices
 {
     using static Metaprogramming.ExpressionBuilder;
 
-    internal sealed class TryCatchFinallyStatement: GuardedStatement
+    internal sealed class TryCatchFinallyStatement : GuardedStatement
     {
         private readonly uint previousState;
         private readonly uint recoveryStateId;

@@ -19,7 +19,7 @@ namespace DotNext.Reflection
         /// wrapped into delegate.
         /// </summary>
         public static readonly Converter<I, O> Converter;
-        
+
         /// <summary>
         /// Indicates that overloaded type-cast operator between types <typeparamref name="I"/> and <typeparamref name="O"/>
         /// is present.

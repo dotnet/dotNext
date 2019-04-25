@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Reflection;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace DotNext.Reflection
 {
@@ -10,7 +10,7 @@ namespace DotNext.Reflection
     /// Represents registry of extension methods that can be registered
     /// for the specified type and be available using strongly typed reflection via <see cref="Type{T}"/>.
     /// </summary>
-    public sealed class ExtensionRegistry: ConcurrentBag<MethodInfo>
+    public sealed class ExtensionRegistry : ConcurrentBag<MethodInfo>
     {
         private static readonly UserDataSlot<ExtensionRegistry> InstanceMethods = UserDataSlot<ExtensionRegistry>.Allocate();
         private static readonly UserDataSlot<ExtensionRegistry> StaticMethods = UserDataSlot<ExtensionRegistry>.Allocate();
@@ -60,7 +60,7 @@ namespace DotNext.Reflection
 
         private static ExtensionRegistry GetOrCreateRegistry(Type target, MethodLookup lookup)
         {
-            switch(lookup)
+            switch (lookup)
             {
                 case MethodLookup.Instance:
                     return target.GetUserData().GetOrSet(InstanceMethods, () => new ExtensionRegistry());

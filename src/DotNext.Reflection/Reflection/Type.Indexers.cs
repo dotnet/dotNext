@@ -10,33 +10,33 @@ namespace DotNext.Reflection
         /// <typeparam name="A">A structure representing parameters of indexer.</typeparam>
 	    /// <typeparam name="V">Property value.</typeparam>
         public static class Indexer<A, V>
-            where A: struct
+            where A : struct
         {
             private const string DefaultIndexerName = "Item";
 
             private sealed class InstanceProperties : MemberCache<PropertyInfo, Indexer<T, A, V>>
-			{
-				internal static readonly InstanceProperties Public = new InstanceProperties(false);
-				internal static readonly InstanceProperties NonPublic = new InstanceProperties(true);
+            {
+                internal static readonly InstanceProperties Public = new InstanceProperties(false);
+                internal static readonly InstanceProperties NonPublic = new InstanceProperties(true);
 
-				private readonly bool nonPublic;
-				private InstanceProperties(bool nonPublic) => this.nonPublic = nonPublic;
+                private readonly bool nonPublic;
+                private InstanceProperties(bool nonPublic) => this.nonPublic = nonPublic;
 
-				private protected override Indexer<T, A, V> Create(string propertyName)
-					=> Indexer<T, A, V>.Reflect(propertyName, nonPublic);
-			}
+                private protected override Indexer<T, A, V> Create(string propertyName)
+                    => Indexer<T, A, V>.Reflect(propertyName, nonPublic);
+            }
 
             private sealed class StaticProperties : MemberCache<PropertyInfo, Reflection.Indexer<A, V>>
-			{
-				internal static readonly StaticProperties Public = new StaticProperties(false);
-				internal static readonly StaticProperties NonPublic = new StaticProperties(true);
+            {
+                internal static readonly StaticProperties Public = new StaticProperties(false);
+                internal static readonly StaticProperties NonPublic = new StaticProperties(true);
 
-				private readonly bool nonPublic;
-				private StaticProperties(bool nonPublic) => this.nonPublic = nonPublic;
+                private readonly bool nonPublic;
+                private StaticProperties(bool nonPublic) => this.nonPublic = nonPublic;
 
-				private protected override Reflection.Indexer<A, V> Create(string propertyName)
-					=> Reflection.Indexer<A, V>.Reflect<T>(propertyName, nonPublic);
-			}
+                private protected override Reflection.Indexer<A, V> Create(string propertyName)
+                    => Reflection.Indexer<A, V>.Reflect<T>(propertyName, nonPublic);
+            }
 
             /// <summary>
             /// Reflects static indexer property.

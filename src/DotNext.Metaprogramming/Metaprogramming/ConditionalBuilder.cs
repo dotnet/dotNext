@@ -6,7 +6,7 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Builder of conditional expression.
     /// </summary>
-    public sealed class ConditionalBuilder: ExpressionBuilder<ConditionalExpression>
+    public sealed class ConditionalBuilder : ExpressionBuilder<ConditionalExpression>
     {
         private readonly Expression test;
         private Expression ifTrue;

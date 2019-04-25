@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class ForLoopScope: LoopScopeBase, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<ForLoopScope>>
+    internal sealed class ForLoopScope : LoopScopeBase, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<ForLoopScope>>
     {
         private readonly Expression condition;
         private readonly ParameterExpression loopVar;
@@ -31,7 +31,7 @@ namespace DotNext.Metaprogramming
             AddStatement(Expression.Label(ContinueLabel));
             iteration(loopVar);
         }
-        
+
         public new BlockExpression Build()
         {
             Expression body = Expression.Condition(condition, base.Build(), Expression.Goto(BreakLabel), typeof(void));

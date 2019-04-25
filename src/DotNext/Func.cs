@@ -9,7 +9,7 @@ namespace DotNext
     public static class Func
     {
         private static class Id<I, O>
-            where I: O
+            where I : O
         {
             internal static readonly Func<I, O> Value = Converter.Identity<I, O>;
         }

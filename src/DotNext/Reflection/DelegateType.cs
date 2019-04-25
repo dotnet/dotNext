@@ -12,9 +12,9 @@ namespace DotNext.Reflection
         private const string InvokeMethodName = "Invoke";
 
         private static MethodInfo GetInvokeMethod(this Type delegateType)
-			=> !(delegateType is null) && typeof(Delegate).IsAssignableFrom(delegateType) ?
-			 delegateType.GetMethod(InvokeMethodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly):
-			 null;
+            => !(delegateType is null) && typeof(Delegate).IsAssignableFrom(delegateType) ?
+             delegateType.GetMethod(InvokeMethodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly) :
+             null;
 
         /// <summary>
         /// Returns special Invoke method generate for each delegate type.

@@ -29,7 +29,7 @@ namespace DotNext.Collections.Generic
             => new ReadOnlyCollectionView<I, O>(collection, converter);
 
         private static T[] ToArray<C, T>(C collection, int count)
-            where C: class, IEnumerable<T>
+            where C : class, IEnumerable<T>
         {
             var result = new T[count];
             var index = 0L;

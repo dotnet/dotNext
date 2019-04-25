@@ -7,47 +7,47 @@ namespace DotNext.Runtime.InteropServices
 {
     using Reflection;
 
-	/// <summary>
-	/// Represents typed array allocated in the unmanaged heap.
-	/// </summary>
-	/// <remarks>
+    /// <summary>
+    /// Represents typed array allocated in the unmanaged heap.
+    /// </summary>
+    /// <remarks>
     /// Allocated memory is not controlled by Garbage Collector.
-	/// Therefore, it's developer responsibility to release unmanaged memory using <see cref="IDisposable.Dispose"/> call.
+    /// Therefore, it's developer responsibility to release unmanaged memory using <see cref="IDisposable.Dispose"/> call.
     /// </remarks>
-	/// <typeparam name="T">Array element type.</typeparam>
-	public unsafe struct UnmanagedArray<T> : IEquatable<UnmanagedArray<T>>, IUnmanagedList<T>
-		where T : unmanaged
-	{
-		/// <summary>
-		/// Represents GC-friendly reference to the unmanaged array.
-		/// </summary>
-		/// <remarks>
-		/// Unmanaged array allocated using handle can be reclaimed by GC automatically.
-		/// </remarks>
-		public sealed class Handle : UnmanagedMemoryHandle<T>
-		{
+    /// <typeparam name="T">Array element type.</typeparam>
+    public unsafe struct UnmanagedArray<T> : IEquatable<UnmanagedArray<T>>, IUnmanagedList<T>
+        where T : unmanaged
+    {
+        /// <summary>
+        /// Represents GC-friendly reference to the unmanaged array.
+        /// </summary>
+        /// <remarks>
+        /// Unmanaged array allocated using handle can be reclaimed by GC automatically.
+        /// </remarks>
+        public sealed class Handle : UnmanagedMemoryHandle<T>
+        {
 
-			private Handle(UnmanagedArray<T> array, bool ownsHandle)
-				: base(array, ownsHandle)
-			{
-				Length = array.Length;
-			}
+            private Handle(UnmanagedArray<T> array, bool ownsHandle)
+                : base(array, ownsHandle)
+            {
+                Length = array.Length;
+            }
 
-			/// <summary>
-			/// Initializes a new unmanaged array and associate it with the handle.
-			/// </summary>
+            /// <summary>
+            /// Initializes a new unmanaged array and associate it with the handle.
+            /// </summary>
             /// <remarks>
             /// The handle instantiated with this constructor has ownership over unmanaged memory.
             /// Unmanaged memory will be released when Garbage Collector reclaims instance of this handle
             /// or <see cref="Dispose()"/> will be called directly.
             /// </remarks>
-			/// <param name="length">Array length.</param>
+            /// <param name="length">Array length.</param>
             /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
-			public Handle(long length, bool zeroMem = true)
-				: this(new UnmanagedArray<T>(length), true)
-			{
+            public Handle(long length, bool zeroMem = true)
+                : this(new UnmanagedArray<T>(length), true)
+            {
 
-			}
+            }
 
             /// <summary>
             /// Initializes a new handle for the given array.
@@ -57,9 +57,9 @@ namespace DotNext.Runtime.InteropServices
             /// </remarks>
             /// <param name="array">The unmanaged array.</param>
 			public Handle(UnmanagedArray<T> array)
-				: this(array, false)
-			{
-			}
+                : this(array, false)
+            {
+            }
 
             private protected override UnmanagedMemoryHandle Clone() => new Handle(Conversion<Handle, UnmanagedArray<T>>.Converter(this).Copy(), true);
 
@@ -84,60 +84,60 @@ namespace DotNext.Runtime.InteropServices
             /// <returns><see langword="true"/>, if this handle is valid; otherwise, <see langword="false"/>.</returns>
 			protected override bool ReleaseHandle() => UnmanagedMemory.Release(handle);
 
-			/// <summary>
-			/// Converts handle into unmanaged array reference.
-			/// </summary>
-			/// <param name="handle">A handle to convert.</param>
-			/// <exception cref="ObjectDisposedException">Handle is closed.</exception>
-			public static implicit operator UnmanagedArray<T>(Handle handle)
-			{
-				if (handle is null)
-					return default;
-				else if (handle.IsClosed)
-					throw handle.HandleClosed();
-				else
-					return new UnmanagedArray<T>(handle.handle, handle.Length);
-			}
-		}
+            /// <summary>
+            /// Converts handle into unmanaged array reference.
+            /// </summary>
+            /// <param name="handle">A handle to convert.</param>
+            /// <exception cref="ObjectDisposedException">Handle is closed.</exception>
+            public static implicit operator UnmanagedArray<T>(Handle handle)
+            {
+                if (handle is null)
+                    return default;
+                else if (handle.IsClosed)
+                    throw handle.HandleClosed();
+                else
+                    return new UnmanagedArray<T>(handle.handle, handle.Length);
+            }
+        }
 
         /// <summary>
         /// Represents empty array.
         /// </summary>
         public static UnmanagedArray<T> Empty => default(UnmanagedArray<T>);
-        
-        private readonly long length;
-		private readonly Pointer<T> pointer;
 
-		/// <summary>
-		/// Allocates a new array in the unmanaged memory of the specified length.
-		/// </summary>
-		/// <param name="length">Array length. Cannot be less or equal than zero.</param>
+        private readonly long length;
+        private readonly Pointer<T> pointer;
+
+        /// <summary>
+        /// Allocates a new array in the unmanaged memory of the specified length.
+        /// </summary>
+        /// <param name="length">Array length. Cannot be less or equal than zero.</param>
         /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>      
-		/// <exception cref="ArgumentOutOfRangeException">Invalid length.</exception>
-		public UnmanagedArray(long length, bool zeroMem = true)
-		{
-			if (length < 0)
-				throw new ArgumentOutOfRangeException(nameof(length), length, ExceptionMessages.ArrayNegativeLength);
-			else if ((this.length = length) > 0L)
+        /// <exception cref="ArgumentOutOfRangeException">Invalid length.</exception>
+        public UnmanagedArray(long length, bool zeroMem = true)
+        {
+            if (length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length), length, ExceptionMessages.ArrayNegativeLength);
+            else if ((this.length = length) > 0L)
             {
                 var size = length * Pointer<T>.Size;
                 pointer = new Pointer<T>(UnmanagedMemory.Alloc(size, zeroMem));
                 GC.AddMemoryPressure(size);
             }
-			else
-				pointer = Pointer<T>.Null;
-		}
+            else
+                pointer = Pointer<T>.Null;
+        }
 
-		private UnmanagedArray(Pointer<T> pointer, long length)
-		{
-			this.length = length;
-			this.pointer = pointer;
-		}
+        private UnmanagedArray(Pointer<T> pointer, long length)
+        {
+            this.length = length;
+            this.pointer = pointer;
+        }
 
-		private UnmanagedArray(IntPtr pointer, long length)
-			: this((T*)pointer, length)
-		{
-		}
+        private UnmanagedArray(IntPtr pointer, long length)
+            : this((T*)pointer, length)
+        {
+        }
 
         /// <summary>
         /// Indicates that this array is empty.
@@ -148,23 +148,23 @@ namespace DotNext.Runtime.InteropServices
             get => length == 0L || pointer == Pointer<T>.Null;
         }
 
-		/// <summary>
-		/// Gets or sets length of this array.
-		/// </summary>
+        /// <summary>
+        /// Gets or sets length of this array.
+        /// </summary>
         /// <remarks>
         /// If length is changed then the contents of this array have been copied to the array, and this array has been freed.      
         /// </remarks> 
         /// <exception cref="ArgumentOutOfRangeException">The new length value is invalid.</exception>           
-		public long Length
+        public long Length
         {
             get => length;
             set
             {
-                if(value <= 0L)
+                if (value <= 0L)
                     throw new ArgumentOutOfRangeException(nameof(value));
-                else if(value == length)
+                else if (value == length)
                     return;
-                else if(IsEmpty)
+                else if (IsEmpty)
                     this = new UnmanagedArray<T>(value);
                 else
                     this = new UnmanagedArray<T>(UnmanagedMemory.Realloc(pointer, Pointer<T>.Size * value), value);
@@ -173,10 +173,10 @@ namespace DotNext.Runtime.InteropServices
 
         int IReadOnlyCollection<T>.Count => (int)Length;
 
-		/// <summary>
-		/// Size of allocated memory, in bytes.
-		/// </summary>
-		public long Size => Pointer<T>.Size * Length;
+        /// <summary>
+        /// Size of allocated memory, in bytes.
+        /// </summary>
+        public long Size => Pointer<T>.Size * Length;
 
         Pointer<T> IUnmanagedMemory<T>.Pointer => pointer;
 
@@ -219,11 +219,11 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="count"/> has invalid value.</exception>
         public UnmanagedArray<T> Slice(long startIndex, long count)
         {
-            if(startIndex < 0L)
+            if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            else if(count < 0L)
+            else if (count < 0L)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if(startIndex >= Length || count == 0L)
+            else if (startIndex >= Length || count == 0L)
                 return Empty;
             else
                 return new UnmanagedArray<T>(pointer + startIndex, count.Min(Length - startIndex));
@@ -267,7 +267,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="predicate">The predicate used to check item.</param>
         /// <returns>The index of the matched item; or -1, if value doesn't exist in this array.</returns>
         public long FindLast(Predicate<T> predicate) => FindLast(predicate, 0);
-                
+
         /// <summary>
         /// Searches for the specified object in a range of elements of the unmanaged array, and returns 
         /// the index of its last occurrence. The range extends from a specified 
@@ -438,7 +438,7 @@ namespace DotNext.Runtime.InteropServices
         {
             count = count.Min(Length);
             count -= 1;
-            while(startIndex <= count)
+            while (startIndex <= count)
             {
                 var mid = (startIndex + count) / 2;
                 var cmd = comparison.Compare((pointer + mid).Value, item);
@@ -537,23 +537,23 @@ namespace DotNext.Runtime.InteropServices
             => index >= 0 && index < Length ?
             pointer + index :
             throw new IndexOutOfRangeException(ExceptionMessages.InvalidIndexValue(Length));
-        
-		/// <summary>
-		/// Gets or sets array element.
-		/// </summary>
-		/// <param name="index">Element index.</param>
-		/// <returns>Array element.</returns>
-		/// <exception cref="NullPointerException">This array is not allocated.</exception>
-		/// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
-		public T this[long index]
-		{
+
+        /// <summary>
+        /// Gets or sets array element.
+        /// </summary>
+        /// <param name="index">Element index.</param>
+        /// <returns>Array element.</returns>
+        /// <exception cref="NullPointerException">This array is not allocated.</exception>
+        /// <exception cref="IndexOutOfRangeException">Invalid index.</exception>
+        public T this[long index]
+        {
             get => ElementAt(index).Value;
             set
             {
                 var ptr = ElementAt(index);
                 ptr.Value = value;
             }
-		}
+        }
 
         T IReadOnlyList<T>.this[int index] => this[index];
 
@@ -572,18 +572,18 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="count">The number of elements to be copied.</param>
         /// <returns>Actual number of copied elements.</returns>
 		public long WriteTo(UnmanagedArray<T> destination, long offset, long count)
-		{
-			if (pointer.IsNull)
-				throw new NullPointerException();
-			else if (destination.pointer.IsNull)
-				throw new ArgumentNullException(nameof(destination));
-			else if (count < 0)
-				throw new IndexOutOfRangeException();
-			else if (destination.IsEmpty || (count + offset) >= destination.Length)
-				return 0;
-			pointer.WriteTo(destination.pointer + offset, count);
-			return count;
-		}
+        {
+            if (pointer.IsNull)
+                throw new NullPointerException();
+            else if (destination.pointer.IsNull)
+                throw new ArgumentNullException(nameof(destination));
+            else if (count < 0)
+                throw new IndexOutOfRangeException();
+            else if (destination.IsEmpty || (count + offset) >= destination.Length)
+                return 0;
+            pointer.WriteTo(destination.pointer + offset, count);
+            return count;
+        }
 
         /// <summary>
         /// Copies elements from this array to the destination array,
@@ -600,7 +600,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="count">The number of elements to be copied.</param>
         /// <returns>Actual number of copied elements.</returns>
 		public long WriteTo(T[] destination, long offset, long count)
-			=> pointer.WriteTo(destination, offset, count.Min(Length));
+            => pointer.WriteTo(destination, offset, count.Min(Length));
 
         /// <summary>
         /// Copies elements from this array to the managed array. 
@@ -617,7 +617,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="count">The number of elements to be copied.</param>
         /// <returns>Actual number of copied elements.</returns>
 		public long ReadFrom(T[] source, long offset, long count)
-			=> pointer.ReadFrom(source, offset, count.Min(Length));
+            => pointer.ReadFrom(source, offset, count.Min(Length));
 
         /// <summary>
         /// Copies elements from given managed array to the this array. 
@@ -634,7 +634,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="count">The number of elements to be copied.</param>
         /// <returns>Actual number of copied elements.</returns>
 		public long ReadFrom(UnmanagedArray<T> source, long offset, long count)
-			=> source.WriteTo(this, offset, count);
+            => source.WriteTo(this, offset, count);
 
         /// <summary>
         /// Copies elements from given unmanaged array to the this array. 
@@ -658,33 +658,33 @@ namespace DotNext.Runtime.InteropServices
                 new UnmanagedArray<U>(pointer.As<U>(), Length * (Pointer<T>.Size / Pointer<U>.Size)) :
                 throw new GenericArgumentException<U>(ExceptionMessages.TargetSizeMustBeMultipleOf);
 
-		/// <summary>
-		/// Converts this unmanaged array into managed array.
-		/// </summary>
-		/// <returns>Managed copy of unmanaged array.</returns>
-		public T[] CopyToManagedHeap()
-		{
-			if (pointer.IsNull)
-				return Array.Empty<T>();
-			var result = new T[Length];
-			WriteTo(result);
-			return result;
-		}
+        /// <summary>
+        /// Converts this unmanaged array into managed array.
+        /// </summary>
+        /// <returns>Managed copy of unmanaged array.</returns>
+        public T[] CopyToManagedHeap()
+        {
+            if (pointer.IsNull)
+                return Array.Empty<T>();
+            var result = new T[Length];
+            WriteTo(result);
+            return result;
+        }
 
-		/// <summary>
-		/// Creates bitwise copy of unmanaged array.
-		/// </summary>
-		/// <returns>Bitwise copy of unmanaged array.</returns>
-		public UnmanagedArray<T> Copy()
-		{
-			if (pointer.IsNull)
-				return this;
-			var result = new UnmanagedArray<T>(Length);
-			WriteTo(result);
-			return result;
-		}
+        /// <summary>
+        /// Creates bitwise copy of unmanaged array.
+        /// </summary>
+        /// <returns>Bitwise copy of unmanaged array.</returns>
+        public UnmanagedArray<T> Copy()
+        {
+            if (pointer.IsNull)
+                return this;
+            var result = new UnmanagedArray<T>(Length);
+            WriteTo(result);
+            return result;
+        }
 
-		object ICloneable.Clone() => Copy();
+        object ICloneable.Clone() => Copy();
 
         /// <summary>
         /// Computes bitwise equality between two blocks of memory.
@@ -692,7 +692,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="other">The block of memory to be compared.</param>
         /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
 		public bool BitwiseEquals(Pointer<T> other)
-			=> pointer.BitwiseEquals(other, Length);
+            => pointer.BitwiseEquals(other, Length);
 
         /// <summary>
         /// Computes bitwise equality between this array and the specified managed array.
@@ -700,15 +700,15 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="other">The array to be compared.</param>
         /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
 		public bool BitwiseEquals(T[] other)
-		{
-			if (other.IsNullOrEmpty())
-				return pointer.IsNull;
-			else if(Length == other.LongLength)
-				fixed (T* ptr = other)
-					return BitwiseEquals(ptr);
-			else
-				return false;
-		}
+        {
+            if (other.IsNullOrEmpty())
+                return pointer.IsNull;
+            else if (Length == other.LongLength)
+                fixed (T* ptr = other)
+                    return BitwiseEquals(ptr);
+            else
+                return false;
+        }
 
         /// <summary>
         /// Bitwise comparison of the memory blocks.
@@ -723,17 +723,17 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="other">The array to be compared.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
 		public int BitwiseCompare(T[] other)
-		{
-			if (other is null)
-				throw new ArgumentNullException(nameof(other));
-			else if (other.LongLength == 0L)
-				return pointer.IsNull ? 0 : 1;
-			else if(Length == other.Length)
-				fixed (T* ptr = other)
-					return BitwiseCompare(ptr);
-			else
-				return Length.CompareTo(other.Length);
-		}
+        {
+            if (other is null)
+                throw new ArgumentNullException(nameof(other));
+            else if (other.LongLength == 0L)
+                return pointer.IsNull ? 0 : 1;
+            else if (Length == other.Length)
+                fixed (T* ptr = other)
+                    return BitwiseCompare(ptr);
+            else
+                return Length.CompareTo(other.Length);
+        }
 
         /// <summary>
         /// Determines whether this unmanaged array points to the same memory block as other unmanaged array.
@@ -741,7 +741,7 @@ namespace DotNext.Runtime.InteropServices
         /// <typeparam name="U">The type of elements in other unmanaged array.</typeparam>
         /// <param name="other">The array to be compared.</param>
         /// <returns><see langword="true"/>, if this unmanaged array points to the same memory block as other unmanaged array; otherwise, <see langword="false"/>.</returns>
-		public bool Equals<U>(UnmanagedArray<U> other) where U: unmanaged => pointer.Equals(other.pointer);
+		public bool Equals<U>(UnmanagedArray<U> other) where U : unmanaged => pointer.Equals(other.pointer);
 
         bool IEquatable<UnmanagedArray<T>>.Equals(UnmanagedArray<T> other) => Equals(other);
 
@@ -751,19 +751,19 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="other">The object of type <see cref="UnmanagedArray{T}"/>, <see cref="IntPtr"/> or <see cref="UIntPtr"/> to be compared.</param>
         /// <returns><see langword="true"/>, if this unmanaged array points to the same memory block as other unmanaged array; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
-		{
-			switch(other)
-			{
-				case IntPtr pointer:
-					return this.pointer.Address == pointer;
-				case UIntPtr pointer:
-					return new UIntPtr(this.pointer) == pointer;
-				case UnmanagedArray<T> array:
-					return Equals(array);
-				default:
-					return false;
-			}
-		}
+        {
+            switch (other)
+            {
+                case IntPtr pointer:
+                    return this.pointer.Address == pointer;
+                case UIntPtr pointer:
+                    return new UIntPtr(this.pointer) == pointer;
+                case UnmanagedArray<T> array:
+                    return Equals(array);
+                default:
+                    return false;
+            }
+        }
 
         /// <summary>
         /// Determines this array contains the same elements as the given array using
@@ -773,19 +773,19 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="comparer">The object implementing equality check logic.</param>
         /// <returns><see langword="true"/>, if this array contains the same elements as the given array; otherwise, <see langword="false"/>.</returns>
 		public bool Equals(T[] other, IEqualityComparer<T> comparer)
-		{
-			if (other is null)
-				return pointer.IsNull;
-			else if(Length == other.Length)
-			{
-				for(int i = 0; i < Length; i++)
-					if(!comparer.Equals(this[i], other[i]))
-						return false;
-				return true;
-			}
-			else
-				return false;
-		}
+        {
+            if (other is null)
+                return pointer.IsNull;
+            else if (Length == other.Length)
+            {
+                for (int i = 0; i < Length; i++)
+                    if (!comparer.Equals(this[i], other[i]))
+                        return false;
+                return true;
+            }
+            else
+                return false;
+        }
 
         /// <summary>
         /// Determines this array contains the same elements as the given array using
@@ -795,17 +795,17 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="comparer">The object implementing equality check logic.</param>
         /// <returns><see langword="true"/>, if this array contains the same elements as the given array; otherwise, <see langword="false"/>.</returns>
         public bool Equals(UnmanagedArray<T> other, IEqualityComparer<T> comparer)
-		{
-			if(Length == other.Length)
-			{
-				for(int i = 0; i < Length; i++)
-					if(!comparer.Equals(this[i], other[i]))
-						return false;
-				return true;
-			}
-			else
-				return false;
-		}
+        {
+            if (Length == other.Length)
+            {
+                for (int i = 0; i < Length; i++)
+                    if (!comparer.Equals(this[i], other[i]))
+                        return false;
+                return true;
+            }
+            else
+                return false;
+        }
 
         /// <summary>
         /// Performs comparison between each two elements from this and given array.
@@ -814,19 +814,19 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="comparer">The custom comparison logic.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
 		public int Compare(T[] other, IComparer<T> comparer)
-		{
-			if (other is null)
-				throw new ArgumentNullException(nameof(other));
-			else if(Length == other.Length)
-			{
-				var cmp = 0;
-				for(int i = 0; i < Length; i++)
-					cmp += comparer.Compare(this[i], other[i]);
-				return cmp;
-			}
-			else
-				return Length.CompareTo(other.Length);
-		}
+        {
+            if (other is null)
+                throw new ArgumentNullException(nameof(other));
+            else if (Length == other.Length)
+            {
+                var cmp = 0;
+                for (int i = 0; i < Length; i++)
+                    cmp += comparer.Compare(this[i], other[i]);
+                return cmp;
+            }
+            else
+                return Length.CompareTo(other.Length);
+        }
 
         /// <summary>
         /// Performs comparison between each two elements from this and given array.
@@ -835,17 +835,17 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="comparer">The custom comparison logic.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
 		public int Compare(UnmanagedArray<T> other, IComparer<T> comparer)
-		{
-			if(Length == other.Length)
-			{
-				var cmp = 0;
-				for(int i = 0; i < Length; i++)
-					cmp += comparer.Compare(this[i], other[i]);
-				return cmp;
-			}
-			else
-				return Length.CompareTo(other.Length);
-		}
+        {
+            if (Length == other.Length)
+            {
+                var cmp = 0;
+                for (int i = 0; i < Length; i++)
+                    cmp += comparer.Compare(this[i], other[i]);
+                return cmp;
+            }
+            else
+                return Length.CompareTo(other.Length);
+        }
 
         /// <summary>
         /// Gets enumerator over elements in this array.
@@ -904,8 +904,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="second">The second unmanaged array reference to be compared.</param>
         /// <returns><see langword="true"/>, if both unmanaged arrays point to the same memory block.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool operator ==(UnmanagedArray<T> first, UnmanagedArray<T> second)
-			=> first.pointer == second.pointer;
+        public static bool operator ==(UnmanagedArray<T> first, UnmanagedArray<T> second)
+            => first.pointer == second.pointer;
 
         /// <summary>
         /// Determines whether two unmanaged arrays point to the different memory blocks.
@@ -915,7 +915,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns><see langword="true"/>, if both unmanaged arrays point to the different memory blocks.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(UnmanagedArray<T> first, UnmanagedArray<T> second)
-			=> first.pointer != second.pointer;
+            => first.pointer != second.pointer;
 
         /// <summary>
         /// Determines whether two unmanaged arrays point to the same memory block.
@@ -943,17 +943,17 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="array">The unmanaged array.</param>
         /// <param name="elementIndex">The element index.</param>
         /// <returns>The pointer to the array element.</returns>
-		public static Pointer<T> operator+(UnmanagedArray<T> array, int elementIndex)
-			=> array.ElementAt(elementIndex);
+		public static Pointer<T> operator +(UnmanagedArray<T> array, int elementIndex)
+            => array.ElementAt(elementIndex);
 
-		/// <summary>
-		/// Releases unmanaged memory associated with the array.
-		/// </summary>
-		public void Dispose()
-		{
-			UnmanagedMemory.Release(pointer.Address);
+        /// <summary>
+        /// Releases unmanaged memory associated with the array.
+        /// </summary>
+        public void Dispose()
+        {
+            UnmanagedMemory.Release(pointer.Address);
             GC.RemoveMemoryPressure(Size);
-			this = default;
-		}
-	}
+            this = default;
+        }
+    }
 }

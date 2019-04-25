@@ -34,7 +34,7 @@ namespace DotNext.Runtime.CompilerServices
             table.Add(pair);
             return pair;
         }
-       
+
         private S FindStatement<S>()
             where S : Statement
         {
@@ -149,7 +149,7 @@ namespace DotNext.Runtime.CompilerServices
 
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
                 attributes.Clear();
                 statements.Clear();

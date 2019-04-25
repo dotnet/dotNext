@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class LockScope: LexicalScope, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<ParameterExpression>>
+    internal sealed class LockScope : LexicalScope, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<ParameterExpression>>
     {
         private readonly ParameterExpression syncRoot;
         private readonly BinaryExpression assignment;
@@ -12,7 +12,7 @@ namespace DotNext.Metaprogramming
         internal LockScope(Expression syncRoot, LexicalScope parent)
             : base(parent)
         {
-            if(syncRoot is ParameterExpression syncVar)
+            if (syncRoot is ParameterExpression syncVar)
                 this.syncRoot = syncVar;
             else
             {
@@ -26,7 +26,7 @@ namespace DotNext.Metaprogramming
             var monitorEnter = typeof(Monitor).GetMethod(nameof(Monitor.Enter), new[] { typeof(object) });
             var monitorExit = typeof(Monitor).GetMethod(nameof(Monitor.Exit), new[] { typeof(object) });
             var body = base.Build();
-            if(assignment is null)
+            if (assignment is null)
             {
                 body = body.Finally(Expression.Call(monitorExit, syncRoot));
                 return Expression.Block(typeof(void), Expression.Call(monitorEnter, syncRoot), body);

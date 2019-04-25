@@ -5,7 +5,7 @@ namespace DotNext.Runtime.CompilerServices
 {
     using static Metaprogramming.ExpressionBuilder;
 
-    internal sealed class StateIdExpression: StateMachineExpression
+    internal sealed class StateIdExpression : StateMachineExpression
     {
         public override Expression Reduce() => 0U.Const();
 

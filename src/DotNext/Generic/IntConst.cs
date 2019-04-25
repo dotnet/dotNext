@@ -3,7 +3,7 @@ namespace DotNext.Generic
     /// <summary>
     /// Represents <see cref="int"/> constant as type.
     /// </summary>
-    public abstract class IntConst: Constant<int>
+    public abstract class IntConst : Constant<int>
     {
         /// <summary>
         /// Associated <see cref="int"/> value with this type.
@@ -17,7 +17,7 @@ namespace DotNext.Generic
         /// <summary>
         /// Represents zero value as type.
         /// </summary>
-        public sealed class Zero: IntConst
+        public sealed class Zero : IntConst
         {
             /// <summary>
             /// Represents constant value.
@@ -36,7 +36,7 @@ namespace DotNext.Generic
         /// <summary>
         /// Represents max integer value as type.
         /// </summary>
-        public sealed class Max: IntConst
+        public sealed class Max : IntConst
         {
             /// <summary>
             /// Represents constant value.
@@ -55,7 +55,7 @@ namespace DotNext.Generic
         /// <summary>
         /// Represents min integer value as type.
         /// </summary>
-        public sealed class Min: IntConst
+        public sealed class Min : IntConst
         {
             /// <summary>
             /// Represents constant value.

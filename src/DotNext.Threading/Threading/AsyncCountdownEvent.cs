@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace DotNext.Threading
 {
@@ -10,9 +9,9 @@ namespace DotNext.Threading
     /// <remarks>
     /// This is asynchronous version of <see cref="System.Threading.CountdownEvent"/>.
     /// </remarks>
-    public class AsyncCountdownEvent: Synchronizer, IAsyncEvent
+    public class AsyncCountdownEvent : Synchronizer, IAsyncEvent
     {
-        private sealed class CounterNode: WaitNode
+        private sealed class CounterNode : WaitNode
         {
             private long count;
 
@@ -24,7 +23,7 @@ namespace DotNext.Threading
 
             internal bool Signal(long value)
             {
-                if((count -= value) <= 0L)
+                if ((count -= value) <= 0L)
                 {
                     Complete();
                     return true;
@@ -40,11 +39,11 @@ namespace DotNext.Threading
         /// <param name="initialCount">The number of signals initially required to set the event.</param>
         public AsyncCountdownEvent(long initialCount)
         {
-            if(initialCount < 0)
+            if (initialCount < 0)
                 throw new ArgumentOutOfRangeException(nameof(initialCount));
             InitialCount = initialCount;
             //just 1 node needed to implement countdown event at all
-            if(initialCount > 0L)
+            if (initialCount > 0L)
                 node = new CounterNode(initialCount);
         }
 
@@ -62,14 +61,14 @@ namespace DotNext.Threading
         internal bool TryAddCount(long signalCount, bool autoReset)
         {
             ThrowIfDisposed();
-            if(signalCount < 0)
+            if (signalCount < 0)
                 throw new ArgumentOutOfRangeException(nameof(signalCount));
-            else if(node is CounterNode counter)
+            else if (node is CounterNode counter)
             {
                 counter.AddCount(signalCount);
                 return true;
             }
-            else if(autoReset)
+            else if (autoReset)
             {
                 node = new CounterNode(signalCount);
                 return true;
@@ -103,7 +102,7 @@ namespace DotNext.Threading
         /// <exception cref="InvalidOperationException">The current instance is already set.</exception>
         public void AddCount(long signalCount)
         {
-            if(!TryAddCount(signalCount))
+            if (!TryAddCount(signalCount))
                 throw new InvalidOperationException();
         }
 
@@ -133,9 +132,9 @@ namespace DotNext.Threading
         public bool Reset(long count)
         {
             ThrowIfDisposed();
-            if(count < 0L)
+            if (count < 0L)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if(node is null)    //in signaled state
+            else if (node is null)    //in signaled state
             {
                 node = count > 0L ? new CounterNode(count) : null;
                 InitialCount = count;

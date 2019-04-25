@@ -133,21 +133,21 @@ namespace DotNext
 		/// <param name="second">The second memory span to compare.</param>
 		/// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
 		public static bool BitwiseEquals<T>(this Span<T> first, Span<T> second)
-			where T: unmanaged
+            where T : unmanaged
             => AsBytes(first).SequenceEqual(AsBytes(second));
-        
+
         /// <summary>
-		/// Determines whether two memory blocks identified by the given spans contain the same set of elements.
-		/// </summary>
-		/// <remarks>
-		/// This method performs bitwise equality between each pair of elements.
-		/// </remarks>
-		/// <typeparam name="T">The type of elements in the span.</typeparam>
-		/// <param name="first">The first memory span to compare.</param>
-		/// <param name="second">The second memory span to compare.</param>
-		/// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
-		public static bool BitwiseEquals<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second)
-			where T: unmanaged
+        /// Determines whether two memory blocks identified by the given spans contain the same set of elements.
+        /// </summary>
+        /// <remarks>
+        /// This method performs bitwise equality between each pair of elements.
+        /// </remarks>
+        /// <typeparam name="T">The type of elements in the span.</typeparam>
+        /// <param name="first">The first memory span to compare.</param>
+        /// <param name="second">The second memory span to compare.</param>
+        /// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
+        public static bool BitwiseEquals<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second)
+            where T : unmanaged
             => AsBytes(first).SequenceEqual(AsBytes(second));
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace DotNext
         public static int BitwiseCompare<T>(this Span<T> first, Span<T> second)
             where T : unmanaged
             => AsBytes(first).SequenceCompareTo(AsBytes(second));
-        
+
         /// <summary>
         /// Compares content of the two memory blocks identified by the given spans.
         /// </summary>

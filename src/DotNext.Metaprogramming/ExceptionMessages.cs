@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Resources;
 using System.Reflection;
+using System.Resources;
 
 namespace DotNext
 {
@@ -11,7 +11,7 @@ namespace DotNext
         internal static string AbstractDelegate => resourceManager.GetString("AbstractDelegate");
 
         internal static string MissingGetAwaiterMethod(Type t) => string.Format(resourceManager.GetString("MissingGetAwaiterMethod"), t.FullName);
-        
+
         internal static string MissingGetResultMethod(Type t) => string.Format(resourceManager.GetString("MissingGetResultMethod"), t.FullName);
 
         internal static string InterfaceNotImplemented(Type t, Type i) => string.Format(resourceManager.GetString("InterfaceNotImplemented"), t.FullName, i.FullName);

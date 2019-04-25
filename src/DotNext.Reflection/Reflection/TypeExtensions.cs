@@ -1,6 +1,6 @@
 using System;
-using System.Reflection;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DotNext.Reflection
 {
@@ -15,7 +15,7 @@ namespace DotNext.Reflection
 
         internal static string ToSetterName(this string propertyName) => "set_" + propertyName;
 
-		internal static bool Equals(this Type type, ParameterExpression expression)
-			=> type.IsByRef ? (type.GetElementType() == expression.Type && expression.IsByRef) : (type == expression.Type && !expression.IsByRef);
+        internal static bool Equals(this Type type, ParameterExpression expression)
+            => type.IsByRef ? (type.GetElementType() == expression.Type && expression.IsByRef) : (type == expression.Type && !expression.IsByRef);
     }
 }

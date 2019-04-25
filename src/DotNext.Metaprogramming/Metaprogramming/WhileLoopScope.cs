@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class WhileLoopScope: LoopScopeBase, IExpressionBuilder<LoopExpression>, ICompoundStatement<Action<LoopContext>>
+    internal sealed class WhileLoopScope : LoopScopeBase, IExpressionBuilder<LoopExpression>, ICompoundStatement<Action<LoopContext>>
     {
         private readonly Expression test;
         private readonly bool conditionFirst;
@@ -19,7 +19,7 @@ namespace DotNext.Metaprogramming
         {
             Expression loopBody;
             LoopExpression loopExpr;
-            if(conditionFirst)
+            if (conditionFirst)
             {
                 loopBody = test.Condition(base.Build(), BreakLabel.Goto());
                 loopExpr = loopBody.Loop(BreakLabel, ContinueLabel);

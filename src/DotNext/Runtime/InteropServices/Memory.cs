@@ -3,16 +3,16 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.InteropServices
 {
-	/// <summary>
-	/// Low-level methods for direct memory access.
-	/// </summary>
+    /// <summary>
+    /// Low-level methods for direct memory access.
+    /// </summary>
     /// <remarks>
     /// Methods in this class doesn't perform
     /// any safety check. Incorrect usage of them may destabilize
     /// Common Language Runtime.
     /// </remarks>
-	public unsafe static class Memory
-	{
+    public unsafe static class Memory
+    {
         private interface IHashFunction<T>
             where T : unmanaged, IConvertible, IComparable<T>
         {
@@ -88,7 +88,7 @@ namespace DotNext.Runtime.InteropServices
         /// Represents null pointer.
         /// </summary>
         [CLSCompliant(false)]
-		public static readonly void* NullPtr = IntPtr.Zero.ToPointer();
+        public static readonly void* NullPtr = IntPtr.Zero.ToPointer();
 
         /// <summary>
         /// Converts the value of this instance to a pointer of the specified type.
@@ -100,38 +100,38 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T* ToPointer<T>(this IntPtr source) where T : unmanaged => (T*)source;
 
-		/// <summary>
-		/// Reads a value of type <typeparamref name="T"/> from the given location
-		/// and adjust pointer according with size of type <typeparamref name="T"/>.
-		/// </summary>
-		/// <typeparam name="T">Unmanaged type to dereference.</typeparam>
-		/// <param name="source">A pointer to block of memory.</param>
-		/// <returns>Dereferenced value.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static T Read<T>(ref IntPtr source)
-			where T : unmanaged
-		{
-			var result = Unsafe.Read<T>(source.ToPointer());
-			source += Unsafe.SizeOf<T>();
-			return result;
-		}
+        /// <summary>
+        /// Reads a value of type <typeparamref name="T"/> from the given location
+        /// and adjust pointer according with size of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Unmanaged type to dereference.</typeparam>
+        /// <param name="source">A pointer to block of memory.</param>
+        /// <returns>Dereferenced value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Read<T>(ref IntPtr source)
+            where T : unmanaged
+        {
+            var result = Unsafe.Read<T>(source.ToPointer());
+            source += Unsafe.SizeOf<T>();
+            return result;
+        }
 
-		/// <summary>
-		/// Reads a value of type <typeparamref name="T"/> from the given location
-		/// without assuming architecture dependent alignment of the addresses;
-		/// and adjust pointer according with size of type <typeparamref name="T"/>.
-		/// </summary>
-		/// <typeparam name="T">Unmanaged type to dereference.</typeparam>
-		/// <param name="source">A pointer to block of memory.</param>
-		/// <returns>Dereferenced value.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static T ReadUnaligned<T>(ref IntPtr source)
-			where T : unmanaged
-		{
-			var result = Unsafe.ReadUnaligned<T>(source.ToPointer());
-			source += Unsafe.SizeOf<T>();
-			return result;
-		}
+        /// <summary>
+        /// Reads a value of type <typeparamref name="T"/> from the given location
+        /// without assuming architecture dependent alignment of the addresses;
+        /// and adjust pointer according with size of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">Unmanaged type to dereference.</typeparam>
+        /// <param name="source">A pointer to block of memory.</param>
+        /// <returns>Dereferenced value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T ReadUnaligned<T>(ref IntPtr source)
+            where T : unmanaged
+        {
+            var result = Unsafe.ReadUnaligned<T>(source.ToPointer());
+            source += Unsafe.SizeOf<T>();
+            return result;
+        }
 
         /// <summary>
         /// Writes a value into the address using aligned access
@@ -142,12 +142,12 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="destination">Destination address.</param>
         /// <param name="value">The value to write into the address.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Write<T>(ref IntPtr destination, T value)
-			where T : unmanaged
-		{
-			Unsafe.Write(destination.ToPointer(), value);
-			destination += Unsafe.SizeOf<T>();
-		}
+        public static void Write<T>(ref IntPtr destination, T value)
+            where T : unmanaged
+        {
+            Unsafe.Write(destination.ToPointer(), value);
+            destination += Unsafe.SizeOf<T>();
+        }
 
         /// <summary>
         /// Writes a value into the address using unaligned access
@@ -158,12 +158,12 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="destination">Destination address.</param>
         /// <param name="value">The value to write into the address.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void WriteUnaligned<T>(ref IntPtr destination, T value)
-			where T : unmanaged
-		{
-			Unsafe.WriteUnaligned(destination.ToPointer(), value);
-			destination += Unsafe.SizeOf<T>();
-		}
+        public static void WriteUnaligned<T>(ref IntPtr destination, T value)
+            where T : unmanaged
+        {
+            Unsafe.WriteUnaligned(destination.ToPointer(), value);
+            destination += Unsafe.SizeOf<T>();
+        }
 
         /// <summary>
         /// Copies specified number of bytes from one address in memory to another.
@@ -172,9 +172,9 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="destination">The target address.</param>
         /// <param name="length">The number of bytes to copy from source address to destination.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		[CLSCompliant(false)]
-		public static void Copy(void* source, void* destination, long length)
-			=> Buffer.MemoryCopy(source, destination, length, length);
+        [CLSCompliant(false)]
+        public static void Copy(void* source, void* destination, long length)
+            => Buffer.MemoryCopy(source, destination, length, length);
 
         /// <summary>
         /// Copies specified number of bytes from one address in memory to another.
@@ -183,58 +183,58 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="destination">The target address.</param>
         /// <param name="length">The number of bytes to copy from source address to destination.</param>
 		public static void Copy(IntPtr source, IntPtr destination, long length)
-			=> Copy(source.ToPointer(), destination.ToPointer(), length);
-        
+            => Copy(source.ToPointer(), destination.ToPointer(), length);
+
         private static void ComputeHashCode64<H>(IntPtr source, long length, ref H hashFunction, bool salted)
             where H : struct, IHashFunction<long>
-		{
-			switch(length)
-			{
-				case sizeof(byte):
-					hashFunction.AddData(Read<byte>(ref source));
-					break;
-				case sizeof(short):
-					hashFunction.AddData(ReadUnaligned<short>(ref source));
-					break;
+        {
+            switch (length)
+            {
+                case sizeof(byte):
+                    hashFunction.AddData(Read<byte>(ref source));
+                    break;
+                case sizeof(short):
+                    hashFunction.AddData(ReadUnaligned<short>(ref source));
+                    break;
                 case sizeof(int):
                     hashFunction.AddData(ReadUnaligned<int>(ref source));
                     break;
-				default:
-					while(length >= IntPtr.Size)
-					{
-						hashFunction.AddData(ReadUnaligned<IntPtr>(ref source).ToInt64());
-						length -= IntPtr.Size;
-					}
-					while(length > 0)
-					{
-						hashFunction.AddData(Read<byte>(ref source));
-						length -= sizeof(byte);
-					}
-					break;
-			}
-            if(salted)
+                default:
+                    while (length >= IntPtr.Size)
+                    {
+                        hashFunction.AddData(ReadUnaligned<IntPtr>(ref source).ToInt64());
+                        length -= IntPtr.Size;
+                    }
+                    while (length > 0)
+                    {
+                        hashFunction.AddData(Read<byte>(ref source));
+                        length -= sizeof(byte);
+                    }
+                    break;
+            }
+            if (salted)
                 hashFunction.AddData(RandomExtensions.BitwiseHashSalt);
         }
 
-		/// <summary>
-		/// Computes 64-bit hash code for the block of memory, 64-bit version.
-		/// </summary>
-		/// <remarks>
-		/// This method may give different value each time you run the program for
-		/// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
-		/// </remarks>
-		/// <param name="source">A pointer to the block of memory.</param>
-		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
-		/// <param name="hash">Initial value of the hash.</param>
-		/// <param name="hashFunction">Hashing function.</param>
-		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-		/// <returns>Hash code of the memory block.</returns>
-		public static long GetHashCode64(IntPtr source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-		{
-			var hashInfo = new Int64HashFunction(hash, hashFunction);
+        /// <summary>
+        /// Computes 64-bit hash code for the block of memory, 64-bit version.
+        /// </summary>
+        /// <remarks>
+        /// This method may give different value each time you run the program for
+        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
+        /// </remarks>
+        /// <param name="source">A pointer to the block of memory.</param>
+        /// <param name="length">Length of memory block to be hashed, in bytes.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Hash code of the memory block.</returns>
+        public static long GetHashCode64(IntPtr source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
+        {
+            var hashInfo = new Int64HashFunction(hash, hashFunction);
             ComputeHashCode64(source, length, ref hashInfo, salted);
             return hashInfo.Result;
-		}
+        }
 
         /// <summary>
 		/// Computes 64-bit hash code for the block of memory, 64-bit version.
@@ -250,9 +250,9 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
-		public static long GetHashCode64(void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-			=> GetHashCode64(new IntPtr(source), length, hash, hashFunction, salted);
-        
+        public static long GetHashCode64(void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
+            => GetHashCode64(new IntPtr(source), length, hash, hashFunction, salted);
+
         /// <summary>
         /// Computes 64-bit hash code for the block of memory.
         /// </summary>
@@ -265,11 +265,11 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         public static long GetHashCode64(IntPtr source, long length, bool salted = true)
-		{
+        {
             var hashInfo = new FNV1a64(FNV1a64.Offset);
             ComputeHashCode64(source, length, ref hashInfo, salted);
             return hashInfo.Result;
-		}
+        }
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory.
@@ -283,8 +283,8 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
-		public static long GetHashCode64(void* source, long length, bool salted = true)
-			=> GetHashCode64(new IntPtr(source), length, salted);
+        public static long GetHashCode64(void* source, long length, bool salted = true)
+            => GetHashCode64(new IntPtr(source), length, salted);
 
         private static void ComputeHashCode32<H>(IntPtr source, long length, ref H hashFunction, bool salted)
             where H : struct, IHashFunction<int>
@@ -314,42 +314,42 @@ namespace DotNext.Runtime.InteropServices
                 hashFunction.AddData(RandomExtensions.BitwiseHashSalt);
         }
 
-		/// <summary>
-		/// Computes 32-bit hash code for the block of memory.
-		/// </summary>
-		/// <remarks>
-		/// This method may give different value each time you run the program for
-		/// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
-		/// </remarks>
-		/// <param name="source">A pointer to the block of memory.</param>
-		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
-		/// <param name="hash">Initial value of the hash.</param>
-		/// <param name="hashFunction">Hashing function.</param>
-		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-		/// <returns>Hash code of the memory block.</returns>
-		public static int GetHashCode32(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-		{
+        /// <summary>
+        /// Computes 32-bit hash code for the block of memory.
+        /// </summary>
+        /// <remarks>
+        /// This method may give different value each time you run the program for
+        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
+        /// </remarks>
+        /// <param name="source">A pointer to the block of memory.</param>
+        /// <param name="length">Length of memory block to be hashed, in bytes.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Hash code of the memory block.</returns>
+        public static int GetHashCode32(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
+        {
             var hashInfo = new Int32HashFunction(hash, hashFunction);
             ComputeHashCode32(source, length, ref hashInfo, salted);
             return hashInfo.Result;
-		}
-		
-		/// <summary>
-		/// Computes 32-bit hash code for the block of memory.
-		/// </summary>
-		/// <remarks>
-		/// This method may give different value each time you run the program for
-		/// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
-		/// </remarks>
-		/// <param name="source">A pointer to the block of memory.</param>
-		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
-		/// <param name="hash">Initial value of the hash.</param>
-		/// <param name="hashFunction">Hashing function.</param>
-		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-		/// <returns>Hash code of the memory block.</returns>
-		[CLSCompliant(false)]
-		public static int GetHashCode32(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-			=> GetHashCode32(new IntPtr(source), length, hash, hashFunction, salted);
+        }
+
+        /// <summary>
+        /// Computes 32-bit hash code for the block of memory.
+        /// </summary>
+        /// <remarks>
+        /// This method may give different value each time you run the program for
+        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
+        /// </remarks>
+        /// <param name="source">A pointer to the block of memory.</param>
+        /// <param name="length">Length of memory block to be hashed, in bytes.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Hash code of the memory block.</returns>
+        [CLSCompliant(false)]
+        public static int GetHashCode32(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            => GetHashCode32(new IntPtr(source), length, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -363,11 +363,11 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         public static int GetHashCode32(IntPtr source, long length, bool salted = true)
-		{
+        {
             var hashInfo = new FNV1a32(FNV1a32.Offset);
             ComputeHashCode32(source, length, ref hashInfo, salted);
             return hashInfo.Result;
-		}
+        }
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -381,8 +381,8 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
-		public static int GetHashCode32(void* source, long length, bool salted = true)
-			=> GetHashCode32(new IntPtr(source), length, salted);
+        public static int GetHashCode32(void* source, long length, bool salted = true)
+            => GetHashCode32(new IntPtr(source), length, salted);
 
         /// <summary>
         /// Sets all bits of allocated memory to zero.
@@ -523,7 +523,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns><see langword="true"/>, if both managed pointers are equal; otherwise, <see langword="false"/>.</returns>
         [CLSCompliant(false)]
         public static bool AreSame<T>(in T first, in T second)
-			=> Unsafe.AreSame(ref Unsafe.AsRef(in first), ref Unsafe.AsRef(in second));
+            => Unsafe.AreSame(ref Unsafe.AsRef(in first), ref Unsafe.AsRef(in second));
 
         /// <summary>
         /// Returns address of the managed pointer to type <typeparamref name="T"/>.
@@ -537,9 +537,9 @@ namespace DotNext.Runtime.InteropServices
         /// </remarks>
         [CLSCompliant(false)]
         public static IntPtr AddressOf<T>(in T value)
-			=> new IntPtr(Unsafe.AsPointer(ref Unsafe.AsRef(in value)));
+            => new IntPtr(Unsafe.AsPointer(ref Unsafe.AsRef(in value)));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int PointerHashCode(void* pointer) => new IntPtr(pointer).GetHashCode();
-	}
+    }
 }

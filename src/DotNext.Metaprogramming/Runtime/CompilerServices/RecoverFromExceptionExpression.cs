@@ -13,7 +13,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             Receiver = receiver;
         }
-        
+
         public override Expression Reduce() => true.Const();
         public override Type Type => typeof(bool);
 

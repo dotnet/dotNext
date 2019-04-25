@@ -19,13 +19,13 @@ namespace DotNext
         }
 
         private static class IsNullPredicate<T>
-            where T: class
+            where T : class
         {
             internal static readonly Predicate<T> Value = ObjectExtensions.IsNull;
         }
 
         private static class IsNotNullPredicate<T>
-            where T: class
+            where T : class
         {
             internal static readonly Predicate<T> Value = ObjectExtensions.IsNotNull;
         }
@@ -38,8 +38,8 @@ namespace DotNext
         /// <remarks>
         /// This method returns the same instance of predicate on every call.
         /// </remarks>
-        public static Predicate<T> IsNull<T>() 
-            where T: class
+        public static Predicate<T> IsNull<T>()
+            where T : class
             => IsNullPredicate<T>.Value;
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace DotNext
         /// This method returns the same instance of predicate on every call.
         /// </remarks>
         public static Predicate<T> IsNotNull<T>()
-            where T: class
+            where T : class
             => IsNotNullPredicate<T>.Value;
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace DotNext
         /// This method returns the same instance of predicate on every call.
         /// </remarks>
         public static Predicate<T> False<T>() => FalsePredicate<T>.Value;
-        
+
         /// <summary>
         /// Represents predicate as type <see cref="Func{T,Boolean}"/>.
         /// </summary>

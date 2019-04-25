@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace DotNext.Metaprogramming
 {
-    using Threading.Tasks;
     using Runtime.CompilerServices;
+    using Threading.Tasks;
 
     /// <summary>
     /// Represents return from asynchronous lambda function.
@@ -14,10 +14,10 @@ namespace DotNext.Metaprogramming
     /// This expression turns async state machine into final state.
     /// </remarks>
     /// <seealso cref="CodeGenerator.AsyncLambda{D}(Action{LambdaContext})"/>
-    public sealed class AsyncResultExpression: Expression
+    public sealed class AsyncResultExpression : Expression
     {
         private readonly TaskType taskType;
-        
+
         internal AsyncResultExpression(Expression result, TaskType taskType)
         {
             this.taskType = taskType;

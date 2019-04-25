@@ -10,7 +10,7 @@ namespace DotNext.Threading
     public static class LockAcquisition
     {
         private static readonly UserDataSlot<ReaderWriterLockSlim> ReaderWriterLock = UserDataSlot<ReaderWriterLockSlim>.Allocate();
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ReaderWriterLockSlim GetReaderWriterLock<T>(this T obj)
             where T : class

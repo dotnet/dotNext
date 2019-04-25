@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class WithBlockScope: LexicalScope, IExpressionBuilder<Expression>, ICompoundStatement<Action<ParameterExpression>>
+    internal sealed class WithBlockScope : LexicalScope, IExpressionBuilder<Expression>, ICompoundStatement<Action<ParameterExpression>>
     {
         private readonly ParameterExpression variable;
         private readonly BinaryExpression assignment;
@@ -11,7 +11,7 @@ namespace DotNext.Metaprogramming
         internal WithBlockScope(Expression expression, LexicalScope parent = null)
             : base(parent)
         {
-            if(expression is ParameterExpression variable)
+            if (expression is ParameterExpression variable)
                 this.variable = variable;
             else
             {

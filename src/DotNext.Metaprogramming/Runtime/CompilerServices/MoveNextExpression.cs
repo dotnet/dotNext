@@ -4,8 +4,8 @@ using System.Reflection;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Reflection.TypeExtensions;
     using static Metaprogramming.ExpressionBuilder;
+    using static Reflection.TypeExtensions;
 
     internal sealed class MoveNextExpression : TransitionExpression
     {

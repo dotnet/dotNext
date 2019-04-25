@@ -1,12 +1,12 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading
 {
-    using Tasks;
     using Generic;
+    using Tasks;
 
     /// <summary>
     /// Provides a framework for implementing asynchronous locks and related synchronizers that doesn't rely on first-in-first-out (FIFO) wait queues.
@@ -15,9 +15,9 @@ namespace DotNext.Threading
     /// Derived synchronizers more efficient in terms of memory pressure in comparison with <see cref="QueuedSynchronizer">queued synchronizers</see>.
     /// It shares the same instance of <see cref="Task{TResult}"/> under contention for all waiters.
     /// </remarks>
-    public abstract class Synchronizer: Disposable, ISynchronizer
+    public abstract class Synchronizer : Disposable, ISynchronizer
     {
-        internal class WaitNode: TaskCompletionSource<bool>
+        internal class WaitNode : TaskCompletionSource<bool>
         {
             internal WaitNode() : base(TaskCreationOptions.RunContinuationsAsynchronously) { }
 
@@ -90,7 +90,7 @@ namespace DotNext.Threading
                 return Wait(node, timeout, token);
         }
 
-        
+
 
         /// <summary>
         /// Releases all resources associated with exclusive lock.
@@ -101,7 +101,7 @@ namespace DotNext.Threading
         /// <param name="disposing">Indicates whether the <see cref="Dispose(bool)"/> has been called directly or from finalizer.</param>
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
                 node?.TrySetCanceled();
                 node = null;

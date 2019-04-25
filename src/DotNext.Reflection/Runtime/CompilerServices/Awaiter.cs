@@ -14,7 +14,7 @@ namespace DotNext.Runtime.CompilerServices
     /// </remarks>
     /// <typeparam name="TAwaiter">Any type implementing awaiter pattern</typeparam>
     public abstract class AwaiterBase<TAwaiter>
-        where TAwaiter: ICriticalNotifyCompletion
+        where TAwaiter : ICriticalNotifyCompletion
     {
         private static readonly MemberGetter<TAwaiter, bool> isCompleted = Type<TAwaiter>.Property<bool>.GetGetter(nameof(TaskAwaiter.IsCompleted));
 
@@ -56,8 +56,8 @@ namespace DotNext.Runtime.CompilerServices
     /// <see cref="Task{TResult}"/>
     /// <seealso cref="TaskAwaiter{TResult}"/>
     [Concept]
-    public sealed class Awaiter<TAwaiter, R>: AwaiterBase<TAwaiter>
-        where TAwaiter: ICriticalNotifyCompletion
+    public sealed class Awaiter<TAwaiter, R> : AwaiterBase<TAwaiter>
+        where TAwaiter : ICriticalNotifyCompletion
     {
         private Awaiter() => throw new NotSupportedException();
 
@@ -82,8 +82,8 @@ namespace DotNext.Runtime.CompilerServices
     /// <seealso cref="TaskAwaiter"/>
     /// <seealso cref="Task"/>
     [Concept]
-    public sealed class Awaiter<TAwaiter>: AwaiterBase<TAwaiter>
-        where TAwaiter: ICriticalNotifyCompletion
+    public sealed class Awaiter<TAwaiter> : AwaiterBase<TAwaiter>
+        where TAwaiter : ICriticalNotifyCompletion
     {
         private delegate void GetResultMethod(in TAwaiter awaiter);
 
