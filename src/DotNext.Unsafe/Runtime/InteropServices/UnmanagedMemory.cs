@@ -361,7 +361,7 @@ namespace DotNext.Runtime.InteropServices
             /// <summary>
             /// Obtains span object pointing to the allocated unmanaged memory.
             /// </summary>
-            public override Span<T> Span => new UnmanagedMemory<T>(handle);
+            public override Span<T> Span => new Span<T>((void*)handle, 1);
 
             /// <summary>
             /// Gets size of allocated unmanaged memory, in bytes.
@@ -445,7 +445,7 @@ namespace DotNext.Runtime.InteropServices
             get => ref pointer.Ref;
         }
 
-        Span<T> IUnmanagedMemory<T>.Span => this;
+        Span<T> IUnmanagedMemory<T>.Span => new Span<T>(pointer, 1);
 
         /// <summary>
         /// Gets or sets value stored in unmanaged memory.
@@ -583,13 +583,6 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="memory">The memory block reference.</param>
         public static implicit operator Pointer<T>(UnmanagedMemory<T> memory)
             => memory.pointer;
-
-        /// <summary>
-        /// Obtains span to the unmanaged memory.
-        /// </summary>
-        /// <param name="memory">The memory block reference.</param>
-        public static implicit operator Span<T>(UnmanagedMemory<T> memory)
-            => memory.pointer.IsNull ? default : new Span<T>(memory.pointer, 1);
 
         /// <summary>
         /// Extracts value from the unmanaged memory.
