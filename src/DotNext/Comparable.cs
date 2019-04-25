@@ -19,6 +19,17 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> => value.Min(max).Max(min);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int Normalize(int cmp)
+        {
+            if (cmp < 0)
+                return -1;
+            else if (cmp > 0)
+                return 1;
+            else
+                return 0;
+        }
+
         /// <summary>
 		/// Checks whether specified value is in range.
 		/// </summary>
@@ -31,17 +42,14 @@ namespace DotNext
         public static bool Between<T>(this T value, T left, T right, BoundType boundType = BoundType.Open)
             where T : IComparable<T>
         {
-            int leftCmp = value.CompareTo(left), rightCmp = value.CompareTo(right);
-            switch (boundType)
+            switch (Normalize(value.CompareTo(left)) + Normalize(value.CompareTo(right)))
             {
-                case BoundType.Open:
-                    return leftCmp > 0 && rightCmp < 0;
-                case BoundType.LeftClosed:
-                    return leftCmp >= 0 && rightCmp < 0;
-                case BoundType.RightClosed:
-                    return leftCmp > 0 && rightCmp <= 0;
-                case BoundType.Closed:
-                    return leftCmp >= 0 && rightCmp <= 0;
+                case 0:
+                    return true;
+                case 1:
+                    return (boundType & BoundType.RightClosed) != 0;
+                case -1:
+                    return (boundType & BoundType.LeftClosed) != 0;
                 default:
                     return false;
             }

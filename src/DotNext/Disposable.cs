@@ -54,41 +54,13 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Disposes many objects in safe manner.
+        /// Disposes many objects.
         /// </summary>
-        /// <remarks>
-        /// This method calls <see cref="IDisposable.Dispose"/> for every
-        /// object even if one of them throws exception.
-        /// All exceptions will be combined into single one and raised again.
-        /// </remarks>
         /// <param name="objects">An array of objects to dispose.</param>
-        /// <exception cref="AggregateException">One or more objects throw exception in dispose.</exception>
         public static void Dispose(IEnumerable<IDisposable> objects)
         {
-            LinkedList<Exception> exceptions = null;
             foreach (var obj in objects)
-                if (!(obj is null))
-                    try
-                    {
-                        obj.Dispose();
-                    }
-                    catch (Exception e)
-                    {
-                        if (exceptions is null)
-                            exceptions = new LinkedList<Exception>();
-                        exceptions.AddLast(e);
-                    }
-            if (exceptions != null)
-                switch (exceptions.Count)
-                {
-                    case 0:
-                        return;
-                    case 1:
-                        ExceptionDispatchInfo.Capture(exceptions.First.Value).Throw();
-                        return;
-                    default:
-                        throw new AggregateException(exceptions);
-                }
+                obj.Dispose();
         }
 
         /// <summary>
