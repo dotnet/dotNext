@@ -30,6 +30,8 @@
       href: lock/event.md
     - name: Countdown Latch
       href: lock/counter.md
+    - name: Barrier
+      href: lock/barrier.md
 - name: Type Classes
   href: concept.md
 - name: Advanced Reflection
