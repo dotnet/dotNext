@@ -30,7 +30,8 @@ var vector = new IntVector<Ten>();  //creates vector of length 10
 Constant value passed as generic argument is available in static context inside of vector class. Such approach allows to pass custom data into static constructor and avoid passing unecessary data through instance constructor.
 
 The library offers a few predefined constant types:
-* [BooleanConst](../../api/DotNext.Generic.BooleanConst.yml) to pass boolean constants as generic arguments
-* [IntConst](../../api/DotNext.Generic.IntConst.yml) to pass integer constants as generic arguments
-* [LongConst](../../api/DotNext.Generic.LongConst.yml) to pass long integer constants as generic arguments
-* [StringConst](../../api/DotNext.Generic.LongConst.yml) to pass string constants as generic arguments
+* [BooleanConst](../../api/DotNext.Generic.BooleanConst.yml) to pass boolean constant as generic argument
+* [IntConst](../../api/DotNext.Generic.IntConst.yml) to pass integer constant as generic argument
+* [LongConst](../../api/DotNext.Generic.LongConst.yml) to pass long integer constant as generic argument
+* [StringConst](../../api/DotNext.Generic.LongConst.yml) to pass string constant as generic argument
+* [DefaultConst](../../api/DotNext.Generic.DefaultConst.yml) to pass default value of `T` as generic argument

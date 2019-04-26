@@ -6,7 +6,7 @@ Visual Studio IDE can help to [generate](https://docs.microsoft.com/en-us/visual
 * A lot of fields decrese readability of these methods
 * If one or more fields have custom struct type then you should implement equality/inequality operators for such struct as well as `GetHashCode`
 
-[EqualityComparerBuilder](../../api/DotNext.EqualityComparerBuilder.yml) is a way to fix these inconveniences. All you need is to call appropriate builder method in this class and obtains the necessary implementation.
+[EqualityComparerBuilder](../../api/DotNext.EqualityComparerBuilder-1.yml) is a way to fix these inconveniences. All you need is to call appropriate builder method in this class and obtains the necessary implementation.
 
 The following example demonstrates recommended usage of this class:
 
@@ -15,8 +15,10 @@ using DotNext;
 
 public class Person: IEquatable<Person>
 {
-    private static readonly Func<Person, Person, bool> equals = EqualityComparerBuilder.BuildEquals<Person>();
-    private static readonly Func<Person, int> hashCode = EqualityComparerBuilder.BuildGetHashCode<Person>();
+    private static readonly Func<Person, Person, bool> equals;
+    private static readonly Func<Person, int> hashCode;
+
+    static Person() => new EqualityComparerBuilder<Person>().Build(out equals, out hashCode);
 
     public string FirstName { get; set; }
     public string SecondName { get; set; }
