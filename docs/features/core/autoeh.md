@@ -30,7 +30,7 @@ public class Person: IEquatable<Person>
 }
 ```
 
-`BuildEquals` and `BuildGetHashCode` rely only on the instance fields (public and private) declared in the specified class and its ancestors. 
+Constructed methods rely on the instance fields (public and private) declared in the specified class and its ancestors. 
 
 > [!IMPORTANT]
 > It is not recommended to call builder method multiple times with the same generic argument. Code generation process is expensive and may affect performance of your application. The recommended approach is to cache generated methods. Additionally, generated code inside of these methods don't provide nullability check of the first passed argument because expected behavior is a passing of **this** parameter. 
