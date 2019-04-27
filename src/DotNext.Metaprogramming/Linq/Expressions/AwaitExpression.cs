@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using TaskAwaiter = System.Runtime.CompilerServices.TaskAwaiter;
 
-namespace DotNext.Metaprogramming
+namespace DotNext.Linq.Expressions
 {
     using Runtime.CompilerServices;
 
