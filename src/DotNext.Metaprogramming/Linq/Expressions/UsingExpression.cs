@@ -4,40 +4,61 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions
 {
+    using Metaprogramming;
+    using VariantType;
     using static Reflection.DisposableType;
 
-    public sealed class UsingExpression: Expression
+    public sealed class UsingExpression: Expression, IMutableExpression
     {
+        public delegate Expression Statement(ParameterExpression resource);
+
         private readonly MethodInfo disposeMethod;
         private readonly BinaryExpression assignment;
 
-        public UsingExpression(Expression resource, Func<ParameterExpression, Expression> body = null)
+        private Expression body;
+
+        private UsingExpression(Expression resource, Variant<Expression, Statement> body)
         {
-            disposeMethod = resource.Type.GetDisposeMethod();
-            if (disposeMethod is null)
-                throw new ArgumentNullException(ExceptionMessages.DisposePatternExpected(resource.Type));
-            else if (resource is ParameterExpression variable)
-                Resource = variable;
-            else
+            disposeMethod = resource.Type.GetDisposeMethod() ?? throw new ArgumentNullException(ExceptionMessages.DisposePatternExpected(resource.Type));
+            if(resource is ParameterExpression param)
             {
-                Resource = Variable(resource.Type, "resource");
-                assignment = Assign(Resource, resource);
+                assignment = null;
+                Resource = param;
             }
-            Body = body?.Invoke(Resource) ?? Empty();
+            else
+                assignment = Assign(Resource = Expression.Variable(resource.Type, "resource"), resource);
+            //construct body
+            if(body.First.TryGet(out var expr))
+                this.body = expr;
+            else if(body.Second.TryGet(out var factory))
+                this.body = factory(Resource);
+            else
+                this.body = Empty();
         }
 
-        private UsingExpression(UsingExpression other, Expression body)
+        public UsingExpression(Expression resource, Statement body)
+            : this(resource, new Variant<Expression, Statement>(body))
         {
-            disposeMethod = other.disposeMethod;
-            assignment = other.assignment;
-            Resource = other.Resource;
-            Body = body;
+        }
+
+        public UsingExpression(Expression resource, Expression body)
+            : this(resource, new Variant<Expression, Statement>(body))
+        {
+        }
+
+        internal UsingExpression(Expression resource)
+            : this(resource, new Variant<Expression, Statement>())
+        {
         }
 
         /// <summary>
         /// Gets body of <see langword="using"/> expression.
         /// </summary>
-        public Expression Body { get; }
+        public Expression Body
+        {
+            get => body ?? Empty();
+            internal set => body = value;
+        }
 
         public ParameterExpression Resource { get; }
 
@@ -47,8 +68,6 @@ namespace DotNext.Linq.Expressions
 
         public override bool CanReduce => true;
 
-        public UsingExpression Update(Expression body) => new UsingExpression(this, body);
-
         public override Expression Reduce()
         {
             Expression @finally = Call(Resource, disposeMethod);
@@ -57,12 +76,6 @@ namespace DotNext.Linq.Expressions
             return assignment is null ?
                 @finally :
                 Expression.Block(typeof(void), Sequence.Singleton(Resource), assignment, @finally);
-        }
-
-        protected override Expression VisitChildren(ExpressionVisitor visitor)
-        {
-            var newBody = visitor.Visit(Body);
-            return ReferenceEquals(Body, newBody) ? this : new UsingExpression(this, newBody);
         }
     }
 }

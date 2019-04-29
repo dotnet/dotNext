@@ -5,6 +5,8 @@ using System.Reflection;
 
 namespace DotNext.Metaprogramming
 {
+    using Linq.Expressions;
+
     /// <summary>
     /// Represents code generator.
     /// </summary>
@@ -13,66 +15,29 @@ namespace DotNext.Metaprogramming
         [ThreadStatic]
         private static LexicalScope current;
 
-        private interface ILexicalScopeFactory<out S>
-            where S : LexicalScope
-        {
-            S CreateScope(LexicalScope parent);
-        }
-
-        private static S PushScope<F, S>(F factory)
-            where S : LexicalScope
-            where F : struct, ILexicalScopeFactory<S>
-        {
-            var scope = factory.CreateScope(current);
-            current = scope;
-            return scope;
-        }
-
-        private static void PopScope() => current = current?.Parent;
-
-        private static S FindScope<S>()
-            where S : LexicalScope
-        {
-            for (var current = CodeGenerator.current; !(current is null); current = current?.Parent)
-                if (current is S target)
-                    return target;
-            return null;
-        }
-
-        private static void AddStatement<D, S, F>(F factory, D body)
-            where D : Delegate
-            where S : LexicalScope, IExpressionBuilder<Expression>, ICompoundStatement<D>
-            where F : struct, ILexicalScopeFactory<S>
-            => CurrentScope.AddStatement(Build<Expression, D, S, F>(factory, body));
-
-        private static E Build<E, D, S, F>(F factory, D body)
-            where D : Delegate
+        private static E InitStatement<E, D, S>(S statement, D action)
             where E : Expression
-            where S : LexicalScope, IExpressionBuilder<E>, ICompoundStatement<D>
-            where F : struct, ILexicalScopeFactory<S>
+            where D : MulticastDelegate
+            where S : struct, IStatement<E, D>
         {
-            var scope = PushScope<F, S>(factory);
-            E statement;
+            E expression;
+            var scope = current = new LexicalScope(current);
             try
             {
-                scope.ConstructBody(body);
-                statement = scope.Build();
+                expression = statement.Build(action, scope);
             }
             finally
             {
-                PopScope();
+                current = current?.Parent;
                 scope.Dispose();
             }
-            return statement;
+            return expression;
         }
 
-        private static B TreatAsStatement<E, B>(this B builder)
-            where E : Expression
-            where B : ExpressionBuilder<E>
-        {
-            builder.Constructed += CurrentScope.AddStatement;
-            return builder;
-        }
+        private static void AddStatement<D, S>(S statement, D action)
+            where D : MulticastDelegate
+            where S : struct, IStatement<Expression, D>
+            => CurrentScope.AddStatement(InitStatement<Expression, D, S>(statement, action));
 
         /// <summary>
         /// Gets curremt lexical scope.
@@ -445,16 +410,25 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Await(Expression asyncResult) => CurrentScope.AddStatement(asyncResult.Await());
 
-        internal static ConditionalBuilder MakeConditional(Expression test) => new ConditionalBuilder(MakeScope, test);
-
         /// <summary>
         /// Adds if-then-else statement to this scope.
         /// </summary>
         /// <param name="test">Test expression.</param>
         /// <returns>Conditional statement builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static ConditionalBuilder If(Expression test)
-            => MakeConditional(test).TreatAsStatement<ConditionalExpression, ConditionalBuilder>();
+        public static ConditionalBuilder If(Expression test) => new ConditionalBuilder(test);
+
+        public static ConditionalBuilder Then(this ConditionalBuilder builder, Action body)
+        {
+            InitStatement<ConditionalBuilder, Action, BranchStatement>(new BranchStatement(builder, true), body);
+            return builder;
+        }
+
+        public static ConditionalBuilder Else(this ConditionalBuilder builder, Action body)
+        {
+            InitStatement<ConditionalBuilder, Action, BranchStatement>(new BranchStatement(builder, false), body);
+            return builder;
+        }
 
         /// <summary>
         /// Adds if-then statement to this scope.
@@ -554,20 +528,6 @@ namespace DotNext.Metaprogramming
         public static void ForEach(Expression collection, Action<MemberExpression> body)
             => AddStatement<Action<MemberExpression>, ForEachLoopScope, ForEachLoopScopeFactory>(new ForEachLoopScopeFactory(collection), body);
 
-        private readonly struct ForLoopScopeFactory : ILexicalScopeFactory<ForLoopScope>
-        {
-            private readonly Expression initializer;
-            private readonly Func<ParameterExpression, Expression> condition;
-
-            internal ForLoopScopeFactory(Expression initializer, Func<ParameterExpression, Expression> condition)
-            {
-                this.initializer = initializer;
-                this.condition = condition;
-            }
-
-            ForLoopScope ILexicalScopeFactory<ForLoopScope>.CreateScope(LexicalScope parent) => new ForLoopScope(initializer, condition, parent);
-        }
-
         /// <summary>
         /// Adds <see langword="for"/> loop statement.
         /// </summary>
@@ -580,7 +540,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
-        public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopContext> body)
+        public static void For(Expression initializer, ForExpr condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopContext> body)
             => AddStatement<Action<ForLoopScope>, ForLoopScope, ForLoopScopeFactory>(new ForLoopScopeFactory(initializer, condition), scope => scope.ConstructBody(body, iteration));
 
         /// <summary>
@@ -640,21 +600,6 @@ namespace DotNext.Metaprogramming
         /// </summary>
         public static void Rethrow() => CurrentScope.AddStatement(Expression.Rethrow());
 
-        private readonly struct UsingBlockScopeFactory : ILexicalScopeFactory<UsingBlockScope>
-        {
-            private readonly Expression resource;
-
-            internal UsingBlockScopeFactory(Expression resource) => this.resource = resource;
-
-            UsingBlockScope ILexicalScopeFactory<UsingBlockScope>.CreateScope(LexicalScope parent) => new UsingBlockScope(resource, parent);
-        }
-
-        internal static Expression MakeUsing(Expression resource, Action<ParameterExpression> body)
-            => Build<Expression, Action<ParameterExpression>, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(resource), body);
-
-        internal static Expression MakeUsing(Expression resource, Action body)
-            => Build<Expression, Action, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(resource), body);
-
         /// <summary>
         /// Adds <see langword="using"/> statement.
         /// </summary>
@@ -663,7 +608,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action<ParameterExpression> body)
-            => AddStatement<Action<ParameterExpression>, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(resource), body);
+            => AddStatement<Action<ParameterExpression>, UsingStatement>(new UsingStatement(resource), body);
 
         /// <summary>
         /// Adds <see langword="using"/> statement.
@@ -673,7 +618,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action body)
-            => AddStatement<Action, UsingBlockScope, UsingBlockScopeFactory>(new UsingBlockScopeFactory(resource), body);
+            => AddStatement<Action, UsingStatement>(new UsingStatement(resource), body);
 
         private readonly struct LockScopeFactory : ILexicalScopeFactory<LockScope>
         {
@@ -898,5 +843,8 @@ namespace DotNext.Metaprogramming
         public static Expression<D> AsyncLambda<D>(Action<LambdaContext> body)
             where D : Delegate
             => Build<Expression<D>, Action<LambdaContext>, AsyncLambdaScope<D>, AsyncLambdaScopeFactory<D>>(new AsyncLambdaScopeFactory<D>(), body);
+
+
+        public static void End<E>(this ExpressionBuilder<E> builder) where E : Expression => CurrentScope.AddStatement(builder);
     }
 }

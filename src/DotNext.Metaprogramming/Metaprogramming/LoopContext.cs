@@ -1,21 +1,30 @@
 ﻿using System;
+using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    using Linq.Expressions;
+
     /// <summary>
     /// Identifies loop.
     /// </summary>
     /// <remarks>
     /// This type can be used to transfer control between outer and inner loops.
     /// </remarks>
-    public readonly struct LoopContext : IDisposable
+    public readonly struct LoopContext
     {
-        private readonly WeakReference<LoopScopeBase> scope;
+        internal readonly LabelTarget ContinueLabel, BreakLabel;
 
-        internal LoopContext(LoopScopeBase scope) => this.scope = new WeakReference<LoopScopeBase>(scope);
+        internal LoopContext(LoopExpression loop)
+        {
+            ContinueLabel = loop.ContinueLabel;
+            BreakLabel = loop.BreakLabel;
+        }
 
-        internal bool TryGetScope(out LoopScopeBase scope) => this.scope.TryGetTarget(out scope);
-
-        void IDisposable.Dispose() => scope.SetTarget(null);
+        internal LoopContext(ILoopExpression loop)
+        {
+            ContinueLabel = loop.ContinueLabel;
+            BreakLabel = loop.BreakLabel;
+        }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using static System.Threading.Thread;
 
 namespace DotNext.Linq.Expressions
 {
@@ -924,13 +925,6 @@ namespace DotNext.Linq.Expressions
             => test.Condition(ifTrue, ifFalse, typeof(R));
 
         /// <summary>
-        /// Creates conditional expression builder.
-        /// </summary>
-        /// <param name="test">Test expression.</param>
-        /// <returns>Conditional expression builder.</returns>
-        public static ConditionalBuilder Condition(this Expression test) => CodeGenerator.MakeConditional(test);
-
-        /// <summary>
         /// Constructs a <see langword="try"/> block with a <see langword="finally"/> block without <see langword="catch"/> block.
         /// </summary>
         /// <remarks>
@@ -1017,7 +1011,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="resource">The expression representing disposable resource.</param>
         /// <param name="body">The body of <see langword="using"/> statement.</param>
         /// <returns><see langword="using"/> statement.</returns>
-        public static Expression Using(this Expression resource, Action<ParameterExpression> body)
+        public static UsingExpression Using(this Expression resource, Func<ParameterExpression, Expression> body)
             => CodeGenerator.MakeUsing(resource, body);
 
         /// <summary>
@@ -1113,5 +1107,60 @@ namespace DotNext.Linq.Expressions
             var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), new[] { typeof(Type), typeof(object[]) });
             return Expression.Call(activate, type, Expression.NewArrayInit(typeof(object), args));
         }
+    }
+
+    /// <summary>
+    /// Represents compound expresssion builder.
+    /// </summary>
+    /// <remarks>
+    /// Any derived expression builder is not thread-safe and event cannot
+    /// be shared between threads.
+    /// </remarks>
+    /// <typeparam name="E">Type of expression to be constructed.</typeparam>
+    public abstract class ExpressionBuilder<E> : Expression
+        where E : Expression
+    {
+        private Type expressionType;
+        private readonly int ownerThread;
+
+        private protected ExpressionBuilder() => ownerThread = CurrentThread.ManagedThreadId;
+
+        public sealed override ExpressionType NodeType => ExpressionType.Extension;
+
+        public sealed override Type Type => expressionType ?? typeof(void);
+
+        public sealed override bool CanReduce => true;
+
+        private protected void VerifyCaller()
+        {
+            if (ownerThread != CurrentThread.ManagedThreadId)
+                throw new InvalidOperationException();
+        }
+
+        /// <summary>
+        /// Changes type of the expression.
+        /// </summary>
+        /// <remarks>
+        /// By default, type of expression is <see cref="void"/>.
+        /// </remarks>
+        /// <param name="expressionType">The expression type.</param>
+        /// <returns>This builder.</returns>
+        public ExpressionBuilder<E> OfType(Type expressionType)
+        {
+            VerifyCaller();
+            this.expressionType = expressionType;
+            return this;
+        }
+
+        /// <summary>
+        /// Changes type of the expression.
+        /// </summary>
+        /// <typeparam name="T">The expression type.</typeparam>
+        /// <returns>This builder.</returns>
+        public ExpressionBuilder<E> OfType<T>() => OfType(typeof(T));
+
+        private protected abstract E Build();
+
+        public sealed override Expression Reduce() => Build();
     }
 }

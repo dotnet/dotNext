@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace DotNext.Metaprogramming
+namespace DotNext.Linq.Expressions
 {
     /// <summary>
     /// Builder of conditional expression.
@@ -9,23 +9,9 @@ namespace DotNext.Metaprogramming
     public sealed class ConditionalBuilder : ExpressionBuilder<ConditionalExpression>
     {
         private readonly Expression test;
-        private Expression ifTrue;
-        private Expression ifFalse;
+        private Expression ifTrue, ifFalse;
 
-        internal ConditionalBuilder(ScopeBuilder builder, Expression test)
-            : base(builder)
-        {
-            this.test = test;
-            ifTrue = ifFalse = Expression.Empty();
-        }
-
-        /// <summary>
-        /// Constructs positive branch of the conditional expression.
-        /// </summary>
-        /// <param name="branch">Branch builder.</param>
-        /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Then(Action branch) => Then(builder(branch));
-
+        internal ConditionalBuilder(Expression test) => this.test = test;
         /// <summary>
         /// Constructs positive branch of the conditional expression.
         /// </summary>
@@ -41,13 +27,6 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Constructs negative branch of the conditional expression.
         /// </summary>
-        /// <param name="branch">Branch builder.</param>
-        /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Else(Action branch) => Else(builder(branch));
-
-        /// <summary>
-        /// Constructs negative branch of the conditional expression.
-        /// </summary>
         /// <param name="branch">An expression representing negative branch.</param>
         /// <returns>Conditional expression builder.</returns>
         public ConditionalBuilder Else(Expression branch)
@@ -57,6 +36,6 @@ namespace DotNext.Metaprogramming
             return this;
         }
 
-        private protected override ConditionalExpression Build() => Expression.Condition(test, ifTrue, ifFalse, ExpressionType);
+        private protected override ConditionalExpression Build() => Condition(test, ifTrue, ifFalse, Type);
     }
 }

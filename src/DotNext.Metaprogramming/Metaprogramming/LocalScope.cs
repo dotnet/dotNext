@@ -4,6 +4,8 @@ namespace DotNext.Metaprogramming
 {
     internal sealed class LocalScope : LexicalScope, IExpressionBuilder<Expression>
     {
+        
+
         internal LocalScope(LexicalScope parent)
             : base(parent)
         {

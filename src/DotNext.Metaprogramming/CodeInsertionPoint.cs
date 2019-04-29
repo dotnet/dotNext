@@ -1,6 +1,6 @@
 using Expression = System.Linq.Expressions.Expression;
 
-namespace DotNext.Metaprogramming
+namespace DotNext
 {
     internal delegate void CodeInsertionPoint(Expression expr);
 }

@@ -14,9 +14,14 @@ namespace DotNext.Metaprogramming
         internal LoopScope(LexicalScope parent)
             : base(parent)
         {
+            BreakLabel = Expression.Label(typeof(void), "break");
+            ContinueLabel = Expression.Label(typeof(void), "continue");
         }
 
-        public new LoopExpression Build() => base.Build().Loop(BreakLabel, ContinueLabel);
+        internal override LabelTarget BreakLabel { get; }
+        internal override LabelTarget ContinueLabel { get; }
+
+        public new LoopExpression Build() => Expression.Loop(base.Build(), BreakLabel, ContinueLabel);
 
         void ICompoundStatement<Action<LoopContext>>.ConstructBody(Action<LoopContext> body)
         {
