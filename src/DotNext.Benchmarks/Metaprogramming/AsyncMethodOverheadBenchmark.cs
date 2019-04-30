@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    using Linq.Expressions;
     using static CodeGenerator;
 
     /// <summary>

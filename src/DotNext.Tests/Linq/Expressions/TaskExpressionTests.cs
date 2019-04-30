@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using Xunit;
 
-namespace DotNext.Metaprogramming
+namespace DotNext.Linq.Expressions
 {
     public sealed class TaskExpressionTests: Assert
     {

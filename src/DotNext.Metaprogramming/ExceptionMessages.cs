@@ -24,8 +24,6 @@ namespace DotNext
 
         internal static string EnumerablePatternExpected => resourceManager.GetString("EnumerablePatternExpected");
 
-        internal static string CallFromLambdaExpected => resourceManager.GetString("CallFromLambdaExpected");
-
         internal static string DisposePatternExpected(Type t) => string.Format(resourceManager.GetString("DisposePatternExpected"), t.FullName);
 
         internal static string UnsupportedAsyncType => resourceManager.GetString("UnsupportedAsyncType");

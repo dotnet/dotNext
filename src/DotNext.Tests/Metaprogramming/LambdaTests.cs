@@ -7,7 +7,8 @@ using Xunit;
 
 namespace DotNext.Metaprogramming
 {
-    using U = UniversalExpression;
+    using Linq.Expressions;
+    using U = Linq.Expressions.UniversalExpression;
     using static CodeGenerator;
 
     public sealed class LambdaTests: Assert

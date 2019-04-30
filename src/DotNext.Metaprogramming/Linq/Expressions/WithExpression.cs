@@ -35,7 +35,7 @@ namespace DotNext.Linq.Expressions
             this.body = body(Variable);
         }
 
-        public ParameterExpression Variable { get; }
+        public new ParameterExpression Variable { get; }
 
         public Expression Body
         {

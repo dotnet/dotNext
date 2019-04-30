@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Xunit;
 using System.Linq.Expressions;
 
-namespace DotNext.Metaprogramming
+namespace DotNext.Linq.Expressions
 {
     public sealed class UniversalExpressionTests: Assert
     {

@@ -4,8 +4,10 @@ using Xunit;
 
 namespace DotNext.Metaprogramming
 {
+    using Linq.Expressions;
     using static CodeGenerator;
-    using U = UniversalExpression;
+
+    using U = Linq.Expressions.UniversalExpression;
 
     public sealed class BlockTests: Assert
     {

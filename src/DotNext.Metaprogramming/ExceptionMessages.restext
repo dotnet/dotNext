@@ -6,7 +6,6 @@ MissingMethod=Method {0} doesn't exist in type {1}
 MissingProperty=Property {0} doesn't exist in type {1}
 MissingCtor=Constructor for type {0} doesn't exist
 EnumerablePatternExpected=Collection expression doesn't implement IEnumerable interface or GetEnumerator method
-CallFromLambdaExpected=Method can be called from within lambda expression only
 DisposePatternExpected=Type {0} doesn't implement Dispose pattern
 UnsupportedAsyncType=Unsupported return type of async method
 UnsupportedConditionalExpr=Unsupported conditional expression

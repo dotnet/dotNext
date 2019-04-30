@@ -4,7 +4,7 @@ using System.Runtime.ExceptionServices;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Metaprogramming.ExpressionBuilder;
+    using static Linq.Expressions.ExpressionBuilder;
 
     internal sealed class RethrowExpression : StateMachineExpression
     {
