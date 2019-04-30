@@ -3,26 +3,28 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using Linq.Expressions;
+    using ForEachExpression = Linq.Expressions.ForEachExpression;
 
-    internal sealed class ForEachLoopScope : LoopScopeBase, IExpressionBuilder<ForEachExpression>, ICompoundStatement<Action<MemberExpression, LoopContext>>, ICompoundStatement<Action<MemberExpression>>
+    internal readonly struct ForEachStatement : IStatement<ForEachExpression, Action<MemberExpression>>, IStatement<ForEachExpression, Action<MemberExpression, LoopContext>>
     {
-        private readonly ForEachExpression expression;
+        private readonly Expression collection;
 
-        internal ForEachLoopScope(Expression collection, LexicalScope parent) : base(parent) => expression = new ForEachExpression(collection);
+        internal ForEachStatement(Expression collection) => this.collection = collection;
 
-        internal override LabelTarget ContinueLabel => expression.ContinueLabel;
-
-        internal override LabelTarget BreakLabel => expression.BreakLabel;
-
-        public new ForEachExpression Build() => expression.Update(base.Build());
-
-        void ICompoundStatement<Action<MemberExpression, LoopContext>>.ConstructBody(Action<MemberExpression, LoopContext> body)
+        ForEachExpression IStatement<ForEachExpression, Action<MemberExpression>>.Build(Action<MemberExpression> scope, ILexicalScope body)
         {
-            using (var cookie = new LoopContext(this))
-                body(expression.Element, cookie);
+            var result = new ForEachExpression(collection);
+            scope(result.Element);
+            result.Body = body.Build();
+            return result;
         }
 
-        void ICompoundStatement<Action<MemberExpression>>.ConstructBody(Action<MemberExpression> body) => body(expression.Element);
+        ForEachExpression IStatement<ForEachExpression, Action<MemberExpression, LoopContext>>.Build(Action<MemberExpression, LoopContext> scope, ILexicalScope body)
+        {
+            var result = new ForEachExpression(collection);
+            scope(result.Element, new LoopContext(result));
+            result.Body = body.Build();
+            return result;
+        }
     }
 }

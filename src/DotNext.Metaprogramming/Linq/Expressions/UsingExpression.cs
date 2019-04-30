@@ -4,17 +4,15 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions
 {
-    using Metaprogramming;
     using VariantType;
     using static Reflection.DisposableType;
 
-    public sealed class UsingExpression: Expression, IMutableExpression
+    public sealed class UsingExpression: Expression
     {
         public delegate Expression Statement(ParameterExpression resource);
 
         private readonly MethodInfo disposeMethod;
         private readonly BinaryExpression assignment;
-
         private Expression body;
 
         private UsingExpression(Expression resource, Variant<Expression, Statement> body)
@@ -28,12 +26,12 @@ namespace DotNext.Linq.Expressions
             else
                 assignment = Assign(Resource = Expression.Variable(resource.Type, "resource"), resource);
             //construct body
-            if(body.First.TryGet(out var expr))
+            if (body.First.TryGet(out var expr))
                 this.body = expr;
-            else if(body.Second.TryGet(out var factory))
+            else if (body.Second.TryGet(out var factory))
                 this.body = factory(Resource);
             else
-                this.body = Empty();
+                this.body = null;
         }
 
         public UsingExpression(Expression resource, Statement body)

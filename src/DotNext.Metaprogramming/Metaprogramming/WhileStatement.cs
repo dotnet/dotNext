@@ -3,7 +3,6 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using DotNext.Linq.Expressions;
     using WhileExpression = Linq.Expressions.WhileExpression;
 
     internal readonly struct WhileStatement : IStatement<WhileExpression, Action>, IStatement<WhileExpression, Action<LoopContext>>

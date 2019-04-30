@@ -14,15 +14,19 @@ namespace DotNext.Linq.Expressions
 
         private Expression iteration, body;
 
-        internal ForExpression(Expression initialization, IBuilder builder)
+        internal ForExpression(Expression initialization, Func<ParameterExpression, Expression> condition)
         {
             Initialization = initialization;
             LoopVar = Variable(initialization.Type, "loop_var");
-            Test = builder.MakeCondition(LoopVar);
+            Test = condition(LoopVar);
             ContinueLabel = Label(typeof(void), "continue");
             BreakLabel = Label(typeof(void), "break");
-            body = builder.MakeBody(LoopVar);
-            iteration = builder.MakeIteration(LoopVar);
+        }
+
+        internal ForExpression(Expression initialization, IBuilder builder)
+            : this(initialization, builder.MakeCondition)
+        {
+
         }
 
         public Expression Iteration => iteration;

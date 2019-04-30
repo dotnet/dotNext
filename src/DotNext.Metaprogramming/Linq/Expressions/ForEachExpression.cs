@@ -8,7 +8,7 @@ namespace DotNext.Linq.Expressions
     using static Reflection.CollectionType;
     using static Reflection.DisposableType;
 
-    public sealed class ForEachExpression: Expression, ILazyExpression<Action<MemberExpression>>, ILazyExpression<Action>, ILoopExpression
+    public sealed class ForEachExpression: Expression, ILoopExpression
     {
         public delegate Expression Statement(MemberExpression current);
 
@@ -45,12 +45,12 @@ namespace DotNext.Linq.Expressions
             BreakLabel = Label(typeof(void), "break");
             ContinueLabel = Label(typeof(void), "continue");
             //construct body
-            if(body.First.TryGet(out var factory))
+            if (body.First.TryGet(out var factory))
                 this.body = factory(Element);
-            else if(body.Second.TryGet(out var expr))
+            else if (body.Second.TryGet(out var expr))
                 this.body = expr;
             else
-                this.body = Empty();
+                this.body = null;
         }
 
         public ForEachExpression(Expression collection, Statement body)
@@ -63,22 +63,19 @@ namespace DotNext.Linq.Expressions
         {
         }
 
-        ref Expression ILazyExpression<Action<MemberExpression>>.GetBody(Action<MemberExpression> action)
+        internal ForEachExpression(Expression collection)
+            : this(collection, new Variant<Statement, Expression>())
         {
-            action(Element);
-            return ref body;
-        }
-
-        ref Expression ILazyExpression<Action>.GetBody(Action action)
-        {
-            action();
-            return ref body;
         }
 
         public LabelTarget BreakLabel { get; }
         public LabelTarget ContinueLabel { get; }
 
-        public Expression Body => body;
+        public Expression Body
+        {
+            get => body ?? Empty();
+            set => body = value;
+        }
 
         public MemberExpression Element { get; }
 

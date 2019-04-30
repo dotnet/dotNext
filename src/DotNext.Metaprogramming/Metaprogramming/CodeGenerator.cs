@@ -485,15 +485,6 @@ namespace DotNext.Metaprogramming
         public static void DoWhile(Expression test, Action body)
             => AddStatement(new WhileStatement(test, false), body);
 
-        private readonly struct ForEachLoopScopeFactory : ILexicalScopeFactory<ForEachLoopScope>
-        {
-            private readonly Expression collection;
-
-            internal ForEachLoopScopeFactory(Expression collection) => this.collection = collection;
-
-            ForEachLoopScope ILexicalScopeFactory<ForEachLoopScope>.CreateScope(LexicalScope parent) => new ForEachLoopScope(collection, parent);
-        }
-
         /// <summary>
         /// Adds <see langword="foreach"/> loop statement.
         /// </summary>
@@ -502,7 +493,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression, LoopContext> body)
-            => AddStatement<Action<MemberExpression, LoopContext>, ForEachLoopScope, ForEachLoopScopeFactory>(new ForEachLoopScopeFactory(collection), body);
+            => AddStatement(new ForEachStatement(collection), body);
 
         /// <summary>
         /// Adds <see langword="foreach"/> loop statement.
@@ -512,7 +503,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression> body)
-            => AddStatement<Action<MemberExpression>, ForEachLoopScope, ForEachLoopScopeFactory>(new ForEachLoopScopeFactory(collection), body);
+            => AddStatement(new ForEachStatement(collection), body);
 
         /// <summary>
         /// Adds <see langword="for"/> loop statement.
