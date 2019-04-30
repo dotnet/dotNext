@@ -12,7 +12,7 @@ namespace DotNext.Linq.Expressions
         private readonly BinaryExpression assignment;
         private Expression body;
 
-        private WithExpression(Expression expr, Variant<Expression, Statement> body)
+        internal WithExpression(Expression expr)
         {
             if (expr is ParameterExpression variable)
                 Variable = variable;
@@ -24,18 +24,15 @@ namespace DotNext.Linq.Expressions
         }
 
         public WithExpression(Expression expr, Expression body)
-            : this(expr, new Variant<Expression, Statement>(body))
+            : this(expr)
         {
+            this.body = body;
         }
 
         public WithExpression(Expression expr, Statement body)
-            : this(expr, new Variant<Expression, Statement>(body))
+            : this(expr)
         {
-        }
-
-        internal WithExpression(Expression expr)
-            : this(expr, new Variant<Expression, Statement>())
-        {
+            this.body = body(Variable);
         }
 
         public ParameterExpression Variable { get; }

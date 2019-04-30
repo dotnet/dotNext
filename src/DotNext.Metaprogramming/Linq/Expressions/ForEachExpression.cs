@@ -4,13 +4,12 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions
 {
-    using VariantType;
     using static Reflection.CollectionType;
     using static Reflection.DisposableType;
 
-    public sealed class ForEachExpression: Expression, ILoopExpression
+    public sealed class ForEachExpression: Expression, ILoopLabels
     {
-        public delegate Expression Statement(MemberExpression current);
+        public delegate Expression Statement(MemberExpression current, LabelTarget continueLabel, LabelTarget breakLabel);
 
         private readonly ParameterExpression enumeratorVar;
         private readonly BinaryExpression enumeratorAssignment;
@@ -18,7 +17,7 @@ namespace DotNext.Linq.Expressions
 
         private Expression body;
 
-        private ForEachExpression(Expression collection, Variant<Statement, Expression> body)
+        internal ForEachExpression(Expression collection, LabelTarget continueLabel, LabelTarget breakLabel)
         {
             collection.Type.GetItemType(out var enumerable);
             const string GetEnumeratorMethod = nameof(IEnumerable.GetEnumerator);
@@ -42,30 +41,20 @@ namespace DotNext.Linq.Expressions
             //enumerator = enumerable.GetEnumerator();
             enumeratorAssignment = Assign(enumeratorVar, getEnumerator);
             Element = Property(enumeratorVar, nameof(IEnumerator.Current));
-            BreakLabel = Label(typeof(void), "break");
-            ContinueLabel = Label(typeof(void), "continue");
-            //construct body
-            if (body.First.TryGet(out var factory))
-                this.body = factory(Element);
-            else if (body.Second.TryGet(out var expr))
-                this.body = expr;
-            else
-                this.body = null;
+            BreakLabel = breakLabel ?? Label(typeof(void), "break");
+            ContinueLabel = continueLabel ?? Label(typeof(void), "continue");
         }
 
         public ForEachExpression(Expression collection, Statement body)
-            : this(collection, new Variant<Statement, Expression>(body))
+            : this(collection, null, null)
         {
+            this.body = body(Element, ContinueLabel, BreakLabel);
         }
 
         public ForEachExpression(Expression collection, Expression body)
-            : this(collection, new Variant<Statement, Expression>(body))
+            : this(collection, null, null)
         {
-        }
-
-        internal ForEachExpression(Expression collection)
-            : this(collection, new Variant<Statement, Expression>())
-        {
+            this.body = body;
         }
 
         public LabelTarget BreakLabel { get; }

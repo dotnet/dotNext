@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace DotNext.Metaprogramming
+namespace DotNext.Linq.Expressions
 {
     internal sealed class MetaExpression : DynamicMetaObject
     {

@@ -3,23 +3,28 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class LoopStatement : IStatement<LoopExpression, Action>, IStatement<LoopExpression, Action<LoopContext>>
+    internal sealed class LoopStatement : LoopLexicalScope, ILexicalScope<LoopExpression, Action>, ILexicalScope<LoopExpression, Action<LoopContext>>
     {
-        internal static readonly LoopStatement Instance = new LoopStatement();
-
-        private LoopStatement() { }
-
-        LoopExpression IStatement<LoopExpression, Action>.Build(Action scope, ILexicalScope body)
+        private sealed class SingletonFactory : IFactory<LoopStatement>
         {
-            scope();
-            return Expression.Loop(body.Build());
+            LoopStatement IFactory<LoopStatement>.Create(LexicalScope parent) => new LoopStatement(parent);
         }
 
-        LoopExpression IStatement<LoopExpression, Action<LoopContext>>.Build(Action<LoopContext> scope, ILexicalScope body)
+        internal static readonly IFactory<LoopStatement> Factory = new SingletonFactory();
+
+        private LoopStatement(LexicalScope parent) : base(parent) { }
+
+        LoopExpression ILexicalScope<LoopExpression, Action>.Build(Action scope)
         {
-            var context = new LoopContext(Expression.Label("continue"), Expression.Label("break"));
-            scope(context);
-            return Expression.Loop(body.Build(), context.BreakLabel, context.ContinueLabel);
+            scope();
+            return Expression.Loop(Build(), BreakLabel, ContinueLabel);
+        }
+
+        LoopExpression ILexicalScope<LoopExpression, Action<LoopContext>>.Build(Action<LoopContext> scope)
+        {
+            using(var context = new LoopContext(this))
+                scope(context);
+            return Expression.Loop(Build(), BreakLabel, ContinueLabel);
         }
     }
 }

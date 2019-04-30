@@ -5,23 +5,32 @@ namespace DotNext.Metaprogramming
 {
     using UsingExpression = Linq.Expressions.UsingExpression;
 
-    internal readonly struct UsingStatement : IStatement<UsingExpression, Action>, IStatement<UsingExpression, Action<ParameterExpression>>
+    internal sealed class UsingStatement : LexicalScope, ILexicalScope<UsingExpression, Action>, ILexicalScope<UsingExpression, Action<ParameterExpression>>
     {
-        private readonly Expression resource;
-
-        internal UsingStatement(Expression resource) => this.resource = resource;
-
-        UsingExpression IStatement<UsingExpression, Action>.Build(Action scope, ILexicalScope body)
+        internal readonly struct Factory : IFactory<UsingStatement>
         {
-            scope();
-            return new UsingExpression(resource, body.Build());
+            private readonly Expression resource;
+
+            internal Factory(Expression resource) => this.resource = resource;
+
+            public UsingStatement Create(LexicalScope parent) => new UsingStatement(resource, parent);
         }
 
-        UsingExpression IStatement<UsingExpression, Action<ParameterExpression>>.Build(Action<ParameterExpression> scope, ILexicalScope body)
+        private readonly Expression resource;
+
+        private UsingStatement(Expression resource, LexicalScope parent) : base(parent) => this.resource = resource;
+
+        UsingExpression ILexicalScope<UsingExpression, Action>.Build(Action scope)
         {
-            var result = new UsingExpression (resource);
+            scope();
+            return new UsingExpression(resource) { Body = Build() };
+        }
+
+        UsingExpression ILexicalScope<UsingExpression, Action<ParameterExpression>>.Build(Action<ParameterExpression> scope)
+        {
+            var result = new UsingExpression(resource);
             scope(result.Resource);
-            result.Body = body.Build();
+            result.Body = Build();
             return result;
         }
     }

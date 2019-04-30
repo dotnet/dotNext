@@ -7,10 +7,24 @@ namespace DotNext.Metaprogramming
 
     internal sealed class WhileStatement : LoopLexicalScope, ILexicalScope<WhileExpression, Action>, ILexicalScope<WhileExpression, Action<LoopContext>>
     {
+        internal readonly struct Factory : IFactory<WhileStatement>
+        {
+            private readonly Expression condition;
+            private readonly bool conditionFirst;
+
+            internal Factory(Expression condition, bool conditionFirst)
+            {
+                this.condition = condition;
+                this.conditionFirst = conditionFirst;
+            }
+
+            public WhileStatement Create(LexicalScope parent) => new WhileStatement(condition, conditionFirst, parent);
+        }
+
         private readonly Expression condition;
         private readonly bool conditionFirst;
 
-        internal WhileStatement(Expression condition, bool conditionFirst, LexicalScope parent)
+        private WhileStatement(Expression condition, bool conditionFirst, LexicalScope parent)
             : base(parent)
         {
             this.condition = condition;
@@ -25,8 +39,9 @@ namespace DotNext.Metaprogramming
 
         WhileExpression ILexicalScope<WhileExpression, Action<LoopContext>>.Build(Action<LoopContext> scope)
         {
-            var result = new WhileExpression(condition, checkConditionFirst: conditionFirst);
-            scope(new LoopContext(result));
+            var result = new WhileExpression(condition, ContinueLabel, BreakLabel, conditionFirst);
+            using(var context = new LoopContext(result))
+                scope(context);
             result.Body = Build();
             return result;
         }

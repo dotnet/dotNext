@@ -4,16 +4,24 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    using Linq.Expressions;
     using Runtime.CompilerServices;
     using static Reflection.DelegateType;
 
-    internal sealed class AsyncLambdaScope<D> : LambdaScope, IExpressionBuilder<Expression<D>>, ICompoundStatement<Action<LambdaContext>>
+    internal sealed class AsyncLambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>
         where D : Delegate
     {
+        private sealed class SingletonFactory : IFactory<AsyncLambdaExpression<D>>
+        {
+            AsyncLambdaExpression<D> IFactory<AsyncLambdaExpression<D>>.Create(LexicalScope parent) => new AsyncLambdaExpression<D>(parent);
+        }
+
+        internal static readonly IFactory<AsyncLambdaExpression<D>> Factory = new SingletonFactory();
+
         private ParameterExpression recursion;
         private readonly TaskType taskType;
 
-        internal AsyncLambdaScope(LexicalScope parent = null)
+        private AsyncLambdaExpression(LexicalScope parent = null)
             : base(parent, false)
         {
             if (typeof(D).IsAbstract)
@@ -22,13 +30,6 @@ namespace DotNext.Metaprogramming
             taskType = new TaskType(invokeMethod.ReturnType);
             Parameters = GetParameters(invokeMethod.GetParameters());
         }
-
-        void ICompoundStatement<Action<LambdaContext>>.ConstructBody(Action<LambdaContext> body)
-        {
-            using (var context = new LambdaContext(this))
-                body(context);
-        }
-
         /// <summary>
         /// Gets this lambda expression suitable for recursive call.
         /// </summary>
@@ -49,7 +50,7 @@ namespace DotNext.Metaprogramming
 
         internal override Expression Return(Expression result) => new AsyncResultExpression(result, taskType);
 
-        public new Expression<D> Build()
+        private new Expression<D> Build()
         {
             var body = base.Build();
             if (body.Type != taskType)
@@ -65,6 +66,13 @@ namespace DotNext.Metaprogramming
                     Expression.Assign(recursion, lambda),
                     Expression.Invoke(recursion, Parameters)), Parameters);
             return lambda;
+        }
+
+        Expression<D> ILexicalScope<Expression<D>, Action<LambdaContext>>.Build(Action<LambdaContext> scope)
+        {
+            using(var context = new LambdaContext(this))
+                scope(context);
+            return Build();
         }
 
         public override void Dispose()

@@ -11,11 +11,11 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents lambda function builder.
     /// </summary>
-    internal abstract class LambdaScope : LexicalScope, ICompoundStatement<Action<LambdaContext>>
+    internal abstract class LambdaExpression : LexicalScope
     {
-        private protected bool tailCall;
+        private protected readonly bool tailCall;
 
-        private protected LambdaScope(LexicalScope parent, bool tailCall) : base(parent) => this.tailCall = tailCall;
+        private protected LambdaExpression(LexicalScope parent, bool tailCall) : base(parent) => this.tailCall = tailCall;
 
         private protected IReadOnlyList<ParameterExpression> GetParameters(System.Reflection.ParameterInfo[] parameters)
             => Array.ConvertAll(parameters, parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
@@ -37,28 +37,31 @@ namespace DotNext.Metaprogramming
         internal abstract IReadOnlyList<ParameterExpression> Parameters { get; }
 
         internal abstract Expression Return(Expression result);
-
-        void ICompoundStatement<Action<LambdaContext>>.ConstructBody(Action<LambdaContext> body)
-        {
-            using (var context = new LambdaContext(this))
-                body(context);
-        }
     }
 
     /// <summary>
     /// Represents lambda function builder.
     /// </summary>
     /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
-    internal sealed class LambdaScope<D> : LambdaScope, IExpressionBuilder<Expression<D>>, ICompoundStatement<Action<LambdaContext, ParameterExpression>>
+    internal sealed class LambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>, ILexicalScope<Expression<D>, Action<LambdaContext, ParameterExpression>>
         where D : Delegate
     {
+        internal readonly struct Factory : IFactory<LambdaExpression<D>>
+        {
+            private readonly bool tailCall;
+
+            internal Factory(bool tailCall) => this.tailCall = tailCall;
+
+            public LambdaExpression<D> Create(LexicalScope parent) => new LambdaExpression<D>(parent, tailCall);
+        }        
+
         private ParameterExpression recursion;
         private ParameterExpression lambdaResult;
         private LabelTarget returnLabel;
 
         private readonly Type returnType;
 
-        internal LambdaScope(LexicalScope parent = null, bool tailCall = false)
+        private LambdaExpression(LexicalScope parent = null, bool tailCall = false)
             : base(parent, tailCall)
         {
             if (typeof(D).IsAbstract)
@@ -106,18 +109,12 @@ namespace DotNext.Metaprogramming
             if (returnLabel is null)
                 returnLabel = Expression.Label("leave");
             if (result is null)
-                result = returnType.Default();
-            result = returnType == typeof(void) ? (Expression)returnLabel.Return() : Expression.Block(Expression.Assign(Result, result), returnLabel.Return());
+                result = Expression.Default(returnType);
+            result = returnType == typeof(void) ? (Expression)Expression.Return(returnLabel) : Expression.Block(Expression.Assign(Result, result), Expression.Return(returnLabel));
             return result;
         }
 
-        void ICompoundStatement<Action<LambdaContext, ParameterExpression>>.ConstructBody(Action<LambdaContext, ParameterExpression> body)
-        {
-            using (var context = new LambdaContext(this))
-                body(context, Result);
-        }
-
-        public new Expression<D> Build()
+        private new Expression<D> Build()
         {
             var body = base.Build();
             var instructions = new LinkedList<Expression>();
@@ -133,7 +130,7 @@ namespace DotNext.Metaprogramming
                 locals = Enumerable.Empty<ParameterExpression>();
             }
             if (!(returnLabel is null))
-                instructions.AddLast(returnLabel.LandingSite());
+                instructions.AddLast(Expression.Label(returnLabel));
             //last instruction should be always a result of a function
             if (!(lambdaResult is null))
                 instructions.AddLast(lambdaResult);
@@ -145,6 +142,20 @@ namespace DotNext.Metaprogramming
                     Expression.Assign(recursion, Expression.Lambda<D>(body, tailCall, Parameters)),
                     Expression.Invoke(recursion, Parameters));
             return Expression.Lambda<D>(body, tailCall, Parameters);
+        }
+
+        Expression<D> ILexicalScope<Expression<D>, Action<LambdaContext>>.Build(Action<LambdaContext> scope)
+        {
+            using(var context = new LambdaContext(this))
+                scope(context);
+            return Build();
+        }
+
+        Expression<D> ILexicalScope<Expression<D>, Action<LambdaContext, ParameterExpression>>.Build(Action<LambdaContext, ParameterExpression> scope)
+        {
+            using(var context = new LambdaContext(this))
+                scope(context, Result);
+            return Build();
         }
 
         public override void Dispose()

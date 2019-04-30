@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace DotNext.Metaprogramming
+namespace DotNext.Linq.Expressions
 {
     /// <summary>
     /// Represents any expression with full support
@@ -740,73 +740,6 @@ namespace DotNext.Metaprogramming
         /// <returns>Conditional expression.</returns>
         public UniversalExpression Condition<R>(Expression ifTrue, Expression ifFalse)
             => new UniversalExpression(expression.Condition<R>(ifTrue, ifFalse));
-
-        /// <summary>
-        /// Creates conditional expression builder.
-        /// </summary>
-        /// <returns>Conditional expression builder.</returns>
-        public ConditionalBuilder Condition() => ExpressionBuilder.Condition(expression);
-
-        /// <summary>
-        /// Constructs compound statement hat repeatedly refer to a single object or 
-        /// structure so that the statements can use a simplified syntax when accessing members 
-        /// of the object or structure.
-        /// </summary>
-        /// <param name="body">The scope statements builder.</param>
-        /// <returns>Construct code block.</returns>
-        public UniversalExpression With(Action<ParameterExpression> body)
-            => new UniversalExpression(ExpressionBuilder.With(expression, body));
-
-        /// <summary>
-        /// Constructs <see langword="using"/> statement.
-        /// </summary>
-        /// <remarks>
-        /// The equivalent code is <code>using(var obj = expression){ }</code>.
-        /// </remarks>
-        /// <param name="body">The body of <see langword="using"/> statement.</param>
-        /// <returns><see langword="using"/> statement.</returns>
-        public UniversalExpression Using(Action<ParameterExpression> body)
-            => new UniversalExpression(ExpressionBuilder.Using(expression, body));
-
-        /// <summary>
-        /// Constructs <see langword="using"/> statement.
-        /// </summary>
-        /// <remarks>
-        /// The equivalent code is <code>using(var obj = expression){ }</code>.
-        /// </remarks>
-        /// <param name="body">The body of <see langword="using"/> statement.</param>
-        /// <returns><see langword="using"/> statement.</returns>
-        public UniversalExpression Using(Action body)
-            => new UniversalExpression(ExpressionBuilder.Using(expression, body));
-
-        /// <summary>
-        /// Creates selection statement builder that chooses a single <see langword="switch"/> section 
-        /// to execute from a list of candidates based on a pattern match with the match expression.
-        /// </summary>
-        /// <returns><see langword="switch"/> statement builder.</returns>
-        public SwitchBuilder Switch() => ExpressionBuilder.Switch(expression);
-
-        /// <summary>
-        /// Creates structured exception handling statement builder.
-        /// </summary>
-        /// <returns>Structured exception handling statement builder.</returns>
-        public TryBuilder Try() => ExpressionBuilder.Try(expression);
-
-        /// <summary>
-        /// Constructs <see langword="lock"/> expression.
-        /// </summary>
-        /// <param name="body">Synchronized scope of code.</param>
-        /// <returns>Constructed lock statement.</returns>
-        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
-        public BlockExpression Lock(Action<ParameterExpression> body) => ExpressionBuilder.Lock(expression, body);
-
-        /// <summary>
-        /// Constructs <see langword="lock"/> expression.
-        /// </summary>
-        /// <param name="body">Synchronized scope of code.</param>
-        /// <returns>Constructed lock statement.</returns>
-        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
-        public BlockExpression Lock(Action body) => ExpressionBuilder.Lock(expression, body);
 
         /// <summary>
         /// Constructs <see langword="throw"/> statement.

@@ -4,7 +4,6 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions
 {
-    using VariantType;
     using static Reflection.DisposableType;
 
     public sealed class UsingExpression: Expression
@@ -15,7 +14,7 @@ namespace DotNext.Linq.Expressions
         private readonly BinaryExpression assignment;
         private Expression body;
 
-        private UsingExpression(Expression resource, Variant<Expression, Statement> body)
+        internal UsingExpression(Expression resource)
         {
             disposeMethod = resource.Type.GetDisposeMethod() ?? throw new ArgumentNullException(ExceptionMessages.DisposePatternExpected(resource.Type));
             if(resource is ParameterExpression param)
@@ -25,28 +24,18 @@ namespace DotNext.Linq.Expressions
             }
             else
                 assignment = Assign(Resource = Expression.Variable(resource.Type, "resource"), resource);
-            //construct body
-            if (body.First.TryGet(out var expr))
-                this.body = expr;
-            else if (body.Second.TryGet(out var factory))
-                this.body = factory(Resource);
-            else
-                this.body = null;
         }
 
         public UsingExpression(Expression resource, Statement body)
-            : this(resource, new Variant<Expression, Statement>(body))
+            : this(resource)
         {
+            this.body = body(Resource);
         }
 
         public UsingExpression(Expression resource, Expression body)
-            : this(resource, new Variant<Expression, Statement>(body))
+            : this(resource)
         {
-        }
-
-        internal UsingExpression(Expression resource)
-            : this(resource, new Variant<Expression, Statement>())
-        {
+            this.body = body;
         }
 
         /// <summary>

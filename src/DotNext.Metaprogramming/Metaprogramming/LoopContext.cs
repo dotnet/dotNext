@@ -10,21 +10,24 @@ namespace DotNext.Metaprogramming
     /// </summary>
     /// <remarks>
     /// This type can be used to transfer control between outer and inner loops.
+    /// The context lifetime is limited by surrounding lexical scope of the loop.
     /// </remarks>
-    public readonly struct LoopContext
+    public struct LoopContext : IDisposable
     {
-        internal readonly LabelTarget ContinueLabel, BreakLabel;
+        private readonly WeakReference loop;
 
-        internal LoopContext(LabelTarget @continue, LabelTarget @break)
-        {
-            ContinueLabel = @continue;
-            BreakLabel = @break;
-        }
+        internal LoopContext(ILoopLabels loop) => this.loop = new WeakReference(loop);
 
-        internal LoopContext(ILoopExpression loop)
+        private ILoopLabels GetLabels() => loop?.Target is ILoopLabels result ? result : throw new ObjectDisposedException(nameof(LoopContext));
+
+        internal LabelTarget ContinueLabel => GetLabels().ContinueLabel;
+
+        internal LabelTarget BreakLabel => GetLabels().BreakLabel;
+
+        void IDisposable.Dispose()
         {
-            ContinueLabel = loop.ContinueLabel;
-            BreakLabel = loop.BreakLabel;
+            loop.Target = null;
+            this = default;
         }
     }
 }

@@ -3,13 +3,8 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions
 {
-    public sealed class WhileExpression: Expression, ILoopExpression
+    public sealed class WhileExpression: Expression, ILoopLabels
     {
-        private readonly struct LoopBody
-        {
-            internal readonly LabelTarget continueLabel, breakLabel;
-        }
-
         public delegate Expression Statement(LabelTarget continueLabel, LabelTarget breakLabel);
 
         private static Expression MakeBody(Statement statement, out LabelTarget continueLabel, out LabelTarget breakLabel)
@@ -18,22 +13,22 @@ namespace DotNext.Linq.Expressions
         private readonly bool conditionFirst;
         private Expression body;
 
-        internal WhileExpression(Expression test, Expression body, LabelTarget continueLabel, LabelTarget breakLabel, bool checkConditionFirst)
+        internal WhileExpression(Expression test, LabelTarget continueLabel, LabelTarget breakLabel, bool checkConditionFirst)
         {
             conditionFirst = checkConditionFirst;
             Test = test;
-            ContinueLabel = continueLabel;
-            BreakLabel = breakLabel;
-            this.body = body;
+            ContinueLabel = continueLabel ?? Label(typeof(void), "continue");
+            BreakLabel = breakLabel ?? Label(typeof(void), "break");
         }
 
         public WhileExpression(Expression test, Statement body, bool checkConditionFirst = true)
-            : this(test, MakeBody(body, out var continueLabel, out var breakLabel), continueLabel, breakLabel, checkConditionFirst)
+            : this(test, null, null, checkConditionFirst)
         {
+            this.body = body(ContinueLabel, BreakLabel);
         }
 
         public WhileExpression(Expression test, Expression body, bool checkConditionFirst = true)
-            : this(test, new ExpressionBuilder(body), checkConditionFirst)
+            : this(test, null, null, checkConditionFirst)
         {
         }
 

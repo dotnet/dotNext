@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace DotNext.Linq.Expressions
+namespace DotNext.Metaprogramming
 {
     /// <summary>
     /// Represents selection statement that chooses a single section to execute from a 
@@ -15,10 +15,11 @@ namespace DotNext.Linq.Expressions
         private readonly ICollection<SwitchCase> cases;
         private Expression defaultExpression;
 
-        internal SwitchBuilder(Expression expression)
+        internal SwitchBuilder(Expression expression, LexicalScope currentScope)
+            : base(currentScope)
         {
             cases = new LinkedList<SwitchCase>();
-            defaultExpression = Empty();
+            defaultExpression = Expression.Empty();
             switchValue = expression;
         }
 
@@ -32,7 +33,7 @@ namespace DotNext.Linq.Expressions
         public SwitchBuilder Case(IEnumerable<Expression> testValues, Expression body)
         {
             VerifyCaller();
-            cases.Add(SwitchCase(body, testValues));
+            cases.Add(Expression.SwitchCase(body, testValues));
             return this;
         }
 
@@ -58,6 +59,6 @@ namespace DotNext.Linq.Expressions
             return this;
         }
 
-        private protected override SwitchExpression Build() => Switch(Type, switchValue, defaultExpression, null, cases);
+        private protected override SwitchExpression Build() => Expression.Switch(Type, switchValue, defaultExpression, null, cases);
     }
 }

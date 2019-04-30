@@ -1,19 +1,22 @@
-﻿using System;
+﻿using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using TryBuilder = Linq.Expressions.TryBuilder;
-
-    internal readonly struct FaultStatement : IStatement<TryBuilder, Action>
+    internal sealed class FaultStatement : LexicalScope<TryBuilder>
     {
+        internal readonly struct Factory : IFactory<FaultStatement>
+        {
+            private readonly TryBuilder builder;
+
+            internal Factory(TryBuilder builder) => this.builder = builder;
+
+            public FaultStatement Create(LexicalScope parent) => new FaultStatement(builder, parent);
+        }
+
         private readonly TryBuilder builder;
 
-        internal FaultStatement(TryBuilder builder) => this.builder = builder;
+        private FaultStatement(TryBuilder builder, LexicalScope parent) : base(parent) => this.builder = builder;
 
-        TryBuilder IStatement<TryBuilder, Action>.Build(Action scope, ILexicalScope body)
-        {
-            scope();
-            return builder.Fault(body.Build());
-        }
+        private protected override TryBuilder CreateExpression(Expression body) => builder.Fault(body);
     }
 }

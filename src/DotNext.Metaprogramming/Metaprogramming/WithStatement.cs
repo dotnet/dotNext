@@ -5,17 +5,26 @@ namespace DotNext.Metaprogramming
 {
     using WithExpression = Linq.Expressions.WithExpression;
 
-    internal readonly struct WithStatement : IStatement<WithExpression, Action<ParameterExpression>>
+    internal sealed class WithStatement : LexicalScope, ILexicalScope<WithExpression, Action<ParameterExpression>>
     {
+        internal readonly struct Factory : IFactory<WithStatement>
+        {
+            private readonly Expression obj;
+
+            internal Factory(Expression obj) => this.obj = obj;
+
+            public WithStatement Create(LexicalScope parent) => new WithStatement(obj, parent);
+        }
+
         private readonly Expression obj;
 
-        internal WithStatement(Expression obj) => this.obj = obj;
+        private WithStatement(Expression obj, LexicalScope parent) : base(parent) => this.obj = obj;
 
-        WithExpression IStatement<WithExpression, Action<ParameterExpression>>.Build(Action<ParameterExpression> scope, ILexicalScope body)
+        WithExpression ILexicalScope<WithExpression, Action<ParameterExpression>>.Build(Action<ParameterExpression> scope)
         {
             var result = new WithExpression(obj);
             scope(result.Variable);
-            result.Body = body.Build();
+            result.Body = Build();
             return result;
         }
     }

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using static System.Linq.Enumerable;
 using System.Linq.Expressions;
 using System.Reflection;
-using static System.Threading.Thread;
 
 namespace DotNext.Linq.Expressions
 {
@@ -985,57 +984,6 @@ namespace DotNext.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates structured exception handling statement builder.
-        /// </summary>
-        /// <param name="expression"><see langword="try"/> block.</param>
-        /// <returns>Structured exception handling statement builder.</returns>
-        public static TryBuilder Try(this Expression expression) => CodeGenerator.MakeTry(expression);
-
-        /// <summary>
-        /// Constructs compound statement hat repeatedly refer to a single object or 
-        /// structure so that the statements can use a simplified syntax when accessing members 
-        /// of the object or structure.
-        /// </summary>
-        /// <param name="expression">An expression to be captured by scope.</param>
-        /// <param name="body">The scope body.</param>
-        /// <returns>Construct code block.</returns>
-        public static Expression With(this Expression expression, Action<ParameterExpression> body)
-            => CodeGenerator.MakeWith(expression, body);
-
-        public static ConditionalBuilder If(this Expression condition) => new ConditionalBuilder(condition);
-
-        /// <summary>
-        /// Constructs <see langword="using"/> statement.
-        /// </summary>
-        /// <remarks>
-        /// The equivalent code is <code>using(var obj = expression){ }</code>.
-        /// </remarks>
-        /// <param name="resource">The expression representing disposable resource.</param>
-        /// <param name="body">The body of <see langword="using"/> statement.</param>
-        /// <returns><see langword="using"/> statement.</returns>
-        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
-        public static UsingExpression Using(this Expression resource, UsingExpression.Statement body)
-            => new UsingExpression(resource, body);
-
-        /// <summary>
-        /// Creates selection statement builder that chooses a single <see langword="switch"/> section 
-        /// to execute from a list of candidates based on a pattern match with the match expression.
-        /// </summary>
-        /// <param name="switchValue">The value to be matched with provided candidates.</param>
-        /// <returns><see langword="switch"/> statement builder.</returns>
-        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/switch">switch Statement</seealso>
-        public static SwitchBuilder Switch(this Expression switchValue) => new SwitchBuilder(switchValue);
-
-        /// <summary>
-        /// Constructs <see langword="lock"/> expression.
-        /// </summary>
-        /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
-        /// <param name="body">Synchronized scope of code.</param>
-        /// <returns>Constructed lock statement.</returns>
-        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
-        public static LockExpression Lock(this Expression syncRoot, LockExpression.Statement body) => new LockExpression(syncRoot, body);
-
-        /// <summary>
         /// Transforms async lambda function into read-to-compile function.
         /// </summary>
         /// <typeparam name="D">Type of the delegate describing signature of asynchronous function.</typeparam>
@@ -1090,60 +1038,5 @@ namespace DotNext.Linq.Expressions
             var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), new[] { typeof(Type), typeof(object[]) });
             return Expression.Call(activate, type, Expression.NewArrayInit(typeof(object), args));
         }
-    }
-
-    /// <summary>
-    /// Represents compound expresssion builder.
-    /// </summary>
-    /// <remarks>
-    /// Any derived expression builder is not thread-safe and event cannot
-    /// be shared between threads.
-    /// </remarks>
-    /// <typeparam name="E">Type of expression to be constructed.</typeparam>
-    public abstract class ExpressionBuilder<E> : Expression
-        where E : Expression
-    {
-        private Type expressionType;
-        private readonly int ownerThread;
-
-        private protected ExpressionBuilder() => ownerThread = CurrentThread.ManagedThreadId;
-
-        public sealed override ExpressionType NodeType => ExpressionType.Extension;
-
-        public sealed override Type Type => expressionType ?? typeof(void);
-
-        public sealed override bool CanReduce => true;
-
-        private protected void VerifyCaller()
-        {
-            if (ownerThread != CurrentThread.ManagedThreadId)
-                throw new InvalidOperationException();
-        }
-
-        /// <summary>
-        /// Changes type of the expression.
-        /// </summary>
-        /// <remarks>
-        /// By default, type of expression is <see cref="void"/>.
-        /// </remarks>
-        /// <param name="expressionType">The expression type.</param>
-        /// <returns>This builder.</returns>
-        public ExpressionBuilder<E> OfType(Type expressionType)
-        {
-            VerifyCaller();
-            this.expressionType = expressionType;
-            return this;
-        }
-
-        /// <summary>
-        /// Changes type of the expression.
-        /// </summary>
-        /// <typeparam name="T">The expression type.</typeparam>
-        /// <returns>This builder.</returns>
-        public ExpressionBuilder<E> OfType<T>() => OfType(typeof(T));
-
-        private protected abstract E Build();
-
-        public sealed override Expression Reduce() => Build();
     }
 }

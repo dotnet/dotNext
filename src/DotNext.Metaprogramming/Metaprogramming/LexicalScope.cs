@@ -6,6 +6,12 @@ namespace DotNext.Metaprogramming
 {
     internal class LexicalScope : LinkedList<Expression>, IDisposable
     {
+        internal interface IFactory<out S>
+            where S : LexicalScope
+        {
+            S Create(LexicalScope parent);
+        }
+
         private readonly Dictionary<string, ParameterExpression> variables = new Dictionary<string, ParameterExpression>();
 
         internal readonly LexicalScope Parent;
@@ -33,10 +39,27 @@ namespace DotNext.Metaprogramming
             }
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             Clear();
             variables.Clear();
+        }
+    }
+
+    internal abstract class LexicalScope<E> : LexicalScope, ILexicalScope<E, Action>
+        where E : class
+    {
+        private protected LexicalScope(LexicalScope parent)
+            : base(parent)
+        {
+        }
+
+        private protected abstract E CreateExpression(Expression body);
+
+        E ILexicalScope<E, Action>.Build(Action scope)
+        {
+            scope();
+            return CreateExpression(Build());
         }
     }
 }

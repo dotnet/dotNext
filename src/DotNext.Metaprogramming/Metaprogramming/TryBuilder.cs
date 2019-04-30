@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace DotNext.Linq.Expressions
+namespace DotNext.Metaprogramming
 {
     /// <summary>
     /// Represents structured exception handling statement.
@@ -18,7 +18,8 @@ namespace DotNext.Linq.Expressions
         private Expression finallyBlock;
         private readonly ICollection<CatchBlock> handlers;
 
-        internal TryBuilder(Expression tryBlock)
+        internal TryBuilder(Expression tryBlock, LexicalScope currentScope)
+            : base(currentScope)
         {
             this.tryBlock = tryBlock;
             faultBlock = finallyBlock = null;
@@ -28,7 +29,7 @@ namespace DotNext.Linq.Expressions
         internal TryBuilder Catch(ParameterExpression exception, Expression filter, Expression handler)
         {
             VerifyCaller();
-            handlers.Add(MakeCatchBlock(exception.Type, exception, handler, filter));
+            handlers.Add(Expression.MakeCatchBlock(exception.Type, exception, handler, filter));
             return this;
         }
 
@@ -41,7 +42,7 @@ namespace DotNext.Linq.Expressions
         /// <returns><see langword="this"/> builder.</returns>
         public TryBuilder Catch(Type exceptionType, Filter filter, Handler handler)
         {
-            var exception = Variable(exceptionType, "e");
+            var exception = Expression.Variable(exceptionType, "e");
             return Catch(exception, filter?.Invoke(exception), handler(exception));
         }
 
@@ -61,7 +62,7 @@ namespace DotNext.Linq.Expressions
         /// <returns><see langword="this"/> builder.</returns>
         public TryBuilder Catch<E>(Handler handler) where E : Exception => Catch(typeof(E), handler);
 
-        public TryBuilder Catch(Expression handler) => Catch(Variable(typeof(Exception), "e"), null, handler);
+        public TryBuilder Catch(Expression handler) => Catch(Expression.Variable(typeof(Exception), "e"), null, handler);
 
         /// <summary>
         /// Associates expression to be returned from structured exception handling block 
@@ -77,13 +78,6 @@ namespace DotNext.Linq.Expressions
         }
 
         /// <summary>
-        /// Constructs block of code run when control leaves a <see langword="try"/> statement.
-        /// </summary>
-        /// <param name="finally">The block of code to be executed.</param>
-        /// <returns><see langword="this"/> builder.</returns>
-        public TryBuilder Finally(Action @finally) => Finally(builder(@finally));
-
-        /// <summary>
         /// Constructs single expression run when control leaves a <see langword="try"/> statement.
         /// </summary>
         /// <param name="finally">The single expression to be executed.</param>
@@ -95,6 +89,6 @@ namespace DotNext.Linq.Expressions
             return this;
         }
 
-        private protected override TryExpression Build() => Expression.MakeTry(ExpressionType, tryBlock, finallyBlock, faultBlock, handlers);
+        private protected override TryExpression Build() => Expression.MakeTry(Type, tryBlock, finallyBlock, faultBlock, handlers);
     }
 }

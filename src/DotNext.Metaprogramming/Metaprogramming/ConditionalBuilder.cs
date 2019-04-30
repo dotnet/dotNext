@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace DotNext.Linq.Expressions
+namespace DotNext.Metaprogramming
 {
     /// <summary>
     /// Builder of conditional expression.
@@ -11,7 +11,8 @@ namespace DotNext.Linq.Expressions
         private readonly Expression test;
         private Expression ifTrue, ifFalse;
 
-        internal ConditionalBuilder(Expression test) => this.test = test;
+        internal ConditionalBuilder(Expression test, LexicalScope currentScope) : base(currentScope) => this.test = test;
+
         /// <summary>
         /// Constructs positive branch of the conditional expression.
         /// </summary>
@@ -36,6 +37,6 @@ namespace DotNext.Linq.Expressions
             return this;
         }
 
-        private protected override ConditionalExpression Build() => Condition(test, ifTrue, ifFalse, Type);
+        private protected override ConditionalExpression Build() => Expression.Condition(test, ifTrue, ifFalse, Type);
     }
 }

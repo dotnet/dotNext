@@ -2,9 +2,9 @@
 
 namespace DotNext.Metaprogramming
 {
-    using ILoopExpression = Linq.Expressions.ILoopExpression;
+    using ILoopLabels = Linq.Expressions.ILoopLabels;
 
-    internal abstract class LoopLexicalScope : LexicalScope, ILoopExpression
+    internal abstract class LoopLexicalScope : LexicalScope, ILoopLabels
     {
         private protected LoopLexicalScope(LexicalScope parent)
             : base(parent)
