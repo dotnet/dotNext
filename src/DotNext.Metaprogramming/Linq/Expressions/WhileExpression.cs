@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions
 {
-    public sealed class WhileExpression: Expression, ILazyExpression<Action>, ILoopExpression
+    public sealed class WhileExpression: Expression, ILoopExpression
     {
         private readonly bool conditionFirst;
         private Expression body;
@@ -11,16 +11,10 @@ namespace DotNext.Linq.Expressions
         public WhileExpression(Expression test, Expression body = null, bool checkConditionFirst = true)
         {
             Test = test;
-            this.body = body ?? Empty();
+            this.body = body;
             BreakLabel = Label(typeof(void), "break");
             ContinueLabel = Label(typeof(void), "continue");
             conditionFirst = checkConditionFirst;
-        }
-
-        ref Expression ILazyExpression<Action>.GetBody(Action action)
-        {
-            action();
-            return ref body;
         }
 
         public LabelTarget BreakLabel { get; }
@@ -28,7 +22,11 @@ namespace DotNext.Linq.Expressions
 
         public Expression Test { get; }
 
-        public Expression Body => body;
+        public Expression Body
+        {
+            get => body ?? Empty();
+            internal set => body = value;
+        }
 
         public override ExpressionType NodeType => ExpressionType.Extension;
 

@@ -449,20 +449,6 @@ namespace DotNext.Metaprogramming
         public static void IfThenElse(Expression test, Action ifTrue, Action ifFalse)
             => If(test).Then(ifTrue).Else(ifFalse).End();
 
-        private readonly struct WhileLoopFactory : ILexicalScopeFactory<WhileLoopScope>
-        {
-            private readonly bool checkConditionFirst;
-            private readonly Expression test;
-
-            internal WhileLoopFactory(Expression test, bool checkConditionFirst)
-            {
-                this.checkConditionFirst = checkConditionFirst;
-                this.test = test;
-            }
-
-            WhileLoopScope ILexicalScopeFactory<WhileLoopScope>.CreateScope(LexicalScope parent) => new WhileLoopScope(test, parent, checkConditionFirst);
-        }
-
         /// <summary>
         /// Adds <see langword="while"/> loop statement.
         /// </summary>
@@ -470,7 +456,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void While(Expression test, Action<LoopContext> body)
-            => AddStatement<Action<LoopContext>, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, true), body);
+            => AddStatement(new WhileStatement(test, true), body);
 
         /// <summary>
         /// Adds <see langword="while"/> loop statement.
@@ -479,7 +465,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void While(Expression test, Action body)
-            => AddStatement<Action, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, true), body);
+            => AddStatement(new WhileStatement(test, true), body);
 
         /// <summary>
         /// Adds <c>do{ } while(condition);</c> loop statement.
@@ -488,7 +474,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void DoWhile(Expression test, Action<LoopContext> body)
-            => AddStatement<Action<LoopContext>, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, false), body);
+            => AddStatement(new WhileStatement(test, false), body);
 
         /// <summary>
         /// Adds <c>do{ } while(condition);</c> loop statement.
@@ -497,7 +483,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void DoWhile(Expression test, Action body)
-            => AddStatement<Action, WhileLoopScope, WhileLoopFactory>(new WhileLoopFactory(test, false), body);
+            => AddStatement(new WhileStatement(test, false), body);
 
         private readonly struct ForEachLoopScopeFactory : ILexicalScopeFactory<ForEachLoopScope>
         {
@@ -608,7 +594,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action<ParameterExpression> body)
-            => AddStatement<Action<ParameterExpression>, UsingStatement>(new UsingStatement(resource), body);
+            => AddStatement(new UsingStatement(resource), body);
 
         /// <summary>
         /// Adds <see langword="using"/> statement.
@@ -618,7 +604,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action body)
-            => AddStatement<Action, UsingStatement>(new UsingStatement(resource), body);
+            => AddStatement(new UsingStatement(resource), body);
 
         private readonly struct LockScopeFactory : ILexicalScopeFactory<LockScope>
         {

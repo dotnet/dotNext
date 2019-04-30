@@ -3,24 +3,32 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    using Linq.Expressions;
+    using DotNext.Linq.Expressions;
+    using WhileExpression = Linq.Expressions.WhileExpression;
 
-    internal sealed class WhileLoopScope : LoopScopeBase, IExpressionBuilder<WhileExpression>, ICompoundStatement<Action<LoopContext>>
+    internal readonly struct WhileStatement : IStatement<WhileExpression, Action>, IStatement<WhileExpression, Action<LoopContext>>
     {
-        private readonly WhileExpression expression;
+        private readonly Expression condition;
+        private readonly bool conditionFirst;
 
-        internal WhileLoopScope(Expression test, LexicalScope parent, bool checkConditionFirst)
-            : base(parent) => expression = new WhileExpression(test, Expression.Empty(), checkConditionFirst);
-
-        public new WhileExpression Build() => expression.Update(base.Build());
-
-        internal override LabelTarget BreakLabel => expression.BreakLabel;
-        internal override LabelTarget ContinueLabel => expression.ContinueLabel;
-
-        void ICompoundStatement<Action<LoopContext>>.ConstructBody(Action<LoopContext> body)
+        internal WhileStatement(Expression condition, bool conditionFirst)
         {
-            using (var context = new LoopContext(this))
-                body(context);
+            this.condition = condition;
+            this.conditionFirst = conditionFirst;
+        }
+
+        WhileExpression IStatement<WhileExpression, Action>.Build(Action scope, ILexicalScope body)
+        {
+            scope();
+            return new WhileExpression(condition, body.Build(), conditionFirst);
+        }
+
+        WhileExpression IStatement<WhileExpression, Action<LoopContext>>.Build(Action<LoopContext> scope, ILexicalScope body)
+        {
+            var result = new WhileExpression(condition, checkConditionFirst: conditionFirst);
+            scope(new LoopContext(result));
+            result.Body = body.Build();
+            return result;
         }
     }
 }
