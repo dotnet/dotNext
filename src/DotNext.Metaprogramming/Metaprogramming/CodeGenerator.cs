@@ -18,7 +18,7 @@ namespace DotNext.Metaprogramming
         private static E InitStatement<E, D, S>(S statement, D action)
             where E : Expression
             where D : MulticastDelegate
-            where S : struct, IStatement<E, D>
+            where S : IStatement<E, D>
         {
             E expression;
             var scope = current = new LexicalScope(current);
@@ -36,7 +36,7 @@ namespace DotNext.Metaprogramming
 
         private static void AddStatement<D, S>(S statement, D action)
             where D : MulticastDelegate
-            where S : struct, IStatement<Expression, D>
+            where S : IStatement<Expression, D>
             => CurrentScope.AddStatement(InitStatement<Expression, D, S>(statement, action));
 
         /// <summary>
@@ -535,11 +535,6 @@ namespace DotNext.Metaprogramming
         public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action<ParameterExpression> body)
             => AddStatement(new ForStatement(initializer, condition, iteration), body);
 
-        private readonly struct LoopScopeFactory : ILexicalScopeFactory<LoopScope>
-        {
-            LoopScope ILexicalScopeFactory<LoopScope>.CreateScope(LexicalScope parent) => new LoopScope(parent);
-        }
-
         /// <summary>
         /// Adds generic loop statement.
         /// </summary>
@@ -548,15 +543,14 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Loop(Action<LoopContext> body)
-            => AddStatement<Action<LoopContext>, LoopScope, LoopScopeFactory>(new LoopScopeFactory(), body);
+        public static void Loop(Action<LoopContext> body) => AddStatement(LoopStatement.Instance, body);
 
         /// <summary>
         /// Adds generic loop statement.
         /// </summary>
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Loop(Action body) => AddStatement<Action, LoopScope, LoopScopeFactory>(new LoopScopeFactory(), body);
+        public static void Loop(Action body) => AddStatement(LoopStatement.Instance, body);
 
         /// <summary>
         /// Adds <see langword="throw"/> statement to the compound statement.

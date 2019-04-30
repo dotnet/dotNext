@@ -15,10 +15,10 @@ namespace DotNext.Metaprogramming
     {
         internal readonly LabelTarget ContinueLabel, BreakLabel;
 
-        internal LoopContext(LoopExpression loop)
+        internal LoopContext(LabelTarget @continue, LabelTarget @break)
         {
-            ContinueLabel = loop.ContinueLabel;
-            BreakLabel = loop.BreakLabel;
+            ContinueLabel = @continue;
+            BreakLabel = @break;
         }
 
         internal LoopContext(ILoopExpression loop)

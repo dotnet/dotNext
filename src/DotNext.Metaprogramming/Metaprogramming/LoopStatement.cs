@@ -3,30 +3,23 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    /// <summary>
-    /// Represents generic loop builder.
-    /// </summary>
-    /// <remarks>
-    /// This loop is equvalent to <c>while(true){ }</c>
-    /// </remarks>
-    internal sealed class LoopScope : LoopScopeBase, IExpressionBuilder<LoopExpression>, ICompoundStatement<Action<LoopContext>>
+    internal sealed class LoopStatement : IStatement<LoopExpression, Action>, IStatement<LoopExpression, Action<LoopContext>>
     {
-        internal LoopScope(LexicalScope parent)
-            : base(parent)
+        internal static readonly LoopStatement Instance = new LoopStatement();
+
+        private LoopStatement() { }
+
+        LoopExpression IStatement<LoopExpression, Action>.Build(Action scope, ILexicalScope body)
         {
-            BreakLabel = Expression.Label(typeof(void), "break");
-            ContinueLabel = Expression.Label(typeof(void), "continue");
+            scope();
+            return Expression.Loop(body.Build());
         }
 
-        internal override LabelTarget BreakLabel { get; }
-        internal override LabelTarget ContinueLabel { get; }
-
-        public new LoopExpression Build() => Expression.Loop(base.Build(), BreakLabel, ContinueLabel);
-
-        void ICompoundStatement<Action<LoopContext>>.ConstructBody(Action<LoopContext> body)
+        LoopExpression IStatement<LoopExpression, Action<LoopContext>>.Build(Action<LoopContext> scope, ILexicalScope body)
         {
-            using (var cookie = new LoopContext(this))
-                body(cookie);
+            var context = new LoopContext(Expression.Label("continue"), Expression.Label("break"));
+            scope(context);
+            return Expression.Loop(body.Build(), context.BreakLabel, context.ContinueLabel);
         }
     }
 }

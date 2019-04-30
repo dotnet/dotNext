@@ -68,12 +68,10 @@ namespace DotNext.Linq.Expressions
 
         public override Expression Reduce()
         {
-            Expression @finally = Call(Resource, disposeMethod);
-            @finally = Block(typeof(void), @finally, Assign(Resource, Default(Resource.Type)));
-            @finally = TryFinally(Body, @finally);
+            Expression body = TryFinally(Body, Call(Resource, disposeMethod));
             return assignment is null ?
-                @finally :
-                Expression.Block(typeof(void), Sequence.Singleton(Resource), assignment, @finally);
+                body :
+                Block(typeof(void), Sequence.Singleton(Resource), assignment, body);
         }
     }
 }
