@@ -5,48 +5,37 @@ namespace DotNext.Metaprogramming
 {
     using ForExpression = Linq.Expressions.ForExpression;
 
-    internal sealed class ForLoopScope : LexicalScope, IExpressionBuilder<ForExpression>
+    internal readonly struct ForStatement : IStatement<ForExpression, Action<ParameterExpression>>, IStatement<ForExpression, Action<ParameterExpression, LoopContext>>
     {
-        private readonly Expression initialization;
-        private readonly ForExpression.Condition condition;
         private readonly Action<ParameterExpression> iteration;
+        private readonly Func<ParameterExpression, Expression> condition;
+        private readonly Expression initialization;
 
-        private readonly MulticastDelegate action;
-
-        internal ForLoopScope(Expression initialization, ForExpression.Condition condition, Action<ParameterExpression> iteration, Action<ParameterExpression> action, LexicalScope parent)
-            : base(parent)
+        internal ForStatement(Expression initialization, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration)
         {
-            this.initialization = initialization;
-            this.condition = condition;
             this.iteration = iteration;
-            this.action = action;
-        }
-
-        internal ForLoopScope(Expression initialization, ForExpression.Condition condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopContext> action, LexicalScope parent)
-            : base(parent)
-        {
-            this.initialization = initialization;
             this.condition = condition;
-            this.iteration = iteration;
-            this.action = action;
+            this.initialization = initialization;
         }
 
-        private Expression BuildBody(ParameterExpression loopVar, LabelTarget continueLabel, LabelTarget breakLabel)
+        ForExpression IStatement<ForExpression, Action<ParameterExpression>>.Build(Action<ParameterExpression> scope, ILexicalScope body)
         {
-            switch(this.action)
-            {
-                case Action<ParameterExpression> action: 
-                    action(loopVar); 
-                    break;
-                case Action<ParameterExpression, LoopContext> action: 
-                    action(loopVar, new LoopContext(continueLabel, breakLabel)); 
-                    break;
-            }
-            AddStatement(Expression.Goto(continueLabel));
-            iteration(loopVar);
-            return base.Build();
+            var result = new ForExpression(initialization, condition);
+            scope(result.LoopVar);
+            body.AddStatement(Expression.Continue(result.ContinueLabel));
+            iteration(result.LoopVar);
+            result.Body = body.Build();
+            return result;
         }
 
-        public new ForExpression Build() => new ForExpression(initialization, condition, BuildBody);
+        ForExpression IStatement<ForExpression, Action<ParameterExpression, LoopContext>>.Build(Action<ParameterExpression, LoopContext> scope, ILexicalScope body)
+        {
+            var result = new ForExpression(initialization, condition);
+            scope(result.LoopVar, new LoopContext(result));
+            body.AddStatement(Expression.Continue(result.ContinueLabel));
+            iteration(result.LoopVar);
+            result.Body = body.Build();
+            return result;
+        }
     }
 }

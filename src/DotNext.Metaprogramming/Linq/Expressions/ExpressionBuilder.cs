@@ -1058,8 +1058,8 @@ namespace DotNext.Linq.Expressions
         /// <typeparam name="D">Type of the delegate describing signature of asynchronous function.</typeparam>
         /// <param name="lambda">The lambda with <see langword="await"/> expressions.</param>
         /// <returns>Prepared async lambda function.</returns>
-        /// <see cref="AsyncResultExpression"/>
-        /// <see cref="AwaitExpression"/>
+        /// <seealso cref="AsyncResultExpression"/>
+        /// <seealso cref="AwaitExpression"/>
         public static Expression<D> ToAsyncLambda<D>(this Expression<D> lambda)
             where D : Delegate
         {

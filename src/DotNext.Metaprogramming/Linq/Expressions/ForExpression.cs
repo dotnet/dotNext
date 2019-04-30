@@ -12,7 +12,7 @@ namespace DotNext.Linq.Expressions
             Expression MakeBody(ParameterExpression loopVar);
         }
 
-        private Expression iteration, body;
+        private Expression body;
 
         internal ForExpression(Expression initialization, Func<ParameterExpression, Expression> condition)
         {
@@ -26,10 +26,8 @@ namespace DotNext.Linq.Expressions
         internal ForExpression(Expression initialization, IBuilder builder)
             : this(initialization, builder.MakeCondition)
         {
-
+            Body = builder.MakeBody(LoopVar).AddPrologue(false, Continue(ContinueLabel), builder.MakeIteration(LoopVar));
         }
-
-        public Expression Iteration => iteration;
 
         public Expression Test { get; }
 
@@ -40,7 +38,11 @@ namespace DotNext.Linq.Expressions
         public LabelTarget BreakLabel { get; }
         public LabelTarget ContinueLabel { get; }
 
-        public Expression Body => body;
+        public Expression Body
+        {
+            get => body ?? Empty();
+            internal set => body = value;
+        }
 
         public override ExpressionType NodeType => ExpressionType.Extension;
 
@@ -50,7 +52,7 @@ namespace DotNext.Linq.Expressions
 
         public override Expression Reduce()
         {
-            Expression body = Condition(Test, Body.AddPrologue(false, Continue(ContinueLabel), Iteration), Goto(BreakLabel), typeof(void));
+            Expression body = Condition(Test, Body, Goto(BreakLabel), typeof(void));
             body = Loop(body, BreakLabel);
             return Block(typeof(void), Sequence.Singleton(LoopVar), Assign(LoopVar, Initialization), body);
         }

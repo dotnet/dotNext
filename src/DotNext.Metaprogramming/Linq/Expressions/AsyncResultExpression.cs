@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace DotNext.Metaprogramming
+namespace DotNext.Linq.Expressions
 {
     using Runtime.CompilerServices;
     using Threading.Tasks;
@@ -25,7 +25,7 @@ namespace DotNext.Metaprogramming
         }
 
         internal AsyncResultExpression(TaskType taskType)
-            : this(taskType.ResultType.Default(), taskType)
+            : this(Default(taskType.ResultType), taskType)
         {
         }
 
@@ -82,7 +82,7 @@ namespace DotNext.Metaprogramming
             var catchedException = Variable(typeof(Exception));
             if (AsyncResult.Type == typeof(void))
             {
-                completedTask = Block(AsyncResult, typeof(CompletedTask).Default());
+                completedTask = Block(AsyncResult, Default(typeof(CompletedTask)));
                 failedTask = typeof(CompletedTask).New(catchedException);
             }
             else

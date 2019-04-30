@@ -517,8 +517,8 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
-        public static void For(Expression initializer, ForExpr condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopContext> body)
-            => AddStatement<Action<ForLoopScope>, ForLoopScope, ForLoopScopeFactory>(new ForLoopScopeFactory(initializer, condition), scope => scope.ConstructBody(body, iteration));
+        public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopContext> body)
+            => AddStatement(new ForStatement(initializer, condition, iteration), body);
 
         /// <summary>
         /// Adds <see langword="for"/> loop statement.
@@ -533,7 +533,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
         public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action<ParameterExpression> body)
-            => AddStatement<Action<ForLoopScope>, ForLoopScope, ForLoopScopeFactory>(new ForLoopScopeFactory(initializer, condition), scope => scope.ConstructBody(body, iteration));
+            => AddStatement(new ForStatement(initializer, condition, iteration), body);
 
         private readonly struct LoopScopeFactory : ILexicalScopeFactory<LoopScope>
         {
