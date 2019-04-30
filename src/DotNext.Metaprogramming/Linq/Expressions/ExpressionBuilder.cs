@@ -1002,17 +1002,7 @@ namespace DotNext.Linq.Expressions
         public static Expression With(this Expression expression, Action<ParameterExpression> body)
             => CodeGenerator.MakeWith(expression, body);
 
-        /// <summary>
-        /// Constructs <see langword="using"/> statement.
-        /// </summary>
-        /// <remarks>
-        /// The equivalent code is <code>using(var obj = expression){ }</code>.
-        /// </remarks>
-        /// <param name="resource">The expression representing disposable resource.</param>
-        /// <param name="body">The body of <see langword="using"/> statement.</param>
-        /// <returns><see langword="using"/> statement.</returns>
-        public static UsingExpression Using(this Expression resource, Func<ParameterExpression, Expression> body)
-            => CodeGenerator.MakeUsing(resource, body);
+        public static ConditionalBuilder If(this Expression condition) => new ConditionalBuilder(condition);
 
         /// <summary>
         /// Constructs <see langword="using"/> statement.
@@ -1023,8 +1013,9 @@ namespace DotNext.Linq.Expressions
         /// <param name="resource">The expression representing disposable resource.</param>
         /// <param name="body">The body of <see langword="using"/> statement.</param>
         /// <returns><see langword="using"/> statement.</returns>
-        public static Expression Using(this Expression resource, Action body)
-            => CodeGenerator.MakeUsing(resource, body);
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
+        public static UsingExpression Using(this Expression resource, UsingExpression.Statement body)
+            => new UsingExpression(resource, body);
 
         /// <summary>
         /// Creates selection statement builder that chooses a single <see langword="switch"/> section 
@@ -1032,7 +1023,8 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="switchValue">The value to be matched with provided candidates.</param>
         /// <returns><see langword="switch"/> statement builder.</returns>
-        public static SwitchBuilder Switch(this Expression switchValue) => CodeGenerator.MakeSwitch(switchValue);
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/switch">switch Statement</seealso>
+        public static SwitchBuilder Switch(this Expression switchValue) => new SwitchBuilder(switchValue);
 
         /// <summary>
         /// Constructs <see langword="lock"/> expression.
@@ -1041,16 +1033,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="body">Synchronized scope of code.</param>
         /// <returns>Constructed lock statement.</returns>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
-        public static BlockExpression Lock(this Expression syncRoot, Action<ParameterExpression> body) => CodeGenerator.MakeLock(syncRoot, body);
-
-        /// <summary>
-        /// Constructs <see langword="lock"/> expression.
-        /// </summary>
-        /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
-        /// <param name="body">Synchronized scope of code.</param>
-        /// <returns>Constructed lock statement.</returns>
-        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
-        public static BlockExpression Lock(this Expression syncRoot, Action body) => CodeGenerator.MakeLock(syncRoot, body);
+        public static LockExpression Lock(this Expression syncRoot, LockExpression.Statement body) => new LockExpression(syncRoot, body);
 
         /// <summary>
         /// Transforms async lambda function into read-to-compile function.

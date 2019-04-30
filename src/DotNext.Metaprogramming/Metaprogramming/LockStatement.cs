@@ -1,43 +1,28 @@
 using System;
 using System.Linq.Expressions;
-using System.Threading;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class LockScope : LexicalScope, IExpressionBuilder<BlockExpression>, ICompoundStatement<Action<ParameterExpression>>
+    using LockExpression = Linq.Expressions.LockExpression;
+
+    internal readonly struct LockStatement: IStatement<LockExpression, Action>, IStatement<LockExpression, Action<ParameterExpression>>
     {
-        private readonly ParameterExpression syncRoot;
-        private readonly BinaryExpression assignment;
+        private readonly Expression syncRoot;
 
-        internal LockScope(Expression syncRoot, LexicalScope parent)
-            : base(parent)
+        internal LockStatement(Expression syncRoot) => this.syncRoot = syncRoot;
+
+        LockExpression IStatement<LockExpression, Action>.Build(Action scope, ILexicalScope body)
         {
-            if (syncRoot is ParameterExpression syncVar)
-                this.syncRoot = syncVar;
-            else
-            {
-                this.syncRoot = Expression.Variable(typeof(object), "syncRoot");
-                assignment = this.syncRoot.Assign(syncRoot);
-            }
+            scope();
+            return new LockExpression(syncRoot, body.Build());
         }
 
-        public new BlockExpression Build()
+        LockExpression IStatement<LockExpression, Action<ParameterExpression>>.Build(Action<ParameterExpression> scope, ILexicalScope body)
         {
-            var monitorEnter = typeof(Monitor).GetMethod(nameof(Monitor.Enter), new[] { typeof(object) });
-            var monitorExit = typeof(Monitor).GetMethod(nameof(Monitor.Exit), new[] { typeof(object) });
-            var body = base.Build();
-            if (assignment is null)
-            {
-                body = body.Finally(Expression.Call(monitorExit, syncRoot));
-                return Expression.Block(typeof(void), Expression.Call(monitorEnter, syncRoot), body);
-            }
-            else
-            {
-                body = body.Finally(Expression.Block(Expression.Call(monitorExit, syncRoot), syncRoot.AssignDefault()));
-                return Expression.Block(typeof(void), Sequence.Singleton(syncRoot), assignment, Expression.Call(monitorEnter, syncRoot), body);
-            }
+            var result = new LockExpression(syncRoot);
+            scope(result.SyncRoot);
+            result.Body = body.Build();
+            return result;
         }
-
-        void ICompoundStatement<Action<ParameterExpression>>.ConstructBody(Action<ParameterExpression> body) => body(syncRoot);
     }
 }

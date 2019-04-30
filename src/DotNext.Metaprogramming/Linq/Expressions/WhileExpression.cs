@@ -5,16 +5,36 @@ namespace DotNext.Linq.Expressions
 {
     public sealed class WhileExpression: Expression, ILoopExpression
     {
+        private readonly struct LoopBody
+        {
+            internal readonly LabelTarget continueLabel, breakLabel;
+        }
+
+        public delegate Expression Statement(LabelTarget continueLabel, LabelTarget breakLabel);
+
+        private static Expression MakeBody(Statement statement, out LabelTarget continueLabel, out LabelTarget breakLabel)
+            => statement(continueLabel = Label(typeof(void), "continue"), breakLabel = Label(typeof(void), "break"));
+
         private readonly bool conditionFirst;
         private Expression body;
 
-        public WhileExpression(Expression test, Expression body = null, bool checkConditionFirst = true)
+        internal WhileExpression(Expression test, Expression body, LabelTarget continueLabel, LabelTarget breakLabel, bool checkConditionFirst)
         {
-            Test = test;
-            this.body = body;
-            BreakLabel = Label(typeof(void), "break");
-            ContinueLabel = Label(typeof(void), "continue");
             conditionFirst = checkConditionFirst;
+            Test = test;
+            ContinueLabel = continueLabel;
+            BreakLabel = breakLabel;
+            this.body = body;
+        }
+
+        public WhileExpression(Expression test, Statement body, bool checkConditionFirst = true)
+            : this(test, MakeBody(body, out var continueLabel, out var breakLabel), continueLabel, breakLabel, checkConditionFirst)
+        {
+        }
+
+        public WhileExpression(Expression test, Expression body, bool checkConditionFirst = true)
+            : this(test, new ExpressionBuilder(body), checkConditionFirst)
+        {
         }
 
         public LabelTarget BreakLabel { get; }
@@ -35,8 +55,6 @@ namespace DotNext.Linq.Expressions
         public override bool CanReduce => true;
 
         public WhileExpression Update(Expression body) => new WhileExpression(Test, body, conditionFirst);
-
-        public WhileExpression Update(Expression test, Expression body) => new WhileExpression(test, body, conditionFirst);
 
         public override Expression Reduce()
         {

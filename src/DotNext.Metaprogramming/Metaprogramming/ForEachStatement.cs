@@ -5,25 +5,25 @@ namespace DotNext.Metaprogramming
 {
     using ForEachExpression = Linq.Expressions.ForEachExpression;
 
-    internal readonly struct ForEachStatement : IStatement<ForEachExpression, Action<MemberExpression>>, IStatement<ForEachExpression, Action<MemberExpression, LoopContext>>
+    internal sealed class ForEachStatement : LexicalScope, ILexicalScope<ForEachExpression, Action<MemberExpression>>, ILexicalScope<ForEachExpression, Action<MemberExpression, LoopContext>>
     {
         private readonly Expression collection;
 
-        internal ForEachStatement(Expression collection) => this.collection = collection;
+        internal ForEachStatement(Expression collection, LexicalScope parent) : base(parent) => this.collection = collection;
 
-        ForEachExpression IStatement<ForEachExpression, Action<MemberExpression>>.Build(Action<MemberExpression> scope, ILexicalScope body)
+        ForEachExpression ILexicalScope<ForEachExpression, Action<MemberExpression>>.Build(Action<MemberExpression> scope)
         {
             var result = new ForEachExpression(collection);
             scope(result.Element);
-            result.Body = body.Build();
+            result.Body = Build();
             return result;
         }
 
-        ForEachExpression IStatement<ForEachExpression, Action<MemberExpression, LoopContext>>.Build(Action<MemberExpression, LoopContext> scope, ILexicalScope body)
+        ForEachExpression ILexicalScope<ForEachExpression, Action<MemberExpression, LoopContext>>.Build(Action<MemberExpression, LoopContext> scope)
         {
             var result = new ForEachExpression(collection);
             scope(result.Element, new LoopContext(result));
-            result.Body = body.Build();
+            result.Body = Build();
             return result;
         }
     }

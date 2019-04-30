@@ -1,11 +1,12 @@
+using System;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal interface ILexicalScope
+    internal interface ILexicalScope<out E, D>
+        where E : Expression
+        where D : MulticastDelegate
     {
-         Expression Build();
-
-        void AddStatement(Expression instruction);
+        E Build(D scope);
     }
 }

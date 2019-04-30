@@ -15,29 +15,30 @@ namespace DotNext.Metaprogramming
         [ThreadStatic]
         private static LexicalScope current;
 
-        private static E InitStatement<E, D, S>(S statement, D action)
+        private static E InitStatement<E, D, S>(Func<LexicalScope, S> factory, D action)
             where E : Expression
             where D : MulticastDelegate
-            where S : IStatement<E, D>
+            where S : LexicalScope, ILexicalScope<E, D>
         {
             E expression;
-            var scope = current = new LexicalScope(current);
+            S statement;
+            current = statement = factory(current);
             try
             {
-                expression = statement.Build(action, scope);
+                expression = statement.Build(action);
             }
             finally
             {
                 current = current?.Parent;
-                scope.Dispose();
+                statement.Dispose();
             }
             return expression;
         }
 
-        private static void AddStatement<D, S>(S statement, D action)
+        private static void AddStatement<D, S>(Func<LexicalScope, S> factory, D action)
             where D : MulticastDelegate
-            where S : IStatement<Expression, D>
-            => CurrentScope.AddStatement(InitStatement<Expression, D, S>(statement, action));
+            where S : LexicalScope, ILexicalScope<Expression, D>
+            => CurrentScope.AddStatement(InitStatement<Expression, D, S>(factory, action));
 
         /// <summary>
         /// Gets curremt lexical scope.
@@ -410,25 +411,11 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Await(Expression asyncResult) => CurrentScope.AddStatement(asyncResult.Await());
 
-        /// <summary>
-        /// Adds if-then-else statement to this scope.
-        /// </summary>
-        /// <param name="test">Test expression.</param>
-        /// <returns>Conditional statement builder.</returns>
-        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static ConditionalBuilder If(Expression test) => new ConditionalBuilder(test);
-
         public static ConditionalBuilder Then(this ConditionalBuilder builder, Action body)
-        {
-            InitStatement<ConditionalBuilder, Action, BranchStatement>(new BranchStatement(builder, true), body);
-            return builder;
-        }
+            => InitStatement<ConditionalBuilder, Action, BranchStatement>(parent => new BranchStatement(builder, true, parent), body);
 
         public static ConditionalBuilder Else(this ConditionalBuilder builder, Action body)
-        {
-            InitStatement<ConditionalBuilder, Action, BranchStatement>(new BranchStatement(builder, false), body);
-            return builder;
-        }
+            => InitStatement<ConditionalBuilder, Action, BranchStatement>(parent => new BranchStatement(builder, false, parent), body);
 
         /// <summary>
         /// Adds if-then statement to this scope.
@@ -437,7 +424,7 @@ namespace DotNext.Metaprogramming
         /// <param name="ifTrue">Positive branch builder.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void IfThen(Expression test, Action ifTrue)
-            => If(test).Then(ifTrue).End();
+            => new ConditionalBuilder(test).Then(ifTrue).End();
 
         /// <summary>
         /// Adds if-then-else statement to this scope.
@@ -447,7 +434,7 @@ namespace DotNext.Metaprogramming
         /// <param name="ifFalse">Negative branch builder.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void IfThenElse(Expression test, Action ifTrue, Action ifFalse)
-            => If(test).Then(ifTrue).Else(ifFalse).End();
+            => new ConditionalBuilder(test).Then(ifTrue).Else(ifFalse).End();
 
         /// <summary>
         /// Adds <see langword="while"/> loop statement.
@@ -456,7 +443,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void While(Expression test, Action<LoopContext> body)
-            => AddStatement(new WhileStatement(test, true), body);
+            => AddStatement(parent => new WhileStatement(test, true, parent), body);
 
         /// <summary>
         /// Adds <see langword="while"/> loop statement.
@@ -465,7 +452,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void While(Expression test, Action body)
-            => AddStatement(new WhileStatement(test, true), body);
+            => AddStatement(parent => new WhileStatement(test, true, parent), body);
 
         /// <summary>
         /// Adds <c>do{ } while(condition);</c> loop statement.
@@ -474,7 +461,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void DoWhile(Expression test, Action<LoopContext> body)
-            => AddStatement(new WhileStatement(test, false), body);
+            => AddStatement(parent => new WhileStatement(test, false, parent), body);
 
         /// <summary>
         /// Adds <c>do{ } while(condition);</c> loop statement.
@@ -483,7 +470,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void DoWhile(Expression test, Action body)
-            => AddStatement(new WhileStatement(test, false), body);
+            => AddStatement(parent => new WhileStatement(test, false, parent), body);
 
         /// <summary>
         /// Adds <see langword="foreach"/> loop statement.
@@ -493,7 +480,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression, LoopContext> body)
-            => AddStatement(new ForEachStatement(collection), body);
+            => AddStatement(parent => new ForEachStatement(collection, parent), body);
 
         /// <summary>
         /// Adds <see langword="foreach"/> loop statement.
@@ -503,7 +490,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression> body)
-            => AddStatement(new ForEachStatement(collection), body);
+            => AddStatement(parent => new ForEachStatement(collection, parent), body);
 
         /// <summary>
         /// Adds <see langword="for"/> loop statement.
@@ -591,21 +578,6 @@ namespace DotNext.Metaprogramming
         public static void Using(Expression resource, Action body)
             => AddStatement(new UsingStatement(resource), body);
 
-        private readonly struct LockScopeFactory : ILexicalScopeFactory<LockScope>
-        {
-            private readonly Expression syncRoot;
-
-            internal LockScopeFactory(Expression syncRoot) => this.syncRoot = syncRoot;
-
-            LockScope ILexicalScopeFactory<LockScope>.CreateScope(LexicalScope parent) => new LockScope(syncRoot, parent);
-        }
-
-        internal static BlockExpression MakeLock(Expression syncRoot, Action<ParameterExpression> body)
-            => Build<BlockExpression, Action<ParameterExpression>, LockScope, LockScopeFactory>(new LockScopeFactory(syncRoot), body);
-
-        internal static BlockExpression MakeLock(Expression syncRoot, Action body)
-            => Build<BlockExpression, Action, LockScope, LockScopeFactory>(new LockScopeFactory(syncRoot), body);
-
         /// <summary>
         /// Adds <see langword="lock"/> statement.
         /// </summary>
@@ -614,7 +586,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
         public static void Lock(Expression syncRoot, Action<ParameterExpression> body)
-            => AddStatement<Action<ParameterExpression>, LockScope, LockScopeFactory>(new LockScopeFactory(syncRoot), body);
+            => AddStatement(new LockStatement(syncRoot), body);
 
         /// <summary>
         /// Adds <see langword="lock"/> statement.
@@ -624,19 +596,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
         public static void Lock(Expression syncRoot, Action body)
-            => AddStatement<Action, LockScope, LockScopeFactory>(new LockScopeFactory(syncRoot), body);
-
-        private readonly struct WithBlockScopeFactory : ILexicalScopeFactory<WithBlockScope>
-        {
-            private readonly Expression expression;
-
-            internal WithBlockScopeFactory(Expression expression) => this.expression = expression;
-
-            WithBlockScope ILexicalScopeFactory<WithBlockScope>.CreateScope(LexicalScope parent) => new WithBlockScope(expression, parent);
-        }
-
-        internal static Expression MakeWith(Expression expression, Action<ParameterExpression> body)
-            => Build<Expression, Action<ParameterExpression>, WithBlockScope, WithBlockScopeFactory>(new WithBlockScopeFactory(expression), body);
+            => AddStatement(new LockStatement(syncRoot), body);
 
         /// <summary>
         /// Constructs compound statement hat repeatedly refer to a single object or 
@@ -648,27 +608,78 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
         public static void With(Expression expression, Action<ParameterExpression> body)
-            => AddStatement<Action<ParameterExpression>, WithBlockScope, WithBlockScopeFactory>(new WithBlockScopeFactory(expression), body);
-
-        internal static SwitchBuilder MakeSwitch(Expression switchValue) => new SwitchBuilder(MakeScope, switchValue);
+            => AddStatement(new WithStatement(expression), body);
 
         /// <summary>
-        /// Adds selection expression.
+        /// Specifies a pattern to compare to the match expression
+        /// and action to be executed if matching is successful.
         /// </summary>
-        /// <param name="switchValue">The value to be handled by the selection expression.</param>
-        /// <returns>Selection expression builder.</returns>
-        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static SwitchBuilder Switch(Expression switchValue) => MakeSwitch(switchValue).TreatAsStatement<SwitchExpression, SwitchBuilder>();
+        /// <param name="testValues">A list of test values.</param>
+        /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
+        /// <returns><see langword="this"/> builder.</returns>
+        public static SwitchBuilder Case(this SwitchBuilder builder, IEnumerable<Expression> testValues, Action body)
+            => InitStatement<SwitchBuilder, Action, CaseStatement>(new CaseStatement(builder, testValues), body);
 
-        internal static TryBuilder MakeTry(Expression body) => new TryBuilder(MakeScope, body);
 
         /// <summary>
-        /// Adds structured exception handling statement.
+        /// Specifies a pattern to compare to the match expression
+        /// and action to be executed if matching is successful.
         /// </summary>
-        /// <param name="body"><see langword="try"/> block.</param>
-        /// <returns>Structured exception handling builder.</returns>
-        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static TryBuilder Try(Expression body) => MakeTry(body).TreatAsStatement<TryExpression, TryBuilder>();
+        /// <param name="test">Single test value.</param>
+        /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
+        /// <returns><see langword="this"/> builder.</returns>
+        public static SwitchBuilder Case(this SwitchBuilder builder, Expression test, Action body)
+            => InitStatement<SwitchBuilder, Action, CaseStatement>(new CaseStatement(builder, test), body);
+
+        /// <summary>
+        /// Specifies the switch section to execute if the match expression
+        /// doesn't match any other cases.
+        /// </summary>
+        /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
+        /// <returns><see langword="this"/> builder.</returns>
+        public static SwitchBuilder Default(this SwitchBuilder builder, Action body)
+            => InitStatement<SwitchBuilder, Action, DefaultStatement>(new DefaultStatement(builder), body);
+
+        /// <summary>
+        /// Constructs exception handling section.
+        /// </summary>
+        /// <param name="exceptionType">Expected exception.</param>
+        /// <param name="filter">Additional filter to be applied to the caught exception.</param>
+        /// <param name="handler">Exception handling block.</param>
+        /// <returns><see langword="this"/> builder.</returns>
+        public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, TryBuilder.Filter filter, Action<ParameterExpression> handler)
+            => InitStatement<TryBuilder, Action<ParameterExpression>, CatchStatement>(new CatchStatement(builder, exceptionType, filter), handler);
+
+        /// <summary>
+        /// Constructs exception handling section.
+        /// </summary>
+        /// <param name="exceptionType">Expected exception.</param>
+        /// <param name="handler">Exception handling block.</param>
+        /// <returns><see langword="this"/> builder.</returns>
+        public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, Action<ParameterExpression> handler)
+            => InitStatement<TryBuilder, Action<ParameterExpression>, CatchStatement>(new CatchStatement(builder, exceptionType), handler);
+
+        /// <summary>
+        /// Constructs exception handling section.
+        /// </summary>
+        /// <typeparam name="E">Expected exception.</typeparam>
+        /// <param name="handler">Exception handling block.</param>
+        /// <returns><see langword="this"/> builder.</returns>
+        public static TryBuilder Catch<E>(this TryBuilder builder, Action<ParameterExpression> handler)
+            where E : Exception
+            => Catch(builder, typeof(E), handler);
+
+        public static TryBuilder Catch(this TryBuilder builder, Action handler)
+            => InitStatement<TryBuilder, Action, CatchStatement>(new CatchStatement(builder, typeof(Exception)), handler);
+
+        /// <summary>
+        /// Constructs block of code which will be executed in case
+        /// of any exception.
+        /// </summary>
+        /// <param name="fault">Fault handling block.</param>
+        /// <returns><see langword="this"/> builder.</returns>
+        public static TryBuilder Fault(this TryBuilder builder, Action fault)
+            => InitStatement<TryBuilder, Action, FaultStatement>(new FaultStatement(builder), fault);
 
         /// <summary>
         /// Adds structured exception handling statement.
@@ -676,19 +687,7 @@ namespace DotNext.Metaprogramming
         /// <param name="scope"><see langword="try"/> block builder.</param>
         /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static TryBuilder Try(Action scope) => Try(MakeScope(scope));
-
-        private readonly struct LocalScopeFactory : ILexicalScopeFactory<LocalScope>
-        {
-            LocalScope ILexicalScopeFactory<LocalScope>.CreateScope(LexicalScope parent) => new LocalScope(parent);
-        }
-
-        private static Expression MakeScope(Action body)
-            => Build<Expression, Action, LocalScope, LocalScopeFactory>(new LocalScopeFactory(), body);
-
-        private static LabelTarget ContinueLabel(LoopScopeBase scope) => scope.ContinueLabel;
-
-        private static LabelTarget BreakLabel(LoopScopeBase scope) => scope.BreakLabel;
+        public static TryBuilder Try(Action scope) => InitStatement<TryBuilder, Action, TryStatement>(TryStatement.Instance, scope);
 
         private static void Goto(LoopContext loop, Func<LoopScopeBase, LabelTarget> labelFactory, GotoExpressionKind kind)
         {
@@ -816,6 +815,11 @@ namespace DotNext.Metaprogramming
             => Build<Expression<D>, Action<LambdaContext>, AsyncLambdaScope<D>, AsyncLambdaScopeFactory<D>>(new AsyncLambdaScopeFactory<D>(), body);
 
 
-        public static void End<E>(this ExpressionBuilder<E> builder) where E : Expression => CurrentScope.AddStatement(builder);
+        /// <summary>
+        /// Finalizes construction of expression and adds it as statement into the current lexical scope.
+        /// </summary>
+        /// <typeparam name="E">The type of expression to be added as statement.</typeparam>
+        /// <param name="builder">Compound statement builder.</param>
+        public static void End<E>(this ExpressionBuilder<E> builder) where E : Expression => CurrentScope.AddStatement(builder.Reduce());
     }
 }

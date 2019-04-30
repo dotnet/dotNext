@@ -4,21 +4,22 @@ namespace DotNext.Metaprogramming
 {
     using ConditionalBuilder = Linq.Expressions.ConditionalBuilder;
 
-    internal readonly struct BranchStatement : IStatement<ConditionalBuilder, Action>
+    internal sealed class BranchStatement : LexicalScope, ILexicalScope<ConditionalBuilder, Action>
     {
         private readonly ConditionalBuilder builder;
         private readonly bool branchType;
 
-        internal BranchStatement(ConditionalBuilder builder, bool branchType)
+        internal BranchStatement(ConditionalBuilder builder, bool branchType, LexicalScope parent)
+            : base(parent)
         {
             this.builder = builder;
             this.branchType = branchType;
         }
 
-        ConditionalBuilder IStatement<ConditionalBuilder, Action>.Build(Action scope, ILexicalScope body)
+        ConditionalBuilder ILexicalScope<ConditionalBuilder, Action>.Build(Action scope)
         {
             scope();
-            return branchType ? builder.Then(body.Build()) : builder.Else(body.Build());
+            return branchType ? builder.Then(Build()) : builder.Else(Build());
         }
     }
 }
