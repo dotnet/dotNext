@@ -24,6 +24,8 @@ namespace DotNext.Metaprogramming
             return null;
         }
 
+        private static bool IsInScope<S>() where S : LexicalScope => !(FindScope<S>() is null);
+
         private static E InitStatement<E, D, S, F>(F factory, D action)
             where E : class
             where D : MulticastDelegate
@@ -575,7 +577,15 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds re-throw statement.
         /// </summary>
-        public static void Rethrow() => CurrentScope.AddStatement(Expression.Rethrow());
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of catch clause.</exception>
+        public static void Rethrow()
+        {
+            if(IsInScope<CatchStatement>())
+                CurrentScope.AddStatement(Expression.Rethrow());
+            else
+                throw new InvalidOperationException(ExceptionMessages.InvalidRethrow);
+                
+        }
 
         /// <summary>
         /// Adds <see langword="using"/> statement.

@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class CaseStatement : LexicalScope<SwitchBuilder>
+    internal sealed class CaseStatement : Statement<SwitchBuilder>
     {
         internal readonly struct Factory : IFactory<CaseStatement>
         {

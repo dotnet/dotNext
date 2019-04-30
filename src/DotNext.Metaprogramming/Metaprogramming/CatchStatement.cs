@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class CatchStatement : LexicalScope, ILexicalScope<TryBuilder, Action<ParameterExpression>>, ILexicalScope<TryBuilder, Action>
+    internal sealed class CatchStatement : Statement, ILexicalScope<TryBuilder, Action<ParameterExpression>>, ILexicalScope<TryBuilder, Action>
     {
         internal readonly struct Factory : IFactory<CatchStatement>
         {

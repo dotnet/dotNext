@@ -4,7 +4,7 @@ namespace DotNext.Metaprogramming
 {
     using ILoopLabels = Linq.Expressions.ILoopLabels;
 
-    internal abstract class LoopLexicalScope : LexicalScope, ILoopLabels
+    internal abstract class LoopLexicalScope : Statement, ILoopLabels
     {
         private protected LoopLexicalScope(LexicalScope parent)
             : base(parent)

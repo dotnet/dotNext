@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class BranchStatement : LexicalScope<ConditionalBuilder>
+    internal sealed class BranchStatement : Statement<ConditionalBuilder>
     {
         internal readonly struct Factory : IFactory<BranchStatement>
         {

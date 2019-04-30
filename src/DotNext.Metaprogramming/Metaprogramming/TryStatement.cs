@@ -2,7 +2,7 @@
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class TryStatement : LexicalScope<TryBuilder>
+    internal sealed class TryStatement : Statement<TryBuilder>
     {
         private sealed class SingletonFactory : IFactory<TryStatement>
         {

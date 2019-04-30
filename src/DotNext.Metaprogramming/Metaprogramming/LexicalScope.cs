@@ -45,21 +45,4 @@ namespace DotNext.Metaprogramming
             variables.Clear();
         }
     }
-
-    internal abstract class LexicalScope<E> : LexicalScope, ILexicalScope<E, Action>
-        where E : class
-    {
-        private protected LexicalScope(LexicalScope parent)
-            : base(parent)
-        {
-        }
-
-        private protected abstract E CreateExpression(Expression body);
-
-        E ILexicalScope<E, Action>.Build(Action scope)
-        {
-            scope();
-            return CreateExpression(Build());
-        }
-    }
 }

@@ -2,7 +2,7 @@
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class FaultStatement : LexicalScope<TryBuilder>
+    internal sealed class FaultStatement : Statement<TryBuilder>
     {
         internal readonly struct Factory : IFactory<FaultStatement>
         {

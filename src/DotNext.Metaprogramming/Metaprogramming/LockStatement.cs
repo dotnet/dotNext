@@ -5,7 +5,7 @@ namespace DotNext.Metaprogramming
 {
     using LockExpression = Linq.Expressions.LockExpression;
 
-    internal sealed class LockStatement: LexicalScope, ILexicalScope<LockExpression, Action>, ILexicalScope<LockExpression, Action<ParameterExpression>>
+    internal sealed class LockStatement: Statement, ILexicalScope<LockExpression, Action>, ILexicalScope<LockExpression, Action<ParameterExpression>>
     {
         internal readonly struct Factory : IFactory<LockStatement>
         {

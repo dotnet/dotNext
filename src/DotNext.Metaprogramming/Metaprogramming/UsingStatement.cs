@@ -5,7 +5,7 @@ namespace DotNext.Metaprogramming
 {
     using UsingExpression = Linq.Expressions.UsingExpression;
 
-    internal sealed class UsingStatement : LexicalScope, ILexicalScope<UsingExpression, Action>, ILexicalScope<UsingExpression, Action<ParameterExpression>>
+    internal sealed class UsingStatement : Statement, ILexicalScope<UsingExpression, Action>, ILexicalScope<UsingExpression, Action<ParameterExpression>>
     {
         internal readonly struct Factory : IFactory<UsingStatement>
         {

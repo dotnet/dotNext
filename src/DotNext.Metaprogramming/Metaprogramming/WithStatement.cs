@@ -5,7 +5,7 @@ namespace DotNext.Metaprogramming
 {
     using WithExpression = Linq.Expressions.WithExpression;
 
-    internal sealed class WithStatement : LexicalScope, ILexicalScope<WithExpression, Action<ParameterExpression>>
+    internal sealed class WithStatement : Statement, ILexicalScope<WithExpression, Action<ParameterExpression>>
     {
         internal readonly struct Factory : IFactory<WithStatement>
         {

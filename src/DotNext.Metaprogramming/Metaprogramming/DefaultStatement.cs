@@ -3,7 +3,7 @@
 namespace DotNext.Metaprogramming
 {
 
-    internal sealed class DefaultStatement : LexicalScope<SwitchBuilder>
+    internal sealed class DefaultStatement : Statement<SwitchBuilder>
     {
         internal readonly struct Factory : IFactory<DefaultStatement>
         {

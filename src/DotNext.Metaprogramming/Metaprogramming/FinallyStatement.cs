@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class FinallyStatement : LexicalScope<TryBuilder>
+    internal sealed class FinallyStatement : Statement<TryBuilder>
     {
         internal readonly struct Factory : IFactory<FinallyStatement>
         {
