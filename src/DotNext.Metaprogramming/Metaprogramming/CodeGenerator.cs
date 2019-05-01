@@ -426,11 +426,31 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Await(Expression asyncResult) => CurrentScope.AddStatement(asyncResult.Await());
 
+        /// <summary>
+        /// Adds if-then-else statement to this scope.
+        /// </summary>
+        /// <param name="test">Test expression.</param>
+        /// <returns>Conditional statement builder.</returns>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static ConditionalBuilder If(Expression test) => new ConditionalBuilder(test, CurrentScope);
 
+        /// <summary>
+        /// Constructs positive branch of the conditional expression.
+        /// </summary>
+        /// <param name="builder">Conditional statement builder.</param>
+        /// <param name="body">Branch builder.</param>
+        /// <returns>Conditional expression builder.</returns>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static ConditionalBuilder Then(this ConditionalBuilder builder, Action body)
             => InitStatement<ConditionalBuilder, Action, BranchStatement, BranchStatement.Factory>(new BranchStatement.Factory(builder, true), body);
 
+        /// <summary>
+        /// Constructs negative branch of the conditional expression.
+        /// </summary>
+        /// <param name="builder">Conditional statement builder.</param>
+        /// <param name="body">Branch builder.</param>
+        /// <returns>Conditional expression builder.</returns>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static ConditionalBuilder Else(this ConditionalBuilder builder, Action body)
             => InitStatement<ConditionalBuilder, Action, BranchStatement, BranchStatement.Factory>(new BranchStatement.Factory(builder, false), body);
 
@@ -630,7 +650,7 @@ namespace DotNext.Metaprogramming
             => AddStatement<Action, LockStatement, LockStatement.Factory>(new LockStatement.Factory(syncRoot), body);
 
         /// <summary>
-        /// Constructs compound statement hat repeatedly refer to a single object or 
+        /// Adds compound statement hat repeatedly refer to a single object or 
         /// structure so that the statements can use a simplified syntax when accessing members 
         /// of the object or structure.
         /// </summary>
@@ -641,15 +661,23 @@ namespace DotNext.Metaprogramming
         public static void With(Expression expression, Action<ParameterExpression> body)
             => AddStatement<Action<ParameterExpression>, WithStatement, WithStatement.Factory>(new WithStatement.Factory(expression), body);
 
+        /// <summary>
+        /// Adds selection expression.
+        /// </summary>
+        /// <param name="value">The value to be handled by the selection expression.</param>
+        /// <returns>A new instance of selection expression builder.</returns>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/switch">switch Statement</seealso>
         public static SwitchBuilder Switch(Expression value) => new SwitchBuilder(value, CurrentScope);
 
         /// <summary>
         /// Specifies a pattern to compare to the match expression
         /// and action to be executed if matching is successful.
         /// </summary>
+        /// <param name="builder">Selection builder.</param>
         /// <param name="testValues">A list of test values.</param>
         /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns>Modified selection builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static SwitchBuilder Case(this SwitchBuilder builder, IEnumerable<Expression> testValues, Action body)
             => InitStatement<SwitchBuilder, Action, CaseStatement, CaseStatement.Factory>(new CaseStatement.Factory(builder, testValues), body);
@@ -659,9 +687,10 @@ namespace DotNext.Metaprogramming
         /// Specifies a pattern to compare to the match expression
         /// and action to be executed if matching is successful.
         /// </summary>
+        /// <param name="builder">Selection builder.</param>
         /// <param name="test">Single test value.</param>
         /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns>Modified selection builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static SwitchBuilder Case(this SwitchBuilder builder, Expression test, Action body)
             => Case(builder, Sequence.Singleton(test), body);
@@ -670,8 +699,9 @@ namespace DotNext.Metaprogramming
         /// Specifies the switch section to execute if the match expression
         /// doesn't match any other cases.
         /// </summary>
+        /// <param name="builder">Selection builder.</param>
         /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns>Modified selection builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static SwitchBuilder Default(this SwitchBuilder builder, Action body)
             => InitStatement<SwitchBuilder, Action, DefaultStatement, DefaultStatement.Factory>(new DefaultStatement.Factory(builder), body);
@@ -679,10 +709,11 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Constructs exception handling section.
         /// </summary>
+        /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="exceptionType">Expected exception.</param>
         /// <param name="filter">Additional filter to be applied to the caught exception.</param>
         /// <param name="handler">Exception handling block.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, TryBuilder.Filter filter, Action<ParameterExpression> handler)
             => InitStatement<TryBuilder, Action<ParameterExpression>, CatchStatement, CatchStatement.Factory>(new CatchStatement.Factory(builder, exceptionType, filter), handler);
@@ -690,9 +721,10 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Constructs exception handling section.
         /// </summary>
+        /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="exceptionType">Expected exception.</param>
         /// <param name="handler">Exception handling block.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, Action handler)
             => InitStatement<TryBuilder, Action, CatchStatement, CatchStatement.Factory>(new CatchStatement.Factory(builder, exceptionType, null), handler);
@@ -700,9 +732,10 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Constructs exception handling section.
         /// </summary>
+        /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="exceptionType">Expected exception.</param>
         /// <param name="handler">Exception handling block.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, Action<ParameterExpression> handler)
             => Catch(builder, exceptionType, null, handler);
@@ -711,8 +744,9 @@ namespace DotNext.Metaprogramming
         /// Constructs exception handling section.
         /// </summary>
         /// <typeparam name="E">Expected exception.</typeparam>
+        /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="handler">Exception handling block.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch<E>(this TryBuilder builder, Action<ParameterExpression> handler)
             where E : Exception
@@ -722,13 +756,21 @@ namespace DotNext.Metaprogramming
         /// Constructs exception handling section.
         /// </summary>
         /// <typeparam name="E">Expected exception.</typeparam>
+        /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="handler">Exception handling block.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch<E>(this TryBuilder builder, Action handler)
             where E : Exception
             => Catch(builder, typeof(E), handler);
 
+        /// <summary>
+        /// Constructs exception handling section that may capture any exception.
+        /// </summary>
+        /// <param name="builder">Structured exception handling builder.</param>
+        /// <param name="handler">Exception handling block.</param>
+        /// <returns>Structured exception handling builder.</returns>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Action handler)
             => InitStatement<TryBuilder, Action, CatchStatement, CatchStatement.Factory>(new CatchStatement.Factory(builder), handler);
 
@@ -736,6 +778,7 @@ namespace DotNext.Metaprogramming
         /// Constructs block of code which will be executed in case
         /// of any exception.
         /// </summary>
+        /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="fault">Fault handling block.</param>
         /// <returns><see langword="this"/> builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -748,14 +791,23 @@ namespace DotNext.Metaprogramming
         /// <param name="scope"><see langword="try"/> block builder.</param>
         /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch-finally">try-catch-finally Statement</seealso>
         public static TryBuilder Try(Action scope) 
             => InitStatement<TryBuilder, Action, TryStatement, LexicalScope.IFactory<TryStatement>>(TryStatement.Factory, scope);
-        
+
+        /// <summary>
+        /// Adds structured exception handling statement.
+        /// </summary>
+        /// <param name="body"><see langword="try"/> block.</param>
+        /// <returns>Structured exception handling builder.</returns>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch-finally">try-catch-finally Statement</seealso>        
         public static TryBuilder Try(Expression body) => new TryBuilder(body, CurrentScope);
 
         /// <summary>
         /// Constructs block of code run when control leaves a <see langword="try"/> statement.
         /// </summary>
+        /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="body">The block of code to be executed.</param>
         /// <returns><see langword="this"/> builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>

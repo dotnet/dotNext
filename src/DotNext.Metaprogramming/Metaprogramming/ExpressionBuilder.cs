@@ -17,7 +17,7 @@ namespace DotNext.Metaprogramming
     public abstract class ExpressionBuilder<E> : IExpressionBuilder<E>
         where E : Expression
     {
-        private readonly LexicalScope currentScope;
+        private LexicalScope currentScope;
 
         private Type expressionType;
         private readonly int ownerThread;
@@ -28,7 +28,7 @@ namespace DotNext.Metaprogramming
             ownerThread = CurrentThread.ManagedThreadId;
         }
 
-        public Type Type => expressionType ?? typeof(void);
+        private protected Type Type => expressionType ?? typeof(void);
 
         private protected void VerifyCaller()
         {
@@ -62,6 +62,17 @@ namespace DotNext.Metaprogramming
 
         E IExpressionBuilder<E>.Build() => Build();
 
-        public void End() => currentScope.AddStatement(Build());
+        /// <summary>
+        /// Finalizes construction of the expression
+        /// and adds constructed expression as statement to the entire lexical scope.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">The expression has been constructed already.</exception>
+        public void End()
+        {
+            if(currentScope is null)
+                throw new InvalidOperationException();
+            currentScope.AddStatement(Build());
+            currentScope = null;
+        }
     }
 }

@@ -63,7 +63,7 @@ namespace DotNext.Linq.Expressions
         public Expression Body
         {
             get => body ?? Empty();
-            set => body = value;
+            internal set => body = value;
         }
 
         public MemberExpression Element { get; }

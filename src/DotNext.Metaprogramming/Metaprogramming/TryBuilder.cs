@@ -10,7 +10,18 @@ namespace DotNext.Metaprogramming
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch">try-catch statement</seealso>
     public sealed class TryBuilder : ExpressionBuilder<TryExpression>
     {
+        /// <summary>
+        /// Represents constructor of exception handling filter.
+        /// </summary>
+        /// <param name="exception">The variable representing captured exception.</param>
+        /// <returns>The expression of type <see cref="bool"/> indicating that captured exception should be handled.</returns>
         public delegate Expression Filter(ParameterExpression exception);
+
+        /// <summary>
+        /// Represents exception handler constructor.
+        /// </summary>
+        /// <param name="exception">The variable representing captured exception.</param>
+        /// <returns>The expression representing exception handling block.</returns>
         public delegate Expression Handler(ParameterExpression exception);
 
         private readonly Expression tryBlock;
@@ -47,7 +58,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Constructs exception handling section.
+        /// Constructs exception handling clause.
         /// </summary>
         /// <param name="exceptionType">Expected exception.</param>
         /// <param name="handler">Exception handling block.</param>
@@ -55,13 +66,18 @@ namespace DotNext.Metaprogramming
         public TryBuilder Catch(Type exceptionType, Handler handler) => Catch(exceptionType, null, handler);
 
         /// <summary>
-        /// Constructs exception handling section.
+        /// Constructs exception handling clause.
         /// </summary>
         /// <typeparam name="E">Expected exception.</typeparam>
         /// <param name="handler">Exception handling block.</param>
         /// <returns><see langword="this"/> builder.</returns>
-        public TryBuilder Catch<E>(Handler handler) where E : Exception => Catch(typeof(E), handler);
+        public TryBuilder Catch<E>(Handler handler) where E : Exception => Catch(typeof(E), handler); 
 
+        /// <summary>
+        /// Constructs exception handling clause that can capture any exception.
+        /// </summary>
+        /// <param name="handler">The expression representing exception handling clause.</param>
+        /// <returns><see langword="this"/> builder.</returns>
         public TryBuilder Catch(Expression handler) => Catch(Expression.Variable(typeof(Exception), "e"), null, handler);
 
         /// <summary>

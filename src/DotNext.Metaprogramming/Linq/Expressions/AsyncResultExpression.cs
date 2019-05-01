@@ -13,7 +13,7 @@ namespace DotNext.Linq.Expressions
     /// <remarks>
     /// This expression turns async state machine into final state.
     /// </remarks>
-    /// <seealso cref="CodeGenerator.AsyncLambda{D}(Action{LambdaContext})"/>
+    /// <seealso cref="Metaprogramming.CodeGenerator.AsyncLambda{D}(Action{Metaprogramming.LambdaContext})"/>
     public sealed class AsyncResultExpression : Expression
     {
         private readonly TaskType taskType;
