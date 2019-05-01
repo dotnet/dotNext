@@ -7,8 +7,19 @@ namespace DotNext.Linq.Expressions
     using static Reflection.CollectionType;
     using static Reflection.DisposableType;
 
+    /// <summary>
+    /// Represents iteration over collection elements as expression.
+    /// </summary>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
     public sealed class ForEachExpression: Expression, ILoopLabels
     {
+        /// <summary>
+        /// Represents constructor of iteration over collection elements.
+        /// </summary>
+        /// <param name="current">An expression representing current collection item in the iteration.</param>
+        /// <param name="continueLabel">A label that can be used to produce <see cref="Expression.Continue(LabelTarget)"/> expression.</param>
+        /// <param name="breakLabel">A label that can be used to produce <see cref="Expression.Break(LabelTarget)"/> expression.</param>
+        /// <returns></returns>
         public delegate Expression Statement(MemberExpression current, LabelTarget continueLabel, LabelTarget breakLabel);
 
         private readonly ParameterExpression enumeratorVar;
@@ -45,35 +56,77 @@ namespace DotNext.Linq.Expressions
             ContinueLabel = continueLabel ?? Label(typeof(void), "continue");
         }
 
-        public ForEachExpression(Expression collection, Statement body)
+        private ForEachExpression(Expression collection)
             : this(collection, null, null)
         {
-            this.body = body(Element, ContinueLabel, BreakLabel);
         }
 
-        public ForEachExpression(Expression collection, Expression body)
-            : this(collection, null, null)
+        /// <summary>
+        /// Creates a new loop expression.
+        /// </summary>
+        /// <param name="collection">The collection to iterate through.</param>
+        /// <param name="body">A delegate that is used to construct the body of the loop.</param>
+        /// <returns>The expression instance.</returns>
+        public static ForEachExpression Create(Expression collection, Statement body)
         {
-            this.body = body;
+            var result = new ForEachExpression(collection);
+            result.Body = body(result.Element, result.ContinueLabel, result.BreakLabel);
+            return result;
         }
 
+        /// <summary>
+        /// Creates a new loop expression.
+        /// </summary>
+        /// <param name="collection">The collection to iterate through.</param>
+        /// <param name="body">The body of the loop.</param>
+        /// <returns>The expression instance.</returns>
+        public static ForEachExpression Create(Expression collection, Expression body)
+            => new ForEachExpression(collection) { Body = body };
+
+        /// <summary>
+        /// Gets label that is used by the loop body as a break statement target.
+        /// </summary>
         public LabelTarget BreakLabel { get; }
+
+        /// <summary>
+        /// Gets label that is used by the loop body as a continue statement target.
+        /// </summary>
         public LabelTarget ContinueLabel { get; }
 
+        /// <summary>
+        /// Gets loop body.
+        /// </summary>
         public Expression Body
         {
             get => body ?? Empty();
             internal set => body = value;
         }
 
+        /// <summary>
+        /// Gets collection element in the iteration.
+        /// </summary>
         public MemberExpression Element { get; }
 
+        /// <summary>
+        /// Always returns <see cref="ExpressionType.Extension"/>.
+        /// </summary>
         public override ExpressionType NodeType => ExpressionType.Extension;
 
+        /// <summary>
+        /// Always returns <see cref="void"/>.
+        /// </summary>
         public override Type Type => typeof(void);
 
+        /// <summary>
+        /// Always returns <see langword="true"/> because
+        /// this expression is <see cref="ExpressionType.Extension"/>.
+        /// </summary>
         public override bool CanReduce => true;
 
+        /// <summary>
+        /// Produces actual code for the loop.
+        /// </summary>
+        /// <returns>The actual code for the loop.</returns>
         public override Expression Reduce()
         {
             Expression loopBody = Condition(moveNextCall, Body, Goto(BreakLabel), typeof(void));

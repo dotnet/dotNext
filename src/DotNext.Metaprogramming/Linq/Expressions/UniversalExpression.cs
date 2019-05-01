@@ -151,6 +151,12 @@ namespace DotNext.Linq.Expressions
         public static implicit operator UniversalExpression(char value) => new UniversalExpression(value.Const());
 
         /// <summary>
+        /// Constructs formatted string expression.
+        /// </summary>
+        /// <param name="value">Formatter string representation.</param>
+        public static implicit operator UniversalExpression(FormattableString value) => new UniversalExpression(InterpolationExpression.PlainString(value));
+
+        /// <summary>
         /// Logical NOT expression.
         /// </summary>
         /// <param name="expr">The operand.</param>

@@ -1038,5 +1038,43 @@ namespace DotNext.Linq.Expressions
             var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), new[] { typeof(Type), typeof(object[]) });
             return Expression.Call(activate, type, Expression.NewArrayInit(typeof(object), args));
         }
+
+        /// <summary>
+        /// Creates <c>foreach</c> loop expression.
+        /// </summary>
+        /// <param name="collection">The collection to iterate through.</param>
+        /// <param name="body">A delegate that is used to construct the body of the loop.</param>
+        /// <returns>The constructed loop.</returns>
+        public static ForEachExpression ForEach(this Expression collection, ForEachExpression.Statement body)
+            => ForEachExpression.Create(collection, body);
+
+        /// <summary>
+        /// Creates <c>for</c> loop expression.
+        /// </summary>
+        /// <param name="initialization">Loop variable initialization expression.</param>
+        /// <param name="condition">The condition of loop continuation.</param>
+        /// <param name="iteration">The loop iteration statement.</param>
+        /// <param name="body">The loop body.</param>
+        /// <returns>The constructed loop.</returns>
+        public static ForExpression For(this Expression initialization, ForExpression.LoopBuilder.Condition condition, ForExpression.LoopBuilder.Iteration iteration, ForExpression.LoopBuilder.Statement body)
+            => ForExpression.Builder(initialization).While(condition).Do(body).Iterate(iteration).Build();
+
+        /// <summary>
+        /// Creates a new synchronized block of code.
+        /// </summary>
+        /// <param name="syncRoot">The monitor object.</param>
+        /// <param name="body">The delegate used to construct synchronized block of code.</param>
+        /// <returns>The synchronized block of code.</returns>
+        public static LockExpression Lock(this Expression syncRoot, LockExpression.Statement body)
+            => LockExpression.Create(syncRoot, body);
+
+        /// <summary>
+        /// Creates block of code associated with disposable resource.
+        /// </summary>
+        /// <param name="resource">The disposable resource.</param>
+        /// <param name="body">The delegate used to construct the block of code.</param>
+        /// <returns>The constructed expression.</returns>
+        public static UsingExpression Using(this Expression resource, UsingExpression.Statement body)
+            => UsingExpression.Create(resource, body);
     }
 }

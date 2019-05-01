@@ -12,7 +12,7 @@ namespace DotNext.Metaprogramming
     using static CodeGenerator;
 
     public sealed class LambdaTests: Assert
-    {   
+    {
         private static long Fact(long value)
         {
             return value > 1L ? value * Fact(value - 1) : value;
@@ -144,8 +144,8 @@ namespace DotNext.Metaprogramming
                 .End();
             });
             var fn = lambda.Compile();
-            //Equal(5L, fn(5L).Result);
-            //Equal(-42L, fn(80L).Result);
+            Equal(5L, fn(5L).Result);
+            Equal(-42L, fn(80L).Result);
             var exception = Throws<AggregateException>(() => fn(-10L).Result);
             IsType<InvalidOperationException>(exception.InnerException);
         }
@@ -176,6 +176,26 @@ namespace DotNext.Metaprogramming
                 Return(typeof(int).CallStatic(nameof(int.Parse), result));
             }).Compile();
             Equal(423, await lambda());
+        }
+
+        [Fact]
+        public static void StringFormatting()
+        {
+            var lambda = Lambda<Func<string, string>>((fun, result) =>
+            {
+                Assign(result, InterpolationExpression.PlainString($"Hello, {fun[0]}"));
+            }).Compile();
+            Equal("Hello, Barry", lambda("Barry"));
+        }
+
+        [Fact]
+        public static void FormattableStringFactory()
+        {
+            var lambda = Lambda<Func<string, FormattableString>>((fun, result) =>
+            {
+                Assign(result, InterpolationExpression.FormattableString($"Hello, {fun[0]}"));
+            }).Compile();
+            Equal("Hello, Barry", lambda("Barry").ToString());
         }
     }
 }

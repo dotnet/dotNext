@@ -32,20 +32,30 @@ namespace DotNext.Linq.Expressions
                 Resource = param;
             }
             else
-                assignment = Assign(Resource = Expression.Variable(resource.Type, "resource"), resource);
+                assignment = Assign(Resource = Variable(resource.Type, "resource"), resource);
         }
 
-        public UsingExpression(Expression resource, Statement body)
-            : this(resource)
+        /// <summary>
+        /// Creates block of code associated with disposable resource.
+        /// </summary>
+        /// <param name="resource">The disposable resource.</param>
+        /// <param name="body">The delegate used to construct the block of code.</param>
+        /// <returns>The constructed expression.</returns>
+        public static UsingExpression Create(Expression resource, Statement body)
         {
-            this.body = body(Resource);
+            var result = new UsingExpression(resource);
+            result.Body = body(result.Resource);
+            return result;
         }
 
-        public UsingExpression(Expression resource, Expression body)
-            : this(resource)
-        {
-            this.body = body;
-        }
+        /// <summary>
+        /// Creates block of code associated with disposable resource.
+        /// </summary>
+        /// <param name="resource">The disposable resource.</param>
+        /// <param name="body">The body of the statement.</param>
+        /// <returns>The constructed expression.</returns>
+        public static UsingExpression Create(Expression resource, Expression body)
+            => new UsingExpression(resource) { Body = body };
 
         /// <summary>
         /// Gets body of <see langword="using"/> expression.
@@ -56,14 +66,31 @@ namespace DotNext.Linq.Expressions
             internal set => body = value;
         }
 
+        /// <summary>
+        /// Gets the variable holding the disposable resource.
+        /// </summary>
         public ParameterExpression Resource { get; }
 
+        /// <summary>
+        /// Always returns <see cref="ExpressionType.Extension"/>.
+        /// </summary>
         public override ExpressionType NodeType => ExpressionType.Extension;
 
+        /// <summary>
+        /// Gets the type of this expression.
+        /// </summary>
         public override Type Type => Body.Type;
 
+        /// <summary>
+        /// Always returns <see langword="true"/> because
+        /// this expression is <see cref="ExpressionType.Extension"/>.
+        /// </summary>
         public override bool CanReduce => true;
 
+        /// <summary>
+        /// Produces actual code of the resource acquisition.
+        /// </summary>
+        /// <returns>The actual code of the resource acquisition.</returns>
         public override Expression Reduce()
         {
             if(assignment is null)

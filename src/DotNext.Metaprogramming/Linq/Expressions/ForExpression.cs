@@ -3,6 +3,10 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions
 {
+    /// <summary>
+    /// Represents <c>for</c> loop as expression.
+    /// </summary>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
     public sealed class ForExpression: Expression, ILoopLabels
     {
         internal interface IBuilder : ILoopLabels
@@ -12,32 +16,79 @@ namespace DotNext.Linq.Expressions
             Expression MakeBody(ParameterExpression loopVar);
         }
 
+        /// <summary>
+        /// Represents expression builder.
+        /// </summary>
+        /// <seealso cref="Builder(Expression)"/>
         public sealed class LoopBuilder : IBuilder, IExpressionBuilder<ForExpression>
         {
+            /// <summary>
+            /// Represents constructor of loop condition.
+            /// </summary>
+            /// <param name="loopVar">The loop variable.</param>
+            /// <returns>The condition of loop continuation. Must be of type <see cref="bool"/>.</returns>
+            public delegate Expression Condition(ParameterExpression loopVar);
+
+            /// <summary>
+            /// Represents constructor of loop iteration.
+            /// </summary>
+            /// <param name="loopVar">The loop variable.</param>
+            /// <returns>The loop iteration.</returns>
+            public delegate Expression Iteration(ParameterExpression loopVar);
+
+            /// <summary>
+            /// Represents constructor of loop body.
+            /// </summary>
+            /// <param name="loopVar">The loop variable.</param>
+            /// <param name="continueLabel">A label that can be used to produce <see cref="Expression.Continue(LabelTarget)"/> expression.</param>
+            /// <param name="breakLabel">A label that can be used to produce <see cref="Expression.Break(LabelTarget)"/> expression.</param>
+            /// <returns>The loop body.</returns>
+            public delegate Expression Statement(ParameterExpression loopVar, LabelTarget continueLabel, LabelTarget breakLabel);
+
             private readonly LabelTarget continueLabel, breakLabel;
             private readonly Expression initialization;
-            private Func<ParameterExpression, Expression> condition, iteration, body;
+            private Iteration iteration;
+            private Condition condition;
+            private Statement body;
 
             internal LoopBuilder(Expression initialization)
             {
                 this.initialization = initialization;
-                breakLabel = Expression.Label(typeof(void), "break");
-                continueLabel = Expression.Label(typeof(void), "continueLabel");
+                breakLabel = Label(typeof(void), "break");
+                continueLabel = Label(typeof(void), "continueLabel");
             }
 
-            public LoopBuilder While(Func<ParameterExpression, Expression> condition)
+            /// <summary>
+            /// Defines loop condition.
+            /// </summary>
+            /// <param name="condition">A delegate used to construct condition.</param>
+            /// <returns><see langword="this"/> builder.</returns>
+            /// <seealso cref="Condition"/>
+            public LoopBuilder While(Condition condition)
             {
                 this.condition = condition;
                 return this;
             }
 
-            public LoopBuilder Do(Func<ParameterExpression, Expression> body)
+            /// <summary>
+            /// Defines loop body.
+            /// </summary>
+            /// <param name="body">A delegate used to construct loop body.</param>
+            /// <returns><see langword="this"/> builder.</returns>
+            /// <seealso cref="Statement"/>
+            public LoopBuilder Do(Statement body)
             {
                 this.body = body;
                 return this;
             }
 
-            public LoopBuilder Iteration(Func<ParameterExpression, Expression> iteration)
+            /// <summary>
+            /// Constructs loop iteration statement.
+            /// </summary>
+            /// <param name="iteration">A delegate used to construct iteration statement.</param>
+            /// <returns><see langword="this"/> builder.</returns>
+            /// <see cref="Iteration"/>
+            public LoopBuilder Iterate(Iteration iteration)
             {
                 this.iteration = iteration;
                 return this;
@@ -46,12 +97,16 @@ namespace DotNext.Linq.Expressions
             LabelTarget ILoopLabels.BreakLabel => breakLabel;
             LabelTarget ILoopLabels.ContinueLabel => continueLabel;
             
-            Expression ForExpression.IBuilder.MakeCondition(ParameterExpression loopVar) => condition(loopVar);
+            Expression IBuilder.MakeCondition(ParameterExpression loopVar) => condition(loopVar);
 
-            Expression ForExpression.IBuilder.MakeIteration(ParameterExpression loopVar) => iteration(loopVar);
+            Expression IBuilder.MakeIteration(ParameterExpression loopVar) => iteration(loopVar);
 
-            Expression ForExpression.IBuilder.MakeBody(ParameterExpression loopVar) => body(loopVar);
+            Expression IBuilder.MakeBody(ParameterExpression loopVar) => body(loopVar, continueLabel, breakLabel);
 
+            /// <summary>
+            /// Constructs a new instance of <see cref="ForExpression"/>.
+            /// </summary>
+            /// <returns>The constructed instance of <see cref="ForExpression"/>.</returns>
             public ForExpression Build() => new ForExpression(initialization, this);
         }
 
@@ -71,30 +126,68 @@ namespace DotNext.Linq.Expressions
         {
             body = builder.MakeBody(LoopVar).AddPrologue(false, Continue(ContinueLabel), builder.MakeIteration(LoopVar));
         }
-
+        
+        /// <summary>
+        /// Creates a builder of <see cref="ForExpression"/>.
+        /// </summary>
+        /// <param name="initialization">Loop variable initialization expression.</param>
+        /// <returns>A new instance of builder.</returns>
         public static LoopBuilder Builder(Expression initialization) => new LoopBuilder(initialization);
 
+        /// <summary>
+        /// Represents condition of the loop continuation.
+        /// </summary>
         public Expression Test { get; }
 
+        /// <summary>
+        /// Represents loop variable initialization expression.
+        /// </summary>
         public Expression Initialization { get; }
 
+        /// <summary>
+        /// Represents loop variable initialized by <see cref="Initialization"/>.
+        /// </summary>
         public ParameterExpression LoopVar { get; }
 
+        /// <summary>
+        /// Gets label that is used by the loop body as a break statement target.
+        /// </summary>
         public LabelTarget BreakLabel { get; }
+
+        /// <summary>
+        /// Gets label that is used by the loop body as a continue statement target.
+        /// </summary>
         public LabelTarget ContinueLabel { get; }
 
+        /// <summary>
+        /// Gets body of this loop.
+        /// </summary>
         public Expression Body
         {
             get => body ?? Empty();
             internal set => body = value;
         }
 
+        /// <summary>
+        /// Always returns <see cref="ExpressionType.Extension"/>.
+        /// </summary>
         public override ExpressionType NodeType => ExpressionType.Extension;
 
+        /// <summary>
+        /// Always returns <see cref="void"/>.
+        /// </summary>
         public override Type Type => typeof(void);
 
+        /// <summary>
+        /// Always returns <see langword="true"/> because
+        /// this expression is <see cref="ExpressionType.Extension"/>.
+        /// </summary>
         public override bool CanReduce => true;
 
+        /// <summary>
+        /// Produces actual code for the loop.
+        /// </summary>
+        /// <returns>The actual code for the loop.</returns>
         public override Expression Reduce()
         {
             Expression body = Condition(Test, Body, Goto(BreakLabel), typeof(void));

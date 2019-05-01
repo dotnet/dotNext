@@ -4,8 +4,17 @@ using System.Threading;
 
 namespace DotNext.Linq.Expressions
 {
+    /// <summary>
+    /// Represents synchronized block of code.
+    /// </summary>
+    /// <see href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</see>
     public sealed class LockExpression: Expression
     {
+        /// <summary>
+        /// Represents constructor of synchronized block of code.
+        /// </summary>
+        /// <param name="syncRoot">The variable representing monitor object.</param>
+        /// <returns>The body of synchronized block of code.</returns>
         public delegate Expression Statement(ParameterExpression syncRoot);
 
         private readonly BinaryExpression assignment;
@@ -22,32 +31,62 @@ namespace DotNext.Linq.Expressions
             }
         }
 
-        public LockExpression(Expression syncRoot, Expression body)
-            : this(syncRoot)
+        /// <summary>
+        /// Creates a new synchronized block of code.
+        /// </summary>
+        /// <param name="syncRoot">The monitor object.</param>
+        /// <param name="body">The delegate used to construct synchronized block of code.</param>
+        /// <returns>The synchronized block of code.</returns>
+        public static LockExpression Create(Expression syncRoot, Statement body)
         {
-            this.body = body;
+            var result = new LockExpression(syncRoot);
+            result.Body = body(result.SyncRoot);
+            return result;
         }
 
-        public LockExpression(Expression syncRoot, Statement body)
-            : this(syncRoot)
-        {
-            this.body = body(SyncRoot);
-        }
+        /// <summary>
+        /// Creates a new synchronized block of code.
+        /// </summary>
+        /// <param name="syncRoot">The monitor object.</param>
+        /// <param name="body">The body of the code block.</param>
+        /// <returns>The synchronized block of code.</returns>
+        public static LockExpression Create(Expression syncRoot, Expression body)
+            => new LockExpression(syncRoot) { Body = body };
 
+        /// <summary>
+        /// Represents monitor object.
+        /// </summary>
         public ParameterExpression SyncRoot { get;  }
 
+        /// <summary>
+        /// Gets body of the synchronized block of code.
+        /// </summary>
         public Expression Body
         {
             get => body ?? Empty();
             internal set => body = value;
         }
 
+        /// <summary>
+        /// Always returns <see langword="true"/> because
+        /// this expression is <see cref="ExpressionType.Extension"/>.
+        /// </summary>
         public override bool CanReduce => true;
 
+        /// <summary>
+        /// Always returns <see cref="ExpressionType.Extension"/>.
+        /// </summary>
         public override ExpressionType NodeType => ExpressionType.Extension;
 
+        /// <summary>
+        /// Gets type of this expression.
+        /// </summary>
         public override Type Type => Body.Type;
 
+        /// <summary>
+        /// Produces actual code for the synchronization block.
+        /// </summary>
+        /// <returns>The actual code for the synchronization block.</returns>
         public override Expression Reduce()
         {
             var monitorEnter = typeof(Monitor).GetMethod(nameof(Monitor.Enter), new[] { typeof(object) });
