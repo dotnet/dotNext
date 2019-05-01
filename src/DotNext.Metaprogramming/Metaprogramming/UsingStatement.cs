@@ -7,18 +7,10 @@ namespace DotNext.Metaprogramming
 
     internal sealed class UsingStatement : Statement, ILexicalScope<UsingExpression, Action>, ILexicalScope<UsingExpression, Action<ParameterExpression>>
     {
-        internal readonly struct Factory : IFactory<UsingStatement>
-        {
-            private readonly Expression resource;
-
-            internal Factory(Expression resource) => this.resource = resource;
-
-            public UsingStatement Create(LexicalScope parent) => new UsingStatement(resource, parent);
-        }
 
         private readonly Expression resource;
 
-        private UsingStatement(Expression resource, LexicalScope parent) : base(parent) => this.resource = resource;
+        internal UsingStatement(Expression resource) => this.resource = resource;
 
         UsingExpression ILexicalScope<UsingExpression, Action>.Build(Action scope)
         {

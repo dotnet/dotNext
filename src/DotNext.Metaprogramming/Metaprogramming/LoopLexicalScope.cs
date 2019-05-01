@@ -6,8 +6,7 @@ namespace DotNext.Metaprogramming
 
     internal abstract class LoopLexicalScope : Statement, ILoopLabels
     {
-        private protected LoopLexicalScope(LexicalScope parent)
-            : base(parent)
+        private protected LoopLexicalScope()
         {
             ContinueLabel = Expression.Label(typeof(void), "continue");
             BreakLabel = Expression.Label(typeof(void), "break");

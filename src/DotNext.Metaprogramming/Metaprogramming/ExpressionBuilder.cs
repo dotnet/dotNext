@@ -17,12 +17,12 @@ namespace DotNext.Metaprogramming
     public abstract class ExpressionBuilder<E> : IExpressionBuilder<E>
         where E : Expression
     {
-        private LexicalScope currentScope;
+        private ILexicalScope currentScope;
 
         private Type expressionType;
         private readonly int ownerThread;
 
-        private protected ExpressionBuilder(LexicalScope currentScope)
+        private protected ExpressionBuilder(ILexicalScope currentScope)
         {
             this.currentScope = currentScope;
             ownerThread = CurrentThread.ManagedThreadId;

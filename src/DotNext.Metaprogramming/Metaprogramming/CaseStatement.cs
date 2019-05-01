@@ -1,34 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class CaseStatement : Statement<SwitchBuilder>
+    internal sealed class CaseStatement : Statement, ILexicalScope<SwitchBuilder, Action>
     {
-        internal readonly struct Factory : IFactory<CaseStatement>
-        {
-            private readonly SwitchBuilder builder;
-            private readonly IEnumerable<Expression> testValues;
-
-            internal Factory(SwitchBuilder builder, IEnumerable<Expression> testValues)
-            {
-                this.builder = builder;
-                this.testValues = testValues;
-            }
-
-            public CaseStatement Create(LexicalScope parent) => new CaseStatement(builder, testValues, parent);
-        }
 
         private readonly SwitchBuilder builder;
         private readonly IEnumerable<Expression> testValues;
 
-        private CaseStatement(SwitchBuilder builder, IEnumerable<Expression> testValues, LexicalScope parent)
-            : base(parent)
+        internal CaseStatement(SwitchBuilder builder, IEnumerable<Expression> testValues)
         {
             this.builder = builder;
             this.testValues = testValues;
         }
 
-        private protected override SwitchBuilder CreateExpression(Expression body) => builder.Case(testValues, body);
+        public SwitchBuilder Build(Action body)
+        {
+            body();
+            return builder.Case(testValues, Build());
+        }
     }
 }

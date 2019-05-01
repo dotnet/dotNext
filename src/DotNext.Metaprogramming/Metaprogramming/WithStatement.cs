@@ -7,18 +7,9 @@ namespace DotNext.Metaprogramming
 
     internal sealed class WithStatement : Statement, ILexicalScope<WithExpression, Action<ParameterExpression>>
     {
-        internal readonly struct Factory : IFactory<WithStatement>
-        {
-            private readonly Expression obj;
-
-            internal Factory(Expression obj) => this.obj = obj;
-
-            public WithStatement Create(LexicalScope parent) => new WithStatement(obj, parent);
-        }
-
         private readonly Expression obj;
 
-        private WithStatement(Expression obj, LexicalScope parent) : base(parent) => this.obj = obj;
+        internal WithStatement(Expression obj) => this.obj = obj;
 
         WithExpression ILexicalScope<WithExpression, Action<ParameterExpression>>.Build(Action<ParameterExpression> scope)
         {

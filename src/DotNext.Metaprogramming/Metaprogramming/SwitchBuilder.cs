@@ -15,7 +15,7 @@ namespace DotNext.Metaprogramming
         private readonly ICollection<SwitchCase> cases;
         private Expression defaultExpression;
 
-        internal SwitchBuilder(Expression expression, LexicalScope currentScope)
+        internal SwitchBuilder(Expression expression, ILexicalScope currentScope)
             : base(currentScope)
         {
             cases = new LinkedList<SwitchCase>();

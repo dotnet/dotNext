@@ -7,28 +7,11 @@ namespace DotNext.Metaprogramming
 
     internal sealed class ForStatement : LoopLexicalScope, ILexicalScope<ForExpression, Action<ParameterExpression>>, ILexicalScope<ForExpression, Action<ParameterExpression, LoopContext>>
     {
-        internal readonly struct Factory : IFactory<ForStatement>
-        {
-            private readonly Action<ParameterExpression> iteration;
-            private readonly ForExpression.LoopBuilder.Condition condition;
-            private readonly Expression initialization;
-
-            internal Factory(Expression initialization, ForExpression.LoopBuilder.Condition condition, Action<ParameterExpression> iteration)
-            {
-                this.iteration = iteration;
-                this.condition = condition;
-                this.initialization = initialization;
-            }
-
-            public ForStatement Create(LexicalScope parent) => new ForStatement(initialization, condition, iteration, parent);
-        }
-
         private readonly Action<ParameterExpression> iteration;
         private readonly ForExpression.LoopBuilder.Condition condition;
         private readonly Expression initialization;
 
-        private ForStatement(Expression initialization, ForExpression.LoopBuilder.Condition condition, Action<ParameterExpression> iteration, LexicalScope parent)
-            : base(parent)
+        internal ForStatement(Expression initialization, ForExpression.LoopBuilder.Condition condition, Action<ParameterExpression> iteration)
         {
             this.iteration = iteration;
             this.condition = condition;
@@ -39,7 +22,7 @@ namespace DotNext.Metaprogramming
         {
             var result = new ForExpression(initialization, ContinueLabel, BreakLabel, condition);
             scope(result.LoopVar);
-            AddStatement(Expression.Label(ContinueLabel));
+            AddLast(Expression.Label(ContinueLabel));
             iteration(result.LoopVar);
             result.Body = Build();
             return result;
@@ -50,7 +33,7 @@ namespace DotNext.Metaprogramming
             var result = new ForExpression(initialization, ContinueLabel, BreakLabel, condition);
             using(var context = new LoopContext(result))
                 scope(result.LoopVar, context);
-            AddStatement(Expression.Label(result.ContinueLabel));
+            AddLast(Expression.Label(result.ContinueLabel));
             iteration(result.LoopVar);
             result.Body = Build();
             return result;

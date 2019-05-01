@@ -7,18 +7,9 @@ namespace DotNext.Metaprogramming
 
     internal sealed class ForEachStatement : LoopLexicalScope, ILexicalScope<ForEachExpression, Action<MemberExpression>>, ILexicalScope<ForEachExpression, Action<MemberExpression, LoopContext>>
     {
-        internal readonly struct Factory : IFactory<ForEachStatement>
-        {
-            private readonly Expression collection;
-
-            internal Factory(Expression collection) => this.collection = collection;
-
-            public ForEachStatement Create(LexicalScope parent) => new ForEachStatement(collection, parent);
-        }
-
         private readonly Expression collection;
 
-        private ForEachStatement(Expression collection, LexicalScope parent) : base(parent) => this.collection = collection;
+        internal ForEachStatement(Expression collection) => this.collection = collection;
 
         ForEachExpression ILexicalScope<ForEachExpression, Action<MemberExpression>>.Build(Action<MemberExpression> scope)
         {

@@ -1,23 +1,19 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
 
-    internal sealed class DefaultStatement : Statement<SwitchBuilder>
+    internal sealed class DefaultStatement : Statement, ILexicalScope<SwitchBuilder, Action>
     {
-        internal readonly struct Factory : IFactory<DefaultStatement>
-        {
-            private readonly SwitchBuilder builder;
-
-            internal Factory(SwitchBuilder builder) => this.builder = builder;
-
-            public DefaultStatement Create(LexicalScope parent) => new DefaultStatement(builder, parent);
-        }
-
         private readonly SwitchBuilder builder;
 
-        private DefaultStatement(SwitchBuilder builder, LexicalScope parent) : base(parent) => this.builder = builder;
+        internal DefaultStatement(SwitchBuilder builder) => this.builder = builder;
 
-        private protected override SwitchBuilder CreateExpression(Expression body) => builder.Default(body);
+        public SwitchBuilder Build(Action scope)
+        {
+            scope();
+            return builder.Default(Build());
+        }
     }
 }

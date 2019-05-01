@@ -4,25 +4,50 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
-    internal class LexicalScope : LinkedList<Expression>, IDisposable
+    internal class LexicalScope : LinkedList<Expression>, ILexicalScope, IDisposable
     {
-        internal interface IFactory<out S>
-            where S : LexicalScope
+        [ThreadStatic]
+        private static LexicalScope current;
+
+        internal static S FindScope<S>()
+            where S : class, ILexicalScope
         {
-            S Create(LexicalScope parent);
+            for(var current = LexicalScope.current; !(current is null); current = current.Parent)
+                if(current is S scope)
+                    return scope;
+            return null;
         }
+
+        internal static bool IsInScope<S>() where S : class, ILexicalScope => !(FindScope<S>() is null);
+
+        internal static ILexicalScope Current => throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
 
         private readonly Dictionary<string, ParameterExpression> variables = new Dictionary<string, ParameterExpression>();
 
         internal readonly LexicalScope Parent;
 
-        private protected LexicalScope(LexicalScope parent) => Parent = parent;
+        private protected LexicalScope(bool isStatement)
+        {
+            if(isStatement && current is null)
+                throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
+            Parent = current;
+            current = this;
+        }
 
-        internal IReadOnlyDictionary<string, ParameterExpression> Variables => variables;
+        ParameterExpression ILexicalScope.this[string variableName]
+        {
+            get
+            {
+                for (var current = this; !(current is null); current = current.Parent)
+                    if (current.variables.TryGetValue(variableName, out var variable))
+                        return variable;
+                return null;
+            }
+        }
 
-        public void AddStatement(Expression statement) => AddLast(statement);
+        void ILexicalScope.AddStatement(Expression statement) => AddLast(statement);
 
-        internal void DeclareVariable(ParameterExpression variable) => variables.Add(variable.Name, variable);
+        void ILexicalScope.DeclareVariable(ParameterExpression variable) => variables.Add(variable.Name, variable);
 
         private protected Expression Build()
         {
@@ -43,6 +68,7 @@ namespace DotNext.Metaprogramming
         {
             Clear();
             variables.Clear();
+            current = Parent;
         }
     }
 }

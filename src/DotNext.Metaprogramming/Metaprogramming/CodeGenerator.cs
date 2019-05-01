@@ -13,70 +13,23 @@ namespace DotNext.Metaprogramming
     /// </summary>
     public static class CodeGenerator
     {
-        [ThreadStatic]
-        private static LexicalScope current;
-
-        private static S FindScope<S>()
-            where S : LexicalScope
-        {
-            for(var current = CodeGenerator.current; !(current is null); current = current.Parent)
-                if(current is S scope)
-                    return scope;
-            return null;
-        }
-
-        private static bool IsInScope<S>() where S : LexicalScope => !(FindScope<S>() is null);
-
-        private static E InitStatement<E, D, S, F>(F factory, D action)
-            where E : class
+        private static void Place<D, S>(this S statement, D scope)
             where D : MulticastDelegate
-            where S : LexicalScope, ILexicalScope<E, D>
-            where F : LexicalScope.IFactory<S>
-        {
-            E expression;
-            S statement;
-            current = statement = factory.Create(current);
-            try
-            {
-                expression = statement.Build(action);
-            }
-            finally
-            {
-                current = current?.Parent;
-                statement.Dispose();
-            }
-            return expression;
-        }
-
-        private static void AddStatement<D, S, F>(F factory, D action)
-            where D : MulticastDelegate
-            where S : LexicalScope, ILexicalScope<Expression, D>
-            where F : LexicalScope.IFactory<S>
-            => CurrentScope.AddStatement(InitStatement<Expression, D, S, F>(factory, action));
-
-        /// <summary>
-        /// Gets curremt lexical scope.
-        /// </summary>
-        private static LexicalScope CurrentScope => current ?? throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
+            where S : Statement, ILexicalScope<Expression, D>
+            => LexicalScope.Current.AddStatement(statement.Build(scope));
 
         /// <summary>
         /// Obtains local variable declared in the current or outer lexical scope.
         /// </summary>
         /// <param name="name">The name of the local variable.</param>
         /// <returns>Declared local variable; or <see langword="null"/>, if there is no declared local variable with the given name.</returns>
-        public static ParameterExpression Variable(string name)
-        {
-            for (var current = CodeGenerator.current; !(current is null); current = current?.Parent)
-                if (current.Variables.TryGetValue(name, out var variable))
-                    return variable;
-            return null;
-        }
+        public static ParameterExpression Variable(string name) => LexicalScope.Current[name];
 
         /// <summary>
         /// Adds no-operation instruction to this scope.
         /// </summary>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Nop() => CurrentScope.AddStatement(Expression.Empty());
+        public static void Nop() => LexicalScope.Current.AddStatement(Expression.Empty());
 
         /// <summary>
         /// Installs breakpoint.
@@ -85,10 +38,11 @@ namespace DotNext.Metaprogramming
         /// This method installs breakpoint in DEBUG configuration.
         /// </remarks>
         [Conditional("DEBUG")]
-        public static void Breakpoint() => CurrentScope.AddStatement(ExpressionBuilder.Breakpoint());
+        public static void Breakpoint() => LexicalScope.Current.AddStatement(ExpressionBuilder.Breakpoint());
 
         [Conditional("DEBUG")]
-        public static void Assert(Expression test, string message = null) => CurrentScope?.AddStatement(test.Assert(message));
+        public static void Assert(Expression test, string message = null) 
+            => LexicalScope.Current.AddStatement(test.Assert(message));
 
         /// <summary>
         /// Adds assignment operation to this scope.
@@ -96,7 +50,8 @@ namespace DotNext.Metaprogramming
         /// <param name="variable">The variable to modify.</param>
         /// <param name="value">The value to be assigned to the variable.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Assign(ParameterExpression variable, Expression value) => CurrentScope.AddStatement(variable.Assign(value));
+        public static void Assign(ParameterExpression variable, Expression value) 
+            => LexicalScope.Current.AddStatement(variable.Assign(value));
 
         /// <summary>
         /// Adds assignment operation to this scope.
@@ -104,7 +59,7 @@ namespace DotNext.Metaprogramming
         /// <param name="indexer">The indexer property or array element to modify.</param>
         /// <param name="value">The value to be assigned to the member or array element.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Assign(IndexExpression indexer, Expression value) => CurrentScope.AddStatement(indexer.Assign(value));
+        public static void Assign(IndexExpression indexer, Expression value) => LexicalScope.Current.AddStatement(indexer.Assign(value));
 
         /// <summary>
         /// Adds assignment operation to this scope.
@@ -112,97 +67,97 @@ namespace DotNext.Metaprogramming
         /// <param name="member">The field or property to modify.</param>
         /// <param name="value">The value to be assigned to the member.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Assign(MemberExpression member, Expression value) => CurrentScope.AddStatement(member.Assign(value));
+        public static void Assign(MemberExpression member, Expression value) => LexicalScope.Current.AddStatement(member.Assign(value));
 
         /// <summary>
         /// Adds an expression that increments given variable by 1 and assigns the result back to the variable.
         /// </summary>
         /// <param name="variable">The variable to be modified.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void PreIncrementAssign(ParameterExpression variable) => CurrentScope.AddStatement(variable.PreIncrementAssign());
+        public static void PreIncrementAssign(ParameterExpression variable) => LexicalScope.Current.AddStatement(variable.PreIncrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given variable followed by a subsequent increment by 1 of the original variable.
         /// </summary>
         /// <param name="variable">The variable to be modified.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void PostIncrementAssign(ParameterExpression variable) => CurrentScope.AddStatement(variable.PostIncrementAssign());
+        public static void PostIncrementAssign(ParameterExpression variable) => LexicalScope.Current.AddStatement(variable.PostIncrementAssign());
 
         /// <summary>
         /// Adds an expression that decrements given variable by 1 and assigns the result back to the variable.
         /// </summary>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void PreDecrementAssign(ParameterExpression variable) => CurrentScope.AddStatement(variable.PreDecrementAssign());
+        public static void PreDecrementAssign(ParameterExpression variable) => LexicalScope.Current.AddStatement(variable.PreDecrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given variable followed by a subsequent decrement by 1 of the original variable.
         /// </summary>
         /// <param name="variable">The variable to be modified.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void PostDecrementAssign(ParameterExpression variable) => CurrentScope.AddStatement(variable.PostDecrementAssign());
+        public static void PostDecrementAssign(ParameterExpression variable) => LexicalScope.Current.AddStatement(variable.PostDecrementAssign());
 
         /// <summary>
         /// Adds an expression that increments given field or property by 1 and assigns the result back to the member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void PreIncrementAssign(MemberExpression member) => CurrentScope.AddStatement(member.PreIncrementAssign());
+        public static void PreIncrementAssign(MemberExpression member) => LexicalScope.Current.AddStatement(member.PreIncrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given field or property followed by a subsequent increment by 1 of the original member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void PostIncrementAssign(MemberExpression member) => CurrentScope.AddStatement(member.PostIncrementAssign());
+        public static void PostIncrementAssign(MemberExpression member) => LexicalScope.Current.AddStatement(member.PostIncrementAssign());
 
         /// <summary>
         /// Adds an expression that decrements given field or property by 1 and assigns the result back to the member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void PreDecrementAssign(MemberExpression member) => CurrentScope.AddStatement(member.PreDecrementAssign());
+        public static void PreDecrementAssign(MemberExpression member) => LexicalScope.Current.AddStatement(member.PreDecrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given field or property followed by a subsequent decrement by 1 of the original member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void PostDecrementAssign(MemberExpression member) => CurrentScope.AddStatement(member.PostDecrementAssign());
+        public static void PostDecrementAssign(MemberExpression member) => LexicalScope.Current.AddStatement(member.PostDecrementAssign());
 
         /// <summary>
         /// Adds an expression that increments given field or property by 1 and assigns the result back to the member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void PreIncrementAssign(IndexExpression member) => CurrentScope.AddStatement(member.PreIncrementAssign());
+        public static void PreIncrementAssign(IndexExpression member) => LexicalScope.Current.AddStatement(member.PreIncrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given field or property followed by a subsequent increment by 1 of the original member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void PostIncrementAssign(IndexExpression member) => CurrentScope.AddStatement(member.PostIncrementAssign());
+        public static void PostIncrementAssign(IndexExpression member) => LexicalScope.Current.AddStatement(member.PostIncrementAssign());
 
         /// <summary>
         /// Adds an expression that decrements given field or property by 1 and assigns the result back to the member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void PreDecrementAssign(IndexExpression member) => CurrentScope.AddStatement(member.PreDecrementAssign());
+        public static void PreDecrementAssign(IndexExpression member) => LexicalScope.Current.AddStatement(member.PreDecrementAssign());
 
         /// <summary>
         /// Adds an expression that represents the assignment of given field or property followed by a subsequent decrement by 1 of the original member.
         /// </summary>
         /// <param name="member">The member to be modified.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void PostDecrementAssign(IndexExpression member) => CurrentScope.AddStatement(member.PostDecrementAssign());
+        public static void PostDecrementAssign(IndexExpression member) => LexicalScope.Current.AddStatement(member.PostDecrementAssign());
 
         /// <summary>
         /// Adds constant as in-place statement.
         /// </summary>
         /// <typeparam name="T">The type of the constant.</typeparam>
         /// <param name="value">The value to be placed as statement.</param>
-        public static void InPlaceValue<T>(T value) => CurrentScope.AddStatement(value.Const());
+        public static void InPlaceValue<T>(T value) => LexicalScope.Current.AddStatement(value.Const());
 
         /// <summary>
         /// Adds local variable assignment operation this scope.
@@ -220,7 +175,7 @@ namespace DotNext.Metaprogramming
         /// <param name="value">A new value of the property.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Assign(Expression instance, PropertyInfo instanceProperty, Expression value)
-            => CurrentScope.AddStatement(Expression.Assign(Expression.Property(instance, instanceProperty), value));
+            => LexicalScope.Current.AddStatement(Expression.Assign(Expression.Property(instance, instanceProperty), value));
 
         /// <summary>
         /// Adds static property assignment.
@@ -239,7 +194,7 @@ namespace DotNext.Metaprogramming
         /// <param name="value">A new value of the field.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Assign(Expression instance, FieldInfo instanceField, Expression value)
-            => CurrentScope.AddStatement(Expression.Assign(Expression.Field(instance, instanceField), value));
+            => LexicalScope.Current.AddStatement(Expression.Assign(Expression.Field(instance, instanceField), value));
 
         /// <summary>
         /// Adds static field assignment.
@@ -256,7 +211,7 @@ namespace DotNext.Metaprogramming
         /// <param name="delegate">The expression providing delegate to be invoked.</param>
         /// <param name="arguments">Delegate invocation arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Invoke(Expression @delegate, IEnumerable<Expression> arguments) => CurrentScope.AddStatement(Expression.Invoke(@delegate, arguments));
+        public static void Invoke(Expression @delegate, IEnumerable<Expression> arguments) => LexicalScope.Current.AddStatement(Expression.Invoke(@delegate, arguments));
 
         /// <summary>
         /// Adds invocation statement.
@@ -274,7 +229,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arguments">Method call arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Call(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
-            => CurrentScope.AddStatement(Expression.Call(instance, method, arguments));
+            => LexicalScope.Current.AddStatement(Expression.Call(instance, method, arguments));
 
         /// <summary>
         /// Adds instance method call statement.
@@ -294,7 +249,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arguments">Method call arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Call(Expression instance, string methodName, params Expression[] arguments)
-            => CurrentScope.AddStatement(instance.Call(methodName, arguments));
+            => LexicalScope.Current.AddStatement(instance.Call(methodName, arguments));
 
         /// <summary>
         /// Adds static method call statement.,
@@ -303,7 +258,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arguments">Method call arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Call(MethodInfo method, IEnumerable<Expression> arguments)
-            => CurrentScope.AddStatement(Expression.Call(null, method, arguments));
+            => LexicalScope.Current.AddStatement(Expression.Call(null, method, arguments));
 
         /// <summary>
         /// Adds static method call statement.
@@ -323,7 +278,7 @@ namespace DotNext.Metaprogramming
         /// <returns>An expression representing static method call.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void CallStatic(Type type, string methodName, params Expression[] arguments)
-            => CurrentScope.AddStatement(type.CallStatic(methodName, arguments));
+            => LexicalScope.Current.AddStatement(type.CallStatic(methodName, arguments));
 
         /// <summary>
         /// Constructs static method call.
@@ -371,10 +326,10 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="target">The label target.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Label(LabelTarget target) => CurrentScope.AddStatement(Expression.Label(target));
+        public static void Label(LabelTarget target) => LexicalScope.Current.AddStatement(Expression.Label(target));
 
         private static void Goto(LabelTarget target, Expression value, GotoExpressionKind kind)
-            => CurrentScope.AddStatement(Expression.MakeGoto(kind, target, value, value?.Type ?? typeof(void)));
+            => LexicalScope.Current.AddStatement(Expression.MakeGoto(kind, target, value, value?.Type ?? typeof(void)));
 
         /// <summary>
         /// Adds unconditional control transfer statement to this scope.
@@ -410,7 +365,7 @@ namespace DotNext.Metaprogramming
         public static ParameterExpression DeclareVariable(Type variableType, string name)
         {
             var variable = Expression.Variable(variableType, name);
-            CurrentScope.DeclareVariable(variable);
+            LexicalScope.Current.DeclareVariable(variable);
             return variable;
         }
 
@@ -437,7 +392,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="asyncResult">The expression representing asynchronous computing process.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Await(Expression asyncResult) => CurrentScope.AddStatement(asyncResult.Await());
+        public static void Await(Expression asyncResult) => LexicalScope.Current.AddStatement(asyncResult.Await());
 
         /// <summary>
         /// Adds if-then-else statement to this scope.
@@ -445,7 +400,7 @@ namespace DotNext.Metaprogramming
         /// <param name="test">Test expression.</param>
         /// <returns>Conditional statement builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static ConditionalBuilder If(Expression test) => new ConditionalBuilder(test, CurrentScope);
+        public static ConditionalBuilder If(Expression test) => new ConditionalBuilder(test, LexicalScope.Current);
 
         /// <summary>
         /// Constructs positive branch of the conditional expression.
@@ -455,7 +410,10 @@ namespace DotNext.Metaprogramming
         /// <returns>Conditional expression builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static ConditionalBuilder Then(this ConditionalBuilder builder, Action body)
-            => InitStatement<ConditionalBuilder, Action, BranchStatement, BranchStatement.Factory>(new BranchStatement.Factory(builder, true), body);
+        {
+            using(var statement = BranchStatement.Positive(builder))
+                return statement.Build(body);
+        }
 
         /// <summary>
         /// Constructs negative branch of the conditional expression.
@@ -465,7 +423,10 @@ namespace DotNext.Metaprogramming
         /// <returns>Conditional expression builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static ConditionalBuilder Else(this ConditionalBuilder builder, Action body)
-            => InitStatement<ConditionalBuilder, Action, BranchStatement, BranchStatement.Factory>(new BranchStatement.Factory(builder, false), body);
+        {
+            using(var statement = BranchStatement.Negative(builder))
+                return statement.Build(body);
+        }
 
         /// <summary>
         /// Adds if-then statement to this scope.
@@ -494,7 +455,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/while">while Statement</seealso>
         public static void While(Expression test, Action<LoopContext> body)
-            => AddStatement<Action<LoopContext>, WhileStatement, WhileStatement.Factory>(new WhileStatement.Factory(test, true), body);
+        {
+            using(var statement = WhileStatement.While(test))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds <see langword="while"/> loop statement.
@@ -504,7 +468,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/while">while Statement</seealso>
         public static void While(Expression test, Action body)
-            => AddStatement<Action, WhileStatement, WhileStatement.Factory>(new WhileStatement.Factory(test, true), body);
+        {
+            using(var statement = WhileStatement.While(test))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds <c>do{ } while(condition);</c> loop statement.
@@ -514,7 +481,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/do">do-while Statement</seealso>
         public static void DoWhile(Expression test, Action<LoopContext> body)
-            => AddStatement<Action<LoopContext>, WhileStatement, WhileStatement.Factory>(new WhileStatement.Factory(test, false), body);
+        {
+            using(var statement = WhileStatement.Until(test))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds <c>do{ } while(condition);</c> loop statement.
@@ -524,7 +494,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/do">do-while Statement</seealso>
         public static void DoWhile(Expression test, Action body)
-            => AddStatement<Action, WhileStatement, WhileStatement.Factory>(new WhileStatement.Factory(test, false), body);
+        {
+            using(var statement = WhileStatement.Until(test))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds <see langword="foreach"/> loop statement.
@@ -534,7 +507,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression, LoopContext> body)
-            => AddStatement<Action<MemberExpression, LoopContext>, ForEachStatement, ForEachStatement.Factory>(new ForEachStatement.Factory(collection), body);
+        {
+            using(var statement = new ForEachStatement(collection))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds <see langword="foreach"/> loop statement.
@@ -544,7 +520,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression> body)
-            => AddStatement<Action<MemberExpression>, ForEachStatement, ForEachStatement.Factory>(new ForEachStatement.Factory(collection), body);
+        {
+            using(var statement = new ForEachStatement(collection))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds <see langword="for"/> loop statement.
@@ -559,7 +538,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
         public static void For(Expression initializer, ForExpression.LoopBuilder.Condition condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopContext> body)
-            => AddStatement<Action<ParameterExpression, LoopContext>, ForStatement, ForStatement.Factory>(new ForStatement.Factory(initializer, condition, iteration), body);
+        {
+            using(var statement = new ForStatement(initializer, condition, iteration))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds <see langword="for"/> loop statement.
@@ -574,7 +556,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
         public static void For(Expression initializer, ForExpression.LoopBuilder.Condition condition, Action<ParameterExpression> iteration, Action<ParameterExpression> body)
-            => AddStatement<Action<ParameterExpression>, ForStatement, ForStatement.Factory>(new ForStatement.Factory(initializer, condition, iteration), body);
+        {
+            using(var statement = new ForStatement(initializer, condition, iteration))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds generic loop statement.
@@ -585,7 +570,10 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Loop(Action<LoopContext> body) 
-            => AddStatement<Action<LoopContext>, LoopStatement, LexicalScope.IFactory<LoopStatement>>(LoopStatement.Factory, body);
+        {
+            using(var statement = new LoopStatement())
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds generic loop statement.
@@ -593,14 +581,17 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Loop(Action body) 
-            => AddStatement<Action, LoopStatement, LexicalScope.IFactory<LoopStatement>>(LoopStatement.Factory, body);
+        {
+            using(var statement = new LoopStatement())
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds <see langword="throw"/> statement to the compound statement.
         /// </summary>
         /// <param name="exception">The exception to be thrown.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Throw(Expression exception) => CurrentScope.AddStatement(Expression.Throw(exception));
+        public static void Throw(Expression exception) => LexicalScope.Current.AddStatement(Expression.Throw(exception));
 
         /// <summary>
         /// Adds <see langword="throw"/> statement to the compound statement.
@@ -615,8 +606,8 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of catch clause.</exception>
         public static void Rethrow()
         {
-            if(IsInScope<CatchStatement>())
-                CurrentScope.AddStatement(Expression.Rethrow());
+            if(LexicalScope.IsInScope<CatchStatement>())
+                LexicalScope.Current.AddStatement(Expression.Rethrow());
             else
                 throw new InvalidOperationException(ExceptionMessages.InvalidRethrow);
                 
@@ -630,7 +621,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action<ParameterExpression> body)
-            => AddStatement<Action<ParameterExpression>, UsingStatement, UsingStatement.Factory>(new UsingStatement.Factory(resource), body);
+        {
+            using(var statement = new UsingStatement(resource))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds <see langword="using"/> statement.
@@ -640,7 +634,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action body)
-            => AddStatement<Action, UsingStatement, UsingStatement.Factory>(new UsingStatement.Factory(resource), body);
+        {
+            using(var statement = new UsingStatement(resource))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds <see langword="lock"/> statement.
@@ -650,7 +647,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
         public static void Lock(Expression syncRoot, Action<ParameterExpression> body)
-            => AddStatement<Action<ParameterExpression>, LockStatement, LockStatement.Factory>(new LockStatement.Factory(syncRoot), body);
+        {
+            using(var statement = new LockStatement(syncRoot))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds <see langword="lock"/> statement.
@@ -660,7 +660,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
         public static void Lock(Expression syncRoot, Action body)
-            => AddStatement<Action, LockStatement, LockStatement.Factory>(new LockStatement.Factory(syncRoot), body);
+        {
+            using(var statement = new LockStatement(syncRoot))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds compound statement hat repeatedly refer to a single object or 
@@ -672,7 +675,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
         public static void With(Expression expression, Action<ParameterExpression> body)
-            => AddStatement<Action<ParameterExpression>, WithStatement, WithStatement.Factory>(new WithStatement.Factory(expression), body);
+        {
+            using(var statement = new WithStatement(expression))
+                statement.Place(body);
+        }
 
         /// <summary>
         /// Adds selection expression.
@@ -681,7 +687,7 @@ namespace DotNext.Metaprogramming
         /// <returns>A new instance of selection expression builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/switch">switch Statement</seealso>
-        public static SwitchBuilder Switch(Expression value) => new SwitchBuilder(value, CurrentScope);
+        public static SwitchBuilder Switch(Expression value) => new SwitchBuilder(value, LexicalScope.Current);
 
         /// <summary>
         /// Specifies a pattern to compare to the match expression
@@ -693,7 +699,10 @@ namespace DotNext.Metaprogramming
         /// <returns>Modified selection builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static SwitchBuilder Case(this SwitchBuilder builder, IEnumerable<Expression> testValues, Action body)
-            => InitStatement<SwitchBuilder, Action, CaseStatement, CaseStatement.Factory>(new CaseStatement.Factory(builder, testValues), body);
+        {
+            using(var statement = new CaseStatement(builder, testValues))
+                return statement.Build(body);
+        }
 
 
         /// <summary>
@@ -717,7 +726,10 @@ namespace DotNext.Metaprogramming
         /// <returns>Modified selection builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static SwitchBuilder Default(this SwitchBuilder builder, Action body)
-            => InitStatement<SwitchBuilder, Action, DefaultStatement, DefaultStatement.Factory>(new DefaultStatement.Factory(builder), body);
+        {
+            using(var statement = new DefaultStatement(builder))
+                return statement.Build(body);
+        }
 
         /// <summary>
         /// Constructs exception handling section.
@@ -729,7 +741,10 @@ namespace DotNext.Metaprogramming
         /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, TryBuilder.Filter filter, Action<ParameterExpression> handler)
-            => InitStatement<TryBuilder, Action<ParameterExpression>, CatchStatement, CatchStatement.Factory>(new CatchStatement.Factory(builder, exceptionType, filter), handler);
+        {
+            using(var statement = new CatchStatement(builder, exceptionType, filter))
+                return statement.Build(handler);
+        }
 
         /// <summary>
         /// Constructs exception handling section.
@@ -740,7 +755,10 @@ namespace DotNext.Metaprogramming
         /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, Action handler)
-            => InitStatement<TryBuilder, Action, CatchStatement, CatchStatement.Factory>(new CatchStatement.Factory(builder, exceptionType, null), handler);
+        {
+            using(var statement = new CatchStatement(builder, exceptionType))
+                return statement.Build(handler);
+        }
         
         /// <summary>
         /// Constructs exception handling section.
@@ -785,7 +803,10 @@ namespace DotNext.Metaprogramming
         /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Action handler)
-            => InitStatement<TryBuilder, Action, CatchStatement, CatchStatement.Factory>(new CatchStatement.Factory(builder), handler);
+        {
+            using(var statement = new CatchStatement(builder))
+                return statement.Build(handler);
+        }
 
         /// <summary>
         /// Constructs block of code which will be executed in case
@@ -796,7 +817,10 @@ namespace DotNext.Metaprogramming
         /// <returns><see langword="this"/> builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Fault(this TryBuilder builder, Action fault)
-            => InitStatement<TryBuilder, Action, FaultStatement, FaultStatement.Factory>(new FaultStatement.Factory(builder), fault);
+        {
+            using(var statement = new FaultStatement(builder))
+                return statement.Build(fault);
+        }
 
         /// <summary>
         /// Adds structured exception handling statement.

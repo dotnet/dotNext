@@ -5,14 +5,7 @@ namespace DotNext.Metaprogramming
 {
     internal sealed class LoopStatement : LoopLexicalScope, ILexicalScope<LoopExpression, Action>, ILexicalScope<LoopExpression, Action<LoopContext>>
     {
-        private sealed class SingletonFactory : IFactory<LoopStatement>
-        {
-            LoopStatement IFactory<LoopStatement>.Create(LexicalScope parent) => new LoopStatement(parent);
-        }
-
-        internal static readonly IFactory<LoopStatement> Factory = new SingletonFactory();
-
-        private LoopStatement(LexicalScope parent) : base(parent) { }
+        internal LoopStatement() { }
 
         LoopExpression ILexicalScope<LoopExpression, Action>.Build(Action scope)
         {
