@@ -85,10 +85,10 @@ namespace DotNext.Metaprogramming
         /// This method installs breakpoint in DEBUG configuration.
         /// </remarks>
         [Conditional("DEBUG")]
-        public static void Breakpoint() => CurrentScope.AddStatement(new Breakpoint());
+        public static void Breakpoint() => CurrentScope.AddStatement(ExpressionBuilder.Breakpoint());
 
         [Conditional("DEBUG")]
-        public static void Assert(Expression condition, string message = null) => CurrentScope?.AddStatement(new Assertion(condition, message));
+        public static void Assert(Expression test, string message = null) => CurrentScope?.AddStatement(test.Assert(message));
 
         /// <summary>
         /// Adds assignment operation to this scope.
@@ -558,7 +558,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
-        public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopContext> body)
+        public static void For(Expression initializer, ForExpression.LoopBuilder.Condition condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopContext> body)
             => AddStatement<Action<ParameterExpression, LoopContext>, ForStatement, ForStatement.Factory>(new ForStatement.Factory(initializer, condition, iteration), body);
 
         /// <summary>
@@ -573,7 +573,7 @@ namespace DotNext.Metaprogramming
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
-        public static void For(Expression initializer, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, Action<ParameterExpression> body)
+        public static void For(Expression initializer, ForExpression.LoopBuilder.Condition condition, Action<ParameterExpression> iteration, Action<ParameterExpression> body)
             => AddStatement<Action<ParameterExpression>, ForStatement, ForStatement.Factory>(new ForStatement.Factory(initializer, condition, iteration), body);
 
         /// <summary>

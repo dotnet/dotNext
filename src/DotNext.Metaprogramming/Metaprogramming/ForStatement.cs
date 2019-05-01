@@ -10,10 +10,10 @@ namespace DotNext.Metaprogramming
         internal readonly struct Factory : IFactory<ForStatement>
         {
             private readonly Action<ParameterExpression> iteration;
-            private readonly Func<ParameterExpression, Expression> condition;
+            private readonly ForExpression.LoopBuilder.Condition condition;
             private readonly Expression initialization;
 
-            internal Factory(Expression initialization, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration)
+            internal Factory(Expression initialization, ForExpression.LoopBuilder.Condition condition, Action<ParameterExpression> iteration)
             {
                 this.iteration = iteration;
                 this.condition = condition;
@@ -24,10 +24,10 @@ namespace DotNext.Metaprogramming
         }
 
         private readonly Action<ParameterExpression> iteration;
-        private readonly Func<ParameterExpression, Expression> condition;
+        private readonly ForExpression.LoopBuilder.Condition condition;
         private readonly Expression initialization;
 
-        private ForStatement(Expression initialization, Func<ParameterExpression, Expression> condition, Action<ParameterExpression> iteration, LexicalScope parent)
+        private ForStatement(Expression initialization, ForExpression.LoopBuilder.Condition condition, Action<ParameterExpression> iteration, LexicalScope parent)
             : base(parent)
         {
             this.iteration = iteration;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using static System.Linq.Enumerable;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -116,7 +117,19 @@ namespace DotNext.Linq.Expressions
             => Expression.Add(left, right);
 
         private static MethodCallExpression Concat(Expression[] strings)
-            => CallStatic(typeof(string), nameof(string.Concat), Expression.NewArrayInit(typeof(string), strings));
+        {
+            switch(strings.LongLength)
+            {
+                case 2:
+                    return CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1]);
+                case 3:
+                    return CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1], strings[2]);
+                case 4:
+                    return CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1], strings[2], strings[3]);
+                default:
+                    return CallStatic(typeof(string), nameof(string.Concat), Expression.NewArrayInit(typeof(string), strings));
+            }
+        }
 
         /// <summary>
         /// Constructs string concatenation expression.
@@ -1102,5 +1115,19 @@ namespace DotNext.Linq.Expressions
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/do">do-while Statement</seealso>
         public static WhileExpression Until(this Expression condition, WhileExpression.Statement body)
             => WhileExpression.Create(condition, body, false);
+        
+        internal static MethodCallExpression Breakpoint() => CallStatic(typeof(Debugger), nameof(Debugger.Break));
+
+        internal static MethodCallExpression Assert(this Expression test, string message)
+        {
+            if(test is null)
+                throw new ArgumentNullException(nameof(test));
+            else if(test.Type != typeof(bool))
+                throw new ArgumentException(ExceptionMessages.BoolExpressionExpected, nameof(test));
+            else if(string.IsNullOrEmpty(message))
+                return CallStatic(typeof(Debug), nameof(Debug.Assert), test);
+            else
+                return CallStatic(typeof(Debug), nameof(Debug.Assert), test, Const(message));
+        }
     }
 }
