@@ -5,9 +5,18 @@ using System.Reflection;
 namespace DotNext.Linq.Expressions
 {
     using static Reflection.DisposableType;
-
+    
+    /// <summary>
+    /// Represents <see langword="using"/> expression.
+    /// </summary>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">USING statement</seealso>
     public sealed class UsingExpression: Expression
     {
+        /// <summary>
+        /// Represents constructor of <see langword="using"/> expression.
+        /// </summary>
+        /// <param name="resource">The variable representing disposable resource.</param>
+        /// <returns>Body of <see langword="using"/> expression.</returns>
         public delegate Expression Statement(ParameterExpression resource);
 
         private readonly MethodInfo disposeMethod;

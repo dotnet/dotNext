@@ -34,7 +34,7 @@ namespace DotNext.Metaprogramming
         WhileExpression ILexicalScope<WhileExpression, Action>.Build(Action scope)
         {
             scope();
-            return new WhileExpression(condition, Build(), conditionFirst);
+            return new WhileExpression(condition, ContinueLabel, BreakLabel, conditionFirst) { Body = Build() };
         }
 
         WhileExpression ILexicalScope<WhileExpression, Action<LoopContext>>.Build(Action<LoopContext> scope)
