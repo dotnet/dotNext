@@ -45,5 +45,7 @@ namespace DotNext
         internal static string LoopNotAvailable => resourceManager.GetString("LoopNotAvailable");
 
         internal static string InvalidRethrow => resourceManager.GetString("InvalidRethrow");
+
+        internal static string BoolExpressionExpected => resourceManager.GetString("BoolExpressionExpected");
     }
 }

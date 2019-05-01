@@ -112,11 +112,13 @@ namespace DotNext.Linq.Expressions
 
         private Expression body;
 
-        internal ForExpression(Expression initialization, LabelTarget continueLabel, LabelTarget breakLabel, Func<ParameterExpression, Expression> condition)
+        internal ForExpression(Expression initialization, LabelTarget continueLabel, LabelTarget breakLabel, LoopBuilder.Condition condition)
         {
             Initialization = initialization;
             LoopVar = Variable(initialization.Type, "loop_var");
             Test = condition(LoopVar);
+            if(Test.Type != typeof(bool))
+                throw new ArgumentException(ExceptionMessages.BoolExpressionExpected, nameof(condition));
             ContinueLabel = continueLabel ?? Label(typeof(void), "continue");
             BreakLabel = breakLabel ?? Label(typeof(void), "break");
         }

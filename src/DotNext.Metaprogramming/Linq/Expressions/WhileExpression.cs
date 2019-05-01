@@ -23,8 +23,13 @@ namespace DotNext.Linq.Expressions
 
         internal WhileExpression(Expression test, LabelTarget continueLabel, LabelTarget breakLabel, bool checkConditionFirst)
         {
-            conditionFirst = checkConditionFirst;
+            if(test is null)
+                throw new ArgumentNullException(nameof(test));
+            else if(test.Type != typeof(bool))
+                throw new ArgumentException(ExceptionMessages.BoolExpressionExpected, nameof(test));
             Test = test;
+            conditionFirst = checkConditionFirst;
+            
             ContinueLabel = continueLabel ?? Label(typeof(void), "continue");
             BreakLabel = breakLabel ?? Label(typeof(void), "break");
         }

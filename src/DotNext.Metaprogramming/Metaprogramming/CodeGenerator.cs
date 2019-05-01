@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace DotNext.Metaprogramming
 {
@@ -76,6 +77,18 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Nop() => CurrentScope.AddStatement(Expression.Empty());
+
+        /// <summary>
+        /// Installs breakpoint.
+        /// </summary>
+        /// <remarks>
+        /// This method installs breakpoint in DEBUG configuration.
+        /// </remarks>
+        [Conditional("DEBUG")]
+        public static void Breakpoint() => CurrentScope.AddStatement(new Breakpoint());
+
+        [Conditional("DEBUG")]
+        public static void Assert(Expression condition, string message = null) => CurrentScope?.AddStatement(new Assertion(condition, message));
 
         /// <summary>
         /// Adds assignment operation to this scope.

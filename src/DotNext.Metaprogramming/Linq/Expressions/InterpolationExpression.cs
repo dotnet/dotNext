@@ -12,9 +12,9 @@ namespace DotNext.Linq.Expressions
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/programming-guide/language-features/strings/interpolated-strings">String Interpolation in VB.NET</seealso>
     public sealed class InterpolationExpression : Expression
     {
-        private enum Kind
+        private enum Kind : byte
         {
-            PlainString,
+            PlainString = 0,
             FormattableString
         }
 
@@ -131,7 +131,7 @@ namespace DotNext.Linq.Expressions
             }
         }
 
-        private Expression MakeFormattableString()
+        private MethodCallExpression MakeFormattableString()
             => typeof(FormattableStringFactory).CallStatic(nameof(FormattableStringFactory.Create), Constant(Format), NewArrayInit(typeof(object), arguments));
 
         /// <summary>
