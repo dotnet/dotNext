@@ -37,6 +37,7 @@ namespace DotNext.Metaprogramming
             return this;
         }
 
-        private protected override ConditionalExpression Build() => Expression.Condition(test, ifTrue, ifFalse, Type);
+        private protected override ConditionalExpression Build() 
+            => Expression.Condition(test, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), Type);
     }
 }

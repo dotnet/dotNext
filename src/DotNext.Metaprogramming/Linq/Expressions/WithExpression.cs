@@ -47,9 +47,9 @@ namespace DotNext.Linq.Expressions
 
         public override ExpressionType NodeType => ExpressionType.Extension;
 
-        public override Type Type => typeof(void);
+        public override Type Type => Body.Type;
 
         public override Expression Reduce()
-            => assignment is null ? Body : Block(typeof(void), Sequence.Singleton(Variable), assignment, Body);
+            => assignment is null ? Body : Block(Sequence.Singleton(Variable), assignment, Body);
     }
 }

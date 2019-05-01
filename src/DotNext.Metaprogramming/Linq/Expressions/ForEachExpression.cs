@@ -76,7 +76,7 @@ namespace DotNext.Linq.Expressions
 
         public override Expression Reduce()
         {
-            Expression loopBody = Condition(moveNextCall, Body, Goto(BreakLabel));
+            Expression loopBody = Condition(moveNextCall, Body, Goto(BreakLabel), typeof(void));
             var disposeMethod = enumeratorVar.Type.GetDisposeMethod();
             loopBody = Loop(loopBody, BreakLabel, ContinueLabel);
             var @finally = disposeMethod is null ?

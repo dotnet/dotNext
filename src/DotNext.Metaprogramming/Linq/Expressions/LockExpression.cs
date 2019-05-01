@@ -46,7 +46,7 @@ namespace DotNext.Linq.Expressions
 
         public override ExpressionType NodeType => ExpressionType.Extension;
 
-        public override Type Type => typeof(void);
+        public override Type Type => Body.Type;
 
         public override Expression Reduce()
         {
@@ -54,8 +54,8 @@ namespace DotNext.Linq.Expressions
             var monitorExit = typeof(Monitor).GetMethod(nameof(Monitor.Exit), new[] { typeof(object) });
             var body = TryFinally(Body, Call(monitorExit, SyncRoot));
             return assignment is null ?
-                    Block(typeof(void), Call(monitorEnter, SyncRoot), body) :
-                    Block(typeof(void), Sequence.Singleton(SyncRoot), assignment, Call(monitorEnter, SyncRoot), body);
+                    Block(Call(monitorEnter, SyncRoot), body) :
+                    Block(Sequence.Singleton(SyncRoot), assignment, Call(monitorEnter, SyncRoot), body);
         }
     }
 }

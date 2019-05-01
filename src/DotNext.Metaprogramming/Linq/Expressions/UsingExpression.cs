@@ -51,16 +51,16 @@ namespace DotNext.Linq.Expressions
 
         public override ExpressionType NodeType => ExpressionType.Extension;
 
-        public override Type Type => typeof(void);
+        public override Type Type => Body.Type;
 
         public override bool CanReduce => true;
 
         public override Expression Reduce()
         {
-            Expression body = TryFinally(Body, Call(Resource, disposeMethod));
-            return assignment is null ?
-                body :
-                Block(typeof(void), Sequence.Singleton(Resource), assignment, body);
+            if(assignment is null)
+                return TryFinally(Body, Block(typeof(void), Call(Resource, disposeMethod), Assign(Resource, Default(Resource.Type))));
+            else
+                return Block(Sequence.Singleton(Resource), assignment, TryFinally(Body, Call(Resource, disposeMethod)));
         }
     }
 }

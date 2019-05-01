@@ -39,7 +39,7 @@ namespace DotNext.Metaprogramming
         {
             var result = new ForExpression(initialization, ContinueLabel, BreakLabel, condition);
             scope(result.LoopVar);
-            AddStatement(Expression.Continue(ContinueLabel));
+            AddStatement(Expression.Label(ContinueLabel));
             iteration(result.LoopVar);
             result.Body = Build();
             return result;
@@ -50,7 +50,7 @@ namespace DotNext.Metaprogramming
             var result = new ForExpression(initialization, ContinueLabel, BreakLabel, condition);
             using(var context = new LoopContext(result))
                 scope(result.LoopVar, context);
-            AddStatement(Expression.Continue(result.ContinueLabel));
+            AddStatement(Expression.Label(result.ContinueLabel));
             iteration(result.LoopVar);
             result.Body = Build();
             return result;
