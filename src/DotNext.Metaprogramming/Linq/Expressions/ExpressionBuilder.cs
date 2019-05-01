@@ -1076,5 +1076,31 @@ namespace DotNext.Linq.Expressions
         /// <returns>The constructed expression.</returns>
         public static UsingExpression Using(this Expression resource, UsingExpression.Statement body)
             => UsingExpression.Create(resource, body);
+
+        /// <summary>
+        /// Creates <c>while</c> loop expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <c>while(condition) {  }</c>
+        /// </remarks>
+        /// <param name="condition">The loop condition.</param>
+        /// <param name="body">The delegate that is used to construct loop body.</param>
+        /// <returns>The constructed loop expression.</returns>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/while">while Statement</seealso>
+        public static WhileExpression While(this Expression condition, WhileExpression.Statement body)
+            => WhileExpression.Create(condition, body, true);
+
+        /// <summary>
+        /// Creates <c>do{ }while()</c> loop expression.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <c>do { } while(condition)</c>.
+        /// </remarks>
+        /// <param name="condition">The loop condition.</param>
+        /// <param name="body">The delegate that is used to construct loop body.</param>
+        /// <returns>The constructed loop expression.</returns>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/do">do-while Statement</seealso>
+        public static WhileExpression Until(this Expression condition, WhileExpression.Statement body)
+            => WhileExpression.Create(condition, body, false);
     }
 }

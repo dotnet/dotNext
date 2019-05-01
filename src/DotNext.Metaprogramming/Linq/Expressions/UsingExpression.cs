@@ -88,6 +88,18 @@ namespace DotNext.Linq.Expressions
         public override bool CanReduce => true;
 
         /// <summary>
+        /// Reconstructs expression with a new body.
+        /// </summary>
+        /// <param name="body">The new body of this expression.</param>
+        /// <returns>Updated expression.</returns>
+        public UsingExpression Update(Expression body)
+        {
+            var result = assignment is null ? new UsingExpression(Resource) : new UsingExpression(assignment.Right);
+            result.Body = body;
+            return result;
+        }
+
+        /// <summary>
         /// Produces actual code of the resource acquisition.
         /// </summary>
         /// <returns>The actual code of the resource acquisition.</returns>

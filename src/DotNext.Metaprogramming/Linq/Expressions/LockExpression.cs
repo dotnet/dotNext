@@ -84,6 +84,18 @@ namespace DotNext.Linq.Expressions
         public override Type Type => Body.Type;
 
         /// <summary>
+        /// Reconstructs synchronized block of code with a new body.
+        /// </summary>
+        /// <param name="body">The new body of the synchronized block of code.</param>
+        /// <returns>Updated expression.</returns>
+        public LockExpression Update(Expression body)
+        {
+            var result = assignment is null ? new LockExpression(SyncRoot) : new LockExpression(assignment.Right);
+            result.Body = body;
+            return result;
+        }
+
+        /// <summary>
         /// Produces actual code for the synchronization block.
         /// </summary>
         /// <returns>The actual code for the synchronization block.</returns>
