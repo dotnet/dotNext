@@ -54,19 +54,17 @@ namespace DotNext.Linq.Expressions
         public override Expression Reduce()
         {
             Expression loopBody;
-            LoopExpression loopExpr;
             if (conditionFirst)
             {
-                loopBody = Test.Condition(Body, Goto(BreakLabel));
-                loopExpr = Loop(loopBody, BreakLabel, ContinueLabel);
+                loopBody = Condition(Test, Body, Goto(BreakLabel), typeof(void));
+                return Loop(loopBody, BreakLabel, ContinueLabel);
             }
             else
             {
-                var condition = Condition(Test, Empty(), Goto(BreakLabel));
+                var condition = Condition(Test, Empty(), Goto(BreakLabel), typeof(void));
                 loopBody = Block(typeof(void), Body, Label(ContinueLabel), condition);
-                loopExpr = Loop(loopBody, BreakLabel);
+                return Loop(loopBody, BreakLabel);
             }
-            return loopExpr;
         }
     }
 }
