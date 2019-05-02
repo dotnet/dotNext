@@ -4,6 +4,9 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    /// <summary>
+    /// Represents lexical scope in the form of instructions inside it and set of declared local variables.
+    /// </summary>
     internal class LexicalScope : LinkedList<Expression>, ILexicalScope, IDisposable
     {
         [ThreadStatic]

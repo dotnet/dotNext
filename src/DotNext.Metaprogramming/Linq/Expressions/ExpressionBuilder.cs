@@ -663,7 +663,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="lambda">The lambda expression.</param>
         /// <param name="arguments">The arguments used to replace lambda parameters.</param>
         /// <returns>The body of lambda expression.</returns>
-        public static Expression Extract<D>(Expression<D> lambda, params Expression[] arguments)
+        public static Expression Fragment<D>(Expression<D> lambda, params Expression[] arguments)
             where D : MulticastDelegate
         {
             if (lambda.Parameters.Count != arguments.LongLength)
@@ -1023,21 +1023,6 @@ namespace DotNext.Linq.Expressions
                 throw new MissingMethodException(ExceptionMessages.MissingCtor(type));
             else
                 return Expression.New(ctor, args);
-        }
-
-        /// <summary>
-        /// Transforms async lambda function into read-to-compile function.
-        /// </summary>
-        /// <typeparam name="D">Type of the delegate describing signature of asynchronous function.</typeparam>
-        /// <param name="lambda">The lambda with <see langword="await"/> expressions.</param>
-        /// <returns>Prepared async lambda function.</returns>
-        /// <seealso cref="AsyncResultExpression"/>
-        /// <seealso cref="AwaitExpression"/>
-        public static Expression<D> ToAsyncLambda<D>(this Expression<D> lambda)
-            where D : Delegate
-        {
-            using (var builder = new Runtime.CompilerServices.AsyncStateMachineBuilder<D>(lambda.Parameters))
-                return builder.Build(lambda.Body, lambda.TailCall);
         }
 
         internal static Expression AddPrologue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)

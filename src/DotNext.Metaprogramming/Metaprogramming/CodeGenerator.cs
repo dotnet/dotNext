@@ -253,7 +253,7 @@ namespace DotNext.Metaprogramming
         /// <param name="arguments">The arguments used to replace lambda parameters.</param>
         public static void Embed<D>(Expression<D> lambda, params Expression[] arguments)
             where D : MulticastDelegate
-            => LexicalScope.Current.AddStatement(ExpressionBuilder.Extract(lambda, arguments));
+            => LexicalScope.Current.AddStatement(ExpressionBuilder.Fragment(lambda, arguments));
 
         /// <summary>
         /// Adds instance method call statement.
@@ -939,7 +939,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Constructs lamdba function capturing the current lexical scope.
+        /// Constructs multi-line lamdba function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
@@ -953,7 +953,31 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Constructs lamdba function capturing the current lexical scope.
+        /// Constructs single-line lamdba function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        public static Expression<D> Lambda<D>(bool tailCall, Func<LambdaContext, Expression> body)
+            where D : Delegate
+        {
+            using(var expression = new LambdaExpression<D>(tailCall))
+                return expression.Build(body);
+        }
+
+        /// <summary>
+        /// Constructs single-line lamdba function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        public static Expression<D> Lambda<D>(Func<LambdaContext, Expression> body)
+            where D : Delegate
+            => Lambda<D>(false, body);
+
+        /// <summary>
+        /// Constructs multi-line lamdba function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
@@ -967,7 +991,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Constructs lamdba function capturing the current lexical scope.
+        /// Constructs multi-line lamdba function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>
@@ -977,7 +1001,7 @@ namespace DotNext.Metaprogramming
             => Lambda<D>(false, body);
 
         /// <summary>
-        /// Constructs lamdba function capturing the current lexical scope.
+        /// Constructs multi-line lamdba function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>
@@ -987,7 +1011,7 @@ namespace DotNext.Metaprogramming
             => Lambda<D>(false, body);
 
         /// <summary>
-        /// Constructs async lambda function capturing the current lexical scope.
+        /// Constructs multi-line async lambda function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>

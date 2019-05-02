@@ -215,7 +215,7 @@ namespace DotNext.Metaprogramming
             {
                 WriteError(fun[0]);
             }).Compile();
-            lambda("Hello");
+            lambda("Error");
         }
 
         [Fact]
@@ -225,16 +225,13 @@ namespace DotNext.Metaprogramming
             {
                 DebugMessage(fun[0]);
             }).Compile();
-            lambda("Hello");
+            lambda("Debug Message");
         }
 
         [Fact]
         public static void ExpressionInlining()
         {
-            var lambda = Lambda<Func<long, long, long>>((fun, result) =>
-            {
-                Assign(result, ExpressionBuilder.Extract<Func<long, long, long>>((a, b) => Math.Max(a, b), fun[0], fun[1]));
-            }).Compile();
+            var lambda = Lambda<Func<long, long, long>>(fun => ExpressionBuilder.Fragment<Func<long, long, long>>((a, b) => Math.Max(a, b), fun[0], fun[1])).Compile();
             Equal(10, lambda(5, 10));
         }
     }

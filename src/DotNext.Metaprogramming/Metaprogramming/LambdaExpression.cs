@@ -43,7 +43,7 @@ namespace DotNext.Metaprogramming
     /// Represents lambda function builder.
     /// </summary>
     /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
-    internal sealed class LambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>, ILexicalScope<Expression<D>, Action<LambdaContext, ParameterExpression>>
+    internal sealed class LambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>, ILexicalScope<Expression<D>, Action<LambdaContext, ParameterExpression>>, ILexicalScope<Expression<D>, Func<LambdaContext, Expression>>
         where D : Delegate
     {        
         private ParameterExpression recursion;
@@ -146,6 +146,13 @@ namespace DotNext.Metaprogramming
         {
             using(var context = new LambdaContext(this))
                 scope(context, Result);
+            return Build();
+        }
+
+        public Expression<D> Build(Func<LambdaContext, Expression> body)
+        {
+            using(var context = new LambdaContext(this))
+                AddLast(body(context));
             return Build();
         }
 
