@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,18 +78,21 @@ namespace DotNext.Threading
         [Fact]
         public static async Task PhaseCompletion()
         {
-            using(var barrier = new AsyncBarrier(3))
+            using (var barrier = new AsyncBarrier(3))
             {
+                ICollection<Task> tasks = new LinkedList<Task>();
                 Equal(0, barrier.CurrentPhaseNumber);
-                var phaseTask = barrier.Wait();
-                foreach(var index in Enumerable.Range(0, 3))
-                    ThreadPool.QueueUserWorkItem(state => barrier.SignalAndWait().Wait());
-                await phaseTask;
+                tasks.Add(barrier.SignalAndWait());
+                tasks.Add(barrier.SignalAndWait());
+                tasks.Add(barrier.SignalAndWait());
+                await Task.WhenAll(tasks);
                 Equal(1, barrier.CurrentPhaseNumber);
-                phaseTask = barrier.Wait();
-                foreach(var index in Enumerable.Range(0, 3))
-                    ThreadPool.QueueUserWorkItem(state => barrier.SignalAndWait());
-                await phaseTask;
+
+                tasks.Clear();
+                tasks.Add(barrier.SignalAndWait());
+                tasks.Add(barrier.SignalAndWait());
+                tasks.Add(barrier.SignalAndWait());
+                await Task.WhenAll(tasks);
                 Equal(2, barrier.CurrentPhaseNumber);
             }
         }

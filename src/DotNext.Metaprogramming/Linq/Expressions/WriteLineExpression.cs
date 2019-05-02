@@ -1,10 +1,16 @@
 using System;
 using System.IO;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace DotNext.Linq.Expressions
 {
+    /// <summary>
+    /// Represents expression that writes some object into particular output.
+    /// </summary>
+    /// <seealso cref="Console.Out"/>
+    /// <seealso cref="Console.Error"/>
+    /// <seealso cref="TextWriter.WriteLine(object)"/>
+    /// <seealso cref="System.Diagnostics.Debug.WriteLine(object)"/>
     public sealed class WriteLineExpression : Expression
     {
         private enum Kind : byte
@@ -25,16 +31,41 @@ namespace DotNext.Linq.Expressions
             this.kind = kind;
         }
 
+        /// <summary>
+        /// Always returns <see cref="void"/>.
+        /// </summary>
         public override Type Type => typeof(void);
 
+        /// <summary>
+        /// Always returns <see langword="true"/> because
+        /// this expression is <see cref="ExpressionType.Extension"/>.
+        /// </summary>
         public override bool CanReduce => true;
 
+        /// <summary>
+        /// Always returns <see cref="ExpressionType.Extension"/>.
+        /// </summary>
         public override ExpressionType NodeType => ExpressionType.Extension;
 
+        /// <summary>
+        /// Creates an expression that writes the object into <see cref="Console.Out"/>.
+        /// </summary>
+        /// <param name="value">The value to be written into the stdout.</param>
+        /// <returns>A new instance of <see cref="WriteLineExpression"/>.</returns>
         public static WriteLineExpression Out(Expression value) => new WriteLineExpression(value, Kind.Out);
 
+        /// <summary>
+        /// Creates an expression that writes the object into <see cref="Console.Error"/>.
+        /// </summary>
+        /// <param name="value">The value to be written into the stderr.</param>
+        /// <returns>A new instance of <see cref="WriteLineExpression"/>.</returns>
         public static WriteLineExpression Error(Expression value) => new WriteLineExpression(value, Kind.Error);
 
+        /// <summary>
+        /// Creates an expression that writes the object using <see cref="System.Diagnostics.Debug.WriteLine(object)"/>.
+        /// </summary>
+        /// <param name="value">The value to be written into the stderr.</param>
+        /// <returns>A new instance of <see cref="WriteLineExpression"/>.</returns>
         public static WriteLineExpression Debug(Expression value) => new WriteLineExpression(value, Kind.Debug);
 
         private static MethodCallExpression WriteLineTo(MemberExpression stream, Expression value)
@@ -49,13 +80,13 @@ namespace DotNext.Linq.Expressions
 
         private MethodCallExpression WriteLineToOut()
         {
-            var outProperty = typeof(Console).GetMethod(nameof(Console.Out));
+            var outProperty = typeof(Console).GetProperty(nameof(Console.Out));
             return WriteLineTo(Property(null, outProperty), value);
         }
 
         private MethodCallExpression WriteLineToError()
         {
-            var outProperty = typeof(Console).GetMethod(nameof(Console.Error));
+            var outProperty = typeof(Console).GetProperty(nameof(Console.Error));
             return WriteLineTo(Property(null, outProperty), value);
         }
 
@@ -65,6 +96,11 @@ namespace DotNext.Linq.Expressions
             return Call(writeLineMethod, value.Type.IsValueType ? Convert(value, typeof(object)) : value);
         }
 
+        /// <summary>
+        /// Translates this expression into predefined set of expressions
+        /// using Lowering technique.
+        /// </summary>
+        /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
             switch(kind)

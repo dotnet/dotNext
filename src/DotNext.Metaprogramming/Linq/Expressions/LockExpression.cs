@@ -96,9 +96,10 @@ namespace DotNext.Linq.Expressions
         }
 
         /// <summary>
-        /// Produces actual code for the synchronization block.
+        /// Translates this expression into predefined set of expressions
+        /// using Lowering technique.
         /// </summary>
-        /// <returns>The actual code for the synchronization block.</returns>
+        /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
             var monitorEnter = typeof(Monitor).GetMethod(nameof(Monitor.Enter), new[] { typeof(object) });

@@ -260,6 +260,17 @@ namespace DotNext.Linq.Expressions
             => Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
 
         /// <summary>
+        /// Constructs <see langword="null"/> check.
+        /// </summary>
+        /// <remarks>
+        /// The equivalent code is <code>!(a is null)</code>
+        /// </remarks>
+        /// <param name="operand">The operand.</param>
+        /// <returns><see langword="null"/> check operation.</returns>
+        public static BinaryExpression IsNotNull(this Expression operand)
+            => Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type));
+
+        /// <summary>
         /// Constructs raising a number to a power expression.
         /// </summary>
         /// <remarks>

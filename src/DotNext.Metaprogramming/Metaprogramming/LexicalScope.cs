@@ -20,11 +20,11 @@ namespace DotNext.Metaprogramming
 
         internal static bool IsInScope<S>() where S : class, ILexicalScope => !(FindScope<S>() is null);
 
-        internal static ILexicalScope Current => throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
+        internal static ILexicalScope Current => current ?? throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
 
         private readonly Dictionary<string, ParameterExpression> variables = new Dictionary<string, ParameterExpression>();
 
-        internal readonly LexicalScope Parent;
+        private protected readonly LexicalScope Parent;
 
         private protected LexicalScope(bool isStatement)
         {
@@ -47,7 +47,9 @@ namespace DotNext.Metaprogramming
 
         void ILexicalScope.AddStatement(Expression statement) => AddLast(statement);
 
-        void ILexicalScope.DeclareVariable(ParameterExpression variable) => variables.Add(variable.Name, variable);
+        private protected void DeclareVariable(ParameterExpression variable) => variables.Add(variable.Name, variable);
+
+        void ILexicalScope.DeclareVariable(ParameterExpression variable) => DeclareVariable(variable);
 
         private protected Expression Build()
         {

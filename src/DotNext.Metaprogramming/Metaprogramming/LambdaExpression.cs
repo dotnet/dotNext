@@ -15,7 +15,7 @@ namespace DotNext.Metaprogramming
     {
         private protected readonly bool tailCall;
 
-        private protected LambdaExpression(LexicalScope parent, bool tailCall) : base(parent) => this.tailCall = tailCall;
+        private protected LambdaExpression(bool tailCall) : base(false) => this.tailCall = tailCall;
 
         private protected IReadOnlyList<ParameterExpression> GetParameters(System.Reflection.ParameterInfo[] parameters)
             => Array.ConvertAll(parameters, parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
@@ -45,24 +45,15 @@ namespace DotNext.Metaprogramming
     /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
     internal sealed class LambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>, ILexicalScope<Expression<D>, Action<LambdaContext, ParameterExpression>>
         where D : Delegate
-    {
-        internal readonly struct Factory : IFactory<LambdaExpression<D>>
-        {
-            private readonly bool tailCall;
-
-            internal Factory(bool tailCall) => this.tailCall = tailCall;
-
-            public LambdaExpression<D> Create(LexicalScope parent) => new LambdaExpression<D>(parent, tailCall);
-        }        
-
+    {        
         private ParameterExpression recursion;
         private ParameterExpression lambdaResult;
         private LabelTarget returnLabel;
 
         private readonly Type returnType;
 
-        private LambdaExpression(LexicalScope parent = null, bool tailCall = false)
-            : base(parent, tailCall)
+        internal LambdaExpression(bool tailCall = false)
+            : base(tailCall)
         {
             if (typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
@@ -144,14 +135,14 @@ namespace DotNext.Metaprogramming
             return Expression.Lambda<D>(body, tailCall, Parameters);
         }
 
-        Expression<D> ILexicalScope<Expression<D>, Action<LambdaContext>>.Build(Action<LambdaContext> scope)
+        public Expression<D> Build(Action<LambdaContext> scope)
         {
             using(var context = new LambdaContext(this))
                 scope(context);
             return Build();
         }
 
-        Expression<D> ILexicalScope<Expression<D>, Action<LambdaContext, ParameterExpression>>.Build(Action<LambdaContext, ParameterExpression> scope)
+        public Expression<D> Build(Action<LambdaContext, ParameterExpression> scope)
         {
             using(var context = new LambdaContext(this))
                 scope(context, Result);

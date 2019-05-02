@@ -1,18 +1,15 @@
-﻿using System.Linq.Expressions;
+﻿using System;
 
 namespace DotNext.Metaprogramming
 {
-    internal sealed class TryStatement : Statement<TryBuilder>
+    internal sealed class TryStatement : Statement, ILexicalScope<TryBuilder, Action>
     {
-        private sealed class SingletonFactory : IFactory<TryStatement>
+        internal TryStatement() { }
+
+        public TryBuilder Build(Action scope)
         {
-            TryStatement IFactory<TryStatement>.Create(LexicalScope parent) => new TryStatement(parent);
+            scope();
+            return new TryBuilder(Build(), Parent);
         }
-
-        internal static readonly IFactory<TryStatement> Factory = new SingletonFactory();
-
-        private TryStatement(LexicalScope parent) : base(parent) { }
-
-        private protected override TryBuilder CreateExpression(Expression body) => new TryBuilder(body, Parent);
     }
 }

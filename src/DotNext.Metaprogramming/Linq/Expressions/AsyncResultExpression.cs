@@ -73,9 +73,10 @@ namespace DotNext.Linq.Expressions
         public override bool CanReduce => true;
 
         /// <summary>
-        /// Reduces this expression to the well-known LINQ expression.
+        /// Translates this expression into predefined set of expressions
+        /// using Lowering technique.
         /// </summary>
-        /// <returns>The reduced expression.</returns>
+        /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
             Expression completedTask, failedTask;

@@ -100,9 +100,10 @@ namespace DotNext.Linq.Expressions
         }
 
         /// <summary>
-        /// Produces actual code of the resource acquisition.
+        /// Translates this expression into predefined set of expressions
+        /// using Lowering technique.
         /// </summary>
-        /// <returns>The actual code of the resource acquisition.</returns>
+        /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
             if(assignment is null)

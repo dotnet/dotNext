@@ -197,5 +197,35 @@ namespace DotNext.Metaprogramming
             }).Compile();
             Equal("Hello, Barry", lambda("Barry").ToString());
         }
+
+        [Fact]
+        public static void WriteLineToOut()
+        {
+            var lambda = Lambda<Action<string>>(fun =>
+            {
+                WriteLine(fun[0]);
+            }).Compile();
+            lambda("Hello");
+        }
+
+        [Fact]
+        public static void WriteLineToError()
+        {
+            var lambda = Lambda<Action<string>>(fun =>
+            {
+                WriteError(fun[0]);
+            }).Compile();
+            lambda("Hello");
+        }
+
+        [Fact]
+        public static void WriteDebugMessage()
+        {
+            var lambda = Lambda<Action<string>>(fun =>
+            {
+                DebugMessage(fun[0]);
+            }).Compile();
+            lambda("Hello");
+        }
     }
 }

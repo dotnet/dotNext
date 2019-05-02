@@ -11,18 +11,11 @@ namespace DotNext.Metaprogramming
     internal sealed class AsyncLambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>
         where D : Delegate
     {
-        private sealed class SingletonFactory : IFactory<AsyncLambdaExpression<D>>
-        {
-            AsyncLambdaExpression<D> IFactory<AsyncLambdaExpression<D>>.Create(LexicalScope parent) => new AsyncLambdaExpression<D>(parent);
-        }
-
-        internal static readonly IFactory<AsyncLambdaExpression<D>> Factory = new SingletonFactory();
-
         private ParameterExpression recursion;
         private readonly TaskType taskType;
 
-        private AsyncLambdaExpression(LexicalScope parent = null)
-            : base(parent, false)
+        internal AsyncLambdaExpression()
+            : base(false)
         {
             if (typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
@@ -68,7 +61,7 @@ namespace DotNext.Metaprogramming
             return lambda;
         }
 
-        Expression<D> ILexicalScope<Expression<D>, Action<LambdaContext>>.Build(Action<LambdaContext> scope)
+        public Expression<D> Build(Action<LambdaContext> scope)
         {
             using(var context = new LambdaContext(this))
                 scope(context);

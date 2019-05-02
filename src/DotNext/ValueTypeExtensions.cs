@@ -121,5 +121,18 @@ namespace DotNext
         public static ValueType<T> Box<T>(this T value)
             where T : struct
             => new ValueType<T>(value);
+
+        /// <summary>
+        /// Attempts to get value from nullable container.
+        /// </summary>
+        /// <typeparam name="T">The underlying value type of the nullable type.</typeparam>
+        /// <param name="nullable">Nullable value.</param>
+        /// <param name="value">Underlying value.</param>
+        /// <returns><see langword="true"/> if <paramref name="nullable"/> is not <see langword="null"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool TryGet<T>(this T? nullable, out T value) where T : struct
+        {
+            value = nullable.GetValueOrDefault();
+            return nullable.HasValue;
+        }
     }
 }

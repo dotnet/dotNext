@@ -135,9 +135,10 @@ namespace DotNext.Linq.Expressions
             => typeof(FormattableStringFactory).CallStatic(nameof(FormattableStringFactory.Create), Constant(Format), NewArrayInit(typeof(object), arguments));
 
         /// <summary>
-        /// Obtains string interpolation code as expression.
+        /// Translates this expression into predefined set of expressions
+        /// using Lowering technique.
         /// </summary>
-        /// <returns>String interpolation code.</returns>
+        /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
             switch(kind)

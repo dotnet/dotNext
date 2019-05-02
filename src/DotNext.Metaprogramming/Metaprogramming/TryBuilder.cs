@@ -29,7 +29,7 @@ namespace DotNext.Metaprogramming
         private Expression finallyBlock;
         private readonly ICollection<CatchBlock> handlers;
 
-        internal TryBuilder(Expression tryBlock, LexicalScope currentScope)
+        internal TryBuilder(Expression tryBlock, ILexicalScope currentScope)
             : base(currentScope)
         {
             this.tryBlock = tryBlock;

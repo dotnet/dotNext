@@ -187,9 +187,10 @@ namespace DotNext.Linq.Expressions
         public override bool CanReduce => true;
 
         /// <summary>
-        /// Produces actual code for the loop.
+        /// Translates this expression into predefined set of expressions
+        /// using Lowering technique.
         /// </summary>
-        /// <returns>The actual code for the loop.</returns>
+        /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
             Expression body = Condition(Test, Body, Goto(BreakLabel), typeof(void));

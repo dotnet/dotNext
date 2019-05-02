@@ -111,9 +111,10 @@ namespace DotNext.Linq.Expressions
         public WhileExpression Update(Expression body) => new WhileExpression(Test, conditionFirst) { Body = body };
 
         /// <summary>
-        /// Produces actual code for the loop.
+        /// Translates this expression into predefined set of expressions
+        /// using Lowering technique.
         /// </summary>
-        /// <returns>The actual code for the loop.</returns>
+        /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
             Expression loopBody;

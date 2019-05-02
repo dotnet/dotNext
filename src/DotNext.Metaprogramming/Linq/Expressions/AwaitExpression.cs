@@ -65,10 +65,10 @@ namespace DotNext.Linq.Expressions
         public override ExpressionType NodeType => ExpressionType.Extension;
 
         /// <summary>
-        /// Produces call of GetResult method which allows to obtain
-        /// result in synchronous manner.
+        /// Translates this expression into predefined set of expressions
+        /// using Lowering technique.
         /// </summary>
-        /// <returns>Method call expression.</returns>
+        /// <returns>Translated expression.</returns>
         public override Expression Reduce() => GetAwaiter.Call(GetResultMethod);
 
         /// <summary>
