@@ -5,7 +5,7 @@ Collection Helpers are set of extension methods and classes aimed to improve _Sy
 # Read-only collection view
 Instance of `System.Collections.ObjectModel.ReadOnlyCollection<T>` is the read-only **copy** of the source collection. It can be redundant or not acceptable by performance reasons. In this case, the family of read-only views can be used to save memory and performance. Read-only view doesn't create a copy of the original collection and just expose read-only API for the collection.
 
-DotNext provides the following set of read-only views:
+.NEXT provides the following set of read-only views:
 * [Read-only list view](../../api/DotNext.Collections.Generic.ReadOnlyListView-1.yml) for lists and arrays
 * [Read-only collection view](../../api/DotNext.Collections.Generic.ReadOnlyCollectionView-1.yml) for generic collections without indexer support
 * [Read-only dictionary view](../../api/DotNext.Collections.Generic.ReadOnlyDictionaryView-2.yml) for generic dictionaries

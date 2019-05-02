@@ -1,11 +1,12 @@
 Metaprogramming
 ====
-Metaprogramming API provided by DotNext library allows to generate and execute code in runtime. Code generation object model is language agnostic so developer can use it from any .NET programming language. From design point of view, metaprogramming capabilities built on top of [LINQ Expressions](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions) without direct usage of IL generator. This increases portability of the library between different .NET implementations. All custom expressions introduced by Metaprogramming libary are reducible into predefined set of LINQ Expressions.
+Metaprogramming API provided by .NEXT library allows to generate and execute code in runtime. Code generation object model is language agnostic so developer can use it from any .NET programming language. From design point of view, metaprogramming capabilities built on top of [LINQ Expressions](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions) without direct usage of IL generator. This increases portability of the library between different .NET implementations. All custom expressions introduced by Metaprogramming libary are reducible into predefined set of LINQ Expressions.
 
 > [!WARNING]
-> Xamarin.iOS supports only interpretation of Expression Trees without Just-in-Time Compilation. Since the iPhone's kernel prevents an application from generating code dynamically Mono on the iPhone does not support any form of dynamic code generation. Check out [this article](https://docs.microsoft.com/en-us/xamarin/ios/internals/limitations) for more information. As a result, the code generated using DotNext Metaprogramming library demonstrates significantly slower performance on iOS.
+> Xamarin.iOS supports only interpretation of Expression Trees without Just-in-Time Compilation. Since the iPhone's kernel prevents an application from generating code dynamically Mono on the iPhone does not support any form of dynamic code generation. Check out [this article](https://docs.microsoft.com/en-us/xamarin/ios/internals/limitations) for more information. As a result, the code generated using .NEXT Metaprogramming library demonstrates significantly slower performance on iOS.
 
 Metaprogramming library extends LINQ Expression with the following features:
+* [String Interpolation](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/tokens/interpolated)
 * [using statement](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement)
 * [lock statement](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement)
 * Loops
@@ -27,35 +28,45 @@ Additionally, DotNext Metaprogramming library replaces limit of [C# Expression T
 # Concept
 The code construction based on the following concepts:
 * [Universal Expression](universal.md)
-* [Expression builder](../../api/DotNext.Metaprogramming.CompoundStatementBuilder.yml) and its derived classes. This class provides lexical scope of local variables, declaration methods and methods for adding statement such as method calls, assignment, loops, if-then-else statement etc.
-* [Lambda function builder](../../api/DotNext.Metaprogramming.LambdaBuilder-1.yml) or [Async lambda function builder](../../api/DotNext.Metaprogramming.AsyncLambdaBuilder-1.yml)
+* [Code Generator](../../api/DotNext.Metaprogramming.CodeGenerator.yml) provides methods for adding statement such as method calls, assignment, loops, if-then-else statement etc.
+* Advanced expression types:
+    * [using Expression](../../api/DotNext.Linq.Expressions.UsingExpression.yml) represents `using` statement from C#
+    * [lock Expression](../../api/DotNext.Linq.Expressions.LockExpression.yml) represents `lock` statement from C#
+    * [await Expression](../../api/DotNext.Linq.Expressions.AwaitExpression.yml) represents `await` operator from C#
+    * [String Interpolation Expression](../../api/DotNext.Linq.Expressions.InterpolationExpression.yml) represents interpolated string
+    * [for-in Expression](../../api/DotNext.Linq.Expressions.ForEachExpression.yml) represents `foreach` loop from C#
+    * [while Expression](../../api/DotNext.Linq.Expressions.WhileExpression.yml) represents `while` and `do-while` loops from C#
+    * [for Expression](../../api/DotNext.Linq.Expressions.ForExpression.yml) represents `for` loop from C#
 
 The lexical scope is enclosed by multi-line lambda function. The body of such function contains the code for generation of expressions and statements.
 
 ```csharp
 using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expression.UniversalExpression;
 
-Func<long, long> fact = LambdaBuilder<Func<long, long>>.Build(fun => 
+Func<long, long> fact = Lambda<Func<long, long>>(fun => 
 {
-    UniversalExpression arg = fun.Parameters[0];    //convert parameter into universal expression
+    var arg = (U)fun[0];    //convert parameter into universal expression
     //if-then-else expression
-    fun.If(arg > 1L)
-        .Then(arg * fun.Self.Invoke(arg - 1L))  //recursive invocation of the current lambda function
+    If(arg > 1L)
+        .Then(arg * fun.Invoke(arg - 1L))  //recursive invocation of the current lambda function
         .Else(arg)  //else branch
-    .OfType<long>()
+        .OfType<long>()
     .End();
     //declare local variable of type long
-    var local = fun.DeclareVariable<long>("local");
+    var local = DeclareVariable<long>("local");
     //assignment
-    fun.Assign(local, -arg);  //equivalent is the assignment statement local = -arg
+    Assign(local, -arg);  //equivalent is the assignment statement local = -arg
     //try-catch
-    fun.Try(tryScope => {
-        tryScope.Return(10);    //return from lambda function
+    Try(() => 
+    {
+        Return(10);    //return from lambda function
     })
-    .Finally(finallyScope => {  //finally block
+    .Finally(() => //finally block
+    {  
         //method call Console.WriteLine(local);
-        finallyScope.Call(typeof(Console).GetMethod(nameof(Console.WriteLine), new[] { typeof(object) }), local);
+        CallStatic(typeof(Console), nameof(Console.WriteLine), local);
     })
     .End(); //end of try block
 }).Compile();

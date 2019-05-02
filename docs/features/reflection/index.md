@@ -1,9 +1,9 @@
 Advanced Reflection
 ====
-DotNext provides additional methods to reflect collection types, delegates and task types. These methods are located in `DotNext.Reflection` namespace.
+.NEXT provides additional methods to reflect collection types, delegates and task types. These methods are located in `DotNext.Reflection` namespace.
 
 # Collection
-.NET Reflection contains a [method](https://docs.microsoft.com/en-us/dotnet/api/system.type.getelementtype) to obtain type of elements in the array. DotNext provides special class [CollectionType](../../api/DotNext.Reflection.CollectionType.yml) to reflect type of collection elements.
+.NET Reflection contains a [method](https://docs.microsoft.com/en-us/dotnet/api/system.type.getelementtype) to obtain type of elements in the array. .NEXT provides special class [CollectionType](../../api/DotNext.Reflection.CollectionType.yml) to reflect type of collection elements.
 ```csharp
 using DotNext.Reflection;
 

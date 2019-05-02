@@ -1,7 +1,7 @@
 Atomic Operations
 ====
 
-Most .NET programming languages provide primitive atomic operations to work with fields with concurrent access. For example, C# [volatile](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/volatile) keyword is a language feature for atomic read/write of the marked field. But what if more complex atomic operation is required? Java provides [such features](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html) at library level, with some overhead associated with object allocation. C# and many other .NET languages support concept of [passing by refence](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref) so it is possible to obtain a reference to the field value. This ability allows to avoid overhead of atomic primitives typical to JVM languages. Moreover, extension methods may accept **this** parameter by reference forming the foundation for atomic operations provided  by DotNext library.
+Most .NET programming languages provide primitive atomic operations to work with fields with concurrent access. For example, C# [volatile](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/volatile) keyword is a language feature for atomic read/write of the marked field. But what if more complex atomic operation is required? Java provides [such features](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html) at library level, with some overhead associated with object allocation. C# and many other .NET languages support concept of [passing by refence](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref) so it is possible to obtain a reference to the field value. This ability allows to avoid overhead of atomic primitives typical to JVM languages. Moreover, extension methods may accept **this** parameter by reference forming the foundation for atomic operations provided  by .NEXT library.
 
 The library provides advanced atomic operations for the following types:
 * Scalar types
@@ -53,7 +53,7 @@ public class TestClass
 ```
 
 # Atomic operations for arrays
-C# doesn't provide volatile access to array elements syntactically in contrast with volatile fields. DotNext library provides the same set of atomic operations as for scalar types with a small difference: array atomic operation accept element index as additional argument.
+C# doesn't provide volatile access to array elements syntactically in contrast with volatile fields. .NEXT library provides the same set of atomic operations as for scalar types with a small difference: array atomic operation accept element index as additional argument.
 
 The second approach utilizes extension method.
 ```csharp

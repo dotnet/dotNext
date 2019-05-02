@@ -1,6 +1,6 @@
 Universal Expression
 ====
-[Universal Expression](../../api/DotNext.Metaprogramming.UniversalExpression.yml) is a powerful tool which allows to use programming language constructs without imitating them using API calls. Compound expressions can be constructed in natural way using operators and constants like in regular code.
+[Universal Expression](../../api/DotNext.Linq.Expressions.UniversalExpression.yml) is a powerful tool which allows to use programming language constructs without imitating them using API calls. Compound expressions can be constructed in natural way using operators and constants like in regular code.
 
 ```csharp
 using DotNext.Metaprogramming;

@@ -7,13 +7,13 @@ Metaprogramming library provides construction of `for`, `foreach` and `while` lo
 
 ```csharp
 using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
 
-LambdaBuilder<Action<string>>.Build(fun => 
+Lambda<Action<string>>(fun => 
 {
-    fun.ForEach(fun.Parameters[0], loop =>
+    ForEach(fun[0], character =>
     {
-        loop.Call(typeof(Console).GetMethod(nameof(Console.WriteLine), new[]{ typeof(char) }), loop.Element);
+        WriteLine(character);
     });
 });
 

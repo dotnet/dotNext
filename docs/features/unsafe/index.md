@@ -7,7 +7,7 @@ Historically, .NET Runtime was oriented to work with managed memory where Garbag
 Span<int> s = stackalloc int[4];
 ```
 
-DotNext library provides rich data structures allocated in unmanaged heap (off-heap memory) and set of routines comparable to C memory functions. Moreover, these features are platform and hardware independent and limited by .NET Runtime support. 
+.NEXT library provides rich data structures allocated in unmanaged heap (off-heap memory) and set of routines comparable to C memory functions. Moreover, these features are platform and hardware independent and limited by .NET Runtime support. 
 
 > [!NOTE]
 > The library is written in managed code without PInvoke calls.
@@ -24,7 +24,7 @@ All unmanaged data types are not thread-safe. However, unmanaged array and point
 # Pointer
 C# programming language supports typed and untyped pointer data types such as _int*_ or _void*_. These types are not CLS-compliant and may not be available in other .NET programming languages. For instance, F# or VB.NET do not support pointer type and interoperation with native libraries or COM objects are limited. 
 
-DotNext offers [Pointer&lt;T&gt;](../../api/DotNext.Runtime.InteropServices.Pointer-1.yml) value type which is CLS-compliant typed pointer. This type supports pointer arithmetic as well as rich methods for memory manupulations such as copying, swapping, filling with zeroes, comparison and equality check. These methods are equivalent to C memory functions: `memset`, `memcmp` etc. Additionally, there are routines to copying bytes to/from the unmanaged memory from/to the arbitrary [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) asynchronously. Check out API documentation for detailed information about available methods.
+.NEXT offers [Pointer&lt;T&gt;](../../api/DotNext.Runtime.InteropServices.Pointer-1.yml) value type which is CLS-compliant typed pointer. This type supports pointer arithmetic as well as rich methods for memory manupulations such as copying, swapping, filling with zeroes, comparison and equality check. These methods are equivalent to C memory functions: `memset`, `memcmp` etc. Additionally, there are routines to copying bytes to/from the unmanaged memory from/to the arbitrary [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) asynchronously. Check out API documentation for detailed information about available methods.
 
 The pointer data type is convertible to/from [native int](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) so it can be used to simplify interoperation with native code. The size of the pointer depends on underlying platform.
 

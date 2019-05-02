@@ -3,14 +3,16 @@ Using Statement
 [using](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement) statement is a missing part of LINQ Expressions. Metaprogramming library provides such support. 
 
 ```csharp
+using DotNext.Linq.Expressions;
 using System;
 using System.IO;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
 
-LambdaBuilder<Action<byte[]>>.Build(fun => 
+Lambda<Action<byte[]>>(fun => 
 {
-    fun.Using(typeof(MemoryStream).New(fun.Parameters[0]), usingBlock => {
-        usingBlock.Call(usingBlock.DisposableVar, nameof(MemoryStream.Flush));
+    Using(typeof(MemoryStream).New(fun[0]), stream => 
+    {
+        Call(stream, nameof(MemoryStream.Flush));
     });
 });
 

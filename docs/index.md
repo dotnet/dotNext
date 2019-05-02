@@ -1,12 +1,17 @@
 .NEXT
 ====
 
-.NEXT (Dot Next) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime. 
+.NEXT (dotNext) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime. 
 
 This chapter gives quick overview of these libraries. Read [articles](./features/core/index.md) for closer look at all available features.
 
 > [!IMPORTANT]
 > DotNext is in early stage of development. Backward compatibility of API is not guaranteed before 1.0 version.
+
+Prerequisites:
+* Runtime: any .NET implementation compatible with .NET Standard 2.0
+* OS: Linux, Windows, macOS
+* Architecture: any if supported by underlying .NET Runtime
 
 # DotNext
 <a href="https://www.nuget.org/packages/dotnext/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.svg?style=flat"></a><br/>

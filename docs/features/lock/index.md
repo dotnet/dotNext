@@ -43,7 +43,7 @@ using(await asyncLock.Acquire(CancellationToken.None))
 # Built-in Reader/Writer Synchronization
 Exclusive lock may not be applicable due to performance reasons for some data types. For example, exclusive lock for dictionary or list is redundant because there are two consumers of these objects: writers and readers.
 
-DotNext Threading library provides several extension methods for more granular control over synchronization of any reference type:
+.NEXT Threading library provides several extension methods for more granular control over synchronization of any reference type:
 * `AcquireReadLockAsync` acquires reader lock asynchronously
 * `AcquireWriteLockAsync` acquires exclusive lock asynchronously
 * `AcquireUpgradeableReadLock` acquires read lock asynchronously which can be upgraded to write lock

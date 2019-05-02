@@ -2,7 +2,7 @@ Synchronization Enhancements
 ====
 .NET class library provides different ways to organize synchronized access to the resource shared between multiple threads. These synchronization mechanisms are have differences in their API and require to pay more attention to how to acquire and release resources. For example, [lock statement](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement) can acquire and release resource in more safely way than [Semaphore](https://docs.microsoft.com/en-us/dotnet/api/system.threading.semaphoreslim) or [ReaderWriterLock](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim). Last two synchronization mechanisms force the developer to use **try-finally** statement manually.
 
-DotNext provides unified representation of the resource lock using the following mechanisms:
+.NEXT provides unified representation of the resource lock using the following mechanisms:
 * Monitor
 * Reader lock
 * Upgradeable lock
