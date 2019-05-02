@@ -11,7 +11,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public static void BitcastTest()
+		public static void Bitcast()
 		{
 			var point = new Point{X = 40, Y = 100};
 			point.BitCast(out decimal dec);
@@ -21,7 +21,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public static void AsBinaryTest()
+		public static void ConvertToByteArray()
 		{
 			var g = Guid.NewGuid();
 			var bytes = ValueType<Guid>.AsBinary(g);
@@ -29,7 +29,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public static void BitwiseEqualityTest2()
+		public static void BitwiseEqualityCheck()
 		{
 			var value1 = Guid.NewGuid();
 			var value2 = value1;
@@ -39,7 +39,7 @@ namespace DotNext
 		}
 
 		[Fact]
-		public static void BitwiseComparisonTest()
+		public static void BitwiseComparison()
 		{
 			var value1 = 40M;
 			var value2 = 50M;
