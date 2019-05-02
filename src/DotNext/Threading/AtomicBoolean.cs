@@ -98,7 +98,7 @@ namespace DotNext.Threading
 		/// <returns>Original value before modification.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool GetAndSet(bool update)
-            => Interlocked.Exchange(ref this.value, update ? True : False) == True;
+            => Interlocked.Exchange(ref value, update ? True : False) == True;
 
         /// <summary>
 		/// Modifies the current value atomically.

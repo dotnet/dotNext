@@ -16,7 +16,7 @@
 	<RepositoryType>git</RepositoryType>
 	<PackageTags>Concept;Reflection;Typeclass</PackageTags>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Introduce assertions of constraints defined by Concept Type</PackageReleaseNotes>
+	<PackageReleaseNotes>Add more built-in operations to Number concept type</PackageReleaseNotes>
   </PropertyGroup>
 
 
