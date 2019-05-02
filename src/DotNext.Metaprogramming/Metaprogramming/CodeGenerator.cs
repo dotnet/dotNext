@@ -246,6 +246,16 @@ namespace DotNext.Metaprogramming
         public static void Invoke(Expression @delegate, params Expression[] arguments) => Invoke(@delegate, (IEnumerable<Expression>)arguments);
 
         /// <summary>
+        /// Inserts expression tree as a statement.
+        /// </summary>
+        /// <typeparam name="D">The type of the delegate describing lambda call site.</typeparam>
+        /// <param name="lambda">The expression to be inserted as statement.</param>
+        /// <param name="arguments">The arguments used to replace lambda parameters.</param>
+        public static void Embed<D>(Expression<D> lambda, params Expression[] arguments)
+            where D : MulticastDelegate
+            => LexicalScope.Current.AddStatement(ExpressionBuilder.Extract(lambda, arguments));
+
+        /// <summary>
         /// Adds instance method call statement.
         /// </summary>
         /// <param name="instance"><see langword="this"/> argument.</param>

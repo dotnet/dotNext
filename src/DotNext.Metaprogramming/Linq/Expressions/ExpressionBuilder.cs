@@ -657,6 +657,24 @@ namespace DotNext.Linq.Expressions
             => Expression.Invoke(@delegate, arguments);
 
         /// <summary>
+        /// Extracts body of lambda expression.
+        /// </summary>
+        /// <typeparam name="D">The type of the delegate describing lambda call site.</typeparam>
+        /// <param name="lambda">The lambda expression.</param>
+        /// <param name="arguments">The arguments used to replace lambda parameters.</param>
+        /// <returns>The body of lambda expression.</returns>
+        public static Expression Extract<D>(Expression<D> lambda, params Expression[] arguments)
+            where D : MulticastDelegate
+        {
+            if (lambda.Parameters.Count != arguments.LongLength)
+                throw new ArgumentException();
+            var replacer = new Runtime.CompilerServices.Replacer();
+            for (var i = 0; i < arguments.Length; i++)
+                replacer.Replace(lambda.Parameters[i], arguments[i]);
+            return replacer.Visit(lambda.Body);
+        }
+
+        /// <summary>
         /// Constructs instance method call expression.
         /// </summary>
         /// <remarks>
@@ -1126,6 +1144,16 @@ namespace DotNext.Linq.Expressions
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/do">do-while Statement</seealso>
         public static WhileExpression Until(this Expression condition, WhileExpression.Statement body)
             => WhileExpression.Create(condition, body, false);
+
+        /// <summary>
+        /// Creates a new instance of <see cref="WithExpression"/>.
+        /// </summary>
+        /// <param name="obj">The object to be referred inside of the body.</param>
+        /// <param name="body">The body of the expression.</param>
+        /// <returns>The constructed expression.</returns>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
+        public static WithExpression With(this Expression obj, WithExpression.Statement body)
+            => WithExpression.Create(obj, body);
         
         internal static MethodCallExpression Breakpoint() => CallStatic(typeof(Debugger), nameof(Debugger.Break));
 

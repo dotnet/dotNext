@@ -11,6 +11,11 @@ namespace DotNext.Linq.Expressions
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
     public sealed class WithExpression : Expression
     {
+        /// <summary>
+        /// Represents constructor of the expression body.
+        /// </summary>
+        /// <param name="scopeVar">The variable representing referred object or structure.</param>
+        /// <returns>The body of the expression.</returns>
         public delegate Expression Statement(ParameterExpression scopeVar);
 
         private readonly BinaryExpression assignment;
@@ -27,6 +32,12 @@ namespace DotNext.Linq.Expressions
             }
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="WithExpression"/>.
+        /// </summary>
+        /// <param name="obj">The object to be referred inside of the body.</param>
+        /// <param name="body">The body of the expression.</param>
+        /// <returns>The constructed expression.</returns>
         public static WithExpression Create(Expression obj, Statement body)
         {
             var result = new WithExpression(obj);
@@ -34,9 +45,18 @@ namespace DotNext.Linq.Expressions
             return result;
         }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="WithExpression"/>.
+        /// </summary>
+        /// <param name="obj">The object to be referred inside of the body.</param>
+        /// <param name="body">The body of the expression.</param>
+        /// <returns>The constructed expression.</returns>
         public static WithExpression Create(Expression obj, Expression body)
             => new WithExpression(obj) { Body = body };
 
+        /// <summary>
+        /// The expression representing referred object inside of <see cref="Body"/>.
+        /// </summary>
         public new ParameterExpression Variable { get; }
 
         /// <summary>
@@ -63,6 +83,13 @@ namespace DotNext.Linq.Expressions
         /// Gets type of this expression.
         /// </summary>
         public override Type Type => Body.Type;
+
+        /// <summary>
+        /// Reconstructs <see cref="WithExpression"/> with a new body.
+        /// </summary>
+        /// <param name="body">A new body to be placed into this expression.</param>
+        /// <returns>The expression updated with the given body.</returns>
+        public WithExpression Update(Expression body) => new WithExpression(body) { Body = body };
 
         /// <summary>
         /// Translates this expression into predefined set of expressions

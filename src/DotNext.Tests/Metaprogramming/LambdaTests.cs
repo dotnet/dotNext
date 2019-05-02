@@ -227,5 +227,15 @@ namespace DotNext.Metaprogramming
             }).Compile();
             lambda("Hello");
         }
+
+        [Fact]
+        public static void ExpressionInlining()
+        {
+            var lambda = Lambda<Func<long, long, long>>((fun, result) =>
+            {
+                Assign(result, ExpressionBuilder.Extract<Func<long, long, long>>((a, b) => Math.Max(a, b), fun[0], fun[1]));
+            }).Compile();
+            Equal(10, lambda(5, 10));
+        }
     }
 }
