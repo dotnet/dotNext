@@ -49,12 +49,21 @@ namespace DotNext
 		}
 
 		[Fact]
-		public static void DefaultTests()
+		public static void LargeStructDefault()
 		{
 			var value = default(Guid);
             True(ValueType<Guid>.IsDefault(value));
             value = Guid.NewGuid();
             False(ValueType<Guid>.IsDefault(value));
 		}
+
+        [Fact]
+        public static void SmallStructDefault()
+        {
+            var value = default(long);
+            True(ValueType<long>.IsDefault(value));
+            value = 42L;
+            False(ValueType<long>.IsDefault(value));
+        }
 	}
 }
