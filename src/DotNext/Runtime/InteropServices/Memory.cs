@@ -191,13 +191,13 @@ namespace DotNext.Runtime.InteropServices
             switch (length)
             {
                 case sizeof(byte):
-                    hashFunction.AddData(Read<byte>(ref source));
+                    hashFunction.AddData(Unsafe.Read<byte>(source.ToPointer()));
                     break;
                 case sizeof(short):
-                    hashFunction.AddData(ReadUnaligned<short>(ref source));
+                    hashFunction.AddData(Unsafe.ReadUnaligned<short>(source.ToPointer()));
                     break;
                 case sizeof(int):
-                    hashFunction.AddData(ReadUnaligned<int>(ref source));
+                    hashFunction.AddData(Unsafe.ReadUnaligned<int>(source.ToPointer()));
                     break;
                 default:
                     while (length >= IntPtr.Size)
@@ -292,10 +292,10 @@ namespace DotNext.Runtime.InteropServices
             switch (length)
             {
                 case sizeof(byte):
-                    hashFunction.AddData(ReadUnaligned<byte>(ref source));
+                    hashFunction.AddData(Unsafe.Read<byte>(source.ToPointer()));
                     break;
                 case sizeof(short):
-                    hashFunction.AddData(ReadUnaligned<short>(ref source));
+                    hashFunction.AddData(Unsafe.ReadUnaligned<short>(source.ToPointer()));
                     break;
                 default:
                     while (length >= sizeof(int))
@@ -462,6 +462,37 @@ namespace DotNext.Runtime.InteropServices
             }
         }
 
+        internal static bool IsZero(void* source, long length) => IsZero(new IntPtr(source), length);
+
+        internal static bool IsZero(IntPtr source, long length)
+        {
+            switch (length)
+            {
+                case 0L:
+                    return true;
+                case sizeof(byte):
+                    return Unsafe.Read<byte>(source.ToPointer()) == 0;
+                case sizeof(ushort):
+                    return Unsafe.ReadUnaligned<ushort>(source.ToPointer()) == 0;
+                case sizeof(uint):
+                    return Unsafe.ReadUnaligned<uint>(source.ToPointer()) == 0;
+                case sizeof(ulong):
+                    return Unsafe.ReadUnaligned<ulong>(source.ToPointer()) == 0;
+                default:
+                    while (length >= IntPtr.Size)
+                        if (ReadUnaligned<IntPtr>(ref source) == IntPtr.Zero)
+                            length -= IntPtr.Size;
+                        else
+                            return false;
+                    while (length > sizeof(byte))
+                        if (Read<byte>(ref source) == 0)
+                            length -= sizeof(byte);
+                        else
+                            return false;
+                    return true;
+            }
+        }
+
         /// <summary>
         /// Bitwise comparison of two memory blocks.
         /// </summary>
@@ -486,7 +517,7 @@ namespace DotNext.Runtime.InteropServices
                 case sizeof(ulong):
                     return Unsafe.ReadUnaligned<ulong>(first.ToPointer()).CompareTo(Unsafe.ReadUnaligned<ulong>(second.ToPointer()));
                 default:
-                    var comparison = 0;
+                    int comparison;
                     do
                     {
                         var count = (int)length.Min(int.MaxValue);
