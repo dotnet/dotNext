@@ -3,9 +3,9 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Metaprogramming.ExpressionBuilder;
+    using static Linq.Expressions.ExpressionBuilder;
 
-    internal sealed class TryCatchFinallyStatement: GuardedStatement
+    internal sealed class TryCatchFinallyStatement : GuardedStatement
     {
         private readonly uint previousState;
         private readonly uint recoveryStateId;

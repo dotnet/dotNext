@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Metaprogramming.ExpressionBuilder;
+    using static Linq.Expressions.ExpressionBuilder;
 
     internal sealed class RecoverFromExceptionExpression : StateMachineExpression
     {
@@ -13,8 +13,8 @@ namespace DotNext.Runtime.CompilerServices
         {
             Receiver = receiver;
         }
-        
-        public override Expression Reduce() => true.AsConst();
+
+        public override Expression Reduce() => true.Const();
         public override Type Type => typeof(bool);
 
         internal override Expression Reduce(ParameterExpression stateMachine)

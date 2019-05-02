@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents <see cref="long"/> constant as type.
     /// </summary>
-    public abstract class LongConst: Constant<long>
+    public abstract class LongConst : Constant<long>
     {
         /// <summary>
         /// Associated <see cref="long"/> value with this type.

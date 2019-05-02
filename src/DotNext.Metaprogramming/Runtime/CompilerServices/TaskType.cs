@@ -24,24 +24,24 @@ namespace DotNext.Runtime.CompilerServices
         internal TaskType(Type taskType)
         {
             this.taskType = taskType;
-            if(taskType is null)
+            if (taskType is null)
                 throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
-            else if(taskType == typeof(ValueTask))
+            else if (taskType == typeof(ValueTask))
             {
                 resultType = null;
                 IsValueTask = true;
             }
-            else if(taskType == typeof(Task))
+            else if (taskType == typeof(Task))
             {
                 resultType = null;
                 IsValueTask = false;
             }
-            else if(taskType.IsGenericInstanceOf(typeof(Task<>)))
+            else if (taskType.IsGenericInstanceOf(typeof(Task<>)))
             {
                 resultType = taskType.GetGenericArguments(typeof(Task<>))[0];
                 IsValueTask = false;
             }
-            else if(taskType.IsGenericInstanceOf(typeof(ValueTask<>)))
+            else if (taskType.IsGenericInstanceOf(typeof(ValueTask<>)))
             {
                 resultType = taskType.GetGenericArguments(typeof(ValueTask<>))[0];
                 IsValueTask = true;

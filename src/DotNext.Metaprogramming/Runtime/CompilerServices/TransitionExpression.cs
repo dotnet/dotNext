@@ -2,7 +2,7 @@
 
 namespace DotNext.Runtime.CompilerServices
 {
-    internal abstract class TransitionExpression: StateMachineExpression
+    internal abstract class TransitionExpression : StateMachineExpression
     {
         private protected readonly Expression StateId;
 

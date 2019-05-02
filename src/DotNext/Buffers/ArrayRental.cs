@@ -7,7 +7,7 @@ namespace DotNext.Buffers
     /// Represents array obtained from array pool.
     /// </summary>
     /// <typeparam name="T">Type of array elements.</typeparam>
-    public readonly struct ArrayRental<T>: IDisposable
+    public readonly struct ArrayRental<T> : IDisposable
     {
         private readonly ArrayPool<T> pool;
         private readonly T[] array;
@@ -30,7 +30,7 @@ namespace DotNext.Buffers
         /// Obtains rented array.
         /// </summary>
         /// <param name="rental">Array rental.</param>
-        public static implicit operator T[](in ArrayRental<T> rental) => rental.array;
+        public static implicit operator T[] (in ArrayRental<T> rental) => rental.array;
 
         /// <summary>
         /// Returns array to the pool.

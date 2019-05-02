@@ -1,5 +1,3 @@
-using System;
-
 namespace DotNext.Generic
 {
     /// <summary>
@@ -50,7 +48,7 @@ namespace DotNext.Generic
         /// <returns><see langword="true"/>, this object represents the same constant value as other; otherwise, <see langword="false"/>.</returns>
         public sealed override bool Equals(object other)
         {
-            switch(other)
+            switch (other)
             {
                 case T obj: return Equals(obj, Value);
                 case Constant<T> @const: return Equals(Value, @const.Value);

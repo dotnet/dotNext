@@ -16,7 +16,7 @@ namespace DotNext.Collections.Generic
         /// <returns>A cloned stack.</returns>
         public static Stack<T> Clone<T>(this Stack<T> original)
         {
-            if(original.Count == 0)
+            if (original.Count == 0)
                 return new Stack<T>();
             var arr = original.ToArray();
             Array.Reverse(arr);
@@ -32,7 +32,7 @@ namespace DotNext.Collections.Generic
         /// <returns><see langword="true"/> if stack is not empty and object at the top of the stack exists; otherwise, <see langword="false"/>.</returns>
         public static bool TryPeek<T>(this Stack<T> stack, out T obj)
         {
-            if(stack.Count > 0)
+            if (stack.Count > 0)
             {
                 obj = stack.Peek();
                 return true;
@@ -53,7 +53,7 @@ namespace DotNext.Collections.Generic
         /// <returns><see langword="true"/> if stack is not empty and object at the top of the stack exists; otherwise, <see langword="false"/>.</returns>
         public static bool TryPop<T>(this Stack<T> stack, out T obj)
         {
-            if(stack.Count > 0)
+            if (stack.Count > 0)
             {
                 obj = stack.Pop();
                 return true;

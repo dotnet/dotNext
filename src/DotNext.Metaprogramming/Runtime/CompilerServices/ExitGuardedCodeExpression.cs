@@ -3,9 +3,9 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Metaprogramming.ExpressionBuilder;
+    using static Linq.Expressions.ExpressionBuilder;
 
-    internal sealed class ExitGuardedCodeExpression: TransitionExpression
+    internal sealed class ExitGuardedCodeExpression : TransitionExpression
     {
         internal ExitGuardedCodeExpression(uint parentState)
             : base(parentState)

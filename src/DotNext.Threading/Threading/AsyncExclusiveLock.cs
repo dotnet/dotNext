@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading
 {
@@ -10,11 +10,11 @@ namespace DotNext.Threading
     /// </summary>
     public sealed class AsyncExclusiveLock : QueuedSynchronizer
     {
-        private readonly struct LockManager: ILockManager<bool, WaitNode>
+        private readonly struct LockManager : ILockManager<bool, WaitNode>
         {
             bool ILockManager<bool, WaitNode>.CheckState(ref bool locked)
             {
-                if(locked)
+                if (locked)
                     return false;
                 else
                 {
@@ -69,7 +69,7 @@ namespace DotNext.Threading
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token).CheckOnTimeout();
+        public Task Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token);
 
         /// <summary>
         /// Releases previously acquired exclusive lock.
@@ -80,9 +80,9 @@ namespace DotNext.Threading
         public void Release()
         {
             ThrowIfDisposed();
-            if(!locked)
+            if (!locked)
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
-            else if(head is null)
+            else if (head is null)
                 locked = false;
             else
             {

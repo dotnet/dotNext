@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Linq.Expressions;
 
 namespace DotNext.Reflection
 {
@@ -22,15 +22,15 @@ namespace DotNext.Reflection
 
         private static bool AddOrRemoveHandler(EventInfo @event, object target, D handler, Action<object, Delegate> modifier)
         {
-            if(@event.AddMethod.IsStatic)
+            if (@event.AddMethod.IsStatic)
             {
-                if(target is null)
+                if (target is null)
                 {
                     modifier(target, handler);
                     return true;
                 }
             }
-            else if(@event.DeclaringType.IsInstanceOfType(target))
+            else if (@event.DeclaringType.IsInstanceOfType(target))
             {
                 modifier(target, handler);
                 return true;
@@ -259,7 +259,8 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if <paramref name="target"/> is <see langword="null"/>, <see langword="false"/>.</returns>
         public override bool AddEventHandler(object target, D handler)
         {
-            if(target is null){
+            if (target is null)
+            {
                 addMethod(handler);
                 return true;
             }
@@ -275,7 +276,7 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if <paramref name="target"/> is <see langword="null"/>, <see langword="false"/>.</returns>
         public override bool RemoveEventHandler(object target, D handler)
         {
-            if(target is null)
+            if (target is null)
             {
                 removeMethod(handler);
                 return true;
@@ -348,9 +349,9 @@ namespace DotNext.Reflection
 
         internal static Event<D> Reflect(EventInfo @event)
         {
-            if(@event is Event<D> other)
+            if (@event is Event<D> other)
                 return other;
-            else if(@event.EventHandlerType == typeof(D))
+            else if (@event.EventHandlerType == typeof(D))
                 return new Event<D>(@event);
             else
                 return null;
@@ -390,9 +391,9 @@ namespace DotNext.Reflection
 
         private static Accessor CompileAccessor(MethodInfo accessor, ParameterExpression instanceParam, ParameterExpression handlerParam)
         {
-             if(accessor is null)
+            if (accessor is null)
                 return null;
-            else if(accessor.DeclaringType.IsValueType)
+            else if (accessor.DeclaringType.IsValueType)
                 return accessor.CreateDelegate<Accessor>();
             else
                 return Expression.Lambda<Accessor>(Expression.Call(instanceParam, accessor, handlerParam), instanceParam, handlerParam).Compile();
@@ -406,7 +407,8 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if arguments are correct; otherwise, <see langword="false"/>.</returns>
         public override bool AddEventHandler(object target, D handler)
         {
-            if(target is T instance){
+            if (target is T instance)
+            {
                 addMethod(instance, handler);
                 return true;
             }
@@ -422,7 +424,7 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if arguments are correct; otherwise, <see langword="false"/>.</returns>
         public override bool RemoveEventHandler(object target, D handler)
         {
-            if(target is T instance)
+            if (target is T instance)
             {
                 removeMethod(instance, handler);
                 return true;
@@ -480,26 +482,26 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="event">Reflected event.</param>
         /// <returns>The delegate which can be used to attach new handlers to the event.</returns>
-        public static Accessor operator+(Event<T, D> @event) => @event.addMethod;
+        public static Accessor operator +(Event<T, D> @event) => @event.addMethod;
 
         /// <summary>
         /// Returns a delegate which can be used to detach from the event.
         /// </summary>
         /// <param name="event">Reflected event.</param>
         /// <returns>The delegate which can be used to detach from the event.</returns>
-        public static Accessor operator-(Event<T, D> @event) => @event.removeMethod;
+        public static Accessor operator -(Event<T, D> @event) => @event.removeMethod;
 
         internal static Event<T, D> Reflect(string eventName, bool nonPublic)
         {
             var @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
             return @event is null ? null : new Event<T, D>(@event);
         }
-        
+
         internal static Event<T, D> Reflect(EventInfo @event)
         {
-            if(@event is Event<T, D> other)
+            if (@event is Event<T, D> other)
                 return other;
-            else if(@event.EventHandlerType == typeof(D) && @event.DeclaringType == typeof(T))
+            else if (@event.EventHandlerType == typeof(D) && @event.DeclaringType == typeof(T))
                 return new Event<T, D>(@event);
             else
                 return null;

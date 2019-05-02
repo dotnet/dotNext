@@ -4,14 +4,14 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Collections.Generic
 {
-    using System.Collections;
     using Runtime.InteropServices;
+    using System.Collections;
 
     /// <summary>
     /// Represents a strongly typed list of objects that is allocated in unmanaged memory.
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
-    public struct UnmanagedList<T>: IList<T>, IDisposable, IUnmanagedList<T>
+    public struct UnmanagedList<T> : IList<T>, IDisposable, IUnmanagedList<T>
         where T : unmanaged
     {
         private const int DefaultCapacity = 4;
@@ -48,7 +48,7 @@ namespace DotNext.Collections.Generic
 
         private void EnsureCapacity(int capacity)
         {
-            if(array.Length < capacity)
+            if (array.Length < capacity)
                 array.Length = array.IsEmpty ? DefaultCapacity : checked(array.Length * 2).Max(capacity);
         }
 
@@ -155,7 +155,7 @@ namespace DotNext.Collections.Generic
         /// <param name="output">The destination of the elements copied from this list.</param>
         /// <param name="arrayIndex">The index in <paramref name="output"/> at which copying begins.</param>
         public void CopyTo(UnmanagedArray<T> output, int arrayIndex)
-            => CopyTo(output, 0, count);
+            => CopyTo(output, arrayIndex, count);
 
         /// <summary>
         /// Allocates a new array and copies items from this list

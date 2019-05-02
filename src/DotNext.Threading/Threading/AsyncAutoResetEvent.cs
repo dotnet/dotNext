@@ -8,13 +8,13 @@ namespace DotNext.Threading
     /// <summary>
     /// Represents asynchronous version of <see cref="AutoResetEvent"/>.
     /// </summary>
-    public class AsyncAutoResetEvent: QueuedSynchronizer, IAsyncResetEvent
+    public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
-        private readonly struct LockManager: ILockManager<bool, WaitNode>
+        private readonly struct LockManager : ILockManager<bool, WaitNode>
         {
             bool ILockManager<bool, WaitNode>.CheckState(ref bool signaled)
             {
-                if(signaled)
+                if (signaled)
                 {
                     signaled = false;
                     return true;
@@ -50,7 +50,7 @@ namespace DotNext.Threading
         public bool Reset()
         {
             ThrowIfDisposed();
-            if(signaled)
+            if (signaled)
             {
                 signaled = false;
                 return true;
@@ -68,9 +68,9 @@ namespace DotNext.Threading
         public bool Set()
         {
             ThrowIfDisposed();
-            if(signaled)
+            if (signaled)
                 return false;
-            else if(head is null)
+            else if (head is null)
                 return signaled = true;
             else
             {

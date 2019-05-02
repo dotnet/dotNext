@@ -12,7 +12,7 @@ namespace DotNext
     /// <typeparam name="R">Type of function return value.</typeparam>
     /// <returns>Function return value.</returns>
     public delegate R Function<A, R>(in A arguments)
-        where A: struct;
+        where A : struct;
 
     /// <summary>
     /// Represents an instance function with arbitrary number of arguments
@@ -40,7 +40,7 @@ namespace DotNext
         /// <returns>Allocated list of arguments.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static A ArgList<A, R>(this Function<A, R> function)
-            where A: struct
+            where A : struct
             => new A();
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace DotNext
         /// <returns>Allocated list of arguments.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static A ArgList<T, A, R>(this Function<T, A, R> function)
-            where A: struct
+            where A : struct
             => new A();
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace DotNext
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static R Invoke<T, R>(this Function<T, ValueTuple, R> function, in T instance)
-			=> function(in instance, in EmptyTuple.Value);
+            => function(in instance, in EmptyTuple.Value);
 
         /// <summary>
         /// Invokes function.
@@ -76,7 +76,7 @@ namespace DotNext
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static R Invoke<R>(this Function<ValueTuple, R> function)
-			=> function(in EmptyTuple.Value);
+            => function(in EmptyTuple.Value);
 
         /// <summary>
         /// Invokes function.

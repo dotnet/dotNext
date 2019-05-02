@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    internal sealed class Inliner: ExpressionVisitor, IDisposable
+    internal sealed class Inliner : ExpressionVisitor, IDisposable
     {
         private readonly IDictionary<LabelTarget, LabelTarget> labelReplacement;
 

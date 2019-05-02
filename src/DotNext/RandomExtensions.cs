@@ -15,7 +15,7 @@ namespace DotNext
             char NextChar(ReadOnlySpan<char> allowedChars);
         }
 
-        private readonly struct RandomCharacterGenerator: IRandomCharacterGenerator
+        private readonly struct RandomCharacterGenerator : IRandomCharacterGenerator
         {
             private readonly Random random;
 
@@ -24,7 +24,7 @@ namespace DotNext
             char IRandomCharacterGenerator.NextChar(ReadOnlySpan<char> allowedChars) => allowedChars[random.Next(0, allowedChars.Length)];
         }
 
-        private readonly struct RNGCharacterGenerator: IRandomCharacterGenerator
+        private readonly struct RNGCharacterGenerator : IRandomCharacterGenerator
         {
             private readonly byte[] buffer;
             private readonly RandomNumberGenerator random;
@@ -44,17 +44,17 @@ namespace DotNext
         }
 
         private static unsafe string NextString<R>(ref R generator, ReadOnlySpan<char> allowedChars, int length)
-            where R: struct, IRandomCharacterGenerator
+            where R : struct, IRandomCharacterGenerator
         {
-            if(length < 0)
+            if (length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
-            else if(length == 0)
+            else if (length == 0)
                 return "";
             //use stack allocation for small strings
             var result = length < 1024 ? stackalloc char[length] : new Span<char>(new char[length]);
-            foreach(ref char element in result)
+            foreach (ref char element in result)
                 element = generator.NextChar(allowedChars);
-            fixed(char* ptr = result)
+            fixed (char* ptr = result)
                 return new string(ptr, 0, length);
         }
 
@@ -67,7 +67,7 @@ namespace DotNext
         /// <returns>Randomly generated string.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this Random random, ReadOnlySpan<char> allowedChars, int length)
-		{
+        {
             var generator = new RandomCharacterGenerator(random);
             return NextString(ref generator, allowedChars, length);
         }
@@ -92,7 +92,7 @@ namespace DotNext
         /// <returns>Randomly generated string.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this Random random, string allowedChars, int length)
-			=> NextString(random, allowedChars.AsSpan(), length);
+            => NextString(random, allowedChars.AsSpan(), length);
 
         /// <summary>
         /// Generates random string of the given length.
@@ -117,7 +117,7 @@ namespace DotNext
         /// <returns>Randomly generated string.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
 		public static string NextString(this RandomNumberGenerator random, char[] allowedChars, int length)
-			=> NextString(random, new ReadOnlySpan<char>(allowedChars), length);
+            => NextString(random, new ReadOnlySpan<char>(allowedChars), length);
 
         /// <summary>
         /// Generates random string of the given length.
@@ -128,7 +128,7 @@ namespace DotNext
         /// <returns>Randomly generated string.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this RandomNumberGenerator random, string allowedChars, int length)
-			=> NextString(random, allowedChars.AsSpan(), length);
+            => NextString(random, allowedChars.AsSpan(), length);
 
         /// <summary>
         /// Generates random boolean value.
@@ -138,7 +138,7 @@ namespace DotNext
         /// <returns>Randomly generated boolean value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="trueProbability"/> value is invalid.</exception>
         public static bool NextBoolean(this Random random, double trueProbability = 0.5D)
-            => trueProbability.Between(0D, 1D, BoundType.Closed) ? 
+            => trueProbability.Between(0D, 1D, BoundType.Closed) ?
                     random.NextDouble() >= (1.0D - trueProbability) :
                     throw new ArgumentOutOfRangeException(nameof(trueProbability));
 
@@ -162,7 +162,7 @@ namespace DotNext
         /// <returns>Randomly generated boolean value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="trueProbability"/> value is invalid.</exception>
         public static bool NextBoolean(this RandomNumberGenerator random, double trueProbability = 0.5D)
-            => trueProbability.Between(0D, 1D, BoundType.Closed) ? 
+            => trueProbability.Between(0D, 1D, BoundType.Closed) ?
                     random.NextDouble() >= (1.0D - trueProbability) :
                     throw new ArgumentOutOfRangeException(nameof(trueProbability));
 

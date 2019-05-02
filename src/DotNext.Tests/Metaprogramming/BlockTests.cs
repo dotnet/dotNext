@@ -1,9 +1,14 @@
-using System;
+﻿using System;
 using System.Text;
 using Xunit;
 
 namespace DotNext.Metaprogramming
 {
+    using Linq.Expressions;
+    using static CodeGenerator;
+
+    using U = Linq.Expressions.UniversalExpression;
+
     public sealed class BlockTests: Assert
     {
         private sealed class DisposableClass: Disposable
@@ -31,9 +36,12 @@ namespace DotNext.Metaprogramming
         [Fact]
         public void DisposableStructTest()
         {
-            var lambda = LambdaBuilder<DisposeLambda>.Build(fun =>
+            var lambda = Lambda<DisposeLambda>(fun =>
             {
-                fun.Using(fun.Parameters[0], @using => @using.Constant(42L));
+                Using(fun[0], () =>
+                {
+                    InPlaceValue(42L);
+                });
             })
            .Compile();
             var flag = new ValueType<bool>(false);
@@ -47,9 +55,12 @@ namespace DotNext.Metaprogramming
         [Fact]
         public void DisposableTest()
         {
-            var lambda = LambdaBuilder<Func<DisposableClass, long>>.Build(fun =>
+            var lambda = Lambda<Func<DisposableClass, long>>(fun =>
             {
-                fun.Using(fun.Parameters[0], @using => @using.Constant(42L));
+                Using(fun[0], () =>
+                {
+                    InPlaceValue(42L);
+                });
             })
            .Compile();
             var disposable = new DisposableClass();
@@ -61,10 +72,12 @@ namespace DotNext.Metaprogramming
         [Fact]
         public void WithBlockTest()
         {
-            var lambda = LambdaBuilder<Func<int, int>>.Build(fun =>
+            var lambda = Lambda<Func<int, int>>(fun =>
             {
-                UniversalExpression arg = fun.Parameters[0];
-                fun.With(arg + 10, scope => scope.Assign(scope.ScopeVar, scope.ScopeVar * 2));
+                With((U)fun[0] + 10, scopeVar =>
+                {
+                    Assign(scopeVar, (U)scopeVar * 2);
+                });
             })
             .Compile();
             Equal(28, lambda(4));
@@ -73,11 +86,11 @@ namespace DotNext.Metaprogramming
         [Fact]
         public void LockTest()
         {
-            var lambda = LambdaBuilder<Action<StringBuilder>>.Build(fun =>
+            var lambda = Lambda<Action<StringBuilder>>(fun =>
             {
-                fun.Lock(fun.Parameters[0], @lock => 
+                Lock(fun[0], () =>
                 {
-                    @lock.Call(fun.Parameters[0], nameof(StringBuilder.Append), 'a');
+                    Call(fun[0], nameof(StringBuilder.Append), 'a'.Const());
                 });
             })
             .Compile();

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DotNext.Collections.Generic
 {
-    internal struct SingletonList<T>: IReadOnlyList<T>
+    internal struct SingletonList<T> : IReadOnlyList<T>
     {
         internal struct Enumerator : IEnumerator<T>
         {
@@ -30,7 +30,7 @@ namespace DotNext.Collections.Generic
 
         internal T Item1;
 
-        T IReadOnlyList<T>.this[int index] 
+        T IReadOnlyList<T>.this[int index]
             => index == 0 ? Item1 : throw new IndexOutOfRangeException(ExceptionMessages.IndexShouldBeZero);
 
         int IReadOnlyCollection<T>.Count => 1;
@@ -44,6 +44,6 @@ namespace DotNext.Collections.Generic
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        
+
     }
 }

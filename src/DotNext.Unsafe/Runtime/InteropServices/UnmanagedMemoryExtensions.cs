@@ -1,6 +1,6 @@
 using System;
-using System.Threading.Tasks;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -149,6 +149,17 @@ namespace DotNext.Runtime.InteropServices
             => memory.ToPointer<byte>().BitwiseHashCode(memory.Size, salted);
 
         /// <summary>
+        /// Computes 64-bit hash code for the block of memory.
+        /// </summary>
+        /// <typeparam name="M">The type of the unmanaged memory view.</typeparam>
+        /// <param name="memory">The memory block.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Content hash code.</returns>
+        public static long BitwiseHashCode64<M>(this ref M memory, bool salted = true)
+            where M : struct, IUnmanagedMemory
+            => memory.ToPointer<byte>().BitwiseHashCode64(memory.Size, salted);
+
+        /// <summary>
         /// Bitwise comparison of two memory blocks.
         /// </summary>
         /// <typeparam name="M1">The first type of the unmanaged memory view.</typeparam>
@@ -169,7 +180,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <returns>Byte located at the specified offset in the memory.</returns>
 		/// <exception cref="NullPointerException">This buffer is not allocated.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Invalid offset.</exception>    
-        public static Pointer<byte> ToPointer<M>(this ref M memory, long offset) 
+        public static Pointer<byte> ToPointer<M>(this ref M memory, long offset)
             where M : struct, IUnmanagedMemory
             => offset >= 0 && offset < memory.Size ?
                 memory.ToPointer<byte>() + offset :

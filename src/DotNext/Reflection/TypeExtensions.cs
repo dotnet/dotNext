@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Reflection;
 
 namespace DotNext.Reflection
@@ -25,15 +23,15 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if the specified type is unmanaged value type; otherwise, <see langword="false"/>.</returns>
         public static bool IsUnmanaged(this Type type)
         {
-            if(type.IsGenericType || type.IsGenericTypeDefinition || type.IsGenericParameter)
+            if (type.IsGenericType || type.IsGenericTypeDefinition || type.IsGenericParameter)
                 return false;
-            else if(type.IsPrimitive || type.IsPointer || type.IsEnum)
+            else if (type.IsPrimitive || type.IsPointer || type.IsEnum)
                 return true;
-            else if(type.IsValueType)
+            else if (type.IsValueType)
             {
                 //check all fields
-                foreach(var field in type.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
-                    if(!field.FieldType.IsUnmanaged())
+                foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
+                    if (!field.FieldType.IsUnmanaged())
                         return false;
                 return true;
             }
@@ -71,8 +69,8 @@ namespace DotNext.Reflection
         /// </remarks>
         public static MethodInfo GetMethod(this Type type, string methodName, BindingFlags flags, long genericParamCount, params Type[] parameters)
         {
-            foreach(var method in type.GetMethods(flags))
-                if(method.Name == methodName && method.GetGenericArguments().LongLength == genericParamCount)
+            foreach (var method in type.GetMethods(flags))
+                if (method.Name == methodName && method.GetGenericArguments().LongLength == genericParamCount)
                 {
                     var success = false;
                     //check signature
@@ -102,27 +100,27 @@ namespace DotNext.Reflection
         /// <param name="parameters">An array representing the number, order, and type of the parameters for the method to get.</param>
         /// <returns>Search result; or <see langword="null"/> if search criteria is invalid or method doesn't exist.</returns>
 		public static MethodInfo GetMethod(this Type type, string name, BindingFlags flags, params Type[] parameters)
-			=> type.GetMethod(name, flags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
+            => type.GetMethod(name, flags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
 
-		internal static Type FindGenericInstance(this Type type, Type genericDefinition)
-		{
-			bool IsGenericInstanceOf(Type candidate)
-				=> candidate.IsGenericType && !candidate.IsGenericTypeDefinition && candidate.GetGenericTypeDefinition() == genericDefinition;
+        internal static Type FindGenericInstance(this Type type, Type genericDefinition)
+        {
+            bool IsGenericInstanceOf(Type candidate)
+                => candidate.IsGenericType && !candidate.IsGenericTypeDefinition && candidate.GetGenericTypeDefinition() == genericDefinition;
 
-			if(genericDefinition.IsInterface)
-			{
-				foreach(var iface in type.GetInterfaces())
-					if(IsGenericInstanceOf(iface))
-						return iface;
-			}
-			else
-				while(!(type is null))
-					if(IsGenericInstanceOf(type))
-						return type;
-					else
-						type = type.BaseType;
-			return null;
-		}
+            if (genericDefinition.IsInterface)
+            {
+                foreach (var iface in type.GetInterfaces())
+                    if (IsGenericInstanceOf(iface))
+                        return iface;
+            }
+            else
+                while (!(type is null))
+                    if (IsGenericInstanceOf(type))
+                        return type;
+                    else
+                        type = type.BaseType;
+            return null;
+        }
 
         /// <summary>
         /// Determines whether the type is an instance of the specified generic type.
@@ -137,7 +135,7 @@ namespace DotNext.Reflection
         /// </code>
         /// </example>
 		public static bool IsGenericInstanceOf(this Type type, Type genericDefinition)
-			=> !(FindGenericInstance(type, genericDefinition) is null);
+            => !(FindGenericInstance(type, genericDefinition) is null);
 
         /// <summary>
         /// Returns actual generic arguments passed into generic type definition implemented by the input type.
@@ -152,7 +150,7 @@ namespace DotNext.Reflection
         /// </code>
         /// </example>
 		public static Type[] GetGenericArguments(this Type type, Type genericDefinition)
-			=> FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? Array.Empty<Type>();
+            => FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? Array.Empty<Type>();
 
         /// <summary>
         /// Gets type code for the specified type.
@@ -160,44 +158,44 @@ namespace DotNext.Reflection
         /// <param name="t">The type to convert into type code.</param>
         /// <returns>Type code.</returns>
 		public static TypeCode GetTypeCode(this Type t)
-		{
-			if (t is null)
-				return TypeCode.Empty;
-			else if (t == typeof(bool))
-				return TypeCode.Boolean;
-			else if (t == typeof(byte))
-				return TypeCode.Byte;
-			else if (t == typeof(sbyte))
-				return TypeCode.SByte;
-			else if (t == typeof(short))
-				return TypeCode.Int16;
-			else if (t == typeof(ushort))
-				return TypeCode.UInt16;
-			else if (t == typeof(int))
-				return TypeCode.Int32;
-			else if (t == typeof(uint))
-				return TypeCode.UInt32;
-			else if (t == typeof(long))
-				return TypeCode.Int64;
-			else if (t == typeof(ulong))
-				return TypeCode.UInt64;
-			else if (t == typeof(float))
-				return TypeCode.Single;
-			else if (t == typeof(double))
-				return TypeCode.Double;
-			else if (t == typeof(string))
-				return TypeCode.String;
-			else if (t == typeof(DateTime))
-				return TypeCode.DateTime;
-			else if (t == typeof(decimal))
-				return TypeCode.Decimal;
-			else if (t == typeof(char))
-				return TypeCode.Char;
-			else if (t == typeof(DBNull))
-				return TypeCode.DBNull;
-			else
-				return TypeCode.Object;
-		}
+        {
+            if (t is null)
+                return TypeCode.Empty;
+            else if (t == typeof(bool))
+                return TypeCode.Boolean;
+            else if (t == typeof(byte))
+                return TypeCode.Byte;
+            else if (t == typeof(sbyte))
+                return TypeCode.SByte;
+            else if (t == typeof(short))
+                return TypeCode.Int16;
+            else if (t == typeof(ushort))
+                return TypeCode.UInt16;
+            else if (t == typeof(int))
+                return TypeCode.Int32;
+            else if (t == typeof(uint))
+                return TypeCode.UInt32;
+            else if (t == typeof(long))
+                return TypeCode.Int64;
+            else if (t == typeof(ulong))
+                return TypeCode.UInt64;
+            else if (t == typeof(float))
+                return TypeCode.Single;
+            else if (t == typeof(double))
+                return TypeCode.Double;
+            else if (t == typeof(string))
+                return TypeCode.String;
+            else if (t == typeof(DateTime))
+                return TypeCode.DateTime;
+            else if (t == typeof(decimal))
+                return TypeCode.Decimal;
+            else if (t == typeof(char))
+                return TypeCode.Char;
+            else if (t == typeof(DBNull))
+                return TypeCode.DBNull;
+            else
+                return TypeCode.Object;
+        }
 
         /// <summary>
         /// Indicates that object of one type can be implicitly converted into another whithout boxing.
@@ -216,7 +214,7 @@ namespace DotNext.Reflection
         /// </example>
         public static bool IsAssignableFromWithoutBoxing(this Type to, Type from)
             => to == from || !from.IsValueType && to.IsAssignableFrom(from);
-        
+
         /// <summary>
         /// Casts an object to the class, value type or interface.
         /// </summary>
@@ -229,9 +227,9 @@ namespace DotNext.Reflection
         /// </exception>
         public static object Cast(this Type type, object obj)
         {
-            if(obj is null)
+            if (obj is null)
                 return type.IsValueType ? new InvalidCastException(ExceptionMessages.CastNullToValueType) : null;
-            else if(type.IsInstanceOfType(obj))
+            else if (type.IsInstanceOfType(obj))
                 return obj;
             else
                 throw new InvalidCastException();

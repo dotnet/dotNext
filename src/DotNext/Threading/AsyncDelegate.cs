@@ -17,11 +17,11 @@ namespace DotNext.Threading
     public static class AsyncDelegate
     {
         private static Task StartNew<D>(D @delegate, Action<D> invoker, CancellationToken token)
-            where D: Delegate
+            where D : Delegate
             => Task.Factory.StartNew(() => invoker(@delegate), token);
 
         private static Task InvokeAsync<D>(D @delegate, Func<D, Task> invoker)
-            where D: MulticastDelegate
+            where D : MulticastDelegate
         {
             if (@delegate is null)
                 return Task.CompletedTask;
@@ -46,7 +46,7 @@ namespace DotNext.Threading
         /// <typeparam name="D">Type of delegate to invoke.</typeparam>
         /// <returns>A task allows to control asynchronous invocation of methods attached to the multicast delegate.</returns>
         public static Task InvokeAsync<D>(this D @delegate, Action<D> invoker, CancellationToken token = default)
-            where D: MulticastDelegate
+            where D : MulticastDelegate
             => InvokeAsync(@delegate, h => StartNew(h, invoker, token));
 
         /// <summary>

@@ -4,7 +4,6 @@ using System.Threading;
 
 namespace DotNext.Threading
 {
-    using Threading;
     using Runtime.InteropServices;
 
     /// <summary>
@@ -498,7 +497,7 @@ namespace DotNext.Threading
         /// <returns>The original value that was in the memory before.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CompareExchangeValue(this Pointer<int> pointer, int value, int comparand) => Interlocked.CompareExchange(ref pointer.Ref, value, comparand);
-    
+
         /// <summary>
         /// Compares two 64-bit signed integers for equality and, if they are equal, replaces the first value.
         /// </summary>
@@ -518,14 +517,14 @@ namespace DotNext.Threading
         /// <returns>The original value that was in the memory before.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double CompareExchangeValue(this Pointer<double> pointer, double value, double comparand) => Interlocked.CompareExchange(ref pointer.Ref, value, comparand);
-        
+
         /// <summary>
-		/// Atomically sets a value located at the specified address in the memory to the given updated value if the current value == the expected value.
-		/// </summary>
-		/// <param name="pointer">A pointer to a value to be modified.</param>
-		/// <param name="expected">The expected value.</param>
-		/// <param name="update">The new value.</param>
-		/// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        /// Atomically sets a value located at the specified address in the memory to the given updated value if the current value == the expected value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="expected">The expected value.</param>
+        /// <param name="update">The new value.</param>
+        /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSetValue(this Pointer<long> pointer, long expected, long update) => AtomicInt64.CompareAndSet(ref pointer.Ref, expected, update);
 
@@ -538,24 +537,24 @@ namespace DotNext.Threading
 		/// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSetValue(this Pointer<int> pointer, int expected, int update) => AtomicInt32.CompareAndSet(ref pointer.Ref, expected, update);
-    
+
         /// <summary>
-		/// Atomically sets a value located at the specified address in the memory to the given updated value if the current value == the expected value.
-		/// </summary>
-		/// <param name="pointer">A pointer to a value to be modified.</param>
-		/// <param name="expected">The expected value.</param>
-		/// <param name="update">The new value.</param>
-		/// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        /// Atomically sets a value located at the specified address in the memory to the given updated value if the current value == the expected value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="expected">The expected value.</param>
+        /// <param name="update">The new value.</param>
+        /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSetValue(this Pointer<float> pointer, float expected, float update) => AtomicSingle.CompareAndSet(ref pointer.Ref, expected, update);
-    
+
         /// <summary>
-		/// Atomically sets a value located at the specified address in the memory to the given updated value if the current value == the expected value.
-		/// </summary>
-		/// <param name="pointer">A pointer to a value to be modified.</param>
-		/// <param name="expected">The expected value.</param>
-		/// <param name="update">The new value.</param>
-		/// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        /// Atomically sets a value located at the specified address in the memory to the given updated value if the current value == the expected value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="expected">The expected value.</param>
+        /// <param name="update">The new value.</param>
+        /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSetValue(this Pointer<double> pointer, double expected, double update) => AtomicDouble.CompareAndSet(ref pointer.Ref, expected, update);
 
@@ -571,31 +570,31 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int AccumulateAndGetValue(this Pointer<int> pointer, int x, Func<int, int, int> accumulator) => AtomicInt32.AccumulateAndGet(ref pointer.Ref, x, accumulator);   
+        public static int AccumulateAndGetValue(this Pointer<int> pointer, int x, Func<int, int, int> accumulator) => AtomicInt32.AccumulateAndGet(ref pointer.Ref, x, accumulator);
 
         /// <summary>
-		/// Atomically updates the current value referenced by pointer with the results of applying the given function 
-		/// to the current and given values, returning the original value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the current value as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="pointer">A pointer to a value to be modified.</param>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments</param>
-		/// <returns>The original value.</returns>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function 
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int GetAndAccumulateValue(this Pointer<int> pointer, int x, Func<int, int, int> accumulator) => AtomicInt32.GetAndAccumulate(ref pointer.Ref, x, accumulator);   
-    
+        public static int GetAndAccumulateValue(this Pointer<int> pointer, int x, Func<int, int, int> accumulator) => AtomicInt32.GetAndAccumulate(ref pointer.Ref, x, accumulator);
+
         /// <summary>
-		/// Atomically updates the value referenced by pointer with the results 
-		/// of applying the given function, returning the updated value.
-		/// </summary>
-		/// <param name="pointer">A pointer to a value to be modified.</param>
-		/// <param name="updater">A side-effect-free function</param>
-		/// <returns>The updated value.</returns>
+        /// Atomically updates the value referenced by pointer with the results 
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int UpdateAndGetValue(this Pointer<int> pointer, Func<int, int> updater) => AtomicInt32.UpdateAndGet(ref pointer.Ref, updater);
+        public static int UpdateAndGetValue(this Pointer<int> pointer, Func<int, int> updater) => AtomicInt32.UpdateAndGet(ref pointer.Ref, updater);
 
         /// <summary>
 		/// Atomically updates the value referenced by pointer with the results 
@@ -605,7 +604,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int GetAndUpdateValue(this Pointer<int> pointer, Func<int, int> updater) => AtomicInt32.GetAndUpdate(ref pointer.Ref, updater);
+        public static int GetAndUpdateValue(this Pointer<int> pointer, Func<int, int> updater) => AtomicInt32.GetAndUpdate(ref pointer.Ref, updater);
 
         /// <summary>
 		/// Atomically updates the current value referenced by pointer with the results of applying the given function 
@@ -619,31 +618,31 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long AccumulateAndGetValue(this Pointer<long> pointer, long x, Func<long, long, long> accumulator) => AtomicInt64.AccumulateAndGet(ref pointer.Ref, x, accumulator);   
+        public static long AccumulateAndGetValue(this Pointer<long> pointer, long x, Func<long, long, long> accumulator) => AtomicInt64.AccumulateAndGet(ref pointer.Ref, x, accumulator);
 
         /// <summary>
-		/// Atomically updates the current value referenced by pointer with the results of applying the given function 
-		/// to the current and given values, returning the original value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the current value as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="pointer">A pointer to a value to be modified.</param>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments</param>
-		/// <returns>The original value.</returns>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function 
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetAndAccumulateValue(this Pointer<long> pointer, long x, Func<long, long, long> accumulator) => AtomicInt64.GetAndAccumulate(ref pointer.Ref, x, accumulator);   
-    
+        public static long GetAndAccumulateValue(this Pointer<long> pointer, long x, Func<long, long, long> accumulator) => AtomicInt64.GetAndAccumulate(ref pointer.Ref, x, accumulator);
+
         /// <summary>
-		/// Atomically updates the value referenced by pointer with the results 
-		/// of applying the given function, returning the updated value.
-		/// </summary>
-		/// <param name="pointer">A pointer to a value to be modified.</param>
-		/// <param name="updater">A side-effect-free function</param>
-		/// <returns>The updated value.</returns>
+        /// Atomically updates the value referenced by pointer with the results 
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static long UpdateAndGetValue(this Pointer<long> pointer, Func<long, long> updater) => AtomicInt64.UpdateAndGet(ref pointer.Ref, updater);
+        public static long UpdateAndGetValue(this Pointer<long> pointer, Func<long, long> updater) => AtomicInt64.UpdateAndGet(ref pointer.Ref, updater);
 
         /// <summary>
 		/// Atomically updates the value referenced by pointer with the results 
@@ -653,7 +652,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static long GetAndUpdateValue(this Pointer<long> pointer, Func<long, long> updater) => AtomicInt64.GetAndUpdate(ref pointer.Ref, updater);
+        public static long GetAndUpdateValue(this Pointer<long> pointer, Func<long, long> updater) => AtomicInt64.GetAndUpdate(ref pointer.Ref, updater);
 
         /// <summary>
 		/// Atomically updates the current value referenced by pointer with the results of applying the given function 
@@ -667,31 +666,31 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float AccumulateAndGetValue(this Pointer<float> pointer, float x, Func<float, float, float> accumulator) => AtomicSingle.AccumulateAndGet(ref pointer.Ref, x, accumulator);   
+        public static float AccumulateAndGetValue(this Pointer<float> pointer, float x, Func<float, float, float> accumulator) => AtomicSingle.AccumulateAndGet(ref pointer.Ref, x, accumulator);
 
         /// <summary>
-		/// Atomically updates the current value referenced by pointer with the results of applying the given function 
-		/// to the current and given values, returning the original value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the current value as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="pointer">A pointer to a value to be modified.</param>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments</param>
-		/// <returns>The original value.</returns>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function 
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float GetAndAccumulateValue(this Pointer<float> pointer, float x, Func<float, float, float> accumulator) => AtomicSingle.GetAndAccumulate(ref pointer.Ref, x, accumulator);   
-    
+        public static float GetAndAccumulateValue(this Pointer<float> pointer, float x, Func<float, float, float> accumulator) => AtomicSingle.GetAndAccumulate(ref pointer.Ref, x, accumulator);
+
         /// <summary>
-		/// Atomically updates the value referenced by pointer with the results 
-		/// of applying the given function, returning the updated value.
-		/// </summary>
-		/// <param name="pointer">A pointer to a value to be modified.</param>
-		/// <param name="updater">A side-effect-free function</param>
-		/// <returns>The updated value.</returns>
+        /// Atomically updates the value referenced by pointer with the results 
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float UpdateAndGetValue(this Pointer<float> pointer, Func<float, float> updater) => AtomicSingle.UpdateAndGet(ref pointer.Ref, updater);
+        public static float UpdateAndGetValue(this Pointer<float> pointer, Func<float, float> updater) => AtomicSingle.UpdateAndGet(ref pointer.Ref, updater);
 
         /// <summary>
 		/// Atomically updates the value referenced by pointer with the results 
@@ -701,7 +700,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static float GetAndUpdateValue(this Pointer<float> pointer, Func<float, float> updater) => AtomicSingle.GetAndUpdate(ref pointer.Ref, updater);
+        public static float GetAndUpdateValue(this Pointer<float> pointer, Func<float, float> updater) => AtomicSingle.GetAndUpdate(ref pointer.Ref, updater);
 
         //
 
@@ -717,31 +716,31 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double AccumulateAndGetValue(this Pointer<double> pointer, double x, Func<double, double, double> accumulator) => AtomicDouble.AccumulateAndGet(ref pointer.Ref, x, accumulator);   
+        public static double AccumulateAndGetValue(this Pointer<double> pointer, double x, Func<double, double, double> accumulator) => AtomicDouble.AccumulateAndGet(ref pointer.Ref, x, accumulator);
 
         /// <summary>
-		/// Atomically updates the current value referenced by pointer with the results of applying the given function 
-		/// to the current and given values, returning the original value.
-		/// </summary>
-		/// <remarks>
-		/// The function is applied with the current value as its first argument, and the given update as the second argument.
-		/// </remarks>
-		/// <param name="pointer">A pointer to a value to be modified.</param>
-		/// <param name="x">Accumulator operand.</param>
-		/// <param name="accumulator">A side-effect-free function of two arguments</param>
-		/// <returns>The original value.</returns>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function 
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double GetAndAccumulateValue(this Pointer<double> pointer, double x, Func<double, double, double> accumulator) => AtomicDouble.GetAndAccumulate(ref pointer.Ref, x, accumulator);   
-    
+        public static double GetAndAccumulateValue(this Pointer<double> pointer, double x, Func<double, double, double> accumulator) => AtomicDouble.GetAndAccumulate(ref pointer.Ref, x, accumulator);
+
         /// <summary>
-		/// Atomically updates the value referenced by pointer with the results 
-		/// of applying the given function, returning the updated value.
-		/// </summary>
-		/// <param name="pointer">A pointer to a value to be modified.</param>
-		/// <param name="updater">A side-effect-free function</param>
-		/// <returns>The updated value.</returns>
+        /// Atomically updates the value referenced by pointer with the results 
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static double UpdateAndGetValue(this Pointer<double> pointer, Func<double, double> updater) => AtomicDouble.UpdateAndGet(ref pointer.Ref, updater);
+        public static double UpdateAndGetValue(this Pointer<double> pointer, Func<double, double> updater) => AtomicDouble.UpdateAndGet(ref pointer.Ref, updater);
 
         /// <summary>
 		/// Atomically updates the value referenced by pointer with the results 
@@ -751,6 +750,6 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static double GetAndUpdateValue(this Pointer<double> pointer, Func<double, double> updater) => AtomicDouble.GetAndUpdate(ref pointer.Ref, updater);
+        public static double GetAndUpdateValue(this Pointer<double> pointer, Func<double, double> updater) => AtomicDouble.GetAndUpdate(ref pointer.Ref, updater);
     }
 }

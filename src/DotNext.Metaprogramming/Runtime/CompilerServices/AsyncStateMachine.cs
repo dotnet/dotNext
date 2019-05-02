@@ -1,8 +1,8 @@
 using System;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 using System.Runtime.ConstrainedExecution;
+using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -14,7 +14,7 @@ namespace DotNext.Runtime.CompilerServices
     /// and intended for expert-level developers.
     /// </remarks>
     /// <typeparam name="STATE">The local state of async function used to store computation state.</typeparam>
-    internal struct AsyncStateMachine<STATE>: IAsyncStateMachine<STATE>
+    internal struct AsyncStateMachine<STATE> : IAsyncStateMachine<STATE>
     {
         /// <summary>
         /// Represents state-transition function.
@@ -82,7 +82,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             StateId = previousState;
             guardedRegionsCounter -= 1;
-            
+
         }
 
         /// <summary>
@@ -146,8 +146,10 @@ namespace DotNext.Runtime.CompilerServices
                     builder.SetResult();
                 else
                     builder.SetException(exception.SourceException);
+                //perform cleanup after resuming of all suspended tasks
                 guardedRegionsCounter = 0;
                 exception = null;
+                State = default;
             }
         }
 
@@ -157,12 +159,19 @@ namespace DotNext.Runtime.CompilerServices
         /// <typeparam name="TAwaiter">Type of asynchronous control flow object.</typeparam>
         /// <param name="awaiter">Asynchronous result obtained from another method to await.</param>
         /// <param name="stateId">A new state identifier.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
-            where TAwaiter: ICriticalNotifyCompletion
+        /// <returns><see langword="true"/> if awaiter is completed synchronously; otherwise, <see langword="false"/>.</returns>
+        public bool MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
+            where TAwaiter : INotifyCompletion
         {
             StateId = stateId;
-            builder.AwaitUnsafeOnCompleted(ref awaiter, ref this);
+            //avoid boxing of this state machine through continuation action if awaiter is completed already
+            if (Awaiter<TAwaiter>.IsCompleted(ref awaiter))
+                return true;
+            else
+            {
+                builder.AwaitOnCompleted(ref awaiter, ref this);
+                return false;
+            }
         }
 
         /// <summary>
@@ -170,11 +179,7 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public void Complete()
-        {
-            StateId = FINAL_STATE;
-            exception = null;
-        }
+        public void Complete() => StateId = FINAL_STATE;
 
         private ValueTask Start()
         {
@@ -309,7 +314,7 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public void Rethrow() => exception?.Throw();
-        
+
         private ValueTask<R> Start()
         {
             builder.Start(ref this);
@@ -346,12 +351,19 @@ namespace DotNext.Runtime.CompilerServices
         /// <typeparam name="TAwaiter">Type of asynchronous control flow object.</typeparam>
         /// <param name="awaiter">Asynchronous result obtained from another method to await.</param>
         /// <param name="stateId">A new state identifier.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
-            where TAwaiter : ICriticalNotifyCompletion
+        /// <returns><see langword="true"/> if awaiter is completed synchronously; otherwise, <see langword="false"/>.</returns>
+        public bool MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
+            where TAwaiter : INotifyCompletion
         {
             StateId = stateId;
-            builder.AwaitUnsafeOnCompleted(ref awaiter, ref this);
+            //avoid boxing of this state machine through continuation action if awaiter is completed already
+            if (Awaiter<TAwaiter>.IsCompleted(ref awaiter))
+                return true;
+            else
+            {
+                builder.AwaitOnCompleted(ref awaiter, ref this);
+                return false;
+            }
         }
 
         void IAsyncStateMachine.MoveNext()
@@ -375,8 +387,11 @@ namespace DotNext.Runtime.CompilerServices
                     builder.SetResult(result);
                 else
                     builder.SetException(exception.SourceException);
+                //perform cleanup after resuming of all suspended tasks
                 guardedRegionsCounter = 0;
                 exception = null;
+                result = default;
+                State = default;
             }
         }
 

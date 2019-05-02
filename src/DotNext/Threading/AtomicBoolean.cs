@@ -1,14 +1,14 @@
 using System;
-using System.Threading;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace DotNext.Threading
 {
-	/// <summary>
-	/// Represents atomic boolean.
-	/// </summary>
+    /// <summary>
+    /// Represents atomic boolean.
+    /// </summary>
     [Serializable]
-    public struct AtomicBoolean: IEquatable<bool>
+    public struct AtomicBoolean : IEquatable<bool>
     {
         private const int True = 1;
         private const int False = 0;
@@ -20,15 +20,15 @@ namespace DotNext.Threading
         /// <param name="value">Initial value of the atomic boolean.</param>
         public AtomicBoolean(bool value) => this.value = value ? True : False;
 
-		/// <summary>
-		/// Gets or sets boolean value in volatile manner.
-		/// </summary>
+        /// <summary>
+        /// Gets or sets boolean value in volatile manner.
+        /// </summary>
         public bool Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => value.VolatileRead() == True;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => this.value.VolatileWrite(value ? True: False);
+            set => this.value.VolatileWrite(value ? True : False);
         }
 
         /// <summary>
@@ -74,8 +74,8 @@ namespace DotNext.Threading
             {
                 oldValue = value.VolatileRead();
                 newValue = oldValue ^ True;
-            } 
-            while(!value.CompareAndSet(oldValue, newValue));
+            }
+            while (!value.CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
         }
 
@@ -98,7 +98,7 @@ namespace DotNext.Threading
 		/// <returns>Original value before modification.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool GetAndSet(bool update)
-            => Interlocked.Exchange(ref this.value, update ? True: False) == True;
+            => Interlocked.Exchange(ref value, update ? True : False) == True;
 
         /// <summary>
 		/// Modifies the current value atomically.
@@ -119,7 +119,7 @@ namespace DotNext.Threading
             {
                 newValue = accumulator(oldValue = Value, x);
             }
-            while(!CompareAndSet(oldValue, newValue));
+            while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
         }
 
@@ -130,7 +130,7 @@ namespace DotNext.Threading
             {
                 newValue = updater(oldValue = Value);
             }
-            while(!CompareAndSet(oldValue, newValue));
+            while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
         }
 
@@ -177,7 +177,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         public bool GetAndUpdate(Func<bool, bool> updater)
             => Update(updater).OldValue;
-        
+
         /// <summary>
         /// Determines whether stored value is equal to
         /// value as the passed argument.
@@ -185,7 +185,7 @@ namespace DotNext.Threading
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
         public bool Equals(bool other) => value == (other ? True : False);
-        
+
         /// <summary>
         /// Computes hash code for the stored value.
         /// </summary>
@@ -200,7 +200,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
-            switch(other)
+            switch (other)
             {
                 case bool b:
                     return Equals(b);
