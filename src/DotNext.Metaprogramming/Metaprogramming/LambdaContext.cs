@@ -242,12 +242,5 @@ namespace DotNext.Metaprogramming
             lambda.Target = null;
             this = default;
         }
-
-        /// <summary>
-        /// Returns expression representing lambda function itself for recursive calls.
-        /// </summary>
-        /// <param name="context">The lambda construction context.</param>
-        /// <exception cref="ObjectDisposedException">The context is no longer available.</exception>
-        public static implicit operator Expression(LambdaContext context) => context.GetLambdaScope().Self;
     }
 }
