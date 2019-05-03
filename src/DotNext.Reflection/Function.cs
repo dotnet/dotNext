@@ -178,7 +178,7 @@ namespace DotNext
         /// <typeparam name="P3">The type of the third function argument.</typeparam>
         /// <typeparam name="P4">The type of the fourth function argument.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <c>this</c>/param>
+        /// <param name="instance">Explicit <c>this</c></param>
         /// <param name="arg1">The first function argument.</param>
         /// <param name="arg2">The second function argument.</param>
         /// <param name="arg3">The third function argument.</param>
@@ -209,7 +209,7 @@ namespace DotNext
         /// <summary>
         /// Invokes function.
         /// </summary>
-        /// <typeparam name="T">The type of the explicit <c>this</c>/typeparam>
+        /// <typeparam name="T">The type of the explicit <c>this</c></typeparam>
         /// <typeparam name="R">The type of function return value.</typeparam>
         /// <typeparam name="P1">The type of the first function argument.</typeparam>
         /// <typeparam name="P2">The type of the second function argument.</typeparam>
@@ -217,7 +217,7 @@ namespace DotNext
         /// <typeparam name="P4">The type of the fourth function argument.</typeparam>
         /// <typeparam name="P5">The type of the fifth function argument.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <c>this</c>/param>
+        /// <param name="instance">Explicit <c>this</c></param>
         /// <param name="arg1">The first function argument.</param>
         /// <param name="arg2">The second function argument.</param>
         /// <param name="arg3">The third function argument.</param>
