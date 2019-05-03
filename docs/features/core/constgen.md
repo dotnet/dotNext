@@ -34,4 +34,4 @@ The library offers a few predefined constant types:
 * [IntConst](../../api/DotNext.Generic.IntConst.yml) to pass integer constant as generic argument
 * [LongConst](../../api/DotNext.Generic.LongConst.yml) to pass long integer constant as generic argument
 * [StringConst](../../api/DotNext.Generic.LongConst.yml) to pass string constant as generic argument
-* [DefaultConst](../../api/DotNext.Generic.DefaultConst.yml) to pass default value of `T` as generic argument
+* [DefaultConst](../../api/DotNext.Generic.DefaultConst-1.yml) to pass default value of `T` as generic argument

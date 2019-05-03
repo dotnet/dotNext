@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class TryBuilder
    | .NEXT ">
-    <meta name="generator" content="docfx 2.40.7.0">
+    <meta name="generator" content="docfx 2.42.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -125,19 +125,19 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Catch_System_Type_System_Action_DotNext_Metaprogramming_CatchBuilder__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Catch(System.Type%2CSystem.Action%7BDotNext.Metaprogramming.CatchBuilder%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Catch_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Catch(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L32">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L81">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_TryBuilder_Catch_" data-uid="DotNext.Metaprogramming.TryBuilder.Catch*"></a>
-  <h4 id="DotNext_Metaprogramming_TryBuilder_Catch_System_Type_System_Action_DotNext_Metaprogramming_CatchBuilder__" data-uid="DotNext.Metaprogramming.TryBuilder.Catch(System.Type,System.Action{DotNext.Metaprogramming.CatchBuilder})">Catch(Type, Action&lt;CatchBuilder&gt;)</h4>
-  <div class="markdown level1 summary"><p>Constructs exception handling section.</p>
+  <h4 id="DotNext_Metaprogramming_TryBuilder_Catch_System_Linq_Expressions_Expression_" data-uid="DotNext.Metaprogramming.TryBuilder.Catch(System.Linq.Expressions.Expression)">Catch(Expression)</h4>
+  <div class="markdown level1 summary"><p>Constructs exception handling clause that can capture any exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TryBuilder Catch(Type exceptionType, Action&lt;CatchBuilder&gt; catch)</code></pre>
+    <pre><code class="lang-csharp hljs">public TryBuilder Catch(Expression handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -150,15 +150,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
-        <td><span class="parametername">exceptionType</span></td>
-        <td><p>Expected exception.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.CatchBuilder.html">CatchBuilder</a>&gt;</td>
-        <td><span class="parametername">catch</span></td>
-        <td><p>Exception handling block.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The expression representing exception handling clause.</p>
 </td>
       </tr>
     </tbody>
@@ -181,19 +175,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Catch_System_Type_System_Func_System_Linq_Expressions_ParameterExpression_DotNext_Metaprogramming_UniversalExpression__System_Func_System_Linq_Expressions_ParameterExpression_DotNext_Metaprogramming_UniversalExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Catch(System.Type%2CSystem.Func%7BSystem.Linq.Expressions.ParameterExpression%2CDotNext.Metaprogramming.UniversalExpression%7D%2CSystem.Func%7BSystem.Linq.Expressions.ParameterExpression%2CDotNext.Metaprogramming.UniversalExpression%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Catch_System_Type_DotNext_Metaprogramming_TryBuilder_Filter_DotNext_Metaprogramming_TryBuilder_Handler_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Catch(System.Type%2CDotNext.Metaprogramming.TryBuilder.Filter%2CDotNext.Metaprogramming.TryBuilder.Handler)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L46">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L54">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_TryBuilder_Catch_" data-uid="DotNext.Metaprogramming.TryBuilder.Catch*"></a>
-  <h4 id="DotNext_Metaprogramming_TryBuilder_Catch_System_Type_System_Func_System_Linq_Expressions_ParameterExpression_DotNext_Metaprogramming_UniversalExpression__System_Func_System_Linq_Expressions_ParameterExpression_DotNext_Metaprogramming_UniversalExpression__" data-uid="DotNext.Metaprogramming.TryBuilder.Catch(System.Type,System.Func{System.Linq.Expressions.ParameterExpression,DotNext.Metaprogramming.UniversalExpression},System.Func{System.Linq.Expressions.ParameterExpression,DotNext.Metaprogramming.UniversalExpression})">Catch(Type, Func&lt;ParameterExpression, UniversalExpression&gt;, Func&lt;ParameterExpression, UniversalExpression&gt;)</h4>
+  <h4 id="DotNext_Metaprogramming_TryBuilder_Catch_System_Type_DotNext_Metaprogramming_TryBuilder_Filter_DotNext_Metaprogramming_TryBuilder_Handler_" data-uid="DotNext.Metaprogramming.TryBuilder.Catch(System.Type,DotNext.Metaprogramming.TryBuilder.Filter,DotNext.Metaprogramming.TryBuilder.Handler)">Catch(Type, TryBuilder.Filter, TryBuilder.Handler)</h4>
   <div class="markdown level1 summary"><p>Constructs exception handling section.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TryBuilder Catch(Type exceptionType, Func&lt;ParameterExpression, UniversalExpression&gt; filter, Func&lt;ParameterExpression, UniversalExpression&gt; body)</code></pre>
+    <pre><code class="lang-csharp hljs">public TryBuilder Catch(Type exceptionType, TryBuilder.Filter filter, TryBuilder.Handler handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -212,14 +206,14 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a>, <a class="xref" href="DotNext.Metaprogramming.UniversalExpression.html">UniversalExpression</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Metaprogramming.TryBuilder.Filter.html">TryBuilder.Filter</a></td>
         <td><span class="parametername">filter</span></td>
         <td><p>Additional filter to be applied to the caught exception.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a>, <a class="xref" href="DotNext.Metaprogramming.UniversalExpression.html">UniversalExpression</a>&gt;</td>
-        <td><span class="parametername">body</span></td>
+        <td><a class="xref" href="DotNext.Metaprogramming.TryBuilder.Handler.html">TryBuilder.Handler</a></td>
+        <td><span class="parametername">handler</span></td>
         <td><p>Exception handling block.</p>
 </td>
       </tr>
@@ -243,19 +237,75 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Catch__1_System_Action_DotNext_Metaprogramming_CatchBuilder__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Catch%60%601(System.Action%7BDotNext.Metaprogramming.CatchBuilder%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Catch_System_Type_DotNext_Metaprogramming_TryBuilder_Handler_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Catch(System.Type%2CDotNext.Metaprogramming.TryBuilder.Handler)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L59">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L66">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_TryBuilder_Catch_" data-uid="DotNext.Metaprogramming.TryBuilder.Catch*"></a>
-  <h4 id="DotNext_Metaprogramming_TryBuilder_Catch__1_System_Action_DotNext_Metaprogramming_CatchBuilder__" data-uid="DotNext.Metaprogramming.TryBuilder.Catch``1(System.Action{DotNext.Metaprogramming.CatchBuilder})">Catch&lt;E&gt;(Action&lt;CatchBuilder&gt;)</h4>
-  <div class="markdown level1 summary"><p>Constructs exception handling section.</p>
+  <h4 id="DotNext_Metaprogramming_TryBuilder_Catch_System_Type_DotNext_Metaprogramming_TryBuilder_Handler_" data-uid="DotNext.Metaprogramming.TryBuilder.Catch(System.Type,DotNext.Metaprogramming.TryBuilder.Handler)">Catch(Type, TryBuilder.Handler)</h4>
+  <div class="markdown level1 summary"><p>Constructs exception handling clause.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TryBuilder Catch&lt;E&gt;(Action&lt;CatchBuilder&gt; catch)
+    <pre><code class="lang-csharp hljs">public TryBuilder Catch(Type exceptionType, TryBuilder.Handler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="parametername">exceptionType</span></td>
+        <td><p>Expected exception.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Metaprogramming.TryBuilder.Handler.html">TryBuilder.Handler</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>Exception handling block.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Metaprogramming.TryBuilder.html">TryBuilder</a></td>
+        <td><p><span class="xref">langword_csharp_this</span> builder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Catch__1_DotNext_Metaprogramming_TryBuilder_Handler_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Catch%60%601(DotNext.Metaprogramming.TryBuilder.Handler)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L74">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_TryBuilder_Catch_" data-uid="DotNext.Metaprogramming.TryBuilder.Catch*"></a>
+  <h4 id="DotNext_Metaprogramming_TryBuilder_Catch__1_DotNext_Metaprogramming_TryBuilder_Handler_" data-uid="DotNext.Metaprogramming.TryBuilder.Catch``1(DotNext.Metaprogramming.TryBuilder.Handler)">Catch&lt;E&gt;(TryBuilder.Handler)</h4>
+  <div class="markdown level1 summary"><p>Constructs exception handling clause.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TryBuilder Catch&lt;E&gt;(TryBuilder.Handler handler)
 
     where E : Exception</code></pre>
   </div>
@@ -270,8 +320,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.CatchBuilder.html">CatchBuilder</a>&gt;</td>
-        <td><span class="parametername">catch</span></td>
+        <td><a class="xref" href="DotNext.Metaprogramming.TryBuilder.Handler.html">TryBuilder.Handler</a></td>
+        <td><span class="parametername">handler</span></td>
         <td><p>Exception handling block.</p>
 </td>
       </tr>
@@ -311,20 +361,20 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Fault_DotNext_Metaprogramming_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Fault(DotNext.Metaprogramming.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Fault_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Fault(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L81">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L89">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_TryBuilder_Fault_" data-uid="DotNext.Metaprogramming.TryBuilder.Fault*"></a>
-  <h4 id="DotNext_Metaprogramming_TryBuilder_Fault_DotNext_Metaprogramming_UniversalExpression_" data-uid="DotNext.Metaprogramming.TryBuilder.Fault(DotNext.Metaprogramming.UniversalExpression)">Fault(UniversalExpression)</h4>
+  <h4 id="DotNext_Metaprogramming_TryBuilder_Fault_System_Linq_Expressions_Expression_" data-uid="DotNext.Metaprogramming.TryBuilder.Fault(System.Linq.Expressions.Expression)">Fault(Expression)</h4>
   <div class="markdown level1 summary"><p>Associates expression to be returned from structured exception handling block
 in case of any exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TryBuilder Fault(UniversalExpression fault)</code></pre>
+    <pre><code class="lang-csharp hljs">public TryBuilder Fault(Expression fault)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -337,7 +387,7 @@ in case of any exception.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Metaprogramming.UniversalExpression.html">UniversalExpression</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
         <td><span class="parametername">fault</span></td>
         <td><p>The expression to be returned from SEH block.</p>
 </td>
@@ -362,70 +412,19 @@ in case of any exception.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Fault_System_Action_DotNext_Metaprogramming_CompoundStatementBuilder__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Fault(System.Action%7BDotNext.Metaprogramming.CompoundStatementBuilder%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Finally_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Finally(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L69">View Source</a>
-  </span>
-  <a id="DotNext_Metaprogramming_TryBuilder_Fault_" data-uid="DotNext.Metaprogramming.TryBuilder.Fault*"></a>
-  <h4 id="DotNext_Metaprogramming_TryBuilder_Fault_System_Action_DotNext_Metaprogramming_CompoundStatementBuilder__" data-uid="DotNext.Metaprogramming.TryBuilder.Fault(System.Action{DotNext.Metaprogramming.CompoundStatementBuilder})">Fault(Action&lt;CompoundStatementBuilder&gt;)</h4>
-  <div class="markdown level1 summary"><p>Constructs block of code which will be executed in case
-of any exception.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TryBuilder Fault(Action&lt;CompoundStatementBuilder&gt; fault)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html">CompoundStatementBuilder</a>&gt;</td>
-        <td><span class="parametername">fault</span></td>
-        <td><p>Fault handling block.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Metaprogramming.TryBuilder.html">TryBuilder</a></td>
-        <td><p><span class="xref">langword_csharp_this</span> builder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Finally_DotNext_Metaprogramming_UniversalExpression_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Finally(DotNext.Metaprogramming.UniversalExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L103">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L101">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_TryBuilder_Finally_" data-uid="DotNext.Metaprogramming.TryBuilder.Finally*"></a>
-  <h4 id="DotNext_Metaprogramming_TryBuilder_Finally_DotNext_Metaprogramming_UniversalExpression_" data-uid="DotNext.Metaprogramming.TryBuilder.Finally(DotNext.Metaprogramming.UniversalExpression)">Finally(UniversalExpression)</h4>
+  <h4 id="DotNext_Metaprogramming_TryBuilder_Finally_System_Linq_Expressions_Expression_" data-uid="DotNext.Metaprogramming.TryBuilder.Finally(System.Linq.Expressions.Expression)">Finally(Expression)</h4>
   <div class="markdown level1 summary"><p>Constructs single expression run when control leaves a <span class="xref">langword_csharp_try</span> statement.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TryBuilder Finally(UniversalExpression finally)</code></pre>
+    <pre><code class="lang-csharp hljs">public TryBuilder Finally(Expression finally)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -438,59 +437,9 @@ of any exception.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Metaprogramming.UniversalExpression.html">UniversalExpression</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
         <td><span class="parametername">finally</span></td>
         <td><p>The single expression to be executed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Metaprogramming.TryBuilder.html">TryBuilder</a></td>
-        <td><p><span class="xref">langword_csharp_this</span> builder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_TryBuilder_Finally_System_Action_DotNext_Metaprogramming_CompoundStatementBuilder__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.TryBuilder.Finally(System.Action%7BDotNext.Metaprogramming.CompoundStatementBuilder%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/TryBuilder.cs/#L92">View Source</a>
-  </span>
-  <a id="DotNext_Metaprogramming_TryBuilder_Finally_" data-uid="DotNext.Metaprogramming.TryBuilder.Finally*"></a>
-  <h4 id="DotNext_Metaprogramming_TryBuilder_Finally_System_Action_DotNext_Metaprogramming_CompoundStatementBuilder__" data-uid="DotNext.Metaprogramming.TryBuilder.Finally(System.Action{DotNext.Metaprogramming.CompoundStatementBuilder})">Finally(Action&lt;CompoundStatementBuilder&gt;)</h4>
-  <div class="markdown level1 summary"><p>Constructs block of code run when control leaves a <span class="xref">langword_csharp_try</span> statement.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TryBuilder Finally(Action&lt;CompoundStatementBuilder&gt; finally)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html">CompoundStatementBuilder</a>&gt;</td>
-        <td><span class="parametername">finally</span></td>
-        <td><p>The block of code to be executed.</p>
 </td>
       </tr>
     </tbody>
@@ -537,7 +486,31 @@ of any exception.</p>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html#DotNext_Metaprogramming_ExpressionBuilder_AsConst__1___0_">ExpressionBuilder.AsConst&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Catch_DotNext_Metaprogramming_TryBuilder_System_Type_DotNext_Metaprogramming_TryBuilder_Filter_System_Action_System_Linq_Expressions_ParameterExpression__">CodeGenerator.Catch(TryBuilder, Type, TryBuilder.Filter, Action&lt;ParameterExpression&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Catch_DotNext_Metaprogramming_TryBuilder_System_Type_System_Action_">CodeGenerator.Catch(TryBuilder, Type, Action)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Catch_DotNext_Metaprogramming_TryBuilder_System_Type_System_Action_System_Linq_Expressions_ParameterExpression__">CodeGenerator.Catch(TryBuilder, Type, Action&lt;ParameterExpression&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Catch__1_DotNext_Metaprogramming_TryBuilder_System_Action_System_Linq_Expressions_ParameterExpression__">CodeGenerator.Catch&lt;E&gt;(TryBuilder, Action&lt;ParameterExpression&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Catch__1_DotNext_Metaprogramming_TryBuilder_System_Action_">CodeGenerator.Catch&lt;E&gt;(TryBuilder, Action)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Catch_DotNext_Metaprogramming_TryBuilder_System_Action_">CodeGenerator.Catch(TryBuilder, Action)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Fault_DotNext_Metaprogramming_TryBuilder_System_Action_">CodeGenerator.Fault(TryBuilder, Action)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Finally_DotNext_Metaprogramming_TryBuilder_System_Action_">CodeGenerator.Finally(TryBuilder, Action)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>

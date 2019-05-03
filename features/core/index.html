@@ -8,7 +8,7 @@
     <title>Base Class Library Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Base Class Library Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.40.7.0">
+    <meta name="generator" content="docfx 2.42.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -70,7 +70,7 @@
 <h1 id="base-class-library-enhancements">Base Class Library Enhancements</h1>
 
 <h1 id="randomization">Randomization</h1>
-<p>Related class: <a href="../../api/DotNext.RandomExtensions.html">RandomExtensions</a></p>
+<p>Related class: <a href="../../api/DotNext.RandomExtensions.yml">RandomExtensions</a></p>
 <p>Extension methods for random data generation extends both classes <em>System.Random</em> and <em>System.Security.Cryptography.RandomNumberGenerator</em>.</p>
 <h2 id="random-string-generation">Random string generation</h2>
 <p>Provides a way to generate random string of the given length and set of allowed characters.</p>
@@ -92,7 +92,7 @@ var b = rand.NextBoolean(0.3D); //0.3 is a probability of TRUE value
 </code></pre>
 <p>The same extension method is provided for class <em>System.Security.Cryptography.RandomNumberGenerator</em>.</p>
 <h1 id="string-extensions">String extensions</h1>
-<p>Related class: <a href="../../api/DotNext.StringExtensions.html">StringExtensions</a>.</p>
+<p>Related class: <a href="../../api/DotNext.StringExtensions.yml">StringExtensions</a>.</p>
 <h2 id="reverse-string">Reverse string</h2>
 <p>Extension method <em>Reverse</em> allows to reverse string characters and returns a new string:</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -107,7 +107,7 @@ var str = &quot;abc&quot;.TrimLength(2);  //str is &quot;ab&quot;
 str = &quot;abc&quot;.TrimLength(4);  //str is &quot;abc&quot;
 </code></pre>
 <h1 id="delegates">Delegates</h1>
-<p>Related classes: <a href="../../api/DotNext.StringExtensions.html">DelegateHelpers</a>, <a href="../../api/DotNext.Func.html">Func</a>, <a href="../../api/DotNext.Converter.html">Converter</a>, <a href="../../api/DotNext.Predicate.html">Predicate</a>.</p>
+<p>Related classes: <a href="../../api/DotNext.StringExtensions.yml">DelegateHelpers</a>, <a href="../../api/DotNext.Func.yml">Func</a>, <a href="../../api/DotNext.Converter.yml">Converter</a>, <a href="../../api/DotNext.Predicate.yml">Predicate</a>.</p>
 <h2 id="change-type-of-delegate">Change type of delegate</h2>
 <p>Different types of delegates can refer to the same method. For instance, <code>Func&lt;string, string&gt;</code> represents the same signature as <code>Converter&lt;string, string&gt;</code>. It means that the delegate instance can be converted into another delegate type if signature matches.</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -151,7 +151,7 @@ predicate = predicate.Or(str =&gt; str.Length % 2 == 0);
 predicate = predicate.Xor(Predicate.IsNull&lt;string&gt;());
 </code></pre>
 <h1 id="comparable-data-types">Comparable data types</h1>
-<p>Related class: <a href="../../api/DotNext.Comparable.html">Comparable</a></p>
+<p>Related class: <a href="../../api/DotNext.Comparable.yml">Comparable</a></p>
 <h2 id="minmax-value">Min/max value</h2>
 <p>Generic methods for comparable data types:</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -170,7 +170,7 @@ i = 5.Clamp(6, 10); //i == 6
 i = 5.Clamp(0, 4); //i == 4
 </code></pre>
 <h1 id="equality-check">Equality check</h1>
-<p>Related classes: <a href="../../api/DotNext.ObjectExtensions.html">ObjectExtensions</a>, <a href="../../api/DotNext.ValueTypeExtensions.html">ValueTypeExtensions</a>.</p>
+<p>Related classes: <a href="../../api/DotNext.ObjectExtensions.yml">ObjectExtensions</a>, <a href="../../api/DotNext.ValueTypeExtensions.yml">ValueTypeExtensions</a>.</p>
 <p>Extension method <em>IsOneOf</em> allows to check whether the value is equal to one of the given values.</p>
 <pre><code class="lang-csharp">using DotNext;
 
@@ -179,7 +179,7 @@ var b = 42.IsOneOf(0, 5, 42, 3); //b == true
 b = &quot;a&quot;.IsOneOf(&quot;b&quot;, &quot;c&quot;, &quot;d&quot;); //b == false
 </code></pre>
 <h1 id="array-extensions">Array extensions</h1>
-<p>Related classes: <a href="../../api/DotNext.OneDimensionalArray.html">OneDimensionalArray</a>.</p>
+<p>Related classes: <a href="../../api/DotNext.OneDimensionalArray.yml">OneDimensionalArray</a>.</p>
 <p>Extension methods for slicing, iteration, conversion, element insertion and fast equality check between elements of two arrays.</p>
 <h2 id="equality-check-1">Equality check</h2>
 <p>There are two extension methods for equality check of each element between two arrays:</p>

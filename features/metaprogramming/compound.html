@@ -8,7 +8,7 @@
     <title>Compound Expressions Construction | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Compound Expressions Construction | .NEXT ">
-    <meta name="generator" content="docfx 2.40.7.0">
+    <meta name="generator" content="docfx 2.42.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -69,16 +69,16 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="compound-expressions-construction">Compound Expressions Construction</h1>
 
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression class</a> provides builder static methods for constructing expression trees. The construction code loss its readability because builder methods oriented for tree-like representation of the final expression. Metaprogramming library offers set of <a href="../../api/DotNext.Metaprogramming.ExpressionBuilder.html">extension methods</a> aimed to simplification of expression tree construction.</p>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression class</a> provides builder static methods for constructing expression trees. The construction code loss its readability because builder methods oriented for tree-like representation of the final expression. Metaprogramming library offers set of <a href="../../api/DotNext.Linq.Expressions.ExpressionBuilder.yml">extension methods</a> aimed to simplification of expression tree construction.</p>
 <pre><code class="lang-csharp">using DotNext.Metaprogramming;
 
-var expr = 42.AsConst().Convert&lt;long&gt;().Negate().Add(1L.AsConst()); // equivalent to -((long)42) + 1L
+var expr = 42.Const().Convert&lt;long&gt;().Negate().Add(1L.Const()); // equivalent to -((long)42) + 1L
 </code></pre>
 <p>The following example demonstrates how to construct <code>throw</code> statement:</p>
 <pre><code class="lang-csharp">using System;
 using DotNext.Metaprogramming;
 
-typeof(Exception).New(&quot;Exception message&quot;.AsConst()).Throw()    //equivalent to new Exception(&quot;Exception message&quot;)
+typeof(Exception).New(&quot;Exception message&quot;.Const()).Throw()    //equivalent to new Exception(&quot;Exception message&quot;)
 </code></pre>
 <p>Compound expression can be constructed with <strong>dynamic</strong> type:</p>
 <pre><code class="lang-csharp">using System;

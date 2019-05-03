@@ -8,7 +8,7 @@
     <title>Atomic Operations | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Atomic Operations | .NEXT ">
-    <meta name="generator" content="docfx 2.40.7.0">
+    <meta name="generator" content="docfx 2.42.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -69,7 +69,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="atomic-operations">Atomic Operations</h1>
 
-<p>Most .NET programming languages provide primitive atomic operations to work with fields with concurrent access. For example, C# <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/volatile">volatile</a> keyword is a language feature for atomic read/write of the marked field. But what if more complex atomic operation is required? Java provides <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html">such features</a> at library level, with some overhead associated with object allocation. C# and many other .NET languages support concept of <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref">passing by refence</a> so it is possible to obtain a reference to the field value. This ability allows to avoid overhead of atomic primitives typical to JVM languages. Moreover, extension methods may accept <strong>this</strong> parameter by reference forming the foundation for atomic operations provided  by DotNext library.</p>
+<p>Most .NET programming languages provide primitive atomic operations to work with fields with concurrent access. For example, C# <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/volatile">volatile</a> keyword is a language feature for atomic read/write of the marked field. But what if more complex atomic operation is required? Java provides <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicInteger.html">such features</a> at library level, with some overhead associated with object allocation. C# and many other .NET languages support concept of <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref">passing by refence</a> so it is possible to obtain a reference to the field value. This ability allows to avoid overhead of atomic primitives typical to JVM languages. Moreover, extension methods may accept <strong>this</strong> parameter by reference forming the foundation for atomic operations provided  by .NEXT library.</p>
 <p>The library provides advanced atomic operations for the following types:</p>
 <ul>
 <li>Scalar types
@@ -100,13 +100,13 @@
 <h1 id="atomic-operations-for-scalar-types">Atomic operations for scalar types</h1>
 <p>All atomic operations are extension methods grouped by specific target scalar types:</p>
 <ul>
-<li><a href="../../api/DotNext.Threading.AtomicInt32.html">AtomicInteger</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int32">int</a></li>
-<li><a href="../../api/DotNext.Threading.AtomicInt64.html">AtomicLong</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int64">long</a></li>
-<li><a href="../../api/DotNext.Threading.AtomicSingle.html">AtomicFloat</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.single">float</a></li>
-<li><a href="../../api/DotNext.Threading.AtomicDouble.html">AtomicDouble</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.double">double</a></li>
-<li><a href="../../api/DotNext.Threading.AtomicReference.html">AtomicReference</a> for <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types">reference types</a></li>
+<li><a href="../../api/DotNext.Threading.AtomicInt32.yml">AtomicInteger</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int32">int</a></li>
+<li><a href="../../api/DotNext.Threading.AtomicInt64.yml">AtomicLong</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int64">long</a></li>
+<li><a href="../../api/DotNext.Threading.AtomicSingle.yml">AtomicFloat</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.single">float</a></li>
+<li><a href="../../api/DotNext.Threading.AtomicDouble.yml">AtomicDouble</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.double">double</a></li>
+<li><a href="../../api/DotNext.Threading.AtomicReference.yml">AtomicReference</a> for <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types">reference types</a></li>
 </ul>
-<p>One exception is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.boolean">bool</a> data type. The only way to use atomic boolean operations is to replace this data type with <a href="../../api/DotNext.Threading.AtomicBoolean.html">AtomicBoolean</a> type.</p>
+<p>One exception is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.boolean">bool</a> data type. The only way to use atomic boolean operations is to replace this data type with <a href="../../api/DotNext.Threading.AtomicBoolean.yml">AtomicBoolean</a> type.</p>
 <p>The following example demonstrates how to use advanced atomic operations</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
 
@@ -122,7 +122,7 @@ public class TestClass
 }
 </code></pre>
 <h1 id="atomic-operations-for-arrays">Atomic operations for arrays</h1>
-<p>C# doesn't provide volatile access to array elements syntactically in contrast with volatile fields. DotNext library provides the same set of atomic operations as for scalar types with a small difference: array atomic operation accept element index as additional argument.</p>
+<p>C# doesn't provide volatile access to array elements syntactically in contrast with volatile fields. .NEXT library provides the same set of atomic operations as for scalar types with a small difference: array atomic operation accept element index as additional argument.</p>
 <p>The second approach utilizes extension method.</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
 

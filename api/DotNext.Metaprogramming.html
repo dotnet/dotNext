@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace DotNext.Metaprogramming
    | .NEXT ">
-    <meta name="generator" content="docfx 2.40.7.0">
+    <meta name="generator" content="docfx 2.42.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -77,53 +77,14 @@
   <div class="markdown level0 remarks"></div>
     <h3 id="classes">Classes
   </h3>
-      <h4><a class="xref" href="DotNext.Metaprogramming.AsyncLambdaBuilder-1.html">AsyncLambdaBuilder&lt;D&gt;</a></h4>
-      <section><p>Provides asynchronous lambda expression with await support.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.AsyncResultExpression.html">AsyncResultExpression</a></h4>
-      <section><p>Represents return from asynchronous lambda function.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.AwaitExpression.html">AwaitExpression</a></h4>
-      <section><p>Represents suspension point in the execution of the lambda function until the awaited task completes.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.CatchBuilder.html">CatchBuilder</a></h4>
-      <section><p>Represents CATCH block builder as part of try-catch-finally statement.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.CompoundStatementBuilder.html">CompoundStatementBuilder</a></h4>
-      <section><p>Represents basic lexical scope support.</p>
+      <h4><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html">CodeGenerator</a></h4>
+      <section><p>Represents code generator.</p>
 </section>
       <h4><a class="xref" href="DotNext.Metaprogramming.ConditionalBuilder.html">ConditionalBuilder</a></h4>
       <section><p>Builder of conditional expression.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder.html">ExpressionBuilder</a></h4>
-      <section><p>Provides extension methods to simplify construction of complex expressions.</p>
-</section>
       <h4><a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder-1.html">ExpressionBuilder&lt;E&gt;</a></h4>
       <section><p>Represents compound expresssion builder.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.ForEachLoopBuilder.html">ForEachLoopBuilder</a></h4>
-      <section><p>Represents <span class="xref">langword_csharp_foreach</span> loop builder.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.ForLoopBuilder.html">ForLoopBuilder</a></h4>
-      <section><p>Represents <span class="xref">langword_csharp_for</span> loop statement builder.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.LambdaBuilder.html">LambdaBuilder</a></h4>
-      <section><p>Represents lambda function builder.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.LambdaBuilder-1.html">LambdaBuilder&lt;D&gt;</a></h4>
-      <section><p>Represents lambda function builder.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.LockBuilder.html">LockBuilder</a></h4>
-      <section><p>Represents statement which acquires the mutual-exclusion lock for a given object, executes a statement block, and then releases the lock.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.LoopBuilder.html">LoopBuilder</a></h4>
-      <section><p>Represents generic loop builder.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.LoopBuilderBase.html">LoopBuilderBase</a></h4>
-      <section><p>Represents abstract class for loop statement builders.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.ScopeBuilder.html">ScopeBuilder</a></h4>
-      <section><p>Represents lexical scope builder.</p>
 </section>
       <h4><a class="xref" href="DotNext.Metaprogramming.SwitchBuilder.html">SwitchBuilder</a></h4>
       <section><p>Represents selection statement that chooses a single section to execute from a
@@ -132,21 +93,21 @@ list of candidates based on a pattern matching.</p>
       <h4><a class="xref" href="DotNext.Metaprogramming.TryBuilder.html">TryBuilder</a></h4>
       <section><p>Represents structured exception handling statement.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.UsingBlockBuilder.html">UsingBlockBuilder</a></h4>
-      <section><p>Represents <span class="xref">langword_csharp_using</span> statement builder.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.WhileLoopBuider.html">WhileLoopBuider</a></h4>
-      <section><p>Represents <span class="xref">langword_csharp_while</span> loop builder.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Metaprogramming.WithBlockBuilder.html">WithBlockBuilder</a></h4>
-      <section><p>Represents <span class="xref">langword_csharp_With</span> statement builder.</p>
-</section>
     <h3 id="structs">Structs
   </h3>
-      <h4><a class="xref" href="DotNext.Metaprogramming.UniversalExpression.html">UniversalExpression</a></h4>
-      <section><p>Represents any expression with full support
-of overloaded operators and conversion from
-primitive data types.</p>
+      <h4><a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a></h4>
+      <section><p>Represents lambda construction context.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Metaprogramming.LoopContext.html">LoopContext</a></h4>
+      <section><p>Identifies loop.</p>
+</section>
+    <h3 id="delegates">Delegates
+  </h3>
+      <h4><a class="xref" href="DotNext.Metaprogramming.TryBuilder.Filter.html">TryBuilder.Filter</a></h4>
+      <section><p>Represents constructor of exception handling filter.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Metaprogramming.TryBuilder.Handler.html">TryBuilder.Handler</a></h4>
+      <section><p>Represents exception handler constructor.</p>
 </section>
 </article>
           </div>

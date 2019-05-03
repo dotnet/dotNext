@@ -8,7 +8,7 @@
     <title>Unmanaged Array | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Unmanaged Array | .NEXT ">
-    <meta name="generator" content="docfx 2.40.7.0">
+    <meta name="generator" content="docfx 2.42.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -69,7 +69,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="unmanaged-array">Unmanaged Array</h1>
 
-<p><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a> is a safe way to allocate array in the unmanaged memory. This type provides bound check for each element access as well as typical features of managed array such as sorting and searching.</p>
+<p><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedArray-1.yml">UnmanagedArray</a> is a safe way to allocate array in the unmanaged memory. This type provides bound check for each element access as well as typical features of managed array such as sorting and searching.</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
 
 var array = new UnmanagedArray&lt;double&gt;(10); //array of 10 elements
@@ -129,7 +129,7 @@ array.Fill(42L);
 var i = array.ElementAt(0).IncrementAndGetValue();  //i == 43L
 array.ElementAt(0).CompareAndSet(0L, 1L);   //false because array[0] == 43L
 </code></pre>
-<p>A set of atomic operations are similar to the atomic operations for primitive types described <a href="../core/atomic.html">here</a>. All supported atomic operations for pointer type located in <a href="../../api/DotNext.Threading.AtomicPointer.html">AtomicPointer</a> class.</p>
+<p>A set of atomic operations are similar to the atomic operations for primitive types described <a href="../core/atomic.html">here</a>. All supported atomic operations for pointer type located in <a href="../../api/DotNext.Threading.AtomicPointer.yml">AtomicPointer</a> class.</p>
 <h1 id="span-and-unmanagedarray">Span and UnmanagedArray</h1>
 <p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type from .NET allows to work with managed arrays as well as stack-allocated memory. It is possible to work with unmanaged heap but with some boilerplate code. The following table shows differences between unmanaged array and span:</p>
 <table>

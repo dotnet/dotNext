@@ -8,7 +8,7 @@
     <title>Loops | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Loops | .NEXT ">
-    <meta name="generator" content="docfx 2.40.7.0">
+    <meta name="generator" content="docfx 2.42.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -69,17 +69,18 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="loops">Loops</h1>
 
-<p>Metaprogramming library provides construction of <code>for</code>, <code>foreach</code> and <code>while</code> loops. The scope object available inside of builder block of code provides two special parameterless methods for continuation and abortion of loop execution: <code>Continue()</code> and <code>Break()</code>. The same methods are available from any other scope object with one exception: these methods have single parameter receiving scope object of the loop to be aborted or continued. This feature allows to leave outer loop from inner loop. There is no equivalent instruction in C# except unconditional control transfer using <code>goto</code>.</p>
+<p>Metaprogramming library provides construction of <code>for</code>, <code>foreach</code> and <code>while</code> loops. The lexical scope constructor may have optional parameter of type <a href="../../api/DotNext.Metaprogramming.LoopContext.yml">LoopContext</a> that can be used to leave outer loop from inner loop. There is no equivalent instruction in C# except unconditional control transfer using <code>goto</code>.</p>
+<p><code>Continue()</code> or <code>Break()</code> methods from <a href="../../api/DotNext.Metaprogramming.CodeGenerator.yml">CodeGenerator</a> are used to pass the control to the next iteration or out of scope respectively.</p>
 <h1 id="foreach-loop">foreach Loop</h1>
 <p><code>foreach</code> statement may accept any expression of type implementing <code>System.Collections.IEnumerable</code> or <code>System.Collections.Generic.IEnumerable&lt;T&gt;</code> interface, or having public instance parameterless method <code>GetEnumerator()</code> which return type has the public instance property <code>Current</code> and public instance parameterless method <code>MoveNext()</code>.</p>
 <pre><code class="lang-csharp">using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
 
-LambdaBuilder&lt;Action&lt;string&gt;&gt;.Build(fun =&gt; 
+Lambda&lt;Action&lt;string&gt;&gt;(fun =&gt; 
 {
-    fun.ForEach(fun.Parameters[0], loop =&gt;
+    ForEach(fun[0], ch =&gt;
     {
-        loop.Call(typeof(Console).GetMethod(nameof(Console.WriteLine), new[]{ typeof(char) }), loop.Element);
+        WriteLine(ch);
     });
 });
 
@@ -91,18 +92,20 @@ new Action&lt;string&gt;(str =&gt;
         Console.WriteLine(ch);
 });
 </code></pre>
-<p><code>Element</code> property of the loop statement builder provides access to loop variable.</p>
+<p><code>ch</code> variable provides access to current element in the collection.</p>
 <h1 id="while-loop">while Loop</h1>
 <p><code>while</code> loop statement is supported in two forms: <code>while-do</code> or <code>do-while</code>. Both forms are representing regular <code>while</code> loop existing in most popular languages such as C#, C++ and C.</p>
 <pre><code class="lang-csharp">using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
 
-LambdaBuilder&lt;Fun&lt;long, long&gt;&gt;(fun =&gt; 
+Lambda&lt;Fun&lt;long, long&gt;&gt;((fun, result) =&gt; 
 {
-    UniversalExpression arg = fun.Parameters[0];
-    fun.Assign(fun.Result, 1L);  //result = 1L;
-    fun.While(arg &gt; 1L, whileBlock =&gt; {
-        whileBlock.Assign(fun.Result, arg-- * fun.Result);  //result *= arg--;
+    var arg = (U)fun[0];
+    Assign(result, 1L);  //result = 1L;
+    While(arg &gt; 1L, () =&gt; 
+	{
+        Assign(result, arg-- * fun.Result);  //result *= arg--;
     });
 });
 
@@ -120,16 +123,15 @@ new Func&lt;long, long&gt;(arg =&gt;
 <h1 id="for-loop">for Loop</h1>
 <p><code>for</code> loop implementation in Metaprogramming library has many similarities with implementation in other C-like languages with one exception: <em>increment</em> (or <em>post iteration</em>) statement is optional, has access to the local variables declared inside of the loop and can be a compount statement. This statement is separated from main loop body with a special method call <code>StartIteratorBlock</code>.</p>
 <pre><code class="lang-csharp">using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
 
-LambdaBuilder&lt;Fun&lt;long, long&gt;&gt;(fun =&gt; 
+Lambda&lt;Fun&lt;long, long&gt;&gt;((fun, result) =&gt; 
 {
-    fun.Assign(fun.Result, 1L);  //result = 1L;
-    fun.For(fun.Parameters[0], i =&gt; i &gt; 1L, loop =&gt; 
+    Assign(result, 1L);  //result = 1L;
+    For(fun[0], i =&gt; (U)i &gt; 1L, i =&gt; PostDecrementAssign(i), i =&gt; 
     {
-        loop.Assign(fun.Result, i * fun.Result);    //result *= i;
-        loop.StartIteratorBlock();
-        loop.PostDecrementAssign(loop.LoopVar);  //i--
+        Assign(result, (U)i * result);    //result *= i;
     });
 });
 
@@ -143,22 +145,22 @@ new Func&lt;long, long&gt;(arg =&gt;
     return result;
 });
 </code></pre>
-<p>Any call of code generation methods after <code>StartIteratorBlock</code> will be interpreted as <em>post iteration</em> statement. Therefore, this statement is not limited to the simple expression. If method <code>StartIteratorBlock</code> is not used then <code>for</code> loop will be similar to <code>while</code> loop but with implicitly declared loop variable.</p>
 <h1 id="plain-loop">Plain Loop</h1>
 <p>Plain loop is similar to <code>while(true)</code> loop and doesn't have built-in loop control tools. Developer need to control loop execution by calling <code>Continue()</code> and <code>Break</code> manually.</p>
 <pre><code class="lang-csharp">using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
 
-LambdaBuilder&lt;Fun&lt;long, long&gt;&gt;(fun =&gt; 
+Lambda&lt;Fun&lt;long, long&gt;&gt;((fun, result) =&gt; 
 {
-    UniversalExpression arg = fun.Parameters[0];
-    fun.Assign(fun.Result, 1L);  //result = 1L;
-    fun.Loop(loopBlock =&gt; 
+    var arg = (U)fun[0];
+    Assign(result, 1L);  //result = 1L;
+    Loop(() =&gt; 
     {
-        loopBlock.If(arg &gt; 1L)
-            .Then(thenBlock =&gt; thenBlock.Assign(fun.Result, arg-- * fun.Result))
-            .Else(elseBlock =&gt; elseBlock.Break(loopBlock))  //break;
-            .End();
+        If(arg &gt; 1L)
+            .Then(() =&gt; Assign(result, arg-- * result))
+            .Else(Break)  //break;
+        .End();
     });
 });
 

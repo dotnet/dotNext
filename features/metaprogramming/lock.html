@@ -8,7 +8,7 @@
     <title>lock Statement | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="lock Statement | .NEXT ">
-    <meta name="generator" content="docfx 2.40.7.0">
+    <meta name="generator" content="docfx 2.42.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -70,19 +70,15 @@
 <h1 id="lock-statement">lock Statement</h1>
 
 <p>The <strong>lock</strong> statement acquires the mutual-exclusion lock for a given object, executes a statement block, and then releases the lock. While a lock is held, the thread that holds the lock can again acquire and release the lock. Any other thread is blocked from acquiring the lock and waits until the lock is released.</p>
-<div class="NOTE">
-<h5>Note</h5>
-<p>This statement is supported since version 0.2 of Metaprogramming library</p>
-</div>
 <p>The statement can be constructed using <em>Lock</em> method from any scope control object:</p>
 <pre><code class="lang-csharp">using System.Text;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
 
-LambdaBuilder&lt;Action&lt;StringBuilder&gt;&gt;.Build(fun =&gt;
+Lambda&lt;Action&lt;StringBuilder&gt;&gt;(fun =&gt;
 {
-    fun.Lock(fun.Parameters[0], @lock =&gt; 
+    Lock(fun[0], () =&gt; 
     {
-        @lock.Call(fun.Parameters[0], nameof(StringBuilder.Append), 'a');
+        Call(fun[0], nameof(StringBuilder.Append), 'a');
     });
 })
 

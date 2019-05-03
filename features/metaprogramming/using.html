@@ -8,7 +8,7 @@
     <title>Using Statement | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Using Statement | .NEXT ">
-    <meta name="generator" content="docfx 2.40.7.0">
+    <meta name="generator" content="docfx 2.42.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -70,14 +70,16 @@
 <h1 id="using-statement">Using Statement</h1>
 
 <p><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using</a> statement is a missing part of LINQ Expressions. Metaprogramming library provides such support.</p>
-<pre><code class="lang-csharp">using System;
+<pre><code class="lang-csharp">using DotNext.Linq.Expressions;
+using System;
 using System.IO;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
 
-LambdaBuilder&lt;Action&lt;byte[]&gt;&gt;.Build(fun =&gt; 
+Lambda&lt;Action&lt;byte[]&gt;&gt;(fun =&gt; 
 {
-    fun.Using(typeof(MemoryStream).New(fun.Parameters[0]), usingBlock =&gt; {
-        usingBlock.Call(usingBlock.DisposableVar, nameof(MemoryStream.Flush));
+    Using(typeof(MemoryStream).New(fun[0]), stream =&gt; 
+    {
+        Call(stream, nameof(MemoryStream.Flush));
     });
 });
 
@@ -90,7 +92,7 @@ new Action&lt;byte&gt;(bytes =&gt;
     }
 });
 </code></pre>
-<p>Disposable resource is accessible using <em>DisposableVar</em> property of the statement builder.</p>
+<p><code>stream</code> parameter represents disposable resource inside of <code>Using()</code> scope.</p>
 <p><em>Using</em> statement can accept any expression of type implementing <code>System.IDisposable</code> interface or having public instance method <code>Dispose()</code> without parameters.</p>
 </article>
           </div>

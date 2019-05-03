@@ -8,7 +8,7 @@
     <title>Multi-line Lambdas | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Multi-line Lambdas | .NEXT ">
-    <meta name="generator" content="docfx 2.40.7.0">
+    <meta name="generator" content="docfx 2.42.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -69,33 +69,46 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="multi-line-lambdas">Multi-line Lambdas</h1>
 
-<p>Expression Trees in C# doesn't support multi-line lambda expressions. This limitation can be avoided using <a href="../../api/DotNext.Metaprogramming.LambdaBuilder-1.html">LambdaBuilder</a>. The builder represents lexical scope and a lot of methods for lambda body construction.</p>
+<p>Expression Trees in C# doesn't support multi-line lambda expressions. This limitation can be avoided using <a href="../../api/DotNext.Metaprogramming.CodeGenerator.yml">CodeGenerator.Lambda</a> construction method. The method accepts lexical scope of the lambda expression in the form of the delegate and provides access to parameters.</p>
 <p>The following example shows how to generate lambda function which performs factorial computation using recursion:</p>
 <pre><code class="lang-csharp">using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
 
-Func&lt;long, long&gt; fact = LambdaBuilder&lt;Func&lt;long, long&gt;&gt;.Build(fun =&gt; 
+Func&lt;long, long&gt; fact = Lambda&lt;Func&lt;long, long&gt;&gt;(fun =&gt; 
 {
-    UniversalExpression arg = fun.Parameters[0];
-    fun.If(arg &gt; 1L)
-        .Then(arg * fun.Self.Invoke(arg - 1L))
+    var arg = (U)fun[0];
+    If(arg &gt; 1L)
+        .Then(arg * fun.Invoke(arg - 1L))
         .Else(arg)
-    .OfType&lt;long&gt;()
+		.OfType&lt;long&gt;()
     .End();
 }).Compile();
 fact(3);    // == 6
 </code></pre>
-<p><code>fun</code> parameter represents lexical scope of the lambda function to be constructed. <code>arg</code> local variable is just a conversion of the lambda function parameter into <a href="universal.html">Universal Expression</a>. <code>fun.If</code> starts construction of <em>if-then-else</em> expression. <code>fun.Self</code> is a reference to the function itself providing recursive access. <code>OfType</code> describes type of conditional expression that was started by <code>fun.If</code> call. <code>End</code> method call represents end of conditional expression. <code>fun.Parameters</code> is a collection of lambda parameters sorted by their position in the signature.</p>
+<p><code>fun</code> parameter is of type <a href="../../api/DotNext.Metaprogramming.LambdaContext.yml">LambdaContext</a> and provide access to the function parameters. <code>arg</code> local variable is just a conversion of the lambda function parameter into <a href="universal.html">Universal Expression</a>. <code>If</code> starts construction of <em>if-then-else</em> expression. <code>fun.Invoke</code> method allows to invoke lambda function recursively. <code>OfType</code> describes type of conditional expression that was started by <code>If</code> call. <code>End</code> method call represents end of conditional expression.</p>
+<p><code>LambdaContext</code> type supports decomposition so it is possible to use convenient syntax to obtain function parameters:</p>
+<pre><code class="lang-csharp">using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
+
+Lambda&lt;Func&lt;int, int, int&gt;&gt;(fun =&gt; 
+{
+  var (x, y) = fun;
+  Return((U)x + y);
+});
+</code></pre>
 <p>The last expression inside of lamda function is interpreted as return value. However, explicit return is supported.</p>
 <pre><code class="lang-csharp">using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
 
-Func&lt;long, bool&gt; isZero = LambdaBuilder&lt;Func&lt;long, bool&gt;&gt;.Build(fun =&gt; 
+Func&lt;long, bool&gt; isZero = Lambda&lt;Func&lt;long, bool&gt;&gt;(fun =&gt; 
 {
-    UniversalExpression arg = fun.Parameters[0];
-    fun.If(arg != 0L)
-        .Then(then =&gt; then.Return(true))
-        .Else(otherwise =&gt; otherwise.Return(false))
+    var arg = (U)fun[0];
+    If(arg != 0L)
+        .Then(() =&gt; Return(true))
+        .Else(() =&gt; Return(false))
     .End();
 }).Compile();
 </code></pre>
@@ -110,15 +123,17 @@ new Func&lt;long, long&gt;(arg =&gt;
         return false;
 });
 </code></pre>
-<p><code>then</code> and <code>otherwise</code> parameters provide access to the lexical scope and code block of the positive and negative conditional branches respectively.</p>
 <h1 id="implicit-result">Implicit result</h1>
-<p>Lambda function builder has implicitly declared <em>Result</em> variable which can be used to set function result without returning from it. If <em>Result</em> variable is not used then builder performs optimization and will not emit declaration of local variable in the final expression tree.</p>
-<pre><code class="lang-csharp">LambdaBuilder&lt;Fun&lt;long, long&gt;&gt;(fun =&gt; 
+<p>Lambda function builder can have optional <em>result</em> variable which is used to set function result without returning from it.</p>
+<pre><code class="lang-csharp">using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+
+Lambda&lt;Fun&lt;long, long&gt;&gt;((fun, result) =&gt; 
 {
-    fun.Assign(fun.Result, fun.Parameters[0]);
+    Assign(result, fun[0]);
 });
 </code></pre>
-<p>This feature is similar to <em>result</em> implicit variable in Object Pascal. Once result assigned, it is not needed to use explicit <em>Return</em> method to return from the lambda function.</p>
+<p>This feature is similar to <em>result</em> implicit variable in <a href="https://www.freepascal.org/docs-html/ref/refse90.html">Pascal</a> programming language. Once result assigned, it is not needed to use explicit <em>Return</em> method to return from the lambda function.</p>
 </article>
           </div>
           

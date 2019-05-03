@@ -8,7 +8,7 @@
     <title>Async Lambda | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Async Lambda | .NEXT ">
-    <meta name="generator" content="docfx 2.40.7.0">
+    <meta name="generator" content="docfx 2.42.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -72,9 +72,9 @@
 <p>Metaprogramming library provides full support of dynamic generation of <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/async">async lambda functions</a>. This functionality is not supported by LINQ Expressions out-of-the-box.</p>
 <p>There are three key elements required to generated async lambda:</p>
 <ul>
-<li><a href="../../api/DotNext.Metaprogramming.AsyncLambdaBuilder-1.html">AsyncLambdaBuilder</a> used to build async lambda function instead of <a href="../../api/DotNext.Metaprogramming.LambdaBuilder-1.html">LambdaBuilder</a> suitable for synchronous lambda functions only.</li>
-<li><a href="../../api/DotNext.Metaprogramming.AsyncResultExpression.html">AsyncResultExpression</a> used to return value from the asynchronous lambda function (known as async return). Usually, the developer don't need to use this type of expression directly.</li>
-<li><a href="../../api/DotNext.Metaprogramming.AwaitExpression.html">AwaitExpression</a> is similar to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">await</a> operator.</li>
+<li><a href="../../api/DotNext.Metaprogramming.CodeGenerator.yml">CodeGenerator.AsyncLambda</a> method used to build async lambda function instead of <code>CodeGenerator.Lambda</code> method suitable for synchronous lambda functions only.</li>
+<li><a href="../../api/DotNext.Linq.Expressions.AsyncResultExpression.yml">AsyncResultExpression</a> used to return value from the asynchronous lambda function (known as async return). Usually, the developer don't need to use this type of expression directly.</li>
+<li><a href="../../api/DotNext.Linq.Expressions.AwaitExpression.yml">AwaitExpression</a> is similar to <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">await</a> operator.</li>
 </ul>
 <p><strong>await</strong> operator can be used even in <em>try-catch-finally</em> statement and means that async lambda function works in the same way as <strong>async</strong> methods in C#.</p>
 <p>Let's translate the following example of async method in C# programming language.</p>
@@ -90,22 +90,29 @@ private static async Task&lt;long&gt; GetPageSizeAsync(string url)
     return urlContents.LongLength;
 }  
 </code></pre>
-<p><code>Await()</code> extension method applicable to any object of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression</a> is an equivalent of <strong>await</strong> operator and do all necessary magic. Note that <code>Await()</code> is applicable inside of async lambda function. If <strong>await</strong> operator is used inside of synchronous async lambda function then compiled code will block the thread during execution of the expression used as an argument for this operator.</p>
-<pre><code class="lang-csharp">using DotNext.Metaprogramming;
+<p><code>Await()</code> extension method from <a href="../../api/DotNext.Linq.Expressions.ExpressionBuilder.yml">ExpressionBuilder</a> applicable to any object of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression</a> is an equivalent of <strong>await</strong> operator and do all necessary magic. Note that <code>Await()</code> is applicable inside of async lambda function. If <strong>await</strong> operator is used inside of synchronous async lambda function then compiled code will block the thread during execution of the expression used as an argument for this operator.</p>
+<pre><code class="lang-csharp">using DotNext.Linq.Expressions;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using static DotNext.Metaprogramming.CodeGenerator;
 
-AsyncLambdaBuilder&lt;Func&lt;string, Task&lt;long&gt;&gt;&gt;(fun =&gt; 
+AsyncLambda&lt;Func&lt;string, Task&lt;long&gt;&gt;&gt;((fun, result) =&gt; 
 {
-    var client = fun.DeclareVariable(&quot;client&quot;, typeof(HttpClient).New());       //var client = new HttpClient();
-    var uri = fun.DeclareVariable(&quot;uri&quot;, typeof(Uri).New(fun.Parameters[0]));   //var uri = new Uri(url);
-    var urlContents = fun.DeclareVariable&lt;byte[]&gt;(&quot;urlContents&quot;);
-    fun.Assign(urlContents, client.Call(nameof(HttpClient.GetByteArrayAsync), uri).Await());    //urlContents = await client.GetByteArrayAsync(uri);
-    fun.Assign(fun.Result, urlContents);
+    var client = DeclareVariable(&quot;client&quot;, typeof(HttpClient).New());       //var client = new HttpClient();
+    var uri = DeclareVariable(&quot;uri&quot;, typeof(Uri).New(fun[0]));   //var uri = new Uri(url);
+    var urlContents = DeclareVariable&lt;byte[]&gt;(&quot;urlContents&quot;);
+    Assign(urlContents, client.Call(nameof(HttpClient.GetByteArrayAsync), uri).Await());    //urlContents = await client.GetByteArrayAsync(uri);
+    Assign(result, urlContents);
 });
 </code></pre>
 <p><strong>await</strong> operator can be placed inside of any statement: <em>switch</em>, <em>if-then-else</em>, <em>try-catch-finally</em> etc.</p>
+<p><code>AsyncLambda</code> factory method is overloaded by two versions of this method:</p>
+<ul>
+<li><code>AsyncLambda((fun, result) =&gt; { })</code> introduces special variable <code>result</code> that can be used to assign result of the function. This approach is similar to <a href="https://www.freepascal.org/docs-html/ref/refse90.html">Result</a> variable in Pascal programming language.</li>
+<li><code>AsyncLambda(fun =&gt; { })</code> doesn't introduce special variable for the function result and control transfer to the caller is provided by <code>CodeGenerator.Return</code> method.</li>
+</ul>
+<p><code>fun</code> parameter is of type <a href="../../api/DotNext.Metaprogramming.LambdaContext.yml">LambdaContext</a> that provides access to the function parameters.</p>
 <h1 id="limitations">Limitations</h1>
 <p>Async lambda function has the following limitations:</p>
 <ul>
@@ -131,6 +138,7 @@ AsyncLambdaBuilder&lt;Func&lt;string, Task&lt;long&gt;&gt;&gt;(fun =&gt;
 <li><em>AsyncStateMachine&lt;TState&gt;</em> is used by async lambda function without return value.</li>
 <li><em>AsyncStateMachine&lt;TState, R&gt;</em> is used by async lambda function with return value.</li>
 </ul>
+<p>Implementation of the state machine optimized for situations when asynchronous method completed synchronously. In this case, the state machine will not be boxed.</p>
 <div class="CAUTION">
 <h5>Caution</h5>
 <p><em>AsyncStateMachine</em> class is internal type and is not available publicly.</p>
