@@ -20,7 +20,7 @@ Metaprogramming library extends LINQ Expression with the following features:
 
 All these extensions are compatible with [Expression](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression) class.
 
-Additionally, DotNext Metaprogramming library replaces limit of [C# Expression Trees](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/expression-trees/) where only single-line lambda expression is allowed.
+Additionally, .NEXT Metaprogramming library replaces limit of [C# Expression Trees](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/expression-trees/) where only single-line lambda expression is allowed.
 
 > [!IMPORTANT]
 > In spite of rich set of Metaprogramming API, a few limits still exist. These restrictions dictated by internal design of LINQ Expression. The first, overloaded operators with [in parameter modifier](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/in-parameter-modifier) cannot be resolved. The second, [ref return](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref#reference-return-values) and [ref locals](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref#ref-locals) are not supported.
@@ -29,7 +29,9 @@ Additionally, DotNext Metaprogramming library replaces limit of [C# Expression T
 The code construction based on the following concepts:
 * [Universal Expression](universal.md)
 * [Code Generator](../../api/DotNext.Metaprogramming.CodeGenerator.yml) provides methods for adding statement such as method calls, assignment, loops, if-then-else statement etc.
-* Advanced expression types:
+* [Expression Builder](../../api/DotNext.Linq.Expressions.ExpressionBuilder.yml) provides extension methods for constructing expressions
+
+[Code expressions](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions) from .NET library heavily extended with additional expression types:
     * [using Expression](../../api/DotNext.Linq.Expressions.UsingExpression.yml) represents `using` statement from C#
     * [lock Expression](../../api/DotNext.Linq.Expressions.LockExpression.yml) represents `lock` statement from C#
     * [await Expression](../../api/DotNext.Linq.Expressions.AwaitExpression.yml) represents `await` operator from C#
@@ -41,6 +43,7 @@ The code construction based on the following concepts:
 The lexical scope is enclosed by multi-line lambda function. The body of such function contains the code for generation of expressions and statements.
 
 ```csharp
+using DotNext.Linq.Expressions;
 using System;
 using static DotNext.Metaprogramming.CodeGenerator;
 using U = DotNext.Linq.Expression.UniversalExpression;
@@ -61,7 +64,7 @@ Func<long, long> fact = Lambda<Func<long, long>>(fun =>
     //try-catch
     Try(() => 
     {
-        Return(10);    //return from lambda function
+        Return(10.Const());    //return from lambda function
     })
     .Finally(() => //finally block
     {  
@@ -71,3 +74,5 @@ Func<long, long> fact = Lambda<Func<long, long>>(fun =>
     .End(); //end of try block
 }).Compile();
 ```
+
+Statement construction methods from `CodeGenerator` mimic syntax of C# programming language that improves maintainability of the code.

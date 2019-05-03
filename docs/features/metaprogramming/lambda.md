@@ -1,6 +1,6 @@
 Multi-line Lambdas
 ====
-Expression Trees in C# doesn't support multi-line lambda expressions. This limitation can be avoided using [LambdaBuilder](../../api/DotNext.Metaprogramming.LambdaBuilder-1.yml). The builder represents lexical scope and a lot of methods for lambda body construction.
+Expression Trees in C# doesn't support multi-line lambda expressions. This limitation can be avoided using [CodeGenerator.Lambda](../../api/DotNext.Metaprogramming.CodeGenerator.yml) construction method. The method accepts lexical scope of the lambda expression in the form of the delegate and provides access to parameters.
 
 The following example shows how to generate lambda function which performs factorial computation using recursion:
 

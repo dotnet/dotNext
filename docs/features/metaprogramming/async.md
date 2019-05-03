@@ -3,9 +3,9 @@ Async Lambda
 Metaprogramming library provides full support of dynamic generation of [async lambda functions](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/async). This functionality is not supported by LINQ Expressions out-of-the-box.
 
 There are three key elements required to generated async lambda:
-* [AsyncLambdaBuilder](../../api/DotNext.Metaprogramming.AsyncLambdaBuilder-1.yml) used to build async lambda function instead of [LambdaBuilder](../../api/DotNext.Metaprogramming.LambdaBuilder-1.yml) suitable for synchronous lambda functions only.
-* [AsyncResultExpression](../../api/DotNext.Metaprogramming.AsyncResultExpression.yml) used to return value from the asynchronous lambda function (known as async return). Usually, the developer don't need to use this type of expression directly.
-* [AwaitExpression](../../api/DotNext.Metaprogramming.AwaitExpression.yml) is similar to [await](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await) operator.
+* [CodeGenerator.AsyncLambda](../../api/DotNext.Metaprogramming.CodeGenerator.yml) method used to build async lambda function instead of `CodeGenerator.Lambda` method suitable for synchronous lambda functions only.
+* [AsyncResultExpression](../../api/DotNext.Linq.Expressions.AsyncResultExpression.yml) used to return value from the asynchronous lambda function (known as async return). Usually, the developer don't need to use this type of expression directly.
+* [AwaitExpression](../../api/DotNext.Linq.Expressions.AwaitExpression.yml) is similar to [await](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await) operator.
 
 **await** operator can be used even in _try-catch-finally_ statement and means that async lambda function works in the same way as **async** methods in C#.
 
@@ -24,25 +24,32 @@ private static async Task<long> GetPageSizeAsync(string url)
 }  
 ```
 
-`Await()` extension method applicable to any object of type [Expression](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression) is an equivalent of **await** operator and do all necessary magic. Note that `Await()` is applicable inside of async lambda function. If **await** operator is used inside of synchronous async lambda function then compiled code will block the thread during execution of the expression used as an argument for this operator.
+`Await()` extension method from [ExpressionBuilder](../../api/DotNext.Linq.Expressions.ExpressionBuilder.yml) applicable to any object of type [Expression](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression) is an equivalent of **await** operator and do all necessary magic. Note that `Await()` is applicable inside of async lambda function. If **await** operator is used inside of synchronous async lambda function then compiled code will block the thread during execution of the expression used as an argument for this operator.
 
 ```csharp
-using DotNext.Metaprogramming;
+using DotNext.Linq.Expressions;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using static DotNext.Metaprogramming.CodeGenerator;
 
-AsyncLambdaBuilder<Func<string, Task<long>>>(fun => 
+AsyncLambda<Func<string, Task<long>>>((fun, result) => 
 {
-    var client = fun.DeclareVariable("client", typeof(HttpClient).New());       //var client = new HttpClient();
-    var uri = fun.DeclareVariable("uri", typeof(Uri).New(fun.Parameters[0]));   //var uri = new Uri(url);
-    var urlContents = fun.DeclareVariable<byte[]>("urlContents");
-    fun.Assign(urlContents, client.Call(nameof(HttpClient.GetByteArrayAsync), uri).Await());    //urlContents = await client.GetByteArrayAsync(uri);
-    fun.Assign(fun.Result, urlContents);
+    var client = DeclareVariable("client", typeof(HttpClient).New());       //var client = new HttpClient();
+    var uri = DeclareVariable("uri", typeof(Uri).New(fun[0]));   //var uri = new Uri(url);
+    var urlContents = DeclareVariable<byte[]>("urlContents");
+    Assign(urlContents, client.Call(nameof(HttpClient.GetByteArrayAsync), uri).Await());    //urlContents = await client.GetByteArrayAsync(uri);
+    Assign(result, urlContents);
 });
 ```
 
 **await** operator can be placed inside of any statement: _switch_, _if-then-else_, _try-catch-finally_ etc.
+
+`AsyncLambda` factory method is overloaded by two versions of this method:
+* `AsyncLambda((fun, result) => { })` introduces special variable `result` that can be used to assign result of the function. This approach is similar to [Result](https://www.freepascal.org/docs-html/ref/refse90.html) variable in Pascal programming language.
+* `AsyncLambda(fun => { })` doesn't introduce special variable for the function result and control transfer to the caller is provided by `CodeGenerator.Return` method.
+
+`fun` parameter is of type [LambdaContext](../../api/DotNext.Metaprogramming.LambdaContext.yml) that provides access to the function parameters.
 
 # Limitations
 Async lambda function has the following limitations:
@@ -69,6 +76,8 @@ The exception raised by the async lambda function is stored inside of async stat
 Async State Machine class contains low-level methods allow to control execution of async lambda function. To be more precise, there are two async state machine classes:
 * _AsyncStateMachine&lt;TState&gt;_ is used by async lambda function without return value.
 * _AsyncStateMachine&lt;TState, R&gt;_ is used by async lambda function with return value.
+
+Implementation of the state machine optimized for situations when asynchronous method completed synchronously. In this case, the state machine will not be boxed.
 
 > [!CAUTION]
 > _AsyncStateMachine_ class is internal type and is not available publicly.
