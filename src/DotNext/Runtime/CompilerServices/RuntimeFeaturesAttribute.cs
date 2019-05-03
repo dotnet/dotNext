@@ -11,7 +11,7 @@ namespace DotNext.Runtime.CompilerServices
     /// issues associated with the marked program element.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Assembly | AttributeTargets.Module, AllowMultiple = false, Inherited = true)]
-    public sealed class RuntimeFeaturesAttribute: Attribute
+    public sealed class RuntimeFeaturesAttribute : Attribute
     {
         /// <summary>
         /// Indicates that code relies on dynamic IL code generation or compilation of Expression Trees.

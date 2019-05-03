@@ -14,7 +14,7 @@ namespace DotNext.Collections.Concurrent
     /// </remarks>
     /// <typeparam name="T">The type of elements held in this collection.</typeparam>
     [Serializable]
-    public class CopyOnWriteList<T>: IReadOnlyList<T>, IList<T>, ICloneable
+    public class CopyOnWriteList<T> : IReadOnlyList<T>, IList<T>, ICloneable
     {
         private volatile T[] backingStore;
 

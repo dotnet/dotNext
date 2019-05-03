@@ -4,8 +4,8 @@ using System.Reflection;
 
 namespace DotNext.Runtime.CompilerServices
 {
+    using static Linq.Expressions.ExpressionBuilder;
     using static Reflection.TypeExtensions;
-    using static Metaprogramming.ExpressionBuilder;
 
     internal sealed class MoveNextExpression : TransitionExpression
     {
@@ -19,7 +19,7 @@ namespace DotNext.Runtime.CompilerServices
             this.awaiter = awaiter;
         }
 
-        public override Type Type => typeof(void);
+        public override Type Type => typeof(bool);
         public override Expression Reduce() => awaiter;
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {

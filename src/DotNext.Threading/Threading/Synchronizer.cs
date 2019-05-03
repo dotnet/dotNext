@@ -1,12 +1,12 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading
 {
-    using Tasks;
     using Generic;
+    using Tasks;
 
     /// <summary>
     /// Provides a framework for implementing asynchronous locks and related synchronizers that doesn't rely on first-in-first-out (FIFO) wait queues.
@@ -15,9 +15,9 @@ namespace DotNext.Threading
     /// Derived synchronizers more efficient in terms of memory pressure in comparison with <see cref="QueuedSynchronizer">queued synchronizers</see>.
     /// It shares the same instance of <see cref="Task{TResult}"/> under contention for all waiters.
     /// </remarks>
-    public abstract class Synchronizer: Disposable, ISynchronizer
+    public abstract class Synchronizer : Disposable, ISynchronizer
     {
-        internal class WaitNode: TaskCompletionSource<bool>
+        internal class WaitNode : TaskCompletionSource<bool>
         {
             internal WaitNode() : base(TaskCreationOptions.RunContinuationsAsynchronously) { }
 
@@ -51,6 +51,18 @@ namespace DotNext.Threading
             return false;
         }
 
+        private static async Task<bool> Wait(WaitNode node, CancellationToken token)
+        {
+            using (var tracker = new CancelableTaskCompletionSource<bool>(ref token))
+                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, tracker.Task).ConfigureAwait(false)))
+                    return true;
+                else
+                {
+                    token.ThrowIfCancellationRequested();
+                    return false;
+                }
+        }
+
         /// <summary>
         /// Suspends the caller until this event is set.
         /// </summary>
@@ -64,17 +76,21 @@ namespace DotNext.Threading
         public Task<bool> Wait(TimeSpan timeout, CancellationToken token)
         {
             ThrowIfDisposed();
-            if(timeout < TimeSpan.Zero)
+            if (timeout < TimeSpan.Zero)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             else if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
-            else if(node is null)
+            else if (node is null)
                 return CompletedTask<bool, BooleanConst.True>.Task;
             else if (timeout == TimeSpan.Zero)   //if timeout is zero fail fast
                 return CompletedTask<bool, BooleanConst.False>.Task;
-            else 
-                return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? Wait(node, timeout, token) : node.Task;
+            else if (timeout == TimeSpan.MaxValue)
+                return token.CanBeCanceled ? Wait(node, token) : node.Task;
+            else
+                return Wait(node, timeout, token);
         }
+
+
 
         /// <summary>
         /// Releases all resources associated with exclusive lock.
@@ -85,7 +101,7 @@ namespace DotNext.Threading
         /// <param name="disposing">Indicates whether the <see cref="Dispose(bool)"/> has been called directly or from finalizer.</param>
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
                 node?.TrySetCanceled();
                 node = null;

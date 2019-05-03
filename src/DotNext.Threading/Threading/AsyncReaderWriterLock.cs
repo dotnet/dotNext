@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading
 {
@@ -13,7 +13,7 @@ namespace DotNext.Threading
     /// </remarks>
     public class AsyncReaderWriterLock : QueuedSynchronizer
     {
-        private interface ILockManager<out N>: ILockManager<State, N>
+        private interface ILockManager<out N> : ILockManager<State, N>
             where N : WaitNode
         {
         }
@@ -38,11 +38,11 @@ namespace DotNext.Threading
                 }
             }
 
-            private WriteLockNode() : base() {}
-            private WriteLockNode(WaitNode previous) : base(previous){}
+            private WriteLockNode() : base() { }
+            private WriteLockNode(WaitNode previous) : base(previous) { }
         }
 
-        private class ReadLockNode: WaitNode
+        private class ReadLockNode : WaitNode
         {
             internal readonly struct LockManager : ILockManager<ReadLockNode>
             {
@@ -79,13 +79,13 @@ namespace DotNext.Threading
 
             internal readonly bool Upgradeable;
 
-            private protected ReadLockNode(bool upgradeable) 
+            private protected ReadLockNode(bool upgradeable)
                 : base()
             {
                 Upgradeable = upgradeable;
             }
 
-            private ReadLockNode(WaitNode previous, bool upgradeable) 
+            private ReadLockNode(WaitNode previous, bool upgradeable)
                 : base(previous)
             {
                 Upgradeable = upgradeable;
@@ -154,7 +154,7 @@ namespace DotNext.Threading
         /// <returns>The task representing acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task EnterReadLock(CancellationToken token) => TryEnterReadLock(TimeSpan.MaxValue, token).CheckOnTimeout();
+        public Task EnterReadLock(CancellationToken token) => TryEnterReadLock(TimeSpan.MaxValue, token);
 
         /// <summary>
         /// Enters the lock in read mode asynchronously.
@@ -192,7 +192,7 @@ namespace DotNext.Threading
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task EnterWriteLock(CancellationToken token) => TryEnterWriteLock(TimeSpan.MaxValue, token).CheckOnTimeout();
+        public Task EnterWriteLock(CancellationToken token) => TryEnterWriteLock(TimeSpan.MaxValue, token);
 
         /// <summary>
         /// Enters the lock in write mode asynchronously.
@@ -222,7 +222,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryEnterUpgradeableReadLock(TimeSpan timeout) => TryEnterUpgradeableReadLock(timeout, CancellationToken.None);
-        
+
         /// <summary>
         /// Enters the lock in upgradeable mode asynchronously.
         /// </summary>
@@ -230,7 +230,7 @@ namespace DotNext.Threading
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task EnterUpgradeableReadLock(CancellationToken token) => TryEnterUpgradeableReadLock(TimeSpan.MaxValue, CancellationToken.None).CheckOnTimeout();
+        public Task EnterUpgradeableReadLock(CancellationToken token) => TryEnterUpgradeableReadLock(TimeSpan.MaxValue, CancellationToken.None);
 
         /// <summary>
         /// Enters the lock in upgradeable mode asynchronously.
@@ -259,7 +259,7 @@ namespace DotNext.Threading
                     state.readLocks += 1L;
                 }
         }
-        
+
         /// <summary>
         /// Exits upgradeable mode.
         /// </summary>

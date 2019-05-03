@@ -4,9 +4,9 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
-	/// <summary>
-	/// Various extensions for value types.
-	/// </summary>
+    /// <summary>
+    /// Various extensions for value types.
+    /// </summary>
     public static class ValueTypeExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -87,12 +87,12 @@ namespace DotNext
 		/// <param name="values">Candidate objects.</param>
 		/// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
 		public static bool IsOneOf<T>(this T value, IEnumerable<T> values)
-            where T: struct, IEquatable<T>
+            where T : struct, IEquatable<T>
         {
             foreach (var v in values)
-				if (v.Equals(value))
-					return true;
-			return false;
+                if (v.Equals(value))
+                    return true;
+            return false;
         }
 
         /// <summary>
@@ -108,18 +108,31 @@ namespace DotNext
 		/// <param name="values">Candidate objects.</param>
 		/// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
 		public static bool IsOneOf<T>(this T value, params T[] values)
-			where T: struct, IEquatable<T>
+            where T : struct, IEquatable<T>
             => value.IsOneOf((IEnumerable<T>)values);
 
-		/// <summary>
-		/// Create boxed representation of the value type.
-		/// </summary>
-		/// <param name="value">Value to be placed into heap.</param>
-		/// <typeparam name="T">Value type.</typeparam>
-		/// <returns>Boxed representation of value type.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static ValueType<T> Box<T>(this T value)
-			where T: struct
-			=> new ValueType<T>(value);
+        /// <summary>
+        /// Create boxed representation of the value type.
+        /// </summary>
+        /// <param name="value">Value to be placed into heap.</param>
+        /// <typeparam name="T">Value type.</typeparam>
+        /// <returns>Boxed representation of value type.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ValueType<T> Box<T>(this T value)
+            where T : struct
+            => new ValueType<T>(value);
+
+        /// <summary>
+        /// Attempts to get value from nullable container.
+        /// </summary>
+        /// <typeparam name="T">The underlying value type of the nullable type.</typeparam>
+        /// <param name="nullable">Nullable value.</param>
+        /// <param name="value">Underlying value.</param>
+        /// <returns><see langword="true"/> if <paramref name="nullable"/> is not <see langword="null"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool TryGet<T>(this T? nullable, out T value) where T : struct
+        {
+            value = nullable.GetValueOrDefault();
+            return nullable.HasValue;
+        }
     }
 }

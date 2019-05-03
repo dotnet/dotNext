@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Metaprogramming.ExpressionBuilder;
+    using static Linq.Expressions.ExpressionBuilder;
 
     internal sealed class EnterGuardedCodeExpression : TransitionExpression
     {
@@ -11,7 +11,7 @@ namespace DotNext.Runtime.CompilerServices
             : base(stateId)
         {
         }
-        
+
         public override Type Type => typeof(void);
 
         public override Expression Reduce() => Empty();

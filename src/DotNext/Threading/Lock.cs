@@ -144,7 +144,7 @@ namespace DotNext.Threading
         /// <returns>Write-only lock.</returns>
         public static Lock WriteLock(ReaderWriterLockSlim rwLock)
             => new Lock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.WriteLock, false);
-        
+
         /// <summary>
         /// Acquires lock.
         /// </summary>
@@ -197,7 +197,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/></returns>
         public bool TryAcquire(out Holder holder)
         {
-            if(TryAcquire())
+            if (TryAcquire())
             {
                 holder = new Holder(lockedObject, type);
                 return true;
@@ -236,7 +236,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/></returns>
         public bool TryAcquire(TimeSpan timeout, out Holder holder)
         {
-            if(TryAcquire(timeout))
+            if (TryAcquire(timeout))
             {
                 holder = new Holder(lockedObject, type);
                 return true;
@@ -253,7 +253,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="timeout">The amount of time to wait for the lock</param>
         /// <exception cref="TimeoutException">The lock has not been acquired during the specified timeout.</exception>
-        public Holder Acquire(TimeSpan timeout) 
+        public Holder Acquire(TimeSpan timeout)
             => TryAcquire() ? new Holder(lockedObject, type) : throw new TimeoutException();
 
         /// <summary>

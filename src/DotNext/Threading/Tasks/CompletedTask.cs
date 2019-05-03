@@ -10,7 +10,7 @@ namespace DotNext.Threading.Tasks
     /// <typeparam name="T">Type of the task result.</typeparam>
     /// <typeparam name="C">The constant value to be assigned to the completed task.</typeparam>
     public static class CompletedTask<T, C>
-        where C: Constant<T>, new()
+        where C : Constant<T>, new()
     {
         /// <summary>
         /// Represents the completed task containing a value passed as constant through <typeparamref name="C"/> generic parameter.

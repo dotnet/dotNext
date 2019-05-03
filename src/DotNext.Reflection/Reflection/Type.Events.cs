@@ -5,10 +5,10 @@ namespace DotNext.Reflection
 {
     public static partial class Type<T>
     {
-         /// <summary>
+        /// <summary>
         /// Provides typed access to instance event declared in type <typeparamref name="T"/>.
         /// </summary>
-		/// <typeparam name="H">Type of event handler.</typeparam>
+        /// <typeparam name="H">Type of event handler.</typeparam>
         public static class Event<H>
             where H : MulticastDelegate
         {
@@ -20,7 +20,7 @@ namespace DotNext.Reflection
                 private readonly bool nonPublic;
                 private InstanceEvents(bool nonPublic) => this.nonPublic = nonPublic;
 
-                private protected override Event<T, H> Create(string eventName) 
+                private protected override Event<T, H> Create(string eventName)
                     => Event<T, H>.Reflect(eventName, nonPublic);
             }
 
@@ -31,7 +31,7 @@ namespace DotNext.Reflection
                 private readonly bool nonPublic;
                 private StaticEvents(bool nonPublic) => this.nonPublic = nonPublic;
 
-                private protected override Reflection.Event<H> Create(string eventName) 
+                private protected override Reflection.Event<H> Create(string eventName)
                     => Reflection.Event<H>.Reflect<T>(eventName, nonPublic);
             }
 

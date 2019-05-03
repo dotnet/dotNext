@@ -28,10 +28,10 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="R">Type of task result.</typeparam>
         /// <returns>Task result.</returns>
         public static R GetResult<R>(this Task<R> task, CancellationToken token)
-		{
-			task.Wait(token);
-			return task.Result;
-		}
+        {
+            task.Wait(token);
+            return task.Result;
+        }
 
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
@@ -42,7 +42,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="task2">The second task to await.</param>
         /// <returns>The task containing results of both tasks.</returns>
         public static async Task<(T1, T2)> WhenAll<T1, T2>(Task<T1> task1, Task<T2> task2) => (await task1, await task2);
-        
+
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
         /// </summary>

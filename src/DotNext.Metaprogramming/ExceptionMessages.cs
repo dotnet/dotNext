@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Resources;
 using System.Reflection;
+using System.Resources;
 
 namespace DotNext
 {
@@ -10,10 +10,8 @@ namespace DotNext
 
         internal static string AbstractDelegate => resourceManager.GetString("AbstractDelegate");
 
-        internal static string TaskTypeExpected => resourceManager.GetString("TaskTypeExpected");
-
         internal static string MissingGetAwaiterMethod(Type t) => string.Format(resourceManager.GetString("MissingGetAwaiterMethod"), t.FullName);
-        
+
         internal static string MissingGetResultMethod(Type t) => string.Format(resourceManager.GetString("MissingGetResultMethod"), t.FullName);
 
         internal static string InterfaceNotImplemented(Type t, Type i) => string.Format(resourceManager.GetString("InterfaceNotImplemented"), t.FullName, i.FullName);
@@ -25,10 +23,6 @@ namespace DotNext
         internal static string MissingCtor(Type t) => string.Format(resourceManager.GetString("MissingCtor"), t.FullName);
 
         internal static string EnumerablePatternExpected => resourceManager.GetString("EnumerablePatternExpected");
-
-        internal static string CallFromLambdaExpected => resourceManager.GetString("CallFromLambdaExpected");
-
-        internal static string ParameterExpected => resourceManager.GetString("ParameterExpected");
 
         internal static string DisposePatternExpected(Type t) => string.Format(resourceManager.GetString("DisposePatternExpected"), t.FullName);
 
@@ -46,8 +40,12 @@ namespace DotNext
 
         internal static string FilterHasAwait => resourceManager.GetString("FilterHasAwait");
 
-        internal static string LexicalScopeIntersection => resourceManager.GetString("LexicalScopeIntersection");
+        internal static string OutOfLexicalScope => resourceManager.GetString("OutOfLexicalScope");
 
-        internal static string OuterScopeModificationDetected = resourceManager.GetString("OuterScopeModificationDetected");
+        internal static string LoopNotAvailable => resourceManager.GetString("LoopNotAvailable");
+
+        internal static string InvalidRethrow => resourceManager.GetString("InvalidRethrow");
+
+        internal static string BoolExpressionExpected => resourceManager.GetString("BoolExpressionExpected");
     }
 }

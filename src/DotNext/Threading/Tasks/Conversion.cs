@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Threading.Tasks
 {
-	/// <summary>
-	/// Provides task result conversion methods.
-	/// </summary>
-	public static class Conversion
-	{
+    /// <summary>
+    /// Provides task result conversion methods.
+    /// </summary>
+    public static class Conversion
+    {
         /// <summary>
         /// Converts one type of task into another.
         /// </summary>
@@ -18,7 +17,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="converter">Non-blocking conversion function.</param>
         /// <returns>The converted task.</returns>
 		public static async Task<O> Convert<I, O>(this Task<I> task, Converter<I, O> converter)
-			=> converter(await task);
+            => converter(await task);
 
         /// <summary>
         /// Converts one type of task into another.
@@ -29,6 +28,6 @@ namespace DotNext.Threading.Tasks
         /// <param name="converter">Asynchronous conversion function.</param>
         /// <returns>The converted task.</returns>
         public static async Task<O> Convert<I, O>(this Task<I> task, Converter<I, Task<O>> converter)
-			=> await converter(await task);
+            => await converter(await task);
     }
 }

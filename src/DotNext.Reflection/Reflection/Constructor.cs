@@ -1,9 +1,9 @@
 using System;
-using System.Globalization;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Linq;
 
 namespace DotNext.Reflection
 {
@@ -20,11 +20,11 @@ namespace DotNext.Reflection
         private readonly D invoker;
         private readonly ConstructorInfo ctor;
 
-		private Constructor(ConstructorInfo ctor, Expression<D> invoker)
-		{
-			this.ctor = ctor;
-			this.invoker = invoker.Compile();
-		}
+        private Constructor(ConstructorInfo ctor, Expression<D> invoker)
+        {
+            this.ctor = ctor;
+            this.invoker = invoker.Compile();
+        }
 
         private Constructor(ConstructorInfo ctor, Expression[] args, ParameterExpression[] parameters)
         {
@@ -277,76 +277,76 @@ namespace DotNext.Reflection
         {
             var (parameters, arglist, input) = Signature.Reflect(argumentsType);
             //handle value type
-            if(declaringType.IsValueType)
+            if (declaringType.IsValueType)
                 return new Constructor<D>(declaringType, Array.ConvertAll(parameters, Expression.Parameter));
 
             var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
-            return ctor is null ? null : new Constructor<D>(ctor, arglist, new[]{ input });
+            return ctor is null ? null : new Constructor<D>(ctor, arglist, new[] { input });
         }
 
         internal static Constructor<D> Reflect(bool nonPublic)
         {
             var delegateType = typeof(D);
-			if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType) == 2L)
-				return Reflect(declaringType, argumentsType, nonPublic);
-			else if (delegateType.IsAbstract)
-				throw new AbstractDelegateException<D>();
-			else
-			{
-				var (parameters, returnType) = DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType);
-				return Reflect(returnType, parameters, nonPublic);
-			}            
+            if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType) == 2L)
+                return Reflect(declaringType, argumentsType, nonPublic);
+            else if (delegateType.IsAbstract)
+                throw new AbstractDelegateException<D>();
+            else
+            {
+                var (parameters, returnType) = DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType);
+                return Reflect(returnType, parameters, nonPublic);
+            }
         }
 
-		private static Constructor<D> Unreflect(ConstructorInfo ctor, Type argumentsType, Type returnType)
-		{
-			var (_, arglist, input) = Signature.Reflect(argumentsType);
-			var prologue = new LinkedList<Expression>();
-			var epilogue = new LinkedList<Expression>();
-			var locals = new LinkedList<ParameterExpression>();
-			//adjust arguments
-			if (!Signature.NormalizeArguments(ctor.GetParameterTypes(), arglist, locals, prologue, epilogue))
-				return null;
-			Expression body;
-			//adjust return type
-			if (returnType == typeof(void) || returnType.IsAssignableFromWithoutBoxing(ctor.DeclaringType))
-				body = Expression.New(ctor, arglist);
-			else if (returnType == typeof(object))
-				body = Expression.Convert(Expression.New(ctor, arglist), returnType);
-			else
-				return null;
-			if (epilogue.Count == 0)
-				epilogue.AddFirst(body);
-			else
-			{
-				var returnArg = Expression.Parameter(returnType);
-				locals.AddFirst(returnArg);
-				body = Expression.Assign(returnArg, body);
-				epilogue.AddFirst(body);
-				epilogue.AddLast(returnArg);
-			}
-			body = prologue.Count == 0 && epilogue.Count == 1 ? epilogue.First.Value : Expression.Block(locals, prologue.Concat(epilogue));
-			return new Constructor<D>(ctor, Expression.Lambda<D>(body, input));
-		}
+        private static Constructor<D> Unreflect(ConstructorInfo ctor, Type argumentsType, Type returnType)
+        {
+            var (_, arglist, input) = Signature.Reflect(argumentsType);
+            var prologue = new LinkedList<Expression>();
+            var epilogue = new LinkedList<Expression>();
+            var locals = new LinkedList<ParameterExpression>();
+            //adjust arguments
+            if (!Signature.NormalizeArguments(ctor.GetParameterTypes(), arglist, locals, prologue, epilogue))
+                return null;
+            Expression body;
+            //adjust return type
+            if (returnType == typeof(void) || returnType.IsAssignableFromWithoutBoxing(ctor.DeclaringType))
+                body = Expression.New(ctor, arglist);
+            else if (returnType == typeof(object))
+                body = Expression.Convert(Expression.New(ctor, arglist), returnType);
+            else
+                return null;
+            if (epilogue.Count == 0)
+                epilogue.AddFirst(body);
+            else
+            {
+                var returnArg = Expression.Parameter(returnType);
+                locals.AddFirst(returnArg);
+                body = Expression.Assign(returnArg, body);
+                epilogue.AddFirst(body);
+                epilogue.AddLast(returnArg);
+            }
+            body = prologue.Count == 0 && epilogue.Count == 1 ? epilogue.First.Value : Expression.Block(locals, prologue.Concat(epilogue));
+            return new Constructor<D>(ctor, Expression.Lambda<D>(body, input));
+        }
 
-		internal static Constructor<D> Unreflect(ConstructorInfo ctor)
+        internal static Constructor<D> Unreflect(ConstructorInfo ctor)
         {
             var delegateType = typeof(D);
-			if (delegateType.IsAbstract)
-				throw new AbstractDelegateException<D>();
-			else if (ctor is Constructor<D> existing)
-				return existing;
-			else if (ctor.IsGenericMethodDefinition || ctor.IsAbstract)
-				return null;
-			else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
-				return Unreflect(ctor, argumentsType, returnType);
-			else
-			{
-				var invokeMethod = DelegateType.GetInvokeMethod<D>();
-				return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
-					new Constructor<D>(ctor, Array.ConvertAll(ctor.GetParameterTypes(), Expression.Parameter)) :
-					null;
-			}
+            if (delegateType.IsAbstract)
+                throw new AbstractDelegateException<D>();
+            else if (ctor is Constructor<D> existing)
+                return existing;
+            else if (ctor.IsGenericMethodDefinition || ctor.IsAbstract)
+                return null;
+            else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
+                return Unreflect(ctor, argumentsType, returnType);
+            else
+            {
+                var invokeMethod = DelegateType.GetInvokeMethod<D>();
+                return ctor.SignatureEquals(invokeMethod) && invokeMethod.ReturnType.IsAssignableFrom(ctor.DeclaringType) ?
+                    new Constructor<D>(ctor, Array.ConvertAll(ctor.GetParameterTypes(), Expression.Parameter)) :
+                    null;
+            }
         }
     }
 }

@@ -26,8 +26,8 @@ namespace DotNext
         static Disposable()
         {
             var disposeMethod = typeof(T).GetDisposeMethod();
-            if(!(disposeMethod is null) && disposeMethod.ReturnType == typeof(void))
-                if(disposeMethod.DeclaringType.IsValueType)
+            if (!(disposeMethod is null) && disposeMethod.ReturnType == typeof(void))
+                if (disposeMethod.DeclaringType.IsValueType)
                     Disposable<T>.disposeMethod = disposeMethod.CreateDelegate<DisposeMethod>();
                 else
                 {

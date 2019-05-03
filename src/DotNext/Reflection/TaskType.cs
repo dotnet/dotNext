@@ -21,8 +21,8 @@ namespace DotNext.Reflection
         /// <seealso cref="Task"/>
         /// <seealso cref="Task{TResult}"/>
         [RuntimeFeatures(RuntimeGenericInstantiation = true)]
-		public static Type MakeTaskType(this Type taskResult)
-			=> taskResult == typeof(void) ? typeof(Task) : typeof(Task<>).MakeGenericType(taskResult);
+        public static Type MakeTaskType(this Type taskResult)
+            => taskResult == typeof(void) ? typeof(Task) : typeof(Task<>).MakeGenericType(taskResult);
 
         /// <summary>
         /// Obtains result type from task type.
@@ -30,14 +30,14 @@ namespace DotNext.Reflection
         /// <param name="taskType">A type of <see cref="Task"/> or <see cref="Task{TResult}"/>.</param>
         /// <returns>Task result type; or <see langword="null"/> if <paramref name="taskType"/> is not a task type.</returns>
 		public static Type GetTaskType(this Type taskType)
-		{
-			var result = taskType.FindGenericInstance(typeof(Task<>));
-			if(!(result is null))
-				return result.GetGenericArguments()[0];
-			else if(typeof(Task).IsAssignableFrom(taskType))
-				return typeof(void);
-			else
-				return null;
-		}
+        {
+            var result = taskType.FindGenericInstance(typeof(Task<>));
+            if (!(result is null))
+                return result.GetGenericArguments()[0];
+            else if (typeof(Task).IsAssignableFrom(taskType))
+                return typeof(void);
+            else
+                return null;
+        }
     }
 }

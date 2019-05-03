@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents string constant as generic parameter.
     /// </summary>
-    public abstract class StringConst: Constant<string>
+    public abstract class StringConst : Constant<string>
     {
         /// <summary>
         /// Initializes string constant.
@@ -17,7 +17,7 @@
         /// <summary>
         /// Represents <see langword="null"/> as string constant.
         /// </summary>
-        public sealed class Null: StringConst
+        public sealed class Null : StringConst
         {
             /// <summary>
             /// Represents constant value.
@@ -36,7 +36,7 @@
         /// <summary>
         /// Represents empty string constant.
         /// </summary>
-        public sealed class Empty: StringConst
+        public sealed class Empty : StringConst
         {
             /// <summary>
             /// Represents constant value.

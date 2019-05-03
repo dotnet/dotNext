@@ -17,13 +17,13 @@ namespace DotNext
     [CLSCompliant(false)]
     [Serializable]
     [Concept]
-    public readonly struct Number<T>: IEquatable<T>
-        where T: struct, IConvertible, IComparable, IFormattable
+    public readonly struct Number<T> : IEquatable<T>
+        where T : struct, IConvertible, IComparable, IFormattable
     {
         #region Concept Definition
-		private static readonly Operator<T, T> UnaryPlus = Type<T>.Operator.Require<T>(UnaryOperator.Plus, OperatorLookup.Predefined);
+        private static readonly Operator<T, T> UnaryPlus = Type<T>.Operator.Require<T>(UnaryOperator.Plus, OperatorLookup.Predefined);
         private static readonly Operator<T, T> UnaryMinus = Type<T>.Operator.Require<T>(UnaryOperator.Negate, OperatorLookup.Predefined);
-        
+
         private static readonly Operator<T, T, T> BinaryPlus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Add, OperatorLookup.Predefined);
 
         private static readonly Operator<T, T, T> BinaryMinus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Subtract, OperatorLookup.Predefined);
@@ -31,9 +31,9 @@ namespace DotNext
         private static readonly Operator<T, T, T> Multiply = Type<T>.Operator<T>.Require<T>(BinaryOperator.Multiply, OperatorLookup.Predefined);
 
         private static readonly Operator<T, T, T> Divide = Type<T>.Operator<T>.Require<T>(BinaryOperator.Divide, OperatorLookup.Predefined);
-        
+
         private static readonly Operator<T, T, bool> Equality = Type<T>.Operator<T>.Require<bool>(BinaryOperator.Equal, OperatorLookup.Predefined);
-		private static readonly Operator<T, T, bool> Inequality = Type<T>.Operator<T>.Require<bool>(BinaryOperator.NotEqual, OperatorLookup.Predefined);
+        private static readonly Operator<T, T, bool> Inequality = Type<T>.Operator<T>.Require<bool>(BinaryOperator.NotEqual, OperatorLookup.Predefined);
 
         private static readonly Function<(string text, Ref<T> result), bool> TryParseMethod = Type<T>.RequireStaticMethod<(string, Ref<T>), bool>(nameof(int.TryParse));
         private static readonly Function<(string text, NumberStyles styles, IFormatProvider provider, Ref<T> result), bool> AdvancedTryParseMethod = Type<T>.RequireStaticMethod<(string, NumberStyles, IFormatProvider, Ref<T>), bool>(nameof(int.TryParse));
@@ -43,9 +43,9 @@ namespace DotNext
         private static readonly Operator<T, string> ToStringMethod = Type<T>.Method.Require<Operator<T, string>>(nameof(int.ToString), MethodLookup.Instance);
 
         private static readonly Operator<T, int> GetHashCodeMethod = Type<T>.Method.Require<Operator<T, int>>(nameof(int.GetHashCode), MethodLookup.Instance);
-		#endregion
+        #endregion
 
-		private readonly T value;
+        private readonly T value;
 
         /// <summary>
         /// Initializes a new generic numeric value.
@@ -60,7 +60,7 @@ namespace DotNext
         /// <param name="other">Other number to be compared.</param>
         /// <returns><see langword="true"/> if this number is equal to the given number; otherwise, <see langword="false"/>.</returns>
         public bool Equals(T other) => Equality(in value, in other);
-        
+
         /// <summary>
         /// Converts the number into string.
         /// </summary>
@@ -89,21 +89,29 @@ namespace DotNext
             => new Number<T>(UnaryPlus(operand));
 
         /// <summary>
+        /// Arithmetic unary minus operation.
+        /// </summary>
+        /// <param name="operand">Unary minus operand.</param>
+        /// <returns>The result of unary minus operation.</returns>
+        public static Number<T> operator -(Number<T> operand)
+            => new Number<T>(UnaryMinus(operand));
+
+        /// <summary>
         /// Arithmetic addition operation.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>The result of addition.</returns>
-        public static Number<T> operator+(Number<T> left, T right)
+        public static Number<T> operator +(Number<T> left, T right)
             => new Number<T>(BinaryPlus(in left.value, in right));
-        
+
         /// <summary>
         /// Arithmetic subtraction operation.
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns>The result of subtraction.</returns>
-        public static Number<T> operator-(Number<T> left, T right)
+        public static Number<T> operator -(Number<T> left, T right)
             => new Number<T>(BinaryMinus(in left.value, in right));
 
         /// <summary>
@@ -131,7 +139,7 @@ namespace DotNext
         /// <param name="right">The right operand.</param>
         /// <returns><see langword="true"/>, if two numers are equal; otherwise, <see langword="false"/>.</returns>
 		public static bool operator ==(Number<T> left, T right)
-			=> Equality(in left.value, right);
+            => Equality(in left.value, right);
 
         /// <summary>
         /// Performs inequality check.
@@ -140,7 +148,7 @@ namespace DotNext
         /// <param name="right">The right operand.</param>
         /// <returns><see langword="true"/>, if two numers are not equal; otherwise, <see langword="false"/>.</returns>
 		public static bool operator !=(Number<T> left, T right)
-			=> Inequality(in left.value, right);
+            => Inequality(in left.value, right);
 
         /// <summary>
         /// Determines whether this number is equal to the specified number.
@@ -148,17 +156,17 @@ namespace DotNext
         /// <param name="other">The number to compare.</param>
         /// <returns><see langword="true"/>, if two numers are equal; otherwise, <see langword="false"/>.</returns>
 		public override bool Equals(object other)
-		{
-			switch(other)
-			{
-				case T number:
-					return Equals(number);
-				case Number<T> number:
-					return Equals(number);
-				default:
-					return false;
-			}
-		}
+        {
+            switch (other)
+            {
+                case T number:
+                    return Equals(number);
+                case Number<T> number:
+                    return Equals(number);
+                default:
+                    return false;
+            }
+        }
 
         /// <summary>
         /// Converts the string representation of a number to its typed equivalent.  

@@ -1,12 +1,12 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading
 {
-    using Tasks;
     using Generic;
+    using Tasks;
 
     /// <summary>
     /// Provides a framework for implementing asynchronous locks and related synchronizers that rely on first-in-first-out (FIFO) wait queues.
@@ -15,7 +15,7 @@ namespace DotNext.Threading
     /// Derived synchronizers less efficient in terms of memory pressure in comparison with <see cref="Synchronizer">non-queued synchronizers</see>.
     /// It provides the individual instance of <see cref="Task{TResult}"/> under contention for each waiter in the queue.
     /// </remarks>
-    public abstract class QueuedSynchronizer: Disposable, ISynchronizer
+    public abstract class QueuedSynchronizer : Disposable, ISynchronizer
     {
         private protected class WaitNode : Synchronizer.WaitNode
         {
@@ -55,7 +55,6 @@ namespace DotNext.Threading
         }
 
         private protected interface ILockManager<STATE, out N>
-            where STATE: struct
             where N : WaitNode
         {
             bool CheckState(ref STATE state); //if true then Wait method can be completed synchronously; otherwise, false.
@@ -102,26 +101,41 @@ namespace DotNext.Threading
                 return await node.Task.ConfigureAwait(false);
         }
 
+        private async Task<bool> Wait(WaitNode node, CancellationToken token)
+        {
+            using (var tracker = new CancelableTaskCompletionSource<bool>(ref token))
+                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, tracker.Task).ConfigureAwait(false)))
+                    return true;
+            if (RemoveNode(node))
+            {
+                token.ThrowIfCancellationRequested();
+                return false;
+            }
+            else
+                return await node.Task.ConfigureAwait(false);
+        }
+
         [MethodImpl(MethodImplOptions.Synchronized)]
         private protected Task<bool> Wait<STATE, M>(ref STATE state, TimeSpan timeout, CancellationToken token)
-            where STATE : struct
             where M : struct, ILockManager<STATE, WaitNode>
         {
             ThrowIfDisposed();
             var manager = new M();
-            if(timeout < TimeSpan.Zero)
+            if (timeout < TimeSpan.Zero)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             else if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
-            else if(manager.CheckState(ref state))
+            else if (manager.CheckState(ref state))
                 return CompletedTask<bool, BooleanConst.True>.Task;
             else if (timeout == TimeSpan.Zero)   //if timeout is zero fail fast
                 return CompletedTask<bool, BooleanConst.False>.Task;
-            else if(head is null)
+            else if (head is null)
                 head = tail = manager.CreateNode(null);
-            else 
+            else
                 tail = manager.CreateNode(tail);
-            return timeout < TimeSpan.MaxValue || token.CanBeCanceled ? Wait(tail, timeout, token) : tail.Task;
+            return timeout == TimeSpan.MaxValue ?
+                (token.CanBeCanceled ? Wait(tail, token) : tail.Task) :
+                Wait(tail, timeout, token);
         }
 
         /// <summary>

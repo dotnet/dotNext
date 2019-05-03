@@ -1,9 +1,9 @@
 using System;
-using System.Globalization;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DotNext.Reflection
 {
@@ -29,14 +29,14 @@ namespace DotNext.Reflection
         }
 
         internal Method(MethodInfo method, Expression[] args, ParameterExpression[] parameters)
-			: this(method, Expression.Lambda<D>(Expression.Call(method, args), true, parameters))
+            : this(method, Expression.Lambda<D>(Expression.Call(method, args), true, parameters))
         {
         }
 
-		internal Method(MethodInfo method, ParameterExpression instance, Expression[] args, ParameterExpression[] parameters)
-			: this(method, Expression.Lambda<D>(Expression.Call(instance, method, args), true, parameters.Insert(instance, 0)))
-		{
-		}
+        internal Method(MethodInfo method, ParameterExpression instance, Expression[] args, ParameterExpression[] parameters)
+            : this(method, Expression.Lambda<D>(Expression.Call(instance, method, args), true, parameters.Insert(instance, 0)))
+        {
+        }
 
         private Method(MethodInfo method)
         {
@@ -341,15 +341,15 @@ namespace DotNext.Reflection
             return targetMethod is null ? null : new Method<D>(targetMethod, arglist, new[] { input });
         }
 
-		private static Type NonRefType(Type type) => type.IsByRef ? type.GetElementType() : type;
+        private static Type NonRefType(Type type) => type.IsByRef ? type.GetElementType() : type;
 
-		private static Method<D> ReflectInstance(Type thisParam, Type[] parameters, Type returnType, string methodName, bool nonPublic)
+        private static Method<D> ReflectInstance(Type thisParam, Type[] parameters, Type returnType, string methodName, bool nonPublic)
         {
             //lookup in declaring type
             var targetMethod = NonRefType(thisParam).GetMethod(methodName,
                 nonPublic ? InstanceNonPublicFlags : InstancePublicFlags,
                 Type.DefaultBinder,
-                parameters, 
+                parameters,
                 Array.Empty<ParameterModifier>());
             //lookup in extension methods
             if (targetMethod is null || returnType != targetMethod.ReturnType)
@@ -366,10 +366,10 @@ namespace DotNext.Reflection
             //first parameter should be passed by REF for structure types
             if (targetMethod is null)
                 return null;
-            else if(thisParam.IsByRef ^ NonRefType(thisParam).IsValueType)
+            else if (thisParam.IsByRef ^ NonRefType(thisParam).IsValueType)
             {
                 ParameterExpression[] parametersDeclaration;
-                if(targetMethod.IsStatic)
+                if (targetMethod.IsStatic)
                 {
                     parametersDeclaration = Array.ConvertAll(targetMethod.GetParameterTypes(), Expression.Parameter);
                     return new Method<D>(targetMethod, parametersDeclaration, parametersDeclaration);
@@ -393,7 +393,7 @@ namespace DotNext.Reflection
             var targetMethod = thisParam.GetMethod(methodName,
                 nonPublic ? InstanceNonPublicFlags : InstancePublicFlags,
                 Type.DefaultBinder,
-                parameters, 
+                parameters,
                 Array.Empty<ParameterModifier>());
             //lookup in extension methods
             if (targetMethod is null || returnType != targetMethod.ReturnType)
@@ -406,7 +406,7 @@ namespace DotNext.Reflection
                         break;
                     }
             }
-            return targetMethod is null ? null : new Method<D>(targetMethod, thisParamDeclaration, arglist, new[]{ input });
+            return targetMethod is null ? null : new Method<D>(targetMethod, thisParamDeclaration, arglist, new[] { input });
         }
 
         /// <summary>
@@ -418,18 +418,18 @@ namespace DotNext.Reflection
         internal static Method<D> Reflect(string methodName, bool nonPublic)
         {
             var delegateType = typeof(D);
-			if (delegateType.IsAbstract)
-				throw new AbstractDelegateException<D>();
-			else if (delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType) == 3L)
-				return ReflectInstance(thisParam, argumentsType, returnType, methodName, nonPublic);
-            else if(delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
+            if (delegateType.IsAbstract)
+                throw new AbstractDelegateException<D>();
+            else if (delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType) == 3L)
+                return ReflectInstance(thisParam, argumentsType, returnType, methodName, nonPublic);
+            else if (delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
                 return ReflectInstance(thisParam, argumentsType, typeof(void), methodName, nonPublic);
-			else
-			{
-				DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
+            else
+            {
+                DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
                 thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
-				return ReflectInstance(thisParam, parameters.RemoveFirst(1), returnType, methodName, nonPublic);
-			}
+                return ReflectInstance(thisParam, parameters.RemoveFirst(1), returnType, methodName, nonPublic);
+            }
         }
 
         /// <summary>
@@ -442,37 +442,37 @@ namespace DotNext.Reflection
         internal static Method<D> Reflect<T>(string methodName, bool nonPublic)
         {
             var delegateType = typeof(D);
-			if (delegateType.IsAbstract)
-				throw new AbstractDelegateException<D>();
-			else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
-				return ReflectStatic(typeof(T), argumentsType, returnType, methodName, nonPublic);
-            else if(delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
+            if (delegateType.IsAbstract)
+                throw new AbstractDelegateException<D>();
+            else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
+                return ReflectStatic(typeof(T), argumentsType, returnType, methodName, nonPublic);
+            else if (delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
                 return ReflectStatic(typeof(T), delegateType.GetGenericArguments()[0], typeof(void), methodName, nonPublic);
-			else
-			{
-				DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
-				return ReflectStatic(typeof(T), parameters, returnType, methodName, nonPublic);
-			}
+            else
+            {
+                DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
+                return ReflectStatic(typeof(T), parameters, returnType, methodName, nonPublic);
+            }
         }
 
         private static Method<D> Unreflect(MethodInfo method, ParameterExpression thisParam, Type argumentsType, Type returnType)
         {
             var (_, arglist, input) = Signature.Reflect(argumentsType);
-			var prologue = new LinkedList<Expression>();
+            var prologue = new LinkedList<Expression>();
             var epilogue = new LinkedList<Expression>();
             var locals = new LinkedList<ParameterExpression>();
             //adjust THIS
             Expression thisArg;
-            if(thisParam is null)
+            if (thisParam is null)
                 thisArg = null;
-            else if(method.DeclaringType.IsAssignableFromWithoutBoxing(thisParam.Type))
+            else if (method.DeclaringType.IsAssignableFromWithoutBoxing(thisParam.Type))
                 thisArg = thisParam;
-            else if(thisParam.Type == typeof(object))
+            else if (thisParam.Type == typeof(object))
                 thisArg = Expression.Convert(thisParam, method.DeclaringType);
             else
                 return null;
             //adjust arguments
-            if(!Signature.NormalizeArguments(method.GetParameterTypes(), arglist, locals, prologue, epilogue))
+            if (!Signature.NormalizeArguments(method.GetParameterTypes(), arglist, locals, prologue, epilogue))
                 return null;
             Expression body;
             //adjust return type
@@ -499,11 +499,11 @@ namespace DotNext.Reflection
         private static Method<D> UnreflectStatic(MethodInfo method)
         {
             var delegateType = typeof(D);
-            if(delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
+            if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
                 return Unreflect(method, null, argumentsType, returnType);
-            else if(delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
+            else if (delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
                 return Unreflect(method, null, delegateType.GetGenericArguments()[0], typeof(void));
-			else if(DelegateType.GetInvokeMethod<D>().SignatureEquals(method))
+            else if (DelegateType.GetInvokeMethod<D>().SignatureEquals(method))
                 return new Method<D>(method);
             else
                 return null;
@@ -512,40 +512,40 @@ namespace DotNext.Reflection
         private static Method<D> UnreflectInstance(MethodInfo method)
         {
             var delegateType = typeof(D);
-            if(delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType) == 3L)
+            if (delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType) == 3L)
                 return Unreflect(method, Expression.Parameter(thisParam.MakeByRefType()), argumentsType, returnType);
-            else if(delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
+            else if (delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
                 return Unreflect(method, Expression.Parameter(thisParam.MakeByRefType()), argumentsType, typeof(void));
             else
             {
                 DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, m => m.ReturnType, out var parameters, out returnType);
                 thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
                 parameters = parameters.RemoveFirst(1);
-				if (method.SignatureEquals(parameters) && method.ReturnType == returnType)
-					if (thisParam.IsByRef ^ method.DeclaringType.IsValueType)
-					{
-						var arguments = Array.ConvertAll(parameters, Expression.Parameter);
-						return new Method<D>(method, Expression.Parameter(thisParam), arguments, arguments);
-					}
-					else
-						return new Method<D>(method);
-				return null;
+                if (method.SignatureEquals(parameters) && method.ReturnType == returnType)
+                    if (thisParam.IsByRef ^ method.DeclaringType.IsValueType)
+                    {
+                        var arguments = Array.ConvertAll(parameters, Expression.Parameter);
+                        return new Method<D>(method, Expression.Parameter(thisParam), arguments, arguments);
+                    }
+                    else
+                        return new Method<D>(method);
+                return null;
             }
         }
 
         internal static Method<D> Unreflect(MethodInfo method)
         {
             var delegateType = typeof(D);
-			if (delegateType.IsAbstract)
-				throw new AbstractDelegateException<D>();
-			else if (method is Method<D> existing)
-				return existing;
-			else if (method.IsGenericMethodDefinition || method.IsAbstract || method.IsConstructor)
-				return null;
-			else if (method.IsStatic)
-				return UnreflectStatic(method);
-			else
-				return UnreflectInstance(method);
+            if (delegateType.IsAbstract)
+                throw new AbstractDelegateException<D>();
+            else if (method is Method<D> existing)
+                return existing;
+            else if (method.IsGenericMethodDefinition || method.IsAbstract || method.IsConstructor)
+                return null;
+            else if (method.IsStatic)
+                return UnreflectStatic(method);
+            else
+                return UnreflectInstance(method);
         }
     }
 }

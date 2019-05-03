@@ -1,9 +1,9 @@
 using System;
-using System.Globalization;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
-using static System.Linq.Expressions.Expression;
 using System.Runtime.CompilerServices;
+using static System.Linq.Expressions.Expression;
 
 namespace DotNext.Reflection
 {
@@ -240,7 +240,7 @@ namespace DotNext.Reflection
     {
         private const BindingFlags PubicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-        
+
 
         private readonly MemberGetter<T, V> getter;
         private readonly MemberSetter<T, V> setter;
@@ -274,14 +274,14 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if field value is obtained successfully; otherwise, <see langword="false"/>.</returns>
         public override bool GetValue(object obj, out V value)
         {
-            if(obj is T instance)
+            if (obj is T instance)
             {
                 value = this[instance];
                 return true;
             }
             else
             {
-                value  = default;
+                value = default;
                 return false;
             }
         }
@@ -294,9 +294,9 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if field value is modified successfully; otherwise, <see langword="false"/>.</returns>
         public override bool SetValue(object obj, V value)
         {
-            if(IsInitOnly)
+            if (IsInitOnly)
                 return false;
-            else if(obj is T instance)
+            else if (obj is T instance)
             {
                 this[instance] = value;
                 return true;
@@ -400,7 +400,7 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if field value is obtained successfully; otherwise, <see langword="false"/>.</returns>
         public override bool GetValue(object obj, out V value)
         {
-            if(obj is null)
+            if (obj is null)
             {
                 value = Value;
                 return true;
@@ -420,9 +420,9 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if field value is modified successfully; otherwise, <see langword="false"/>.</returns>
         public override bool SetValue(object obj, V value)
         {
-            if(IsInitOnly)
+            if (IsInitOnly)
                 return false;
-            else if(obj is null)
+            else if (obj is null)
             {
                 Value = value;
                 return true;
@@ -468,7 +468,7 @@ namespace DotNext.Reflection
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
-                if(setter is null)
+                if (setter is null)
                     throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
                 else
                     setter(value);

@@ -6,7 +6,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <StartupObject>DotNext.Program</StartupObject>
     <LangVersion>latest</LangVersion>
-    <Version>0.6.0</Version>
+    <Version>0.8.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Various benchmarks demonstrating performance aspects of .NEXT extensions</Description>
@@ -31,11 +31,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" Condition="'$(Configuration)'=='Debug'"/>
-    <PackageReference Include="DotNext.Reflection" Version="0.6.0" Condition="'$(Configuration)'=='Release'" />
+    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="DotNext.Reflection" Version="0.8.0" Condition="'$(Configuration)'=='Release'" />
     
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.6.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.8.0" Condition="'$(Configuration)'=='Release'" />
+
+    <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="DotNext.Metaprogramming" Version="0.8.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
 </Project>

@@ -16,7 +16,7 @@ namespace DotNext.Reflection
         /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>. This parameter is ignored for properties and events.</param>
         /// <returns><see langword="true"/> if one or more instances of <typeparamref name="A"/> or any of its derived types is applied to the provided member; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined<A>(this MemberInfo member, bool inherit = false) where A : Attribute => member.IsDefined(typeof(A), inherit);
-        
+
         /// <summary>
         /// Returns a value that indicates whether the specified attribute type has been applied to the module.
         /// </summary>
@@ -32,7 +32,7 @@ namespace DotNext.Reflection
         /// <typeparam name="A">The type of custom attribute to search for. The search includes derived types.</typeparam>
         /// <returns><see langword="true"/> if one or more instances of <typeparamref name="A"/> or any of its derived types is applied to the provided assembly; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined<A>(this Assembly assembly) where A : Attribute => assembly.IsDefined(typeof(A), false);
-        
+
         /// <summary>
         /// Returns a value that indicates whether the specified attribute type has been applied to the parameter.
         /// </summary>

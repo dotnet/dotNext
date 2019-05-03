@@ -111,5 +111,16 @@ namespace DotNext.Runtime.InteropServices
                 Equal(42, ptr.Value);
             }
         }
+
+        [Fact]
+        public static unsafe void Fill()
+        {
+            Pointer<int> ptr = stackalloc int[10];
+            Equal(0, ptr[0]);
+            Equal(0, ptr[8]);
+            ptr.Fill(42, 10L);
+            Equal(42, ptr[0]);
+            Equal(42, ptr[9]);
+        }
     }
 }

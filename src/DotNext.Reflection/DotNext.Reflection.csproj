@@ -5,7 +5,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<Version>0.6.0</Version>
+	<Version>0.8.0</Version>
 	<Authors>Roman Sakno</Authors>
 	<Product>.NEXT Family of Libraries</Product>
 	<Description>Strongly typed reflection, concept types (type classes), fast reflection</Description>
@@ -16,7 +16,7 @@
 	<RepositoryType>git</RepositoryType>
 	<PackageTags>Concept;Reflection;Typeclass</PackageTags>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Introduce assertions of constraints defined by Concept Type</PackageReleaseNotes>
+	<PackageReleaseNotes>Improved Awaitable and Awaiter concept types</PackageReleaseNotes>
   </PropertyGroup>
 
 
@@ -35,7 +35,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.6.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.8.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
   <ItemGroup>

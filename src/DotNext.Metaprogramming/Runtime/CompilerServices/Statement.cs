@@ -5,9 +5,9 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using static Metaprogramming.ExpressionBuilder;
     using VariantType;
     using static Collections.Generic.Collection;
+    using static Linq.Expressions.ExpressionBuilder;
 
     /// <summary>
     /// Represents statement.
@@ -68,7 +68,7 @@ namespace DotNext.Runtime.CompilerServices
 
         internal static Expression Wrap(Expression expr)
         {
-            switch(expr)
+            switch (expr)
             {
                 case TryExpression seh:
                     return seh;
@@ -100,9 +100,9 @@ namespace DotNext.Runtime.CompilerServices
         private static CodeInsertionPoint CaptureRewritePoint(LinkedList<Expression> codeBlock)
             => codeBlock.First is null ? new CodeInsertionPoint(codeBlock) : new CodeInsertionPoint(codeBlock.Last);
 
-        internal Metaprogramming.CodeInsertionPoint PrologueCodeInserter() => CaptureRewritePoint(prologue).Insert;
+        internal DotNext.CodeInsertionPoint PrologueCodeInserter() => CaptureRewritePoint(prologue).Insert;
 
-        internal Metaprogramming.CodeInsertionPoint EpilogueCodeInserter() => CaptureRewritePoint(epilogue).Insert;
+        internal DotNext.CodeInsertionPoint EpilogueCodeInserter() => CaptureRewritePoint(epilogue).Insert;
 
         public sealed override Type Type => Content.Type;
         public sealed override ExpressionType NodeType => ExpressionType.Extension;

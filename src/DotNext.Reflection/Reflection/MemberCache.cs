@@ -5,9 +5,9 @@ using System.Threading;
 
 namespace DotNext.Reflection
 {
-	internal abstract class Cache<K, V>
-		where V: class
-	{
+    internal abstract class Cache<K, V>
+        where V : class
+    {
         private readonly Dictionary<K, V> elements;
         private readonly ReaderWriterLockSlim syncObject;
 
@@ -54,13 +54,13 @@ namespace DotNext.Reflection
         }
     }
 
-	internal abstract class MemberCache<M, E>: Cache<string, E>
-		where M: MemberInfo
-		where E: class, IMember<M>
-	{
-		private protected MemberCache()
-			: base(StringComparer.Ordinal)
-		{
-		}
-	}
+    internal abstract class MemberCache<M, E> : Cache<string, E>
+        where M : MemberInfo
+        where E : class, IMember<M>
+    {
+        private protected MemberCache()
+            : base(StringComparer.Ordinal)
+        {
+        }
+    }
 }

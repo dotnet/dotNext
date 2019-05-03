@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.6.0</Version>
+    <Version>0.8.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>A library for metaprogramming and dynamic code generation</Description>
@@ -15,7 +15,10 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>metaprogramming</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Fixed correctness of code generation</PackageReleaseNotes>
+    <PackageReleaseNotes>Introduced new metaprogramming model with is not backward compatible with previous versions of this library but much more simplier and convenient.
+Improved performance of code generated for async lambda, especially, state machine boxing prevention.
+String interpolation expression introduced
+Embedding of C# Expression Trees</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -41,7 +44,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.6.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.8.0" Condition="'$(Configuration)'=='Release'" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" />
   </ItemGroup>
 </Project>

@@ -12,7 +12,7 @@ namespace DotNext.Runtime.CompilerServices
             var task = Task<long>.Factory.StartNew(() => 42);
             task.Wait();
             var awaiter = Awaitable<Task<long>, TaskAwaiter<long>, long>.GetAwaiter(task);
-            True(Awaiter<TaskAwaiter<long>, long>.IsCompleted(awaiter));
+            True(NotifyCompletion<TaskAwaiter<long>>.IsCompleted(awaiter));
             Equal(42, Awaiter<TaskAwaiter<long>, long>.GetResult(awaiter));
         }
 
@@ -30,9 +30,18 @@ namespace DotNext.Runtime.CompilerServices
             var task = Task.Factory.StartNew(holder.ChangeValue);
             task.Wait();
             var awaiter = Awaitable<Task, TaskAwaiter>.GetAwaiter(task);
-            True(Awaiter<TaskAwaiter>.IsCompleted(awaiter));
+            True(NotifyCompletion<TaskAwaiter>.IsCompleted(awaiter));
             Awaiter<TaskAwaiter>.GetResult(awaiter);
             Equal(42, holder.Value);
+        }
+
+        [Fact]
+        public async static Task AwaitUsingConcept()
+        {
+            var task = new Task<int>(() => 42);
+            task.Start();
+            var result = await new Awaitable<Task<int>, TaskAwaiter<int>, int>(task);
+            Equal(42, result);
         }
     }
 }
