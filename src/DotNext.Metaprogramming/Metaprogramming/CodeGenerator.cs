@@ -194,7 +194,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds instance property assignment.
         /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="instanceProperty">Instance property to be assigned.</param>
         /// <param name="value">A new value of the property.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -213,7 +213,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds instance field assignment.
         /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="instanceField">Instance field to be assigned.</param>
         /// <param name="value">A new value of the field.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -258,7 +258,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds instance method call statement.
         /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -268,7 +268,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds instance method call statement.
         /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -278,7 +278,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds instance method call statement.
         /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="methodName">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -482,7 +482,7 @@ namespace DotNext.Metaprogramming
             => If(test).Then(ifTrue).Else(ifFalse).End();
 
         /// <summary>
-        /// Adds <see langword="while"/> loop statement.
+        /// Adds <c>while</c> loop statement.
         /// </summary>
         /// <param name="test">Loop continuation condition.</param>
         /// <param name="body">Loop body.</param>
@@ -495,7 +495,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="while"/> loop statement.
+        /// Adds <c>while</c> loop statement.
         /// </summary>
         /// <param name="test">Loop continuation condition.</param>
         /// <param name="body">Loop body.</param>
@@ -534,7 +534,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="foreach"/> loop statement.
+        /// Adds <c>foreach</c> loop statement.
         /// </summary>
         /// <param name="collection">The expression providing enumerable collection.</param>
         /// <param name="body">Loop body.</param>
@@ -547,7 +547,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="foreach"/> loop statement.
+        /// Adds <c>foreach</c> loop statement.
         /// </summary>
         /// <param name="collection">The expression providing enumerable collection.</param>
         /// <param name="body">Loop body.</param>
@@ -560,7 +560,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="for"/> loop statement.
+        /// Adds <c>for</c> loop statement.
         /// </summary>
         /// <remarks>
         /// This builder constructs the statement equivalent to <c>for(var i = initializer; condition; iter){ body; }</c>
@@ -578,7 +578,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="for"/> loop statement.
+        /// Adds <c>for</c> loop statement.
         /// </summary>
         /// <remarks>
         /// This builder constructs the statement equivalent to <c>for(var i = initializer; condition; iter){ body; }</c>
@@ -621,14 +621,14 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="throw"/> statement to the compound statement.
+        /// Adds <c>throw</c> statement to the compound statement.
         /// </summary>
         /// <param name="exception">The exception to be thrown.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Throw(Expression exception) => LexicalScope.Current.AddStatement(Expression.Throw(exception));
 
         /// <summary>
-        /// Adds <see langword="throw"/> statement to the compound statement.
+        /// Adds <c>throw</c> statement to the compound statement.
         /// </summary>
         /// <typeparam name="E">The exception to be thrown.</typeparam>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -648,7 +648,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="using"/> statement.
+        /// Adds <c>using</c> statement.
         /// </summary>
         /// <param name="resource">The expression representing disposable resource.</param>
         /// <param name="body">The body of the statement.</param>
@@ -661,7 +661,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="using"/> statement.
+        /// Adds <c>using</c> statement.
         /// </summary>
         /// <param name="resource">The expression representing disposable resource.</param>
         /// <param name="body">The body of the statement.</param>
@@ -674,7 +674,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="lock"/> statement.
+        /// Adds <c>lock</c> statement.
         /// </summary>
         /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
         /// <param name="body">Synchronized scope of code.</param>
@@ -687,7 +687,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="lock"/> statement.
+        /// Adds <c>lock</c> statement.
         /// </summary>
         /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
         /// <param name="body">Synchronized scope of code.</param>
@@ -848,7 +848,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="fault">Fault handling block.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns><c>this</c> builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Fault(this TryBuilder builder, Action fault)
         {
@@ -859,7 +859,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds structured exception handling statement.
         /// </summary>
-        /// <param name="scope"><see langword="try"/> block builder.</param>
+        /// <param name="scope"><c>try</c> block builder.</param>
         /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch-finally">try-catch-finally Statement</seealso>
@@ -872,18 +872,18 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds structured exception handling statement.
         /// </summary>
-        /// <param name="body"><see langword="try"/> block.</param>
+        /// <param name="body"><c>try</c> block.</param>
         /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch-finally">try-catch-finally Statement</seealso>        
         public static TryBuilder Try(Expression body) => new TryBuilder(body, LexicalScope.Current);
 
         /// <summary>
-        /// Constructs block of code run when control leaves a <see langword="try"/> statement.
+        /// Constructs block of code run when control leaves a <c>try</c> statement.
         /// </summary>
         /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="body">The block of code to be executed.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns><c>this</c> builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Finally(this TryBuilder builder, Action body)
         {
@@ -926,8 +926,8 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="return"/> instruction to return from
-        /// underlying lambda function having non-<see langword="void"/>
+        /// Adds <c>return</c> instruction to return from
+        /// underlying lambda function having non-<see cref="void"/>
         /// return type.
         /// </summary>
         /// <param name="result">Optional value to be returned from the lambda function.</param>

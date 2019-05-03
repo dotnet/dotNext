@@ -7,16 +7,16 @@ namespace DotNext.Linq.Expressions
     using static Reflection.DisposableType;
     
     /// <summary>
-    /// Represents <see langword="using"/> expression.
+    /// Represents <c>using</c> expression.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">USING statement</seealso>
     public sealed class UsingExpression: Expression
     {
         /// <summary>
-        /// Represents constructor of <see langword="using"/> expression.
+        /// Represents constructor of <c>using</c> expression.
         /// </summary>
         /// <param name="resource">The variable representing disposable resource.</param>
-        /// <returns>Body of <see langword="using"/> expression.</returns>
+        /// <returns>Body of <c>using</c> expression.</returns>
         public delegate Expression Statement(ParameterExpression resource);
 
         private readonly MethodInfo disposeMethod;
@@ -58,7 +58,7 @@ namespace DotNext.Linq.Expressions
             => new UsingExpression(resource) { Body = body };
 
         /// <summary>
-        /// Gets body of <see langword="using"/> expression.
+        /// Gets body of <c>using</c> expression.
         /// </summary>
         public Expression Body
         {

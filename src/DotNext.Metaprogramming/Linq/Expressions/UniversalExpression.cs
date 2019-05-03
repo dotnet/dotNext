@@ -732,7 +732,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="ifTrue">Positive branch.</param>
         /// <param name="ifFalse">Negative branch.</param>
-        /// <param name="type">The type of conditional expression. Default is <see langword="void"/>.</param>
+        /// <param name="type">The type of conditional expression. Default is <see cref="void"/>.</param>
         /// <returns>Conditional expression.</returns>
         public UniversalExpression Condition(Expression ifTrue = null, Expression ifFalse = null, Type type = null)
             => new UniversalExpression(expression.Condition(ifTrue, ifFalse, type));
@@ -748,9 +748,9 @@ namespace DotNext.Linq.Expressions
             => new UniversalExpression(expression.Condition<R>(ifTrue, ifFalse));
 
         /// <summary>
-        /// Constructs <see langword="throw"/> statement.
+        /// Constructs <c>throw</c> statement.
         /// </summary>
-        /// <returns><see langword="throw"/> statement.</returns>
+        /// <returns><c>throw</c> statement.</returns>
         public UnaryExpression Throw() => expression.Throw();
 
         /// <summary>
