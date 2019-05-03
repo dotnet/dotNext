@@ -6,7 +6,5 @@
   href: benchmarks.md
 - name: NuGet
   href: https://www.nuget.org/packages?q=DotNext
-- name: MyGet
-  href: https://www.myget.org/gallery/dotnext
 - name: Source Code
   href: https://github.com/sakno/dotNext
