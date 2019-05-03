@@ -6,34 +6,49 @@ The following example shows how to generate lambda function which performs facto
 
 ```csharp
 using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
 
-Func<long, long> fact = LambdaBuilder<Func<long, long>>.Build(fun => 
+Func<long, long> fact = Lambda<Func<long, long>>(fun => 
 {
-    UniversalExpression arg = fun.Parameters[0];
-    fun.If(arg > 1L)
-        .Then(arg * fun.Self.Invoke(arg - 1L))
+    var arg = (U)fun[0];
+    If(arg > 1L)
+        .Then(arg * fun.Invoke(arg - 1L))
         .Else(arg)
-    .OfType<long>()
+		.OfType<long>()
     .End();
 }).Compile();
 fact(3);    // == 6
 ```
 
-`fun` parameter represents lexical scope of the lambda function to be constructed. `arg` local variable is just a conversion of the lambda function parameter into [Universal Expression](universal.md). `fun.If` starts construction of _if-then-else_ expression. `fun.Self` is a reference to the function itself providing recursive access. `OfType` describes type of conditional expression that was started by `fun.If` call. `End` method call represents end of conditional expression. `fun.Parameters` is a collection of lambda parameters sorted by their position in the signature.
+`fun` parameter is of type [LambdaContext](../../api/DotNext.Metaprogramming.LambdaContext.yml) and provide access to the function parameters. `arg` local variable is just a conversion of the lambda function parameter into [Universal Expression](universal.md). `If` starts construction of _if-then-else_ expression. `fun.Invoke` method allows to invoke lambda function recursively. `OfType` describes type of conditional expression that was started by `If` call. `End` method call represents end of conditional expression.
+
+`LambdaContext` type supports decomposition so it is possible to use convenient syntax to obtain function parameters:
+```csharp
+using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
+
+Lambda<Func<int, int, int>>(fun => 
+{
+  var (x, y) = fun;
+  Return((U)x + y);
+});
+```
 
 The last expression inside of lamda function is interpreted as return value. However, explicit return is supported.
 
 ```csharp
 using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
 
-Func<long, bool> isZero = LambdaBuilder<Func<long, bool>>.Build(fun => 
+Func<long, bool> isZero = Lambda<Func<long, bool>>(fun => 
 {
-    UniversalExpression arg = fun.Parameters[0];
-    fun.If(arg != 0L)
-        .Then(then => then.Return(true))
-        .Else(otherwise => otherwise.Return(false))
+    var arg = (U)fun[0];
+    If(arg != 0L)
+        .Then(() => Return(true))
+        .Else(() => Return(false))
     .End();
 }).Compile();
 ```
@@ -51,16 +66,17 @@ new Func<long, long>(arg =>
 });
 ```
 
-`then` and `otherwise` parameters provide access to the lexical scope and code block of the positive and negative conditional branches respectively.
-
 # Implicit result
 Lambda function builder has implicitly declared _Result_ variable which can be used to set function result without returning from it. If _Result_ variable is not used then builder performs optimization and will not emit declaration of local variable in the final expression tree.
 
 ```csharp
-LambdaBuilder<Fun<long, long>>(fun => 
+using System;
+using static DotNext.Metaprogramming.CodeGenerator;
+
+Lambda<Fun<long, long>>((fun, result) => 
 {
-    fun.Assign(fun.Result, fun.Parameters[0]);
+    Assign(result, fun[0]);
 });
 ```
 
-This feature is similar to _result_ implicit variable in Object Pascal. Once result assigned, it is not needed to use explicit _Return_ method to return from the lambda function.
+This feature is similar to _result_ implicit variable in [Pascal](https://www.freepascal.org/docs-html/ref/refse90.html) programming language. Once result assigned, it is not needed to use explicit _Return_ method to return from the lambda function.

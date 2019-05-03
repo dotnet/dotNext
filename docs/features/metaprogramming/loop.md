@@ -1,6 +1,8 @@
 Loops
 ====
-Metaprogramming library provides construction of `for`, `foreach` and `while` loops. The scope object available inside of builder block of code provides two special parameterless methods for continuation and abortion of loop execution: `Continue()` and `Break()`. The same methods are available from any other scope object with one exception: these methods have single parameter receiving scope object of the loop to be aborted or continued. This feature allows to leave outer loop from inner loop. There is no equivalent instruction in C# except unconditional control transfer using `goto`.
+Metaprogramming library provides construction of `for`, `foreach` and `while` loops. The lexical scope constructor may have optional parameter of type [LoopContext](../../api/DotNext.Metaprogramming.LoopContext.yml) that can be used to leave outer loop from inner loop. There is no equivalent instruction in C# except unconditional control transfer using `goto`.
+
+`Continue()` or `Break()` methods from [CodeGenerator](../../api/DotNext.Metaprogramming.CodeGenerator.yml) are used to pass the control to the next iteration or out of scope respectively.
 
 # foreach Loop
 `foreach` statement may accept any expression of type implementing `System.Collections.IEnumerable` or `System.Collections.Generic.IEnumerable<T>` interface, or having public instance parameterless method `GetEnumerator()` which return type has the public instance property `Current` and public instance parameterless method `MoveNext()`.
@@ -11,9 +13,9 @@ using static DotNext.Metaprogramming.CodeGenerator;
 
 Lambda<Action<string>>(fun => 
 {
-    ForEach(fun[0], character =>
+    ForEach(fun[0], ch =>
     {
-        WriteLine(character);
+        WriteLine(ch);
     });
 });
 
@@ -26,21 +28,23 @@ new Action<string>(str =>
 });
 ```
 
-`Element` property of the loop statement builder provides access to loop variable.
+`ch` variable provides access to current element in the collection.
 
 # while Loop
 `while` loop statement is supported in two forms: `while-do` or `do-while`. Both forms are representing regular `while` loop existing in most popular languages such as C#, C++ and C. 
 
 ```csharp
 using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
 
-LambdaBuilder<Fun<long, long>>(fun => 
+Lambda<Fun<long, long>>((fun, result) => 
 {
-    UniversalExpression arg = fun.Parameters[0];
-    fun.Assign(fun.Result, 1L);  //result = 1L;
-    fun.While(arg > 1L, whileBlock => {
-        whileBlock.Assign(fun.Result, arg-- * fun.Result);  //result *= arg--;
+    var arg = (U)fun[0];
+    Assign(result, 1L);  //result = 1L;
+    While(arg > 1L, () => 
+	{
+        Assign(result, arg-- * fun.Result);  //result *= arg--;
     });
 });
 
@@ -62,16 +66,15 @@ new Func<long, long>(arg =>
 
 ```csharp
 using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
 
-LambdaBuilder<Fun<long, long>>(fun => 
+Lambda<Fun<long, long>>((fun, result) => 
 {
-    fun.Assign(fun.Result, 1L);  //result = 1L;
-    fun.For(fun.Parameters[0], i => i > 1L, loop => 
+    Assign(result, 1L);  //result = 1L;
+    For(fun[0], i => (U)i > 1L, i => PostDecrementAssign(i), i => 
     {
-        loop.Assign(fun.Result, i * fun.Result);    //result *= i;
-        loop.StartIteratorBlock();
-        loop.PostDecrementAssign(loop.LoopVar);  //i--
+        Assign(result, (U)i * result);    //result *= i;
     });
 });
 
@@ -86,25 +89,24 @@ new Func<long, long>(arg =>
 });
 ```
 
-Any call of code generation methods after `StartIteratorBlock` will be interpreted as _post iteration_ statement. Therefore, this statement is not limited to the simple expression. If method `StartIteratorBlock` is not used then `for` loop will be similar to `while` loop but with implicitly declared loop variable.
-
 # Plain Loop
 Plain loop is similar to `while(true)` loop and doesn't have built-in loop control tools. Developer need to control loop execution by calling `Continue()` and `Break` manually.
 
 ```csharp
 using System;
-using DotNext.Metaprogramming;
+using static DotNext.Metaprogramming.CodeGenerator;
+using U = DotNext.Linq.Expressions.UniversalExpression;
 
-LambdaBuilder<Fun<long, long>>(fun => 
+Lambda<Fun<long, long>>((fun, result) => 
 {
-    UniversalExpression arg = fun.Parameters[0];
-    fun.Assign(fun.Result, 1L);  //result = 1L;
-    fun.Loop(loopBlock => 
+    var arg = (U)fun[0];
+    Assign(result, 1L);  //result = 1L;
+    Loop(() => 
     {
-        loopBlock.If(arg > 1L)
-            .Then(thenBlock => thenBlock.Assign(fun.Result, arg-- * fun.Result))
-            .Else(elseBlock => elseBlock.Break(loopBlock))  //break;
-            .End();
+        If(arg > 1L)
+            .Then(() => Assign(result, arg-- * result))
+            .Else(Break)  //break;
+        .End();
     });
 });
 

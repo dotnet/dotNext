@@ -26,6 +26,6 @@ new Action<byte>(bytes =>
 });
 ```
 
-Disposable resource is accessible using _DisposableVar_ property of the statement builder. 
+`stream` parameter represents disposable resource inside of `Using()` scope.
 
 _Using_ statement can accept any expression of type implementing `System.IDisposable` interface or having public instance method `Dispose()` without parameters.

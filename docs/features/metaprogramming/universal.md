@@ -3,7 +3,7 @@ Universal Expression
 [Universal Expression](../../api/DotNext.Linq.Expressions.UniversalExpression.yml) is a powerful tool which allows to use programming language constructs without imitating them using API calls. Compound expressions can be constructed in natural way using operators and constants like in regular code.
 
 ```csharp
-using DotNext.Metaprogramming;
+using DotNext.Linq.Expressions;
 
 UniversalExpression i = 10; //int const
 UniversalExpression g = 20; //int const
@@ -13,8 +13,8 @@ i += g; //now i is expression tree representing binary addition operation
 Universal expression can be converted into or from [Expression class](https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression).
 
 ```csharp
+using DotNext.Linq.Expressions;
 using System.Linq.Expressions;
-using DotNext.Metaprogramming;
 
 UniversalExpression i = 10;
 i = i.Convert<long>() * 20L;
@@ -24,6 +24,8 @@ Expression expr = i;
 Properties and methods are accessible using appropriate methods of the universal expression:
 
 ```csharp
+using DotNext.Linq.Expressions;
+
 UniversalExpression str = "Hello, world";
 var length = str.Property(nameof(string.Length));   //"Hello, world".Length
 ```
@@ -34,7 +36,7 @@ The expression tree can be constructed using [dynamic](https://docs.microsoft.co
 This feature converts any dynamic expression into expression tree. The starting point is an instance of _UniversalExpression_ which can be converted into **dynamic** data type. After all necessary manipulations with expression tree it is possible to convert dynamic type into _Expression_ or _UniversalExpression_ type back again.
 
 ```csharp
-using DotNext.Metaprogramming;
+using DotNext.Linq.Expressions;
 using System.Linq.Expressions;
 
 dynamic expr = (UniversalExpression)"Hello, world";
