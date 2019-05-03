@@ -29,7 +29,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="testValues">A list of test values.</param>
         /// <param name="body">The expression to be returned from selection statement.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns><c>this</c> builder.</returns>
         public SwitchBuilder Case(IEnumerable<Expression> testValues, Expression body)
         {
             VerifyCaller();
@@ -43,7 +43,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="test">Single test value.</param>
         /// <param name="body">The expression to be returned from selection statement.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns><c>this</c> builder.</returns>
         public SwitchBuilder Case(Expression test, Expression body) => Case(Sequence.Singleton(test), body);
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace DotNext.Metaprogramming
         /// doesn't match any other cases.
         /// </summary>
         /// <param name="body">The expression to be returned from selection statement in default case.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns><c>this</c> builder.</returns>
         public SwitchBuilder Default(Expression body)
         {
             VerifyCaller();
