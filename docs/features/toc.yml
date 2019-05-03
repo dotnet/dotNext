@@ -60,6 +60,8 @@
       href: metaprogramming/lock.md
     - name: String Interpolation
       href: metaprogramming/interp.md
+    - name: Miscellaneous Statements
+      href: metaprogramming/misc.md
 - name: Unsafe Data Structures
   href: unsafe/index.md
   items:
