@@ -67,7 +67,7 @@ new Func<long, long>(arg =>
 ```
 
 # Implicit result
-Lambda function builder has implicitly declared _Result_ variable which can be used to set function result without returning from it. If _Result_ variable is not used then builder performs optimization and will not emit declaration of local variable in the final expression tree.
+Lambda function builder can have optional _result_ variable which is used to set function result without returning from it.
 
 ```csharp
 using System;
