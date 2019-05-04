@@ -14,8 +14,8 @@ namespace DotNext.Metaprogramming
         private ParameterExpression recursion;
         private readonly TaskType taskType;
 
-        internal AsyncLambdaExpression()
-            : base(false)
+        internal AsyncLambdaExpression(CompilationOptions options)
+            : base(options)
         {
             if (typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));

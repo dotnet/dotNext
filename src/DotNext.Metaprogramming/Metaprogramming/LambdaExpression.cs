@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Metaprogramming
 {
+    using CompilationOptions = Runtime.CompilerServices.CompilationOptions;
     using static Collections.Generic.Collection;
     using static Reflection.DelegateType;
 
@@ -14,8 +17,26 @@ namespace DotNext.Metaprogramming
     internal abstract class LambdaExpression : LexicalScope
     {
         private protected readonly bool tailCall;
+        private SymbolDocumentInfo sourceCode;
+        private DebugInfoGenerator debugInfo;
 
-        private protected LambdaExpression(bool tailCall) : base(false) => this.tailCall = tailCall;
+        private protected LambdaExpression(CompilationOptions options) 
+            : base(false)
+        {
+            tailCall = options.TailCall;
+            sourceCode = options.CreateSymbolDocument();
+        }
+
+        internal DebugInfoExpression CreateDebugInfo(int startLine, int startColumn, int endLine, int endColumn)
+        {
+            if(sourceCode is null)
+            {
+                debugInfo = DebugInfoGenerator.CreatePdbGenerator();
+                //generate temp file for source code
+                sourceCode = Expression.SymbolDocument(Path.GetTempFileName());
+            }
+            AddLast(Expression.DebugInfo(sourceCode, startLine, startColumn, endLine, endColumn));
+        } 
 
         private protected IReadOnlyList<ParameterExpression> GetParameters(System.Reflection.ParameterInfo[] parameters)
             => Array.ConvertAll(parameters, parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
@@ -37,6 +58,12 @@ namespace DotNext.Metaprogramming
         internal abstract IReadOnlyList<ParameterExpression> Parameters { get; }
 
         internal abstract Expression Return(Expression result);
+
+        public override void Dispose()
+        {
+            sourceCode = null;
+            debugInfo = null;
+        }
     }
 
     /// <summary>
@@ -52,8 +79,8 @@ namespace DotNext.Metaprogramming
 
         private readonly Type returnType;
 
-        internal LambdaExpression(bool tailCall = false)
-            : base(tailCall)
+        internal LambdaExpression(CompilationOptions options)
+            : base(options)
         {
             if (typeof(D).IsAbstract)
                 throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
