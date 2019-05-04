@@ -6,6 +6,7 @@ using System.Diagnostics;
 
 namespace DotNext.Metaprogramming
 {
+    using CompilationOptions = Runtime.CompilerServices.CompilationOptions;
     using Linq.Expressions;
 
     /// <summary>
@@ -39,6 +40,13 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         [Conditional("DEBUG")]
         public static void Breakpoint() => LexicalScope.Current.AddStatement(ExpressionBuilder.Breakpoint());
+
+        [Conditional("DEBUG")]
+        public static void DebugInfo(int startLine, int startColumn, int endLine, int endColumn)
+        {
+            var lambda = LexicalScope.FindScope<LambdaExpression>() ?? throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
+            LexicalScope.Current.AddStatement(lambda.CreateDebugInfo(startLine, startColumn, endLine, endColumn));
+        }
 
         /// <summary>
         /// Writes line of the text into <see cref="Console.Out"/>.
@@ -942,15 +950,26 @@ namespace DotNext.Metaprogramming
         /// Constructs multi-line lamdba function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="options">Lambda expression compilation options.</param>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        public static Expression<D> Lambda<D>(CompilationOptions options, Action<LambdaContext> body)
+            where D : Delegate
+        {
+            using (var expression = new LambdaExpression<D>(options))
+                return expression.Build(body);
+        }
+
+        /// <summary>
+        /// Constructs multi-line lamdba function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
         public static Expression<D> Lambda<D>(bool tailCall, Action<LambdaContext> body)
             where D : Delegate
-        {
-            using (var expression = new LambdaExpression<D>(tailCall))
-                return expression.Build(body);
-        }
+            => Lambda<D>(new CompilationOptions { TailCall = tailCall }, body);
 
         /// <summary>
         /// Constructs single-line lamdba function capturing the current lexical scope.
@@ -962,7 +981,7 @@ namespace DotNext.Metaprogramming
         public static Expression<D> Lambda<D>(bool tailCall, Func<LambdaContext, Expression> body)
             where D : Delegate
         {
-            using(var expression = new LambdaExpression<D>(tailCall))
+            using(var expression = new LambdaExpression<D>(new CompilationOptions { TailCall = tailCall }))
                 return expression.Build(body);
         }
 
@@ -980,15 +999,26 @@ namespace DotNext.Metaprogramming
         /// Constructs multi-line lamdba function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="options">Lambda expression compilation options.</param>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        public static Expression<D> Lambda<D>(CompilationOptions options, Action<LambdaContext, ParameterExpression> body)
+            where D : Delegate
+        {
+            using (var expression = new LambdaExpression<D>(options))
+                return expression.Build(body);
+        }
+
+        /// <summary>
+        /// Constructs multi-line lamdba function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
         public static Expression<D> Lambda<D>(bool tailCall, Action<LambdaContext, ParameterExpression> body)
             where D : Delegate
-        {
-            using (var expression = new LambdaExpression<D>(tailCall))
-                return expression.Build(body);
-        }
+            => Lambda<D>(new CompilationOptions { TailCall = tailCall }, body);
 
         /// <summary>
         /// Constructs multi-line lamdba function capturing the current lexical scope.
@@ -1009,6 +1039,23 @@ namespace DotNext.Metaprogramming
         public static Expression<D> Lambda<D>(Action<LambdaContext, ParameterExpression> body)
             where D : Delegate
             => Lambda<D>(false, body);
+        
+        /// <summary>
+        /// Constructs multi-line async lambda function capturing the current lexical scope.
+        /// </summary>
+        /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
+        /// <param name="options">Lambda expression compilation options.</param>
+        /// <param name="body">Lambda function builder.</param>
+        /// <returns>Constructed lambda expression.</returns>
+        /// <seealso cref="AwaitExpression"/>
+        /// <seealso cref="AsyncResultExpression"/>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
+        public static Expression<D> AsyncLambda<D>(CompilationOptions options, Action<LambdaContext> body)
+            where D : Delegate
+        {
+            using (var statement = new AsyncLambdaExpression<D>(options))
+                return statement.Build(body);
+        }
 
         /// <summary>
         /// Constructs multi-line async lambda function capturing the current lexical scope.
@@ -1021,9 +1068,6 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
         public static Expression<D> AsyncLambda<D>(Action<LambdaContext> body)
             where D : Delegate
-        {
-            using (var statement = new AsyncLambdaExpression<D>())
-                return statement.Build(body);
-        }
+            => AsyncLambda<D>(default, body);
     }
 }
