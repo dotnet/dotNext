@@ -21,9 +21,6 @@ namespace DotNext.Metaprogramming
 
         private LambdaExpression GetLambdaScope() 
             => lambda?.Target is LambdaExpression result ? result : throw new ObjectDisposedException(nameof(LambdaContext));
-        
-        [Conditional("DEBUG")]
-        public void EnableDebugging() => GetLambdaScope().EnableDebugging();
 
         /// <summary>
         /// Gets parameter of the lambda function.
