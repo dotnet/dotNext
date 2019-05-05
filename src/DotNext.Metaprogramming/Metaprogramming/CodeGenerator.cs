@@ -724,6 +724,8 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/switch">switch Statement</seealso>
         public static SwitchBuilder Switch(Expression value) => new SwitchBuilder(value, LexicalScope.Current);
 
+        public static MatchBuilder Match(Expression value) => new MatchBuilder(value, LexicalScope.Current);
+
         /// <summary>
         /// Specifies a pattern to compare to the match expression
         /// and action to be executed if matching is successful.
