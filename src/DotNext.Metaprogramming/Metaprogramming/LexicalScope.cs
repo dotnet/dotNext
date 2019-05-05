@@ -93,7 +93,7 @@ namespace DotNext.Metaprogramming
 
         internal void EnableDebugging() => sourceCode = Expression.SymbolDocument(Path.GetTempFileName());
 
-        private SymbolDocumentInfo SymbolDocument => Parent is null ? sourceCode : Parent.SymbolDocument;
+        private protected SymbolDocumentInfo SymbolDocument => Parent is null ? sourceCode : Parent.SymbolDocument;
 
         ParameterExpression ILexicalScope.this[string variableName]
         {

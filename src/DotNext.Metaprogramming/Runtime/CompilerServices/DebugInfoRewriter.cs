@@ -28,7 +28,8 @@ namespace DotNext.Runtime.CompilerServices
                 if(lineOfCode.Contains(DebugInfoPrefix))
                 {
                     lineOfCode = sourceCode[++lineNumber];
-                    return Expression.DebugInfo(node.Document, lineNumber, 0, lineNumber, lineOfCode.Length - 1);
+                    lineNumber += 1;    //line number is 1-based, not zero-based
+                    return Expression.DebugInfo(node.Document, lineNumber, 1, lineNumber, lineOfCode.Length);
                 }
             }
             return node;

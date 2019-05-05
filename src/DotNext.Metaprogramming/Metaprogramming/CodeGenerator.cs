@@ -7,6 +7,7 @@ using System.Diagnostics;
 namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
+    using Runtime.CompilerServices;
 
     /// <summary>
     /// Represents code generator.
@@ -945,7 +946,7 @@ namespace DotNext.Metaprogramming
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(bool tailCall, Action<LambdaContext> body)
+        public static LambdaCompiler<D> Lambda<D>(bool tailCall, Action<LambdaContext> body)
             where D : Delegate
         {
             using (var expression = new LambdaExpression<D>(tailCall))
@@ -959,7 +960,7 @@ namespace DotNext.Metaprogramming
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(bool tailCall, Func<LambdaContext, Expression> body)
+        public static LambdaCompiler<D> Lambda<D>(bool tailCall, Func<LambdaContext, Expression> body)
             where D : Delegate
         {
             using(var expression = new LambdaExpression<D>(tailCall))
@@ -972,7 +973,7 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(Func<LambdaContext, Expression> body)
+        public static LambdaCompiler<D> Lambda<D>(Func<LambdaContext, Expression> body)
             where D : Delegate
             => Lambda<D>(false, body);
 
@@ -983,7 +984,7 @@ namespace DotNext.Metaprogramming
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(bool tailCall, Action<LambdaContext, ParameterExpression> body)
+        public static LambdaCompiler<D> Lambda<D>(bool tailCall, Action<LambdaContext, ParameterExpression> body)
             where D : Delegate
         {
             using (var expression = new LambdaExpression<D>(tailCall))
@@ -996,7 +997,7 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(Action<LambdaContext> body)
+        public static LambdaCompiler<D> Lambda<D>(Action<LambdaContext> body)
             where D : Delegate
             => Lambda<D>(false, body);
 
@@ -1006,7 +1007,7 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>
         /// <returns>Constructed lambda expression.</returns>
-        public static Expression<D> Lambda<D>(Action<LambdaContext, ParameterExpression> body)
+        public static LambdaCompiler<D> Lambda<D>(Action<LambdaContext, ParameterExpression> body)
             where D : Delegate
             => Lambda<D>(false, body);
 
@@ -1019,7 +1020,7 @@ namespace DotNext.Metaprogramming
         /// <seealso cref="AwaitExpression"/>
         /// <seealso cref="AsyncResultExpression"/>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
-        public static Expression<D> AsyncLambda<D>(Action<LambdaContext> body)
+        public static LambdaCompiler<D> AsyncLambda<D>(Action<LambdaContext> body)
             where D : Delegate
         {
             using (var statement = new AsyncLambdaExpression<D>())
