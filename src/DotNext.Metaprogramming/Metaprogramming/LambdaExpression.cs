@@ -8,7 +8,6 @@ namespace DotNext.Metaprogramming
 {
     using static Collections.Generic.Collection;
     using static Reflection.DelegateType;
-    using Runtime.CompilerServices;
 
     /// <summary>
     /// Represents lambda function builder.
@@ -39,29 +38,13 @@ namespace DotNext.Metaprogramming
         internal abstract IReadOnlyList<ParameterExpression> Parameters { get; }
 
         internal abstract Expression Return(Expression result);
-
-        private protected LambdaCompiler<D> CreateCompiler<D>(Expression<D> lambda)
-            where D : Delegate
-        {
-            var document = SymbolDocument;
-            if(document is null)    //debugging not enabled
-                return new LambdaCompiler<D>(lambda);
-            //compile temporary version of lambda
-            //compilation causes source code generation
-            var generator = DebugInfoGenerator.CreatePdbGenerator();
-            lambda.Compile(generator);
-            //now adjust debugging information
-            var rewriter = new DebugInfoRewriter(document);
-            lambda = (Expression<D>)rewriter.Visit(lambda);
-            return new LambdaCompiler<D>(lambda, generator);
-        }
     }
 
     /// <summary>
     /// Represents lambda function builder.
     /// </summary>
     /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
-    internal sealed class LambdaExpression<D> : LambdaExpression, ILexicalScope<LambdaCompiler<D>, Action<LambdaContext>>, ILexicalScope<LambdaCompiler<D>, Action<LambdaContext, ParameterExpression>>, ILexicalScope<LambdaCompiler<D>, Func<LambdaContext, Expression>>
+    internal sealed class LambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>, ILexicalScope<Expression<D>, Action<LambdaContext, ParameterExpression>>, ILexicalScope<Expression<D>, Func<LambdaContext, Expression>>
         where D : Delegate
     {        
         private ParameterExpression recursion;
@@ -140,25 +123,25 @@ namespace DotNext.Metaprogramming
             return Expression.Lambda<D>(body, tailCall, Parameters);
         }
 
-        public LambdaCompiler<D> Build(Action<LambdaContext> scope)
+        public Expression<D> Build(Action<LambdaContext> scope)
         {
             using(var context = new LambdaContext(this))
                 scope(context);
-            return CreateCompiler(Build());
+            return Build();
         }
 
-        public LambdaCompiler<D> Build(Action<LambdaContext, ParameterExpression> scope)
+        public Expression<D> Build(Action<LambdaContext, ParameterExpression> scope)
         {
             using(var context = new LambdaContext(this))
                 scope(context, Result);
-            return CreateCompiler(Build());
+            return Build();
         }
 
-        public LambdaCompiler<D> Build(Func<LambdaContext, Expression> body)
+        public Expression<D> Build(Func<LambdaContext, Expression> body)
         {
             using(var context = new LambdaContext(this))
                 AddStatement(body(context));
-            return CreateCompiler(Build());
+            return Build();
         }
 
         public override void Dispose()

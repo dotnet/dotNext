@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Metaprogramming
 {
@@ -81,7 +80,6 @@ namespace DotNext.Metaprogramming
 
         private StatementNode first, last;
         private protected readonly LexicalScope Parent;
-        private SymbolDocumentInfo sourceCode;
 
         private protected LexicalScope(bool isStatement)
         {
@@ -90,10 +88,6 @@ namespace DotNext.Metaprogramming
             Parent = current;
             current = this;
         }
-
-        internal void EnableDebugging() => sourceCode = Expression.SymbolDocument(Path.GetTempFileName());
-
-        private protected SymbolDocumentInfo SymbolDocument => Parent is null ? sourceCode : Parent.SymbolDocument;
 
         ParameterExpression ILexicalScope.this[string variableName]
         {
@@ -108,16 +102,8 @@ namespace DotNext.Metaprogramming
         
         private protected IReadOnlyCollection<ParameterExpression> Variables => variables.Values;
 
-        private void AddStatementCore(Expression statement)
-            => last = first is null || last is null ? first = new StatementNode(statement) : last.CreateNext(statement);
-
         public void AddStatement(Expression statement)
-        {
-            var document = SymbolDocument;
-            if(!(document is null))
-                AddStatementCore(Expression.DebugInfo(document, 0, 0, 0, 0));
-            AddStatementCore(statement);
-        }
+            => last = first is null || last is null ? first = new StatementNode(statement) : last.CreateNext(statement);
 
         public void DeclareVariable(ParameterExpression variable) => variables.Add(variable.Name, variable);
 
@@ -142,7 +128,6 @@ namespace DotNext.Metaprogramming
             for(var current = first; !(current is null); current = current.Next)
                 current.Dispose();
             first = last = null;
-            sourceCode = null;
             variables.Clear();
             current = Parent;
         }
