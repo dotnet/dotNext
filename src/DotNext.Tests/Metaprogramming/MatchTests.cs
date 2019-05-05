@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace DotNext.Metaprogramming
@@ -14,7 +15,7 @@ namespace DotNext.Metaprogramming
             var lambda = Lambda<Func<object, int>>(fun =>
             {
                 Match(fun[0])
-                    .When<string>(t => t.Property(nameof(string.Length)))
+                    .Case<string>(t => t.Property(nameof(string.Length)))
                     .Default((-1).Const())
                     .OfType<int>()
                 .End();
@@ -29,7 +30,7 @@ namespace DotNext.Metaprogramming
             var lambda = Lambda<Func<object, int>>((fun, result) =>
             {
                 Match(fun[0])
-                    .When<string>(t => result.Assign(t.Property(nameof(string.Length))))
+                    .Case<string>(t => result.Assign(t.Property(nameof(string.Length))))
                     .Default(result.Assign((-1).Const()))
                 .End();
             }).Compile();

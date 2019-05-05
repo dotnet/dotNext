@@ -4,6 +4,8 @@ using IEnumerable = System.Collections.IEnumerable;
 
 namespace DotNext.Reflection
 {
+    using static Collections.Generic.EnumerableTuple;
+
     /// <summary>
     /// Provides specialized reflection methods for
     /// collection types.
@@ -40,5 +42,26 @@ namespace DotNext.Reflection
         /// <returns>Type of items in the collection; or <see langword="null"/> if <paramref name="collectionType"/> is not a generic collection.</returns>
         public static Type GetItemType(this Type collectionType)
             => collectionType.GetItemType(out _);
+        
+        /// <summary>
+        /// Returns type of collection implemented by the given type.
+        /// </summary>
+        /// <remarks>
+        /// The supported collection types are <see cref="ICollection{T}"/>, <seealso cref="IReadOnlyCollection{T}"/>.
+        /// </remarks>
+        /// <param name="type">The type that implements the one of the supported collection types.</param>
+        /// <returns>The interface of the collection implemented by the given type; otherwise, <see langword="null"/> if collection interface is not implemented.</returns>
+        /// <seealso cref="ICollection{T}"/>
+        /// <seealso cref="IReadOnlyCollection{T}"/>
+        public static Type GetImplementedCollection(this Type type)
+        {
+            foreach(var collectionType in (typeof(IReadOnlyCollection<>), typeof(ICollection<>)).AsEnumerable())
+            {
+                var instance = type.FindGenericInstance(collectionType);
+                if(!(instance is null))
+                    return instance;
+            }
+            return null;
+        }
     }
 }

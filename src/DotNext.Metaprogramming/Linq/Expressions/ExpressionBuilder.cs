@@ -7,6 +7,8 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions
 {
+    using Reflection;
+
     /// <summary>
     /// Provides extension methods to simplify construction of complex expressions.
     /// </summary>
@@ -829,6 +831,23 @@ namespace DotNext.Linq.Expressions
         /// <returns>Array length expression.</returns>
         public static UnaryExpression ArrayLength(this Expression array)
             => Expression.ArrayLength(array);
+        
+        /// <summary>
+        /// Constructs expression representing count of items in the collection or string.
+        /// </summary>
+        /// <remarks>
+        /// The input expression must be of type <see cref="string"/>, array or any type
+        /// implementing <see cref="ICollection{T}"/> or <see cref="IReadOnlyCollection{T}"/>.
+        /// </remarks>
+        /// <param name="collection">The expression representing collection.</param>
+        /// <returns>The expression providing access to the appropriate property indicating the number of items in the collection.</returns>
+        public static MemberExpression Count(this Expression collection)
+        {
+            if(collection.Type == typeof(string))
+                return Expression.Property(collection, nameof(string.Length));
+            var interfaceType = collection.Type.GetImplementedCollection() ?? throw new ArgumentException();
+            return Expression.Property(collection, interfaceType, nameof(Count));
+        }
 
         /// <summary>
         /// Constructs loop statement.

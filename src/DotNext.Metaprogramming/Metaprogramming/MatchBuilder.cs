@@ -11,30 +11,62 @@ namespace DotNext.Metaprogramming
     /// </summary>
     public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
     {
-        private readonly struct Case
+        public delegate Expression Condition(ParameterExpression variable);
+        public delegate Expression Action(ParameterExpression variable);
+        
+        private interface IPatternMatch
         {
-            private readonly Expression pattern;
-            private readonly Expression value;
+            ConditionalExpression CreateExpression(LabelTarget endOfMatch);
+        }
 
-            internal Case(Expression pattern, Expression value)
+        private sealed class MatchByType : IPatternMatch
+        {
+            private readonly Expression test;
+            private readonly Expression body;
+
+            internal MatchByType(ParameterExpression value, Type expectedType, Action body)
             {
-                this.pattern = pattern;
-                this.value = value;
+                test = value.InstanceOf(expectedType);
+                var typedValue = Expression.Variable(expectedType);
+                var assignment = typedValue.Assign(value.Convert(expectedType));
+                this.body = Expression.Block(Sequence.Singleton(typedValue), assignment, body(typedValue));
             }
 
-            internal ConditionalExpression CreateExpression(Type resultType, LabelTarget endOfMatch)
-                => Expression.IfThen(pattern, Expression.Goto(endOfMatch, value));
+            public ConditionalExpression CreateExpression(LabelTarget endOfMatch)
+                => Expression.IfThen(test, endOfMatch.Goto(body));
+        }
+
+        private sealed class MatchByTypeWithCondition : IPatternMatch
+        {
+            private readonly Expression test;
+            private readonly ConditionalExpression typedTest;
+            private readonly ParameterExpression typedVar;
+            private readonly BinaryExpression typedVarInit;
+
+            internal MatchByTypeWithCondition(ParameterExpression value, Type expectedType, Condition condition, Action body)
+            {
+                test = value.InstanceOf(expectedType);
+                typedVar = Expression.Variable(expectedType);
+                typedVarInit = typedVar.Assign(value.Convert(expectedType));
+                typedTest = Expression.IfThen(condition(typedVar), body(typedVar));
+            }
+
+            public ConditionalExpression CreateExpression(LabelTarget endOfMatch)
+            {
+                var typedTest = Expression.IfThen(this.typedTest.Test, endOfMatch.Goto(this.typedTest.IfTrue));
+                return Expression.IfThen(test, Expression.Block(Sequence.Singleton(typedVar), typedVarInit, typedTest));
+            }
         }
 
         private readonly ParameterExpression value;
         private readonly BinaryExpression assignment;
-        private readonly ICollection<Case> patterns;
+        private readonly ICollection<IPatternMatch> patterns;
         private Expression defaultCase;
 
         internal MatchBuilder(Expression value, ILexicalScope currentScope)
             : base(currentScope)
         {
-            patterns = new LinkedList<Case>();
+            patterns = new LinkedList<IPatternMatch>();
             if(value is ParameterExpression param)
                 this.value = param;
             else
@@ -44,18 +76,33 @@ namespace DotNext.Metaprogramming
             }
         }
 
-        public MatchBuilder When(Type targetType, Func<ParameterExpression, Expression> body)
+        public MatchBuilder Case(Type targetType, Condition condition, Action body)
         {
-            var typedVar = Expression.Variable(targetType);
-            var statement = Expression.Block(Sequence.Singleton(typedVar),
-                typedVar.Assign(value.Convert(targetType)),
-                body(typedVar));
-            patterns.Add(new Case(value.InstanceOf(targetType), statement));
+            patterns.Add(new MatchByTypeWithCondition(value, targetType, condition, body));
             return this;
         }
 
-        public MatchBuilder When<T>(Func<ParameterExpression, Expression> body)
-            => When(typeof(T), body);
+        public MatchBuilder Case(Type targetType, Action body)
+        {
+            patterns.Add(new MatchByType(value, targetType, body));
+            return this;
+        }
+
+        public MatchBuilder Case<T>(Action body)
+            => Case(typeof(T), body);
+        
+        public MatchBuilder Case(Type targetType, (string FieldOrProperty, Expression Value)[] structPattern, Action body)
+        {
+            return this;
+        }
+
+        public MatchBuilder Case<T>((string FieldOrProperty, Expression Value)[] structPattern, Action body)
+            => Case(typeof(T), structPattern, body);
+
+        public MatchBuilder Case<P>(Type targetType, P structPattern, Action body)
+        {
+            return this;
+        }
         
         public MatchBuilder Default(Expression value)
         {
@@ -71,7 +118,7 @@ namespace DotNext.Metaprogramming
             if(!(assignment is null))
                 instructions.Add(assignment);
             foreach(var pattern in patterns)
-                instructions.Add(pattern.CreateExpression(Type, endOfMatch));
+                instructions.Add(pattern.CreateExpression(endOfMatch));
             //handle default
             if(!(defaultCase is null))
                 instructions.Add(Expression.Goto(endOfMatch, defaultCase));
