@@ -8,7 +8,7 @@ namespace DotNext.Metaprogramming
     using Runtime.CompilerServices;
     using static Reflection.DelegateType;
 
-    internal sealed class AsyncLambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>
+    internal sealed class AsyncLambdaExpression<D> : LambdaExpression, ILexicalScope<LambdaCompiler<D>, Action<LambdaContext>>
         where D : Delegate
     {
         private ParameterExpression recursion;
@@ -61,11 +61,11 @@ namespace DotNext.Metaprogramming
             return lambda;
         }
 
-        public Expression<D> Build(Action<LambdaContext> scope)
+        public LambdaCompiler<D> Build(Action<LambdaContext> scope)
         {
             using(var context = new LambdaContext(this))
                 scope(context);
-            return Build();
+            return CreateCompiler(Build());
         }
 
         public override void Dispose()
