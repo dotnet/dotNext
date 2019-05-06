@@ -356,7 +356,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T, T>> AsEnumerable<T>(this Tuple<T, T> tuple)
-            => new EnumerableTuple<T, Tuple<T, T>>(tuple, 2, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T>>(tuple, 2, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of three items.
@@ -374,7 +374,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T, T, T>> AsEnumerable<T>(this Tuple<T, T, T> tuple)
-            => new EnumerableTuple<T, Tuple<T, T, T>>(tuple, 3, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T>>(tuple, 3, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of four items.
@@ -392,7 +392,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T, T, T, T>> AsEnumerable<T>(this Tuple<T, T, T, T> tuple)
-            => new EnumerableTuple<T, Tuple<T, T, T, T>>(tuple, 4, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T>>(tuple, 4, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of five items.
@@ -410,7 +410,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T, T, T, T, T>> AsEnumerable<T>(this Tuple<T, T, T, T, T> tuple)
-            => new EnumerableTuple<T, Tuple<T, T, T, T, T>>(tuple, 5, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T, T>>(tuple, 5, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of six items.
@@ -428,7 +428,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T, T, T, T, T, T>> AsEnumerable<T>(this Tuple<T, T, T, T, T, T> tuple)
-            => new EnumerableTuple<T, Tuple<T, T, T, T, T, T>>(tuple, 6, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T, T, T>>(tuple, 6, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of seven items.
@@ -446,6 +446,6 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T, T, T, T, T, T, T>> AsEnumerable<T>(this Tuple<T, T, T, T, T, T, T> tuple)
-            => new EnumerableTuple<T, Tuple<T, T, T, T, T, T, T>>(tuple, 7, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T, T, T, T>>(tuple, 7, GetItem);
     }
 }

@@ -737,6 +737,12 @@ namespace DotNext.Metaprogramming
                 return statement.Build(body);
         }
 
+        public static MatchBuilder Match(this MatchBuilder builder, Type expectedType, Action<ParameterExpression> body)
+        {
+            using (var statement = builder.Case(expectedType))
+                return statement.Build(body);
+        }
+
         public static MatchBuilder Default(this MatchBuilder builder, Action body)
         {
             using (var statement = builder.Default())
