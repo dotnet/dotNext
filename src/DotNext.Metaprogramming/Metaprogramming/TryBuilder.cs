@@ -106,5 +106,12 @@ namespace DotNext.Metaprogramming
         }
 
         private protected override TryExpression Build() => Expression.MakeTry(Type, tryBlock, finallyBlock, faultBlock, handlers);
+
+        private protected override void Cleanup()
+        {
+            handlers.Clear();
+            faultBlock = finallyBlock = null;
+            base.Cleanup();
+        }
     }
 }

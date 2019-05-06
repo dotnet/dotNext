@@ -4,6 +4,7 @@ using System.Diagnostics;
 using static System.Linq.Enumerable;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 
 namespace DotNext.Linq.Expressions
 {
@@ -836,14 +837,14 @@ namespace DotNext.Linq.Expressions
         /// Constructs expression representing count of items in the collection or string.
         /// </summary>
         /// <remarks>
-        /// The input expression must be of type <see cref="string"/>, array or any type
+        /// The input expression must be of type <see cref="string"/>, <see cref="StringBuilder"/>, array or any type
         /// implementing <see cref="ICollection{T}"/> or <see cref="IReadOnlyCollection{T}"/>.
         /// </remarks>
         /// <param name="collection">The expression representing collection.</param>
         /// <returns>The expression providing access to the appropriate property indicating the number of items in the collection.</returns>
         public static MemberExpression Count(this Expression collection)
         {
-            if(collection.Type == typeof(string))
+            if(collection.Type == typeof(string) || collection.Type == typeof(StringBuilder))
                 return Expression.Property(collection, nameof(string.Length));
             var interfaceType = collection.Type.GetImplementedCollection() ?? throw new ArgumentException();
             return Expression.Property(collection, interfaceType, nameof(Count));
