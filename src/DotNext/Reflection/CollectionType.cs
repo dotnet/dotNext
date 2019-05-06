@@ -4,8 +4,6 @@ using IEnumerable = System.Collections.IEnumerable;
 
 namespace DotNext.Reflection
 {
-    using static Collections.Generic.EnumerableTuple;
-
     /// <summary>
     /// Provides specialized reflection methods for
     /// collection types.

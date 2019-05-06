@@ -18,10 +18,7 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>64-bit hash code support
-Improved GetHashCode/Equals runtime code generator
-Improved performance of IsDefault method
-Reduced memory pressure caused by RandomString method</PackageReleaseNotes>
+	<PackageReleaseNotes>Introduced support of enumerable tuples</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

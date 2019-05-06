@@ -724,7 +724,24 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/switch">switch Statement</seealso>
         public static SwitchBuilder Switch(Expression value) => new SwitchBuilder(value, LexicalScope.Current);
 
+        /// <summary>
+        /// Adds pattern match statement.
+        /// </summary>
+        /// <param name="value">The value to be matched with patterns.</param>
+        /// <returns>Pattern matcher.</returns>
         public static MatchBuilder Match(Expression value) => new MatchBuilder(value, LexicalScope.Current);
+
+        public static MatchBuilder Match(this MatchBuilder builder, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
+        {
+            using (var statement = builder.Case(pattern))
+                return statement.Build(body);
+        }
+
+        public static MatchBuilder Default(this MatchBuilder builder, Action body)
+        {
+            using (var statement = builder.Default())
+                return statement.Build(body);
+        }
 
         /// <summary>
         /// Specifies a pattern to compare to the match expression
@@ -737,7 +754,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static SwitchBuilder Case(this SwitchBuilder builder, IEnumerable<Expression> testValues, Action body)
         {
-            using(var statement = new CaseStatement(builder, testValues))
+            using (var statement = builder.Case(testValues))
                 return statement.Build(body);
         }
 
@@ -764,7 +781,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static SwitchBuilder Default(this SwitchBuilder builder, Action body)
         {
-            using(var statement = new DefaultStatement(builder))
+            using (var statement = builder.Default())
                 return statement.Build(body);
         }
 
