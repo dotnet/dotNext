@@ -95,5 +95,12 @@ namespace DotNext.Metaprogramming
         internal DefaultStatement Default() => new DefaultStatement(this);
 
         private protected override SwitchExpression Build() => Expression.Switch(Type, switchValue, defaultExpression, null, cases);
+
+        private protected override void Cleanup()
+        {
+            cases.Clear();
+            defaultExpression = null;
+            base.Cleanup();
+        }
     }
 }

@@ -743,6 +743,30 @@ namespace DotNext.Metaprogramming
                 return statement.Build(body);
         }
 
+        public static MatchBuilder Match<T>(this MatchBuilder builder, Action<ParameterExpression> body)
+            => Match(builder, typeof(T), body);
+
+        public static MatchBuilder Match(this MatchBuilder builder, Type expectedType, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
+        {
+            using(var statement = builder.Case(expectedType, pattern))
+                return statement.Build(body);
+        }
+
+        public static MatchBuilder Match<T>(this MatchBuilder builder, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
+            => Match(builder, typeof(T), pattern, body);
+        
+        public static MatchBuilder Match(this MatchBuilder builder, object structPattern, Action<ParameterExpression> body)
+        {
+            using(var statement = builder.Case(structPattern))
+                return statement.Build(body);
+        }
+
+        public static MatchBuilder Match(this MatchBuilder builder, (string Name, Expression Value) structPattern, Action<ParameterExpression> body)
+        {
+            using(var statement = builder.Case(structPattern))
+                return statement.Build(body);
+        }
+
         public static MatchBuilder Default(this MatchBuilder builder, Action body)
         {
             using (var statement = builder.Default())
