@@ -39,27 +39,26 @@ namespace DotNext.Metaprogramming
             public MatchBuilder Build(Action<ParameterExpression> body)
             {
                 body(builder.value);
-                builder.patterns.Add(new MatchByCondition(builder.value, pattern, Build()));
+                builder.patterns.Add(new MatchByCondition(builder.value, pattern, Build));
                 return builder;
             }
         }
 
         internal sealed class MatchByTypeStatement : Statement, ILexicalScope<MatchBuilder, Action<ParameterExpression>>
         {
-            private readonly Pattern pattern;
             private readonly MatchBuilder builder;
             private readonly Type expectedType;
 
-            internal MatchByTypeStatement(MatchBuilder builder, Type expectedType, Pattern pattern)
+            internal MatchByTypeStatement(MatchBuilder builder, Type expectedType)
             {
-                this.pattern = pattern;
                 this.builder = builder;
                 this.expectedType = expectedType;
             }
 
-            public MatchBuilder Build(Action<ParameterExpression> scope)
+            public MatchBuilder Build(Action<ParameterExpression> body)
             {
-
+                builder.patterns.Add(new MatchByType(builder.value, expectedType, body, Build));
+                return builder;
             }
         }
 
@@ -94,10 +93,10 @@ namespace DotNext.Metaprogramming
                 this.body = body(value);
             }
 
-            internal MatchByCondition(ParameterExpression value, Pattern condition, Expression body)
+            internal MatchByCondition(ParameterExpression value, Pattern condition, Func<Expression> body)
             {
                 test = condition(value);
-                this.body = body;
+                this.body = body();
             }
 
             public ConditionalExpression CreateExpression(LabelTarget endOfMatch)
@@ -115,6 +114,15 @@ namespace DotNext.Metaprogramming
                 var typedValue = Expression.Variable(expectedType);
                 var assignment = typedValue.Assign(value.Convert(expectedType));
                 this.body = Expression.Block(Sequence.Singleton(typedValue), assignment, body(typedValue));
+            }
+
+            internal MatchByType(ParameterExpression value, Type expectedType, Action<ParameterExpression> body, Func<Expression> builder)
+            {
+                test = value.InstanceOf(expectedType);
+                var typedValue = Expression.Variable(expectedType);
+                var assignment = typedValue.Assign(value.Convert(expectedType));
+                body(typedValue);
+                this.body = Expression.Block(Sequence.Singleton(typedValue), assignment, builder());
             }
 
             public ConditionalExpression CreateExpression(LabelTarget endOfMatch)
@@ -211,6 +219,8 @@ namespace DotNext.Metaprogramming
             patterns.Add(new MatchByType(value, targetType, body));
             return this;
         }
+
+        internal MatchByTypeStatement Case(Type expectedType) => new MatchByTypeStatement(this, expectedType);
 
         /// <summary>
         /// Defines pattern matching based on the expected type of value.
