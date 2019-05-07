@@ -15,7 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>unsafe;unmanaged;pointer;pinvoke;interop</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Fixed bugs associated with incorrect implementation of Pointer.Fill</PackageReleaseNotes>
+    <PackageReleaseNotes>UnmanagedArray now supports Reverse() method</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
