@@ -13,11 +13,6 @@ namespace DotNext.Metaprogramming
     {
         private sealed class DisposableClass: Disposable
         {
-            protected override void Dispose(bool disposing)
-            {
-                
-            }
-
             public new bool IsDisposed => base.IsDisposed;
         }
 

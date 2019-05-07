@@ -43,7 +43,7 @@ namespace DotNext.Reflection
     /// </remarks>
     /// <typeparam name="T">Referenced type.</typeparam>
     [SecuritySafeCritical]
-    public struct Ref<T> : IStrongBox
+    public struct Ref<T> : IStrongBox, IEquatable<Ref<T>>
     {
         /// <summary>
         /// Gets or sets value.
@@ -111,5 +111,7 @@ namespace DotNext.Reflection
         /// <param name="other">Other object to compare.</param>
         /// <returns>Always <see langword="false"/>.</returns>
         public override bool Equals(object other) => false;
+
+        bool IEquatable<Ref<T>>.Equals(Ref<T> other) => false;
     }
 }

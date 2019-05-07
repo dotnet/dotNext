@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 
 namespace DotNext.Collections.Generic
 {
@@ -13,12 +12,9 @@ namespace DotNext.Collections.Generic
     /// Represents a strongly typed list of objects that is allocated in unmanaged memory.
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
-    [Serializable]
-    public struct UnmanagedList<T> : IList<T>, IDisposable, IUnmanagedList<T>, ISerializable
+    public struct UnmanagedList<T> : IList<T>, IDisposable, IUnmanagedList<T>
         where T : unmanaged
     {
-        private const string CountSerData = "Count";
-        private const string ArraySerData = "Array";
         private const int DefaultCapacity = 4;
 
         private UnmanagedArray<T> array;
@@ -33,13 +29,6 @@ namespace DotNext.Collections.Generic
         {
             array = new UnmanagedArray<T>(capacity);
             count = 0;
-        }
-
-        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
-        private UnmanagedList(SerializationInfo info, StreamingContext context)
-        {
-            count = info.GetInt32(CountSerData);
-            array = (UnmanagedArray<T>)info.GetValue(ArraySerData, typeof(UnmanagedArray<T>));
         }
 
         private UnmanagedList(int count, UnmanagedArray<T> array)
@@ -377,11 +366,5 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="list">The unmanaged list to be converted into span.</param>
         public static implicit operator Span<T>(UnmanagedList<T> list) => list.Span;
-
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(CountSerData, count);
-            info.AddValue(ArraySerData, array);
-        }
     }
 }

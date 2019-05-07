@@ -18,7 +18,7 @@ namespace DotNext.Threading
 	/// <seealso cref="Interlocked"/>
     public static class AtomicDouble
     {
-        [SuppressMessage("Style", "CA1812")]
+        [SuppressMessage("Performance", "CA1812")]
         private sealed class CASProvider : Constant<CAS<double>>
         {
             public CASProvider()

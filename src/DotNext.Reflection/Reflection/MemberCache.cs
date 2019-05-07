@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 
 namespace DotNext.Reflection
 {
+    [SuppressMessage("Design", "CA1001", Justification = "Member Cache lifetime is the same as application")]
     internal abstract class Cache<K, V>
         where V : class
     {

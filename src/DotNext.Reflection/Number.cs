@@ -15,10 +15,9 @@ namespace DotNext
     /// </remarks>
     /// <typeparam name="T">Primitive numeric type.</typeparam>
     [CLSCompliant(false)]
-    [Serializable]
     [Concept]
-    public readonly struct Number<T> : IEquatable<T>
-        where T : struct, IConvertible, IComparable, IFormattable
+    public readonly struct Number<T> : IEquatable<T>, IEquatable<Number<T>>
+        where T : struct, IConvertible, IComparable<T>, IEquatable<T>, IFormattable
     {
         #region Concept Definition
         private static readonly Operator<T, T> UnaryPlus = Type<T>.Operator.Require<T>(UnaryOperator.Plus, OperatorLookup.Predefined);
@@ -31,9 +30,6 @@ namespace DotNext
         private static readonly Operator<T, T, T> Multiply = Type<T>.Operator<T>.Require<T>(BinaryOperator.Multiply, OperatorLookup.Predefined);
 
         private static readonly Operator<T, T, T> Divide = Type<T>.Operator<T>.Require<T>(BinaryOperator.Divide, OperatorLookup.Predefined);
-
-        private static readonly Operator<T, T, bool> Equality = Type<T>.Operator<T>.Require<bool>(BinaryOperator.Equal, OperatorLookup.Predefined);
-        private static readonly Operator<T, T, bool> Inequality = Type<T>.Operator<T>.Require<bool>(BinaryOperator.NotEqual, OperatorLookup.Predefined);
 
         private static readonly Function<(string text, Ref<T> result), bool> TryParseMethod = Type<T>.RequireStaticMethod<(string, Ref<T>), bool>(nameof(int.TryParse));
         private static readonly Function<(string text, NumberStyles styles, IFormatProvider provider, Ref<T> result), bool> AdvancedTryParseMethod = Type<T>.RequireStaticMethod<(string, NumberStyles, IFormatProvider, Ref<T>), bool>(nameof(int.TryParse));
@@ -59,7 +55,9 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other number to be compared.</param>
         /// <returns><see langword="true"/> if this number is equal to the given number; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(T other) => Equality(in value, in other);
+        public bool Equals(T other) => value.Equals(other);
+
+        bool IEquatable<Number<T>>.Equals(Number<T> other) => Equals(other);
 
         /// <summary>
         /// Converts the number into string.
@@ -139,7 +137,7 @@ namespace DotNext
         /// <param name="right">The right operand.</param>
         /// <returns><see langword="true"/>, if two numers are equal; otherwise, <see langword="false"/>.</returns>
 		public static bool operator ==(Number<T> left, T right)
-            => Equality(in left.value, right);
+            => left.value.Equals(right);
 
         /// <summary>
         /// Performs inequality check.
@@ -148,7 +146,7 @@ namespace DotNext
         /// <param name="right">The right operand.</param>
         /// <returns><see langword="true"/>, if two numers are not equal; otherwise, <see langword="false"/>.</returns>
 		public static bool operator !=(Number<T> left, T right)
-            => Inequality(in left.value, right);
+            => !left.value.Equals(right);
 
         /// <summary>
         /// Determines whether this number is equal to the specified number.
