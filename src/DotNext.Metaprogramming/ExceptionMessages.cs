@@ -47,5 +47,9 @@ namespace DotNext
         internal static string InvalidRethrow => resourceManager.GetString("InvalidRethrow");
 
         internal static string BoolExpressionExpected => resourceManager.GetString("BoolExpressionExpected");
+
+        internal static string InvalidFragmentRendering => resourceManager.GetString("InvalidFragmentRendering");
+
+        internal static string CollectionImplementationExpected => resourceManager.GetString("CollectionImplementationExpected");
     }
 }
