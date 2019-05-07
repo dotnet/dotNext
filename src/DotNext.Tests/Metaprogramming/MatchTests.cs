@@ -39,7 +39,7 @@ namespace DotNext.Metaprogramming
 
         private struct Point
         {
-            public long X, Y;
+            internal long X, Y;
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace DotNext.Metaprogramming
             var lambda = Lambda<Func<Point, string>>(fun =>
             {
                 Match(fun[0])
-                    .Case(new { X = 0L }, value => "X is zero".Const())
+                    .Case("X", 0L.Const(), value => "X is zero".Const())
                     .Case(new { X = long.MaxValue, Y = long.MaxValue }, value => "MaxValue".Const())
                     .Default("Unknown".Const())
                     .OfType<string>()
@@ -56,6 +56,31 @@ namespace DotNext.Metaprogramming
             }).Compile();
             Equal("X is zero", lambda(new Point { X = 0, Y = 20 }));
             Equal("X is zero", lambda(new Point { X = 0, Y = 30 }));
+            Equal("MaxValue", lambda(new Point { X = long.MaxValue, Y = long.MaxValue }));
+            Equal("Unknown", lambda(new Point { X = 10 }));
+        }
+
+        [Fact]
+        public static void TupleMatchVoid()
+        {
+            var lambda = Lambda<Func<Point, string>>((fun, result) =>
+            {
+                Match(fun[0])
+                    .Case("X", 0L.Const(), x =>
+                    {
+                        Assign(result, "X is zero".Const());
+                    })
+                    .Case("X", long.MaxValue.Const(), "Y", long.MaxValue.Const(), (x, y) =>
+                    {
+                        Assign(result, "MaxValue".Const());
+                    })
+                    .Default(() =>
+                    {
+                        Assign(result, "Unknown".Const());
+                    })
+                .End();
+            }).Compile();
+            Equal("X is zero", lambda(new Point { X = 0, Y = 10 }));
             Equal("MaxValue", lambda(new Point { X = long.MaxValue, Y = long.MaxValue }));
             Equal("Unknown", lambda(new Point { X = 10 }));
         }

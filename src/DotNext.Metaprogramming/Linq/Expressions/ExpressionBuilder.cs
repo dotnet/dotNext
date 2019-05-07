@@ -670,7 +670,7 @@ namespace DotNext.Linq.Expressions
             where D : MulticastDelegate
         {
             if (lambda.Parameters.Count != arguments.LongLength)
-                throw new ArgumentException();
+                throw new ArgumentException(ExceptionMessages.InvalidFragmentRendering);
             var replacer = new Runtime.CompilerServices.Replacer();
             for (var i = 0; i < arguments.Length; i++)
                 replacer.Replace(lambda.Parameters[i], arguments[i]);
@@ -846,7 +846,7 @@ namespace DotNext.Linq.Expressions
         {
             if(collection.Type == typeof(string) || collection.Type == typeof(StringBuilder))
                 return Expression.Property(collection, nameof(string.Length));
-            var interfaceType = collection.Type.GetImplementedCollection() ?? throw new ArgumentException();
+            var interfaceType = collection.Type.GetImplementedCollection() ?? throw new ArgumentException(ExceptionMessages.CollectionImplementationExpected);
             return Expression.Property(collection, interfaceType, nameof(Count));
         }
 

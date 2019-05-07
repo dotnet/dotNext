@@ -731,42 +731,134 @@ namespace DotNext.Metaprogramming
         /// <returns>Pattern matcher.</returns>
         public static MatchBuilder Match(Expression value) => new MatchBuilder(value, LexicalScope.Current);
 
-        public static MatchBuilder Match(this MatchBuilder builder, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
+        /// <summary>
+        /// Defines pattern matching.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="pattern">The condition representing pattern.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
         {
             using (var statement = builder.Case(pattern))
                 return statement.Build(body);
         }
 
-        public static MatchBuilder Match(this MatchBuilder builder, Type expectedType, Action<ParameterExpression> body)
+        /// <summary>
+        /// Defines pattern matching based on the expected type of value.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="expectedType">The expected type of the value.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, Type expectedType, Action<ParameterExpression> body)
         {
             using (var statement = builder.Case(expectedType))
                 return statement.Build(body);
         }
 
-        public static MatchBuilder Match<T>(this MatchBuilder builder, Action<ParameterExpression> body)
-            => Match(builder, typeof(T), body);
+        /// <summary>
+        /// Defines pattern matching based on the expected type of value.
+        /// </summary>
+        /// <typeparam name="T">The expected type of the value.</typeparam>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case<T>(this MatchBuilder builder, Action<ParameterExpression> body)
+            => Case(builder, typeof(T), body);
 
-        public static MatchBuilder Match(this MatchBuilder builder, Type expectedType, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
+        /// <summary>
+        /// Defines pattern matching based on the expected type of value.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="expectedType">The expected type of the value.</param>
+        /// <param name="pattern">Additional condition associated with the value.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, Type expectedType, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
         {
             using(var statement = builder.Case(expectedType, pattern))
                 return statement.Build(body);
         }
 
-        public static MatchBuilder Match<T>(this MatchBuilder builder, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
-            => Match(builder, typeof(T), pattern, body);
-        
-        public static MatchBuilder Match(this MatchBuilder builder, object structPattern, Action<ParameterExpression> body)
+        /// <summary>
+        /// Defines pattern matching based on the expected type of value.
+        /// </summary>
+        /// <typeparam name="T">The expected type of the value.</typeparam>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="pattern">Additional condition associated with the value.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case<T>(this MatchBuilder builder, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
+            => Case(builder, typeof(T), pattern, body);
+
+        /// <summary>
+        /// Defines pattern matching based on structural matching.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="structPattern">The structure pattern represented by instance of anonymous type.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, object structPattern, Action<ParameterExpression> body)
         {
             using(var statement = builder.Case(structPattern))
                 return statement.Build(body);
         }
 
-        public static MatchBuilder Match(this MatchBuilder builder, (string Name, Expression Value) structPattern, Action<ParameterExpression> body)
+        /// <summary>
+        /// Defines pattern matching based on structural matching.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="memberName">The name of the field or property.</param>
+        /// <param name="memberValue">The expected value of the field or property.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, string memberName, Expression memberValue, Action<MemberExpression> body)
         {
-            using(var statement = builder.Case(structPattern))
+            using (var statement = builder.Case(memberName, memberValue))
                 return statement.Build(body);
         }
 
+        /// <summary>
+        /// Defines pattern matching based on structural matching.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="memberName1">The name of the first field or property.</param>
+        /// <param name="memberValue1">The expected value of the first field or property.</param>
+        /// <param name="memberName2">The name of the second field or property.</param>
+        /// <param name="memberValue2">The expected value of the second field or property.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, Action<MemberExpression, MemberExpression> body)
+        {
+            using (var statement = builder.Case(memberName1, memberValue1, memberName2, memberValue2))
+                return statement.Build(body);
+        }
+
+        /// <summary>
+        /// Defines pattern matching based on structural matching.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="memberName1">The name of the first field or property.</param>
+        /// <param name="memberValue1">The expected value of the first field or property.</param>
+        /// <param name="memberName2">The name of the second field or property.</param>
+        /// <param name="memberValue2">The expected value of the second field or property.</param>
+        /// <param name="memberName3">The name of the third field or property.</param>
+        /// <param name="memberValue3">The expected value of the third field or property.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3, Action<MemberExpression, MemberExpression, MemberExpression> body)
+        {
+            using (var statement = builder.Case(memberName1, memberValue1, memberName2, memberValue2, memberName3, memberValue3))
+                return statement.Build(body);
+        }
+
+        /// <summary>
+        /// Defines default behavior in case when all defined patterns are false positive.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="body">The body to be executed as default case.</param>
+        /// <returns><c>this</c> builder.</returns>
         public static MatchBuilder Default(this MatchBuilder builder, Action body)
         {
             using (var statement = builder.Default())

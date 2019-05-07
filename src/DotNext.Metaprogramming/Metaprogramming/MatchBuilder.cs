@@ -19,14 +19,15 @@ namespace DotNext.Metaprogramming
             Expression Build(ParameterExpression value);
         }
 
-        internal abstract class MatchStatement : Statement, ILexicalScope<MatchBuilder, Action<ParameterExpression>>
+        internal abstract class MatchStatement<D> : Statement, ILexicalScope<MatchBuilder, D>
+            where D : MulticastDelegate
         {
             private protected readonly struct CaseStatementBuilder : ICaseStatementBuilder
             {
                 private readonly Action<ParameterExpression> scope;
-                private readonly MatchStatement statement;
+                private readonly MatchStatement<D> statement;
 
-                internal CaseStatementBuilder(Action<ParameterExpression> scope, MatchStatement statement)
+                internal CaseStatementBuilder(MatchStatement<D> statement, Action<ParameterExpression> scope)
                 {
                     this.scope = scope;
                     this.statement = statement;
@@ -43,42 +44,169 @@ namespace DotNext.Metaprogramming
 
             private protected MatchStatement(MatchBuilder builder) => this.builder = builder;
 
-            private protected abstract MatchBuilder Build(MatchBuilder builder, CaseStatementBuilder caseStatement);
+            private protected abstract MatchBuilder Build(MatchBuilder builder, D scope);
 
-            public MatchBuilder Build(Action<ParameterExpression> body) => Build(builder, new CaseStatementBuilder(body, this));
+            public MatchBuilder Build(D scope) => Build(builder, scope);
         }
 
-        internal sealed class DefaultStatement : Statement, ILexicalScope<MatchBuilder, Action>
+        private sealed class DefaultStatement : MatchStatement<Action>
         {
-            private readonly MatchBuilder builder;
+            internal DefaultStatement(MatchBuilder builder)
+                : base(builder)
+            {
+            }
 
-            internal DefaultStatement(MatchBuilder builder) => this.builder = builder;
-
-            public MatchBuilder Build(Action scope)
+            private protected override MatchBuilder Build(MatchBuilder builder, Action scope)
             {
                 scope();
                 return builder.Default(Build());
             }
         }
 
-        private sealed class MatchByConditionStatement : MatchStatement
+        private sealed class MatchByMemberStatement : MatchStatement<Action<MemberExpression>>
+        {
+            private readonly new struct CaseStatementBuilder : ICaseStatementBuilder
+            {
+                private readonly string memberName;
+                private readonly Action<MemberExpression> memberHandler;
+                private readonly MatchByMemberStatement statement;
+
+                internal CaseStatementBuilder(MatchByMemberStatement statement, string memberName, Action<MemberExpression> memberHandler)
+                {
+                    this.memberName = memberName;
+                    this.memberHandler = memberHandler;
+                    this.statement = statement;
+                }
+
+                Expression ICaseStatementBuilder.Build(ParameterExpression value)
+                {
+                    memberHandler(Expression.PropertyOrField(value, memberName));
+                    return statement.Build();
+                }
+            }
+
+            private readonly string memberName;
+            private readonly Expression memberValue;
+
+            internal MatchByMemberStatement(MatchBuilder builder, string memberName, Expression memberValue)
+                : base(builder)
+            {
+                this.memberName = memberName;
+                this.memberValue = memberValue;
+            }
+
+            private protected override MatchBuilder Build(MatchBuilder builder, Action<MemberExpression> scope)
+            {
+                var pattern = StructuralPattern(Sequence.Singleton((memberName, memberValue)));
+                return builder.MatchByCondition(pattern, new CaseStatementBuilder(this, memberName, scope));
+            }
+        }
+
+        private sealed class MatchByTwoMembersStatement : MatchStatement<Action<MemberExpression, MemberExpression>>
+        {
+            private readonly new struct CaseStatementBuilder : ICaseStatementBuilder
+            {
+                private readonly string memberName1, memberName2;
+                private readonly Action<MemberExpression, MemberExpression> memberHandler;
+                private readonly MatchByTwoMembersStatement statement;
+
+                internal CaseStatementBuilder(MatchByTwoMembersStatement statement, string memberName1, string memberName2, Action<MemberExpression, MemberExpression> memberHandler)
+                {
+                    this.memberName1 = memberName1;
+                    this.memberName2 = memberName2;
+                    this.memberHandler = memberHandler;
+                    this.statement = statement;
+                }
+
+                Expression ICaseStatementBuilder.Build(ParameterExpression value)
+                {
+                    memberHandler(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2));
+                    return statement.Build();
+                }
+            }
+
+            private readonly string memberName1, memberName2;
+            private readonly Expression memberValue1, memberValue2;
+
+            internal MatchByTwoMembersStatement(MatchBuilder builder, string memberName1, Expression memberValue1, string memberName2, Expression memberValue2)
+                : base(builder)
+            {
+                this.memberName1 = memberName1;
+                this.memberValue1 = memberValue1;
+                this.memberName2 = memberName2;
+                this.memberValue2 = memberValue2;
+            }
+
+            private protected override MatchBuilder Build(MatchBuilder builder, Action<MemberExpression, MemberExpression> scope)
+            {
+                var pattern = StructuralPattern(new[] { (memberName1, memberValue1), (memberName2, memberValue2) });
+                return builder.MatchByCondition(pattern, new CaseStatementBuilder(this, memberName1, memberName2, scope));
+            }
+        }
+
+        private sealed class MatchByThreeMembersStatement : MatchStatement<Action<MemberExpression, MemberExpression, MemberExpression>>
+        {
+            private readonly new struct CaseStatementBuilder : ICaseStatementBuilder
+            {
+                private readonly string memberName1, memberName2, memberName3;
+                private readonly Action<MemberExpression, MemberExpression, MemberExpression> memberHandler;
+                private readonly MatchByThreeMembersStatement statement;
+
+                internal CaseStatementBuilder(MatchByThreeMembersStatement statement, string memberName1, string memberName2, string memberName3, Action<MemberExpression, MemberExpression, MemberExpression> memberHandler)
+                {
+                    this.memberName1 = memberName1;
+                    this.memberName2 = memberName2;
+                    this.memberName3 = memberName3;
+                    this.memberHandler = memberHandler;
+                    this.statement = statement;
+                }
+
+                Expression ICaseStatementBuilder.Build(ParameterExpression value)
+                {
+                    memberHandler(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2), Expression.PropertyOrField(value, memberName3));
+                    return statement.Build();
+                }
+            }
+
+            private readonly string memberName1, memberName2, memberName3;
+            private readonly Expression memberValue1, memberValue2, memberValue3;
+
+            internal MatchByThreeMembersStatement(MatchBuilder builder, string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3)
+                : base(builder)
+            {
+                this.memberName1 = memberName1;
+                this.memberValue1 = memberValue1;
+                this.memberName2 = memberName2;
+                this.memberValue2 = memberValue2;
+                this.memberName3 = memberName3;
+                this.memberValue3 = memberValue3;
+            }
+
+            private protected override MatchBuilder Build(MatchBuilder builder, Action<MemberExpression, MemberExpression, MemberExpression> scope)
+            {
+                var pattern = StructuralPattern(new[] { (memberName1, memberValue1), (memberName2, memberValue2), (memberName3, memberValue3) });
+                return builder.MatchByCondition(pattern, new CaseStatementBuilder(this, memberName1, memberName2, memberName3, scope));
+            }
+        }
+
+        private sealed class MatchByConditionStatement : MatchStatement<Action<ParameterExpression>>
         {
             private readonly Pattern pattern;
 
             internal MatchByConditionStatement(MatchBuilder builder, Pattern pattern) : base(builder) => this.pattern = pattern;
 
-            private protected override MatchBuilder Build(MatchBuilder builder, CaseStatementBuilder caseStatement)
-                => builder.MatchByCondition(pattern, caseStatement);
+            private protected override MatchBuilder Build(MatchBuilder builder, Action<ParameterExpression> scope)
+                => builder.MatchByCondition(pattern, new CaseStatementBuilder(this, scope));
         }
 
-        private class MatchByTypeStatement : MatchStatement
+        private class MatchByTypeStatement : MatchStatement<Action<ParameterExpression>>
         {
             private protected readonly Type expectedType;
 
             internal MatchByTypeStatement(MatchBuilder builder, Type expectedType): base(builder) => this.expectedType = expectedType;
 
-            private protected override MatchBuilder Build(MatchBuilder builder, CaseStatementBuilder caseStatement)
-                => builder.MatchByType(expectedType, caseStatement);
+            private protected override MatchBuilder Build(MatchBuilder builder, Action<ParameterExpression> scope)
+                => builder.MatchByType(expectedType, new CaseStatementBuilder(this, scope));
         }
 
         private sealed class MatchByTypeWithConditionStatement : MatchByTypeStatement
@@ -87,8 +215,8 @@ namespace DotNext.Metaprogramming
 
             internal MatchByTypeWithConditionStatement(MatchBuilder builder, Type expectedType, Pattern condition) : base(builder, expectedType) => this.condition = condition;
 
-            private protected override MatchBuilder Build(MatchBuilder builder, CaseStatementBuilder caseStatement)
-                => builder.MatchByType(expectedType, condition, caseStatement);
+            private protected override MatchBuilder Build(MatchBuilder builder, Action<ParameterExpression> scope)
+                => builder.MatchByType(expectedType, condition, new CaseStatementBuilder(this, scope));
         }
 
         /// <summary>
@@ -105,8 +233,6 @@ namespace DotNext.Metaprogramming
         /// <param name="value">The value participating in pattern match.</param>
         /// <returns>The action to be executed if object matches to the pattern.</returns>
         public delegate Expression CaseStatement(ParameterExpression value);
-
-        
 
         private readonly struct CaseStatementBuilder : ICaseStatementBuilder
         {
@@ -182,7 +308,7 @@ namespace DotNext.Metaprogramming
         private MatchBuilder MatchByType<B>(Type expectedType, Pattern condition, B builder)
             where B : struct, ICaseStatementBuilder
         {
-            patterns.Add(MatchByType(value, expectedType, builder));
+            patterns.Add(MatchByType(value, expectedType, condition, builder));
             return this;
         }
 
@@ -195,11 +321,17 @@ namespace DotNext.Metaprogramming
         public MatchBuilder Case(Pattern pattern, CaseStatement body)
             => MatchByCondition<CaseStatementBuilder>(pattern, body);
 
-        internal MatchStatement Case(Pattern pattern) => new MatchByConditionStatement(this, pattern);
+        internal MatchStatement<Action<ParameterExpression>> Case(Pattern pattern) => new MatchByConditionStatement(this, pattern);
 
-        internal MatchStatement Case(IEnumerable<(string, Expression)> structPattern) => Case(StructuralPattern(structPattern));
+        internal MatchStatement<Action<MemberExpression>> Case(string memberName, Expression memberValue) => new MatchByMemberStatement(this, memberName, memberValue);
 
-        internal MatchStatement Case(object structPattern) => Case(GetProperties(structPattern));
+        internal MatchStatement<Action<MemberExpression, MemberExpression>> Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2) 
+            => new MatchByTwoMembersStatement(this, memberName1, memberValue1, memberName2, memberValue2);
+
+        internal MatchStatement<Action<MemberExpression, MemberExpression, MemberExpression>> Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3)
+            => new MatchByThreeMembersStatement(this, memberName1, memberValue1, memberName2, memberValue2, memberName3, memberValue3);
+
+        internal MatchStatement<Action<ParameterExpression>> Case(object structPattern) => Case(GetProperties(structPattern));
 
         /// <summary>
         /// Defines pattern matching based on the expected type of value.
@@ -207,14 +339,14 @@ namespace DotNext.Metaprogramming
         /// <remarks>
         /// This method equivalent to <c>case T value where condition(value): body();</c>
         /// </remarks>
-        /// <param name="targetType">The expected type of the value.</param>
+        /// <param name="expectedType">The expected type of the value.</param>
         /// <param name="pattern">Additional condition associated with the value.</param>
         /// <param name="body">The action to be executed if object matches to the pattern.</param>
         /// <returns><c>this</c> builder.</returns>
-        public MatchBuilder Case(Type targetType, Pattern pattern, CaseStatement body)
-            => MatchByType<CaseStatementBuilder>(targetType, pattern, body);
+        public MatchBuilder Case(Type expectedType, Pattern pattern, CaseStatement body)
+            => MatchByType<CaseStatementBuilder>(expectedType, pattern, body);
         
-        internal MatchStatement Case(Type expectedType, Pattern pattern) => new MatchByTypeWithConditionStatement(this, expectedType, pattern); 
+        internal MatchStatement<Action<ParameterExpression>> Case(Type expectedType, Pattern pattern) => new MatchByTypeWithConditionStatement(this, expectedType, pattern); 
 
         /// <summary>
         /// Defines pattern matching based on the expected type of value.
@@ -222,13 +354,13 @@ namespace DotNext.Metaprogramming
         /// <remarks>
         /// This method equivalent to <c>case T value: body();</c>
         /// </remarks>
-        /// <param name="targetType">The expected type of the value.</param>
+        /// <param name="expectedType">The expected type of the value.</param>
         /// <param name="body">The action to be executed if object matches to the pattern.</param>
         /// <returns><c>this</c> builder.</returns>
-        public MatchBuilder Case(Type targetType, CaseStatement body)
-            => MatchByType<CaseStatementBuilder>(targetType, body);
+        public MatchBuilder Case(Type expectedType, CaseStatement body)
+            => MatchByType<CaseStatementBuilder>(expectedType, body);
 
-        internal MatchStatement Case(Type expectedType) => new MatchByTypeStatement(this, expectedType);
+        internal MatchStatement<Action<ParameterExpression>> Case(Type expectedType) => new MatchByTypeStatement(this, expectedType);
 
         /// <summary>
         /// Defines pattern matching based on the expected type of value.
@@ -239,7 +371,7 @@ namespace DotNext.Metaprogramming
         public MatchBuilder Case<T>(CaseStatement body)
             => Case(typeof(T), body);
         
-        private static Pattern StructuralPattern(IEnumerable<(string FieldOrProperty, Expression Value)> structPattern)
+        private static Pattern StructuralPattern(IEnumerable<(string, Expression)> structPattern)
             => delegate(ParameterExpression obj)
             {
                 var result = default(Expression);
@@ -251,16 +383,48 @@ namespace DotNext.Metaprogramming
                 return result;
             };
 
+        private MatchBuilder Case(IEnumerable<(string, Expression)> structPattern, CaseStatement body)
+            => Case(StructuralPattern(structPattern), body);
+
         /// <summary>
         /// Defines pattern matching based on structural matching.
         /// </summary>
-        /// <param name="structPattern">A sequence of fields or properties with their expected values.</param>
+        /// <param name="memberName">The name of the field or property.</param>
+        /// <param name="memberValue">The expected value of the field or property.</param>
         /// <param name="body">The action to be executed if object matches to the pattern.</param>
         /// <returns><c>this</c> builder.</returns>
-        public MatchBuilder Case((string FieldOrProperty, Expression Value)[] structPattern, CaseStatement body)
-            => Case(StructuralPattern(structPattern), body);
+        public MatchBuilder Case(string memberName, Expression memberValue, Func<MemberExpression, Expression> body)
+            => Case(StructuralPattern(Sequence.Singleton((memberName, memberValue))), value => body(Expression.PropertyOrField(value, memberName)));
 
-        private static IEnumerable<(string FieldOrProperty, Expression Value)> GetProperties(object structPattern)
+
+
+        /// <summary>
+        /// Defines pattern matching based on structural matching.
+        /// </summary>
+        /// <param name="memberName1">The name of the first field or property.</param>
+        /// <param name="memberValue1">The expected value of the first field or property.</param>
+        /// <param name="memberName2">The name of the second field or property.</param>
+        /// <param name="memberValue2">The expected value of the second field or property.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public MatchBuilder Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, Func<MemberExpression, MemberExpression, Expression> body)
+            => Case(StructuralPattern(new[] { (memberName1, memberValue1), (memberName2, memberValue2) }), value => body(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2)));
+
+        /// <summary>
+        /// Defines pattern matching based on structural matching.
+        /// </summary>
+        /// <param name="memberName1">The name of the first field or property.</param>
+        /// <param name="memberValue1">The expected value of the first field or property.</param>
+        /// <param name="memberName2">The name of the second field or property.</param>
+        /// <param name="memberValue2">The expected value of the second field or property.</param>
+        /// <param name="memberName3">The name of the third field or property.</param>
+        /// <param name="memberValue3">The expected value of the third field or property.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public MatchBuilder Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3, Func<MemberExpression, MemberExpression, MemberExpression, Expression> body)
+            => Case(StructuralPattern(new[] { (memberName1, memberValue1), (memberName2, memberValue2), (memberName3, memberValue3) }), value => body(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2), Expression.PropertyOrField(value, memberName3)));
+
+        private static IEnumerable<(string, Expression)> GetProperties(object structPattern)
         {
             foreach (var property in structPattern.GetType().GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance))
             {
@@ -294,7 +458,7 @@ namespace DotNext.Metaprogramming
             return this;
         }
 
-        internal DefaultStatement Default() => new DefaultStatement(this);
+        internal MatchStatement<Action> Default() => new DefaultStatement(this);
 
         private protected override BlockExpression Build()
         {
