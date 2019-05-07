@@ -74,14 +74,7 @@ namespace DotNext.Runtime.InteropServices
 			/// <param name="handle">Handle to convert.</param>
 			/// <exception cref="ObjectDisposedException">Handle is closed.</exception>
             public static implicit operator UnmanagedMemory(Handle handle)
-            {
-                if (handle is null)
-                    return default;
-                else if (handle.IsClosed)
-                    throw handle.HandleClosed();
-                else
-                    return new UnmanagedMemory(handle.handle, handle.Size);
-            }
+                => handle is null || handle.IsClosed ? default : new UnmanagedMemory(handle.handle, handle.Size);
         }
 
         private readonly long size;

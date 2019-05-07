@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace DotNext
@@ -22,7 +24,7 @@ namespace DotNext
         /// <param name="defaultValue">The value to be returned if there is no value present.</param>
         /// <returns>The value, if present, otherwise default</returns>
         public static async Task<T> Or<T>(this Task<Optional<T>> task, T defaultValue)
-            => (await task).Or(defaultValue);
+            => (await task.ConfigureAwait(false)).Or(defaultValue);
 
         /// <summary>
 		/// If a value is present, apply the provided mapping function to it, and if the result is 
@@ -34,7 +36,7 @@ namespace DotNext
 		/// <param name="converter">A mapping function to be applied to the value, if present.</param>
 		/// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.Empty"/>.</returns>
 		public static async Task<Optional<O>> Convert<I, O>(this Task<Optional<I>> task, Converter<I, O> converter)
-            => (await task).Convert(converter);
+            => (await task.ConfigureAwait(false)).Convert(converter);
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
@@ -45,7 +47,7 @@ namespace DotNext
         /// <returns>The value, if present.</returns>
         public static async Task<T> OrThrow<T, E>(this Task<Optional<T>> task)
             where E : Exception, new()
-            => (await task).OrThrow<E>();
+            => (await task.ConfigureAwait(false)).OrThrow<E>();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
@@ -57,7 +59,7 @@ namespace DotNext
         /// <returns>The value, if present.</returns>
         public static async Task<T> OrThrow<T, E>(this Task<Optional<T>> task, Func<E> exceptionFactory)
             where E : Exception
-            => (await task).OrThrow(exceptionFactory);
+            => (await task.ConfigureAwait(false)).OrThrow(exceptionFactory);
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
@@ -67,7 +69,7 @@ namespace DotNext
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
         public static async Task<T> OrInvoke<T>(this Task<Optional<T>> task, Func<T> defaultFunc)
-            => (await task).OrInvoke(defaultFunc);
+            => (await task.ConfigureAwait(false)).OrInvoke(defaultFunc);
 
         /// <summary>
         /// If a value is present, returns the value, otherwise return default value.
@@ -76,7 +78,7 @@ namespace DotNext
         /// <param name="task">The task returning optional value.</param>
         /// <returns>The value, if present, otherwise default</returns>
         public static async Task<T> OrDefault<T>(this Task<Optional<T>> task)
-            => (await task).OrDefault();
+            => (await task.ConfigureAwait(false)).OrDefault();
 
         /// <summary>
         /// If a value is present, and the value matches the given predicate, 
@@ -87,7 +89,7 @@ namespace DotNext
         /// <param name="condition">A predicate to apply to the value, if present.</param>
         /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
         public static async Task<Optional<T>> If<T>(this Task<Optional<T>> task, Predicate<T> condition)
-            => (await task).If(condition);
+            => (await task.ConfigureAwait(false)).If(condition);
 
         /// <summary>
         /// Indicates that specified type is optional type.
@@ -165,8 +167,11 @@ namespace DotNext
     /// </summary>
     /// <typeparam name="T">Type of value.</typeparam>
     [Serializable]
-    public readonly struct Optional<T> : IOptional, IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable
+    public readonly struct Optional<T> : IOptional, IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable, ISerializable
     {
+        private const string IsPresentSerData = "IsPresent";
+        private const string ValueSerData = "Value";
+
         private delegate bool ByRefPredicate(in T value);
 
         /// <summary>
@@ -221,6 +226,13 @@ namespace DotNext
             isPresent = true;
         }
 
+        [SuppressMessage("Style", "CA1801", Justification = "context is required by .NET serialization framework")]
+        private Optional(SerializationInfo info, StreamingContext context)
+        {
+            value = (T)info.GetValue(ValueSerData, typeof(T));
+            isPresent = info.GetBoolean(IsPresentSerData);
+        }
+
         /// <summary>
         /// Represents optional container without value.
         /// </summary>
@@ -239,6 +251,8 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool HasValue(in T value) => HasValueChecker is null || HasValueChecker(in value);
 
+        [SuppressMessage("Style", "CA1801")]
+        [SuppressMessage("Style", "IDE0060")]
         private static bool HasNoValue(ref T value) => false;
 
         /// <summary>
@@ -414,7 +428,7 @@ namespace DotNext
         /// Wraps value into Optional container.
         /// </summary>
         /// <param name="value">The value to convert.</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Optional<T>(T value) => new Optional<T>(value);
 
         /// <summary>
@@ -483,5 +497,11 @@ namespace DotNext
         /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
         /// <see cref="IsPresent"/>
         public static bool operator false(in Optional<T> optional) => !optional.IsPresent;
+
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(IsPresentSerData, isPresent);
+            info.AddValue(ValueSerData, value, typeof(T));
+        }
     }
 }

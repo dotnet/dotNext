@@ -153,6 +153,7 @@ namespace DotNext.Threading
                     current.TrySetCanceled();
                 head = tail = null;
             }
+            base.Dispose(disposing);
         }
     }
 }

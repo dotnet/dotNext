@@ -183,6 +183,7 @@ namespace DotNext.Threading
             if (disposing)
                 countdown.Dispose();
             participants = currentPhase = 0L;
+            base.Dispose(disposing);
         }
     }
 }

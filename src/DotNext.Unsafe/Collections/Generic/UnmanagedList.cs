@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace DotNext.Collections.Generic
@@ -34,6 +35,7 @@ namespace DotNext.Collections.Generic
             count = 0;
         }
 
+        [SuppressMessage("Style", "CA1801", Justification = "context is required by .NET serialization framework")]
         private UnmanagedList(SerializationInfo info, StreamingContext context)
         {
             count = info.GetInt32(CountSerData);

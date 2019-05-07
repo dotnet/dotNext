@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 namespace DotNext.Threading
@@ -17,6 +18,7 @@ namespace DotNext.Threading
 	/// <seealso cref="Interlocked"/>
     public static class AtomicSingle
     {
+        [SuppressMessage("Style", "CA1812")]
         private sealed class CASProvider : Constant<CAS<float>>
         {
             public CASProvider()
