@@ -25,19 +25,19 @@ namespace DotNext.Benchmarks
         }
 
         [Benchmark]
-        public void ShortGuidArrayBitwiseEquals()
+        public static void ShortGuidArrayBitwiseEquals()
         {
             ShortGuidArray1.BitwiseEquals(ShortGuidArray2);
         }
 
         [Benchmark]
-        public void ShortGuidArraySequenceEqual()
+        public static void ShortGuidArraySequenceEqual()
         {
             ShortGuidArray1.SequenceEqual(ShortGuidArray2);
         }
 
         [Benchmark]
-        public void ShortGuidArrayForEachEqual()
+        public static void ShortGuidArrayForEachEqual()
         {
             for(var i = default(long); i < ShortGuidArray1.LongLength; i++)
                 if(ShortGuidArray1[i] != ShortGuidArray2[i])
@@ -45,19 +45,19 @@ namespace DotNext.Benchmarks
         }
 
         [Benchmark]
-        public void LongGuidArrayBitwiseEquals()
+        public static void LongGuidArrayBitwiseEquals()
         {
             LongGuidArray1.BitwiseEquals(LongGuidArray2);
         }
 
         [Benchmark]
-        public void LongGuidArraySequenceEqual()
+        public static void LongGuidArraySequenceEqual()
         {
             LongGuidArray1.SequenceEqual(LongGuidArray2);
         }
 
         [Benchmark]
-        public void LongGuidArrayForEachEqual()
+        public static void LongGuidArrayForEachEqual()
         {
             for(var i = default(long); i < LongGuidArray1.LongLength; i++)
                 if(LongGuidArray1[i] != LongGuidArray2[i])

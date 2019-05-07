@@ -43,25 +43,25 @@ namespace DotNext
 		[Benchmark]
 		public void GuidEqualsMethod()
 		{
-			NonEmptyGuid.Equals(default(Guid));
+			NonEmptyGuid.Equals(default);
 		}
 
 		[Benchmark]
 		public void GuidBitwiseEqualsMethod()
 		{
-			ValueType<Guid>.BitwiseEquals(NonEmptyGuid, default(Guid));
+			ValueType<Guid>.BitwiseEquals(NonEmptyGuid, default);
 		}
 
 		[Benchmark]
 		public void BigStructEqualsMethod()
 		{
-			NonEmptyBigStruct.Equals(default(BigStructure));
+			NonEmptyBigStruct.Equals(default);
 		}
 
 		[Benchmark]
 		public void BigStructBitwiseEqualsMethod()
 		{
-			ValueType<BigStructure>.BitwiseEquals(NonEmptyBigStruct, default(BigStructure));
+			ValueType<BigStructure>.BitwiseEquals(NonEmptyBigStruct, default);
 		}
 	}
 }

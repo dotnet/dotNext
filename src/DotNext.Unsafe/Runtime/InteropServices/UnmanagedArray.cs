@@ -91,14 +91,7 @@ namespace DotNext.Runtime.InteropServices
             /// <param name="handle">A handle to convert.</param>
             /// <exception cref="ObjectDisposedException">Handle is closed.</exception>
             public static implicit operator UnmanagedArray<T>(Handle handle)
-            {
-                if (handle is null)
-                    return default;
-                else if (handle.IsClosed)
-                    throw handle.HandleClosed();
-                else
-                    return new UnmanagedArray<T>(handle.handle, handle.Length);
-            }
+                => handle is null || handle.IsClosed ? default : new UnmanagedArray<T>(handle.handle, handle.Length);
         }
 
         private const string LengthSerEntry = nameof(Length);
@@ -112,12 +105,7 @@ namespace DotNext.Runtime.InteropServices
         private readonly long length;
         private readonly Pointer<T> pointer;
 
-        /// <summary>
-        /// Deserializes unmanaged array.
-        /// </summary>
-        /// <param name="info">Deserialization content.</param>
-        /// <param name="context">Streaming context.</param>
-        public unsafe UnmanagedArray(SerializationInfo info, StreamingContext context)
+        private unsafe UnmanagedArray(SerializationInfo info, StreamingContext context)
             : this(info.GetInt64(LengthSerEntry))
         {
             var data = (byte[])info.GetValue(DataSerEntry, typeof(byte[]));
@@ -683,7 +671,7 @@ namespace DotNext.Runtime.InteropServices
             where U : unmanaged
             => Pointer<T>.Size % Pointer<U>.Size == 0 ?
                 new UnmanagedArray<U>(pointer.As<U>(), Length * (Pointer<T>.Size / Pointer<U>.Size)) :
-                throw new GenericArgumentException<U>(ExceptionMessages.TargetSizeMustBeMultipleOf);
+                throw new GenericArgumentException<U>(ExceptionMessages.TargetSizeMustBeMultipleOf, nameof(U));
 
         /// <summary>
         /// Converts this unmanaged array into managed array.

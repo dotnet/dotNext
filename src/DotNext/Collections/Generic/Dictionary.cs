@@ -25,7 +25,6 @@ namespace DotNext.Collections.Generic
                         Setter = indexer.SetMethod?.CreateDelegate<Action<D, K, V>>();
                         return;
                     }
-                throw new MissingMemberException();
             }
         }
 

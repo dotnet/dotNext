@@ -34,12 +34,7 @@ namespace DotNext.Collections.Generic
             count = 0;
         }
 
-        /// <summary>
-        /// Deserializes unmanaged list.
-        /// </summary>
-        /// <param name="info">Deserialization content.</param>
-        /// <param name="context">Streaming context.</param>
-        public UnmanagedList(SerializationInfo info, StreamingContext context)
+        private UnmanagedList(SerializationInfo info, StreamingContext context)
         {
             count = info.GetInt32(CountSerData);
             array = (UnmanagedArray<T>)info.GetValue(ArraySerData, typeof(UnmanagedArray<T>));

@@ -702,8 +702,6 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float GetAndUpdateValue(this Pointer<float> pointer, Func<float, float> updater) => AtomicSingle.GetAndUpdate(ref pointer.Ref, updater);
 
-        //
-
         /// <summary>
 		/// Atomically updates the current value referenced by pointer with the results of applying the given function 
 		/// to the current and given values, returning the updated value.
