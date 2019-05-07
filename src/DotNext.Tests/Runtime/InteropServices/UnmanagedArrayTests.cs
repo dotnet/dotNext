@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using Xunit;
 
 namespace DotNext.Runtime.InteropServices
@@ -225,34 +224,6 @@ namespace DotNext.Runtime.InteropServices
             {
                 array.Dispose();
             }
-        }
-
-        [Fact]
-        public static void SerializationDeserialization()
-        {
-            var formatter = new BinaryFormatter();
-            var array = new UnmanagedArray<long>(3);
-            var stream = new MemoryStream();
-            //serialize
-            try
-            {
-                array[0] = 10;
-                array[1] = 20;
-                array[2] = 30;
-                formatter.Serialize(stream, array);
-            }
-            finally
-            {
-                array.Dispose();
-            }
-            True(array.IsEmpty);
-            //deserialize
-            stream.Position = 0;
-            array = (UnmanagedArray<long>)formatter.Deserialize(stream);
-            Equal(3, array.Length);
-            Equal(10, array[0]);
-            Equal(20, array[1]);
-            Equal(30, array[2]);
         }
     }
 }

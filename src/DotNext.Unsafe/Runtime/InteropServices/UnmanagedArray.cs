@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -17,8 +16,7 @@ namespace DotNext.Runtime.InteropServices
     /// Therefore, it's developer responsibility to release unmanaged memory using <see cref="IDisposable.Dispose"/> call.
     /// </remarks>
     /// <typeparam name="T">Array element type.</typeparam>
-    [Serializable]
-    public unsafe struct UnmanagedArray<T> : IEquatable<UnmanagedArray<T>>, IUnmanagedList<T>, ISerializable
+    public unsafe struct UnmanagedArray<T> : IEquatable<UnmanagedArray<T>>, IUnmanagedList<T>
         where T : unmanaged
     {
         /// <summary>
@@ -95,9 +93,6 @@ namespace DotNext.Runtime.InteropServices
                 => handle is null || handle.IsClosed ? default : new UnmanagedArray<T>(handle.handle, handle.Length);
         }
 
-        private const string LengthSerEntry = nameof(Length);
-        private const string DataSerEntry = "Data";
-
         /// <summary>
         /// Represents empty array.
         /// </summary>
@@ -105,14 +100,6 @@ namespace DotNext.Runtime.InteropServices
 
         private readonly long length;
         private readonly Pointer<T> pointer;
-
-        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
-        private UnmanagedArray(SerializationInfo info, StreamingContext context)
-            : this(info.GetInt64(LengthSerEntry), false)
-        {
-            var data = (byte[])info.GetValue(DataSerEntry, typeof(byte[]));
-            pointer.As<byte>().ReadFrom(data, 0, Size);
-        }
 
         /// <summary>
         /// Allocates a new array in the unmanaged memory of the specified length.
@@ -972,12 +959,6 @@ namespace DotNext.Runtime.InteropServices
             UnmanagedMemory.Release(pointer.Address);
             GC.RemoveMemoryPressure(Size);
             this = default;
-        }
-
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(LengthSerEntry, Length);
-            info.AddValue(DataSerEntry, pointer.ToByteArray(Length), typeof(byte[]));
         }
     }
 }

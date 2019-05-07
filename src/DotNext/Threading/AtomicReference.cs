@@ -13,7 +13,7 @@ namespace DotNext.Threading
     /// </summary>
     public static class AtomicReference
     {
-        [SuppressMessage("Style", "CA1812")]
+        [SuppressMessage("Performance", "CA1812")]
         private sealed class CASProvider<T> : Constant<CAS<T>>
             where T : class
         {
@@ -237,6 +237,8 @@ namespace DotNext.Threading
     /// not referred to the field.
     /// </remarks>
     [Serializable]
+    [SuppressMessage("Design", "CA1066")]
+    [SuppressMessage("Usage", "CA2231")]
     public struct AtomicReference<T> : IEquatable<T>, ISerializable
         where T : class
     {
