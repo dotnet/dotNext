@@ -528,6 +528,16 @@ namespace DotNext.Runtime.InteropServices
         public long BinarySearch(T item) => BinarySearch(item, Comparer<T>.Default);
 
         /// <summary>
+        /// Reverses the sequence of the elements in the entire array.
+        /// </summary>
+        /// <exception cref="NotSupportedException"><see cref="Length"/> is more than <see cref="int.MaxValue"/>.</exception>
+        public void Reverse()
+        {
+            Span<T> span = this;
+            span.Reverse();
+        }
+
+        /// <summary>
         /// Gets pointer to array element.
         /// </summary>
         /// <param name="index">Index of the element.</param>
@@ -879,6 +889,7 @@ namespace DotNext.Runtime.InteropServices
         /// Obtains span to the unmanaged array.
         /// </summary>
         /// <param name="array">The unmanaged array.</param>
+        /// <exception cref="NotSupportedException"><see cref="Length"/> is more than <see cref="int.MaxValue"/>.</exception>
 		public static implicit operator Span<T>(UnmanagedArray<T> array)
         {
             //TODO: should be fixed if Span will support long data type
@@ -888,7 +899,7 @@ namespace DotNext.Runtime.InteropServices
             else if (array.Length <= int.MaxValue)
                 return new Span<T>(array.pointer, (int)array.Length);
             else
-                return new Span<T>(array.pointer, int.MaxValue);
+                throw new NotSupportedException(ExceptionMessages.ArrayTooLong);
         }
 
         /// <summary>
