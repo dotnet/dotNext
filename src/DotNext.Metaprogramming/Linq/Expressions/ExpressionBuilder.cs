@@ -617,10 +617,11 @@ namespace DotNext.Linq.Expressions
         /// The equivalent code is <c>await b</c>.
         /// </remarks>
         /// <param name="expression">The expression </param>
+        /// <param name="configureAwait"><see langword="true"/> to call <see cref="System.Threading.Tasks.Task.ConfigureAwait(bool)"/> with <see langword="false"/> argument.</param>
         /// <returns><see langword="await"/> expression.</returns>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
-        public static AwaitExpression Await(this Expression expression)
-            => new AwaitExpression(expression);
+        public static AwaitExpression Await(this Expression expression, bool configureAwait = false)
+            => new AwaitExpression(expression, configureAwait);
 
         /// <summary>
         /// Constructs explicit unboxing.

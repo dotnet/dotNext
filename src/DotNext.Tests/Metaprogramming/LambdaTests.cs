@@ -64,7 +64,7 @@ namespace DotNext.Metaprogramming
             {
                 var (arg1, arg2) = fun;
                 var temp = DeclareVariable<long>("tmp");
-                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await());
+                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(true));
                 Return((U)temp + 20L);
             });
             var fn = lambda.Compile();
@@ -79,7 +79,7 @@ namespace DotNext.Metaprogramming
             {
                 var (arg1, arg2) = fun;
                 var temp = DeclareVariable<long>("tmp");
-                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await());
+                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(false));
                 Return((U)temp + 20L);
             });
             var fn = lambda.Compile();
@@ -118,7 +118,7 @@ namespace DotNext.Metaprogramming
                 ForEach(fun[0], item =>
                 {
                     If((U)item == 0L).Then(Break).End();
-                    Assign(result, Expression.Call(null, sumMethod, result, item).Await());
+                    Assign(result, Expression.Call(null, sumMethod, result, item).Await(true));
                 });
                 Return(result);
             });

@@ -426,8 +426,9 @@ namespace DotNext.Metaprogramming
         /// Adds await operator.
         /// </summary>
         /// <param name="asyncResult">The expression representing asynchronous computing process.</param>
+        /// <param name="configureAwait"><see langword="true"/> to call <see cref="System.Threading.Tasks.Task.ConfigureAwait(bool)"/> with <see langword="false"/> argument.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Await(Expression asyncResult) => LexicalScope.Current.AddStatement(asyncResult.Await());
+        public static void Await(Expression asyncResult, bool configureAwait = false) => LexicalScope.Current.AddStatement(asyncResult.Await(configureAwait));
 
         /// <summary>
         /// Adds if-then-else statement to this scope.
