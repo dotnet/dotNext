@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Monitor = System.Threading.Monitor;
 
@@ -52,6 +53,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Read-only collection of objects in this pool.
         /// </summary>
+        [SuppressMessage("Design", "CA1051", Justification = "Field is protected and its object cannot be modified")]
         protected readonly IReadOnlyList<T> objects;
         private int counter;
 

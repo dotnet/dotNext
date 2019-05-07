@@ -18,7 +18,11 @@ namespace DotNext.Threading
     {
         private static Task StartNew<D>(D @delegate, Action<D> invoker, CancellationToken token)
             where D : Delegate
-            => Task.Factory.StartNew(() => invoker(@delegate), token);
+        {
+            var task = new Task(() => invoker(@delegate), token);
+            task.Start();
+            return task;
+        }
 
         private static Task InvokeAsync<D>(D @delegate, Func<D, Task> invoker)
             where D : MulticastDelegate

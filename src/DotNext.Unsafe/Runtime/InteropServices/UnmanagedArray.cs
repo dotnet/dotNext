@@ -106,13 +106,12 @@ namespace DotNext.Runtime.InteropServices
         private readonly long length;
         private readonly Pointer<T> pointer;
 
-        [SuppressMessage("Style", "CA1801", Justification = "context is required by .NET serialization framework")]
-        private unsafe UnmanagedArray(SerializationInfo info, StreamingContext context)
-            : this(info.GetInt64(LengthSerEntry))
+        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
+        private UnmanagedArray(SerializationInfo info, StreamingContext context)
+            : this(info.GetInt64(LengthSerEntry), false)
         {
             var data = (byte[])info.GetValue(DataSerEntry, typeof(byte[]));
-            fixed (byte* ptr = data)
-                Memory.Copy(ptr, pointer, Size);
+            pointer.As<byte>().ReadFrom(data, 0, Size);
         }
 
         /// <summary>
@@ -669,6 +668,7 @@ namespace DotNext.Runtime.InteropServices
         /// <typeparam name="U">New element type.</typeparam>
         /// <returns>Reinterpreted unmanaged array which points to the same memory as original array.</returns>
         /// <exception cref="GenericArgumentException{U}">Invalid size of target element type.</exception>
+        [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         public UnmanagedArray<U> As<U>()
             where U : unmanaged
             => Pointer<T>.Size % Pointer<U>.Size == 0 ?

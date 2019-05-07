@@ -230,7 +230,7 @@ namespace DotNext.Threading
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task EnterUpgradeableReadLock(CancellationToken token) => TryEnterUpgradeableReadLock(TimeSpan.MaxValue, CancellationToken.None);
+        public Task EnterUpgradeableReadLock(CancellationToken token) => TryEnterUpgradeableReadLock(TimeSpan.MaxValue, token);
 
         /// <summary>
         /// Enters the lock in upgradeable mode asynchronously.

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -82,6 +83,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Represents address of the allocated memory.
         /// </summary>
+        [SuppressMessage("Design", "CA1051", Justification = "It is by-design due to nature of this type")]
         public readonly IntPtr Address;
 
         internal UnmanagedMemory(IntPtr address, long size)
