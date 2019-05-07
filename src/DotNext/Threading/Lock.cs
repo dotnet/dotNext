@@ -254,7 +254,7 @@ namespace DotNext.Threading
         /// <param name="timeout">The amount of time to wait for the lock</param>
         /// <exception cref="TimeoutException">The lock has not been acquired during the specified timeout.</exception>
         public Holder Acquire(TimeSpan timeout)
-            => TryAcquire() ? new Holder(lockedObject, type) : throw new TimeoutException();
+            => TryAcquire(timeout) ? new Holder(lockedObject, type) : throw new TimeoutException();
 
         /// <summary>
         /// Destroy this lock and dispose underlying lock object if it is owned by the given lock.

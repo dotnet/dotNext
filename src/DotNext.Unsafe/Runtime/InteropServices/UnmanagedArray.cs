@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -15,7 +16,8 @@ namespace DotNext.Runtime.InteropServices
     /// Therefore, it's developer responsibility to release unmanaged memory using <see cref="IDisposable.Dispose"/> call.
     /// </remarks>
     /// <typeparam name="T">Array element type.</typeparam>
-    public unsafe struct UnmanagedArray<T> : IEquatable<UnmanagedArray<T>>, IUnmanagedList<T>
+    [Serializable]
+    public unsafe struct UnmanagedArray<T> : IEquatable<UnmanagedArray<T>>, IUnmanagedList<T>, ISerializable
         where T : unmanaged
     {
         /// <summary>
@@ -26,7 +28,6 @@ namespace DotNext.Runtime.InteropServices
         /// </remarks>
         public sealed class Handle : UnmanagedMemoryHandle<T>
         {
-
             private Handle(UnmanagedArray<T> array, bool ownsHandle)
                 : base(array, ownsHandle)
             {
@@ -100,6 +101,9 @@ namespace DotNext.Runtime.InteropServices
             }
         }
 
+        private const string LengthSerEntry = nameof(Length);
+        private const string DataSerEntry = "Data";
+
         /// <summary>
         /// Represents empty array.
         /// </summary>
@@ -107,6 +111,19 @@ namespace DotNext.Runtime.InteropServices
 
         private readonly long length;
         private readonly Pointer<T> pointer;
+
+        /// <summary>
+        /// Deserializes unmanaged array.
+        /// </summary>
+        /// <param name="info">Deserialization content.</param>
+        /// <param name="context">Streaming context.</param>
+        public unsafe UnmanagedArray(SerializationInfo info, StreamingContext context)
+            : this(info.GetInt64(LengthSerEntry))
+        {
+            var data = (byte[])info.GetValue(DataSerEntry, typeof(byte[]));
+            fixed (byte* ptr = data)
+                Memory.Copy(ptr, pointer, Size);
+        }
 
         /// <summary>
         /// Allocates a new array in the unmanaged memory of the specified length.
@@ -965,6 +982,12 @@ namespace DotNext.Runtime.InteropServices
             UnmanagedMemory.Release(pointer.Address);
             GC.RemoveMemoryPressure(Size);
             this = default;
+        }
+
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(LengthSerEntry, Length);
+            info.AddValue(DataSerEntry, pointer.ToByteArray(Length), typeof(byte[]));
         }
     }
 }
