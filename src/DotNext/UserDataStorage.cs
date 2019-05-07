@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 namespace DotNext
@@ -14,8 +15,11 @@ namespace DotNext
     /// This is by-ref struct because user data should have
     /// the same lifetime as its owner.
 	/// </remarks>
+    [SuppressMessage("Style", "CA1066")]
     public readonly ref struct UserDataStorage
     {
+        [SuppressMessage("Style", "CA1001", Justification = "Object should be reclaimed by GC, no way to do Dispose manually")]
+        [SuppressMessage("Style", "CA1812", Justification = "It is instantiated by method GetOrCreateValue")]
         private sealed class BackingStorage : Dictionary<long, object>
         {
             private readonly ReaderWriterLockSlim synchronizer = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);

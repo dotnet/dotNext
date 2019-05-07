@@ -67,15 +67,4 @@ namespace DotNext.VariantType
 
         protected override DynamicMetaObject VariantValue { get; }
     }
-
-    internal sealed class VariantVolatileMetaObject : VariantMetaObject
-    {
-        private readonly MemberExpression ValueExpression;
-
-        internal VariantVolatileMetaObject(Expression parameter, IVariant variant)
-            : base(parameter, variant, out var valueExpression)
-            => ValueExpression = valueExpression;
-
-        protected override DynamicMetaObject VariantValue => new DynamicMetaObject(ValueExpression, Restrictions, Value.Value);
-    }
 }

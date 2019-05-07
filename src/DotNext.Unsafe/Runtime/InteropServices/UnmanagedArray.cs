@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace DotNext.Runtime.InteropServices
@@ -105,6 +106,7 @@ namespace DotNext.Runtime.InteropServices
         private readonly long length;
         private readonly Pointer<T> pointer;
 
+        [SuppressMessage("Style", "CA1801", Justification = "context is required by .NET serialization framework")]
         private unsafe UnmanagedArray(SerializationInfo info, StreamingContext context)
             : this(info.GetInt64(LengthSerEntry))
         {

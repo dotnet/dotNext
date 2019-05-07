@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -10,6 +11,7 @@ namespace DotNext.Runtime.CompilerServices
     /// This attribute informs the developer about potential portability and performance
     /// issues associated with the marked program element.
     /// </remarks>
+    [SuppressMessage("Style", "CA1051")]
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Assembly | AttributeTargets.Module, AllowMultiple = false, Inherited = true)]
     public sealed class RuntimeFeaturesAttribute : Attribute
     {

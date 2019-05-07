@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Resources;
 using System.Reflection;
 
 namespace DotNext.Threading
 {
+    [SuppressMessage("Style", "CA1304", Justification = "This is culture-specific resource strings")]
     internal static class ExceptionMessages
     {
         private static readonly ResourceManager resourceManager = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());

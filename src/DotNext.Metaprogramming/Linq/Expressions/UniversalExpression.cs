@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -461,6 +462,8 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         [SpecialName]
+        [SuppressMessage("Style", "IDE1006")]
+        [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_Exponent(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.Power, right.expression);
 
@@ -471,6 +474,8 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         [SpecialName]
+        [SuppressMessage("Style", "IDE1006")]
+        [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_Exponent(UniversalExpression left, Expression right)
             => left.Transform(ExpressionBuilder.Power, right);
 
@@ -481,6 +486,8 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         [SpecialName]
+        [SuppressMessage("Style", "IDE1006")]
+        [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_LeftShift(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.LeftShift, right.expression);
 
@@ -491,6 +498,8 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         [SpecialName]
+        [SuppressMessage("Style", "IDE1006")]
+        [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_LeftShift(UniversalExpression left, Expression right)
             => left.Transform(ExpressionBuilder.LeftShift, right);
 
@@ -501,6 +510,8 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         [SpecialName]
+        [SuppressMessage("Style", "IDE1006")]
+        [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_RightShift(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.RightShift, right.expression);
 
@@ -511,6 +522,8 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         [SpecialName]
+        [SuppressMessage("Style", "IDE1006")]
+        [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_RightShift(UniversalExpression left, Expression right)
             => left.Transform(ExpressionBuilder.RightShift, right);
 

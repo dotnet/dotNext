@@ -88,7 +88,7 @@ namespace DotNext
         /// useful for debugging.
         /// </summary>
         /// <returns>Textual representation of this data slot.</returns>
-        public override string ToString() => Id.ToString();
+        public override string ToString() => Id.ToString(default(IFormatProvider));
 
         /// <summary>
         /// Checks whether the two data slots are the same.

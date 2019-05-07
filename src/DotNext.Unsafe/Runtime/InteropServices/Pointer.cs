@@ -289,7 +289,7 @@ namespace DotNext.Runtime.InteropServices
             for (var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
             {
                 Unsafe.As<byte, IntPtr>(ref buffer[0]) = Memory.ReadUnaligned<IntPtr>(ref source);
-                await destination.WriteAsync(buffer, 0, buffer.Length);
+                await destination.WriteAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
             }
             while (length > 0)
             {
@@ -401,7 +401,7 @@ namespace DotNext.Runtime.InteropServices
             var total = 0L;
             for (var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
             {
-                var count = await source.ReadAsync(buffer, 0, buffer.Length);
+                var count = await source.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
                 Memory.WriteUnaligned(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
                 total += count;
                 if (count < IntPtr.Size)
@@ -500,7 +500,7 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe Pointer<U> As<U>()
             where U : unmanaged
-            => Size >= Pointer<U>.Size ? new Pointer<U>(value) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize);
+            => Size >= Pointer<U>.Size ? new Pointer<U>(value) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize, nameof(U));
 
         /// <summary>
         /// Converts unmanaged pointer into managed pointer.
