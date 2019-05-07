@@ -16,7 +16,7 @@ namespace DotNext
     /// <typeparam name="T">Primitive numeric type.</typeparam>
     [CLSCompliant(false)]
     [Concept]
-    public readonly struct Number<T> : IEquatable<T>, IEquatable<Number<T>>
+    public readonly struct Number<T> : IEquatable<T>, IEquatable<Number<T>>, IComparable<T>
         where T : struct, IConvertible, IComparable<T>, IEquatable<T>, IFormattable
     {
         #region Concept Definition
@@ -58,6 +58,8 @@ namespace DotNext
         public bool Equals(T other) => value.Equals(other);
 
         bool IEquatable<Number<T>>.Equals(Number<T> other) => Equals(other);
+
+        int IComparable<T>.CompareTo(T other) => value.CompareTo(other);
 
         /// <summary>
         /// Converts the number into string.
@@ -147,6 +149,38 @@ namespace DotNext
         /// <returns><see langword="true"/>, if two numers are not equal; otherwise, <see langword="false"/>.</returns>
 		public static bool operator !=(Number<T> left, T right)
             => !left.value.Equals(right);
+        
+        /// <summary>
+        /// Determines whether the first number is greater than the second number.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns><see langword="true"/> if the first number is greater than the second number; otherwise, <see langword="false"/>.</returns>
+        public static bool operator >(Number<T> left, T right) => left.value.CompareTo(right) > 0;
+
+        /// <summary>
+        /// Determines whether the first number is less than the second number.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns><see langword="true"/> if the first number is less than the second number; otherwise, <see langword="false"/>.</returns>
+        public static bool operator <(Number<T> left, T right) => left.value.CompareTo(right) < 0;
+
+        /// <summary>
+        /// Determines whether the first number is greater than or equal to the second number.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns><see langword="true"/> if the first number is greater than or equal to the second number; otherwise, <see langword="false"/>.</returns>
+        public static bool operator >=(Number<T> left, T right) => left.value.CompareTo(right) >= 0;
+
+        /// <summary>
+        /// Determines whether the first number is less than or equal to the second number.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="right">The right operand.</param>
+        /// <returns><see langword="true"/> if the first number is less than or equal to the second number; otherwise, <see langword="false"/>.</returns>
+        public static bool operator <=(Number<T> left, T right) => left.value.CompareTo(right) < 0;
 
         /// <summary>
         /// Determines whether this number is equal to the specified number.
