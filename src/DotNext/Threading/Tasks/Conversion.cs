@@ -17,7 +17,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="converter">Non-blocking conversion function.</param>
         /// <returns>The converted task.</returns>
 		public static async Task<O> Convert<I, O>(this Task<I> task, Converter<I, O> converter)
-            => converter(await task);
+            => converter(await task.ConfigureAwait(false));
 
         /// <summary>
         /// Converts one type of task into another.
@@ -28,6 +28,6 @@ namespace DotNext.Threading.Tasks
         /// <param name="converter">Asynchronous conversion function.</param>
         /// <returns>The converted task.</returns>
         public static async Task<O> Convert<I, O>(this Task<I> task, Converter<I, Task<O>> converter)
-            => await converter(await task);
+            => await converter(await task.ConfigureAwait(false));
     }
 }
