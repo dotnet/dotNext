@@ -467,9 +467,9 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 return Array.Empty<byte>();
-            var result = new byte[Size];
+            var result = new byte[Size * length];
             fixed (byte* destination = result)
-                Memory.Copy(value, destination, Size * length);
+                Memory.Copy(value, destination, result.LongLength);
             return result;
         }
 
