@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using DebugInfoGenerator = System.Runtime.CompilerServices.DebugInfoGenerator;
@@ -53,6 +54,7 @@ namespace DotNext.Metaprogramming
 
         private readonly Type returnType;
 
+        [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         internal LambdaExpression(bool tailCall)
             : base(tailCall)
         {

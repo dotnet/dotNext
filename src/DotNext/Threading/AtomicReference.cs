@@ -253,7 +253,7 @@ namespace DotNext.Threading
             this.value = value;
         }
 
-        [SuppressMessage("Style", "CA1801", Justification = "context is required by .NET serialization framework")]
+        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private AtomicReference(SerializationInfo info, StreamingContext context)
         {
             value = (T)info.GetValue(ValueSerData, typeof(T));

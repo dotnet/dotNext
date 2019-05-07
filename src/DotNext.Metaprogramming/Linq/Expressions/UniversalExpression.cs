@@ -15,7 +15,7 @@ namespace DotNext.Linq.Expressions
     /// <remarks>
     /// This class is intended for expression building purposes only.
     /// </remarks>
-    public readonly struct UniversalExpression : IExpressionBuilder<Expression>, IDynamicMetaObjectProvider
+    public readonly struct UniversalExpression : IExpressionBuilder<Expression>, IDynamicMetaObjectProvider, IEquatable<UniversalExpression>
     {
         private readonly Expression expression;
 
@@ -778,6 +778,14 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="other">Other expression to compare.</param>
         /// <returns><see langword="true"/>, if both expressions are equal; otherwise, <see langword="false"/>.</returns>
+        public bool Equals(UniversalExpression other) => Equals(expression, other.expression);
+
+        /// <summary>
+        /// Determines whether this universal expression
+        /// represents the same underlying expression as other.
+        /// </summary>
+        /// <param name="other">Other expression to compare.</param>
+        /// <returns><see langword="true"/>, if both expressions are equal; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
             switch (other)
@@ -785,7 +793,7 @@ namespace DotNext.Linq.Expressions
                 case Expression expr:
                     return Equals(expression, expr);
                 case UniversalExpression view:
-                    return Equals(expression, view.expression);
+                    return Equals(view);
                 default:
                     return false;
             }

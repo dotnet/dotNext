@@ -226,7 +226,7 @@ namespace DotNext
             isPresent = true;
         }
 
-        [SuppressMessage("Style", "CA1801", Justification = "context is required by .NET serialization framework")]
+        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private Optional(SerializationInfo info, StreamingContext context)
         {
             value = (T)info.GetValue(ValueSerData, typeof(T));
@@ -251,8 +251,8 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool HasValue(in T value) => HasValueChecker is null || HasValueChecker(in value);
 
-        [SuppressMessage("Style", "CA1801")]
-        [SuppressMessage("Style", "IDE0060")]
+        [SuppressMessage("Usage", "CA1801")]
+        [SuppressMessage("Usage", "IDE0060")]
         private static bool HasNoValue(ref T value) => false;
 
         /// <summary>

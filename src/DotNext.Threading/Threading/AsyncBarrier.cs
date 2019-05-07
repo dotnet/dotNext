@@ -126,11 +126,11 @@ namespace DotNext.Threading
                 throw new InvalidOperationException();
             else if (countdown.Signal(1L, true))
             {
-                await PostPhase(currentPhase.Add(1L));
+                await PostPhase(currentPhase.Add(1L)).ConfigureAwait(false);
                 return true;
             }
             else
-                return await Wait(timeout, token);
+                return await Wait(timeout, token).ConfigureAwait(false);
         }
 
         /// <summary>

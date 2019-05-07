@@ -35,7 +35,7 @@ namespace DotNext.Collections.Generic
             count = 0;
         }
 
-        [SuppressMessage("Style", "CA1801", Justification = "context is required by .NET serialization framework")]
+        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private UnmanagedList(SerializationInfo info, StreamingContext context)
         {
             count = info.GetInt32(CountSerData);

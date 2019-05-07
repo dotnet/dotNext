@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -498,6 +499,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Reinterpreted pointer type.</returns>
         /// <exception cref="GenericArgumentException{U}">Type <typeparamref name="U"/> should be the same size or less than type <typeparamref name="T"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         public unsafe Pointer<U> As<U>()
             where U : unmanaged
             => Size >= Pointer<U>.Size ? new Pointer<U>(value) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize, nameof(U));

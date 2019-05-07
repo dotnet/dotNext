@@ -21,6 +21,7 @@ Reduced memory consumption caused by Wait operations</PackageReleaseNotes>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <CodeAnalysisRuleSet>../DotNext.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -30,7 +31,6 @@ Reduced memory consumption caused by Wait operations</PackageReleaseNotes>
     <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <CodeAnalysisRuleSet>../DotNext.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>

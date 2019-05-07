@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security;
@@ -47,6 +48,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets or sets value.
         /// </summary>
+        [SuppressMessage("Design", "CA1051", Justification = "It is by-design due to nature of this type")]
         public T Value;
 
         object IStrongBox.Value

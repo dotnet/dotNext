@@ -10,8 +10,8 @@ namespace DotNext.Threading
     /// Represents atomic boolean.
     /// </summary>
     [Serializable]
-    [SuppressMessage("Style", "CA1066")]
-    [SuppressMessage("Style", "CA2231")]
+    [SuppressMessage("Design", "CA1066")]
+    [SuppressMessage("Usage", "CA2231")]
     public struct AtomicBoolean : IEquatable<bool>, ISerializable
     {
         private const string ValueSerData = "value";
@@ -25,7 +25,7 @@ namespace DotNext.Threading
         /// <param name="value">Initial value of the atomic boolean.</param>
         public AtomicBoolean(bool value) => this.value = value ? True : False;
 
-        [SuppressMessage("Style", "CA1801", Justification = "context is required by .NET serialization framework")]
+        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private AtomicBoolean(SerializationInfo info, StreamingContext context)
         {
             value = (int)info.GetValue(ValueSerData, typeof(int));
