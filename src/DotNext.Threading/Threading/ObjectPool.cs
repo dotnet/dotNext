@@ -2,17 +2,40 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Monitor = System.Threading.Monitor;
 
 namespace DotNext.Threading
 {
     /// <summary>
-    /// Provides concurrent object pool where
-    /// object selection is thread-safe but not selected object.
+    /// Provides concurrent object pool where object selection is thread-safe except the rented object. 
+    /// </summary>
+    public abstract class ObjectPool : Disposable
+    {
+        private protected int cursor;
+
+        private protected ObjectPool() => cursor = -1;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private protected static int MakeIndex(int cursor, int count) => (cursor & int.MaxValue) % count;
+
+        /// <summary>
+        /// Gets total count of objects in this pool.
+        /// </summary>
+        public abstract int Capacity { get; }
+
+        /// <summary>
+        /// Gets number of rented objects.
+        /// </summary>
+        public int Occupation => MakeIndex(cursor.VolatileRead(), Capacity) + 1;
+    }
+
+    /// <summary>
+    /// Provides concurrent object pool where object selection is thread-safe except the rented object.
     /// </summary>
     /// <typeparam name="T">Type of objects in the pool.</typeparam>
-    public class ObjectPool<T> : Disposable
+    public class ObjectPool<T> : ObjectPool
         where T : class
     {
         /// <summary>
@@ -33,7 +56,7 @@ namespace DotNext.Threading
             }
 
             /// <summary>
-            /// Releases object lock and return it into pool.
+            /// Returns object to the pool.
             /// </summary>
             public void Dispose()
             {
@@ -44,7 +67,7 @@ namespace DotNext.Threading
             }
 
             /// <summary>
-            /// Gets channel/model associated with this lock.
+            /// Gets object from the pool associated with this lock.
             /// </summary>
             /// <param name="lock">Lock container.</param>
             public static implicit operator T(Rental @lock) => @lock.lockedObject;
@@ -55,7 +78,6 @@ namespace DotNext.Threading
         /// </summary>
         [SuppressMessage("Design", "CA1051", Justification = "Field is protected and its object cannot be modified")]
         protected readonly IReadOnlyList<T> objects;
-        private int counter;
 
         /// <summary>
         /// Initializes a new object pool.
@@ -66,8 +88,12 @@ namespace DotNext.Threading
             if (objects.Count == 0)
                 throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
             this.objects = new ReadOnlyCollection<T>(objects);
-            counter = -1;
-        }
+        } 
+
+        /// <summary>
+        /// Gets total count of objects in this pool.
+        /// </summary>
+        public sealed override int Capacity => objects.Count;
 
         /// <summary>
         /// Select first unbusy object from pool, lock it and return it.
@@ -79,7 +105,7 @@ namespace DotNext.Threading
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
                 //apply selection using round-robin mechanism
-                var index = (counter.IncrementAndGet() & int.MaxValue) % objects.Count;
+                var index = MakeIndex(cursor.IncrementAndGet(), objects.Count);
                 //lock selected object if possible
                 var result = new Rental(objects[index], out var locked);
                 if (locked)
