@@ -17,8 +17,10 @@ namespace DotNext.Threading
 
         private protected ObjectPool() => cursor = -1;
 
+        private protected int NextIndex() => MakeIndex(cursor.IncrementAndGet(), Capacity);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private protected static int MakeIndex(int cursor, int count) => (cursor & int.MaxValue) % count;
+        private static int MakeIndex(int cursor, int count) => (cursor & int.MaxValue) % count;
 
         /// <summary>
         /// Gets total count of objects in this pool.
@@ -105,7 +107,7 @@ namespace DotNext.Threading
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
                 //apply selection using round-robin mechanism
-                var index = MakeIndex(cursor.IncrementAndGet(), objects.Count);
+                var index = NextIndex();
                 //lock selected object if possible
                 var result = new Rental(objects[index], out var locked);
                 if (locked)
