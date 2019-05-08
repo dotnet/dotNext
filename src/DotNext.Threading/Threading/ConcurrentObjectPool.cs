@@ -76,7 +76,7 @@ namespace DotNext.Threading
         public Rental Rent()
         {
             //each thread must have its own spin awaiter
-            for (SpinWait spinner; ; spinner.SpinOnce())
+            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
                 //apply selection using round-robin mechanism
                 var index = counter.IncrementAndGet() % objects.Count;
