@@ -13,14 +13,21 @@ namespace DotNext.Threading
     /// </summary>
     public abstract class ObjectPool : Disposable
     {
-        private protected int cursor;
+        private int cursor;
 
         private protected ObjectPool() => cursor = -1;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private protected int NextIndex() => MakeIndex(cursor.IncrementAndGet(), Capacity);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int MakeIndex(int cursor, int count) => (cursor & int.MaxValue) % count;
+
+        private protected int Cursor
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set => cursor.VolatileWrite(value);
+        }
 
         /// <summary>
         /// Gets total count of objects in this pool.
@@ -30,7 +37,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Gets number of rented objects.
         /// </summary>
-        public int Occupation => MakeIndex(cursor.VolatileRead(), Capacity) + 1;
+        public virtual int Occupation => MakeIndex(cursor.VolatileRead(), Capacity) + 1;
     }
 
     /// <summary>
@@ -106,10 +113,8 @@ namespace DotNext.Threading
             //each thread must have its own spin awaiter
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
-                //apply selection using round-robin mechanism
-                var index = NextIndex();
                 //lock selected object if possible
-                var result = new Rental(objects[index], out var locked);
+                var result = new Rental(objects[NextIndex()], out var locked);
                 if (locked)
                     return result;
             }

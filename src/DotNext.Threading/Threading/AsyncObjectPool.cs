@@ -75,7 +75,7 @@ namespace DotNext.Threading
         private readonly RentalLock[] objects;
         private readonly ObjectFactory factory;
         private Action<int> releaseCallback;
-        private int cursor;
+        private int occupation;
 
         public AsyncObjectPool(int capacity, ObjectFactory factory)
         {
@@ -83,19 +83,27 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(capacity));
             objects = new RentalLock[capacity];
             objects.ForEach(CreateRentalLock);
-            cursor = -1;
             releaseCallback = Released;
         }
 
         private static void CreateRentalLock(long index, ref RentalLock rental)
             => rental = new RentalLock((int)index);
 
-        private void Released(int index) => cursor.VolatileWrite(index - 1); //set cursor to the released object
+        private void Released(int index)
+        {
+            Cursor = index - 1; //set cursor to the released object
+            occupation.DecrementAndGet();
+        }
 
         /// <summary>
         /// Gets total count of objects in this pool.
         /// </summary>
         public sealed override int Capacity => objects.Length;
+
+        /// <summary>
+        /// Gets number of rented objects.
+        /// </summary>
+        public sealed override int Occupation => occupation;
 
         public async ValueTask<Rental> Rent()
         {
@@ -105,6 +113,7 @@ namespace DotNext.Threading
                 var rental = objects[index];
                 if(await rental.TryAcquire(TimeSpan.Zero).ConfigureAwait(false))
                 {
+                    occupation.IncrementAndGet();
                     await rental.InitResource(factory);
                     return new Rental(rental, releaseCallback);
                 }
