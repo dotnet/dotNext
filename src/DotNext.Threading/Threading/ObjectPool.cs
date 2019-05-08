@@ -12,7 +12,7 @@ namespace DotNext.Threading
     /// object selection is thread-safe but not selected object.
     /// </summary>
     /// <typeparam name="T">Type of objects in the pool.</typeparam>
-    public class ConcurrentObjectPool<T> : Disposable
+    public class ObjectPool<T> : Disposable
         where T : class
     {
         /// <summary>
@@ -61,7 +61,7 @@ namespace DotNext.Threading
         /// Initializes a new object pool.
         /// </summary>
         /// <param name="objects">Predefined objects to be available from the pool.</param>
-        public ConcurrentObjectPool(IList<T> objects)
+        public ObjectPool(IList<T> objects)
         {
             if (objects.Count == 0)
                 throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
