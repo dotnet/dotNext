@@ -79,7 +79,7 @@ namespace DotNext.Threading
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
                 //apply selection using round-robin mechanism
-                var index = (counter.IncrementAndGet() % objects.Count) & int.MaxValue;
+                var index = (counter.IncrementAndGet() & int.MaxValue) % objects.Count;
                 //lock selected object if possible
                 var result = new Rental(objects[index], out var locked);
                 if (locked)
