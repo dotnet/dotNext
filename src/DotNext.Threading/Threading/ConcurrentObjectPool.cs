@@ -12,7 +12,7 @@ namespace DotNext.Threading
     /// object selection is thread-safe but not selected object.
     /// </summary>
     /// <typeparam name="T">Type of objects in the pool.</typeparam>
-    public class ConcurrentObjectPool<T>
+    public class ConcurrentObjectPool<T> : Disposable
         where T : class
     {
         /// <summary>

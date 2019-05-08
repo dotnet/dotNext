@@ -8,7 +8,7 @@ namespace DotNext.Threading
     /// <summary>
     /// Represents asynchronous mutually exclusive lock.
     /// </summary>
-    public sealed class AsyncExclusiveLock : QueuedSynchronizer
+    public class AsyncExclusiveLock : QueuedSynchronizer
     {
         private readonly struct LockManager : ILockManager<bool, WaitNode>
         {
