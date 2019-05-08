@@ -90,12 +90,7 @@ namespace DotNext.Threading
         private static void CreateRentalLock(long index, ref RentalLock rental)
             => rental = new RentalLock((int)index);
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        private void Released(int index) => cursor = index - 1; //set cursor to the released object
-
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        private int NextIndex() => MakeIndex(++cursor, objects.Length);
+        private void Released(int index) => cursor.VolatileWrite(index - 1); //set cursor to the released object
 
         /// <summary>
         /// Gets total count of objects in this pool.
