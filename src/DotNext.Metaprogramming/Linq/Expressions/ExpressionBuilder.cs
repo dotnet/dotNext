@@ -852,6 +852,13 @@ namespace DotNext.Linq.Expressions
         }
 
         /// <summary>
+        /// Constructs expression that calls <see cref="object.ToString"/>
+        /// </summary>
+        /// <param name="obj">The object to be converted into string.</param>
+        /// <returns>The expression representing <c>ToString()</c> method call.</returns>
+        public static MethodCallExpression AsString(this Expression obj) => Call(obj, nameof(object.ToString));
+
+        /// <summary>
         /// Constructs loop statement.
         /// </summary>
         /// <param name="body">The loop body.</param>
