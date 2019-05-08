@@ -7,7 +7,7 @@ namespace DotNext.Threading
     /// </summary>
     public readonly struct Timeout
     {
-        private readonly DateTime created;
+        private readonly long created;
         private readonly TimeSpan timeout;
 
         /// <summary>
@@ -16,16 +16,18 @@ namespace DotNext.Threading
         /// <param name="timeout">Max duration of operation.</param>
         public Timeout(TimeSpan timeout)
         {
-            created = DateTime.Now;
+            created = CurrentUnixTime;
             this.timeout = timeout;
         }
+
+        private static long CurrentUnixTime => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
         internal bool Zero => timeout == TimeSpan.Zero;
 
         /// <summary>
         /// Indicates that timeout is reached.
         /// </summary>
-        public bool Expired => DateTime.Now - created > timeout;
+        public bool Expired => CurrentUnixTime - created > timeout.TotalMilliseconds;
 
         /// <summary>
         /// Throws <see cref="TimeoutException"/> if timeout occurs.
