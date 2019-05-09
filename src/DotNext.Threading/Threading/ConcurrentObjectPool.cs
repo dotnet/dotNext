@@ -184,6 +184,8 @@ namespace DotNext.Threading
                     rental = next;
                 }
             }
+            if(index == 0)
+                throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
             rental.Attach(current.Value);
             Capacity = index;
         }
