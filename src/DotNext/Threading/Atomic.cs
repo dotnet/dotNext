@@ -2,30 +2,28 @@
 
 namespace DotNext.Threading
 {
-    using Generic;
-
-    internal static class Atomic<T, CAS>
-        where CAS : Constant<CAS<T>>, new()
+    internal abstract class Atomic<T>
     {
-        private static readonly CAS<T> CompareAndSet = new CAS();
+        internal abstract bool CompareAndSet(ref T value, T expected, T update);
+        private protected abstract T VolatileRead(ref T value);
 
-        internal static (T OldValue, T NewValue) Update(ref T value, Func<T, T> updater)
+        internal (T OldValue, T NewValue) Update(ref T value, Func<T, T> updater)
         {
             T oldValue, newValue;
             do
             {
-                newValue = updater(oldValue = value);
+                newValue = updater(oldValue = VolatileRead(ref value));
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
         }
 
-        internal static (T OldValue, T NewValue) Accumulute(ref T value, T x, Func<T, T, T> accumulator)
+        internal (T OldValue, T NewValue) Accumulute(ref T value, T x, Func<T, T, T> accumulator)
         {
             T oldValue, newValue;
             do
             {
-                newValue = accumulator(oldValue = value, x);
+                newValue = accumulator(oldValue = VolatileRead(ref value), x);
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
