@@ -1,123 +1,196 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Monitor = System.Threading.Monitor;
 
 namespace DotNext.Threading
 {
     /// <summary>
-    /// Provides concurrent object pool where object selection is thread-safe except the rented object. 
+    /// Provides concurrent object pool where object selection is thread-safe except the rented object.
     /// </summary>
-    public abstract class ObjectPool : Disposable
+    /// <typeparam name="T">Type of objects in the pool.</typeparam>
+    public class ObjectPool<T> : Disposable
+        where T : class
     {
-        private int cursor;
+        /// <summary>
+        /// Represents rented object.
+        /// </summary>
+        /// <remarks>
+        /// Call <see cref="IDisposable.Dispose"/> to return object back to the pool.
+        /// </remarks>
+        public interface IRental : IDisposable
+        {
+            /// <summary>
+            /// Gets rented object.
+            /// </summary>
+            T Resource { get; }
+        }
 
-        private protected ObjectPool() => cursor = -1;
+        private sealed class Rental : IRental
+        {
+            private AtomicBoolean lockState;
+            private volatile T resource;
+            internal readonly int Index;
+            private readonly int maxWeight;
+            private int weight;
+
+            internal Rental(int index, int weight, T resource = null)
+            {
+                Index = index;
+                this.resource = resource;
+                this.weight = maxWeight = weight;
+            }
+
+            internal event Action<Rental> Released;
+
+            T IRental.Resource => resource;
+
+            internal void InitResource(Func<T> factory)
+            {
+                if (resource is null)
+                    resource = factory();
+            }
+
+            internal bool TryAcquire()
+            {
+                return lockState.FalseToTrue();
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal void Touch() => weight.VolatileWrite(maxWeight);
+
+            internal bool Starve()
+            {
+                var success = false;
+                if (TryAcquire() && weight.DecrementAndGet() == 0)
+                    (resource as IDisposable).Dispose();
+                lockState.Value = false;    //release lock
+                return success;
+            }
+
+            void IDisposable.Dispose()
+            {
+                lockState.Value = false;
+                Released?.Invoke(this);
+            }
+
+            internal void Destroy(bool disposeResource)
+            {
+                Released = null;
+                if (disposeResource && resource is IDisposable disposable)
+                    disposable.Dispose();
+                resource = null;
+            }
+        }
+
+        private readonly Func<T> factory;
+        private AtomicReference<Rental> last;
+        private readonly bool lazyInstantiation;
+        private int cursor, pressure;
+        private readonly Rental[] objects;
+        //cached delegate to avoid allocations
+        private readonly Func<Rental, Rental, Rental> lastRentalSelector;
+
+        private ObjectPool(int capacity, Func<int, Rental> initializer, bool fairness)
+        {
+            var objects = new Rental[capacity];
+            var callback = fairness ? new Action<Rental>(ReleasedRR) : new Action<Rental>(ReleasedSJF);
+            for (var i = 0; i < capacity; i++)
+            {
+                ref Rental rental = ref objects[i];
+                rental = initializer(i);
+                rental.Released += callback;
+            }
+            cursor = -1;
+            pressure = 0;
+            lastRentalSelector = SelectLastRental;
+        }
+
+        private protected ObjectPool(int capacity, Func<T> factory)
+            : this(capacity, index => new Rental(index, capacity), true)
+        {
+            lazyInstantiation = true;
+            this.factory = factory;
+        }
+
+        private protected ObjectPool(IList<T> objects)
+            : this(objects.Count, index => new Rental(index, objects.Count, objects[index]), false)
+        {
+            lazyInstantiation = false;
+        }
+
+        //release object according with Round-robin scheduling algorithm
+        private void ReleasedRR(Rental rental) => pressure.DecrementAndGet();
+
+        //release object according with Shortest Job First algorithm
+        private void ReleasedSJF(Rental rental)
+        {
+            cursor.VolatileWrite(rental.Index - 1); //set cursor to the released object
+            pressure.DecrementAndGet();
+            rental = last.AccumulateAndGet(rental, lastRentalSelector);
+            //starvation detected, disposed object stored in rental object
+            if (rental.Starve())
+                last.Value = rental.Index == 0 ? null : objects[rental.Index - 1];
+        }
+
+        private static Rental SelectLastRental(Rental current, Rental update)
+        {
+            if (current is null)
+                return update;
+            else if (update.Index > current.Index)
+                return update;
+            else
+                return current;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private protected int NextIndex() => MakeIndex(cursor.IncrementAndGet(), Capacity);
+        private int NextIndex() => MakeIndex(cursor.IncrementAndGet(), Capacity);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int MakeIndex(int cursor, int count) => (cursor & int.MaxValue) % count;
 
-        private protected int Cursor
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => cursor.VolatileWrite(value);
-        }
-
         /// <summary>
         /// Gets total count of objects in this pool.
         /// </summary>
-        public abstract int Capacity { get; }
+        public int Capacity => objects.Length;
 
         /// <summary>
         /// Gets number of rented objects.
         /// </summary>
-        public virtual int Occupation => MakeIndex(cursor.VolatileRead(), Capacity) + 1;
-    }
+        public int Pressure => MakeIndex(pressure.VolatileRead(), Capacity) + 1;
 
-    /// <summary>
-    /// Provides concurrent object pool where object selection is thread-safe except the rented object.
-    /// </summary>
-    /// <typeparam name="T">Type of objects in the pool.</typeparam>
-    public class ObjectPool<T> : ObjectPool
-        where T : class
-    {
         /// <summary>
-        /// Represents locked object.
+        /// Rents the object from this pool.
         /// </summary>
-        /// <remarks>
-        /// Object lock cannot be stored in fields
-        /// or escape call stack, therefore, it is ref-struct.
-        /// </remarks>
-        public ref struct Rental
+        /// <returns>The object allows to control lifetime of the rent.</returns>
+        public IRental Rent()
         {
-            private readonly T lockedObject;
-
-            internal Rental(T obj, out bool lockTaken)
-            {
-                lockTaken = Monitor.TryEnter(obj);
-                lockedObject = lockTaken ? obj : null;
-            }
-
-            /// <summary>
-            /// Returns object to the pool.
-            /// </summary>
-            public void Dispose()
-            {
-                if (lockedObject is null)
-                    throw new ObjectDisposedException(ExceptionMessages.ReleasedLock);
-                Monitor.Exit(lockedObject);
-                this = default;
-            }
-
-            /// <summary>
-            /// Gets object from the pool associated with this lock.
-            /// </summary>
-            /// <param name="lock">Lock container.</param>
-            public static implicit operator T(Rental @lock) => @lock.lockedObject;
-        }
-
-        /// <summary>
-        /// Read-only collection of objects in this pool.
-        /// </summary>
-        [SuppressMessage("Design", "CA1051", Justification = "Field is protected and its object cannot be modified")]
-        protected readonly IReadOnlyList<T> objects;
-
-        /// <summary>
-        /// Initializes a new object pool.
-        /// </summary>
-        /// <param name="objects">Predefined objects to be available from the pool.</param>
-        public ObjectPool(IList<T> objects)
-        {
-            if (objects.Count == 0)
-                throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
-            this.objects = new ReadOnlyCollection<T>(objects);
-        } 
-
-        /// <summary>
-        /// Gets total count of objects in this pool.
-        /// </summary>
-        public sealed override int Capacity => objects.Count;
-
-        /// <summary>
-        /// Select first unbusy object from pool, lock it and return it.
-        /// </summary>
-        /// <returns>First unbusy object locked for the caller thread.</returns>
-        public Rental Rent()
-        {
-            //each thread must have its own spin awaiter
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
-                //lock selected object if possible
-                var result = new Rental(objects[NextIndex()], out var locked);
-                if (locked)
-                    return result;
+                var rental = objects[NextIndex()];
+                if (rental.TryAcquire())
+                {
+                    rental.Touch();
+                    if (!(factory is null))
+                        rental.InitResource(factory);
+                    pressure.IncrementAndGet();
+                    return rental;
+                }
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                for (var i = 0; i < objects.Length; i++)
+                {
+                    ref Rental rental = ref objects[i];
+                    rental.Destroy(lazyInstantiation);
+                    rental = null;
+                }
+            }
+            base.Dispose(disposing);
         }
     }
 }
