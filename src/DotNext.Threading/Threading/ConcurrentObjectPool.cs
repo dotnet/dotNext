@@ -26,28 +26,67 @@ namespace DotNext.Threading
             T Resource { get; }
         }
 
+        /*
+         * Actual rental object is a node in double linked ring buffer. 
+         * 
+         */
         private sealed class Rental : IRental
         {
             //cached delegate to avoid memory allocations and increase chance of inline caching
             private static readonly WaitCallback DisposeResource = resource => (resource as IDisposable)?.Dispose();
             private AtomicBoolean lockState;
-            private AtomicReference<T> resource;
-            internal readonly int Index;
+            private T resource; //this is not volatile because it's consistency is protected by lockState memory barrier
+            private readonly int rank;
             private readonly long maxWeight;
             private long weight;
 
-            internal Rental(int index, long weight, T resource = null)
+            internal Rental(int rank, long weight)
             {
-                Index = index;
-                this.resource = new AtomicReference<T>(resource);
+                this.rank = rank;
                 this.weight = maxWeight = weight;
+            }
+
+            internal Rental(int rank, T resource)
+            {
+                this.rank = rank;
+                this.resource = resource;
+            }
+
+            internal bool IsFirst => rank == 0;
+
+            internal Rental Next
+            {
+                get;
+                private set;
+            }
+
+            internal Rental Previous
+            {
+                get;
+                private set;
+            }
+
+            //indicates that this object is a predecessor of the specified object in the ring buffer
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal bool IsPredecessorOf(Rental other) => rank < other.rank;
+
+            internal void Attach(Rental next)
+            {
+                Next = next;
+                next.Previous = this;
             }
 
             internal event Action<Rental> Released;
 
-            T IRental.Resource => resource.Value;
+            T IRental.Resource => resource;
 
-            internal void InitResource(Func<T> factory) => resource.SetIfNull(factory);
+            //instantiate resource if needed
+            //call to this method must be protected by the lock using TryAcquire
+            internal void CreateResourceIfNeeded(Func<T> factory)
+            {
+                if(resource is null)
+                    resource = factory();
+            }
 
             internal bool TryAcquire() => lockState.FalseToTrue();
 
@@ -56,18 +95,18 @@ namespace DotNext.Threading
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal void Touch() => weight.VolatileWrite(maxWeight);
 
-            //used in SFG mode only
+            //used by SJF strategy only
             internal bool Starve()
             {
                 bool success;
-                if (success = lockState.FalseToTrue())
+                if (success = lockState.FalseToTrue())  //acquire lock
                 {
-                    if(success = weight.DecrementAndGet() <= 0)
+                    if(success = weight.DecrementAndGet() <= 0) //decrease weight because this object was accessed a long time ago
                     {
-                        var resource = this.resource.GetAndSet(null);
                         //prevent this method from blocking so dispose resource asynchronously
-                        if(!(resource is null))
+                        if(resource is IDisposable)
                             ThreadPool.QueueUserWorkItem(DisposeResource, resource);
+                        resource = null;
                     }
                     lockState.Value = false;
                 }
@@ -76,84 +115,105 @@ namespace DotNext.Threading
 
             void IDisposable.Dispose()
             {
-                lockState.Value = false;
-                Released?.Invoke(this);
+                lockState.Value = false;    //release the lock
+                Released?.Invoke(this);     //notify that this object is returned back to the pool
             }
 
             internal void Destroy(bool disposeResource)
             {
+                if(!(Next is null))
+                {
+                    Next.Previous = null;
+                    Next = null;
+                }
+                if(!(Previous is null))
+                {
+                    Previous.Next = null;
+                    Previous = null;
+                }
                 Released = null;
-                var resource = this.resource.GetAndSet(null);
                 if (disposeResource && resource is IDisposable disposable)
                     disposable.Dispose();
+                resource = null;
             }
         }
 
-        //cached delegate to avoid allocations
-        private static readonly Func<Rental, Rental, Rental> SelectLastRenal = (current, update) => current is null || update.Index > current.Index ? update : current;
+        //cached delegates to avoid allocations
+        private static readonly Func<Rental, Rental, Rental> SelectLastRenal = (current, update) => current is null || current.IsPredecessorOf(update) ? update : current;
+        private static readonly Func<Rental, Rental> SelectNextRental = current => current.Next;
         private readonly Func<T> factory;
-        private AtomicReference<Rental> last;
-        private readonly bool lazyInstantiation;
-        private int cursor, pressure;
-        private readonly Rental[] objects;
-        
-
-        private ConcurrentObjectPool(int capacity, Func<int, Rental> initializer, bool fairness)
-        {
-            var objects = new Rental[capacity];
-            var callback = fairness ? new Action<Rental>(ReleasedRR) : new Action<Rental>(ReleasedSJF);
-            for (var i = 0; i < capacity; i++)
-            {
-                ref Rental rental = ref objects[i];
-                rental = initializer(i);
-                rental.Released += callback;
-            }
-            cursor = -1;
-            pressure = 0;
-        }
+        private AtomicReference<Rental> last, current;
+        private int waitCount;
 
         public ConcurrentObjectPool(int capacity, Func<T> factory)
-            : this(capacity, index => new Rental(index, capacity * 2L), true)
         {
-            lazyInstantiation = true;
+            if(capacity < 1)
+                throw new ArgumentOutOfRangeException(nameof(capacity));
+            Capacity = capacity;
             this.factory = factory;
+            var rental = default(Rental);
+            Action<Rental> callback = AdjustAvailableObjectAndCheckStarvation;
+            for(var index = 0; index < capacity; index++)
+            {
+                var next = new Rental(index, capacity + capacity / 2L);
+                next.Released += callback;  
+                if(rental is null)
+                    current = last = new AtomicReference<Rental>(rental = next);
+                else
+                {
+                    rental.Attach(next);
+                    rental = next;
+                }
+            }
+            rental.Attach(current.Value);
         }
 
-        public ConcurrentObjectPool(IList<T> objects)
-            : this(objects.Count, index => new Rental(index, 0, objects[index]), false)
+        public ConcurrentObjectPool(IEnumerable<T> objects)
         {
-            lazyInstantiation = false;
+            this.factory = null;
+            var rental = default(Rental);
+            var index = 0;
+            foreach(var resource in objects)
+            {
+                var next = new Rental(index++, resource);
+                if(rental is null)
+                    current = last = new AtomicReference<Rental>(rental = next);
+                else
+                {
+                    rental.Attach(next);
+                    rental = next;
+                }
+            }
+            rental.Attach(current.Value);
+            Capacity = index;
         }
-
-        //release object according with Round-robin scheduling algorithm
-        private void ReleasedRR(Rental rental) => pressure.DecrementAndGet();
 
         //release object according with Shortest Job First algorithm
-        private void ReleasedSJF(Rental rental)
+        private void AdjustAvailableObjectAndCheckStarvation(Rental rental)
         {
-            cursor.VolatileWrite(rental.Index - 1); //set cursor to the released object
-            pressure.DecrementAndGet();
+            current.Value = rental;
             rental = last.AccumulateAndGet(rental, SelectLastRenal);
-            //starvation detected, disposed object stored in rental object
+            //starvation detected, dispose the resource stored in rental object
             if (rental.Starve())
-                last.Value = rental.Index == 0 ? null : objects[rental.Index - 1];
+                last.Value = rental.IsFirst ? null : rental.Previous;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int NextIndex() => MakeIndex(cursor.IncrementAndGet(), Capacity);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int MakeIndex(int cursor, int count) => (cursor & int.MaxValue) % count;
 
         /// <summary>
         /// Gets total count of objects in this pool.
         /// </summary>
-        public int Capacity => objects.Length;
+        public int Capacity { get; }
 
         /// <summary>
-        /// Gets number of rented objects.
+        /// Gets number of threads waiting for the first available object.
         /// </summary>
-        public int Pressure => MakeIndex(pressure.VolatileRead(), Capacity) + 1;
+        /// <remarks>
+        /// This property is for diagnostics purposes.
+        /// Ideally, it should be always 0. But in reality, some threads
+        /// may wait for the first released object a very small amount of time.
+        /// Therefore, the expected value should not be greater than <see cref="Capacity"/> divided by 2,
+        /// and do not grow over time. Otherwise, you should increase the capacity.
+        /// </remarks>
+        public int WaitCount => waitCount;
 
         /// <summary>
         /// Rents the object from this pool.
@@ -161,30 +221,40 @@ namespace DotNext.Threading
         /// <returns>The object allows to control lifetime of the rent.</returns>
         public IRental Rent()
         {
+            waitCount.IncrementAndGet();
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
-                var rental = objects[NextIndex()];
+                var rental = current.UpdateAndGet(SelectNextRental);
                 if (rental.TryAcquire())
                 {
+                    waitCount.DecrementAndGet();
                     rental.Touch();
                     if (!(factory is null))
-                        rental.InitResource(factory);
-                    pressure.IncrementAndGet();
+                        rental.CreateResourceIfNeeded(factory);
                     return rental;
                 }
             }
         }
 
+        /// <summary>
+        /// Dispos
+        /// </summary>
+        /// <remarks>
+        /// This method is not thread-safe and may not be used concurrently with other members of this instance.
+        /// Additionally, this method disposes all objects stored in the pool if it was created
+        /// with <see cref="ConcurrentObjectPool(int, Func{T})"/> constructor.
+        /// </remarks>
+        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                for (var i = 0; i < objects.Length; i++)
+                for(Rental rental = current.Value, next = null; !(rental is null); rental = next)
                 {
-                    ref Rental rental = ref objects[i];
-                    rental.Destroy(lazyInstantiation);
-                    rental = null;
+                    next = rental.Next;
+                    rental.Destroy(!(factory is null));
                 }
+                current = last = default;
             }
             base.Dispose(disposing);
         }
