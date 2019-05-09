@@ -9,7 +9,7 @@ namespace DotNext.Threading
     /// Provides concurrent object pool where object selection is thread-safe except the rented object.
     /// </summary>
     /// <typeparam name="T">Type of objects in the pool.</typeparam>
-    public class ObjectPool<T> : Disposable
+    public class ConcurrentObjectPool<T> : Disposable
         where T : class
     {
         /// <summary>
@@ -91,7 +91,7 @@ namespace DotNext.Threading
         //cached delegate to avoid allocations
         private readonly Func<Rental, Rental, Rental> lastRentalSelector;
 
-        private ObjectPool(int capacity, Func<int, Rental> initializer, bool fairness)
+        private ConcurrentObjectPool(int capacity, Func<int, Rental> initializer, bool fairness)
         {
             var objects = new Rental[capacity];
             var callback = fairness ? new Action<Rental>(ReleasedRR) : new Action<Rental>(ReleasedSJF);
@@ -106,14 +106,14 @@ namespace DotNext.Threading
             lastRentalSelector = SelectLastRental;
         }
 
-        private protected ObjectPool(int capacity, Func<T> factory)
+        private protected ConcurrentObjectPool(int capacity, Func<T> factory)
             : this(capacity, index => new Rental(index, capacity), true)
         {
             lazyInstantiation = true;
             this.factory = factory;
         }
 
-        private protected ObjectPool(IList<T> objects)
+        private protected ConcurrentObjectPool(IList<T> objects)
             : this(objects.Count, index => new Rental(index, objects.Count, objects[index]), false)
         {
             lazyInstantiation = false;
