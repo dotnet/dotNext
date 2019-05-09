@@ -149,7 +149,6 @@ namespace DotNext.Threading
         {
             if(capacity < 1)
                 throw new ArgumentOutOfRangeException(nameof(capacity));
-            Capacity = capacity;
             this.factory = factory;
             var rental = default(Rental);
             Action<Rental> callback = AdjustAvailableObjectAndCheckStarvation;
@@ -166,6 +165,7 @@ namespace DotNext.Threading
                 }
             }
             rental.Attach(current.Value);
+            Capacity = capacity;
         }
 
         public ConcurrentObjectPool(IEnumerable<T> objects)
@@ -244,7 +244,7 @@ namespace DotNext.Threading
         /// Additionally, this method disposes all objects stored in the pool if it was created
         /// with <see cref="ConcurrentObjectPool(int, Func{T})"/> constructor.
         /// </remarks>
-        /// <param name="disposing"></param>
+        /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
