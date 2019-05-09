@@ -28,43 +28,49 @@ namespace DotNext.Threading
 
         private sealed class Rental : IRental
         {
+            //cached delegate to avoid memory allocations and increase chance of inline caching
+            private static readonly WaitCallback DisposeResource = resource => (resource as IDisposable)?.Dispose();
             private AtomicBoolean lockState;
-            private volatile T resource;
+            private AtomicReference<T> resource;
             internal readonly int Index;
-            private readonly int maxWeight;
-            private int weight;
+            private readonly long maxWeight;
+            private long weight;
 
-            internal Rental(int index, int weight, T resource = null)
+            internal Rental(int index, long weight, T resource = null)
             {
                 Index = index;
-                this.resource = resource;
+                this.resource = new AtomicReference<T>(resource);
                 this.weight = maxWeight = weight;
             }
 
             internal event Action<Rental> Released;
 
-            T IRental.Resource => resource;
+            T IRental.Resource => resource.Value;
 
-            internal void InitResource(Func<T> factory)
-            {
-                if (resource is null)
-                    resource = factory();
-            }
+            internal void InitResource(Func<T> factory) => resource.SetIfNull(factory);
 
-            internal bool TryAcquire()
-            {
-                return lockState.FalseToTrue();
-            }
+            internal bool TryAcquire() => lockState.FalseToTrue();
 
+            //this method indicates that the object is requested
+            //and no longer starving
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal void Touch() => weight.VolatileWrite(maxWeight);
 
+            //used in SFG mode only
             internal bool Starve()
             {
-                var success = false;
-                if (TryAcquire() && weight.DecrementAndGet() == 0)
-                    (resource as IDisposable).Dispose();
-                lockState.Value = false;    //release lock
+                bool success;
+                if (success = lockState.FalseToTrue())
+                {
+                    if(success = weight.DecrementAndGet() <= 0)
+                    {
+                        var resource = this.resource.GetAndSet(null);
+                        //prevent this method from blocking so dispose resource asynchronously
+                        if(!(resource is null))
+                            ThreadPool.QueueUserWorkItem(DisposeResource, resource);
+                    }
+                    lockState.Value = false;
+                }
                 return success;
             }
 
@@ -77,19 +83,20 @@ namespace DotNext.Threading
             internal void Destroy(bool disposeResource)
             {
                 Released = null;
+                var resource = this.resource.GetAndSet(null);
                 if (disposeResource && resource is IDisposable disposable)
                     disposable.Dispose();
-                resource = null;
             }
         }
 
+        //cached delegate to avoid allocations
+        private static readonly Func<Rental, Rental, Rental> SelectLastRenal = (current, update) => current is null || update.Index > current.Index ? update : current;
         private readonly Func<T> factory;
         private AtomicReference<Rental> last;
         private readonly bool lazyInstantiation;
         private int cursor, pressure;
         private readonly Rental[] objects;
-        //cached delegate to avoid allocations
-        private readonly Func<Rental, Rental, Rental> lastRentalSelector;
+        
 
         private ConcurrentObjectPool(int capacity, Func<int, Rental> initializer, bool fairness)
         {
@@ -103,18 +110,17 @@ namespace DotNext.Threading
             }
             cursor = -1;
             pressure = 0;
-            lastRentalSelector = SelectLastRental;
         }
 
-        private protected ConcurrentObjectPool(int capacity, Func<T> factory)
-            : this(capacity, index => new Rental(index, capacity), true)
+        public ConcurrentObjectPool(int capacity, Func<T> factory)
+            : this(capacity, index => new Rental(index, capacity * 2L), true)
         {
             lazyInstantiation = true;
             this.factory = factory;
         }
 
-        private protected ConcurrentObjectPool(IList<T> objects)
-            : this(objects.Count, index => new Rental(index, objects.Count, objects[index]), false)
+        public ConcurrentObjectPool(IList<T> objects)
+            : this(objects.Count, index => new Rental(index, 0, objects[index]), false)
         {
             lazyInstantiation = false;
         }
@@ -127,20 +133,10 @@ namespace DotNext.Threading
         {
             cursor.VolatileWrite(rental.Index - 1); //set cursor to the released object
             pressure.DecrementAndGet();
-            rental = last.AccumulateAndGet(rental, lastRentalSelector);
+            rental = last.AccumulateAndGet(rental, SelectLastRenal);
             //starvation detected, disposed object stored in rental object
             if (rental.Starve())
                 last.Value = rental.Index == 0 ? null : objects[rental.Index - 1];
-        }
-
-        private static Rental SelectLastRental(Rental current, Rental update)
-        {
-            if (current is null)
-                return update;
-            else if (update.Index > current.Index)
-                return update;
-            else
-                return current;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
