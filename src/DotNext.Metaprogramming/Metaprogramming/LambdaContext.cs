@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using static System.Linq.Enumerable;
 
 namespace DotNext.Metaprogramming
@@ -15,12 +16,12 @@ namespace DotNext.Metaprogramming
     /// </remarks>
     public struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisposable
     {
-        private readonly WeakReference lambda;
+        private readonly GCHandle lambda;
 
-        internal LambdaContext(LambdaExpression lambda) => this.lambda = new WeakReference(lambda, false);
+        internal LambdaContext(LambdaExpression lambda) => this.lambda = GCHandle.Alloc(lambda, GCHandleType.Weak);
 
         private LambdaExpression GetLambdaScope() 
-            => lambda?.Target is LambdaExpression result ? result : throw new ObjectDisposedException(nameof(LambdaContext));
+            => lambda.Target is LambdaExpression result ? result : throw new ObjectDisposedException(nameof(LambdaContext));
 
         /// <summary>
         /// Gets parameter of the lambda function.
@@ -240,7 +241,7 @@ namespace DotNext.Metaprogramming
 
         void IDisposable.Dispose()
         {
-            lambda.Target = null;
+            lambda.Free();
             this = default;
         }
     }

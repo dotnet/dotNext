@@ -93,7 +93,7 @@ namespace DotNext.Threading
             //this method indicates that the object is requested
             //and no longer starving
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal void Touch() => weight.VolatileWrite(maxWeight);
+            internal void Renew() => weight.VolatileWrite(maxWeight);
 
             //used by SJF strategy only
             internal bool Starve()
@@ -230,7 +230,7 @@ namespace DotNext.Threading
                 if (rental.TryAcquire())
                 {
                     waitCount.DecrementAndGet();
-                    rental.Touch();
+                    rental.Renew();
                     if (!(factory is null))
                         rental.CreateResourceIfNeeded(factory);
                     return rental;
@@ -239,7 +239,7 @@ namespace DotNext.Threading
         }
 
         /// <summary>
-        /// Dispos
+        /// Releases all resources associated with this object pool.
         /// </summary>
         /// <remarks>
         /// This method is not thread-safe and may not be used concurrently with other members of this instance.

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Metaprogramming
 {
@@ -14,11 +15,11 @@ namespace DotNext.Metaprogramming
     /// </remarks>
     public struct LoopContext : IDisposable
     {
-        private readonly WeakReference loop;
+        private readonly GCHandle loop;
 
-        internal LoopContext(ILoopLabels loop) => this.loop = new WeakReference(loop);
+        internal LoopContext(ILoopLabels loop) => this.loop = GCHandle.Alloc(loop, GCHandleType.Weak);
 
-        private ILoopLabels GetLabels() => loop?.Target is ILoopLabels result ? result : throw new ObjectDisposedException(nameof(LoopContext));
+        private ILoopLabels GetLabels() => loop.Target is ILoopLabels result ? result : throw new ObjectDisposedException(nameof(LoopContext));
 
         internal LabelTarget ContinueLabel => GetLabels().ContinueLabel;
 
@@ -26,7 +27,7 @@ namespace DotNext.Metaprogramming
 
         void IDisposable.Dispose()
         {
-            loop.Target = null;
+            loop.Free();
             this = default;
         }
     }
