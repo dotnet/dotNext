@@ -12,9 +12,9 @@ namespace DotNext.Metaprogramming
     /// <remarks>
     /// The context lifetime is limited by surrounding lexical scope of the lambda function.
     /// </remarks>
-    public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisposable
+    public struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisposable
     {
-        private readonly GCHandle lambda;
+        private GCHandle lambda;
 
         internal LambdaContext(LambdaExpression lambda) => this.lambda = GCHandle.Alloc(lambda, GCHandleType.Weak);
 
@@ -237,6 +237,10 @@ namespace DotNext.Metaprogramming
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator(); 
 
-        void IDisposable.Dispose() => lambda.Free();
+        void IDisposable.Dispose()
+        {
+            lambda.Free();
+            this = default;
+        }
     }
 }
