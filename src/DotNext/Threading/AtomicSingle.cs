@@ -4,8 +4,6 @@ using System.Threading;
 
 namespace DotNext.Threading
 {
-    using Generic;
-
     /// <summary>
 	/// Various atomic operations for <see cref="float"/> data type
 	/// accessible as extension methods.

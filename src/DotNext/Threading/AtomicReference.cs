@@ -6,8 +6,6 @@ using System.Threading;
 
 namespace DotNext.Threading
 {
-    using Generic;
-
     /// <summary>
     /// Provides atomic operations for the reference type.
     /// </summary>
