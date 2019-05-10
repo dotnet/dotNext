@@ -14,8 +14,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>async;lock;objectpool</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>AsyncBarrier is introduced as asynchronous version of Barrier from .NET standard library
-Reduced memory consumption caused by Wait operations</PackageReleaseNotes>
+    <PackageReleaseNotes>First class support of ConcurrentObjectPool. It is rewritten and provide two scheduling methods: round-robin and shortest job first.</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
