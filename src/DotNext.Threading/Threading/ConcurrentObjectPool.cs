@@ -37,6 +37,8 @@ namespace DotNext.Threading
     /// </description>
     /// </item>
     /// </list>
+    /// Object pool is compatible with async methods so it is possible to rent the object
+    /// is one thread and return it back to the pool in another thread.
     /// </remarks>
     /// <typeparam name="T">Type of objects in the pool.</typeparam>
     public class ConcurrentObjectPool<T> : Disposable
@@ -66,23 +68,14 @@ namespace DotNext.Threading
             private static readonly WaitCallback DisposeResource = resource => (resource as IDisposable)?.Dispose();
             private AtomicBoolean lockState;
             private T resource; //this is not volatile because it's consistency is protected by lockState memory barrier
-            private readonly int rank;
-            private readonly long maxWeight;
-            private long weight;
+            private readonly int position;
+            private long timeToLive;    //not used by Round-robin algorithm
 
-            internal Rental(int rank, long weight)
-            {
-                this.rank = rank;
-                this.weight = maxWeight = weight;
-            }
+            internal Rental(int position) => this.position = position;
 
-            internal Rental(int rank, T resource)
-            {
-                this.rank = rank;
-                this.resource = resource;
-            }
+            internal Rental(int position, T resource) : this(position) => this.resource = resource;
 
-            internal bool IsFirst => rank == 0;
+            internal bool IsFirst => position == 0;
 
             internal Rental Next
             {
@@ -98,7 +91,7 @@ namespace DotNext.Threading
 
             //indicates that this object is a predecessor of the specified object in the ring buffer
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal bool IsPredecessorOf(Rental other) => rank < other.rank;
+            internal bool IsPredecessorOf(Rental other) => position < other.position;
 
             internal void Attach(Rental next)
             {
@@ -110,20 +103,18 @@ namespace DotNext.Threading
 
             T IRental.Resource => resource;
 
-            //instantiate resource if needed
-            //call to this method must be protected by the lock using TryAcquire
-            internal void CreateResourceIfNeeded(Func<T> factory)
-            {
-                if(resource is null)
-                    resource = factory();
-            }
-
             internal bool TryAcquire() => lockState.FalseToTrue();
 
             //this method indicates that the object is requested
             //and no longer starving
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal void Renew() => weight.VolatileWrite(maxWeight);
+            //call to this method must be protected by the lock using TryAcquire
+            //used by SJF strategy only
+            internal void Renew(long timeToLive, Func<T> factory)
+            {
+                this.timeToLive.VolatileWrite(timeToLive);
+                if (resource is null)
+                    resource = factory();
+            }
 
             //used by SJF strategy only
             internal bool Starve()
@@ -131,7 +122,7 @@ namespace DotNext.Threading
                 bool success;
                 if (success = lockState.FalseToTrue())  //acquire lock
                 {
-                    if(success = weight.DecrementAndGet() <= 0) //decrease weight because this object was accessed a long time ago
+                    if(success = timeToLive.DecrementAndGet() <= 0) //decrease weight because this object was accessed a long time ago
                     {
                         //prevent this method from blocking so dispose resource asynchronously
                         if(resource is IDisposable)
@@ -195,7 +186,7 @@ namespace DotNext.Threading
             Action<Rental> callback = AdjustAvailableObjectAndCheckStarvation;
             for(var index = 0; index < capacity; index++)
             {
-                var next = new Rental(index, capacity + capacity / 2L);
+                var next = new Rental(index);
                 next.Released += callback;  
                 if(rental is null)
                     current = last = new AtomicReference<Rental>(rental = next);
@@ -279,9 +270,8 @@ namespace DotNext.Threading
                 if (rental.TryAcquire())
                 {
                     waitCount.DecrementAndGet();
-                    rental.Renew();
                     if (!(factory is null))
-                        rental.CreateResourceIfNeeded(factory);
+                        rental.Renew(Capacity + Capacity / 2, factory);
                     return rental;
                 }
             }
