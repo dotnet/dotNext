@@ -13,7 +13,7 @@ namespace DotNext.Metaprogramming
     /// This type can be used to transfer control between outer and inner loops.
     /// The context lifetime is limited by surrounding lexical scope of the loop.
     /// </remarks>
-    public struct LoopContext : IDisposable
+    public readonly struct LoopContext : IDisposable
     {
         private readonly GCHandle loop;
 
@@ -25,10 +25,6 @@ namespace DotNext.Metaprogramming
 
         internal LabelTarget BreakLabel => GetLabels().BreakLabel;
 
-        void IDisposable.Dispose()
-        {
-            loop.Free();
-            this = default;
-        }
+        void IDisposable.Dispose() => loop.Free();
     }
 }

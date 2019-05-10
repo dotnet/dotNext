@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
-using static System.Linq.Enumerable;
 
 namespace DotNext.Metaprogramming
 {
@@ -14,7 +12,7 @@ namespace DotNext.Metaprogramming
     /// <remarks>
     /// The context lifetime is limited by surrounding lexical scope of the lambda function.
     /// </remarks>
-    public struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisposable
+    public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisposable
     {
         private readonly GCHandle lambda;
 
@@ -239,10 +237,6 @@ namespace DotNext.Metaprogramming
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator(); 
 
-        void IDisposable.Dispose()
-        {
-            lambda.Free();
-            this = default;
-        }
+        void IDisposable.Dispose() => lambda.Free();
     }
 }
