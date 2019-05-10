@@ -19,11 +19,11 @@ namespace DotNext.Metaprogramming
 
         internal LoopContext(ILoopLabels loop) => this.loop = GCHandle.Alloc(loop, GCHandleType.Weak);
 
-        private ILoopLabels GetLabels() => loop.Target is ILoopLabels result ? result : throw new ObjectDisposedException(nameof(LoopContext));
+        private ILoopLabels Labels => loop.Target is ILoopLabels result ? result : throw new ObjectDisposedException(nameof(LoopContext));
 
-        internal LabelTarget ContinueLabel => GetLabels().ContinueLabel;
+        internal LabelTarget ContinueLabel => Labels.ContinueLabel;
 
-        internal LabelTarget BreakLabel => GetLabels().BreakLabel;
+        internal LabelTarget BreakLabel => Labels.BreakLabel;
 
         void IDisposable.Dispose()
         {
