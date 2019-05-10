@@ -1,13 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace DotNext.Threading
 {
     /// <summary>
-    /// Provides concurrent object pool where object selection is thread-safe except the rented object.
+    /// Provides container for the thread-unsafe objects that can be shared
+    /// between threads concurrently.
     /// </summary>
+    /// <remarks>
+    /// The object pool implements two scheduling strategies:
+    /// <list type="number">
+    /// <item>
+    /// <term>Round-robin</term>
+    /// <description>
+    /// This strategy requires that all objects should be prepared before instantiation
+    /// of object pool. All objects are placed into pool and shared between concurrent threads.
+    /// Workload has uniform distribution across all objects.
+    /// This strategy is recommended for situations when workload is constant or unpredictable,
+    /// cost of the object in the pool is relatively low.
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <term>Shortest Job First</term>
+    /// <description>
+    /// This stategy instantiates objects in the pool on-demand depends on workload.
+    /// The first released object will be passed to the one of waiting threads.
+    /// Fairness policy is not supported so the longest waiting thread may not obtain
+    /// the object first.
+    /// Moreover, if the created object is not used for a long period of time then
+    /// object pool will dispose it and remove the object from the pool.
+    /// This strategy is recommended for situations when workload is variable and predictable
+    /// (for instance, Poisson distribution of requests), cost of the object in the pool is high.
+    /// </description>
+    /// </item>
+    /// </list>
+    /// </remarks>
     /// <typeparam name="T">Type of objects in the pool.</typeparam>
     public class ConcurrentObjectPool<T> : Disposable
         where T : class
@@ -143,12 +173,23 @@ namespace DotNext.Threading
         private static readonly Func<Rental, Rental> SelectNextRental = current => current.Next;
         private readonly Func<T> factory;
         private AtomicReference<Rental> last, current;
+        [SuppressMessage("Design", "IDE0032", Justification = "Volatile operations are applied directly to this field")]
         private int waitCount;
 
+        /// <summary>
+        /// Initializes object pool that will apply Shortest Job First scheduling
+        /// strategy.
+        /// </summary>
+        /// <param name="capacity">The maximum objects in the pool.</param>
+        /// <param name="factory">The delegate instance that is used for lazy instantiation of objects in the pool.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="factory"/> is <see langword="null"/>.</exception>
         public ConcurrentObjectPool(int capacity, Func<T> factory)
         {
             if(capacity < 1)
                 throw new ArgumentOutOfRangeException(nameof(capacity));
+            if (factory is null)
+                throw new ArgumentNullException(nameof(factory));
             this.factory = factory;
             var rental = default(Rental);
             Action<Rental> callback = AdjustAvailableObjectAndCheckStarvation;
@@ -165,12 +206,19 @@ namespace DotNext.Threading
                 }
             }
             rental.Attach(current.Value);
+            current = new AtomicReference<Rental>(rental);
             Capacity = capacity;
         }
 
+        /// <summary>
+        /// Initializes object pool that will apply Round-robing scheduling
+        /// strategy.
+        /// </summary>
+        /// <param name="objects">The objects to be placed into the pool.</param>
+        /// <exception cref="ArgumentException"><paramref name="objects"/> is empty.</exception>
         public ConcurrentObjectPool(IEnumerable<T> objects)
         {
-            this.factory = null;
+            factory = null;
             var rental = default(Rental);
             var index = 0;
             foreach(var resource in objects)
@@ -187,13 +235,14 @@ namespace DotNext.Threading
             if(index == 0)
                 throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
             rental.Attach(current.Value);
+            current = new AtomicReference<Rental>(rental);
             Capacity = index;
         }
 
         //release object according with Shortest Job First algorithm
         private void AdjustAvailableObjectAndCheckStarvation(Rental rental)
         {
-            current.Value = rental;
+            current.Value = rental.Previous;
             rental = last.AccumulateAndGet(rental, SelectLastRenal);
             //starvation detected, dispose the resource stored in rental object
             if (rental.Starve())
@@ -251,7 +300,7 @@ namespace DotNext.Threading
         {
             if (disposing)
             {
-                for(Rental rental = current.Value, next = null; !(rental is null); rental = next)
+                for(Rental rental = current.Value, next; !(rental is null); rental = next)
                 {
                     next = rental.Next;
                     rental.Destroy(!(factory is null));
