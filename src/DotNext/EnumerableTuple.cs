@@ -10,8 +10,10 @@ namespace DotNext
     /// <typeparam name="I">The type of items in the tuple.</typeparam>
     /// <typeparam name="T">The tuple type.</typeparam>
     public readonly struct EnumerableTuple<I, T> : IReadOnlyList<I>
-        where T : IStructuralEquatable, IStructuralComparable //, ITuple
+        where T : IStructuralEquatable, IStructuralComparable
     {
+        //TODO: EnumerableTuple should implements ITuple, possible from .NET Standard 2.1
+
         internal delegate I ItemAccessor(in T tuple, int index);
 
         /// <summary>
