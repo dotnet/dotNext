@@ -101,11 +101,10 @@ namespace DotNext.Threading
                 rental2.Dispose();
                 rental1.Dispose();
                 //Use first two objects in the pool, third will be destroyed automatically
-                rental1 = pool.Rent();
-                rental1.Dispose();
                 rental2 = pool.Rent();
                 rental2.Dispose();
-                //rent them again
+                rental1 = pool.Rent();
+                rental1.Dispose();
                 rental1 = pool.Rent();
                 rental2 = pool.Rent();
                 Throws<Exception>(pool.Rent);
