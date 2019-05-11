@@ -166,6 +166,7 @@ namespace DotNext.Threading
         private AtomicReference<Rental> last, current;
         [SuppressMessage("Design", "IDE0032", Justification = "Volatile operations are applied directly to this field")]
         private int waitCount;
+        private readonly long lifetime;
 
         /// <summary>
         /// Initializes object pool that will apply Shortest Job First scheduling
@@ -199,6 +200,7 @@ namespace DotNext.Threading
             rental.Attach(current.Value);
             current = new AtomicReference<Rental>(rental);
             Capacity = capacity;
+            lifetime = capacity + Math.DivRem(capacity, 2L, out var remainder) + remainder;
         }
 
         /// <summary>
@@ -257,12 +259,6 @@ namespace DotNext.Threading
         /// </remarks>
         public int WaitCount => waitCount;
 
-        private long Lifetime
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Capacity + Math.DivRem(Capacity, 2L, out var remainder) + remainder;
-        }
-
         /// <summary>
         /// Rents the object from this pool.
         /// </summary>
@@ -277,7 +273,7 @@ namespace DotNext.Threading
                 {
                     waitCount.DecrementAndGet();
                     if (!(factory is null))
-                        rental.Renew(Lifetime, factory);
+                        rental.Renew(lifetime, factory);
                     return rental;
                 }
             }
