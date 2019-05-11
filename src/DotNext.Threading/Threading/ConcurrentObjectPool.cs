@@ -257,6 +257,12 @@ namespace DotNext.Threading
         /// </remarks>
         public int WaitCount => waitCount;
 
+        private long Lifetime
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => Capacity + Math.DivRem(Capacity, 2L, out var remainder) + remainder;
+        }
+
         /// <summary>
         /// Rents the object from this pool.
         /// </summary>
@@ -271,7 +277,7 @@ namespace DotNext.Threading
                 {
                     waitCount.DecrementAndGet();
                     if (!(factory is null))
-                        rental.Renew(Capacity + Capacity / 2, factory);
+                        rental.Renew(Lifetime, factory);
                     return rental;
                 }
             }
