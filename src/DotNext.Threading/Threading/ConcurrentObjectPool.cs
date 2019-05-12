@@ -16,9 +16,9 @@ namespace DotNext.Threading
     /// <item>
     /// <term>Round-robin</term>
     /// <description>
-    /// This strategy requires that all objects should be prepared before instantiation
+    /// This strategy requires that all objects should be created and initialized before instantiation
     /// of object pool. All objects are placed into pool and shared between concurrent threads.
-    /// Workload has uniform distribution across all objects.
+    /// Workload is distributed across all objects in the pool in circular order.
     /// This strategy is recommended for situations when workload is constant or unpredictable,
     /// cost of the object in the pool is relatively low.
     /// </description>
@@ -192,6 +192,7 @@ namespace DotNext.Threading
         /// <param name="factory">The delegate instance that is used for lazy instantiation of objects in the pool.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="factory"/> is <see langword="null"/>.</exception>
+        /// <seealso href="https://en.wikipedia.org/wiki/Shortest_job_next">Shortest Job First</seealso>
         public ConcurrentObjectPool(int capacity, Func<T> factory)
         {
             if(capacity < 1)
@@ -225,6 +226,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="objects">The objects to be placed into the pool.</param>
         /// <exception cref="ArgumentException"><paramref name="objects"/> is empty.</exception>
+        /// <seealso href="https://en.wikipedia.org/wiki/Round-robin_scheduling">Round-robin</seealso>
         public ConcurrentObjectPool(IEnumerable<T> objects)
         {
             factory = null;
