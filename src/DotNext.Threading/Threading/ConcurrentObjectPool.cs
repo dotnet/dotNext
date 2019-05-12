@@ -63,9 +63,10 @@ namespace DotNext.Threading
         public interface IRental : IDisposable
         {
             /// <summary>
-            /// Gets rented object.
+            /// Gets or sets rented object.
             /// </summary>
-            T Resource { get; }
+            /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
+            T Resource { get; set; }
         }
 
         /*
@@ -111,7 +112,11 @@ namespace DotNext.Threading
 
             internal event Action<Rental> Released;
 
-            T IRental.Resource => resource;
+            T IRental.Resource
+            {
+                get => resource;
+                set => resource = value ?? throw new ArgumentNullException(nameof(value));
+            }
 
             internal bool TryAcquire() => lockState.FalseToTrue();
 
