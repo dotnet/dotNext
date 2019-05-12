@@ -82,8 +82,9 @@ Read more about this strategy [here](https://en.wikipedia.org/wiki/Round-robin_s
 
 # Shortest Job First
 This strategy differs from round-robin in the following aspects:
-1. Objects are creating lazily
-1. Objects are destroying automatically by the pool if they are not in use for a longer period of time
+1. Objects are creating lazily.
+1. Objects are destroying automatically by the pool if they are not in use for a long period of time.
+1. The most recently returned object to the pool will pulled by waiting thread, in contrast to cirtucal-based access.
 
 You should provide factory as a constructor parameter that will be used by the pool for instantiating objects during pool lifetime.
 
