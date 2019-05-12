@@ -19,19 +19,21 @@
       href: core/constgen.md
     - name: Synchronization Enhancements
       href: core/sync.md
-- name: Async Locks
-  href: lock/index.md
+- name: Threading
+  href: threading/index.md
   items:
-    - name: Mutually Exclusive Lock
-      href: lock/exclusive.md
-    - name: Reader/Writer Lock
-      href: lock/rwlock.md
-    - name: Reset Event
-      href: lock/event.md
-    - name: Countdown Latch
-      href: lock/counter.md
-    - name: Barrier
-      href: lock/barrier.md
+    - name: Async Lock
+      href: threading/exclusive.md
+    - name: Async Reader/Writer Lock
+      href: threading/rwlock.md
+    - name: Async Reset Event
+      href: threading/event.md
+    - name: Async Countdown Latch
+      href: threading/counter.md
+    - name: Async Barrier
+      href: threading/barrier.md
+    - name: Object Pool
+      href: threading/objectpool.md
 - name: Type Classes
   href: concept.md
 - name: Advanced Reflection
