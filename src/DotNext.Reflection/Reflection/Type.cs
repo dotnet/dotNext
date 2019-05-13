@@ -22,8 +22,6 @@ namespace DotNext.Reflection
         /// </summary>
         public static T Default => default;
 
-        private static readonly System.Linq.Expressions.DefaultExpression DefaultExpression = Default(RuntimeType);
-
         /// <summary>
         /// Checks whether the specified value is default value.
         /// </summary>

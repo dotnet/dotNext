@@ -1,24 +1,26 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 using System.Threading;
 
 namespace DotNext.Threading
 {
-    using Generic;
-
     /// <summary>
     /// Provides atomic operations for the reference type.
     /// </summary>
     public static class AtomicReference
     {
-
-        private sealed class CASProvider<T> : Constant<CAS<T>>
+        private sealed class Operations<T> : Atomic<T>
             where T : class
         {
-            public CASProvider()
-                : base(CompareAndSet)
-            {
-            }
+            internal static readonly Operations<T> Instance = new Operations<T>();
+            private Operations() { }
+
+            internal override bool CompareAndSet(ref T value, T expected, T update)
+                => ReferenceEquals(Interlocked.CompareExchange(ref value, update, expected), expected);
+            
+            private protected override T VolatileRead(ref T value) => Volatile.Read(ref value);
         }
 
         /// <summary>
@@ -33,7 +35,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet<T>(ref T value, T expected, T update)
             where T : class
-            => ReferenceEquals(Interlocked.CompareExchange(ref value, update, expected), expected);
+            => Operations<T>.Instance.CompareAndSet(ref value, expected, update);
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -47,9 +49,10 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T AccumulateAndGet<T>(ref T value, T x, Func<T, T, T> accumulator)
             where T : class
-            => Atomic<T, CASProvider<T>>.Accumulute(ref value, x, accumulator).NewValue;
+            => Operations<T>.Instance.Accumulute(ref value, x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -63,9 +66,10 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetAndAccumulate<T>(ref T value, T x, Func<T, T, T> accumulator)
             where T : class
-            => Atomic<T, CASProvider<T>>.Accumulute(ref value, x, accumulator).OldValue;
+            => Operations<T>.Instance.Accumulute(ref value, x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -75,9 +79,10 @@ namespace DotNext.Threading
         /// <param name="value">The value to update.</param>
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T UpdateAndGet<T>(ref T value, Func<T, T> updater)
             where T : class
-            => Atomic<T, CASProvider<T>>.Update(ref value, updater).NewValue;
+            => Operations<T>.Instance.Update(ref value, updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -87,9 +92,10 @@ namespace DotNext.Threading
         /// <param name="value">The value to update.</param>
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetAndUpdate<T>(ref T value, Func<T, T> updater)
             where T : class
-            => Atomic<T, CASProvider<T>>.Update(ref value, updater).OldValue;
+            => Operations<T>.Instance.Update(ref value, updater).OldValue;
 
         /// <summary>
         /// Performs volatile read of the array element.
@@ -235,9 +241,12 @@ namespace DotNext.Threading
     /// not referred to the field.
     /// </remarks>
     [Serializable]
-    public struct AtomicReference<T> : IEquatable<T>
+    [SuppressMessage("Design", "CA1066")]
+    [SuppressMessage("Usage", "CA2231")]
+    public struct AtomicReference<T> : IEquatable<T>, ISerializable
         where T : class
     {
+        private const string ValueSerData = "Value";
         private T value;
 
         /// <summary>
@@ -248,6 +257,12 @@ namespace DotNext.Threading
 		public AtomicReference(T value)
         {
             this.value = value;
+        }
+
+        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
+        private AtomicReference(SerializationInfo info, StreamingContext context)
+        {
+            value = (T)info.GetValue(ValueSerData, typeof(T));
         }
 
         /// <summary>
@@ -412,5 +427,8 @@ namespace DotNext.Threading
             else
                 return value;
         }
+
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+            => info.AddValue(ValueSerData, value, typeof(T));
     }
 }

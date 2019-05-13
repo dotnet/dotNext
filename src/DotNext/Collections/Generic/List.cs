@@ -135,6 +135,6 @@ namespace DotNext.Collections.Generic
         /// <param name="item">An item to be placed into list.</param>
         /// <typeparam name="T">Type of list items.</typeparam>
         /// <returns>Read-only list containing single item.</returns>
-        public static IReadOnlyList<T> Singleton<T>(T item) => new SingletonList<T> { Item1 = item };
+        public static IReadOnlyList<T> Singleton<T>(T item) => new SingletonList<T>(item);
     }
 }

@@ -1,5 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 using System.Threading;
 
 namespace DotNext.Threading
@@ -8,8 +10,11 @@ namespace DotNext.Threading
     /// Represents atomic boolean.
     /// </summary>
     [Serializable]
-    public struct AtomicBoolean : IEquatable<bool>
+    [SuppressMessage("Design", "CA1066")]
+    [SuppressMessage("Usage", "CA2231")]
+    public struct AtomicBoolean : IEquatable<bool>, ISerializable
     {
+        private const string ValueSerData = "value";
         private const int True = 1;
         private const int False = 0;
         private int value;
@@ -19,6 +24,12 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="value">Initial value of the atomic boolean.</param>
         public AtomicBoolean(bool value) => this.value = value ? True : False;
+
+        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
+        private AtomicBoolean(SerializationInfo info, StreamingContext context)
+        {
+            value = (int)info.GetValue(ValueSerData, typeof(int));
+        }
 
         /// <summary>
         /// Gets or sets boolean value in volatile manner.
@@ -216,5 +227,8 @@ namespace DotNext.Threading
         /// </summary>
         /// <returns>Textual representation of stored boolean value.</returns>
         public override string ToString() => value == True ? bool.TrueString : bool.FalseString;
+
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+            => info.AddValue(ValueSerData, value);
     }
 }

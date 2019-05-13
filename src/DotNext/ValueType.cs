@@ -187,11 +187,11 @@ namespace DotNext
         /// <param name="input">A value to convert.</param>
         /// <param name="output">Conversion result.</param>
         /// <typeparam name="TO">The type of output struct.</typeparam>
-        public static void BitCast<TO>(ref T input, out TO output)
+        public static void BitCast<TO>(in T input, out TO output)
             where TO : unmanaged
         {
             if (Size >= ValueType<TO>.Size)
-                output = Unsafe.As<T, TO>(ref input);
+                output = Unsafe.As<T, TO>(ref Unsafe.AsRef(in input));
             else
             {
                 output = default;

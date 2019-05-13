@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using static System.Linq.Enumerable;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Metaprogramming
 {
@@ -14,12 +14,11 @@ namespace DotNext.Metaprogramming
     /// </remarks>
     public struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisposable
     {
-        private readonly WeakReference lambda;
+        private GCHandle lambda;
 
-        internal LambdaContext(LambdaExpression lambda) => this.lambda = new WeakReference(lambda, false);
+        internal LambdaContext(LambdaExpression lambda) => this.lambda = GCHandle.Alloc(lambda, GCHandleType.Weak);
 
-        private LambdaExpression GetLambdaScope() 
-            => lambda?.Target is LambdaExpression result ? result : throw new ObjectDisposedException(nameof(LambdaContext));
+        private LambdaExpression Lambda => lambda.Target is LambdaExpression result ? result : throw new ObjectDisposedException(nameof(LambdaContext));
 
         /// <summary>
         /// Gets parameter of the lambda function.
@@ -27,7 +26,7 @@ namespace DotNext.Metaprogramming
         /// <param name="index">The index of the parameter.</param>
         /// <returns>The parameter of lambda function.</returns>
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
-        public ParameterExpression this[int index] => GetLambdaScope().Parameters[index];
+        public ParameterExpression this[int index] => Lambda.Parameters[index];
 
         /// <summary>
         /// Obtains first two arguments in the form of expressions.
@@ -37,7 +36,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2)
         {
-            var lambda = GetLambdaScope();
+            var lambda = Lambda;
             arg1 = lambda.Parameters[0];
             arg2 = lambda.Parameters[1];
         }
@@ -51,7 +50,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3)
         {
-            var lambda = GetLambdaScope();
+            var lambda = Lambda;
             arg1 = lambda.Parameters[0];
             arg2 = lambda.Parameters[1];
             arg3 = lambda.Parameters[2];
@@ -67,7 +66,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4)
         {
-            var lambda = GetLambdaScope();
+            var lambda = Lambda;
             arg1 = lambda.Parameters[0];
             arg2 = lambda.Parameters[1];
             arg3 = lambda.Parameters[2];
@@ -85,7 +84,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5)
         {
-            var lambda = GetLambdaScope();
+            var lambda = Lambda;
             arg1 = lambda.Parameters[0];
             arg2 = lambda.Parameters[1];
             arg3 = lambda.Parameters[2];
@@ -105,7 +104,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6)
         {
-            var lambda = GetLambdaScope();
+            var lambda = Lambda;
             arg1 = lambda.Parameters[0];
             arg2 = lambda.Parameters[1];
             arg3 = lambda.Parameters[2];
@@ -127,7 +126,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7)
         {
-            var lambda = GetLambdaScope();
+            var lambda = Lambda;
             arg1 = lambda.Parameters[0];
             arg2 = lambda.Parameters[1];
             arg3 = lambda.Parameters[2];
@@ -151,7 +150,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7, out ParameterExpression arg8)
         {
-            var lambda = GetLambdaScope();
+            var lambda = Lambda;
             arg1 = lambda.Parameters[0];
             arg2 = lambda.Parameters[1];
             arg3 = lambda.Parameters[2];
@@ -177,7 +176,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7, out ParameterExpression arg8, out ParameterExpression arg9)
         {
-            var lambda = GetLambdaScope();
+            var lambda = Lambda;
             arg1 = lambda.Parameters[0];
             arg2 = lambda.Parameters[1];
             arg3 = lambda.Parameters[2];
@@ -205,7 +204,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
         public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7, out ParameterExpression arg8, out ParameterExpression arg9, out ParameterExpression arg10)
         {
-            var lambda = GetLambdaScope();
+            var lambda = Lambda;
             arg1 = lambda.Parameters[0];
             arg2 = lambda.Parameters[1];
             arg3 = lambda.Parameters[2];
@@ -227,11 +226,11 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="args">The arguments to be passed into function.</param>
         /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
-        public InvocationExpression Invoke(params Expression[] args) => Expression.Invoke(GetLambdaScope().Self, args);
+        public InvocationExpression Invoke(params Expression[] args) => Expression.Invoke(Lambda.Self, args);
 
-        int IReadOnlyCollection<ParameterExpression>.Count => GetLambdaScope().Parameters.Count;
+        int IReadOnlyCollection<ParameterExpression>.Count => Lambda.Parameters.Count;
 
-        private IEnumerator<ParameterExpression> GetEnumerator() => GetLambdaScope().Parameters.GetEnumerator();
+        private IEnumerator<ParameterExpression> GetEnumerator() => Lambda.Parameters.GetEnumerator();
 
         IEnumerator<ParameterExpression> IEnumerable<ParameterExpression>.GetEnumerator() => GetEnumerator();
 
@@ -239,7 +238,7 @@ namespace DotNext.Metaprogramming
 
         void IDisposable.Dispose()
         {
-            lambda.Target = null;
+            lambda.Free();
             this = default;
         }
     }

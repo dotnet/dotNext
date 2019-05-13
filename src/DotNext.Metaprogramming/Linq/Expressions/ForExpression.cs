@@ -62,7 +62,7 @@ namespace DotNext.Linq.Expressions
             /// Defines loop condition.
             /// </summary>
             /// <param name="condition">A delegate used to construct condition.</param>
-            /// <returns><see langword="this"/> builder.</returns>
+            /// <returns><c>this</c> builder.</returns>
             /// <seealso cref="Condition"/>
             public LoopBuilder While(Condition condition)
             {
@@ -74,7 +74,7 @@ namespace DotNext.Linq.Expressions
             /// Defines loop body.
             /// </summary>
             /// <param name="body">A delegate used to construct loop body.</param>
-            /// <returns><see langword="this"/> builder.</returns>
+            /// <returns><c>this</c> builder.</returns>
             /// <seealso cref="Statement"/>
             public LoopBuilder Do(Statement body)
             {
@@ -86,7 +86,7 @@ namespace DotNext.Linq.Expressions
             /// Constructs loop iteration statement.
             /// </summary>
             /// <param name="iteration">A delegate used to construct iteration statement.</param>
-            /// <returns><see langword="this"/> builder.</returns>
+            /// <returns><c>this</c> builder.</returns>
             /// <see cref="Iteration"/>
             public LoopBuilder Iterate(Iteration iteration)
             {

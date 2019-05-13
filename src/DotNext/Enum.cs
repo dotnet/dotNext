@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization;
 
 namespace DotNext
 {
@@ -8,8 +10,9 @@ namespace DotNext
     /// </summary>
     /// <typeparam name="E">Enum type to reflect.</typeparam>
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
+    [SuppressMessage("Design", "CA1036")]
     [Serializable]
-    public readonly struct Enum<E> : IEquatable<E>, IComparable<E>, IFormattable, IComparable<Enum<E>>
+    public readonly struct Enum<E> : IEquatable<E>, IComparable<E>, IFormattable, IEquatable<Enum<E>>, ISerializable
         where E : struct, Enum
     {
         private readonly struct Tuple : IEquatable<Tuple>
@@ -55,8 +58,8 @@ namespace DotNext
                     Add(entry.Name, index);
                     base[entry.Value] = index;
                     //detect min and max
-                    min = entry.Min(min);
-                    max = entry.Max(max);
+                    min = entry.Value.CompareTo(min.Value) < 0 ? entry : min;
+                    max = entry.Value.CompareTo(max.Value) > 0 ? entry : max;
                 }
             }
 
@@ -161,12 +164,21 @@ namespace DotNext
         /// </summary>
         public static TypeCode UnderlyingTypeCode => ValueTypeExtensions.GetTypeCode<E>();
 
+        private const string NameSerData = "Name";
+        private const string ValueSerData = "Value";
         private readonly string name;
 
         private Enum(E value, string name)
         {
             Value = value;
             this.name = name;
+        }
+
+        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
+        private Enum(SerializationInfo info, StreamingContext context)
+        {
+            name = info.GetString(NameSerData);
+            Value = (E)info.GetValue(ValueSerData, typeof(E));
         }
 
         /// <summary>
@@ -192,14 +204,19 @@ namespace DotNext
         /// <returns>Comparison result.</returns>
         public int CompareTo(E other) => Comparer<E>.Default.Compare(Value, other);
 
-        int IComparable<Enum<E>>.CompareTo(Enum<E> other) => CompareTo(other);
-
         /// <summary>
         /// Determines whether this value equals to the other enum value.
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns>Equality check result.</returns>
-        public bool Equals(E other) => ValueTypeExtensions.ToUInt64(Value) == ValueTypeExtensions.ToUInt64(other);
+        public bool Equals(E other) => EqualityComparer<E>.Default.Equals(Value, other);
+
+        /// <summary>
+        /// Determines whether two enum members are equal.
+        /// </summary>
+        /// <param name="other">Other member to compare.</param>
+        /// <returns><see langword="true"/> if this enum member is the same as other; otherwise, <see langword="false"/>.</returns>
+        public bool Equals(Enum<E> other) => Equals(other.Value) && Equals(Name, other.Name);
 
         /// <summary>
         /// Determines whether this value equals to the other enum value.
@@ -238,5 +255,27 @@ namespace DotNext
         public override string ToString() => ValueTypeExtensions.ToString(Value);
 
         string IFormattable.ToString(string format, IFormatProvider provider) => ValueTypeExtensions.ToString(Value, format, provider);
+
+        /// <summary>
+        /// Determines whether two enum members are equal.
+        /// </summary>
+        /// <param name="first">The first member to compare.</param>
+        /// <param name="second">The second member to compare.</param>
+        /// <returns><see langword="true"/> if this enum member is the same as other; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(Enum<E> first, Enum<E> second) => first.Equals(second);
+
+        /// <summary>
+        /// Determines whether two enum members are not equal.
+        /// </summary>
+        /// <param name="first">The first member to compare.</param>
+        /// <param name="second">The second member to compare.</param>
+        /// <returns><see langword="true"/> if this enum member is not the same as other; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(Enum<E> first, Enum<E> second) => !first.Equals(second);
+
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(NameSerData, name, typeof(string));
+            info.AddValue(ValueSerData, Value);
+        }
     }
 }

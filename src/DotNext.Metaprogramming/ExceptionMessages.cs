@@ -2,8 +2,12 @@
 using System.Reflection;
 using System.Resources;
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext
 {
+    [SuppressMessage("Globalization", "CA1304", Justification = "This is culture-specific resource strings")]
+    [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
     internal static class ExceptionMessages
     {
         private static readonly ResourceManager resourceManager = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
@@ -47,5 +51,9 @@ namespace DotNext
         internal static string InvalidRethrow => resourceManager.GetString("InvalidRethrow");
 
         internal static string BoolExpressionExpected => resourceManager.GetString("BoolExpressionExpected");
+
+        internal static string InvalidFragmentRendering => resourceManager.GetString("InvalidFragmentRendering");
+
+        internal static string CollectionImplementationExpected => resourceManager.GetString("CollectionImplementationExpected");
     }
 }

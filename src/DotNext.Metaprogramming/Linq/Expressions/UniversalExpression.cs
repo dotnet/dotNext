@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -14,7 +15,7 @@ namespace DotNext.Linq.Expressions
     /// <remarks>
     /// This class is intended for expression building purposes only.
     /// </remarks>
-    public readonly struct UniversalExpression : IExpressionBuilder<Expression>, IDynamicMetaObjectProvider
+    public readonly struct UniversalExpression : IExpressionBuilder<Expression>, IDynamicMetaObjectProvider, IEquatable<UniversalExpression>
     {
         private readonly Expression expression;
 
@@ -461,6 +462,8 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         [SpecialName]
+        [SuppressMessage("Style", "IDE1006")]
+        [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_Exponent(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.Power, right.expression);
 
@@ -471,6 +474,8 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         [SpecialName]
+        [SuppressMessage("Style", "IDE1006")]
+        [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_Exponent(UniversalExpression left, Expression right)
             => left.Transform(ExpressionBuilder.Power, right);
 
@@ -481,6 +486,8 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         [SpecialName]
+        [SuppressMessage("Style", "IDE1006")]
+        [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_LeftShift(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.LeftShift, right.expression);
 
@@ -491,6 +498,8 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         [SpecialName]
+        [SuppressMessage("Style", "IDE1006")]
+        [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_LeftShift(UniversalExpression left, Expression right)
             => left.Transform(ExpressionBuilder.LeftShift, right);
 
@@ -501,6 +510,8 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         [SpecialName]
+        [SuppressMessage("Style", "IDE1006")]
+        [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_RightShift(UniversalExpression left, UniversalExpression right)
             => left.Transform(ExpressionBuilder.RightShift, right.expression);
 
@@ -511,6 +522,8 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         [SpecialName]
+        [SuppressMessage("Style", "IDE1006")]
+        [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_RightShift(UniversalExpression left, Expression right)
             => left.Transform(ExpressionBuilder.RightShift, right);
 
@@ -732,7 +745,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="ifTrue">Positive branch.</param>
         /// <param name="ifFalse">Negative branch.</param>
-        /// <param name="type">The type of conditional expression. Default is <see langword="void"/>.</param>
+        /// <param name="type">The type of conditional expression. Default is <see cref="void"/>.</param>
         /// <returns>Conditional expression.</returns>
         public UniversalExpression Condition(Expression ifTrue = null, Expression ifFalse = null, Type type = null)
             => new UniversalExpression(expression.Condition(ifTrue, ifFalse, type));
@@ -748,9 +761,9 @@ namespace DotNext.Linq.Expressions
             => new UniversalExpression(expression.Condition<R>(ifTrue, ifFalse));
 
         /// <summary>
-        /// Constructs <see langword="throw"/> statement.
+        /// Constructs <c>throw</c> statement.
         /// </summary>
-        /// <returns><see langword="throw"/> statement.</returns>
+        /// <returns><c>throw</c> statement.</returns>
         public UnaryExpression Throw() => expression.Throw();
 
         /// <summary>
@@ -765,6 +778,14 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="other">Other expression to compare.</param>
         /// <returns><see langword="true"/>, if both expressions are equal; otherwise, <see langword="false"/>.</returns>
+        public bool Equals(UniversalExpression other) => Equals(expression, other.expression);
+
+        /// <summary>
+        /// Determines whether this universal expression
+        /// represents the same underlying expression as other.
+        /// </summary>
+        /// <param name="other">Other expression to compare.</param>
+        /// <returns><see langword="true"/>, if both expressions are equal; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
             switch (other)
@@ -772,7 +793,7 @@ namespace DotNext.Linq.Expressions
                 case Expression expr:
                     return Equals(expression, expr);
                 case UniversalExpression view:
-                    return Equals(expression, view.expression);
+                    return Equals(view);
                 default:
                     return false;
             }

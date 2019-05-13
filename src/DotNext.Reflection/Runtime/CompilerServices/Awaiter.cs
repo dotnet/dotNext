@@ -8,7 +8,7 @@ namespace DotNext.Runtime.CompilerServices
 
     /// <summary>
     /// Represents awaiter pattern for type <typeparamref name="TAwaiter"/>
-    /// with non-<see langword="void"/> result.
+    /// with non-<see cref="void"/> result.
     /// </summary>
     /// <typeparam name="TAwaiter">Any type implementing awaiter pattern</typeparam>
     /// <typeparam name="R">Type of asynchronous result</typeparam>
@@ -64,7 +64,7 @@ namespace DotNext.Runtime.CompilerServices
 
     /// <summary>
     /// Represents awaiter pattern for type <typeparamref name="TAwaiter"/>.
-    /// with <see langword="void"/> result.
+    /// with <see cref="void"/> result.
     /// </summary>
     /// <typeparam name="TAwaiter">Any type implementing awaiter pattern</typeparam>
     /// <seealso cref="TaskAwaiter"/>

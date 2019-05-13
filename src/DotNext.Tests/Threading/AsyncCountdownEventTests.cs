@@ -57,7 +57,7 @@ namespace DotNext.Threading
                 else
                     for (int i = 0; i < initCount + increms; i++)
                     {
-                        False(ev.IsSet, string.Format("  > error: latch is set after {0} signals", i));
+                        False(ev.IsSet);
                         ev.Signal();
                     }
 

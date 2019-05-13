@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
+using DebugInfoGenerator = System.Runtime.CompilerServices.DebugInfoGenerator;
 
 namespace DotNext.Metaprogramming
 {
@@ -52,7 +54,8 @@ namespace DotNext.Metaprogramming
 
         private readonly Type returnType;
 
-        internal LambdaExpression(bool tailCall = false)
+        [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
+        internal LambdaExpression(bool tailCall)
             : base(tailCall)
         {
             if (typeof(D).IsAbstract)
@@ -107,26 +110,13 @@ namespace DotNext.Metaprogramming
 
         private new Expression<D> Build()
         {
-            var body = base.Build();
-            var instructions = new LinkedList<Expression>();
-            IEnumerable<ParameterExpression> locals;
-            if (body is BlockExpression block)
-            {
-                instructions.AddAll(block.Expressions);
-                locals = block.Variables;
-            }
-            else
-            {
-                instructions.AddLast(body);
-                locals = Enumerable.Empty<ParameterExpression>();
-            }
             if (!(returnLabel is null))
-                instructions.AddLast(Expression.Label(returnLabel));
+                AddStatement(Expression.Label(returnLabel));
             //last instruction should be always a result of a function
             if (!(lambdaResult is null))
-                instructions.AddLast(lambdaResult);
+                AddStatement(lambdaResult);
             //rewrite body
-            body = Expression.Block(returnType, locals, instructions);
+            var body = Expression.Block(returnType, Variables, this);
             //build lambda expression
             if (!(recursion is null))
                 body = Expression.Block(Sequence.Singleton(recursion),
@@ -152,7 +142,7 @@ namespace DotNext.Metaprogramming
         public Expression<D> Build(Func<LambdaContext, Expression> body)
         {
             using(var context = new LambdaContext(this))
-                AddLast(body(context));
+                AddStatement(body(context));
             return Build();
         }
 

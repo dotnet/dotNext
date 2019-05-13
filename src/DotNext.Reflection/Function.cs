@@ -18,7 +18,7 @@ namespace DotNext
     /// Represents an instance function with arbitrary number of arguments
     /// allocated on the stack.
     /// </summary>
-    /// <param name="this">Hidden <see langword="this"/> parameter.</param>
+    /// <param name="this">Hidden <c>this</c> parameter.</param>
     /// <param name="arguments">Function arguments in the form of public structure fields.</param>
     /// <typeparam name="T">Type of instance to be passed into underlying method.</typeparam>
     /// <typeparam name="A">Type of structure with function arguments allocated on the stack.</typeparam>
@@ -46,7 +46,7 @@ namespace DotNext
         /// <summary>
         /// Allocates list of arguments on the stack.
         /// </summary>
-        /// <typeparam name="T">Type of explicit <see langword="this"/> argument.</typeparam>
+        /// <typeparam name="T">Type of explicit <c>this</c> argument.</typeparam>
         /// <typeparam name="A">The type representing list of arguments.</typeparam>
         /// <typeparam name="R">The return type of the function.</typeparam>
         /// <param name="function">The function instance.</param>
@@ -59,14 +59,14 @@ namespace DotNext
         /// <summary>
         /// Invokes function.
         /// </summary>
-        /// <typeparam name="T">The type of the explicit <see langword="this"/> argument.</typeparam>
+        /// <typeparam name="T">The type of the explicit <c>this</c> argument.</typeparam>
         /// <typeparam name="R">The type of function return value.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <see langword="this"/> argument.</param>
+        /// <param name="instance">Explicit <c>this</c> argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static R Invoke<T, R>(this Function<T, ValueTuple, R> function, in T instance)
-            => function(in instance, in EmptyTuple.Value);
+            => function(in instance, default);
 
         /// <summary>
         /// Invokes function.
@@ -76,7 +76,7 @@ namespace DotNext
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static R Invoke<R>(this Function<ValueTuple, R> function)
-            => function(in EmptyTuple.Value);
+            => function(default);
 
         /// <summary>
         /// Invokes function.
@@ -93,11 +93,11 @@ namespace DotNext
         /// <summary>
         /// Invokes function.
         /// </summary>
-        /// <typeparam name="T">The type of the explicit <see langword="this"/> argument.</typeparam>
+        /// <typeparam name="T">The type of the explicit <c>this</c> argument.</typeparam>
         /// <typeparam name="R">The type of function return value.</typeparam>
         /// <typeparam name="P">The type of the first function argument.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <see langword="this"/> argument.</param>
+        /// <param name="instance">Explicit <c>this</c> argument.</param>
         /// <param name="arg">The first function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -121,12 +121,12 @@ namespace DotNext
         /// <summary>
         /// Invokes function.
         /// </summary>
-        /// <typeparam name="T">The type of the explicit <see langword="this"/> argument.</typeparam>
+        /// <typeparam name="T">The type of the explicit <c>this</c> argument.</typeparam>
         /// <typeparam name="R">The type of function return value.</typeparam>
         /// <typeparam name="P1">The type of the first function argument.</typeparam>
         /// <typeparam name="P2">The type of the second function argument.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <see langword="this"/> argument.</param>
+        /// <param name="instance">Explicit <c>this</c> argument.</param>
         /// <param name="arg1">The first function argument.</param>
         /// <param name="arg2">The second function argument.</param>
         /// <returns>Function return value.</returns>
@@ -137,13 +137,13 @@ namespace DotNext
         /// <summary>
         /// Invokes function.
         /// </summary>
-        /// <typeparam name="T">The type of the explicit <see langword="this"/> argument.</typeparam>
+        /// <typeparam name="T">The type of the explicit <c>this</c> argument.</typeparam>
         /// <typeparam name="R">The type of function return value.</typeparam>
         /// <typeparam name="P1">The type of the first function argument.</typeparam>
         /// <typeparam name="P2">The type of the second function argument.</typeparam>
         /// <typeparam name="P3">The type of the third function argument.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <see langword="this"/> argument.</param>
+        /// <param name="instance">Explicit <c>this</c> argument.</param>
         /// <param name="arg1">The first function argument.</param>
         /// <param name="arg2">The second function argument.</param>
         /// <param name="arg3">The third function argument.</param>
@@ -171,14 +171,14 @@ namespace DotNext
         /// <summary>
         /// Invokes function.
         /// </summary>
-        /// <typeparam name="T">The type of the explicit <see langword="this"/> argument.</typeparam>
+        /// <typeparam name="T">The type of the explicit <c>this</c> argument.</typeparam>
         /// <typeparam name="R">The type of function return value.</typeparam>
         /// <typeparam name="P1">The type of the first function argument.</typeparam>
         /// <typeparam name="P2">The type of the second function argument.</typeparam>
         /// <typeparam name="P3">The type of the third function argument.</typeparam>
         /// <typeparam name="P4">The type of the fourth function argument.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <see langword="this"/> argument.</param>
+        /// <param name="instance">Explicit <c>this</c></param>
         /// <param name="arg1">The first function argument.</param>
         /// <param name="arg2">The second function argument.</param>
         /// <param name="arg3">The third function argument.</param>
@@ -209,7 +209,7 @@ namespace DotNext
         /// <summary>
         /// Invokes function.
         /// </summary>
-        /// <typeparam name="T">The type of the explicit <see langword="this"/> argument.</typeparam>
+        /// <typeparam name="T">The type of the explicit <c>this</c></typeparam>
         /// <typeparam name="R">The type of function return value.</typeparam>
         /// <typeparam name="P1">The type of the first function argument.</typeparam>
         /// <typeparam name="P2">The type of the second function argument.</typeparam>
@@ -217,7 +217,7 @@ namespace DotNext
         /// <typeparam name="P4">The type of the fourth function argument.</typeparam>
         /// <typeparam name="P5">The type of the fifth function argument.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <see langword="this"/> argument.</param>
+        /// <param name="instance">Explicit <c>this</c></param>
         /// <param name="arg1">The first function argument.</param>
         /// <param name="arg2">The second function argument.</param>
         /// <param name="arg3">The third function argument.</param>
@@ -251,7 +251,7 @@ namespace DotNext
         /// <summary>
         /// Invokes function.
         /// </summary>
-        /// <typeparam name="T">The type of the explicit <see langword="this"/> argument.</typeparam>
+        /// <typeparam name="T">The type of the explicit <c>this</c> argument.</typeparam>
         /// <typeparam name="R">The type of function return value.</typeparam>
         /// <typeparam name="P1">The type of the first function argument.</typeparam>
         /// <typeparam name="P2">The type of the second function argument.</typeparam>
@@ -260,7 +260,7 @@ namespace DotNext
         /// <typeparam name="P5">The type of the fifth function argument.</typeparam>
         /// <typeparam name="P6">The type of the sixth function argument.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <see langword="this"/> argument.</param>
+        /// <param name="instance">Explicit <c>this</c> argument.</param>
         /// <param name="arg1">The first function argument.</param>
         /// <param name="arg2">The second function argument.</param>
         /// <param name="arg3">The third function argument.</param>
@@ -297,7 +297,7 @@ namespace DotNext
         /// <summary>
         /// Invokes function.
         /// </summary>
-        /// <typeparam name="T">The type of the explicit <see langword="this"/> argument.</typeparam>
+        /// <typeparam name="T">The type of the explicit <c>this</c> argument.</typeparam>
         /// <typeparam name="R">The type of function return value.</typeparam>
         /// <typeparam name="P1">The type of the first function argument.</typeparam>
         /// <typeparam name="P2">The type of the second function argument.</typeparam>
@@ -307,7 +307,7 @@ namespace DotNext
         /// <typeparam name="P6">The type of the sixth function argument.</typeparam>
         /// <typeparam name="P7">The type of the seventh function argument.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <see langword="this"/> argument.</param>
+        /// <param name="instance">Explicit <c>this</c> argument.</param>
         /// <param name="arg1">The first function argument.</param>
         /// <param name="arg2">The second function argument.</param>
         /// <param name="arg3">The third function argument.</param>
@@ -347,7 +347,7 @@ namespace DotNext
         /// <summary>
         /// Invokes function.
         /// </summary>
-        /// <typeparam name="T">The type of the explicit <see langword="this"/> argument.</typeparam>
+        /// <typeparam name="T">The type of the explicit <c>this</c> argument.</typeparam>
         /// <typeparam name="R">The type of function return value.</typeparam>
         /// <typeparam name="P1">The type of the first function argument.</typeparam>
         /// <typeparam name="P2">The type of the second function argument.</typeparam>
@@ -358,7 +358,7 @@ namespace DotNext
         /// <typeparam name="P7">The type of the seventh function argument.</typeparam>
         /// <typeparam name="P8">The type of the eighth function argument.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <see langword="this"/> argument.</param>
+        /// <param name="instance">Explicit <c>this</c> argument.</param>
         /// <param name="arg1">The first function argument.</param>
         /// <param name="arg2">The second function argument.</param>
         /// <param name="arg3">The third function argument.</param>
@@ -401,7 +401,7 @@ namespace DotNext
         /// <summary>
         /// Invokes function.
         /// </summary>
-        /// <typeparam name="T">The type of the explicit <see langword="this"/> argument.</typeparam>
+        /// <typeparam name="T">The type of the explicit <c>this</c> argument.</typeparam>
         /// <typeparam name="R">The type of function return value.</typeparam>
         /// <typeparam name="P1">The type of the first function argument.</typeparam>
         /// <typeparam name="P2">The type of the second function argument.</typeparam>
@@ -413,7 +413,7 @@ namespace DotNext
         /// <typeparam name="P8">The type of the eighth function argument.</typeparam>
         /// <typeparam name="P9">The type of the ninth function argument.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <see langword="this"/> argument.</param>
+        /// <param name="instance">Explicit <c>this</c> argument.</param>
         /// <param name="arg1">The first function argument.</param>
         /// <param name="arg2">The second function argument.</param>
         /// <param name="arg3">The third function argument.</param>
@@ -459,7 +459,7 @@ namespace DotNext
         /// <summary>
         /// Invokes function.
         /// </summary>
-        /// <typeparam name="T">The type of the explicit <see langword="this"/> argument.</typeparam>
+        /// <typeparam name="T">The type of the explicit <c>this</c> argument.</typeparam>
         /// <typeparam name="R">The type of function return value.</typeparam>
         /// <typeparam name="P1">The type of the first function argument.</typeparam>
         /// <typeparam name="P2">The type of the second function argument.</typeparam>
@@ -472,7 +472,7 @@ namespace DotNext
         /// <typeparam name="P9">The type of the ninth function argument.</typeparam>
         /// <typeparam name="P10">The type of the tenth function argument.</typeparam>
         /// <param name="function">The function to be invoked.</param>
-        /// <param name="instance">Explicit <see langword="this"/> argument.</param>
+        /// <param name="instance">Explicit <c>this</c> argument.</param>
         /// <param name="arg1">The first function argument.</param>
         /// <param name="arg2">The second function argument.</param>
         /// <param name="arg3">The third function argument.</param>

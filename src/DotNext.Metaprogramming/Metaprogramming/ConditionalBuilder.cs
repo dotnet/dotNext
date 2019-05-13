@@ -39,5 +39,11 @@ namespace DotNext.Metaprogramming
 
         private protected override ConditionalExpression Build() 
             => Expression.Condition(test, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), Type);
+
+        private protected override void Cleanup() 
+        {
+            ifTrue = ifFalse = null;
+            base.Cleanup();
+        }
     }
 }

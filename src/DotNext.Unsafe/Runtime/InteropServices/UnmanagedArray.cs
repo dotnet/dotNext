@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -26,7 +27,6 @@ namespace DotNext.Runtime.InteropServices
         /// </remarks>
         public sealed class Handle : UnmanagedMemoryHandle<T>
         {
-
             private Handle(UnmanagedArray<T> array, bool ownsHandle)
                 : base(array, ownsHandle)
             {
@@ -90,14 +90,7 @@ namespace DotNext.Runtime.InteropServices
             /// <param name="handle">A handle to convert.</param>
             /// <exception cref="ObjectDisposedException">Handle is closed.</exception>
             public static implicit operator UnmanagedArray<T>(Handle handle)
-            {
-                if (handle is null)
-                    return default;
-                else if (handle.IsClosed)
-                    throw handle.HandleClosed();
-                else
-                    return new UnmanagedArray<T>(handle.handle, handle.Length);
-            }
+                => handle is null || handle.IsClosed ? default : new UnmanagedArray<T>(handle.handle, handle.Length);
         }
 
         /// <summary>
@@ -528,6 +521,16 @@ namespace DotNext.Runtime.InteropServices
         public long BinarySearch(T item) => BinarySearch(item, Comparer<T>.Default);
 
         /// <summary>
+        /// Reverses the sequence of the elements in the entire array.
+        /// </summary>
+        /// <exception cref="NotSupportedException"><see cref="Length"/> is more than <see cref="int.MaxValue"/>.</exception>
+        public void Reverse()
+        {
+            Span<T> span = this;
+            span.Reverse();
+        }
+
+        /// <summary>
         /// Gets pointer to array element.
         /// </summary>
         /// <param name="index">Index of the element.</param>
@@ -652,11 +655,12 @@ namespace DotNext.Runtime.InteropServices
         /// <typeparam name="U">New element type.</typeparam>
         /// <returns>Reinterpreted unmanaged array which points to the same memory as original array.</returns>
         /// <exception cref="GenericArgumentException{U}">Invalid size of target element type.</exception>
+        [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         public UnmanagedArray<U> As<U>()
             where U : unmanaged
             => Pointer<T>.Size % Pointer<U>.Size == 0 ?
                 new UnmanagedArray<U>(pointer.As<U>(), Length * (Pointer<T>.Size / Pointer<U>.Size)) :
-                throw new GenericArgumentException<U>(ExceptionMessages.TargetSizeMustBeMultipleOf);
+                throw new GenericArgumentException<U>(ExceptionMessages.TargetSizeMustBeMultipleOf, nameof(U));
 
         /// <summary>
         /// Converts this unmanaged array into managed array.
@@ -879,6 +883,7 @@ namespace DotNext.Runtime.InteropServices
         /// Obtains span to the unmanaged array.
         /// </summary>
         /// <param name="array">The unmanaged array.</param>
+        /// <exception cref="NotSupportedException"><see cref="Length"/> is more than <see cref="int.MaxValue"/>.</exception>
 		public static implicit operator Span<T>(UnmanagedArray<T> array)
         {
             //TODO: should be fixed if Span will support long data type
@@ -888,7 +893,7 @@ namespace DotNext.Runtime.InteropServices
             else if (array.Length <= int.MaxValue)
                 return new Span<T>(array.pointer, (int)array.Length);
             else
-                return new Span<T>(array.pointer, int.MaxValue);
+                throw new NotSupportedException(ExceptionMessages.ArrayTooLong);
         }
 
         /// <summary>

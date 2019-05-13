@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
@@ -7,8 +9,57 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents lexical scope in the form of instructions inside it and set of declared local variables.
     /// </summary>
-    internal class LexicalScope : LinkedList<Expression>, ILexicalScope, IDisposable
+    internal class LexicalScope : ILexicalScope, IDisposable, IEnumerable<Expression>
     {
+        private class StatementNode : IDisposable
+        {
+            internal StatementNode(Expression statement) => Statement = statement;
+
+            internal Expression Statement { get; }
+
+            internal StatementNode Next { get; private protected set; }
+
+            internal StatementNode CreateNext(Expression statement) => Next = new StatementNode(statement);
+
+            public virtual void Dispose() => Next = null;
+        }
+
+        private sealed class Enumerator : StatementNode, IEnumerator<Expression>
+        {
+            private StatementNode current;
+
+            internal Enumerator(StatementNode first)
+                : base(Expression.Empty())
+            {
+                Next = first;
+                current = this;
+            }
+
+            public bool MoveNext()
+            {
+                current = Next;
+                if(current is null)
+                    return false;
+                else
+                {
+                    Next = current.Next;
+                    return true;
+                }
+            }
+
+            public Expression Current => current?.Statement;
+
+            object IEnumerator.Current => Current;
+
+            void IEnumerator.Reset() => throw new NotSupportedException();
+
+            public override void Dispose()
+            {
+                current = null;
+                base.Dispose();
+            }
+        }
+
         [ThreadStatic]
         private static LexicalScope current;
 
@@ -27,6 +78,7 @@ namespace DotNext.Metaprogramming
 
         private readonly Dictionary<string, ParameterExpression> variables = new Dictionary<string, ParameterExpression>();
 
+        private StatementNode first, last;
         private protected readonly LexicalScope Parent;
 
         private protected LexicalScope(bool isStatement)
@@ -47,31 +99,35 @@ namespace DotNext.Metaprogramming
                 return null;
             }
         }
+        
+        private protected IReadOnlyCollection<ParameterExpression> Variables => variables.Values;
 
-        void ILexicalScope.AddStatement(Expression statement) => AddLast(statement);
+        public void AddStatement(Expression statement)
+            => last = first is null || last is null ? first = new StatementNode(statement) : last.CreateNext(statement);
 
-        private protected void DeclareVariable(ParameterExpression variable) => variables.Add(variable.Name, variable);
-
-        void ILexicalScope.DeclareVariable(ParameterExpression variable) => DeclareVariable(variable);
+        public void DeclareVariable(ParameterExpression variable) => variables.Add(variable.Name, variable);
 
         private protected Expression Build()
         {
-            switch (Count)
-            {
-                case 0:
-                    return Expression.Empty();
-                case 1:
-                    if (variables.Count == 0)
-                        return First.Value;
-                    goto default;
-                default:
-                    return Expression.Block(variables.Values, this);
-            }
+            if(first is null)
+                return Expression.Empty();
+            else if(ReferenceEquals(first, last) && Variables.Count == 0)
+                return first.Statement;
+            else
+                return Expression.Block(Variables, this);
         }
+
+        private Enumerator GetEnumerator() => new Enumerator(first);
+
+        IEnumerator<Expression> IEnumerable<Expression>.GetEnumerator() => GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public virtual void Dispose()
         {
-            Clear();
+            for(var current = first; !(current is null); current = current.Next)
+                current.Dispose();
+            first = last = null;
             variables.Clear();
             current = Parent;
         }

@@ -132,6 +132,6 @@ namespace DotNext.Threading
         /// <param name="timeout">The amount of time to wait for the lock.</param>
         /// <returns>The acquired upgradeable read lock.</returns>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public static Lock.Holder AcquireUpgradeableReadLock<T>(this T obj, TimeSpan timeout) where T : class => Lock.ReadLock(obj.GetReaderWriterLock(), false).Acquire();
+        public static Lock.Holder AcquireUpgradeableReadLock<T>(this T obj, TimeSpan timeout) where T : class => Lock.ReadLock(obj.GetReaderWriterLock(), false).Acquire(timeout);
     }
 }

@@ -118,6 +118,7 @@ namespace DotNext.Runtime.CompilerServices
                 items.Clear();
                 Rest?.Dispose(disposing);
             }
+            base.Dispose(disposing);
         }
     }
 }

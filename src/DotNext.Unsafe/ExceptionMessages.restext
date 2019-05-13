@@ -10,3 +10,4 @@ TargetSizeMustBeMultipleOf=Target element size must be a multiple of the origina
 ExpectedType=Value must be of type {0}
 StreamNotReadable=Stream is not readable
 StreamNotWritable=Stream is not writable
+ArrayTooLong=Unmanaged array is too long to be converted into Span

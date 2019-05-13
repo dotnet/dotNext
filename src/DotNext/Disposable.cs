@@ -5,8 +5,6 @@ using System.Runtime.ExceptionServices;
 
 namespace DotNext
 {
-    using Threading;
-
     /// <summary>
     /// Provides implementation of dispose pattern.
     /// </summary>
@@ -14,12 +12,14 @@ namespace DotNext
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
     public abstract class Disposable : IDisposable
     {
-        private AtomicBoolean disposed = new AtomicBoolean(false);
-
         /// <summary>
         /// Indicates that this object is disposed.
         /// </summary>
-        protected bool IsDisposed => disposed.Value;
+        protected bool IsDisposed
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Throws exception if this object is disposed.
@@ -36,20 +36,14 @@ namespace DotNext
         /// Releases managed and unmanaged resources associated with this object.
         /// </summary>
         /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Finalize()"/>.</param>
-		protected abstract void Dispose(bool disposing);
-
-        private void DisposeCore(bool disposing)
-        {
-            if (disposed.FalseToTrue())
-                Dispose(disposing);
-        }
+		protected virtual void Dispose(bool disposing) => IsDisposed = true;
 
         /// <summary>
         /// Releases all resources associated with this object.
         /// </summary>
         public void Dispose()
         {
-            DisposeCore(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -73,6 +67,6 @@ namespace DotNext
         /// <summary>
         /// Finalizes this object.
         /// </summary>
-        ~Disposable() => DisposeCore(false);
+        ~Disposable() => Dispose(false);
     }
 }

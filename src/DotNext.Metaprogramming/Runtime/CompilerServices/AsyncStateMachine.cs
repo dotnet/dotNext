@@ -60,7 +60,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Enters guarded code block which represents <see langword="try"/> block of code
+        /// Enters guarded code block which represents <c>try</c> block of code
         /// inside of async lambda function.
         /// </summary>
         /// <param name="newState">The identifier of the async state machine representing guared code.</param>
@@ -86,7 +86,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Attempts to recover from the exception and indicating prologue of <see langword="catch"/> statement
+        /// Attempts to recover from the exception and indicating prologue of <c>try</c> statement
         /// inside of async lambda function.
         /// </summary>
         /// <typeparam name="E">Type of expression to be caught.</typeparam>
@@ -251,7 +251,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Enters guarded code block which represents <see langword="try"/> block of code
+        /// Enters guarded code block which represents <c>try</c> block of code
         /// inside of async lambda function.
         /// </summary>
         /// <param name="newState">The identifier of the async machine state representing guared code.</param>
@@ -276,7 +276,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Attempts to recover from the exception and indicating prologue of <see langword="catch"/> statement
+        /// Attempts to recover from the exception and indicating prologue of <c>try</c> statement
         /// inside of async lambda function.
         /// </summary>
         /// <typeparam name="E">Type of expression to be caught.</typeparam>

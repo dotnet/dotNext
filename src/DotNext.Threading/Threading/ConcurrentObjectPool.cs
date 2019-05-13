@@ -1,88 +1,323 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using Monitor = System.Threading.Monitor;
 
 namespace DotNext.Threading
 {
     /// <summary>
-    /// Provides concurrent object pool where
-    /// object selection is thread-safe but not selected object.
+    /// Provides container for the thread-unsafe objects that can be shared
+    /// between threads concurrently.
     /// </summary>
+    /// <remarks>
+    /// The object pool implements two scheduling strategies:
+    /// <list type="number">
+    /// <item>
+    /// <term>Round-robin</term>
+    /// <description>
+    /// This strategy requires that all objects should be created and initialized before instantiation
+    /// of object pool. All objects are placed into pool and shared between concurrent threads.
+    /// Workload is distributed across all objects in the pool in circular order.
+    /// This strategy is recommended for situations when workload is constant or unpredictable,
+    /// cost of the object in the pool is relatively low.
+    /// </description>
+    /// </item>
+    /// <item>
+    /// <term>Shortest Job First</term>
+    /// <description>
+    /// This stategy instantiates objects in the pool on-demand depends on workload.
+    /// The first released object will be passed to the one of waiting threads.
+    /// Fairness policy is not supported so the longest waiting thread may not obtain
+    /// the object first.
+    /// Moreover, if the created object is not used for a long period of time then
+    /// object pool will dispose it and remove the object from the pool.
+    /// This strategy is recommended for situations when workload is variable and predictable
+    /// (for instance, Poisson distribution of requests), cost of the object in the pool is high.
+    /// </description>
+    /// </item>
+    /// </list>
+    /// Object pool is compatible with async methods so it is possible to rent the object
+    /// is one thread and return it back to the pool in another thread.
+    /// </remarks>
     /// <typeparam name="T">Type of objects in the pool.</typeparam>
-    public class ConcurrentObjectPool<T>
+    public class ConcurrentObjectPool<T> : Disposable
         where T : class
     {
         /// <summary>
-        /// Represents locked object.
+        /// Represents rented object.
         /// </summary>
         /// <remarks>
-        /// Object lock cannot be stored in fields
-        /// or escape call stack, therefore, it is ref-struct.
+        /// Call <see cref="IDisposable.Dispose"/> to return object back to the pool or use <c>using</c> statement
+        /// as follows:
+        /// <code>
+        /// var pool = new ConcurrentObjectPool&lt;DatabaseConnection&gt;();
+        /// using(var rent = pool.Rent())
+        /// {
+        ///     rent.Resource.ExecuteQuery();    
+        /// }
+        /// </code>
+        /// If you gets the resource from the rental object outside of <c>using</c> block
+        /// then behavior of object pool becomes unpredictable.
         /// </remarks>
-        public ref struct Rental
+        public interface IRental : IDisposable
         {
-            private readonly T lockedObject;
+            /// <summary>
+            /// Gets or sets rented object.
+            /// </summary>
+            /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
+            T Resource { get; set; }
+        }
 
-            internal Rental(T obj, out bool lockTaken)
+        /*
+         * Actual rental object is a node in double linked ring buffer. 
+         * 
+         */
+        private sealed class Rental : IRental
+        {
+            //cached delegate to avoid memory allocations and increase chance of inline caching
+            private static readonly WaitCallback DisposeResource = resource => ((IDisposable) resource).Dispose();
+            private AtomicBoolean lockState;
+            private T resource; //this is not volatile because it's consistency is protected by lockState memory barrier
+            private readonly int position;
+            private long timeToLive;    //not used by Round-robin algorithm
+
+            internal Rental(int position) => this.position = position;
+
+            internal Rental(int position, T resource) : this(position) => this.resource = resource;
+
+            internal bool IsFirst => position == 0;
+
+            internal Rental Next
             {
-                lockTaken = Monitor.TryEnter(obj);
-                lockedObject = lockTaken ? obj : null;
+                get;
+                private set;
             }
 
-            /// <summary>
-            /// Releases object lock and return it into pool.
-            /// </summary>
-            public void Dispose()
+            internal Rental Previous
             {
-                if (lockedObject is null)
-                    throw new ObjectDisposedException(ExceptionMessages.ReleasedLock);
-                Monitor.Exit(lockedObject);
-                this = default;
+                get;
+                private set;
             }
 
-            /// <summary>
-            /// Gets channel/model associated with this lock.
-            /// </summary>
-            /// <param name="lock">Lock container.</param>
-            public static implicit operator T(Rental @lock) => @lock.lockedObject;
+            //indicates that this object is a predecessor of the specified object in the ring buffer
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal bool IsPredecessorOf(Rental other) => position < other.position;
+
+            internal void Attach(Rental next)
+            {
+                Next = next;
+                next.Previous = this;
+            }
+
+            internal event Action<Rental> Released;
+
+            T IRental.Resource
+            {
+                get => resource;
+                set => resource = value ?? throw new ArgumentNullException(nameof(value));
+            }
+
+            internal bool TryAcquire() => lockState.FalseToTrue();
+
+            //this method indicates that the object is requested
+            //and no longer starving
+            //call to this method must be protected by the lock using TryAcquire
+            //used by SJF strategy only
+            internal void Renew(long timeToLive, Func<T> factory)
+            {
+                this.timeToLive.VolatileWrite(timeToLive);
+                if (resource is null)
+                    resource = factory();
+            }
+
+            //used by SJF strategy only
+            internal bool Starve()
+            {
+                bool success;
+                if (success = lockState.FalseToTrue())  //acquire lock
+                {
+                    if(success = timeToLive.DecrementAndGet() <= 0) //decrease weight because this object was accessed a long time ago
+                    {
+                        //prevent this method from blocking so dispose resource asynchronously
+                        //TODO: Should be replaced with typed QueueUserWorkItem method in .NET Standard 2.1
+                        if(resource is IDisposable)
+                            ThreadPool.QueueUserWorkItem(DisposeResource, resource);
+                        resource = null;
+                    }
+                    lockState.Value = false;
+                }
+                return success;
+            }
+
+            void IDisposable.Dispose()
+            {
+                lockState.Value = false;    //release the lock
+                Released?.Invoke(this);     //notify that this object is returned back to the pool
+            }
+
+            internal void Destroy(bool disposeResource)
+            {
+                if(!(Next is null))
+                {
+                    Next.Previous = null;
+                    Next = null;
+                }
+                if(!(Previous is null))
+                {
+                    Previous.Next = null;
+                    Previous = null;
+                }
+                Released = null;
+                if (disposeResource && resource is IDisposable disposable)
+                    disposable.Dispose();
+                resource = null;
+            }
+        }
+
+        //cached delegates to avoid allocations
+        private static readonly Func<Rental, Rental, Rental> SelectLastRenal = (current, update) => current is null || current.IsPredecessorOf(update) ? update : current;
+        private static readonly Func<Rental, Rental> SelectNextRental = current => current.Next;
+        private readonly Func<T> factory;
+        private AtomicReference<Rental> last, current;
+        [SuppressMessage("Design", "IDE0032", Justification = "Volatile operations are applied directly to this field")]
+        private int waitCount;
+        private readonly long lifetime;
+
+        /// <summary>
+        /// Initializes object pool that will apply Shortest Job First scheduling
+        /// strategy.
+        /// </summary>
+        /// <param name="capacity">The maximum objects in the pool.</param>
+        /// <param name="factory">The delegate instance that is used for lazy instantiation of objects in the pool.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="factory"/> is <see langword="null"/>.</exception>
+        /// <seealso href="https://en.wikipedia.org/wiki/Shortest_job_next">Shortest Job First</seealso>
+        public ConcurrentObjectPool(int capacity, Func<T> factory)
+        {
+            if(capacity < 1)
+                throw new ArgumentOutOfRangeException(nameof(capacity));
+            if (factory is null)
+                throw new ArgumentNullException(nameof(factory));
+            this.factory = factory;
+            var rental = default(Rental);
+            Action<Rental> callback = AdjustAvailableObjectAndCheckStarvation;
+            for(var index = 0; index < capacity; index++)
+            {
+                var next = new Rental(index);
+                next.Released += callback;  
+                if(rental is null)
+                    current = last = new AtomicReference<Rental>(rental = next);
+                else
+                {
+                    rental.Attach(next);
+                    rental = next;
+                }
+            }
+            rental.Attach(current.Value);
+            current = new AtomicReference<Rental>(rental);
+            Capacity = capacity;
+            lifetime = capacity + Math.DivRem(capacity, 2L, out var remainder) + remainder;
         }
 
         /// <summary>
-        /// Read-only collection of objects in this pool.
+        /// Initializes object pool that will apply Round-robing scheduling
+        /// strategy.
         /// </summary>
-        protected readonly IReadOnlyList<T> objects;
-        private int counter;
-
-        /// <summary>
-        /// Initializes a new object pool.
-        /// </summary>
-        /// <param name="objects">Predefined objects to be available from the pool.</param>
-        public ConcurrentObjectPool(IList<T> objects)
+        /// <param name="objects">The objects to be placed into the pool.</param>
+        /// <exception cref="ArgumentException"><paramref name="objects"/> is empty.</exception>
+        /// <seealso href="https://en.wikipedia.org/wiki/Round-robin_scheduling">Round-robin</seealso>
+        public ConcurrentObjectPool(IEnumerable<T> objects)
         {
-            if (objects.Count == 0)
+            factory = null;
+            var rental = default(Rental);
+            var index = 0;
+            foreach(var resource in objects)
+            {
+                var next = new Rental(index++, resource);
+                if(rental is null)
+                    current = last = new AtomicReference<Rental>(rental = next);
+                else
+                {
+                    rental.Attach(next);
+                    rental = next;
+                }
+            }
+            if(index == 0)
                 throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
-            this.objects = new ReadOnlyCollection<T>(objects);
-            counter = -1;
+            rental.Attach(current.Value);
+            current = new AtomicReference<Rental>(rental);
+            Capacity = index;
+        }
+
+        //release object according with Shortest Job First algorithm
+        private void AdjustAvailableObjectAndCheckStarvation(Rental rental)
+        {
+            current.Value = rental.Previous;
+            rental = last.AccumulateAndGet(rental, SelectLastRenal);
+            //starvation detected, dispose the resource stored in rental object
+            if (rental.Starve())
+                last.Value = rental.IsFirst ? null : rental.Previous;
         }
 
         /// <summary>
-        /// Select first unbusy object from pool, lock it and return it.
+        /// Gets total count of objects in this pool.
         /// </summary>
-        /// <returns>First unbusy object locked for the caller thread.</returns>
-        public Rental Rent()
+        public int Capacity { get; }
+
+        /// <summary>
+        /// Gets number of threads waiting for the first available object.
+        /// </summary>
+        /// <remarks>
+        /// This property is for diagnostics purposes.
+        /// Ideally, it should be always 0. But in reality, some threads
+        /// may wait for the first released object a very small amount of time.
+        /// Therefore, the expected value should not be greater than <see cref="Capacity"/> divided by 2,
+        /// and do not grow over time. Otherwise, you should increase the capacity.
+        /// </remarks>
+        public int WaitCount => waitCount;
+
+        /// <summary>
+        /// Rents the object from this pool.
+        /// </summary>
+        /// <returns>The object allows to control lifetime of the rent.</returns>
+        public IRental Rent()
         {
-            //each thread must have its own spin awaiter
-            for (SpinWait spinner; ; spinner.SpinOnce())
+            waitCount.IncrementAndGet();
+            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
-                //apply selection using round-robin mechanism
-                var index = counter.IncrementAndGet() % objects.Count;
-                //lock selected object if possible
-                var result = new Rental(objects[index], out var locked);
-                if (locked)
-                    return result;
+                var rental = current.UpdateAndGet(SelectNextRental);
+                if (rental.TryAcquire())
+                {
+                    waitCount.DecrementAndGet();
+                    if (!(factory is null))
+                        rental.Renew(lifetime, factory);
+                    return rental;
+                }
             }
+        }
+
+        /// <summary>
+        /// Releases all resources associated with this object pool.
+        /// </summary>
+        /// <remarks>
+        /// This method is not thread-safe and may not be used concurrently with other members of this instance.
+        /// Additionally, this method disposes all objects stored in the pool if it was created
+        /// with <see cref="ConcurrentObjectPool(int, Func{T})"/> constructor.
+        /// </remarks>
+        /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                for(Rental rental = current.Value, next; !(rental is null); rental = next)
+                {
+                    next = rental.Next;
+                    rental.Destroy(!(factory is null));
+                }
+                current = last = default;
+            }
+            base.Dispose(disposing);
         }
     }
 }

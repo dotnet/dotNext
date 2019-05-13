@@ -7,6 +7,7 @@ using System.Diagnostics;
 namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
+    using Runtime.CompilerServices;
 
     /// <summary>
     /// Represents code generator.
@@ -194,7 +195,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds instance property assignment.
         /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="instanceProperty">Instance property to be assigned.</param>
         /// <param name="value">A new value of the property.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -213,7 +214,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds instance field assignment.
         /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="instanceField">Instance field to be assigned.</param>
         /// <param name="value">A new value of the field.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -258,7 +259,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds instance method call statement.
         /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -268,7 +269,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds instance method call statement.
         /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -278,7 +279,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds instance method call statement.
         /// </summary>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="methodName">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -425,8 +426,9 @@ namespace DotNext.Metaprogramming
         /// Adds await operator.
         /// </summary>
         /// <param name="asyncResult">The expression representing asynchronous computing process.</param>
+        /// <param name="configureAwait"><see langword="true"/> to call <see cref="System.Threading.Tasks.Task.ConfigureAwait(bool)"/> with <see langword="false"/> argument.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Await(Expression asyncResult) => LexicalScope.Current.AddStatement(asyncResult.Await());
+        public static void Await(Expression asyncResult, bool configureAwait = false) => LexicalScope.Current.AddStatement(asyncResult.Await(configureAwait));
 
         /// <summary>
         /// Adds if-then-else statement to this scope.
@@ -482,7 +484,7 @@ namespace DotNext.Metaprogramming
             => If(test).Then(ifTrue).Else(ifFalse).End();
 
         /// <summary>
-        /// Adds <see langword="while"/> loop statement.
+        /// Adds <c>while</c> loop statement.
         /// </summary>
         /// <param name="test">Loop continuation condition.</param>
         /// <param name="body">Loop body.</param>
@@ -495,7 +497,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="while"/> loop statement.
+        /// Adds <c>while</c> loop statement.
         /// </summary>
         /// <param name="test">Loop continuation condition.</param>
         /// <param name="body">Loop body.</param>
@@ -534,7 +536,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="foreach"/> loop statement.
+        /// Adds <c>foreach</c> loop statement.
         /// </summary>
         /// <param name="collection">The expression providing enumerable collection.</param>
         /// <param name="body">Loop body.</param>
@@ -547,7 +549,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="foreach"/> loop statement.
+        /// Adds <c>foreach</c> loop statement.
         /// </summary>
         /// <param name="collection">The expression providing enumerable collection.</param>
         /// <param name="body">Loop body.</param>
@@ -560,7 +562,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="for"/> loop statement.
+        /// Adds <c>for</c> loop statement.
         /// </summary>
         /// <remarks>
         /// This builder constructs the statement equivalent to <c>for(var i = initializer; condition; iter){ body; }</c>
@@ -578,7 +580,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="for"/> loop statement.
+        /// Adds <c>for</c> loop statement.
         /// </summary>
         /// <remarks>
         /// This builder constructs the statement equivalent to <c>for(var i = initializer; condition; iter){ body; }</c>
@@ -621,14 +623,14 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="throw"/> statement to the compound statement.
+        /// Adds <c>throw</c> statement to the compound statement.
         /// </summary>
         /// <param name="exception">The exception to be thrown.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Throw(Expression exception) => LexicalScope.Current.AddStatement(Expression.Throw(exception));
 
         /// <summary>
-        /// Adds <see langword="throw"/> statement to the compound statement.
+        /// Adds <c>throw</c> statement to the compound statement.
         /// </summary>
         /// <typeparam name="E">The exception to be thrown.</typeparam>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -648,7 +650,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="using"/> statement.
+        /// Adds <c>using</c> statement.
         /// </summary>
         /// <param name="resource">The expression representing disposable resource.</param>
         /// <param name="body">The body of the statement.</param>
@@ -661,7 +663,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="using"/> statement.
+        /// Adds <c>using</c> statement.
         /// </summary>
         /// <param name="resource">The expression representing disposable resource.</param>
         /// <param name="body">The body of the statement.</param>
@@ -674,7 +676,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="lock"/> statement.
+        /// Adds <c>lock</c> statement.
         /// </summary>
         /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
         /// <param name="body">Synchronized scope of code.</param>
@@ -687,7 +689,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="lock"/> statement.
+        /// Adds <c>lock</c> statement.
         /// </summary>
         /// <param name="syncRoot">The object to be locked during execution of the compound statement.</param>
         /// <param name="body">Synchronized scope of code.</param>
@@ -724,6 +726,147 @@ namespace DotNext.Metaprogramming
         public static SwitchBuilder Switch(Expression value) => new SwitchBuilder(value, LexicalScope.Current);
 
         /// <summary>
+        /// Adds pattern match statement.
+        /// </summary>
+        /// <param name="value">The value to be matched with patterns.</param>
+        /// <returns>Pattern matcher.</returns>
+        public static MatchBuilder Match(Expression value) => new MatchBuilder(value, LexicalScope.Current);
+
+        /// <summary>
+        /// Defines pattern matching.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="pattern">The condition representing pattern.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
+        {
+            using (var statement = builder.Case(pattern))
+                return statement.Build(body);
+        }
+
+        /// <summary>
+        /// Defines pattern matching based on the expected type of value.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="expectedType">The expected type of the value.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, Type expectedType, Action<ParameterExpression> body)
+        {
+            using (var statement = builder.Case(expectedType))
+                return statement.Build(body);
+        }
+
+        /// <summary>
+        /// Defines pattern matching based on the expected type of value.
+        /// </summary>
+        /// <typeparam name="T">The expected type of the value.</typeparam>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case<T>(this MatchBuilder builder, Action<ParameterExpression> body)
+            => Case(builder, typeof(T), body);
+
+        /// <summary>
+        /// Defines pattern matching based on the expected type of value.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="expectedType">The expected type of the value.</param>
+        /// <param name="pattern">Additional condition associated with the value.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, Type expectedType, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
+        {
+            using(var statement = builder.Case(expectedType, pattern))
+                return statement.Build(body);
+        }
+
+        /// <summary>
+        /// Defines pattern matching based on the expected type of value.
+        /// </summary>
+        /// <typeparam name="T">The expected type of the value.</typeparam>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="pattern">Additional condition associated with the value.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case<T>(this MatchBuilder builder, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
+            => Case(builder, typeof(T), pattern, body);
+
+        /// <summary>
+        /// Defines pattern matching based on structural matching.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="structPattern">The structure pattern represented by instance of anonymous type.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, object structPattern, Action<ParameterExpression> body)
+        {
+            using(var statement = builder.Case(structPattern))
+                return statement.Build(body);
+        }
+
+        /// <summary>
+        /// Defines pattern matching based on structural matching.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="memberName">The name of the field or property.</param>
+        /// <param name="memberValue">The expected value of the field or property.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, string memberName, Expression memberValue, Action<MemberExpression> body)
+        {
+            using (var statement = builder.Case(memberName, memberValue))
+                return statement.Build(body);
+        }
+
+        /// <summary>
+        /// Defines pattern matching based on structural matching.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="memberName1">The name of the first field or property.</param>
+        /// <param name="memberValue1">The expected value of the first field or property.</param>
+        /// <param name="memberName2">The name of the second field or property.</param>
+        /// <param name="memberValue2">The expected value of the second field or property.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, Action<MemberExpression, MemberExpression> body)
+        {
+            using (var statement = builder.Case(memberName1, memberValue1, memberName2, memberValue2))
+                return statement.Build(body);
+        }
+
+        /// <summary>
+        /// Defines pattern matching based on structural matching.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="memberName1">The name of the first field or property.</param>
+        /// <param name="memberValue1">The expected value of the first field or property.</param>
+        /// <param name="memberName2">The name of the second field or property.</param>
+        /// <param name="memberValue2">The expected value of the second field or property.</param>
+        /// <param name="memberName3">The name of the third field or property.</param>
+        /// <param name="memberValue3">The expected value of the third field or property.</param>
+        /// <param name="body">The action to be executed if object matches to the pattern.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Case(this MatchBuilder builder, string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3, Action<MemberExpression, MemberExpression, MemberExpression> body)
+        {
+            using (var statement = builder.Case(memberName1, memberValue1, memberName2, memberValue2, memberName3, memberValue3))
+                return statement.Build(body);
+        }
+
+        /// <summary>
+        /// Defines default behavior in case when all defined patterns are false positive.
+        /// </summary>
+        /// <param name="builder">Pattern matching builder.</param>
+        /// <param name="body">The body to be executed as default case.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public static MatchBuilder Default(this MatchBuilder builder, Action<ParameterExpression> body)
+        {
+            using (var statement = builder.Default())
+                return statement.Build(body);
+        }
+
+        /// <summary>
         /// Specifies a pattern to compare to the match expression
         /// and action to be executed if matching is successful.
         /// </summary>
@@ -734,7 +877,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static SwitchBuilder Case(this SwitchBuilder builder, IEnumerable<Expression> testValues, Action body)
         {
-            using(var statement = new CaseStatement(builder, testValues))
+            using (var statement = builder.Case(testValues))
                 return statement.Build(body);
         }
 
@@ -761,7 +904,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static SwitchBuilder Default(this SwitchBuilder builder, Action body)
         {
-            using(var statement = new DefaultStatement(builder))
+            using (var statement = builder.Default())
                 return statement.Build(body);
         }
 
@@ -848,7 +991,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="fault">Fault handling block.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns><c>this</c> builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Fault(this TryBuilder builder, Action fault)
         {
@@ -859,7 +1002,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds structured exception handling statement.
         /// </summary>
-        /// <param name="scope"><see langword="try"/> block builder.</param>
+        /// <param name="scope"><c>try</c> block builder.</param>
         /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch-finally">try-catch-finally Statement</seealso>
@@ -872,18 +1015,18 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Adds structured exception handling statement.
         /// </summary>
-        /// <param name="body"><see langword="try"/> block.</param>
+        /// <param name="body"><c>try</c> block.</param>
         /// <returns>Structured exception handling builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch-finally">try-catch-finally Statement</seealso>        
         public static TryBuilder Try(Expression body) => new TryBuilder(body, LexicalScope.Current);
 
         /// <summary>
-        /// Constructs block of code run when control leaves a <see langword="try"/> statement.
+        /// Constructs block of code run when control leaves a <c>try</c> statement.
         /// </summary>
         /// <param name="builder">Structured exception handling builder.</param>
         /// <param name="body">The block of code to be executed.</param>
-        /// <returns><see langword="this"/> builder.</returns>
+        /// <returns><c>this</c> builder.</returns>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Finally(this TryBuilder builder, Action body)
         {
@@ -926,8 +1069,8 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Adds <see langword="return"/> instruction to return from
-        /// underlying lambda function having non-<see langword="void"/>
+        /// Adds <c>return</c> instruction to return from
+        /// underlying lambda function having non-<see cref="void"/>
         /// return type.
         /// </summary>
         /// <param name="result">Optional value to be returned from the lambda function.</param>

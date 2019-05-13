@@ -106,6 +106,7 @@ namespace DotNext.Threading
                 node?.TrySetCanceled();
                 node = null;
             }
+            base.Dispose(disposing);
         }
     }
 }

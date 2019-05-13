@@ -62,6 +62,8 @@ namespace DotNext.Metaprogramming
 
         E IExpressionBuilder<E>.Build() => Build();
 
+        private protected virtual void Cleanup() => currentScope = null;
+
         /// <summary>
         /// Finalizes construction of the expression
         /// and adds constructed expression as statement to the entire lexical scope.
@@ -72,7 +74,7 @@ namespace DotNext.Metaprogramming
             if(currentScope is null)
                 throw new InvalidOperationException();
             currentScope.AddStatement(Build());
-            currentScope = null;
+            Cleanup();
         }
     }
 }

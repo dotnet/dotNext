@@ -178,19 +178,19 @@ namespace DotNext.Threading
             switch (type)
             {
                 case Type.Exclusive:
-                    await As<AsyncExclusiveLock>(lockedObject).Acquire(timeout);
+                    await As<AsyncExclusiveLock>(lockedObject).Acquire(timeout).ConfigureAwait(false);
                     break;
                 case Type.ReadLock:
-                    await As<AsyncReaderWriterLock>(lockedObject).EnterReadLock(timeout);
+                    await As<AsyncReaderWriterLock>(lockedObject).EnterReadLock(timeout).ConfigureAwait(false);
                     break;
                 case Type.UpgradeableReadLock:
-                    await As<AsyncReaderWriterLock>(lockedObject).EnterUpgradeableReadLock(timeout);
+                    await As<AsyncReaderWriterLock>(lockedObject).EnterUpgradeableReadLock(timeout).ConfigureAwait(false);
                     break;
                 case Type.WriteLock:
-                    await As<AsyncReaderWriterLock>(lockedObject).EnterWriteLock(timeout);
+                    await As<AsyncReaderWriterLock>(lockedObject).EnterWriteLock(timeout).ConfigureAwait(false);
                     break;
                 case Type.Semaphore:
-                    await As<SemaphoreSlim>(lockedObject).WaitAsync(timeout).CheckOnTimeout();
+                    await As<SemaphoreSlim>(lockedObject).WaitAsync(timeout).CheckOnTimeout().ConfigureAwait(false);
                     break;
                 default:
                     return default;
@@ -235,7 +235,7 @@ namespace DotNext.Threading
                     task = CompletedTask<bool, BooleanConst.False>.Task;
                     break;
             }
-            return await task ? new Holder(lockedObject, type) : default;
+            return await task.ConfigureAwait(false) ? new Holder(lockedObject, type) : default;
         }
 
         /// <summary>

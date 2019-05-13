@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security;
@@ -42,11 +43,12 @@ namespace DotNext.Reflection
     /// </remarks>
     /// <typeparam name="T">Referenced type.</typeparam>
     [SecuritySafeCritical]
-    public struct Ref<T> : IStrongBox
+    public struct Ref<T> : IStrongBox, IEquatable<Ref<T>>
     {
         /// <summary>
         /// Gets or sets value.
         /// </summary>
+        [SuppressMessage("Design", "CA1051", Justification = "It is by-design due to nature of this type")]
         public T Value;
 
         object IStrongBox.Value
@@ -109,5 +111,7 @@ namespace DotNext.Reflection
         /// <param name="other">Other object to compare.</param>
         /// <returns>Always <see langword="false"/>.</returns>
         public override bool Equals(object other) => false;
+
+        bool IEquatable<Ref<T>>.Equals(Ref<T> other) => false;
     }
 }

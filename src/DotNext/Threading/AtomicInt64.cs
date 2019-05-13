@@ -4,8 +4,6 @@ using System.Threading;
 
 namespace DotNext.Threading
 {
-    using Generic;
-
     /// <summary>
     /// Various atomic operations for <see cref="long"/> data type
     /// accessible as extension methods.
@@ -17,12 +15,16 @@ namespace DotNext.Threading
     /// <seealso cref="Interlocked"/>
     public static class AtomicInt64
     {
-        private sealed class CASProvider : Constant<CAS<long>>
+        private sealed class Operations : Atomic<long>
         {
-            public CASProvider()
-                : base(CompareAndSet)
-            {
-            }
+            internal static readonly Operations Instance = new Operations();
+
+            private Operations() { }
+
+            internal override bool CompareAndSet(ref long value, long expected, long update)
+                => Interlocked.CompareExchange(ref value, update, expected) == expected;
+            
+            private protected override long VolatileRead(ref long value) => Volatile.Read(ref value);
         }
 
         /// <summary>
@@ -83,7 +85,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet(ref this long value, long expected, long update)
-            => Interlocked.CompareExchange(ref value, update, expected) == expected;
+            => Operations.Instance.CompareAndSet(ref value, expected, update);
 
         /// <summary>
         /// Adds two 64-bit integers and replaces referenced integer with the sum, 
@@ -130,8 +132,9 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long AccumulateAndGet(ref this long value, long x, Func<long, long, long> accumulator)
-            => Atomic<long, CASProvider>.Accumulute(ref value, x, accumulator).NewValue;
+            => Operations.Instance.Accumulute(ref value, x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -144,8 +147,9 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndAccumulate(ref this long value, long x, Func<long, long, long> accumulator)
-            => Atomic<long, CASProvider>.Accumulute(ref value, x, accumulator).OldValue;
+            => Operations.Instance.Accumulute(ref value, x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -154,8 +158,9 @@ namespace DotNext.Threading
         /// <param name="value">Reference to a value to be modified.</param>
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long UpdateAndGet(ref this long value, Func<long, long> updater)
-            => Atomic<long, CASProvider>.Update(ref value, updater).NewValue;
+            => Operations.Instance.Update(ref value, updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -164,8 +169,9 @@ namespace DotNext.Threading
         /// <param name="value">Reference to a value to be modified.</param>
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndUpdate(ref this long value, Func<long, long> updater)
-            => Atomic<long, CASProvider>.Update(ref value, updater).OldValue;
+            => Operations.Instance.Update(ref value, updater).OldValue;
 
         /// <summary>
         /// Performs volatile read of the array element.

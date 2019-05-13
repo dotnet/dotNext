@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -27,9 +28,10 @@ namespace DotNext
         /// Sets an array of excluded field names.
         /// </summary>
         /// <value>An array of excluded fields.</value>
+        [SuppressMessage("Performance", "CA1819", Justification = "Property is write-only")]
         public string[] ExcludedFields
         {
-            set => excludedFields = value;
+            set => excludedFields = new HashSet<string>(value);
         }
 
         private bool IsIncluded(FieldInfo field) => excludedFields is null || !excludedFields.Contains(field.Name);

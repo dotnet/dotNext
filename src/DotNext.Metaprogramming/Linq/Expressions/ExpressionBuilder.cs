@@ -4,9 +4,12 @@ using System.Diagnostics;
 using static System.Linq.Enumerable;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 
 namespace DotNext.Linq.Expressions
 {
+    using Reflection;
+
     /// <summary>
     /// Provides extension methods to simplify construction of complex expressions.
     /// </summary>
@@ -16,7 +19,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs unary plus expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>+a</code>
+        /// The equivalent code is <c>+a</c>
         /// </remarks>
         /// <param name="expression">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -27,7 +30,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs negate expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>-a</code>
+        /// The equivalent code is <c>-a</c>
         /// </remarks>
         /// <param name="expression">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -38,7 +41,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs logical NOT expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>!a</code>
+        /// The equivalent code is <c>!a</c>
         /// </remarks>
         /// <param name="expression">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -49,7 +52,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs ones complement.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>~a</code>
+        /// The equivalent code is <c>~a</c>
         /// </remarks>
         /// <param name="expression">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -60,7 +63,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary logical AND expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a &amp; b</code>
+        /// The equivalent code is <c>a &amp; b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -72,7 +75,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary logical OR expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a | b</code>
+        /// The equivalent code is <c>a | b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -84,7 +87,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary logical exclusive OR expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a ^ b</code>
+        /// The equivalent code is <c>a ^ b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -96,7 +99,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs arithmetic remainder expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a % b</code>
+        /// The equivalent code is <c>a % b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -108,7 +111,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary arithmetic addition expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a + b</code>
+        /// The equivalent code is <c>a + b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -144,7 +147,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary arithmetic subtraction expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a - b</code>
+        /// The equivalent code is <c>a - b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -156,7 +159,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary arithmetic multiplication expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a * b</code>
+        /// The equivalent code is <c>a * b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -168,7 +171,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary arithmetic division expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a / b</code>
+        /// The equivalent code is <c>a / b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -180,7 +183,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs "greater than" numeric comparison.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a &gt; b</code>
+        /// The equivalent code is <c>a &gt; b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -192,7 +195,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs "less than" numeric comparison.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a &lt; b</code>
+        /// The equivalent code is <c>a &lt; b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -204,7 +207,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs "greater than or equal" numeric comparison.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a &gt;= b</code>
+        /// The equivalent code is <c>a &gt;= b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -216,7 +219,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs "less than or equal" numeric comparison.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a &lt;= b</code>
+        /// The equivalent code is <c>a &lt;= b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -228,7 +231,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs equality comparison.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a == b</code>
+        /// The equivalent code is <c>a == b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -240,7 +243,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs inequality comparison.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a != b</code>
+        /// The equivalent code is <c>a != b</c>
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -252,7 +255,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs <see langword="null"/> check.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a is null</code>
+        /// The equivalent code is <c>a is null</c>
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns><see langword="null"/> check operation.</returns>
@@ -263,7 +266,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs <see langword="null"/> check.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>!(a is null)</code>
+        /// The equivalent code is <c>!(a is null)</c>
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns><see langword="null"/> check operation.</returns>
@@ -274,7 +277,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs raising a number to a power expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a ^ b</code> in Visual Basic.
+        /// The equivalent code is <c>a ^ b</c> in Visual Basic.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -286,7 +289,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs bitwise left-shift expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a &lt;&lt; b</code> in Visual Basic.
+        /// The equivalent code is <c>a &lt;&lt; b</c> in Visual Basic.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -298,7 +301,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs bitwise right-shift expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a &gt;&gt; b</code> in Visual Basic.
+        /// The equivalent code is <c>a &gt;&gt; b</c> in Visual Basic.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -310,7 +313,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs an expression that decrements given expression by 1 and assigns the result back to the expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>--i</code>.
+        /// The equivalent code is <c>--i</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -321,7 +324,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs an expression that increments given expression by 1 and assigns the result back to the expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>++i</code>.
+        /// The equivalent code is <c>++i</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -332,7 +335,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs an expression that represents the assignment of given expression followed by a subsequent decrement by 1 of the original expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>i--</code>.
+        /// The equivalent code is <c>i--</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -343,7 +346,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs an expression that represents the assignment of given expression followed by a subsequent increment by 1 of the original expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>i++</code>.
+        /// The equivalent code is <c>i++</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -354,7 +357,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs an expression that decrements given expression by 1 and assigns the result back to the expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>--a.b</code>.
+        /// The equivalent code is <c>--a.b</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -365,7 +368,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs an expression that increments given expression by 1 and assigns the result back to the expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>++a.b</code>.
+        /// The equivalent code is <c>++a.b</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -376,7 +379,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs an expression that represents the assignment of given expression followed by a subsequent decrement by 1 of the original expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.b--</code>.
+        /// The equivalent code is <c>a.b--</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -387,7 +390,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs an expression that represents the assignment of given expression followed by a subsequent increment by 1 of the original expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.b++</code>.
+        /// The equivalent code is <c>a.b++</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -398,7 +401,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs an expression that decrements given expression by 1 and assigns the result back to the expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>--a.b[i]</code>.
+        /// The equivalent code is <c>--a.b[i]</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -409,7 +412,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs an expression that increments given expression by 1 and assigns the result back to the expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>++a.b[i]</code>.
+        /// The equivalent code is <c>++a.b[i]</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -420,7 +423,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs an expression that represents the assignment of given expression followed by a subsequent decrement by 1 of the original expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.b[i]--</code>.
+        /// The equivalent code is <c>a.b[i]--</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -431,7 +434,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs an expression that represents the assignment of given expression followed by a subsequent increment by 1 of the original expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.b[i]++</code>.
+        /// The equivalent code is <c>a.b[i]++</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -442,7 +445,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs assignment expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a = b</code>.
+        /// The equivalent code is <c>a = b</c>.
         /// </remarks>
         /// <param name="left">The assignee.</param>
         /// <param name="value">The value to be assigned to the left expression.</param>
@@ -454,7 +457,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs assignment expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.b[i] = c</code>.
+        /// The equivalent code is <c>a.b[i] = c</c>.
         /// </remarks>
         /// <param name="left">The assignee.</param>
         /// <param name="value">The value to be assigned to the left expression.</param>
@@ -466,7 +469,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs assignment expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a = default(T)</code>.
+        /// The equivalent code is <c>a = default(T)</c>.
         /// </remarks>
         /// <param name="left">The assignee.</param>
         /// <returns>Binary expression.</returns>
@@ -477,7 +480,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs assignment expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.member = default(T)</code>.
+        /// The equivalent code is <c>a.member = default(T)</c>.
         /// </remarks>
         /// <param name="left">The assignee.</param>
         /// <returns>Binary expression.</returns>
@@ -488,7 +491,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs assignment expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.member[i] = default(T)</code>.
+        /// The equivalent code is <c>a.member[i] = default(T)</c>.
         /// </remarks>
         /// <param name="left">The assignee.</param>
         /// <returns>Binary expression.</returns>
@@ -499,7 +502,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs assignment expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.member = b</code>.
+        /// The equivalent code is <c>a.member = b</c>.
         /// </remarks>
         /// <param name="left">The assignee.</param>
         /// <param name="value">The value to be assigned to the left expression.</param>
@@ -511,7 +514,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs type conversion expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>(T)a</code>.
+        /// The equivalent code is <c>(T)a</c>.
         /// </remarks>
         /// <param name="expression">The expression to be converted.</param>
         /// <param name="targetType">The target type.</param>
@@ -523,7 +526,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs type conversion expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>(T)a</code>.
+        /// The equivalent code is <c>(T)a</c>.
         /// </remarks>
         /// <typeparam name="T">The target type.</typeparam>
         /// <param name="expression">The expression to be converted.</param>
@@ -535,7 +538,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs type check expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a is T</code>.
+        /// The equivalent code is <c>a is T</c>.
         /// </remarks>
         /// <param name="expression">The expression to test.</param>
         /// <param name="type">The target type.</param>
@@ -547,7 +550,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs type check expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a is T</code>.
+        /// The equivalent code is <c>a is T</c>.
         /// </remarks>
         /// <typeparam name="T">The target type.</typeparam>
         /// <param name="expression">The expression to test.</param>
@@ -560,7 +563,7 @@ namespace DotNext.Linq.Expressions
         /// reference or boxing conversion where <see langword="null"/> is supplied if the conversion fails.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a as T</code>.
+        /// The equivalent code is <c>a as T</c>.
         /// </remarks>
         /// <param name="expression">The expression to convert.</param>
         /// <param name="type">The target type.</param>
@@ -573,7 +576,7 @@ namespace DotNext.Linq.Expressions
         /// reference or boxing conversion where <see langword="null"/> is supplied if the conversion fails.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a as T</code>.
+        /// The equivalent code is <c>a as T</c>.
         /// </remarks>
         /// <typeparam name="T">The target type.</typeparam>
         /// <param name="expression">The expression to convert.</param>
@@ -586,7 +589,7 @@ namespace DotNext.Linq.Expressions
         /// AND operation that evaluates the second operand only if the first operand evaluates to <see langword="true"/>.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a &amp;&amp; b</code>.
+        /// The equivalent code is <c>a &amp;&amp; b</c>.
         /// </remarks>
         /// <param name="left">The first operand.</param>
         /// <param name="right">The second operand.</param>
@@ -599,7 +602,7 @@ namespace DotNext.Linq.Expressions
         /// OR operation that evaluates the second operand only if the first operand evaluates to <see langword="false"/>.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a || b</code>.
+        /// The equivalent code is <c>a || b</c>.
         /// </remarks>
         /// <param name="left">The first operand.</param>
         /// <param name="right">The second operand.</param>
@@ -614,16 +617,17 @@ namespace DotNext.Linq.Expressions
         /// The equivalent code is <c>await b</c>.
         /// </remarks>
         /// <param name="expression">The expression </param>
+        /// <param name="configureAwait"><see langword="true"/> to call <see cref="System.Threading.Tasks.Task.ConfigureAwait(bool)"/> with <see langword="false"/> argument.</param>
         /// <returns><see langword="await"/> expression.</returns>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
-        public static AwaitExpression Await(this Expression expression)
-            => new AwaitExpression(expression);
+        public static AwaitExpression Await(this Expression expression, bool configureAwait = false)
+            => new AwaitExpression(expression, configureAwait);
 
         /// <summary>
         /// Constructs explicit unboxing.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>(T)b</code>.
+        /// The equivalent code is <c>(T)b</c>.
         /// </remarks>
         /// <param name="expression">The operand.</param>
         /// <param name="type">The target value type.</param>
@@ -635,7 +639,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs explicit unboxing.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>(T)b</code>.
+        /// The equivalent code is <c>(T)b</c>.
         /// </remarks>
         /// <typeparam name="T">The target value type.</typeparam>
         /// <param name="expression">The operand.</param>
@@ -648,7 +652,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs delegate invocation expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>delegate.Invoke(a, b,...)</code>.
+        /// The equivalent code is <c>delegate.Invoke(a, b,...)</c>.
         /// </remarks>
         /// <param name="delegate">The expression representing delegate.</param>
         /// <param name="arguments">Invocation arguments.</param>
@@ -667,7 +671,7 @@ namespace DotNext.Linq.Expressions
             where D : MulticastDelegate
         {
             if (lambda.Parameters.Count != arguments.LongLength)
-                throw new ArgumentException();
+                throw new ArgumentException(ExceptionMessages.InvalidFragmentRendering);
             var replacer = new Runtime.CompilerServices.Replacer();
             for (var i = 0; i < arguments.Length; i++)
                 replacer.Replace(lambda.Parameters[i], arguments[i]);
@@ -678,9 +682,9 @@ namespace DotNext.Linq.Expressions
         /// Constructs instance method call expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>obj.Method(a, b,...)</code>.
+        /// The equivalent code is <c>obj.Method(a, b,...)</c>.
         /// </remarks>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">The method arguments.</param>
         /// <returns>The method call expression.</returns>
@@ -691,9 +695,9 @@ namespace DotNext.Linq.Expressions
         /// Constructs instance method call expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>obj.Method()</code>.
+        /// The equivalent code is <c>obj.Method()</c>.
         /// </remarks>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="methodName">The name of the method to be called.</param>
         /// <param name="arguments">The method arguments.</param>
         /// <returns>The method call expression.</returns>
@@ -706,9 +710,9 @@ namespace DotNext.Linq.Expressions
         /// Constructs interface or base class method call expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>((T)obj).Method()</code>.
+        /// The equivalent code is <c>((T)obj).Method()</c>.
         /// </remarks>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="interfaceType">The interface or base class.</param>
         /// <param name="methodName">The name of the method in the interface or base class to be called.</param>
         /// <param name="arguments">The method arguments.</param>
@@ -742,9 +746,9 @@ namespace DotNext.Linq.Expressions
         /// Constructs instance property or indexer access expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.b</code> or <code>a.b[i]</code>.
+        /// The equivalent code is <c>a.b</c> or <c>a.b[i]</c>.
         /// </remarks>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="property">Property metadata.</param>
         /// <param name="indicies">Indexer indicies.</param>
         /// <returns>Property access expression.</returns>
@@ -755,9 +759,9 @@ namespace DotNext.Linq.Expressions
         /// Constructs instance property or indexer access expression declared in the given interface or base type. 
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.b</code> or <code>a.b[i]</code>.
+        /// The equivalent code is <c>a.b</c> or <c>a.b[i]</c>.
         /// </remarks>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="interfaceType">The interface or base class declaring property.</param>
         /// <param name="propertyName">The name of the instance property or indexer.</param>
         /// <param name="indicies">Indexer indicies.</param>
@@ -774,9 +778,9 @@ namespace DotNext.Linq.Expressions
         /// Constructs instance property or indexer access expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.b</code> or <code>a.b[i]</code>.
+        /// The equivalent code is <c>a.b</c> or <c>a.b[i]</c>.
         /// </remarks>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="propertyName">The name of the instance property or indexer.</param>
         /// <param name="indicies">Indexer indicies.</param>
         /// <returns>Property access expression.</returns>
@@ -787,9 +791,9 @@ namespace DotNext.Linq.Expressions
         /// Constructs instance field access expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.b</code>.
+        /// The equivalent code is <c>a.b</c>.
         /// </remarks>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="field">Field metadata.</param>
         /// <returns>Field access expression.</returns>
         public static MemberExpression Field(this Expression instance, FieldInfo field)
@@ -799,9 +803,9 @@ namespace DotNext.Linq.Expressions
         /// Constructs instance field access expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.b</code>.
+        /// The equivalent code is <c>a.b</c>.
         /// </remarks>
-        /// <param name="instance"><see langword="this"/> argument.</param>
+        /// <param name="instance"><c>this</c> argument.</param>
         /// <param name="fieldName">The name of the instance field.</param>
         /// <returns>Field access expression.</returns>
         public static MemberExpression Field(this Expression instance, string fieldName)
@@ -811,7 +815,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs array element access expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.b[i]</code>.
+        /// The equivalent code is <c>a.b[i]</c>.
         /// </remarks>
         /// <param name="array">The array expression.</param>
         /// <param name="indexes">Array element indicies.</param>
@@ -823,12 +827,36 @@ namespace DotNext.Linq.Expressions
         /// Constructs array length expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a.LongLength</code>.
+        /// The equivalent code is <c>a.LongLength</c>.
         /// </remarks>
         /// <param name="array">The array expression.</param>
         /// <returns>Array length expression.</returns>
         public static UnaryExpression ArrayLength(this Expression array)
             => Expression.ArrayLength(array);
+        
+        /// <summary>
+        /// Constructs expression representing count of items in the collection or string.
+        /// </summary>
+        /// <remarks>
+        /// The input expression must be of type <see cref="string"/>, <see cref="StringBuilder"/>, array or any type
+        /// implementing <see cref="ICollection{T}"/> or <see cref="IReadOnlyCollection{T}"/>.
+        /// </remarks>
+        /// <param name="collection">The expression representing collection.</param>
+        /// <returns>The expression providing access to the appropriate property indicating the number of items in the collection.</returns>
+        public static MemberExpression Count(this Expression collection)
+        {
+            if(collection.Type == typeof(string) || collection.Type == typeof(StringBuilder))
+                return Expression.Property(collection, nameof(string.Length));
+            var interfaceType = collection.Type.GetImplementedCollection() ?? throw new ArgumentException(ExceptionMessages.CollectionImplementationExpected);
+            return Expression.Property(collection, interfaceType, nameof(Count));
+        }
+
+        /// <summary>
+        /// Constructs expression that calls <see cref="object.ToString"/>
+        /// </summary>
+        /// <param name="obj">The object to be converted into string.</param>
+        /// <returns>The expression representing <c>ToString()</c> method call.</returns>
+        public static MethodCallExpression AsString(this Expression obj) => Call(obj, nameof(object.ToString));
 
         /// <summary>
         /// Constructs loop statement.
@@ -859,7 +887,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs unconditional control transfer statement.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>goto label</code>.
+        /// The equivalent code is <c>goto label</c>.
         /// </remarks>
         /// <param name="label">The declared label.</param>
         /// <returns>Unconditional control transfer statement.</returns>
@@ -874,20 +902,20 @@ namespace DotNext.Linq.Expressions
         public static GotoExpression Goto(this LabelTarget label, Expression value) => Expression.Goto(label, value);
 
         /// <summary>
-        /// Constructs <see langword="return"/> statement.
+        /// Constructs <c>return</c> statement.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>return</code>.
+        /// The equivalent code is <c>return</c>.
         /// </remarks>
         /// <param name="label">The label representing function exit.</param>
         /// <returns>Return statement.</returns>
         public static GotoExpression Return(this LabelTarget label) => Expression.Return(label);
 
         /// <summary>
-        /// Constructs <see langword="return"/> statement with given value.
+        /// Constructs <c>return</c> statement with given value.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>return a</code>.
+        /// The equivalent code is <c>return a</c>.
         /// </remarks>
         /// <param name="label">The label representing function exit.</param>
         /// <param name="value">The value to be returned from function.</param>
@@ -898,7 +926,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs loop leave statement.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>break</code>.
+        /// The equivalent code is <c>break</c>.
         /// </remarks>
         /// <param name="label">The label indicating loop exit.</param>
         /// <returns>Break statement.</returns>
@@ -923,7 +951,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs label landing site.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>label:</code>.
+        /// The equivalent code is <c>label:</c>.
         /// </remarks>
         /// <param name="label">The label reference.</param>
         /// <returns>The label landing site.</returns>
@@ -941,12 +969,12 @@ namespace DotNext.Linq.Expressions
         /// Constructs conditional expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a ? b : c</code>.
+        /// The equivalent code is <c>a ? b : c</c>.
         /// </remarks>
         /// <param name="test">Test expression.</param>
         /// <param name="ifTrue">Positive branch.</param>
         /// <param name="ifFalse">Negative branch.</param>
-        /// <param name="type">The type of conditional expression. Default is <see langword="void"/>.</param>
+        /// <param name="type">The type of conditional expression. Default is <see cref="void"/>.</param>
         /// <returns>Conditional expression.</returns>
         public static ConditionalExpression Condition(this Expression test, Expression ifTrue = null, Expression ifFalse = null, Type type = null)
             => Expression.Condition(test, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), type ?? typeof(void));
@@ -955,9 +983,9 @@ namespace DotNext.Linq.Expressions
         /// Constructs conditional expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>a ? b : c</code>.
+        /// The equivalent code is <c>a ? b : c</c>.
         /// </remarks>
-        /// <typeparam name="R">The type of conditional expression. Default is <see langword="void"/>.</typeparam>
+        /// <typeparam name="R">The type of conditional expression. Default is <see cref="void"/>.</typeparam>
         /// <param name="test">Test expression.</param>
         /// <param name="ifTrue">Positive branch.</param>
         /// <param name="ifFalse">Negative branch.</param>
@@ -966,25 +994,25 @@ namespace DotNext.Linq.Expressions
             => test.Condition(ifTrue, ifFalse, typeof(R));
 
         /// <summary>
-        /// Constructs a <see langword="try"/> block with a <see langword="finally"/> block without <see langword="catch"/> block.
+        /// Constructs a <c>try</c> block with a <c>finally</c> block without <c>catch</c> block.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>try { } finally { }</code>.
+        /// The equivalent code is <c>try { } finally { }</c>.
         /// </remarks>
-        /// <param name="try"><see langword="try"/> block.</param>
-        /// <param name="finally"><see langword="finally"/> block</param>
+        /// <param name="try"><c>try</c> block.</param>
+        /// <param name="finally"><c>finally</c> block</param>
         /// <returns>Try-finally statement.</returns>
         public static TryExpression Finally(this Expression @try, Expression @finally) => Expression.TryFinally(@try, @finally);
 
         /// <summary>
-        /// Constructs <see langword="throw"/> expression.
+        /// Constructs <c>throw</c> expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>throw e</code>.
+        /// The equivalent code is <c>throw e</c>.
         /// </remarks>
         /// <param name="exception">An exception to be thrown.</param>
-        /// <param name="type">The type of expression. Default is <see langword="void"/>.</param>
-        /// <returns><see langword="throw"/> expression.</returns>
+        /// <param name="type">The type of expression. Default is <see cref="void"/>.</param>
+        /// <returns><c>throw</c> expression.</returns>
         public static UnaryExpression Throw(this Expression exception, Type type = null) => Expression.Throw(exception, type ?? typeof(void));
 
         /// <summary>
@@ -999,7 +1027,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs type default value supplier.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>default(T)</code>.
+        /// The equivalent code is <c>default(T)</c>.
         /// </remarks>
         /// <param name="type">The target type.</param>
         /// <returns>The type default value expression.</returns>
@@ -1009,7 +1037,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs type instantiation expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>new T()</code>.
+        /// The equivalent code is <c>new T()</c>.
         /// </remarks>
         /// <param name="type">The type to be instantiated.</param>
         /// <param name="args">The list of arguments to be passed into constructor.</param>
@@ -1055,7 +1083,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs type instantiation expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <code>new T()</code>.
+        /// The equivalent code is <c>new T()</c>.
         /// </remarks>
         /// <param name="type">The expression representung the type to be instantiated.</param>
         /// <param name="args">The list of arguments to be passed into constructor.</param>

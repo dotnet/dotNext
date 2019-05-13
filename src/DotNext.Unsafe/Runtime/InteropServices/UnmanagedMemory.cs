@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -74,14 +75,7 @@ namespace DotNext.Runtime.InteropServices
 			/// <param name="handle">Handle to convert.</param>
 			/// <exception cref="ObjectDisposedException">Handle is closed.</exception>
             public static implicit operator UnmanagedMemory(Handle handle)
-            {
-                if (handle is null)
-                    return default;
-                else if (handle.IsClosed)
-                    throw handle.HandleClosed();
-                else
-                    return new UnmanagedMemory(handle.handle, handle.Size);
-            }
+                => handle is null || handle.IsClosed ? default : new UnmanagedMemory(handle.handle, handle.Size);
         }
 
         private readonly long size;
@@ -89,6 +83,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Represents address of the allocated memory.
         /// </summary>
+        [SuppressMessage("Design", "CA1051", Justification = "It is by-design due to nature of this type")]
         public readonly IntPtr Address;
 
         internal UnmanagedMemory(IntPtr address, long size)

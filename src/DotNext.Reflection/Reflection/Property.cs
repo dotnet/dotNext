@@ -441,7 +441,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets or sets property value.
         /// </summary>
-        /// <param name="this"><see langword="this"/> argument.</param>
+        /// <param name="this"><c>this</c> argument.</param>
         /// <returns>Property value.</returns>
         public V this[in T @this]
         {

@@ -81,12 +81,12 @@ namespace DotNext.Reflection
         /// <typeparam name="T">The type of the instance.</typeparam>
         /// <typeparam name="R">The return type.</typeparam>
         /// <param name="member">Callable member.</param>
-        /// <param name="this"><see langword="this"/> argument.</param>
+        /// <param name="this"><c>this</c> argument.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static R Invoke<M, T, R>(this IMember<M, Function<T, ValueTuple, R>> member, in T @this)
 			where M: MemberInfo
-			=> member.Invoke(in @this, in EmptyTuple.Value);
+			=> member.Invoke(in @this, default);
 
         /// <summary>
         /// Invokes member without arguments.
@@ -98,7 +98,7 @@ namespace DotNext.Reflection
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static R Invoke<M, R>(this IMember<M, Function<ValueTuple, R>> member)
 			where M: MemberInfo
-			=> member.Invoke(in EmptyTuple.Value);
+			=> member.Invoke(default);
 
         /// <summary>
         /// Allocates unitialized structure for placing arguments.

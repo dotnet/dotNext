@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Xunit;
 
 namespace DotNext.Runtime.InteropServices
@@ -198,6 +199,30 @@ namespace DotNext.Runtime.InteropServices
                 Equal(0, array[0]);
                 array.Fill(42L);
                 Equal(42L, array[0]);
+            }
+        }
+
+        [Fact]
+        public static void ReverseElements()
+        {
+            var array = default(UnmanagedArray<long>);
+            array.Reverse();
+            Empty(array);
+            array = new UnmanagedArray<long>(3);
+            try
+            {
+                array[0] = 10;
+                array[1] = 20;
+                array[2] = 30;
+                Equal(30, array[2]);
+                array.Reverse();
+                Equal(30, array[0]);
+                Equal(20, array[1]);
+                Equal(10, array[2]);
+            }
+            finally
+            {
+                array.Dispose();
             }
         }
     }

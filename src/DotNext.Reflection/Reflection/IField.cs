@@ -35,7 +35,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets or sets instance field value.
         /// </summary>
-        /// <param name="this"><see langword="this"/> parameter.</param>
+        /// <param name="this"><c>this</c> parameter.</param>
 		F this[in T @this] { get; set; }
 	}
 }

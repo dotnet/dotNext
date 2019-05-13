@@ -18,7 +18,6 @@ namespace DotNext.Metaprogramming
     /// <typeparam name="E">The expression represented by the statement.</typeparam>
     /// <typeparam name="D">The delegate type that points to the method producing a set of instructions inside of lexical scope.</typeparam>
     internal interface ILexicalScope<out E, D> : ILexicalScope
-        where E : class
         where D : MulticastDelegate
     {
         /// <summary>
