@@ -1,7 +1,7 @@
 Object Pool
 ====
 
-[ConcurrentObjectPool](../../api/DotNext.Threading.ConcurrentObjectPool.yml) is a way to share thread-unsafe objects between multiple threads in thread-safe manner. It allows to reause already initialized objects rather than allocating and destroying them on demand.
+[ConcurrentObjectPool](../../api/DotNext.Threading.ConcurrentObjectPool-1.yml) is a way to share thread-unsafe objects between multiple threads in thread-safe manner. It allows to reause already initialized objects rather than allocating and destroying them on demand.
 
 It is reasonable to use the pool for performance when the instantiation of the object is too costly and each objets holds reference to some external expensive resource such as network connection. An object lifetime management is covered by Object Pool implementation and very similar to Last Recently Used policy. The object that is least used will be disposed automatically.
 

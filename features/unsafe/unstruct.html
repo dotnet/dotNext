@@ -69,7 +69,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="unstructured-memory-access">Unstructured Memory Access</h1>
 
-<p><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory.yml">UnmanagedMemory</a> in contrast to <a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.yml">UnmanagedMemory&lt;T&gt;</a> provides unstructured access to the allocated unmanaged memory. Unstructured access means that the allocated block of memory is not represented by some unmanaged type <code>T</code>. Instead of that, the memory is represented as a set of bytes. In spite of this, random memory access is protected by boundary checks. Every unmanaged data type in .NEXT Unsafe library is convertible into <code>UnmanagedMemory</code> type.</p>
+<p><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory.html">UnmanagedMemory</a> in contrast to <a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html">UnmanagedMemory&lt;T&gt;</a> provides unstructured access to the allocated unmanaged memory. Unstructured access means that the allocated block of memory is not represented by some unmanaged type <code>T</code>. Instead of that, the memory is represented as a set of bytes. In spite of this, random memory access is protected by boundary checks. Every unmanaged data type in .NEXT Unsafe library is convertible into <code>UnmanagedMemory</code> type.</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
 
 var memory = new UnmanagedMemory(16);   //allocates 16 bytes in unmanaged heap

@@ -127,8 +127,8 @@ accessible as extension methods.</p>
 accessible as extension methods.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.ConcurrentObjectPool-1.html">ConcurrentObjectPool&lt;T&gt;</a></h4>
-      <section><p>Provides concurrent object pool where
-object selection is thread-safe but not selected object.</p>
+      <section><p>Provides container for the thread-unsafe objects that can be shared
+between threads concurrently.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.LockAcquisition.html">LockAcquisition</a></h4>
       <section><p>Provides a set of methods to acquire different types of lock.</p>
@@ -154,9 +154,6 @@ object selection is thread-safe but not selected object.</p>
       <section><p>Provides container with atomic operations
 for the reference type.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Threading.ConcurrentObjectPool-1.Rental.html">ConcurrentObjectPool&lt;T&gt;.Rental</a></h4>
-      <section><p>Represents locked object.</p>
-</section>
       <h4><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></h4>
       <section><p>Unified representation of monitor lock, semaphore lock, read lock, write lock or upgradeable read lock.</p>
 </section>
@@ -168,6 +165,9 @@ for the reference type.</p>
 </section>
     <h3 id="interfaces">Interfaces
   </h3>
+      <h4><a class="xref" href="DotNext.Threading.ConcurrentObjectPool-1.IRental.html">ConcurrentObjectPool&lt;T&gt;.IRental</a></h4>
+      <section><p>Represents rented object.</p>
+</section>
       <h4><a class="xref" href="DotNext.Threading.IAsyncEvent.html">IAsyncEvent</a></h4>
       <section><p>Represents asynchronous event.</p>
 </section>

@@ -1052,19 +1052,19 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_AwaitExpression__ctor_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AwaitExpression.%23ctor(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_AwaitExpression__ctor_System_Linq_Expressions_Expression_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AwaitExpression.%23ctor(System.Linq.Expressions.Expression%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AwaitExpression.cs/#L24">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AwaitExpression.cs/#L25">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_AwaitExpression__ctor_" data-uid="DotNext.Linq.Expressions.AwaitExpression.#ctor*"></a>
-  <h4 id="DotNext_Linq_Expressions_AwaitExpression__ctor_System_Linq_Expressions_Expression_" data-uid="DotNext.Linq.Expressions.AwaitExpression.#ctor(System.Linq.Expressions.Expression)">AwaitExpression(Expression)</h4>
+  <h4 id="DotNext_Linq_Expressions_AwaitExpression__ctor_System_Linq_Expressions_Expression_System_Boolean_" data-uid="DotNext.Linq.Expressions.AwaitExpression.#ctor(System.Linq.Expressions.Expression,System.Boolean)">AwaitExpression(Expression, Boolean)</h4>
   <div class="markdown level1 summary"><p>Constructs <span class="xref">await</span> expression.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AwaitExpression(Expression expression)</code></pre>
+    <pre><code class="lang-csharp hljs">public AwaitExpression(Expression expression, bool configureAwait = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1080,6 +1080,12 @@
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
         <td><span class="parametername">expression</span></td>
         <td><p>An expression providing asynchronous result in the form or <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a> or any other TAP pattern.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">configureAwait</span></td>
+        <td><p><span class="xref">true</span> to call <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task.configureawait#System_Threading_Tasks_Task_ConfigureAwait_System_Boolean_">ConfigureAwait(Boolean)</a> with <span class="xref">false</span> argument.</p>
 </td>
       </tr>
     </tbody>
@@ -1107,7 +1113,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_AwaitExpression_CanReduce.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AwaitExpression.CanReduce%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AwaitExpression.cs/#L59">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AwaitExpression.cs/#L66">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_AwaitExpression_CanReduce_" data-uid="DotNext.Linq.Expressions.AwaitExpression.CanReduce*"></a>
   <h4 id="DotNext_Linq_Expressions_AwaitExpression_CanReduce" data-uid="DotNext.Linq.Expressions.AwaitExpression.CanReduce">CanReduce</h4>
@@ -1140,7 +1146,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_AwaitExpression_NodeType.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AwaitExpression.NodeType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AwaitExpression.cs/#L65">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AwaitExpression.cs/#L72">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_AwaitExpression_NodeType_" data-uid="DotNext.Linq.Expressions.AwaitExpression.NodeType*"></a>
   <h4 id="DotNext_Linq_Expressions_AwaitExpression_NodeType" data-uid="DotNext.Linq.Expressions.AwaitExpression.NodeType">NodeType</h4>
@@ -1173,7 +1179,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_AwaitExpression_Type.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AwaitExpression.Type%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AwaitExpression.cs/#L54">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AwaitExpression.cs/#L61">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_AwaitExpression_Type_" data-uid="DotNext.Linq.Expressions.AwaitExpression.Type*"></a>
   <h4 id="DotNext_Linq_Expressions_AwaitExpression_Type" data-uid="DotNext.Linq.Expressions.AwaitExpression.Type">Type</h4>
@@ -1208,7 +1214,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_AwaitExpression_Reduce.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AwaitExpression.Reduce%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AwaitExpression.cs/#L72">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AwaitExpression.cs/#L79">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_AwaitExpression_Reduce_" data-uid="DotNext.Linq.Expressions.AwaitExpression.Reduce*"></a>
   <h4 id="DotNext_Linq_Expressions_AwaitExpression_Reduce" data-uid="DotNext.Linq.Expressions.AwaitExpression.Reduce">Reduce()</h4>
@@ -1243,7 +1249,7 @@ using Lowering technique.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_AwaitExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AwaitExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AwaitExpression.cs/#L79">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AwaitExpression.cs/#L86">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_AwaitExpression_VisitChildren_" data-uid="DotNext.Linq.Expressions.AwaitExpression.VisitChildren*"></a>
   <h4 id="DotNext_Linq_Expressions_AwaitExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_" data-uid="DotNext.Linq.Expressions.AwaitExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)">VisitChildren(ExpressionVisitor)</h4>
@@ -1412,7 +1418,7 @@ using Lowering technique.</p>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_OrElse_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">ExpressionBuilder.OrElse(Expression, Expression)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Await_System_Linq_Expressions_Expression_">ExpressionBuilder.Await(Expression)</a>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Await_System_Linq_Expressions_Expression_System_Boolean_">ExpressionBuilder.Await(Expression, Boolean)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Unbox_System_Linq_Expressions_Expression_System_Type_">ExpressionBuilder.Unbox(Expression, Type)</a>
@@ -1452,6 +1458,12 @@ using Lowering technique.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_ArrayLength_System_Linq_Expressions_Expression_">ExpressionBuilder.ArrayLength(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Count_System_Linq_Expressions_Expression_">ExpressionBuilder.Count(Expression)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_AsString_System_Linq_Expressions_Expression_">ExpressionBuilder.AsString(Expression)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Loop_System_Linq_Expressions_Expression_System_Linq_Expressions_LabelTarget_System_Linq_Expressions_LabelTarget_">ExpressionBuilder.Loop(Expression, LabelTarget, LabelTarget)</a>

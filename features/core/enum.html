@@ -69,7 +69,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="enum-enhancements">Enum Enhancements</h1>
 
-<p>Currently, to retrieve both the names and values of an enum's members requires two separate calls and requires you to use a for loop which is quite clumsy. Moreover, static methods from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.enum">Enum</a> to work with arbitrary enum types cause boxing/unboxing. <a href="../../api/DotNext.Enum-1.yml">Enum&lt;T&gt;</a> allows to obtain value and name of the enum member as well as to obtain the member by its value or name.</p>
+<p>Currently, to retrieve both the names and values of an enum's members requires two separate calls and requires you to use a for loop which is quite clumsy. Moreover, static methods from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.enum">Enum</a> to work with arbitrary enum types cause boxing/unboxing. <a href="../../api/DotNext.Enum-1.html">Enum&lt;T&gt;</a> allows to obtain value and name of the enum member as well as to obtain the member by its value or name.</p>
 <pre><code class="lang-csharp">using DotNext;
 using System;
 
@@ -96,7 +96,7 @@ member.Value == Color.Black;    //true
 
 Enum&lt;Color&gt;.Member red = Enum&lt;Color&gt;.Members[1];
 </code></pre>
-<p><a href="../../api/DotNext.Enum-1.yml">EnumConverter</a> allows to convert primitive types into arbitrary enum type and vice versa. It is helpful if enum type is defined as generic parameter and not known at compile time.</p>
+<p><a href="../../api/DotNext.Enum-1.html">EnumConverter</a> allows to convert primitive types into arbitrary enum type and vice versa. It is helpful if enum type is defined as generic parameter and not known at compile time.</p>
 <pre><code class="lang-csharp">using DotNext;
 using System;
 

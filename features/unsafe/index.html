@@ -80,15 +80,15 @@
 </div>
 <p>The first feature is CLS compliant pointer data type with low-level memory manipulation methods. The second feature is a set of value types representing structured access to the off-heap memory:</p>
 <ol>
-<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedArray-1.yml">UnmanagedArray</a> is a one-dimensional array allocated in unmanaged heap.</li>
-<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.yml">UnmanagedMemory&lt;T&gt;</a> provides structured access to the unmanaged memory.</li>
-<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory.yml">UnmanagedMemory</a> provides unstructured access to the unmanaged memory.</li>
-<li><a href="../../api/DotNext.Collections.Generic.UnmanagedList-1.yml">UnmanagedList</a> is a growable list of value types allocated in unmanaged heap. This type is equivalent of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1">List</a> from .NET Base Class Library. All elements of unmanaged list are allocated in off-heap memory.</li>
+<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a> is a one-dimensional array allocated in unmanaged heap.</li>
+<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html">UnmanagedMemory&lt;T&gt;</a> provides structured access to the unmanaged memory.</li>
+<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory.html">UnmanagedMemory</a> provides unstructured access to the unmanaged memory.</li>
+<li><a href="../../api/DotNext.Collections.Generic.UnmanagedList-1.html">UnmanagedList</a> is a growable list of value types allocated in unmanaged heap. This type is equivalent of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1">List</a> from .NET Base Class Library. All elements of unmanaged list are allocated in off-heap memory.</li>
 </ol>
 <p>All unmanaged data types are not thread-safe. However, unmanaged array and pointer have atomic operations. Additionally, these types are implicitly convertible into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type.</p>
 <h1 id="pointer">Pointer</h1>
 <p>C# programming language supports typed and untyped pointer data types such as <em>int*</em> or <em>void*</em>. These types are not CLS-compliant and may not be available in other .NET programming languages. For instance, F# or VB.NET do not support pointer type and interoperation with native libraries or COM objects are limited.</p>
-<p>.NEXT offers <a href="../../api/DotNext.Runtime.InteropServices.Pointer-1.yml">Pointer&lt;T&gt;</a> value type which is CLS-compliant typed pointer. This type supports pointer arithmetic as well as rich methods for memory manupulations such as copying, swapping, filling with zeroes, comparison and equality check. These methods are equivalent to C memory functions: <code>memset</code>, <code>memcmp</code> etc. Additionally, there are routines to copying bytes to/from the unmanaged memory from/to the arbitrary <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">streams</a> asynchronously. Check out API documentation for detailed information about available methods.</p>
+<p>.NEXT offers <a href="../../api/DotNext.Runtime.InteropServices.Pointer-1.html">Pointer&lt;T&gt;</a> value type which is CLS-compliant typed pointer. This type supports pointer arithmetic as well as rich methods for memory manupulations such as copying, swapping, filling with zeroes, comparison and equality check. These methods are equivalent to C memory functions: <code>memset</code>, <code>memcmp</code> etc. Additionally, there are routines to copying bytes to/from the unmanaged memory from/to the arbitrary <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">streams</a> asynchronously. Check out API documentation for detailed information about available methods.</p>
 <p>The pointer data type is convertible to/from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.intptr">native int</a> so it can be used to simplify interoperation with native code. The size of the pointer depends on underlying platform.</p>
 <p>The following example demonstrates usage of the typed pointer to work with stack-allocated memory:</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
@@ -129,7 +129,7 @@ ptr.VolatileWrite(42L);
 var i = ptr.VolatileRead();
 i = ptr.IncrementAndGetValue(); //i == 43
 </code></pre>
-<p>See <a href="../../api/DotNext.Threading.AtomicPointer.yml">here</a> for complete list of volatile operations.</p>
+<p>See <a href="../../api/DotNext.Threading.AtomicPointer.html">here</a> for complete list of volatile operations.</p>
 </article>
           </div>
           

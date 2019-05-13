@@ -69,7 +69,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="unmanaged-list">Unmanaged List</h1>
 
-<p><a href="../../api/DotNext.Collections.Generic.UnmanagedList-1.yml">UnmanagedList</a> is alternative implementation of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1">List</a> but all elements are located in the unmanaged memory. The list is growable and backed by unmanaged array. This data type is similar to <a href="http://www.cplusplus.com/reference/vector/vector/">vector</a> class in C++.</p>
+<p><a href="../../api/DotNext.Collections.Generic.UnmanagedList-1.html">UnmanagedList</a> is alternative implementation of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1">List</a> but all elements are located in the unmanaged memory. The list is growable and backed by unmanaged array. This data type is similar to <a href="http://www.cplusplus.com/reference/vector/vector/">vector</a> class in C++.</p>
 <p><em>UnmanagedList</em> fully implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1">IList</a> interface so developer can expect the same features as provided by traditional managed list.</p>
 <p>The memory during resizing process caused by adding/removing elements are controlled by library, but the lifecycle of the list should be controlled manually.</p>
 <pre><code class="lang-csharp">using(var list = new UnmanagedList&lt;long&gt;(10))   //initial capacity

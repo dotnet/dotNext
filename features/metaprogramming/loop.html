@@ -69,8 +69,8 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="loops">Loops</h1>
 
-<p>Metaprogramming library provides construction of <code>for</code>, <code>foreach</code> and <code>while</code> loops. The lexical scope constructor may have optional parameter of type <a href="../../api/DotNext.Metaprogramming.LoopContext.yml">LoopContext</a> that can be used to leave outer loop from inner loop. There is no equivalent instruction in C# except unconditional control transfer using <code>goto</code>.</p>
-<p><code>Continue()</code> or <code>Break()</code> methods from <a href="../../api/DotNext.Metaprogramming.CodeGenerator.yml">CodeGenerator</a> are used to pass the control to the next iteration or out of scope respectively.</p>
+<p>Metaprogramming library provides construction of <code>for</code>, <code>foreach</code> and <code>while</code> loops. The lexical scope constructor may have optional parameter of type <a href="../../api/DotNext.Metaprogramming.LoopContext.html">LoopContext</a> that can be used to leave outer loop from inner loop. There is no equivalent instruction in C# except unconditional control transfer using <code>goto</code>.</p>
+<p><code>Continue()</code> or <code>Break()</code> methods from <a href="../../api/DotNext.Metaprogramming.CodeGenerator.html">CodeGenerator</a> are used to pass the control to the next iteration or out of scope respectively.</p>
 <h1 id="foreach-loop">foreach Loop</h1>
 <p><code>foreach</code> statement may accept any expression of type implementing <code>System.Collections.IEnumerable</code> or <code>System.Collections.Generic.IEnumerable&lt;T&gt;</code> interface, or having public instance parameterless method <code>GetEnumerator()</code> which return type has the public instance property <code>Current</code> and public instance parameterless method <code>MoveNext()</code>.</p>
 <pre><code class="lang-csharp">using System;

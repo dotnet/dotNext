@@ -3467,6 +3467,15 @@ references:
   fullName.vb: DotNext.Enum(Of E).Equals(E)
   nameWithType: Enum<E>.Equals(E)
   nameWithType.vb: Enum(Of E).Equals(E)
+- uid: DotNext.Enum`1.Equals(DotNext.Enum{`0})
+  name: Equals(Enum<E>)
+  href: api/DotNext.Enum-1.html#DotNext_Enum_1_Equals_DotNext_Enum__0__
+  commentId: M:DotNext.Enum`1.Equals(DotNext.Enum{`0})
+  name.vb: Equals(Enum(Of E))
+  fullName: DotNext.Enum<E>.Equals(DotNext.Enum<E>)
+  fullName.vb: DotNext.Enum(Of E).Equals(DotNext.Enum(Of E))
+  nameWithType: Enum<E>.Equals(Enum<E>)
+  nameWithType.vb: Enum(Of E).Equals(Enum(Of E))
 - uid: DotNext.Enum`1.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.Enum-1.html#DotNext_Enum_1_Equals_System_Object_
@@ -3601,6 +3610,24 @@ references:
   fullName.vb: DotNext.Enum(Of E).Name
   nameWithType: Enum<E>.Name
   nameWithType.vb: Enum(Of E).Name
+- uid: DotNext.Enum`1.op_Equality(DotNext.Enum{`0},DotNext.Enum{`0})
+  name: Equality(Enum<E>, Enum<E>)
+  href: api/DotNext.Enum-1.html#DotNext_Enum_1_op_Equality_DotNext_Enum__0__DotNext_Enum__0__
+  commentId: M:DotNext.Enum`1.op_Equality(DotNext.Enum{`0},DotNext.Enum{`0})
+  name.vb: Equality(Enum(Of E), Enum(Of E))
+  fullName: DotNext.Enum<E>.Equality(DotNext.Enum<E>, DotNext.Enum<E>)
+  fullName.vb: DotNext.Enum(Of E).Equality(DotNext.Enum(Of E), DotNext.Enum(Of E))
+  nameWithType: Enum<E>.Equality(Enum<E>, Enum<E>)
+  nameWithType.vb: Enum(Of E).Equality(Enum(Of E), Enum(Of E))
+- uid: DotNext.Enum`1.op_Equality*
+  name: Equality
+  href: api/DotNext.Enum-1.html#DotNext_Enum_1_op_Equality_
+  commentId: Overload:DotNext.Enum`1.op_Equality
+  isSpec: "True"
+  fullName: DotNext.Enum<E>.Equality
+  fullName.vb: DotNext.Enum(Of E).Equality
+  nameWithType: Enum<E>.Equality
+  nameWithType.vb: Enum(Of E).Equality
 - uid: DotNext.Enum`1.op_Implicit(DotNext.Enum{`0}@)~`0
   name: Implicit(Enum<E> to E)
   href: api/DotNext.Enum-1.html#DotNext_Enum_1_op_Implicit_DotNext_Enum__0_____0
@@ -3620,25 +3647,24 @@ references:
   fullName.vb: DotNext.Enum(Of E).Widening
   nameWithType: Enum<E>.Implicit
   nameWithType.vb: Enum(Of E).Widening
-- uid: DotNext.Enum`1.System#IComparable{DotNext#Enum{E}}#CompareTo(DotNext.Enum{`0})
-  name: IComparable<Enum<E>>.CompareTo(Enum<E>)
-  href: api/DotNext.Enum-1.html#DotNext_Enum_1_System_IComparable_DotNext_Enum_E___CompareTo_DotNext_Enum__0__
-  commentId: M:DotNext.Enum`1.System#IComparable{DotNext#Enum{E}}#CompareTo(DotNext.Enum{`0})
-  name.vb: System.IComparable<DotNext.Enum<E>>.CompareTo(Enum(Of E))
-  fullName: DotNext.Enum<E>.System.IComparable<DotNext.Enum<E>>.CompareTo(DotNext.Enum<E>)
-  fullName.vb: DotNext.Enum(Of E).System.IComparable<DotNext.Enum<E>>.CompareTo(DotNext.Enum(Of E))
-  nameWithType: Enum<E>.IComparable<Enum<E>>.CompareTo(Enum<E>)
-  nameWithType.vb: Enum(Of E).System.IComparable<DotNext.Enum<E>>.CompareTo(Enum(Of E))
-- uid: DotNext.Enum`1.System#IComparable{DotNext#Enum{E}}#CompareTo*
-  name: IComparable<Enum<E>>.CompareTo
-  href: api/DotNext.Enum-1.html#DotNext_Enum_1_System_IComparable_DotNext_Enum_E___CompareTo_
-  commentId: Overload:DotNext.Enum`1.System#IComparable{DotNext#Enum{E}}#CompareTo
+- uid: DotNext.Enum`1.op_Inequality(DotNext.Enum{`0},DotNext.Enum{`0})
+  name: Inequality(Enum<E>, Enum<E>)
+  href: api/DotNext.Enum-1.html#DotNext_Enum_1_op_Inequality_DotNext_Enum__0__DotNext_Enum__0__
+  commentId: M:DotNext.Enum`1.op_Inequality(DotNext.Enum{`0},DotNext.Enum{`0})
+  name.vb: Inequality(Enum(Of E), Enum(Of E))
+  fullName: DotNext.Enum<E>.Inequality(DotNext.Enum<E>, DotNext.Enum<E>)
+  fullName.vb: DotNext.Enum(Of E).Inequality(DotNext.Enum(Of E), DotNext.Enum(Of E))
+  nameWithType: Enum<E>.Inequality(Enum<E>, Enum<E>)
+  nameWithType.vb: Enum(Of E).Inequality(Enum(Of E), Enum(Of E))
+- uid: DotNext.Enum`1.op_Inequality*
+  name: Inequality
+  href: api/DotNext.Enum-1.html#DotNext_Enum_1_op_Inequality_
+  commentId: Overload:DotNext.Enum`1.op_Inequality
   isSpec: "True"
-  name.vb: System.IComparable<DotNext.Enum<E>>.CompareTo
-  fullName: DotNext.Enum<E>.System.IComparable<DotNext.Enum<E>>.CompareTo
-  fullName.vb: DotNext.Enum(Of E).System.IComparable<DotNext.Enum<E>>.CompareTo
-  nameWithType: Enum<E>.IComparable<Enum<E>>.CompareTo
-  nameWithType.vb: Enum(Of E).System.IComparable<DotNext.Enum<E>>.CompareTo
+  fullName: DotNext.Enum<E>.Inequality
+  fullName.vb: DotNext.Enum(Of E).Inequality
+  nameWithType: Enum<E>.Inequality
+  nameWithType.vb: Enum(Of E).Inequality
 - uid: DotNext.Enum`1.System#IFormattable#ToString(System.String,System.IFormatProvider)
   name: IFormattable.ToString(String, IFormatProvider)
   href: api/DotNext.Enum-1.html#DotNext_Enum_1_System_IFormattable_ToString_System_String_System_IFormatProvider_
@@ -3658,6 +3684,25 @@ references:
   fullName.vb: DotNext.Enum(Of E).System.IFormattable.ToString
   nameWithType: Enum<E>.IFormattable.ToString
   nameWithType.vb: Enum(Of E).System.IFormattable.ToString
+- uid: DotNext.Enum`1.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  name: ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+  href: api/DotNext.Enum-1.html#DotNext_Enum_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
+  commentId: M:DotNext.Enum`1.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  name.vb: System.Runtime.Serialization.ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+  fullName: DotNext.Enum<E>.System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  fullName.vb: DotNext.Enum(Of E).System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  nameWithType: Enum<E>.ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+  nameWithType.vb: Enum(Of E).System.Runtime.Serialization.ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+- uid: DotNext.Enum`1.System#Runtime#Serialization#ISerializable#GetObjectData*
+  name: ISerializable.GetObjectData
+  href: api/DotNext.Enum-1.html#DotNext_Enum_1_System_Runtime_Serialization_ISerializable_GetObjectData_
+  commentId: Overload:DotNext.Enum`1.System#Runtime#Serialization#ISerializable#GetObjectData
+  isSpec: "True"
+  name.vb: System.Runtime.Serialization.ISerializable.GetObjectData
+  fullName: DotNext.Enum<E>.System.Runtime.Serialization.ISerializable.GetObjectData
+  fullName.vb: DotNext.Enum(Of E).System.Runtime.Serialization.ISerializable.GetObjectData
+  nameWithType: Enum<E>.ISerializable.GetObjectData
+  nameWithType.vb: Enum(Of E).System.Runtime.Serialization.ISerializable.GetObjectData
 - uid: DotNext.Enum`1.ToString
   name: ToString()
   href: api/DotNext.Enum-1.html#DotNext_Enum_1_ToString
@@ -3966,6 +4011,342 @@ references:
   fullName.vb: DotNext.EnumConverter.ToUInt64(Of T)(T)
   nameWithType: EnumConverter.ToUInt64<T>(T)
   nameWithType.vb: EnumConverter.ToUInt64(Of T)(T)
+- uid: DotNext.EnumerableTuple
+  name: EnumerableTuple
+  href: api/DotNext.EnumerableTuple.html
+  commentId: T:DotNext.EnumerableTuple
+  fullName: DotNext.EnumerableTuple
+  nameWithType: EnumerableTuple
+- uid: DotNext.EnumerableTuple.AsEnumerable*
+  name: AsEnumerable
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable_
+  commentId: Overload:DotNext.EnumerableTuple.AsEnumerable
+  isSpec: "True"
+  fullName: DotNext.EnumerableTuple.AsEnumerable
+  nameWithType: EnumerableTuple.AsEnumerable
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0,``0,``0,``0,``0,``0,``0})
+  name: AsEnumerable<T>(Tuple<T, T, T, T, T, T, T>)
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_Tuple___0___0___0___0___0___0___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0,``0,``0,``0,``0,``0,``0})
+  name.vb: AsEnumerable(Of T)(Tuple(Of T, T, T, T, T, T, T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.Tuple<T, T, T, T, T, T, T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.Tuple(Of T, T, T, T, T, T, T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>(Tuple<T, T, T, T, T, T, T>)
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)(Tuple(Of T, T, T, T, T, T, T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0,``0,``0,``0,``0,``0})
+  name: AsEnumerable<T>(Tuple<T, T, T, T, T, T>)
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_Tuple___0___0___0___0___0___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0,``0,``0,``0,``0,``0})
+  name.vb: AsEnumerable(Of T)(Tuple(Of T, T, T, T, T, T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.Tuple<T, T, T, T, T, T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.Tuple(Of T, T, T, T, T, T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>(Tuple<T, T, T, T, T, T>)
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)(Tuple(Of T, T, T, T, T, T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0,``0,``0,``0,``0})
+  name: AsEnumerable<T>(Tuple<T, T, T, T, T>)
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_Tuple___0___0___0___0___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0,``0,``0,``0,``0})
+  name.vb: AsEnumerable(Of T)(Tuple(Of T, T, T, T, T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.Tuple<T, T, T, T, T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.Tuple(Of T, T, T, T, T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>(Tuple<T, T, T, T, T>)
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)(Tuple(Of T, T, T, T, T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0,``0,``0,``0})
+  name: AsEnumerable<T>(Tuple<T, T, T, T>)
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_Tuple___0___0___0___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0,``0,``0,``0})
+  name.vb: AsEnumerable(Of T)(Tuple(Of T, T, T, T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.Tuple<T, T, T, T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.Tuple(Of T, T, T, T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>(Tuple<T, T, T, T>)
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)(Tuple(Of T, T, T, T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0,``0,``0})
+  name: AsEnumerable<T>(Tuple<T, T, T>)
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_Tuple___0___0___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0,``0,``0})
+  name.vb: AsEnumerable(Of T)(Tuple(Of T, T, T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.Tuple<T, T, T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.Tuple(Of T, T, T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>(Tuple<T, T, T>)
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)(Tuple(Of T, T, T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0,``0})
+  name: AsEnumerable<T>(Tuple<T, T>)
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_Tuple___0___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0,``0})
+  name.vb: AsEnumerable(Of T)(Tuple(Of T, T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.Tuple<T, T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.Tuple(Of T, T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>(Tuple<T, T>)
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)(Tuple(Of T, T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0})
+  name: AsEnumerable<T>(Tuple<T>)
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_Tuple___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.Tuple{``0})
+  name.vb: AsEnumerable(Of T)(Tuple(Of T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.Tuple<T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.Tuple(Of T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>(Tuple<T>)
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)(Tuple(Of T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0,``0,``0,``0,``0,``0,``0})
+  name: AsEnumerable<T>((T, T, T, T, T, T, T))
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_ValueTuple___0___0___0___0___0___0___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0,``0,``0,``0,``0,``0,``0})
+  name.vb: AsEnumerable(Of T)((T, T, T, T, T, T, T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.ValueTuple<T, T, T, T, T, T, T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.ValueTuple(Of T, T, T, T, T, T, T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>((T, T, T, T, T, T, T))
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)((T, T, T, T, T, T, T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0,``0,``0,``0,``0,``0})
+  name: AsEnumerable<T>((T, T, T, T, T, T))
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_ValueTuple___0___0___0___0___0___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0,``0,``0,``0,``0,``0})
+  name.vb: AsEnumerable(Of T)((T, T, T, T, T, T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.ValueTuple<T, T, T, T, T, T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.ValueTuple(Of T, T, T, T, T, T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>((T, T, T, T, T, T))
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)((T, T, T, T, T, T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0,``0,``0,``0,``0})
+  name: AsEnumerable<T>((T, T, T, T, T))
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_ValueTuple___0___0___0___0___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0,``0,``0,``0,``0})
+  name.vb: AsEnumerable(Of T)((T, T, T, T, T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.ValueTuple<T, T, T, T, T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.ValueTuple(Of T, T, T, T, T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>((T, T, T, T, T))
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)((T, T, T, T, T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0,``0,``0,``0})
+  name: AsEnumerable<T>((T, T, T, T))
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_ValueTuple___0___0___0___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0,``0,``0,``0})
+  name.vb: AsEnumerable(Of T)((T, T, T, T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.ValueTuple<T, T, T, T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.ValueTuple(Of T, T, T, T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>((T, T, T, T))
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)((T, T, T, T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0,``0,``0})
+  name: AsEnumerable<T>((T, T, T))
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_ValueTuple___0___0___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0,``0,``0})
+  name.vb: AsEnumerable(Of T)((T, T, T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.ValueTuple<T, T, T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.ValueTuple(Of T, T, T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>((T, T, T))
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)((T, T, T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0,``0})
+  name: AsEnumerable<T>((T, T))
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_ValueTuple___0___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0,``0})
+  name.vb: AsEnumerable(Of T)((T, T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.ValueTuple<T, T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.ValueTuple(Of T, T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>((T, T))
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)((T, T))
+- uid: DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0})
+  name: AsEnumerable<T>((T))
+  href: api/DotNext.EnumerableTuple.html#DotNext_EnumerableTuple_AsEnumerable__1_System_ValueTuple___0__
+  commentId: M:DotNext.EnumerableTuple.AsEnumerable``1(System.ValueTuple{``0})
+  name.vb: AsEnumerable(Of T)((T))
+  fullName: DotNext.EnumerableTuple.AsEnumerable<T>(System.ValueTuple<T>)
+  fullName.vb: DotNext.EnumerableTuple.AsEnumerable(Of T)(System.ValueTuple(Of T))
+  nameWithType: EnumerableTuple.AsEnumerable<T>((T))
+  nameWithType.vb: EnumerableTuple.AsEnumerable(Of T)((T))
+- uid: DotNext.EnumerableTuple`2
+  name: EnumerableTuple<I, T>
+  href: api/DotNext.EnumerableTuple-2.html
+  commentId: T:DotNext.EnumerableTuple`2
+  name.vb: EnumerableTuple(Of I, T)
+  fullName: DotNext.EnumerableTuple<I, T>
+  fullName.vb: DotNext.EnumerableTuple(Of I, T)
+  nameWithType: EnumerableTuple<I, T>
+  nameWithType.vb: EnumerableTuple(Of I, T)
+- uid: DotNext.EnumerableTuple`2.Count
+  name: Count
+  href: api/DotNext.EnumerableTuple-2.html#DotNext_EnumerableTuple_2_Count
+  commentId: P:DotNext.EnumerableTuple`2.Count
+  fullName: DotNext.EnumerableTuple<I, T>.Count
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Count
+  nameWithType: EnumerableTuple<I, T>.Count
+  nameWithType.vb: EnumerableTuple(Of I, T).Count
+- uid: DotNext.EnumerableTuple`2.Count*
+  name: Count
+  href: api/DotNext.EnumerableTuple-2.html#DotNext_EnumerableTuple_2_Count_
+  commentId: Overload:DotNext.EnumerableTuple`2.Count
+  isSpec: "True"
+  fullName: DotNext.EnumerableTuple<I, T>.Count
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Count
+  nameWithType: EnumerableTuple<I, T>.Count
+  nameWithType.vb: EnumerableTuple(Of I, T).Count
+- uid: DotNext.EnumerableTuple`2.Enumerator
+  name: EnumerableTuple<I, T>.Enumerator
+  href: api/DotNext.EnumerableTuple-2.Enumerator.html
+  commentId: T:DotNext.EnumerableTuple`2.Enumerator
+  name.vb: EnumerableTuple(Of I, T).Enumerator
+  fullName: DotNext.EnumerableTuple<I, T>.Enumerator
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Enumerator
+  nameWithType: EnumerableTuple<I, T>.Enumerator
+  nameWithType.vb: EnumerableTuple(Of I, T).Enumerator
+- uid: DotNext.EnumerableTuple`2.Enumerator.Current
+  name: Current
+  href: api/DotNext.EnumerableTuple-2.Enumerator.html#DotNext_EnumerableTuple_2_Enumerator_Current
+  commentId: P:DotNext.EnumerableTuple`2.Enumerator.Current
+  fullName: DotNext.EnumerableTuple<I, T>.Enumerator.Current
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Enumerator.Current
+  nameWithType: EnumerableTuple<I, T>.Enumerator.Current
+  nameWithType.vb: EnumerableTuple(Of I, T).Enumerator.Current
+- uid: DotNext.EnumerableTuple`2.Enumerator.Current*
+  name: Current
+  href: api/DotNext.EnumerableTuple-2.Enumerator.html#DotNext_EnumerableTuple_2_Enumerator_Current_
+  commentId: Overload:DotNext.EnumerableTuple`2.Enumerator.Current
+  isSpec: "True"
+  fullName: DotNext.EnumerableTuple<I, T>.Enumerator.Current
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Enumerator.Current
+  nameWithType: EnumerableTuple<I, T>.Enumerator.Current
+  nameWithType.vb: EnumerableTuple(Of I, T).Enumerator.Current
+- uid: DotNext.EnumerableTuple`2.Enumerator.MoveNext
+  name: MoveNext()
+  href: api/DotNext.EnumerableTuple-2.Enumerator.html#DotNext_EnumerableTuple_2_Enumerator_MoveNext
+  commentId: M:DotNext.EnumerableTuple`2.Enumerator.MoveNext
+  fullName: DotNext.EnumerableTuple<I, T>.Enumerator.MoveNext()
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Enumerator.MoveNext()
+  nameWithType: EnumerableTuple<I, T>.Enumerator.MoveNext()
+  nameWithType.vb: EnumerableTuple(Of I, T).Enumerator.MoveNext()
+- uid: DotNext.EnumerableTuple`2.Enumerator.MoveNext*
+  name: MoveNext
+  href: api/DotNext.EnumerableTuple-2.Enumerator.html#DotNext_EnumerableTuple_2_Enumerator_MoveNext_
+  commentId: Overload:DotNext.EnumerableTuple`2.Enumerator.MoveNext
+  isSpec: "True"
+  fullName: DotNext.EnumerableTuple<I, T>.Enumerator.MoveNext
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Enumerator.MoveNext
+  nameWithType: EnumerableTuple<I, T>.Enumerator.MoveNext
+  nameWithType.vb: EnumerableTuple(Of I, T).Enumerator.MoveNext
+- uid: DotNext.EnumerableTuple`2.Enumerator.Reset
+  name: Reset()
+  href: api/DotNext.EnumerableTuple-2.Enumerator.html#DotNext_EnumerableTuple_2_Enumerator_Reset
+  commentId: M:DotNext.EnumerableTuple`2.Enumerator.Reset
+  fullName: DotNext.EnumerableTuple<I, T>.Enumerator.Reset()
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Enumerator.Reset()
+  nameWithType: EnumerableTuple<I, T>.Enumerator.Reset()
+  nameWithType.vb: EnumerableTuple(Of I, T).Enumerator.Reset()
+- uid: DotNext.EnumerableTuple`2.Enumerator.Reset*
+  name: Reset
+  href: api/DotNext.EnumerableTuple-2.Enumerator.html#DotNext_EnumerableTuple_2_Enumerator_Reset_
+  commentId: Overload:DotNext.EnumerableTuple`2.Enumerator.Reset
+  isSpec: "True"
+  fullName: DotNext.EnumerableTuple<I, T>.Enumerator.Reset
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Enumerator.Reset
+  nameWithType: EnumerableTuple<I, T>.Enumerator.Reset
+  nameWithType.vb: EnumerableTuple(Of I, T).Enumerator.Reset
+- uid: DotNext.EnumerableTuple`2.Enumerator.System#Collections#IEnumerator#Current
+  name: IEnumerator.Current
+  href: api/DotNext.EnumerableTuple-2.Enumerator.html#DotNext_EnumerableTuple_2_Enumerator_System_Collections_IEnumerator_Current
+  commentId: P:DotNext.EnumerableTuple`2.Enumerator.System#Collections#IEnumerator#Current
+  name.vb: System.Collections.IEnumerator.Current
+  fullName: DotNext.EnumerableTuple<I, T>.Enumerator.System.Collections.IEnumerator.Current
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Enumerator.System.Collections.IEnumerator.Current
+  nameWithType: EnumerableTuple<I, T>.Enumerator.IEnumerator.Current
+  nameWithType.vb: EnumerableTuple(Of I, T).Enumerator.System.Collections.IEnumerator.Current
+- uid: DotNext.EnumerableTuple`2.Enumerator.System#Collections#IEnumerator#Current*
+  name: IEnumerator.Current
+  href: api/DotNext.EnumerableTuple-2.Enumerator.html#DotNext_EnumerableTuple_2_Enumerator_System_Collections_IEnumerator_Current_
+  commentId: Overload:DotNext.EnumerableTuple`2.Enumerator.System#Collections#IEnumerator#Current
+  isSpec: "True"
+  name.vb: System.Collections.IEnumerator.Current
+  fullName: DotNext.EnumerableTuple<I, T>.Enumerator.System.Collections.IEnumerator.Current
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Enumerator.System.Collections.IEnumerator.Current
+  nameWithType: EnumerableTuple<I, T>.Enumerator.IEnumerator.Current
+  nameWithType.vb: EnumerableTuple(Of I, T).Enumerator.System.Collections.IEnumerator.Current
+- uid: DotNext.EnumerableTuple`2.Enumerator.System#IDisposable#Dispose
+  name: IDisposable.Dispose()
+  href: api/DotNext.EnumerableTuple-2.Enumerator.html#DotNext_EnumerableTuple_2_Enumerator_System_IDisposable_Dispose
+  commentId: M:DotNext.EnumerableTuple`2.Enumerator.System#IDisposable#Dispose
+  name.vb: System.IDisposable.Dispose()
+  fullName: DotNext.EnumerableTuple<I, T>.Enumerator.System.IDisposable.Dispose()
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Enumerator.System.IDisposable.Dispose()
+  nameWithType: EnumerableTuple<I, T>.Enumerator.IDisposable.Dispose()
+  nameWithType.vb: EnumerableTuple(Of I, T).Enumerator.System.IDisposable.Dispose()
+- uid: DotNext.EnumerableTuple`2.Enumerator.System#IDisposable#Dispose*
+  name: IDisposable.Dispose
+  href: api/DotNext.EnumerableTuple-2.Enumerator.html#DotNext_EnumerableTuple_2_Enumerator_System_IDisposable_Dispose_
+  commentId: Overload:DotNext.EnumerableTuple`2.Enumerator.System#IDisposable#Dispose
+  isSpec: "True"
+  name.vb: System.IDisposable.Dispose
+  fullName: DotNext.EnumerableTuple<I, T>.Enumerator.System.IDisposable.Dispose
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Enumerator.System.IDisposable.Dispose
+  nameWithType: EnumerableTuple<I, T>.Enumerator.IDisposable.Dispose
+  nameWithType.vb: EnumerableTuple(Of I, T).Enumerator.System.IDisposable.Dispose
+- uid: DotNext.EnumerableTuple`2.GetEnumerator
+  name: GetEnumerator()
+  href: api/DotNext.EnumerableTuple-2.html#DotNext_EnumerableTuple_2_GetEnumerator
+  commentId: M:DotNext.EnumerableTuple`2.GetEnumerator
+  fullName: DotNext.EnumerableTuple<I, T>.GetEnumerator()
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).GetEnumerator()
+  nameWithType: EnumerableTuple<I, T>.GetEnumerator()
+  nameWithType.vb: EnumerableTuple(Of I, T).GetEnumerator()
+- uid: DotNext.EnumerableTuple`2.GetEnumerator*
+  name: GetEnumerator
+  href: api/DotNext.EnumerableTuple-2.html#DotNext_EnumerableTuple_2_GetEnumerator_
+  commentId: Overload:DotNext.EnumerableTuple`2.GetEnumerator
+  isSpec: "True"
+  fullName: DotNext.EnumerableTuple<I, T>.GetEnumerator
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).GetEnumerator
+  nameWithType: EnumerableTuple<I, T>.GetEnumerator
+  nameWithType.vb: EnumerableTuple(Of I, T).GetEnumerator
+- uid: DotNext.EnumerableTuple`2.Item(System.Int32)
+  name: Item[Int32]
+  href: api/DotNext.EnumerableTuple-2.html#DotNext_EnumerableTuple_2_Item_System_Int32_
+  commentId: P:DotNext.EnumerableTuple`2.Item(System.Int32)
+  name.vb: Item(Int32)
+  fullName: DotNext.EnumerableTuple<I, T>.Item[System.Int32]
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Item(System.Int32)
+  nameWithType: EnumerableTuple<I, T>.Item[Int32]
+  nameWithType.vb: EnumerableTuple(Of I, T).Item(Int32)
+- uid: DotNext.EnumerableTuple`2.Item*
+  name: Item
+  href: api/DotNext.EnumerableTuple-2.html#DotNext_EnumerableTuple_2_Item_
+  commentId: Overload:DotNext.EnumerableTuple`2.Item
+  isSpec: "True"
+  fullName: DotNext.EnumerableTuple<I, T>.Item
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).Item
+  nameWithType: EnumerableTuple<I, T>.Item
+  nameWithType.vb: EnumerableTuple(Of I, T).Item
+- uid: DotNext.EnumerableTuple`2.System#Collections#Generic#IEnumerable{I}#GetEnumerator
+  name: IEnumerable<I>.GetEnumerator()
+  href: api/DotNext.EnumerableTuple-2.html#DotNext_EnumerableTuple_2_System_Collections_Generic_IEnumerable_I__GetEnumerator
+  commentId: M:DotNext.EnumerableTuple`2.System#Collections#Generic#IEnumerable{I}#GetEnumerator
+  name.vb: System.Collections.Generic.IEnumerable<I>.GetEnumerator()
+  fullName: DotNext.EnumerableTuple<I, T>.System.Collections.Generic.IEnumerable<I>.GetEnumerator()
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).System.Collections.Generic.IEnumerable<I>.GetEnumerator()
+  nameWithType: EnumerableTuple<I, T>.IEnumerable<I>.GetEnumerator()
+  nameWithType.vb: EnumerableTuple(Of I, T).System.Collections.Generic.IEnumerable<I>.GetEnumerator()
+- uid: DotNext.EnumerableTuple`2.System#Collections#Generic#IEnumerable{I}#GetEnumerator*
+  name: IEnumerable<I>.GetEnumerator
+  href: api/DotNext.EnumerableTuple-2.html#DotNext_EnumerableTuple_2_System_Collections_Generic_IEnumerable_I__GetEnumerator_
+  commentId: Overload:DotNext.EnumerableTuple`2.System#Collections#Generic#IEnumerable{I}#GetEnumerator
+  isSpec: "True"
+  name.vb: System.Collections.Generic.IEnumerable<I>.GetEnumerator
+  fullName: DotNext.EnumerableTuple<I, T>.System.Collections.Generic.IEnumerable<I>.GetEnumerator
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).System.Collections.Generic.IEnumerable<I>.GetEnumerator
+  nameWithType: EnumerableTuple<I, T>.IEnumerable<I>.GetEnumerator
+  nameWithType.vb: EnumerableTuple(Of I, T).System.Collections.Generic.IEnumerable<I>.GetEnumerator
+- uid: DotNext.EnumerableTuple`2.System#Collections#IEnumerable#GetEnumerator
+  name: IEnumerable.GetEnumerator()
+  href: api/DotNext.EnumerableTuple-2.html#DotNext_EnumerableTuple_2_System_Collections_IEnumerable_GetEnumerator
+  commentId: M:DotNext.EnumerableTuple`2.System#Collections#IEnumerable#GetEnumerator
+  name.vb: System.Collections.IEnumerable.GetEnumerator()
+  fullName: DotNext.EnumerableTuple<I, T>.System.Collections.IEnumerable.GetEnumerator()
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).System.Collections.IEnumerable.GetEnumerator()
+  nameWithType: EnumerableTuple<I, T>.IEnumerable.GetEnumerator()
+  nameWithType.vb: EnumerableTuple(Of I, T).System.Collections.IEnumerable.GetEnumerator()
+- uid: DotNext.EnumerableTuple`2.System#Collections#IEnumerable#GetEnumerator*
+  name: IEnumerable.GetEnumerator
+  href: api/DotNext.EnumerableTuple-2.html#DotNext_EnumerableTuple_2_System_Collections_IEnumerable_GetEnumerator_
+  commentId: Overload:DotNext.EnumerableTuple`2.System#Collections#IEnumerable#GetEnumerator
+  isSpec: "True"
+  name.vb: System.Collections.IEnumerable.GetEnumerator
+  fullName: DotNext.EnumerableTuple<I, T>.System.Collections.IEnumerable.GetEnumerator
+  fullName.vb: DotNext.EnumerableTuple(Of I, T).System.Collections.IEnumerable.GetEnumerator
+  nameWithType: EnumerableTuple<I, T>.IEnumerable.GetEnumerator
+  nameWithType.vb: EnumerableTuple(Of I, T).System.Collections.IEnumerable.GetEnumerator
 - uid: DotNext.EqualityComparerBuilder`1
   name: EqualityComparerBuilder<T>
   href: api/DotNext.EqualityComparerBuilder-1.html
@@ -4982,12 +5363,12 @@ references:
   commentId: T:DotNext.Linq.Expressions.AwaitExpression
   fullName: DotNext.Linq.Expressions.AwaitExpression
   nameWithType: AwaitExpression
-- uid: DotNext.Linq.Expressions.AwaitExpression.#ctor(System.Linq.Expressions.Expression)
-  name: AwaitExpression(Expression)
-  href: api/DotNext.Linq.Expressions.AwaitExpression.html#DotNext_Linq_Expressions_AwaitExpression__ctor_System_Linq_Expressions_Expression_
-  commentId: M:DotNext.Linq.Expressions.AwaitExpression.#ctor(System.Linq.Expressions.Expression)
-  fullName: DotNext.Linq.Expressions.AwaitExpression.AwaitExpression(System.Linq.Expressions.Expression)
-  nameWithType: AwaitExpression.AwaitExpression(Expression)
+- uid: DotNext.Linq.Expressions.AwaitExpression.#ctor(System.Linq.Expressions.Expression,System.Boolean)
+  name: AwaitExpression(Expression, Boolean)
+  href: api/DotNext.Linq.Expressions.AwaitExpression.html#DotNext_Linq_Expressions_AwaitExpression__ctor_System_Linq_Expressions_Expression_System_Boolean_
+  commentId: M:DotNext.Linq.Expressions.AwaitExpression.#ctor(System.Linq.Expressions.Expression,System.Boolean)
+  fullName: DotNext.Linq.Expressions.AwaitExpression.AwaitExpression(System.Linq.Expressions.Expression, System.Boolean)
+  nameWithType: AwaitExpression.AwaitExpression(Expression, Boolean)
 - uid: DotNext.Linq.Expressions.AwaitExpression.#ctor*
   name: AwaitExpression
   href: api/DotNext.Linq.Expressions.AwaitExpression.html#DotNext_Linq_Expressions_AwaitExpression__ctor_
@@ -5168,12 +5549,25 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.ExpressionBuilder.AssignDefault
   nameWithType: ExpressionBuilder.AssignDefault
-- uid: DotNext.Linq.Expressions.ExpressionBuilder.Await(System.Linq.Expressions.Expression)
-  name: Await(Expression)
-  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Await_System_Linq_Expressions_Expression_
-  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Await(System.Linq.Expressions.Expression)
-  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Await(System.Linq.Expressions.Expression)
-  nameWithType: ExpressionBuilder.Await(Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.AsString(System.Linq.Expressions.Expression)
+  name: AsString(Expression)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_AsString_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.AsString(System.Linq.Expressions.Expression)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.AsString(System.Linq.Expressions.Expression)
+  nameWithType: ExpressionBuilder.AsString(Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.AsString*
+  name: AsString
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_AsString_
+  commentId: Overload:DotNext.Linq.Expressions.ExpressionBuilder.AsString
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.AsString
+  nameWithType: ExpressionBuilder.AsString
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Await(System.Linq.Expressions.Expression,System.Boolean)
+  name: Await(Expression, Boolean)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Await_System_Linq_Expressions_Expression_System_Boolean_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Await(System.Linq.Expressions.Expression,System.Boolean)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Await(System.Linq.Expressions.Expression, System.Boolean)
+  nameWithType: ExpressionBuilder.Await(Expression, Boolean)
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.Await*
   name: Await
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Await_
@@ -5339,6 +5733,19 @@ references:
   fullName.vb: DotNext.Linq.Expressions.ExpressionBuilder.Convert(Of T)(System.Linq.Expressions.Expression)
   nameWithType: ExpressionBuilder.Convert<T>(Expression)
   nameWithType.vb: ExpressionBuilder.Convert(Of T)(Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Count(System.Linq.Expressions.Expression)
+  name: Count(Expression)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Count_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Count(System.Linq.Expressions.Expression)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Count(System.Linq.Expressions.Expression)
+  nameWithType: ExpressionBuilder.Count(Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Count*
+  name: Count
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Count_
+  commentId: Overload:DotNext.Linq.Expressions.ExpressionBuilder.Count
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Count
+  nameWithType: ExpressionBuilder.Count
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.Default(System.Type)
   name: Default(Type)
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Default_System_Type_
@@ -6882,6 +7289,12 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.UniversalExpression.ElementAt
   nameWithType: UniversalExpression.ElementAt
+- uid: DotNext.Linq.Expressions.UniversalExpression.Equals(DotNext.Linq.Expressions.UniversalExpression)
+  name: Equals(UniversalExpression)
+  href: api/DotNext.Linq.Expressions.UniversalExpression.html#DotNext_Linq_Expressions_UniversalExpression_Equals_DotNext_Linq_Expressions_UniversalExpression_
+  commentId: M:DotNext.Linq.Expressions.UniversalExpression.Equals(DotNext.Linq.Expressions.UniversalExpression)
+  fullName: DotNext.Linq.Expressions.UniversalExpression.Equals(DotNext.Linq.Expressions.UniversalExpression)
+  nameWithType: UniversalExpression.Equals(UniversalExpression)
 - uid: DotNext.Linq.Expressions.UniversalExpression.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.Linq.Expressions.UniversalExpression.html#DotNext_Linq_Expressions_UniversalExpression_Equals_System_Object_
@@ -8301,12 +8714,12 @@ references:
   fullName.vb: DotNext.Metaprogramming.CodeGenerator.AsyncLambda(Of D)(System.Action(Of DotNext.Metaprogramming.LambdaContext))
   nameWithType: CodeGenerator.AsyncLambda<D>(Action<LambdaContext>)
   nameWithType.vb: CodeGenerator.AsyncLambda(Of D)(Action(Of LambdaContext))
-- uid: DotNext.Metaprogramming.CodeGenerator.Await(System.Linq.Expressions.Expression)
-  name: Await(Expression)
-  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Await_System_Linq_Expressions_Expression_
-  commentId: M:DotNext.Metaprogramming.CodeGenerator.Await(System.Linq.Expressions.Expression)
-  fullName: DotNext.Metaprogramming.CodeGenerator.Await(System.Linq.Expressions.Expression)
-  nameWithType: CodeGenerator.Await(Expression)
+- uid: DotNext.Metaprogramming.CodeGenerator.Await(System.Linq.Expressions.Expression,System.Boolean)
+  name: Await(Expression, Boolean)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Await_System_Linq_Expressions_Expression_System_Boolean_
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.Await(System.Linq.Expressions.Expression,System.Boolean)
+  fullName: DotNext.Metaprogramming.CodeGenerator.Await(System.Linq.Expressions.Expression, System.Boolean)
+  nameWithType: CodeGenerator.Await(Expression, Boolean)
 - uid: DotNext.Metaprogramming.CodeGenerator.Await*
   name: Await
   href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Await_
@@ -8423,6 +8836,69 @@ references:
   fullName.vb: DotNext.Metaprogramming.CodeGenerator.CallStatic(Of T)(System.String, System.Linq.Expressions.Expression())
   nameWithType: CodeGenerator.CallStatic<T>(String, Expression[])
   nameWithType.vb: CodeGenerator.CallStatic(Of T)(String, Expression())
+- uid: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,DotNext.Metaprogramming.MatchBuilder.Pattern,System.Action{System.Linq.Expressions.ParameterExpression})
+  name: Case(MatchBuilder, MatchBuilder.Pattern, Action<ParameterExpression>)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Case_DotNext_Metaprogramming_MatchBuilder_DotNext_Metaprogramming_MatchBuilder_Pattern_System_Action_System_Linq_Expressions_ParameterExpression__
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,DotNext.Metaprogramming.MatchBuilder.Pattern,System.Action{System.Linq.Expressions.ParameterExpression})
+  name.vb: Case(MatchBuilder, MatchBuilder.Pattern, Action(Of ParameterExpression))
+  fullName: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, DotNext.Metaprogramming.MatchBuilder.Pattern, System.Action<System.Linq.Expressions.ParameterExpression>)
+  fullName.vb: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, DotNext.Metaprogramming.MatchBuilder.Pattern, System.Action(Of System.Linq.Expressions.ParameterExpression))
+  nameWithType: CodeGenerator.Case(MatchBuilder, MatchBuilder.Pattern, Action<ParameterExpression>)
+  nameWithType.vb: CodeGenerator.Case(MatchBuilder, MatchBuilder.Pattern, Action(Of ParameterExpression))
+- uid: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,System.Object,System.Action{System.Linq.Expressions.ParameterExpression})
+  name: Case(MatchBuilder, Object, Action<ParameterExpression>)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Case_DotNext_Metaprogramming_MatchBuilder_System_Object_System_Action_System_Linq_Expressions_ParameterExpression__
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,System.Object,System.Action{System.Linq.Expressions.ParameterExpression})
+  name.vb: Case(MatchBuilder, Object, Action(Of ParameterExpression))
+  fullName: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, System.Object, System.Action<System.Linq.Expressions.ParameterExpression>)
+  fullName.vb: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, System.Object, System.Action(Of System.Linq.Expressions.ParameterExpression))
+  nameWithType: CodeGenerator.Case(MatchBuilder, Object, Action<ParameterExpression>)
+  nameWithType.vb: CodeGenerator.Case(MatchBuilder, Object, Action(Of ParameterExpression))
+- uid: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,System.String,System.Linq.Expressions.Expression,System.Action{System.Linq.Expressions.MemberExpression})
+  name: Case(MatchBuilder, String, Expression, Action<MemberExpression>)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Case_DotNext_Metaprogramming_MatchBuilder_System_String_System_Linq_Expressions_Expression_System_Action_System_Linq_Expressions_MemberExpression__
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,System.String,System.Linq.Expressions.Expression,System.Action{System.Linq.Expressions.MemberExpression})
+  name.vb: Case(MatchBuilder, String, Expression, Action(Of MemberExpression))
+  fullName: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, System.String, System.Linq.Expressions.Expression, System.Action<System.Linq.Expressions.MemberExpression>)
+  fullName.vb: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, System.String, System.Linq.Expressions.Expression, System.Action(Of System.Linq.Expressions.MemberExpression))
+  nameWithType: CodeGenerator.Case(MatchBuilder, String, Expression, Action<MemberExpression>)
+  nameWithType.vb: CodeGenerator.Case(MatchBuilder, String, Expression, Action(Of MemberExpression))
+- uid: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,System.String,System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression,System.Action{System.Linq.Expressions.MemberExpression,System.Linq.Expressions.MemberExpression})
+  name: Case(MatchBuilder, String, Expression, String, Expression, Action<MemberExpression, MemberExpression>)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Case_DotNext_Metaprogramming_MatchBuilder_System_String_System_Linq_Expressions_Expression_System_String_System_Linq_Expressions_Expression_System_Action_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_MemberExpression__
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,System.String,System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression,System.Action{System.Linq.Expressions.MemberExpression,System.Linq.Expressions.MemberExpression})
+  name.vb: Case(MatchBuilder, String, Expression, String, Expression, Action(Of MemberExpression, MemberExpression))
+  fullName: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, System.String, System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression, System.Action<System.Linq.Expressions.MemberExpression, System.Linq.Expressions.MemberExpression>)
+  fullName.vb: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, System.String, System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression, System.Action(Of System.Linq.Expressions.MemberExpression, System.Linq.Expressions.MemberExpression))
+  nameWithType: CodeGenerator.Case(MatchBuilder, String, Expression, String, Expression, Action<MemberExpression, MemberExpression>)
+  nameWithType.vb: CodeGenerator.Case(MatchBuilder, String, Expression, String, Expression, Action(Of MemberExpression, MemberExpression))
+- uid: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,System.String,System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression,System.Action{System.Linq.Expressions.MemberExpression,System.Linq.Expressions.MemberExpression,System.Linq.Expressions.MemberExpression})
+  name: Case(MatchBuilder, String, Expression, String, Expression, String, Expression, Action<MemberExpression, MemberExpression, MemberExpression>)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Case_DotNext_Metaprogramming_MatchBuilder_System_String_System_Linq_Expressions_Expression_System_String_System_Linq_Expressions_Expression_System_String_System_Linq_Expressions_Expression_System_Action_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_MemberExpression__
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,System.String,System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression,System.Action{System.Linq.Expressions.MemberExpression,System.Linq.Expressions.MemberExpression,System.Linq.Expressions.MemberExpression})
+  name.vb: Case(MatchBuilder, String, Expression, String, Expression, String, Expression, Action(Of MemberExpression, MemberExpression, MemberExpression))
+  fullName: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, System.String, System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression, System.Action<System.Linq.Expressions.MemberExpression, System.Linq.Expressions.MemberExpression, System.Linq.Expressions.MemberExpression>)
+  fullName.vb: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, System.String, System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression, System.Action(Of System.Linq.Expressions.MemberExpression, System.Linq.Expressions.MemberExpression, System.Linq.Expressions.MemberExpression))
+  nameWithType: CodeGenerator.Case(MatchBuilder, String, Expression, String, Expression, String, Expression, Action<MemberExpression, MemberExpression, MemberExpression>)
+  nameWithType.vb: CodeGenerator.Case(MatchBuilder, String, Expression, String, Expression, String, Expression, Action(Of MemberExpression, MemberExpression, MemberExpression))
+- uid: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,System.Type,DotNext.Metaprogramming.MatchBuilder.Pattern,System.Action{System.Linq.Expressions.ParameterExpression})
+  name: Case(MatchBuilder, Type, MatchBuilder.Pattern, Action<ParameterExpression>)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Case_DotNext_Metaprogramming_MatchBuilder_System_Type_DotNext_Metaprogramming_MatchBuilder_Pattern_System_Action_System_Linq_Expressions_ParameterExpression__
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,System.Type,DotNext.Metaprogramming.MatchBuilder.Pattern,System.Action{System.Linq.Expressions.ParameterExpression})
+  name.vb: Case(MatchBuilder, Type, MatchBuilder.Pattern, Action(Of ParameterExpression))
+  fullName: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, System.Type, DotNext.Metaprogramming.MatchBuilder.Pattern, System.Action<System.Linq.Expressions.ParameterExpression>)
+  fullName.vb: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, System.Type, DotNext.Metaprogramming.MatchBuilder.Pattern, System.Action(Of System.Linq.Expressions.ParameterExpression))
+  nameWithType: CodeGenerator.Case(MatchBuilder, Type, MatchBuilder.Pattern, Action<ParameterExpression>)
+  nameWithType.vb: CodeGenerator.Case(MatchBuilder, Type, MatchBuilder.Pattern, Action(Of ParameterExpression))
+- uid: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,System.Type,System.Action{System.Linq.Expressions.ParameterExpression})
+  name: Case(MatchBuilder, Type, Action<ParameterExpression>)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Case_DotNext_Metaprogramming_MatchBuilder_System_Type_System_Action_System_Linq_Expressions_ParameterExpression__
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder,System.Type,System.Action{System.Linq.Expressions.ParameterExpression})
+  name.vb: Case(MatchBuilder, Type, Action(Of ParameterExpression))
+  fullName: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, System.Type, System.Action<System.Linq.Expressions.ParameterExpression>)
+  fullName.vb: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.MatchBuilder, System.Type, System.Action(Of System.Linq.Expressions.ParameterExpression))
+  nameWithType: CodeGenerator.Case(MatchBuilder, Type, Action<ParameterExpression>)
+  nameWithType.vb: CodeGenerator.Case(MatchBuilder, Type, Action(Of ParameterExpression))
 - uid: DotNext.Metaprogramming.CodeGenerator.Case(DotNext.Metaprogramming.SwitchBuilder,System.Collections.Generic.IEnumerable{System.Linq.Expressions.Expression},System.Action)
   name: Case(SwitchBuilder, IEnumerable<Expression>, Action)
   href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Case_DotNext_Metaprogramming_SwitchBuilder_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__System_Action_
@@ -8445,6 +8921,24 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.CodeGenerator.Case
   nameWithType: CodeGenerator.Case
+- uid: DotNext.Metaprogramming.CodeGenerator.Case``1(DotNext.Metaprogramming.MatchBuilder,DotNext.Metaprogramming.MatchBuilder.Pattern,System.Action{System.Linq.Expressions.ParameterExpression})
+  name: Case<T>(MatchBuilder, MatchBuilder.Pattern, Action<ParameterExpression>)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Case__1_DotNext_Metaprogramming_MatchBuilder_DotNext_Metaprogramming_MatchBuilder_Pattern_System_Action_System_Linq_Expressions_ParameterExpression__
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.Case``1(DotNext.Metaprogramming.MatchBuilder,DotNext.Metaprogramming.MatchBuilder.Pattern,System.Action{System.Linq.Expressions.ParameterExpression})
+  name.vb: Case(Of T)(MatchBuilder, MatchBuilder.Pattern, Action(Of ParameterExpression))
+  fullName: DotNext.Metaprogramming.CodeGenerator.Case<T>(DotNext.Metaprogramming.MatchBuilder, DotNext.Metaprogramming.MatchBuilder.Pattern, System.Action<System.Linq.Expressions.ParameterExpression>)
+  fullName.vb: DotNext.Metaprogramming.CodeGenerator.Case(Of T)(DotNext.Metaprogramming.MatchBuilder, DotNext.Metaprogramming.MatchBuilder.Pattern, System.Action(Of System.Linq.Expressions.ParameterExpression))
+  nameWithType: CodeGenerator.Case<T>(MatchBuilder, MatchBuilder.Pattern, Action<ParameterExpression>)
+  nameWithType.vb: CodeGenerator.Case(Of T)(MatchBuilder, MatchBuilder.Pattern, Action(Of ParameterExpression))
+- uid: DotNext.Metaprogramming.CodeGenerator.Case``1(DotNext.Metaprogramming.MatchBuilder,System.Action{System.Linq.Expressions.ParameterExpression})
+  name: Case<T>(MatchBuilder, Action<ParameterExpression>)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Case__1_DotNext_Metaprogramming_MatchBuilder_System_Action_System_Linq_Expressions_ParameterExpression__
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.Case``1(DotNext.Metaprogramming.MatchBuilder,System.Action{System.Linq.Expressions.ParameterExpression})
+  name.vb: Case(Of T)(MatchBuilder, Action(Of ParameterExpression))
+  fullName: DotNext.Metaprogramming.CodeGenerator.Case<T>(DotNext.Metaprogramming.MatchBuilder, System.Action<System.Linq.Expressions.ParameterExpression>)
+  fullName.vb: DotNext.Metaprogramming.CodeGenerator.Case(Of T)(DotNext.Metaprogramming.MatchBuilder, System.Action(Of System.Linq.Expressions.ParameterExpression))
+  nameWithType: CodeGenerator.Case<T>(MatchBuilder, Action<ParameterExpression>)
+  nameWithType.vb: CodeGenerator.Case(Of T)(MatchBuilder, Action(Of ParameterExpression))
 - uid: DotNext.Metaprogramming.CodeGenerator.Catch(DotNext.Metaprogramming.TryBuilder,System.Action)
   name: Catch(TryBuilder, Action)
   href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Catch_DotNext_Metaprogramming_TryBuilder_System_Action_
@@ -8560,6 +9054,15 @@ references:
   fullName.vb: DotNext.Metaprogramming.CodeGenerator.DeclareVariable(Of T)(System.String)
   nameWithType: CodeGenerator.DeclareVariable<T>(String)
   nameWithType.vb: CodeGenerator.DeclareVariable(Of T)(String)
+- uid: DotNext.Metaprogramming.CodeGenerator.Default(DotNext.Metaprogramming.MatchBuilder,System.Action{System.Linq.Expressions.ParameterExpression})
+  name: Default(MatchBuilder, Action<ParameterExpression>)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Default_DotNext_Metaprogramming_MatchBuilder_System_Action_System_Linq_Expressions_ParameterExpression__
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.Default(DotNext.Metaprogramming.MatchBuilder,System.Action{System.Linq.Expressions.ParameterExpression})
+  name.vb: Default(MatchBuilder, Action(Of ParameterExpression))
+  fullName: DotNext.Metaprogramming.CodeGenerator.Default(DotNext.Metaprogramming.MatchBuilder, System.Action<System.Linq.Expressions.ParameterExpression>)
+  fullName.vb: DotNext.Metaprogramming.CodeGenerator.Default(DotNext.Metaprogramming.MatchBuilder, System.Action(Of System.Linq.Expressions.ParameterExpression))
+  nameWithType: CodeGenerator.Default(MatchBuilder, Action<ParameterExpression>)
+  nameWithType.vb: CodeGenerator.Default(MatchBuilder, Action(Of ParameterExpression))
 - uid: DotNext.Metaprogramming.CodeGenerator.Default(DotNext.Metaprogramming.SwitchBuilder,System.Action)
   name: Default(SwitchBuilder, Action)
   href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Default_DotNext_Metaprogramming_SwitchBuilder_System_Action_
@@ -8938,6 +9441,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Metaprogramming.CodeGenerator.Loop
   nameWithType: CodeGenerator.Loop
+- uid: DotNext.Metaprogramming.CodeGenerator.Match(System.Linq.Expressions.Expression)
+  name: Match(Expression)
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Match_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Metaprogramming.CodeGenerator.Match(System.Linq.Expressions.Expression)
+  fullName: DotNext.Metaprogramming.CodeGenerator.Match(System.Linq.Expressions.Expression)
+  nameWithType: CodeGenerator.Match(Expression)
+- uid: DotNext.Metaprogramming.CodeGenerator.Match*
+  name: Match
+  href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Match_
+  commentId: Overload:DotNext.Metaprogramming.CodeGenerator.Match
+  isSpec: "True"
+  fullName: DotNext.Metaprogramming.CodeGenerator.Match
+  nameWithType: CodeGenerator.Match
 - uid: DotNext.Metaprogramming.CodeGenerator.Nop
   name: Nop()
   href: api/DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Nop
@@ -9544,6 +10060,122 @@ references:
   fullName: DotNext.Metaprogramming.LoopContext.System.IDisposable.Dispose
   nameWithType: LoopContext.IDisposable.Dispose
   nameWithType.vb: LoopContext.System.IDisposable.Dispose
+- uid: DotNext.Metaprogramming.MatchBuilder
+  name: MatchBuilder
+  href: api/DotNext.Metaprogramming.MatchBuilder.html
+  commentId: T:DotNext.Metaprogramming.MatchBuilder
+  fullName: DotNext.Metaprogramming.MatchBuilder
+  nameWithType: MatchBuilder
+- uid: DotNext.Metaprogramming.MatchBuilder.Case(DotNext.Metaprogramming.MatchBuilder.Pattern,DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  name: Case(MatchBuilder.Pattern, MatchBuilder.CaseStatement)
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Case_DotNext_Metaprogramming_MatchBuilder_Pattern_DotNext_Metaprogramming_MatchBuilder_CaseStatement_
+  commentId: M:DotNext.Metaprogramming.MatchBuilder.Case(DotNext.Metaprogramming.MatchBuilder.Pattern,DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  fullName: DotNext.Metaprogramming.MatchBuilder.Case(DotNext.Metaprogramming.MatchBuilder.Pattern, DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  nameWithType: MatchBuilder.Case(MatchBuilder.Pattern, MatchBuilder.CaseStatement)
+- uid: DotNext.Metaprogramming.MatchBuilder.Case(DotNext.Metaprogramming.MatchBuilder.Pattern,System.Linq.Expressions.Expression)
+  name: Case(MatchBuilder.Pattern, Expression)
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Case_DotNext_Metaprogramming_MatchBuilder_Pattern_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Metaprogramming.MatchBuilder.Case(DotNext.Metaprogramming.MatchBuilder.Pattern,System.Linq.Expressions.Expression)
+  fullName: DotNext.Metaprogramming.MatchBuilder.Case(DotNext.Metaprogramming.MatchBuilder.Pattern, System.Linq.Expressions.Expression)
+  nameWithType: MatchBuilder.Case(MatchBuilder.Pattern, Expression)
+- uid: DotNext.Metaprogramming.MatchBuilder.Case(System.Object,DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  name: Case(Object, MatchBuilder.CaseStatement)
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Case_System_Object_DotNext_Metaprogramming_MatchBuilder_CaseStatement_
+  commentId: M:DotNext.Metaprogramming.MatchBuilder.Case(System.Object,DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  fullName: DotNext.Metaprogramming.MatchBuilder.Case(System.Object, DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  nameWithType: MatchBuilder.Case(Object, MatchBuilder.CaseStatement)
+- uid: DotNext.Metaprogramming.MatchBuilder.Case(System.Object,System.Linq.Expressions.Expression)
+  name: Case(Object, Expression)
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Case_System_Object_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Metaprogramming.MatchBuilder.Case(System.Object,System.Linq.Expressions.Expression)
+  fullName: DotNext.Metaprogramming.MatchBuilder.Case(System.Object, System.Linq.Expressions.Expression)
+  nameWithType: MatchBuilder.Case(Object, Expression)
+- uid: DotNext.Metaprogramming.MatchBuilder.Case(System.String,System.Linq.Expressions.Expression,System.Func{System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression})
+  name: Case(String, Expression, Func<MemberExpression, Expression>)
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Case_System_String_System_Linq_Expressions_Expression_System_Func_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_Expression__
+  commentId: M:DotNext.Metaprogramming.MatchBuilder.Case(System.String,System.Linq.Expressions.Expression,System.Func{System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression})
+  name.vb: Case(String, Expression, Func(Of MemberExpression, Expression))
+  fullName: DotNext.Metaprogramming.MatchBuilder.Case(System.String, System.Linq.Expressions.Expression, System.Func<System.Linq.Expressions.MemberExpression, System.Linq.Expressions.Expression>)
+  fullName.vb: DotNext.Metaprogramming.MatchBuilder.Case(System.String, System.Linq.Expressions.Expression, System.Func(Of System.Linq.Expressions.MemberExpression, System.Linq.Expressions.Expression))
+  nameWithType: MatchBuilder.Case(String, Expression, Func<MemberExpression, Expression>)
+  nameWithType.vb: MatchBuilder.Case(String, Expression, Func(Of MemberExpression, Expression))
+- uid: DotNext.Metaprogramming.MatchBuilder.Case(System.String,System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression,System.Func{System.Linq.Expressions.MemberExpression,System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression})
+  name: Case(String, Expression, String, Expression, Func<MemberExpression, MemberExpression, Expression>)
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Case_System_String_System_Linq_Expressions_Expression_System_String_System_Linq_Expressions_Expression_System_Func_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_Expression__
+  commentId: M:DotNext.Metaprogramming.MatchBuilder.Case(System.String,System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression,System.Func{System.Linq.Expressions.MemberExpression,System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression})
+  name.vb: Case(String, Expression, String, Expression, Func(Of MemberExpression, MemberExpression, Expression))
+  fullName: DotNext.Metaprogramming.MatchBuilder.Case(System.String, System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression, System.Func<System.Linq.Expressions.MemberExpression, System.Linq.Expressions.MemberExpression, System.Linq.Expressions.Expression>)
+  fullName.vb: DotNext.Metaprogramming.MatchBuilder.Case(System.String, System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression, System.Func(Of System.Linq.Expressions.MemberExpression, System.Linq.Expressions.MemberExpression, System.Linq.Expressions.Expression))
+  nameWithType: MatchBuilder.Case(String, Expression, String, Expression, Func<MemberExpression, MemberExpression, Expression>)
+  nameWithType.vb: MatchBuilder.Case(String, Expression, String, Expression, Func(Of MemberExpression, MemberExpression, Expression))
+- uid: DotNext.Metaprogramming.MatchBuilder.Case(System.String,System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression,System.Func{System.Linq.Expressions.MemberExpression,System.Linq.Expressions.MemberExpression,System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression})
+  name: Case(String, Expression, String, Expression, String, Expression, Func<MemberExpression, MemberExpression, MemberExpression, Expression>)
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Case_System_String_System_Linq_Expressions_Expression_System_String_System_Linq_Expressions_Expression_System_String_System_Linq_Expressions_Expression_System_Func_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_MemberExpression_System_Linq_Expressions_Expression__
+  commentId: M:DotNext.Metaprogramming.MatchBuilder.Case(System.String,System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.Expression,System.Func{System.Linq.Expressions.MemberExpression,System.Linq.Expressions.MemberExpression,System.Linq.Expressions.MemberExpression,System.Linq.Expressions.Expression})
+  name.vb: Case(String, Expression, String, Expression, String, Expression, Func(Of MemberExpression, MemberExpression, MemberExpression, Expression))
+  fullName: DotNext.Metaprogramming.MatchBuilder.Case(System.String, System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression, System.Func<System.Linq.Expressions.MemberExpression, System.Linq.Expressions.MemberExpression, System.Linq.Expressions.MemberExpression, System.Linq.Expressions.Expression>)
+  fullName.vb: DotNext.Metaprogramming.MatchBuilder.Case(System.String, System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression, System.String, System.Linq.Expressions.Expression, System.Func(Of System.Linq.Expressions.MemberExpression, System.Linq.Expressions.MemberExpression, System.Linq.Expressions.MemberExpression, System.Linq.Expressions.Expression))
+  nameWithType: MatchBuilder.Case(String, Expression, String, Expression, String, Expression, Func<MemberExpression, MemberExpression, MemberExpression, Expression>)
+  nameWithType.vb: MatchBuilder.Case(String, Expression, String, Expression, String, Expression, Func(Of MemberExpression, MemberExpression, MemberExpression, Expression))
+- uid: DotNext.Metaprogramming.MatchBuilder.Case(System.Type,DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  name: Case(Type, MatchBuilder.CaseStatement)
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Case_System_Type_DotNext_Metaprogramming_MatchBuilder_CaseStatement_
+  commentId: M:DotNext.Metaprogramming.MatchBuilder.Case(System.Type,DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  fullName: DotNext.Metaprogramming.MatchBuilder.Case(System.Type, DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  nameWithType: MatchBuilder.Case(Type, MatchBuilder.CaseStatement)
+- uid: DotNext.Metaprogramming.MatchBuilder.Case(System.Type,DotNext.Metaprogramming.MatchBuilder.Pattern,DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  name: Case(Type, MatchBuilder.Pattern, MatchBuilder.CaseStatement)
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Case_System_Type_DotNext_Metaprogramming_MatchBuilder_Pattern_DotNext_Metaprogramming_MatchBuilder_CaseStatement_
+  commentId: M:DotNext.Metaprogramming.MatchBuilder.Case(System.Type,DotNext.Metaprogramming.MatchBuilder.Pattern,DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  fullName: DotNext.Metaprogramming.MatchBuilder.Case(System.Type, DotNext.Metaprogramming.MatchBuilder.Pattern, DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  nameWithType: MatchBuilder.Case(Type, MatchBuilder.Pattern, MatchBuilder.CaseStatement)
+- uid: DotNext.Metaprogramming.MatchBuilder.Case*
+  name: Case
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Case_
+  commentId: Overload:DotNext.Metaprogramming.MatchBuilder.Case
+  isSpec: "True"
+  fullName: DotNext.Metaprogramming.MatchBuilder.Case
+  nameWithType: MatchBuilder.Case
+- uid: DotNext.Metaprogramming.MatchBuilder.Case``1(DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  name: Case<T>(MatchBuilder.CaseStatement)
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Case__1_DotNext_Metaprogramming_MatchBuilder_CaseStatement_
+  commentId: M:DotNext.Metaprogramming.MatchBuilder.Case``1(DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  name.vb: Case(Of T)(MatchBuilder.CaseStatement)
+  fullName: DotNext.Metaprogramming.MatchBuilder.Case<T>(DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  fullName.vb: DotNext.Metaprogramming.MatchBuilder.Case(Of T)(DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  nameWithType: MatchBuilder.Case<T>(MatchBuilder.CaseStatement)
+  nameWithType.vb: MatchBuilder.Case(Of T)(MatchBuilder.CaseStatement)
+- uid: DotNext.Metaprogramming.MatchBuilder.CaseStatement
+  name: MatchBuilder.CaseStatement
+  href: api/DotNext.Metaprogramming.MatchBuilder.CaseStatement.html
+  commentId: T:DotNext.Metaprogramming.MatchBuilder.CaseStatement
+  fullName: DotNext.Metaprogramming.MatchBuilder.CaseStatement
+  nameWithType: MatchBuilder.CaseStatement
+- uid: DotNext.Metaprogramming.MatchBuilder.Default(DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  name: Default(MatchBuilder.CaseStatement)
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Default_DotNext_Metaprogramming_MatchBuilder_CaseStatement_
+  commentId: M:DotNext.Metaprogramming.MatchBuilder.Default(DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  fullName: DotNext.Metaprogramming.MatchBuilder.Default(DotNext.Metaprogramming.MatchBuilder.CaseStatement)
+  nameWithType: MatchBuilder.Default(MatchBuilder.CaseStatement)
+- uid: DotNext.Metaprogramming.MatchBuilder.Default(System.Linq.Expressions.Expression)
+  name: Default(Expression)
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Default_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Metaprogramming.MatchBuilder.Default(System.Linq.Expressions.Expression)
+  fullName: DotNext.Metaprogramming.MatchBuilder.Default(System.Linq.Expressions.Expression)
+  nameWithType: MatchBuilder.Default(Expression)
+- uid: DotNext.Metaprogramming.MatchBuilder.Default*
+  name: Default
+  href: api/DotNext.Metaprogramming.MatchBuilder.html#DotNext_Metaprogramming_MatchBuilder_Default_
+  commentId: Overload:DotNext.Metaprogramming.MatchBuilder.Default
+  isSpec: "True"
+  fullName: DotNext.Metaprogramming.MatchBuilder.Default
+  nameWithType: MatchBuilder.Default
+- uid: DotNext.Metaprogramming.MatchBuilder.Pattern
+  name: MatchBuilder.Pattern
+  href: api/DotNext.Metaprogramming.MatchBuilder.Pattern.html
+  commentId: T:DotNext.Metaprogramming.MatchBuilder.Pattern
+  fullName: DotNext.Metaprogramming.MatchBuilder.Pattern
+  nameWithType: MatchBuilder.Pattern
 - uid: DotNext.Metaprogramming.SwitchBuilder
   name: SwitchBuilder
   href: api/DotNext.Metaprogramming.SwitchBuilder.html
@@ -9785,6 +10417,42 @@ references:
   fullName.vb: DotNext.Number(Of T).Equality
   nameWithType: Number<T>.Equality
   nameWithType.vb: Number(Of T).Equality
+- uid: DotNext.Number`1.op_GreaterThan(DotNext.Number{`0},`0)
+  name: GreaterThan(Number<T>, T)
+  href: api/DotNext.Number-1.html#DotNext_Number_1_op_GreaterThan_DotNext_Number__0___0_
+  commentId: M:DotNext.Number`1.op_GreaterThan(DotNext.Number{`0},`0)
+  name.vb: GreaterThan(Number(Of T), T)
+  fullName: DotNext.Number<T>.GreaterThan(DotNext.Number<T>, T)
+  fullName.vb: DotNext.Number(Of T).GreaterThan(DotNext.Number(Of T), T)
+  nameWithType: Number<T>.GreaterThan(Number<T>, T)
+  nameWithType.vb: Number(Of T).GreaterThan(Number(Of T), T)
+- uid: DotNext.Number`1.op_GreaterThan*
+  name: GreaterThan
+  href: api/DotNext.Number-1.html#DotNext_Number_1_op_GreaterThan_
+  commentId: Overload:DotNext.Number`1.op_GreaterThan
+  isSpec: "True"
+  fullName: DotNext.Number<T>.GreaterThan
+  fullName.vb: DotNext.Number(Of T).GreaterThan
+  nameWithType: Number<T>.GreaterThan
+  nameWithType.vb: Number(Of T).GreaterThan
+- uid: DotNext.Number`1.op_GreaterThanOrEqual(DotNext.Number{`0},`0)
+  name: GreaterThanOrEqual(Number<T>, T)
+  href: api/DotNext.Number-1.html#DotNext_Number_1_op_GreaterThanOrEqual_DotNext_Number__0___0_
+  commentId: M:DotNext.Number`1.op_GreaterThanOrEqual(DotNext.Number{`0},`0)
+  name.vb: GreaterThanOrEqual(Number(Of T), T)
+  fullName: DotNext.Number<T>.GreaterThanOrEqual(DotNext.Number<T>, T)
+  fullName.vb: DotNext.Number(Of T).GreaterThanOrEqual(DotNext.Number(Of T), T)
+  nameWithType: Number<T>.GreaterThanOrEqual(Number<T>, T)
+  nameWithType.vb: Number(Of T).GreaterThanOrEqual(Number(Of T), T)
+- uid: DotNext.Number`1.op_GreaterThanOrEqual*
+  name: GreaterThanOrEqual
+  href: api/DotNext.Number-1.html#DotNext_Number_1_op_GreaterThanOrEqual_
+  commentId: Overload:DotNext.Number`1.op_GreaterThanOrEqual
+  isSpec: "True"
+  fullName: DotNext.Number<T>.GreaterThanOrEqual
+  fullName.vb: DotNext.Number(Of T).GreaterThanOrEqual
+  nameWithType: Number<T>.GreaterThanOrEqual
+  nameWithType.vb: Number(Of T).GreaterThanOrEqual
 - uid: DotNext.Number`1.op_Implicit(DotNext.Number{`0})~`0
   name: Implicit(Number<T> to T)
   href: api/DotNext.Number-1.html#DotNext_Number_1_op_Implicit_DotNext_Number__0____0
@@ -9822,6 +10490,42 @@ references:
   fullName.vb: DotNext.Number(Of T).Inequality
   nameWithType: Number<T>.Inequality
   nameWithType.vb: Number(Of T).Inequality
+- uid: DotNext.Number`1.op_LessThan(DotNext.Number{`0},`0)
+  name: LessThan(Number<T>, T)
+  href: api/DotNext.Number-1.html#DotNext_Number_1_op_LessThan_DotNext_Number__0___0_
+  commentId: M:DotNext.Number`1.op_LessThan(DotNext.Number{`0},`0)
+  name.vb: LessThan(Number(Of T), T)
+  fullName: DotNext.Number<T>.LessThan(DotNext.Number<T>, T)
+  fullName.vb: DotNext.Number(Of T).LessThan(DotNext.Number(Of T), T)
+  nameWithType: Number<T>.LessThan(Number<T>, T)
+  nameWithType.vb: Number(Of T).LessThan(Number(Of T), T)
+- uid: DotNext.Number`1.op_LessThan*
+  name: LessThan
+  href: api/DotNext.Number-1.html#DotNext_Number_1_op_LessThan_
+  commentId: Overload:DotNext.Number`1.op_LessThan
+  isSpec: "True"
+  fullName: DotNext.Number<T>.LessThan
+  fullName.vb: DotNext.Number(Of T).LessThan
+  nameWithType: Number<T>.LessThan
+  nameWithType.vb: Number(Of T).LessThan
+- uid: DotNext.Number`1.op_LessThanOrEqual(DotNext.Number{`0},`0)
+  name: LessThanOrEqual(Number<T>, T)
+  href: api/DotNext.Number-1.html#DotNext_Number_1_op_LessThanOrEqual_DotNext_Number__0___0_
+  commentId: M:DotNext.Number`1.op_LessThanOrEqual(DotNext.Number{`0},`0)
+  name.vb: LessThanOrEqual(Number(Of T), T)
+  fullName: DotNext.Number<T>.LessThanOrEqual(DotNext.Number<T>, T)
+  fullName.vb: DotNext.Number(Of T).LessThanOrEqual(DotNext.Number(Of T), T)
+  nameWithType: Number<T>.LessThanOrEqual(Number<T>, T)
+  nameWithType.vb: Number(Of T).LessThanOrEqual(Number(Of T), T)
+- uid: DotNext.Number`1.op_LessThanOrEqual*
+  name: LessThanOrEqual
+  href: api/DotNext.Number-1.html#DotNext_Number_1_op_LessThanOrEqual_
+  commentId: Overload:DotNext.Number`1.op_LessThanOrEqual
+  isSpec: "True"
+  fullName: DotNext.Number<T>.LessThanOrEqual
+  fullName.vb: DotNext.Number(Of T).LessThanOrEqual
+  nameWithType: Number<T>.LessThanOrEqual
+  nameWithType.vb: Number(Of T).LessThanOrEqual
 - uid: DotNext.Number`1.op_Multiply(DotNext.Number{`0},`0)
   name: Multiply(Number<T>, T)
   href: api/DotNext.Number-1.html#DotNext_Number_1_op_Multiply_DotNext_Number__0___0_
@@ -9911,6 +10615,44 @@ references:
   fullName.vb: DotNext.Number(Of T).Parse
   nameWithType: Number<T>.Parse
   nameWithType.vb: Number(Of T).Parse
+- uid: DotNext.Number`1.System#IComparable{T}#CompareTo(`0)
+  name: IComparable<T>.CompareTo(T)
+  href: api/DotNext.Number-1.html#DotNext_Number_1_System_IComparable_T__CompareTo__0_
+  commentId: M:DotNext.Number`1.System#IComparable{T}#CompareTo(`0)
+  name.vb: System.IComparable<T>.CompareTo(T)
+  fullName: DotNext.Number<T>.System.IComparable<T>.CompareTo(T)
+  fullName.vb: DotNext.Number(Of T).System.IComparable<T>.CompareTo(T)
+  nameWithType: Number<T>.IComparable<T>.CompareTo(T)
+  nameWithType.vb: Number(Of T).System.IComparable<T>.CompareTo(T)
+- uid: DotNext.Number`1.System#IComparable{T}#CompareTo*
+  name: IComparable<T>.CompareTo
+  href: api/DotNext.Number-1.html#DotNext_Number_1_System_IComparable_T__CompareTo_
+  commentId: Overload:DotNext.Number`1.System#IComparable{T}#CompareTo
+  isSpec: "True"
+  name.vb: System.IComparable<T>.CompareTo
+  fullName: DotNext.Number<T>.System.IComparable<T>.CompareTo
+  fullName.vb: DotNext.Number(Of T).System.IComparable<T>.CompareTo
+  nameWithType: Number<T>.IComparable<T>.CompareTo
+  nameWithType.vb: Number(Of T).System.IComparable<T>.CompareTo
+- uid: DotNext.Number`1.System#IEquatable{DotNext#Number{T}}#Equals(DotNext.Number{`0})
+  name: IEquatable<Number<T>>.Equals(Number<T>)
+  href: api/DotNext.Number-1.html#DotNext_Number_1_System_IEquatable_DotNext_Number_T___Equals_DotNext_Number__0__
+  commentId: M:DotNext.Number`1.System#IEquatable{DotNext#Number{T}}#Equals(DotNext.Number{`0})
+  name.vb: System.IEquatable<DotNext.Number<T>>.Equals(Number(Of T))
+  fullName: DotNext.Number<T>.System.IEquatable<DotNext.Number<T>>.Equals(DotNext.Number<T>)
+  fullName.vb: DotNext.Number(Of T).System.IEquatable<DotNext.Number<T>>.Equals(DotNext.Number(Of T))
+  nameWithType: Number<T>.IEquatable<Number<T>>.Equals(Number<T>)
+  nameWithType.vb: Number(Of T).System.IEquatable<DotNext.Number<T>>.Equals(Number(Of T))
+- uid: DotNext.Number`1.System#IEquatable{DotNext#Number{T}}#Equals*
+  name: IEquatable<Number<T>>.Equals
+  href: api/DotNext.Number-1.html#DotNext_Number_1_System_IEquatable_DotNext_Number_T___Equals_
+  commentId: Overload:DotNext.Number`1.System#IEquatable{DotNext#Number{T}}#Equals
+  isSpec: "True"
+  name.vb: System.IEquatable<DotNext.Number<T>>.Equals
+  fullName: DotNext.Number<T>.System.IEquatable<DotNext.Number<T>>.Equals
+  fullName.vb: DotNext.Number(Of T).System.IEquatable<DotNext.Number<T>>.Equals
+  nameWithType: Number<T>.IEquatable<Number<T>>.Equals
+  nameWithType.vb: Number(Of T).System.IEquatable<DotNext.Number<T>>.Equals
 - uid: DotNext.Number`1.ToString
   name: ToString()
   href: api/DotNext.Number-1.html#DotNext_Number_1_ToString
@@ -10919,6 +11661,25 @@ references:
   fullName.vb: DotNext.Optional(Of T).System.IEquatable<DotNext.Optional<T>>.Equals
   nameWithType: Optional<T>.IEquatable<Optional<T>>.Equals
   nameWithType.vb: Optional(Of T).System.IEquatable<DotNext.Optional<T>>.Equals
+- uid: DotNext.Optional`1.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  name: ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+  href: api/DotNext.Optional-1.html#DotNext_Optional_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
+  commentId: M:DotNext.Optional`1.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  name.vb: System.Runtime.Serialization.ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+  fullName: DotNext.Optional<T>.System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  fullName.vb: DotNext.Optional(Of T).System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  nameWithType: Optional<T>.ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+  nameWithType.vb: Optional(Of T).System.Runtime.Serialization.ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+- uid: DotNext.Optional`1.System#Runtime#Serialization#ISerializable#GetObjectData*
+  name: ISerializable.GetObjectData
+  href: api/DotNext.Optional-1.html#DotNext_Optional_1_System_Runtime_Serialization_ISerializable_GetObjectData_
+  commentId: Overload:DotNext.Optional`1.System#Runtime#Serialization#ISerializable#GetObjectData
+  isSpec: "True"
+  name.vb: System.Runtime.Serialization.ISerializable.GetObjectData
+  fullName: DotNext.Optional<T>.System.Runtime.Serialization.ISerializable.GetObjectData
+  fullName.vb: DotNext.Optional(Of T).System.Runtime.Serialization.ISerializable.GetObjectData
+  nameWithType: Optional<T>.ISerializable.GetObjectData
+  nameWithType.vb: Optional(Of T).System.Runtime.Serialization.ISerializable.GetObjectData
 - uid: DotNext.Optional`1.ToString
   name: ToString()
   href: api/DotNext.Optional-1.html#DotNext_Optional_1_ToString
@@ -11679,6 +12440,19 @@ references:
   commentId: T:DotNext.Reflection.CollectionType
   fullName: DotNext.Reflection.CollectionType
   nameWithType: CollectionType
+- uid: DotNext.Reflection.CollectionType.GetImplementedCollection(System.Type)
+  name: GetImplementedCollection(Type)
+  href: api/DotNext.Reflection.CollectionType.html#DotNext_Reflection_CollectionType_GetImplementedCollection_System_Type_
+  commentId: M:DotNext.Reflection.CollectionType.GetImplementedCollection(System.Type)
+  fullName: DotNext.Reflection.CollectionType.GetImplementedCollection(System.Type)
+  nameWithType: CollectionType.GetImplementedCollection(Type)
+- uid: DotNext.Reflection.CollectionType.GetImplementedCollection*
+  name: GetImplementedCollection
+  href: api/DotNext.Reflection.CollectionType.html#DotNext_Reflection_CollectionType_GetImplementedCollection_
+  commentId: Overload:DotNext.Reflection.CollectionType.GetImplementedCollection
+  isSpec: "True"
+  fullName: DotNext.Reflection.CollectionType.GetImplementedCollection
+  nameWithType: CollectionType.GetImplementedCollection
 - uid: DotNext.Reflection.CollectionType.GetItemType(System.Type)
   name: GetItemType(Type)
   href: api/DotNext.Reflection.CollectionType.html#DotNext_Reflection_CollectionType_GetItemType_System_Type_
@@ -17544,6 +18318,25 @@ references:
   fullName.vb: DotNext.Reflection.Ref(Of T).Inequality
   nameWithType: Ref<T>.Inequality
   nameWithType.vb: Ref(Of T).Inequality
+- uid: DotNext.Reflection.Ref`1.System#IEquatable{DotNext#Reflection#Ref{T}}#Equals(DotNext.Reflection.Ref{`0})
+  name: IEquatable<Ref<T>>.Equals(Ref<T>)
+  href: api/DotNext.Reflection.Ref-1.html#DotNext_Reflection_Ref_1_System_IEquatable_DotNext_Reflection_Ref_T___Equals_DotNext_Reflection_Ref__0__
+  commentId: M:DotNext.Reflection.Ref`1.System#IEquatable{DotNext#Reflection#Ref{T}}#Equals(DotNext.Reflection.Ref{`0})
+  name.vb: System.IEquatable<DotNext.Reflection.Ref<T>>.Equals(Ref(Of T))
+  fullName: DotNext.Reflection.Ref<T>.System.IEquatable<DotNext.Reflection.Ref<T>>.Equals(DotNext.Reflection.Ref<T>)
+  fullName.vb: DotNext.Reflection.Ref(Of T).System.IEquatable<DotNext.Reflection.Ref<T>>.Equals(DotNext.Reflection.Ref(Of T))
+  nameWithType: Ref<T>.IEquatable<Ref<T>>.Equals(Ref<T>)
+  nameWithType.vb: Ref(Of T).System.IEquatable<DotNext.Reflection.Ref<T>>.Equals(Ref(Of T))
+- uid: DotNext.Reflection.Ref`1.System#IEquatable{DotNext#Reflection#Ref{T}}#Equals*
+  name: IEquatable<Ref<T>>.Equals
+  href: api/DotNext.Reflection.Ref-1.html#DotNext_Reflection_Ref_1_System_IEquatable_DotNext_Reflection_Ref_T___Equals_
+  commentId: Overload:DotNext.Reflection.Ref`1.System#IEquatable{DotNext#Reflection#Ref{T}}#Equals
+  isSpec: "True"
+  name.vb: System.IEquatable<DotNext.Reflection.Ref<T>>.Equals
+  fullName: DotNext.Reflection.Ref<T>.System.IEquatable<DotNext.Reflection.Ref<T>>.Equals
+  fullName.vb: DotNext.Reflection.Ref(Of T).System.IEquatable<DotNext.Reflection.Ref<T>>.Equals
+  nameWithType: Ref<T>.IEquatable<Ref<T>>.Equals
+  nameWithType.vb: Ref(Of T).System.IEquatable<DotNext.Reflection.Ref<T>>.Equals
 - uid: DotNext.Reflection.Ref`1.System#Runtime#CompilerServices#IStrongBox#Value
   name: IStrongBox.Value
   href: api/DotNext.Reflection.Ref-1.html#DotNext_Reflection_Ref_1_System_Runtime_CompilerServices_IStrongBox_Value
@@ -23214,6 +24007,23 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).ReadFrom
   nameWithType: UnmanagedArray<T>.ReadFrom
   nameWithType.vb: UnmanagedArray(Of T).ReadFrom
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Reverse
+  name: Reverse()
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Reverse
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedArray`1.Reverse
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Reverse()
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Reverse()
+  nameWithType: UnmanagedArray<T>.Reverse()
+  nameWithType.vb: UnmanagedArray(Of T).Reverse()
+- uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Reverse*
+  name: Reverse
+  href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Reverse_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedArray`1.Reverse
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.UnmanagedArray<T>.Reverse
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedArray(Of T).Reverse
+  nameWithType: UnmanagedArray<T>.Reverse
+  nameWithType.vb: UnmanagedArray(Of T).Reverse
 - uid: DotNext.Runtime.InteropServices.UnmanagedArray`1.Size
   name: Size
   href: api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html#DotNext_Runtime_InteropServices_UnmanagedArray_1_Size
@@ -26869,6 +27679,23 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AtomicBoolean.SetAndGet
   nameWithType: AtomicBoolean.SetAndGet
+- uid: DotNext.Threading.AtomicBoolean.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  name: ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+  href: api/DotNext.Threading.AtomicBoolean.html#DotNext_Threading_AtomicBoolean_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
+  commentId: M:DotNext.Threading.AtomicBoolean.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  name.vb: System.Runtime.Serialization.ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+  fullName: DotNext.Threading.AtomicBoolean.System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  nameWithType: AtomicBoolean.ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+  nameWithType.vb: AtomicBoolean.System.Runtime.Serialization.ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+- uid: DotNext.Threading.AtomicBoolean.System#Runtime#Serialization#ISerializable#GetObjectData*
+  name: ISerializable.GetObjectData
+  href: api/DotNext.Threading.AtomicBoolean.html#DotNext_Threading_AtomicBoolean_System_Runtime_Serialization_ISerializable_GetObjectData_
+  commentId: Overload:DotNext.Threading.AtomicBoolean.System#Runtime#Serialization#ISerializable#GetObjectData
+  isSpec: "True"
+  name.vb: System.Runtime.Serialization.ISerializable.GetObjectData
+  fullName: DotNext.Threading.AtomicBoolean.System.Runtime.Serialization.ISerializable.GetObjectData
+  nameWithType: AtomicBoolean.ISerializable.GetObjectData
+  nameWithType.vb: AtomicBoolean.System.Runtime.Serialization.ISerializable.GetObjectData
 - uid: DotNext.Threading.AtomicBoolean.ToString
   name: ToString()
   href: api/DotNext.Threading.AtomicBoolean.html#DotNext_Threading_AtomicBoolean_ToString
@@ -29011,6 +29838,25 @@ references:
   fullName.vb: DotNext.Threading.AtomicReference(Of T).SetIfNull(Of G)()
   nameWithType: AtomicReference<T>.SetIfNull<G>()
   nameWithType.vb: AtomicReference(Of T).SetIfNull(Of G)()
+- uid: DotNext.Threading.AtomicReference`1.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  name: ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+  href: api/DotNext.Threading.AtomicReference-1.html#DotNext_Threading_AtomicReference_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
+  commentId: M:DotNext.Threading.AtomicReference`1.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
+  name.vb: System.Runtime.Serialization.ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+  fullName: DotNext.Threading.AtomicReference<T>.System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  fullName.vb: DotNext.Threading.AtomicReference(Of T).System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo, System.Runtime.Serialization.StreamingContext)
+  nameWithType: AtomicReference<T>.ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+  nameWithType.vb: AtomicReference(Of T).System.Runtime.Serialization.ISerializable.GetObjectData(SerializationInfo, StreamingContext)
+- uid: DotNext.Threading.AtomicReference`1.System#Runtime#Serialization#ISerializable#GetObjectData*
+  name: ISerializable.GetObjectData
+  href: api/DotNext.Threading.AtomicReference-1.html#DotNext_Threading_AtomicReference_1_System_Runtime_Serialization_ISerializable_GetObjectData_
+  commentId: Overload:DotNext.Threading.AtomicReference`1.System#Runtime#Serialization#ISerializable#GetObjectData
+  isSpec: "True"
+  name.vb: System.Runtime.Serialization.ISerializable.GetObjectData
+  fullName: DotNext.Threading.AtomicReference<T>.System.Runtime.Serialization.ISerializable.GetObjectData
+  fullName.vb: DotNext.Threading.AtomicReference(Of T).System.Runtime.Serialization.ISerializable.GetObjectData
+  nameWithType: AtomicReference<T>.ISerializable.GetObjectData
+  nameWithType.vb: AtomicReference(Of T).System.Runtime.Serialization.ISerializable.GetObjectData
 - uid: DotNext.Threading.AtomicReference`1.ToString
   name: ToString()
   href: api/DotNext.Threading.AtomicReference-1.html#DotNext_Threading_AtomicReference_1_ToString
@@ -29394,15 +30240,24 @@ references:
   fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T)
   nameWithType: ConcurrentObjectPool<T>
   nameWithType.vb: ConcurrentObjectPool(Of T)
-- uid: DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Collections.Generic.IList{`0})
-  name: ConcurrentObjectPool(IList<T>)
-  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Collections_Generic_IList__0__
-  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Collections.Generic.IList{`0})
-  name.vb: ConcurrentObjectPool(IList(Of T))
-  fullName: DotNext.Threading.ConcurrentObjectPool<T>.ConcurrentObjectPool(System.Collections.Generic.IList<T>)
-  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).ConcurrentObjectPool(System.Collections.Generic.IList(Of T))
-  nameWithType: ConcurrentObjectPool<T>.ConcurrentObjectPool(IList<T>)
-  nameWithType.vb: ConcurrentObjectPool(Of T).ConcurrentObjectPool(IList(Of T))
+- uid: DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Collections.Generic.IEnumerable{`0})
+  name: ConcurrentObjectPool(IEnumerable<T>)
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Collections_Generic_IEnumerable__0__
+  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Collections.Generic.IEnumerable{`0})
+  name.vb: ConcurrentObjectPool(IEnumerable(Of T))
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.ConcurrentObjectPool(System.Collections.Generic.IEnumerable<T>)
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).ConcurrentObjectPool(System.Collections.Generic.IEnumerable(Of T))
+  nameWithType: ConcurrentObjectPool<T>.ConcurrentObjectPool(IEnumerable<T>)
+  nameWithType.vb: ConcurrentObjectPool(Of T).ConcurrentObjectPool(IEnumerable(Of T))
+- uid: DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Int32,System.Func{`0})
+  name: ConcurrentObjectPool(Int32, Func<T>)
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Int32_System_Func__0__
+  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Int32,System.Func{`0})
+  name.vb: ConcurrentObjectPool(Int32, Func(Of T))
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.ConcurrentObjectPool(System.Int32, System.Func<T>)
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).ConcurrentObjectPool(System.Int32, System.Func(Of T))
+  nameWithType: ConcurrentObjectPool<T>.ConcurrentObjectPool(Int32, Func<T>)
+  nameWithType.vb: ConcurrentObjectPool(Of T).ConcurrentObjectPool(Int32, Func(Of T))
 - uid: DotNext.Threading.ConcurrentObjectPool`1.#ctor*
   name: ConcurrentObjectPool
   href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_
@@ -29412,14 +30267,66 @@ references:
   fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).ConcurrentObjectPool
   nameWithType: ConcurrentObjectPool<T>.ConcurrentObjectPool
   nameWithType.vb: ConcurrentObjectPool(Of T).ConcurrentObjectPool
-- uid: DotNext.Threading.ConcurrentObjectPool`1.objects
-  name: objects
-  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1_objects
-  commentId: F:DotNext.Threading.ConcurrentObjectPool`1.objects
-  fullName: DotNext.Threading.ConcurrentObjectPool<T>.objects
-  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).objects
-  nameWithType: ConcurrentObjectPool<T>.objects
-  nameWithType.vb: ConcurrentObjectPool(Of T).objects
+- uid: DotNext.Threading.ConcurrentObjectPool`1.Capacity
+  name: Capacity
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1_Capacity
+  commentId: P:DotNext.Threading.ConcurrentObjectPool`1.Capacity
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Capacity
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Capacity
+  nameWithType: ConcurrentObjectPool<T>.Capacity
+  nameWithType.vb: ConcurrentObjectPool(Of T).Capacity
+- uid: DotNext.Threading.ConcurrentObjectPool`1.Capacity*
+  name: Capacity
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1_Capacity_
+  commentId: Overload:DotNext.Threading.ConcurrentObjectPool`1.Capacity
+  isSpec: "True"
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Capacity
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Capacity
+  nameWithType: ConcurrentObjectPool<T>.Capacity
+  nameWithType.vb: ConcurrentObjectPool(Of T).Capacity
+- uid: DotNext.Threading.ConcurrentObjectPool`1.Dispose(System.Boolean)
+  name: Dispose(Boolean)
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1_Dispose_System_Boolean_
+  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.Dispose(System.Boolean)
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Dispose(System.Boolean)
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Dispose(System.Boolean)
+  nameWithType: ConcurrentObjectPool<T>.Dispose(Boolean)
+  nameWithType.vb: ConcurrentObjectPool(Of T).Dispose(Boolean)
+- uid: DotNext.Threading.ConcurrentObjectPool`1.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1_Dispose_
+  commentId: Overload:DotNext.Threading.ConcurrentObjectPool`1.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Dispose
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Dispose
+  nameWithType: ConcurrentObjectPool<T>.Dispose
+  nameWithType.vb: ConcurrentObjectPool(Of T).Dispose
+- uid: DotNext.Threading.ConcurrentObjectPool`1.IRental
+  name: ConcurrentObjectPool<T>.IRental
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.IRental.html
+  commentId: T:DotNext.Threading.ConcurrentObjectPool`1.IRental
+  name.vb: ConcurrentObjectPool(Of T).IRental
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.IRental
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).IRental
+  nameWithType: ConcurrentObjectPool<T>.IRental
+  nameWithType.vb: ConcurrentObjectPool(Of T).IRental
+- uid: DotNext.Threading.ConcurrentObjectPool`1.IRental.Resource
+  name: Resource
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.IRental.html#DotNext_Threading_ConcurrentObjectPool_1_IRental_Resource
+  commentId: P:DotNext.Threading.ConcurrentObjectPool`1.IRental.Resource
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.IRental.Resource
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).IRental.Resource
+  nameWithType: ConcurrentObjectPool<T>.IRental.Resource
+  nameWithType.vb: ConcurrentObjectPool(Of T).IRental.Resource
+- uid: DotNext.Threading.ConcurrentObjectPool`1.IRental.Resource*
+  name: Resource
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.IRental.html#DotNext_Threading_ConcurrentObjectPool_1_IRental_Resource_
+  commentId: Overload:DotNext.Threading.ConcurrentObjectPool`1.IRental.Resource
+  isSpec: "True"
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.IRental.Resource
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).IRental.Resource
+  nameWithType: ConcurrentObjectPool<T>.IRental.Resource
+  nameWithType.vb: ConcurrentObjectPool(Of T).IRental.Resource
 - uid: DotNext.Threading.ConcurrentObjectPool`1.Rent
   name: Rent()
   href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1_Rent
@@ -29437,51 +30344,23 @@ references:
   fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rent
   nameWithType: ConcurrentObjectPool<T>.Rent
   nameWithType.vb: ConcurrentObjectPool(Of T).Rent
-- uid: DotNext.Threading.ConcurrentObjectPool`1.Rental
-  name: ConcurrentObjectPool<T>.Rental
-  href: api/DotNext.Threading.ConcurrentObjectPool-1.Rental.html
-  commentId: T:DotNext.Threading.ConcurrentObjectPool`1.Rental
-  name.vb: ConcurrentObjectPool(Of T).Rental
-  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Rental
-  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rental
-  nameWithType: ConcurrentObjectPool<T>.Rental
-  nameWithType.vb: ConcurrentObjectPool(Of T).Rental
-- uid: DotNext.Threading.ConcurrentObjectPool`1.Rental.Dispose
-  name: Dispose()
-  href: api/DotNext.Threading.ConcurrentObjectPool-1.Rental.html#DotNext_Threading_ConcurrentObjectPool_1_Rental_Dispose
-  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.Rental.Dispose
-  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Rental.Dispose()
-  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rental.Dispose()
-  nameWithType: ConcurrentObjectPool<T>.Rental.Dispose()
-  nameWithType.vb: ConcurrentObjectPool(Of T).Rental.Dispose()
-- uid: DotNext.Threading.ConcurrentObjectPool`1.Rental.Dispose*
-  name: Dispose
-  href: api/DotNext.Threading.ConcurrentObjectPool-1.Rental.html#DotNext_Threading_ConcurrentObjectPool_1_Rental_Dispose_
-  commentId: Overload:DotNext.Threading.ConcurrentObjectPool`1.Rental.Dispose
+- uid: DotNext.Threading.ConcurrentObjectPool`1.WaitCount
+  name: WaitCount
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1_WaitCount
+  commentId: P:DotNext.Threading.ConcurrentObjectPool`1.WaitCount
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.WaitCount
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).WaitCount
+  nameWithType: ConcurrentObjectPool<T>.WaitCount
+  nameWithType.vb: ConcurrentObjectPool(Of T).WaitCount
+- uid: DotNext.Threading.ConcurrentObjectPool`1.WaitCount*
+  name: WaitCount
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1_WaitCount_
+  commentId: Overload:DotNext.Threading.ConcurrentObjectPool`1.WaitCount
   isSpec: "True"
-  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Rental.Dispose
-  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rental.Dispose
-  nameWithType: ConcurrentObjectPool<T>.Rental.Dispose
-  nameWithType.vb: ConcurrentObjectPool(Of T).Rental.Dispose
-- uid: DotNext.Threading.ConcurrentObjectPool`1.Rental.op_Implicit(DotNext.Threading.ConcurrentObjectPool{`0}.Rental)~`0
-  name: Implicit(ConcurrentObjectPool<T>.Rental to T)
-  href: api/DotNext.Threading.ConcurrentObjectPool-1.Rental.html#DotNext_Threading_ConcurrentObjectPool_1_Rental_op_Implicit_DotNext_Threading_ConcurrentObjectPool__0__Rental___0
-  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.Rental.op_Implicit(DotNext.Threading.ConcurrentObjectPool{`0}.Rental)~`0
-  name.vb: Widening(ConcurrentObjectPool(Of T).Rental to T)
-  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Rental.Implicit(DotNext.Threading.ConcurrentObjectPool<T>.Rental to T)
-  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rental.Widening(DotNext.Threading.ConcurrentObjectPool(Of T).Rental to T)
-  nameWithType: ConcurrentObjectPool<T>.Rental.Implicit(ConcurrentObjectPool<T>.Rental to T)
-  nameWithType.vb: ConcurrentObjectPool(Of T).Rental.Widening(ConcurrentObjectPool(Of T).Rental to T)
-- uid: DotNext.Threading.ConcurrentObjectPool`1.Rental.op_Implicit*
-  name: Implicit
-  href: api/DotNext.Threading.ConcurrentObjectPool-1.Rental.html#DotNext_Threading_ConcurrentObjectPool_1_Rental_op_Implicit_
-  commentId: Overload:DotNext.Threading.ConcurrentObjectPool`1.Rental.op_Implicit
-  isSpec: "True"
-  name.vb: Widening
-  fullName: DotNext.Threading.ConcurrentObjectPool<T>.Rental.Implicit
-  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).Rental.Widening
-  nameWithType: ConcurrentObjectPool<T>.Rental.Implicit
-  nameWithType.vb: ConcurrentObjectPool(Of T).Rental.Widening
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.WaitCount
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).WaitCount
+  nameWithType: ConcurrentObjectPool<T>.WaitCount
+  nameWithType.vb: ConcurrentObjectPool(Of T).WaitCount
 - uid: DotNext.Threading.IAsyncEvent
   name: IAsyncEvent
   href: api/DotNext.Threading.IAsyncEvent.html
@@ -30775,13 +31654,13 @@ references:
   nameWithType: ValueType<T>.BitCast
   nameWithType.vb: ValueType(Of T).BitCast
 - uid: DotNext.ValueType`1.BitCast``1(`0@,``0@)
-  name: BitCast<TO>(ref T, out TO)
+  name: BitCast<TO>(T, out TO)
   href: api/DotNext.ValueType-1.html#DotNext_ValueType_1_BitCast__1__0____0__
   commentId: M:DotNext.ValueType`1.BitCast``1(`0@,``0@)
   name.vb: BitCast(Of TO)(ByRef T, ByRef TO)
-  fullName: DotNext.ValueType<T>.BitCast<TO>(ref T, out TO)
+  fullName: DotNext.ValueType<T>.BitCast<TO>(T, out TO)
   fullName.vb: DotNext.ValueType(Of T).BitCast(Of TO)(ByRef T, ByRef TO)
-  nameWithType: ValueType<T>.BitCast<TO>(ref T, out TO)
+  nameWithType: ValueType<T>.BitCast<TO>(T, out TO)
   nameWithType.vb: ValueType(Of T).BitCast(Of TO)(ByRef T, ByRef TO)
 - uid: DotNext.ValueType`1.BitwiseCompare(`0,`0)
   name: BitwiseCompare(T, T)

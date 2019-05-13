@@ -73,8 +73,8 @@
   
   <h1 id="DotNext_Threading_ConcurrentObjectPool_1" data-uid="DotNext.Threading.ConcurrentObjectPool`1" class="text-break">Class ConcurrentObjectPool&lt;T&gt;
   </h1>
-  <div class="markdown level0 summary"><p>Provides concurrent object pool where
-object selection is thread-safe but not selected object.</p>
+  <div class="markdown level0 summary"><p>Provides container for the thread-unsafe objects that can be shared
+between threads concurrently.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -82,37 +82,11 @@ object selection is thread-safe but not selected object.</p>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">ConcurrentObjectPool&lt;T&gt;</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.html">DotNext.Threading</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
   <h5 id="DotNext_Threading_ConcurrentObjectPool_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class ConcurrentObjectPool&lt;T&gt;
-
-    where T : class</code></pre>
+    <pre><code class="lang-csharp hljs">public class ConcurrentObjectPool&lt;T&gt; : Disposable where T : class</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -130,23 +104,45 @@ object selection is thread-safe but not selected object.</p>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Threading_ConcurrentObjectPool_1_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>The object pool implements two scheduling strategies:</p>
+<ol><li>Round-robin
+This strategy requires that all objects should be created and initialized before instantiation
+of object pool. All objects are placed into pool and shared between concurrent threads.
+Workload is distributed across all objects in the pool in circular order.
+This strategy is recommended for situations when workload is constant or unpredictable,
+cost of the object in the pool is relatively low.
+</li><li>Shortest Job First
+This stategy instantiates objects in the pool on-demand depends on workload.
+The first released object will be passed to the one of waiting threads.
+Fairness policy is not supported so the longest waiting thread may not obtain
+the object first.
+Moreover, if the created object is not used for a long period of time then
+object pool will dispose it and remove the object from the pool.
+This strategy is recommended for situations when workload is variable and predictable
+(for instance, Poisson distribution of requests), cost of the object in the pool is high.
+</li></ol>
+Object pool is compatible with async methods so it is possible to rent the object
+is one thread and return it back to the pool in another thread.
+</div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Collections_Generic_IList__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601.%23ctor(System.Collections.Generic.IList%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Collections_Generic_IEnumerable__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601.%23ctor(System.Collections.Generic.IEnumerable%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L62">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L230">View Source</a>
   </span>
   <a id="DotNext_Threading_ConcurrentObjectPool_1__ctor_" data-uid="DotNext.Threading.ConcurrentObjectPool`1.#ctor*"></a>
-  <h4 id="DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Collections_Generic_IList__0__" data-uid="DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Collections.Generic.IList{`0})">ConcurrentObjectPool(IList&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new object pool.</p>
+  <h4 id="DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Collections_Generic_IEnumerable__0__" data-uid="DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Collections.Generic.IEnumerable{`0})">ConcurrentObjectPool(IEnumerable&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes object pool that will apply Round-robing scheduling
+strategy.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ConcurrentObjectPool(IList&lt;T&gt; objects)</code></pre>
+    <pre><code class="lang-csharp hljs">public ConcurrentObjectPool(IEnumerable&lt;T&gt; objects)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -159,31 +155,118 @@ object selection is thread-safe but not selected object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;T&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;T&gt;</td>
         <td><span class="parametername">objects</span></td>
-        <td><p>Predefined objects to be available from the pool.</p>
+        <td><p>The objects to be placed into the pool.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h3 id="fields">Fields
-  </h3>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">objects</code> is empty.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Collections_Generic_IEnumerable__0___seealso">See Also</h5>
+  <div class="seealso">
+      <div><span><a href="https://en.wikipedia.org/wiki/Round-robin_scheduling">Round-robin</a></span></div>
+  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1_objects.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601.objects%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Int32_System_Func__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601.%23ctor(System.Int32%2CSystem.Func%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L55">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L196">View Source</a>
   </span>
-  <h4 id="DotNext_Threading_ConcurrentObjectPool_1_objects" data-uid="DotNext.Threading.ConcurrentObjectPool`1.objects">objects</h4>
-  <div class="markdown level1 summary"><p>Read-only collection of objects in this pool.</p>
+  <a id="DotNext_Threading_ConcurrentObjectPool_1__ctor_" data-uid="DotNext.Threading.ConcurrentObjectPool`1.#ctor*"></a>
+  <h4 id="DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Int32_System_Func__0__" data-uid="DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Int32,System.Func{`0})">ConcurrentObjectPool(Int32, Func&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes object pool that will apply Shortest Job First scheduling
+strategy.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected readonly IReadOnlyList&lt;T&gt; objects</code></pre>
+    <pre><code class="lang-csharp hljs">public ConcurrentObjectPool(int capacity, Func&lt;T&gt; factory)</code></pre>
   </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">capacity</span></td>
+        <td><p>The maximum objects in the pool.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;T&gt;</td>
+        <td><span class="parametername">factory</span></td>
+        <td><p>The delegate instance that is used for lazy instantiation of objects in the pool.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">capacity</code> is less than zero.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">factory</code> is <span class="xref">null</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Int32_System_Func__0___seealso">See Also</h5>
+  <div class="seealso">
+      <div><span><a href="https://en.wikipedia.org/wiki/Shortest_job_next">Shortest Job First</a></span></div>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1_Capacity.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601.Capacity%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L266">View Source</a>
+  </span>
+  <a id="DotNext_Threading_ConcurrentObjectPool_1_Capacity_" data-uid="DotNext.Threading.ConcurrentObjectPool`1.Capacity*"></a>
+  <h4 id="DotNext_Threading_ConcurrentObjectPool_1_Capacity" data-uid="DotNext.Threading.ConcurrentObjectPool`1.Capacity">Capacity</h4>
+  <div class="markdown level1 summary"><p>Gets total count of objects in this pool.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Capacity { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -193,28 +276,105 @@ object selection is thread-safe but not selected object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;T&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1_WaitCount.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601.WaitCount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L278">View Source</a>
+  </span>
+  <a id="DotNext_Threading_ConcurrentObjectPool_1_WaitCount_" data-uid="DotNext.Threading.ConcurrentObjectPool`1.WaitCount*"></a>
+  <h4 id="DotNext_Threading_ConcurrentObjectPool_1_WaitCount" data-uid="DotNext.Threading.ConcurrentObjectPool`1.WaitCount">WaitCount</h4>
+  <div class="markdown level1 summary"><p>Gets number of threads waiting for the first available object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int WaitCount { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_ConcurrentObjectPool_1_WaitCount_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This property is for diagnostics purposes.
+Ideally, it should be always 0. But in reality, some threads
+may wait for the first released object a very small amount of time.
+Therefore, the expected value should not be greater than <a class="xref" href="DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1_Capacity">Capacity</a> divided by 2,
+and do not grow over time. Otherwise, you should increase the capacity.</p>
+</div>
   <h3 id="methods">Methods
   </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L309">View Source</a>
+  </span>
+  <a id="DotNext_Threading_ConcurrentObjectPool_1_Dispose_" data-uid="DotNext.Threading.ConcurrentObjectPool`1.Dispose*"></a>
+  <h4 id="DotNext_Threading_ConcurrentObjectPool_1_Dispose_System_Boolean_" data-uid="DotNext.Threading.ConcurrentObjectPool`1.Dispose(System.Boolean)">Dispose(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Releases all resources associated with this object pool.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">disposing</span></td>
+        <td><p><span class="xref">true</span> if called from <see cref="!:Disposable.Dispose()"></see>; <span class="xref">false</span> if called from finalizer <see cref="!:Disposable.Finalize()"></see>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_ConcurrentObjectPool_1_Dispose_System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method is not thread-safe and may not be used concurrently with other members of this instance.
+Additionally, this method disposes all objects stored in the pool if it was created
+with <a class="xref" href="DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Int32_System_Func__0__">ConcurrentObjectPool(Int32, Func&lt;T&gt;)</a> constructor.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1_Rent.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601.Rent%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L74">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L284">View Source</a>
   </span>
   <a id="DotNext_Threading_ConcurrentObjectPool_1_Rent_" data-uid="DotNext.Threading.ConcurrentObjectPool`1.Rent*"></a>
   <h4 id="DotNext_Threading_ConcurrentObjectPool_1_Rent" data-uid="DotNext.Threading.ConcurrentObjectPool`1.Rent">Rent()</h4>
-  <div class="markdown level1 summary"><p>Select first unbusy object from pool, lock it and return it.</p>
+  <div class="markdown level1 summary"><p>Rents the object from this pool.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ConcurrentObjectPool&lt;T&gt;.Rental Rent()</code></pre>
+    <pre><code class="lang-csharp hljs">public ConcurrentObjectPool&lt;T&gt;.IRental Rent()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -226,8 +386,8 @@ object selection is thread-safe but not selected object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.ConcurrentObjectPool-1.Rental.html">ConcurrentObjectPool.Rental</a>&lt;&gt;</td>
-        <td><p>First unbusy object locked for the caller thread.</p>
+        <td><a class="xref" href="DotNext.Threading.ConcurrentObjectPool-1.IRental.html">ConcurrentObjectPool.IRental</a>&lt;&gt;</td>
+        <td><p>The object allows to control lifetime of the rent.</p>
 </td>
       </tr>
     </tbody>
@@ -307,7 +467,7 @@ object selection is thread-safe but not selected object.</p>
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_ConcurrentObjectPool_1.md&amp;value=---%0Auid%3A%20DotNext.Threading.ConcurrentObjectPool%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/ConcurrentObjectPool.cs/#L44" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

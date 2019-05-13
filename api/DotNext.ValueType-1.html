@@ -331,14 +331,14 @@ public sealed class ValueType&lt;T&gt; : StrongBox&lt;T&gt;, IStrongBox where T 
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueType.cs/#L190">View Source</a>
   </span>
   <a id="DotNext_ValueType_1_BitCast_" data-uid="DotNext.ValueType`1.BitCast*"></a>
-  <h4 id="DotNext_ValueType_1_BitCast__1__0____0__" data-uid="DotNext.ValueType`1.BitCast``1(`0@,``0@)">BitCast&lt;TO&gt;(ref T, out TO)</h4>
+  <h4 id="DotNext_ValueType_1_BitCast__1__0____0__" data-uid="DotNext.ValueType`1.BitCast``1(`0@,``0@)">BitCast&lt;TO&gt;(T, out TO)</h4>
   <div class="markdown level1 summary"><p>Obtain a value of type <code data-dev-comment-type="typeparamref" class="typeparamref">TO</code> by
 reinterpreting the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void BitCast&lt;TO&gt;(ref T input, out TO output)
+    <pre><code class="lang-csharp hljs">public static void BitCast&lt;TO&gt;(in T input, out TO output)
 
     where TO : struct</code></pre>
   </div>

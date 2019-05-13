@@ -79,6 +79,8 @@
   <div classs="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Number-1.html">Number</a>&lt;T&gt;&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.icomparable-1">IComparable</a>&lt;T&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -97,8 +99,7 @@
   <h5 id="DotNext_Number_1_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-[Serializable]
-public struct Number&lt;T&gt; : IEquatable&lt;T&gt; where T : struct, IConvertible, IComparable, IFormattable</code></pre>
+public struct Number&lt;T&gt; : IEquatable&lt;T&gt;, IEquatable&lt;Number&lt;T&gt;&gt;, IComparable&lt;T&gt; where T : struct, IConvertible, IComparable&lt;T&gt;, IEquatable&lt;T&gt;, IFormattable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -127,7 +128,7 @@ using method from type <a class="xref" href="DotNext.Reflection.Type-1.html">Typ
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Number%601.%23ctor(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L54">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L50">View Source</a>
   </span>
   <a id="DotNext_Number_1__ctor_" data-uid="DotNext.Number`1.#ctor*"></a>
   <h4 id="DotNext_Number_1__ctor__0_" data-uid="DotNext.Number`1.#ctor(`0)">Number(T)</h4>
@@ -163,7 +164,7 @@ using method from type <a class="xref" href="DotNext.Reflection.Type-1.html">Typ
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1_Equals__0_.md&amp;value=---%0Auid%3A%20DotNext.Number%601.Equals(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L62">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L58">View Source</a>
   </span>
   <a id="DotNext_Number_1_Equals_" data-uid="DotNext.Number`1.Equals*"></a>
   <h4 id="DotNext_Number_1_Equals__0_" data-uid="DotNext.Number`1.Equals(`0)">Equals(T)</h4>
@@ -213,7 +214,7 @@ using method from type <a class="xref" href="DotNext.Reflection.Type-1.html">Typ
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Number%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L158">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L190">View Source</a>
   </span>
   <a id="DotNext_Number_1_Equals_" data-uid="DotNext.Number`1.Equals*"></a>
   <h4 id="DotNext_Number_1_Equals_System_Object_" data-uid="DotNext.Number`1.Equals(System.Object)">Equals(Object)</h4>
@@ -299,7 +300,7 @@ using method from type <a class="xref" href="DotNext.Reflection.Type-1.html">Typ
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1_Parse_System_String_.md&amp;value=---%0Auid%3A%20DotNext.Number%601.Parse(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L212">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L244">View Source</a>
   </span>
   <a id="DotNext_Number_1_Parse_" data-uid="DotNext.Number`1.Parse*"></a>
   <h4 id="DotNext_Number_1_Parse_System_String_" data-uid="DotNext.Number`1.Parse(System.String)">Parse(String)</h4>
@@ -404,7 +405,7 @@ using method from type <a class="xref" href="DotNext.Reflection.Type-1.html">Typ
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1_TryParse_System_String_DotNext_Number__0___.md&amp;value=---%0Auid%3A%20DotNext.Number%601.TryParse(System.String%2CDotNext.Number%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L177">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L209">View Source</a>
   </span>
   <a id="DotNext_Number_1_TryParse_" data-uid="DotNext.Number`1.TryParse*"></a>
   <h4 id="DotNext_Number_1_TryParse_System_String_DotNext_Number__0___" data-uid="DotNext.Number`1.TryParse(System.String,DotNext.Number{`0}@)">TryParse(String, out Number&lt;T&gt;)</h4>
@@ -460,7 +461,7 @@ using method from type <a class="xref" href="DotNext.Reflection.Type-1.html">Typ
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1_TryParse_System_String_System_Globalization_NumberStyles_System_IFormatProvider_DotNext_Number__0___.md&amp;value=---%0Auid%3A%20DotNext.Number%601.TryParse(System.String%2CSystem.Globalization.NumberStyles%2CSystem.IFormatProvider%2CDotNext.Number%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L194">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L226">View Source</a>
   </span>
   <a id="DotNext_Number_1_TryParse_" data-uid="DotNext.Number`1.TryParse*"></a>
   <h4 id="DotNext_Number_1_TryParse_System_String_System_Globalization_NumberStyles_System_IFormatProvider_DotNext_Number__0___" data-uid="DotNext.Number`1.TryParse(System.String,System.Globalization.NumberStyles,System.IFormatProvider,DotNext.Number{`0}@)">TryParse(String, NumberStyles, IFormatProvider, out Number&lt;T&gt;)</h4>
@@ -695,6 +696,118 @@ using method from type <a class="xref" href="DotNext.Reflection.Type-1.html">Typ
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1_op_GreaterThan_DotNext_Number__0___0_.md&amp;value=---%0Auid%3A%20DotNext.Number%601.op_GreaterThan(DotNext.Number%7B%600%7D%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L159">View Source</a>
+  </span>
+  <a id="DotNext_Number_1_op_GreaterThan_" data-uid="DotNext.Number`1.op_GreaterThan*"></a>
+  <h4 id="DotNext_Number_1_op_GreaterThan_DotNext_Number__0___0_" data-uid="DotNext.Number`1.op_GreaterThan(DotNext.Number{`0},`0)">GreaterThan(Number&lt;T&gt;, T)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the first number is greater than the second number.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator&gt;(Number&lt;T&gt; left, T right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Number-1.html">Number</a>&lt;T&gt;</td>
+        <td><span class="parametername">left</span></td>
+        <td><p>The left operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">right</span></td>
+        <td><p>The right operand.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the first number is greater than the second number; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1_op_GreaterThanOrEqual_DotNext_Number__0___0_.md&amp;value=---%0Auid%3A%20DotNext.Number%601.op_GreaterThanOrEqual(DotNext.Number%7B%600%7D%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L175">View Source</a>
+  </span>
+  <a id="DotNext_Number_1_op_GreaterThanOrEqual_" data-uid="DotNext.Number`1.op_GreaterThanOrEqual*"></a>
+  <h4 id="DotNext_Number_1_op_GreaterThanOrEqual_DotNext_Number__0___0_" data-uid="DotNext.Number`1.op_GreaterThanOrEqual(DotNext.Number{`0},`0)">GreaterThanOrEqual(Number&lt;T&gt;, T)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the first number is greater than or equal to the second number.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator &gt;=(Number&lt;T&gt; left, T right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Number-1.html">Number</a>&lt;T&gt;</td>
+        <td><span class="parametername">left</span></td>
+        <td><p>The left operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">right</span></td>
+        <td><p>The right operand.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the first number is greater than or equal to the second number; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1_op_Implicit_DotNext_Number__0____0.md&amp;value=---%0Auid%3A%20DotNext.Number%601.op_Implicit(DotNext.Number%7B%600%7D)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -794,6 +907,118 @@ using method from type <a class="xref" href="DotNext.Reflection.Type-1.html">Typ
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><p><span class="xref">true</span>, if two numers are not equal; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1_op_LessThan_DotNext_Number__0___0_.md&amp;value=---%0Auid%3A%20DotNext.Number%601.op_LessThan(DotNext.Number%7B%600%7D%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L167">View Source</a>
+  </span>
+  <a id="DotNext_Number_1_op_LessThan_" data-uid="DotNext.Number`1.op_LessThan*"></a>
+  <h4 id="DotNext_Number_1_op_LessThan_DotNext_Number__0___0_" data-uid="DotNext.Number`1.op_LessThan(DotNext.Number{`0},`0)">LessThan(Number&lt;T&gt;, T)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the first number is less than the second number.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator &lt;(Number&lt;T&gt; left, T right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Number-1.html">Number</a>&lt;T&gt;</td>
+        <td><span class="parametername">left</span></td>
+        <td><p>The left operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">right</span></td>
+        <td><p>The right operand.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the first number is less than the second number; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1_op_LessThanOrEqual_DotNext_Number__0___0_.md&amp;value=---%0Auid%3A%20DotNext.Number%601.op_LessThanOrEqual(DotNext.Number%7B%600%7D%2C%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L183">View Source</a>
+  </span>
+  <a id="DotNext_Number_1_op_LessThanOrEqual_" data-uid="DotNext.Number`1.op_LessThanOrEqual*"></a>
+  <h4 id="DotNext_Number_1_op_LessThanOrEqual_DotNext_Number__0___0_" data-uid="DotNext.Number`1.op_LessThanOrEqual(DotNext.Number{`0},`0)">LessThanOrEqual(Number&lt;T&gt;, T)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the first number is less than or equal to the second number.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator &lt;=(Number&lt;T&gt; left, T right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Number-1.html">Number</a>&lt;T&gt;</td>
+        <td><span class="parametername">left</span></td>
+        <td><p>The left operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">right</span></td>
+        <td><p>The right operand.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the first number is less than or equal to the second number; otherwise, <span class="xref">false</span>.</p>
 </td>
       </tr>
     </tbody>
@@ -1010,13 +1235,121 @@ using method from type <a class="xref" href="DotNext.Reflection.Type-1.html">Typ
       </tr>
     </tbody>
   </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1_System_IComparable_T__CompareTo__0_.md&amp;value=---%0Auid%3A%20DotNext.Number%601.System%23IComparable%7BT%7D%23CompareTo(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L62">View Source</a>
+  </span>
+  <a id="DotNext_Number_1_System_IComparable_T__CompareTo_" data-uid="DotNext.Number`1.System#IComparable{T}#CompareTo*"></a>
+  <h4 id="DotNext_Number_1_System_IComparable_T__CompareTo__0_" data-uid="DotNext.Number`1.System#IComparable{T}#CompareTo(`0)">IComparable&lt;T&gt;.CompareTo(T)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int IComparable&lt;T&gt;.CompareTo(T other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Number_1_System_IEquatable_DotNext_Number_T___Equals_DotNext_Number__0__.md&amp;value=---%0Auid%3A%20DotNext.Number%601.System%23IEquatable%7BDotNext%23Number%7BT%7D%7D%23Equals(DotNext.Number%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Number.cs/#L60">View Source</a>
+  </span>
+  <a id="DotNext_Number_1_System_IEquatable_DotNext_Number_T___Equals_" data-uid="DotNext.Number`1.System#IEquatable{DotNext#Number{T}}#Equals*"></a>
+  <h4 id="DotNext_Number_1_System_IEquatable_DotNext_Number_T___Equals_DotNext_Number__0__" data-uid="DotNext.Number`1.System#IEquatable{DotNext#Number{T}}#Equals(DotNext.Number{`0})">IEquatable&lt;Number&lt;T&gt;&gt;.Equals(Number&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool IEquatable&lt;Number&lt;T&gt;&gt;.Equals(Number&lt;T&gt; other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Number-1.html">Number</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
   </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.icomparable-1">System.IComparable&lt;T&gt;</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0___0___">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_Box__1___0_">ValueTypeExtensions.Box&lt;T&gt;(T)</a>

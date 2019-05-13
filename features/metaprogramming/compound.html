@@ -69,7 +69,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="compound-expressions-construction">Compound Expressions Construction</h1>
 
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression class</a> provides builder static methods for constructing expression trees. The construction code loss its readability because builder methods oriented for tree-like representation of the final expression. Metaprogramming library offers set of <a href="../../api/DotNext.Linq.Expressions.ExpressionBuilder.yml">extension methods</a> aimed to simplification of expression tree construction.</p>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression class</a> provides builder static methods for constructing expression trees. The construction code loss its readability because builder methods oriented for tree-like representation of the final expression. Metaprogramming library offers set of <a href="../../api/DotNext.Linq.Expressions.ExpressionBuilder.html">extension methods</a> aimed to simplification of expression tree construction.</p>
 <pre><code class="lang-csharp">using DotNext.Metaprogramming;
 
 var expr = 42.Const().Convert&lt;long&gt;().Negate().Add(1L.Const()); // equivalent to -((long)42) + 1L

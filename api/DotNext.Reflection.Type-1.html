@@ -131,7 +131,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Equals.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Equals%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L51">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L49">View Source</a>
   </span>
   <h4 id="DotNext_Reflection_Type_1_Equals" data-uid="DotNext.Reflection.Type`1.Equals">Equals</h4>
   <div class="markdown level1 summary"><p>Provides smart equality check.</p>
@@ -167,7 +167,7 @@ it calls <see cref="!:ValueType&lt;T>.BitwiseEquals(T, T)"></see>.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L40">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L38">View Source</a>
   </span>
   <h4 id="DotNext_Reflection_Type_1_GetHashCode" data-uid="DotNext.Reflection.Type`1.GetHashCode">GetHashCode</h4>
   <div class="markdown level1 summary"><p>Provides smart hash code computation.</p>
@@ -202,7 +202,7 @@ it calls <see cref="!:ValueType&lt;T>.BitwiseHashCode(T, bool)"></see>.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_IsDefault.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.IsDefault%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L30">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L28">View Source</a>
   </span>
   <h4 id="DotNext_Reflection_Type_1_IsDefault" data-uid="DotNext.Reflection.Type`1.IsDefault">IsDefault</h4>
   <div class="markdown level1 summary"><p>Checks whether the specified value is default value.</p>
@@ -298,7 +298,7 @@ it calls <see cref="!:ValueType&lt;T>.BitwiseHashCode(T, bool)"></see>.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Convert__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Convert%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L158">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L156">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Convert_" data-uid="DotNext.Reflection.Type`1.Convert*"></a>
   <h4 id="DotNext_Reflection_Type_1_Convert__1___0_" data-uid="DotNext.Reflection.Type`1.Convert``1(``0)">Convert&lt;U&gt;(U)</h4>
@@ -394,6 +394,7 @@ and implicit/explicit cast operators.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Constructor&lt;Function&lt;A, T&gt;&gt; GetConstructor&lt;A&gt;(bool nonPublic = false)
+
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -462,6 +463,7 @@ and has arguments described by type <code data-dev-comment-type="typeparamref" c
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Procedure&lt;T, A&gt;&gt; GetMethod&lt;A&gt;(string methodName, bool nonPublic = false)
+
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -542,6 +544,7 @@ by type <code data-dev-comment-type="typeparamref" class="typeparamref">A</code>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Function&lt;T, A, R&gt;&gt; GetMethod&lt;A, R&gt;(string methodName, bool nonPublic = false)
+
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -626,6 +629,7 @@ and has arguments described by type <code data-dev-comment-type="typeparamref" c
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Procedure&lt;A&gt;&gt; GetStaticMethod&lt;A&gt;(string methodName, bool nonPublic = false)
+
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -706,6 +710,7 @@ by type <code data-dev-comment-type="typeparamref" class="typeparamref">A</code>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Function&lt;A, R&gt;&gt; GetStaticMethod&lt;A, R&gt;(string methodName, bool nonPublic = false)
+
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -779,7 +784,7 @@ performed by .NET Runtime.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Initialize.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Initialize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L110">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L108">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Initialize_" data-uid="DotNext.Reflection.Type`1.Initialize*"></a>
   <h4 id="DotNext_Reflection_Type_1_Initialize" data-uid="DotNext.Reflection.Type`1.Initialize">Initialize()</h4>
@@ -798,7 +803,7 @@ performed by .NET Runtime.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_IsAssignableFrom__1.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.IsAssignableFrom%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L117">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L115">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_IsAssignableFrom_" data-uid="DotNext.Reflection.Type`1.IsAssignableFrom*"></a>
   <h4 id="DotNext_Reflection_Type_1_IsAssignableFrom__1" data-uid="DotNext.Reflection.Type`1.IsAssignableFrom``1">IsAssignableFrom&lt;U&gt;()</h4>
@@ -846,7 +851,7 @@ performed by .NET Runtime.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_IsAssignableTo__1.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.IsAssignableTo%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L124">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L122">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_IsAssignableTo_" data-uid="DotNext.Reflection.Type`1.IsAssignableTo*"></a>
   <h4 id="DotNext_Reflection_Type_1_IsAssignableTo__1" data-uid="DotNext.Reflection.Type`1.IsAssignableTo``1">IsAssignableTo&lt;U&gt;()</h4>
@@ -904,6 +909,7 @@ performed by .NET Runtime.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Constructor&lt;Function&lt;A, T&gt;&gt; RequireConstructor&lt;A&gt;(bool nonPublic = false)
+
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -988,6 +994,7 @@ and has arguments described by type <code data-dev-comment-type="typeparamref" c
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Procedure&lt;T, A&gt;&gt; RequireMethod&lt;A&gt;(string methodName, bool nonPublic = false)
+
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1084,6 +1091,7 @@ by type <code data-dev-comment-type="typeparamref" class="typeparamref">A</code>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Function&lt;T, A, R&gt;&gt; RequireMethod&lt;A, R&gt;(string methodName, bool nonPublic = false)
+
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1184,6 +1192,7 @@ and has arguments described by type <code data-dev-comment-type="typeparamref" c
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Procedure&lt;A&gt;&gt; RequireStaticMethod&lt;A&gt;(string methodName, bool nonPublic = false)
+
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1280,6 +1289,7 @@ by type <code data-dev-comment-type="typeparamref" class="typeparamref">A</code>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Function&lt;A, R&gt;&gt; RequireStaticMethod&lt;A, R&gt;(string methodName, bool nonPublic = false)
+
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1369,7 +1379,7 @@ performed by .NET Runtime.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_TryConvert__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.TryConvert%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L132">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L130">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_TryConvert_" data-uid="DotNext.Reflection.Type`1.TryConvert*"></a>
   <h4 id="DotNext_Reflection_Type_1_TryConvert__1___0_" data-uid="DotNext.Reflection.Type`1.TryConvert``1(``0)">TryConvert&lt;U&gt;(U)</h4>
@@ -1435,7 +1445,7 @@ performed by .NET Runtime.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_TryConvert__1___0__0__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.TryConvert%60%601(%60%600%2C%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L145">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.cs/#L143">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_TryConvert_" data-uid="DotNext.Reflection.Type`1.TryConvert*"></a>
   <h4 id="DotNext_Reflection_Type_1_TryConvert__1___0__0__" data-uid="DotNext.Reflection.Type`1.TryConvert``1(``0,`0@)">TryConvert&lt;U&gt;(U, out T)</h4>

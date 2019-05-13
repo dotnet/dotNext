@@ -72,12 +72,12 @@
 <p>Lock acquisition operation may blocks the caller thread. Reader/writer lock from .NET library doesn't have async versions of lock acquisition methods as well as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor">Monitor</a>. To avoid this, DotNext Threading library provides asynchronous non-blocking alternatives of these locks.</p>
 <div class="CAUTION">
 <h5>Caution</h5>
-<p>Non-blocking and blocking locks are two different worlds. It is not recommended to mix these API in the same part of application. The lock acquired with blocking API located in <a href="../../api/DotNext.Threading.Lock.yml">Lock</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor">Monitor</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a> is not aware about the lock acquired asynchronously with <a href="../../api/DotNext.Threading.AsyncLock.yml">AsyncLock</a>, <a href="../../api/DotNext.Threading.AsyncExclusiveLock.yml">AsyncExclusiveLock</a> or <a href="../../api/DotNext.Threading.AsyncReaderWriterLock.yml">AsyncReaderWriterLock</a>. The only exception is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.semaphoreslim">SemaphoreSlim</a> because it contains acquisition methods in blocking and non-blocking manner at the same time.</p>
+<p>Non-blocking and blocking locks are two different worlds. It is not recommended to mix these API in the same part of application. The lock acquired with blocking API located in <a href="../../api/DotNext.Threading.Lock.html">Lock</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.monitor">Monitor</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a> is not aware about the lock acquired asynchronously with <a href="../../api/DotNext.Threading.AsyncLock.html">AsyncLock</a>, <a href="../../api/DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a> or <a href="../../api/DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>. The only exception is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.semaphoreslim">SemaphoreSlim</a> because it contains acquisition methods in blocking and non-blocking manner at the same time.</p>
 </div>
 <p>All non-blocking synchronization mechanisms are optimized in terms of memory allocations. If lock acquisitions are not caused in the same time from different application tasks running concurrently then heap allocation associated with waiting queue will not happen.</p>
 <p>Asynchronous locks don't rely on the caller thread. The caller thread never blocks so there is no concept of lock owner thread. As a result, these locks are not reentrant.</p>
 <p>It is hard to detect root cause of deadlocks occurred by asynchronous locks so use them carefully.</p>
-<p><a href="../../api/DotNext.Threading.AsyncLock.yml">AsyncLock</a> is a unified representation of the all supported asynchronous locks:</p>
+<p><a href="../../api/DotNext.Threading.AsyncLock.html">AsyncLock</a> is a unified representation of the all supported asynchronous locks:</p>
 <ul>
 <li>Exclusive lock</li>
 <li>Reader lock</li>
@@ -131,7 +131,7 @@ using(builder.AcquireWriteLockAsync(CancellationToken.None))
     builder.Append(&quot;Hello, world!&quot;);
 }
 </code></pre>
-<p>For more information check extension methods inside of <a href="../../api/DotNext.Threading.LockAcquisition.yml">AsyncLockAcquisition</a> class.</p>
+<p>For more information check extension methods inside of <a href="../../api/DotNext.Threading.LockAcquisition.html">AsyncLockAcquisition</a> class.</p>
 </article>
           </div>
           
@@ -140,7 +140,7 @@ using(builder.AcquireWriteLockAsync(CancellationToken.None))
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/lock/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/threading/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
