@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -203,7 +204,7 @@ namespace DotNext.Metaprogramming
         {
             private protected readonly Type expectedType;
 
-            internal MatchByTypeStatement(MatchBuilder builder, Type expectedType): base(builder) => this.expectedType = expectedType;
+            internal MatchByTypeStatement(MatchBuilder builder, Type expectedType) : base(builder) => this.expectedType = expectedType;
 
             private protected override MatchBuilder Build(MatchBuilder builder, Action<ParameterExpression> scope)
                 => builder.MatchByType(expectedType, new CaseStatementBuilder(this, scope));
@@ -254,7 +255,7 @@ namespace DotNext.Metaprogramming
             : base(currentScope)
         {
             patterns = new LinkedList<PatternMatch>();
-            if(value is ParameterExpression param)
+            if (value is ParameterExpression param)
                 this.value = param;
             else
             {
@@ -325,7 +326,7 @@ namespace DotNext.Metaprogramming
 
         internal MatchStatement<Action<MemberExpression>> Case(string memberName, Expression memberValue) => new MatchByMemberStatement(this, memberName, memberValue);
 
-        internal MatchStatement<Action<MemberExpression, MemberExpression>> Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2) 
+        internal MatchStatement<Action<MemberExpression, MemberExpression>> Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2)
             => new MatchByTwoMembersStatement(this, memberName1, memberValue1, memberName2, memberValue2);
 
         internal MatchStatement<Action<MemberExpression, MemberExpression, MemberExpression>> Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3)
@@ -345,8 +346,8 @@ namespace DotNext.Metaprogramming
         /// <returns><c>this</c> builder.</returns>
         public MatchBuilder Case(Type expectedType, Pattern pattern, CaseStatement body)
             => MatchByType<CaseStatementBuilder>(expectedType, pattern, body);
-        
-        internal MatchStatement<Action<ParameterExpression>> Case(Type expectedType, Pattern pattern) => new MatchByTypeWithConditionStatement(this, expectedType, pattern); 
+
+        internal MatchStatement<Action<ParameterExpression>> Case(Type expectedType, Pattern pattern) => new MatchByTypeWithConditionStatement(this, expectedType, pattern);
 
         /// <summary>
         /// Defines pattern matching based on the expected type of value.
@@ -370,9 +371,9 @@ namespace DotNext.Metaprogramming
         /// <returns><c>this</c> builder.</returns>
         public MatchBuilder Case<T>(CaseStatement body)
             => Case(typeof(T), body);
-        
+
         private static Pattern StructuralPattern(IEnumerable<(string, Expression)> structPattern)
-            => delegate(ParameterExpression obj)
+            => delegate (ParameterExpression obj)
             {
                 var result = default(Expression);
                 foreach (var (name, value) in structPattern)
@@ -424,18 +425,24 @@ namespace DotNext.Metaprogramming
         public MatchBuilder Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3, Func<MemberExpression, MemberExpression, MemberExpression, Expression> body)
             => Case(StructuralPattern(new[] { (memberName1, memberValue1), (memberName2, memberValue2), (memberName3, memberValue3) }), value => body(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2), Expression.PropertyOrField(value, memberName3)));
 
+        private static (string, Expression) GetMemberPattern(object @this, string memberName, Type memberType, Func<object, object> valueProvider)
+        {
+            var value = valueProvider(@this);
+            if (value is null)
+                return (memberName, Expression.Default(memberType));
+            else if (value is Expression expr)
+                return (memberName, expr);
+            else
+                return (memberName, Expression.Constant(value, memberType));
+        }
+
         private static IEnumerable<(string, Expression)> GetProperties(object structPattern)
         {
-            foreach (var property in structPattern.GetType().GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance))
-            {
-                var value = property.GetValue(structPattern);
-                if (value is null)
-                    yield return (property.Name, Expression.Default(property.PropertyType));
-                else if (value is Expression expr)
-                    yield return (property.Name, expr);
-                else
-                    yield return (property.Name, Expression.Constant(value, property.PropertyType));
-            }
+            const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance;
+            foreach (var property in structPattern.GetType().GetProperties(PublicInstance))
+                yield return GetMemberPattern(structPattern, property.Name, property.PropertyType, property.GetValue);
+            foreach (var field in structPattern.GetType().GetFields(PublicInstance))
+                yield return GetMemberPattern(structPattern, field.Name, field.FieldType, field.GetValue);
         }
 
         /// <summary>
@@ -465,12 +472,12 @@ namespace DotNext.Metaprogramming
             var endOfMatch = Expression.Label(Type, "end");
             //handle patterns
             ICollection<Expression> instructions = new LinkedList<Expression>();
-            if(!(assignment is null))
+            if (!(assignment is null))
                 instructions.Add(assignment);
-            foreach(var pattern in patterns)
+            foreach (var pattern in patterns)
                 instructions.Add(pattern(endOfMatch));
             //handle default
-            if(!(defaultCase is null))
+            if (!(defaultCase is null))
                 instructions.Add(Expression.Goto(endOfMatch, defaultCase));
             //setup label as last instruction
             instructions.Add(Expression.Label(endOfMatch, Expression.Default(endOfMatch.Type)));
