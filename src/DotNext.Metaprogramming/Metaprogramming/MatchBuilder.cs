@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -243,15 +242,16 @@ namespace DotNext.Metaprogramming
 
             Expression ICaseStatementBuilder.Build(ParameterExpression value) => statement(value);
 
+            internal static Expression Build(Expression result, ParameterExpression value) => result;
+
             public static implicit operator CaseStatementBuilder(CaseStatement statement) => new CaseStatementBuilder(statement);
         }
 
-        private static readonly MethodInfo PlainCaseStatementBuilder = new Func<Expression, ParameterExpression, Expression>((v, p) => v).Method;
+        private static readonly MethodInfo PlainCaseStatementBuilder = new Func<Expression, ParameterExpression, Expression>(CaseStatementBuilder.Build).Method;
         private readonly ParameterExpression value;
         private readonly BinaryExpression assignment;
         private readonly ICollection<PatternMatch> patterns;
-        private CaseStatement defaultCase;
-        
+        private CaseStatement defaultCase;        
 
         internal MatchBuilder(Expression value, ILexicalScope currentScope)
             : base(currentScope)
