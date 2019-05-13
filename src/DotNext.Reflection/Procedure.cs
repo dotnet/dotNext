@@ -54,14 +54,14 @@ namespace DotNext
         /// <param name="procedure">The procedure to be invoked.</param>
         /// <param name="instance">Explicit <c>this</c> argument.</param>
         public static void Invoke<T>(this Procedure<T, ValueTuple> procedure, in T instance)
-            => procedure(in instance, in EmptyTuple.Value);
+            => procedure(in instance, default);
 
         /// <summary>
         /// Invokes procedure.
         /// </summary>
         /// <param name="procedure">The function to be invoked.</param>
         public static void Invoke(this Procedure<ValueTuple> procedure)
-            => procedure(in EmptyTuple.Value);
+            => procedure(default);
 
         /// <summary>
         /// Invokes procedure.

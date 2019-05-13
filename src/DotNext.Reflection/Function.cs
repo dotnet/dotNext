@@ -66,7 +66,7 @@ namespace DotNext
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static R Invoke<T, R>(this Function<T, ValueTuple, R> function, in T instance)
-            => function(in instance, in EmptyTuple.Value);
+            => function(in instance, default);
 
         /// <summary>
         /// Invokes function.
@@ -76,7 +76,7 @@ namespace DotNext
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static R Invoke<R>(this Function<ValueTuple, R> function)
-            => function(in EmptyTuple.Value);
+            => function(default);
 
         /// <summary>
         /// Invokes function.
