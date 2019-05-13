@@ -50,16 +50,16 @@ namespace DotNext.Metaprogramming
             public MatchBuilder Build(D scope) => Build(builder, scope);
         }
 
-        private sealed class DefaultStatement : MatchStatement<Action>
+        private sealed class DefaultStatement : MatchStatement<Action<ParameterExpression>>
         {
             internal DefaultStatement(MatchBuilder builder)
                 : base(builder)
             {
             }
 
-            private protected override MatchBuilder Build(MatchBuilder builder, Action scope)
+            private protected override MatchBuilder Build(MatchBuilder builder, Action<ParameterExpression> scope)
             {
-                scope();
+                scope(builder.value);
                 return builder.Default(Build());
             }
         }
@@ -246,10 +246,12 @@ namespace DotNext.Metaprogramming
             public static implicit operator CaseStatementBuilder(CaseStatement statement) => new CaseStatementBuilder(statement);
         }
 
+        private static readonly MethodInfo PlainCaseStatementBuilder = new Func<Expression, ParameterExpression, Expression>((v, p) => v).Method;
         private readonly ParameterExpression value;
         private readonly BinaryExpression assignment;
         private readonly ICollection<PatternMatch> patterns;
-        private Expression defaultCase;
+        private CaseStatement defaultCase;
+        
 
         internal MatchBuilder(Expression value, ILexicalScope currentScope)
             : base(currentScope)
@@ -263,6 +265,9 @@ namespace DotNext.Metaprogramming
                 assignment = Expression.Assign(this.value, value);
             }
         }
+
+        private static CaseStatement MakeCaseStatement(Expression value)
+            => PlainCaseStatementBuilder.CreateDelegate<CaseStatement>(value);
 
         private static PatternMatch MatchByCondition<B>(ParameterExpression value, Pattern condition, B builder)
             where B : struct, ICaseStatementBuilder
@@ -321,6 +326,14 @@ namespace DotNext.Metaprogramming
         /// <returns><c>this</c> builder.</returns>
         public MatchBuilder Case(Pattern pattern, CaseStatement body)
             => MatchByCondition<CaseStatementBuilder>(pattern, body);
+        
+        /// <summary>
+        /// Defines pattern matching.
+        /// </summary>
+        /// <param name="pattern">The condition representing pattern.</param>
+        /// <param name="value">The value to be supplied if the specified pattern matches to the passed object.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public MatchBuilder Case(Pattern pattern, Expression value) => Case(pattern, MakeCaseStatement(value));
 
         internal MatchStatement<Action<ParameterExpression>> Case(Pattern pattern) => new MatchByConditionStatement(this, pattern);
 
@@ -453,19 +466,35 @@ namespace DotNext.Metaprogramming
         /// <returns><c>this</c> builder.</returns>
         public MatchBuilder Case(object structPattern, CaseStatement body)
             => Case(GetProperties(structPattern), body);
+        
+        /// <summary>
+        /// Defines pattern matching based on structural matching.
+        /// </summary>
+        /// <param name="structPattern">The structure pattern represented by instance of anonymous type.</param>
+        /// <param name="value">The value to be supplied if the specified structural pattern matches to the passed object.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public MatchBuilder Case(object structPattern, Expression value)
+            => Case(structPattern, MakeCaseStatement(value)); 
+        
+        /// <summary>
+        /// Defines default behavior in case when all defined patterns are false positive.
+        /// </summary>
+        /// <param name="body">The block of code to be evaluated as default case.</param>
+        /// <returns><c>this</c> builder.</returns>
+        public MatchBuilder Default(CaseStatement body)
+        {
+            defaultCase = body;
+            return this;
+        }
 
         /// <summary>
         /// Defines default behavior in case when all defined patterns are false positive.
         /// </summary>
-        /// <param name="expression">The expression to be evaluated as default case.</param>
+        /// <param name="value">The expression to be evaluated as default case.</param>
         /// <returns><c>this</c> builder.</returns>
-        public MatchBuilder Default(Expression expression)
-        {
-            defaultCase = expression;
-            return this;
-        }
+        public MatchBuilder Default(Expression value) => Default(MakeCaseStatement(value));
 
-        internal MatchStatement<Action> Default() => new DefaultStatement(this);
+        internal MatchStatement<Action<ParameterExpression>> Default() => new DefaultStatement(this);
 
         private protected override BlockExpression Build()
         {
@@ -478,7 +507,7 @@ namespace DotNext.Metaprogramming
                 instructions.Add(pattern(endOfMatch));
             //handle default
             if (!(defaultCase is null))
-                instructions.Add(Expression.Goto(endOfMatch, defaultCase));
+                instructions.Add(Expression.Goto(endOfMatch, defaultCase(value)));
             //setup label as last instruction
             instructions.Add(Expression.Label(endOfMatch, Expression.Default(endOfMatch.Type)));
             return assignment is null ? Expression.Block(instructions) : Expression.Block(Sequence.Singleton(value), instructions);

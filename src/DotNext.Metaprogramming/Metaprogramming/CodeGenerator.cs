@@ -860,7 +860,7 @@ namespace DotNext.Metaprogramming
         /// <param name="builder">Pattern matching builder.</param>
         /// <param name="body">The body to be executed as default case.</param>
         /// <returns><c>this</c> builder.</returns>
-        public static MatchBuilder Default(this MatchBuilder builder, Action body)
+        public static MatchBuilder Default(this MatchBuilder builder, Action<ParameterExpression> body)
         {
             using (var statement = builder.Default())
                 return statement.Build(body);
