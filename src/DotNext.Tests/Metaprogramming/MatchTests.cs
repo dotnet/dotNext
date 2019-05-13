@@ -43,7 +43,7 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public static void TupleMatch()
+        public static void StructMatch()
         {
             var lambda = Lambda<Func<Point, string>>(fun =>
             {
@@ -61,7 +61,7 @@ namespace DotNext.Metaprogramming
         }
 
         [Fact]
-        public static void TupleMatchVoid()
+        public static void StructMatchVoid()
         {
             var lambda = Lambda<Func<Point, string>>((fun, result) =>
             {
@@ -83,6 +83,24 @@ namespace DotNext.Metaprogramming
             Equal("X is zero", lambda(new Point { X = 0, Y = 10 }));
             Equal("MaxValue", lambda(new Point { X = long.MaxValue, Y = long.MaxValue }));
             Equal("Unknown", lambda(new Point { X = 10 }));
+        }
+
+        [Fact]
+        public static void TupleMatch()
+        {
+            var lambda = Lambda<Func<(long X, long Y), string>>(fun =>
+            {
+                Match(fun[0])
+                    .Case("Item1", 0L.Const(), value => "X is zero".Const())
+                    .Case((long.MaxValue, long.MaxValue), value => "MaxValue".Const())
+                    .Default("Unknown".Const())
+                    .OfType<string>()
+                .End();
+            }).Compile();
+            Equal("X is zero", lambda((0, 20)));
+            Equal("X is zero", lambda((0, 30)));
+            Equal("MaxValue", lambda((long.MaxValue, long.MaxValue)));
+            Equal("Unknown", lambda((10, 0)));
         }
     }
 }

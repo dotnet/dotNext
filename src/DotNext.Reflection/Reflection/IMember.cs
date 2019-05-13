@@ -86,7 +86,7 @@ namespace DotNext.Reflection
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static R Invoke<M, T, R>(this IMember<M, Function<T, ValueTuple, R>> member, in T @this)
 			where M: MemberInfo
-			=> member.Invoke(in @this, in EmptyTuple.Value);
+			=> member.Invoke(in @this, default);
 
         /// <summary>
         /// Invokes member without arguments.
@@ -98,7 +98,7 @@ namespace DotNext.Reflection
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static R Invoke<M, R>(this IMember<M, Function<ValueTuple, R>> member)
 			where M: MemberInfo
-			=> member.Invoke(in EmptyTuple.Value);
+			=> member.Invoke(default);
 
         /// <summary>
         /// Allocates unitialized structure for placing arguments.

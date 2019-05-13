@@ -106,6 +106,6 @@ namespace DotNext
         /// <param name="second">The second data slot to check.</param>
         /// <returns><see langword="false"/> if both data slots identifies the same data key.</returns>
         public static bool operator !=(UserDataSlot<V> first, UserDataSlot<V> second)
-            => first.Id == second.Id;
+            => first.Id != second.Id;
     }
 }

@@ -42,7 +42,7 @@ namespace DotNext.Linq.Expressions
         }
 
         private Expression PrepareExpression()
-            => Value is IExpressionBuilder<Expression> builder ? Expression.Convert<IExpressionBuilder<Expression>>().Call(nameof(IExpressionBuilder<Expression>.Build)) : Expression;
+            => Value is IExpressionBuilder<Expression> ? Expression.Convert<IExpressionBuilder<Expression>>().Call(nameof(IExpressionBuilder<Expression>.Build)) : Expression;
 
         public override DynamicMetaObject BindUnaryOperation(UnaryOperationBinder binder)
         {

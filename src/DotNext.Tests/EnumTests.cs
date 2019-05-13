@@ -39,5 +39,17 @@ namespace DotNext
             Equal(EnvironmentVariableTarget.Machine, Enum<EnvironmentVariableTarget>.MaxValue);
             Equal(EnvironmentVariableTarget.Process, Enum<EnvironmentVariableTarget>.MinValue);
         }
+
+        [Fact]
+        public static void EqualityOperators()
+        {
+            var e1 = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.Machine);
+            var e2 = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.Machine);
+            True(e1 == e2);
+            False(e1 != e2);
+            e2 = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.Process);
+            False(e1 == e2);
+            True(e1 != e2);
+        }
     }
 }

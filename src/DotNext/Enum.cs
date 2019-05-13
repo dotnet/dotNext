@@ -10,7 +10,7 @@ namespace DotNext
     /// </summary>
     /// <typeparam name="E">Enum type to reflect.</typeparam>
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
-    [SuppressMessage("Design", "CA1036", Justification = "")]
+    [SuppressMessage("Design", "CA1036")]
     [Serializable]
     public readonly struct Enum<E> : IEquatable<E>, IComparable<E>, IFormattable, IEquatable<Enum<E>>, ISerializable
         where E : struct, Enum
@@ -262,7 +262,7 @@ namespace DotNext
         /// <param name="first">The first member to compare.</param>
         /// <param name="second">The second member to compare.</param>
         /// <returns><see langword="true"/> if this enum member is the same as other; otherwise, <see langword="false"/>.</returns>
-        public static bool operator==(Enum<E> first, Enum<E> second) => first.Equals(second);
+        public static bool operator ==(Enum<E> first, Enum<E> second) => first.Equals(second);
 
         /// <summary>
         /// Determines whether two enum members are not equal.
@@ -270,7 +270,7 @@ namespace DotNext
         /// <param name="first">The first member to compare.</param>
         /// <param name="second">The second member to compare.</param>
         /// <returns><see langword="true"/> if this enum member is not the same as other; otherwise, <see langword="false"/>.</returns>
-        public static bool operator!=(Enum<E> first, Enum<E> second) => first.Equals(second);
+        public static bool operator !=(Enum<E> first, Enum<E> second) => !first.Equals(second);
 
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {

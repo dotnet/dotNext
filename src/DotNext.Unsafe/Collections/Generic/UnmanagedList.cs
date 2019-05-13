@@ -81,7 +81,7 @@ namespace DotNext.Collections.Generic
 
         Pointer<T> IUnmanagedMemory<T>.Pointer => array;
 
-        private Span<T> Span => (Span<T>)array.Slice(0, count);
+        private Span<T> Span => array.Slice(0, count);
 
         Span<T> IUnmanagedMemory<T>.Span => Span;
 

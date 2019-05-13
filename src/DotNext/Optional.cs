@@ -262,16 +262,8 @@ namespace DotNext
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
         public bool TryGet(out T value)
         {
-            if (IsPresent)
-            {
-                value = this.value;
-                return true;
-            }
-            else
-            {
-                value = default;
-                return false;
-            }
+            value = this.value;
+            return IsPresent;
         }
 
         /// <summary>

@@ -82,7 +82,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="first">The first unmanaged memory handle.</param>
         /// <param name="second">The second unmanaged memory handle.</param>
         /// <returns><see langword="true"/>, if both handles point to the differemt blocks of unmanaged memory; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(UnmanagedMemoryHandle first, UnmanagedMemoryHandle second) => first is null ? second is null : first.Equals(second);
+        public static bool operator !=(UnmanagedMemoryHandle first, UnmanagedMemoryHandle second) => first is null || !first.Equals(second);
     }
 
     /// <summary>
