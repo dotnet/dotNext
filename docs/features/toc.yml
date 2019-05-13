@@ -62,6 +62,8 @@
       href: metaprogramming/lock.md
     - name: String Interpolation
       href: metaprogramming/interp.md
+    - name: Pattern Matching
+      href: metaprogramming/match.md
     - name: Miscellaneous Statements
       href: metaprogramming/misc.md
 - name: Unsafe Data Structures
