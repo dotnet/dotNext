@@ -18,6 +18,56 @@ namespace DotNext
     [SuppressMessage("Design", "CA1066")]
     public readonly ref struct UserDataStorage
     {
+        private interface ISupplier<V>
+        {
+            V Supply();
+        }
+
+        internal readonly struct FuncSupplier<V> : ISupplier<V>
+        {
+            private readonly Func<V> factory;
+
+            internal FuncSupplier(Func<V> factory) => this.factory = factory;
+
+            V ISupplier<V>.Supply() => factory();
+        }
+
+        internal readonly struct FuncSupplier<T, V> : ISupplier<V>
+        {
+            private readonly T arg;
+            private readonly Func<T, V> factory;
+
+            internal FuncSupplier(T arg, Func<T, V> factory)
+            {
+                this.arg = arg;
+                this.factory = factory;
+            }
+
+            V ISupplier<V>.Supply() => factory(arg);
+        }
+
+        internal readonly struct FuncSupplier<T1, T2, V> : ISupplier<V>
+        {
+            private readonly T1 arg1;
+            private readonly T2 arg2;
+            private readonly Func<T1, T2, V> factory;
+
+            internal FuncSupplier(T1 arg1, T2 arg2, Func<T1, T2, V> factory)
+            {
+                this.arg1 = arg1;
+                this.arg2 = arg2;
+                this.factory = factory;
+            }
+
+            V ISupplier<V>.Supply() => factory(arg1, arg2);
+        }
+
+        internal readonly struct CtorSupplier<V> : ISupplier<V>
+            where V : new()
+        {
+            V ISupplier<V>.Supply() => new V();
+        }
+
         [SuppressMessage("Design", "CA1001", Justification = "Object should be reclaimed by GC, no way to do Dispose manually")]
         [SuppressMessage("Performance", "CA1812", Justification = "It is instantiated by method GetOrCreateValue")]
         private sealed class BackingStorage : Dictionary<long, object>
@@ -32,7 +82,8 @@ namespace DotNext
                 }
             }
 
-            internal V GetOrSet<V>(UserDataSlot<V> slot, Func<V> valueFactory)
+            internal V GetOrSet<V, S>(UserDataSlot<V> slot, ref S valueFactory)
+                where S : struct, ISupplier<V>
             {
                 V userData;
                 //fast path - read user data if it is already exists
@@ -46,7 +97,7 @@ namespace DotNext
                 using (synchronizer.AcquireWriteLock())
                 {
                     if (!slot.GetUserData(this, out userData))
-                        slot.SetUserData(this, userData = valueFactory());
+                        slot.SetUserData(this, userData = valueFactory.Supply());
                     return userData;
                 }
             }
@@ -134,7 +185,11 @@ namespace DotNext
         /// <returns>The data associated with the slot.</returns>
         public V GetOrSet<V>(UserDataSlot<V> slot)
             where V : new()
-            => GetOrSet(slot, () => new V());
+        {
+            var supplier = new CtorSupplier<V>();
+            return GetStorage(true).GetOrSet(slot, ref supplier);
+        }
+        
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -144,7 +199,42 @@ namespace DotNext
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
         public V GetOrSet<V>(UserDataSlot<V> slot, Func<V> valueFactory)
-            => GetStorage(true).GetOrSet(slot, valueFactory);
+        {
+            var supplier = new FuncSupplier<V>(valueFactory);
+            return GetStorage(true).GetOrSet(slot, ref supplier);
+        }
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="T">The type of the argument to be passed into factory.</typeparam>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="arg">The argument to be passed into factory.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, Func<T, V> valueFactory)
+        {
+            var supplier = new FuncSupplier<T, V>(arg, valueFactory);
+            return GetStorage(true).GetOrSet(slot, ref supplier);
+        }
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first argument to be passed into factory.</typeparam>
+        /// <typeparam name="T2">The type of the first argument to be passed into factory.</typeparam>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="arg1">The first argument to be passed into factory.</param>
+        /// <param name="arg2">The second argument to be passed into factory.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, Func<T1, T2, V> valueFactory)
+        {
+            var supplier = new FuncSupplier<T1, T2, V>(arg1, arg2, valueFactory);
+            return GetStorage(true).GetOrSet(slot, ref supplier);
+        }
 
         /// <summary>
         /// Tries to get user data.

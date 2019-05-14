@@ -13,22 +13,21 @@ namespace DotNext.Reflection
         private static class ConstructorCache<D>
             where D : MulticastDelegate
         {
-            private static readonly ConditionalWeakTable<ConstructorInfo, Constructor<D>> constructors =
-                new ConditionalWeakTable<ConstructorInfo, Constructor<D>>();
+            private static readonly Func<ConstructorInfo, Constructor<D>> Factory = Constructor<D>.Unreflect;
+            private static readonly UserDataSlot<Constructor<D>> UnreflectedConstructor = UserDataSlot<Constructor<D>>.Allocate();
 
             internal static Constructor<D> GetOrCreate(ConstructorInfo ctor)
-                => constructors.GetValue(ctor, Constructor<D>.Unreflect);
-
+                => ctor.GetUserData().GetOrSet(UnreflectedConstructor, ctor, Factory);
         }
 
         private static class MethodCache<D>
             where D : MulticastDelegate
         {
-            private static readonly ConditionalWeakTable<MethodInfo, Method<D>> constructors =
-                new ConditionalWeakTable<MethodInfo, Method<D>>();
+            private static readonly Func<MethodInfo, Method<D>> Factory = Method<D>.Unreflect;
+            private static readonly UserDataSlot<Method<D>> UnreflectedMethod = UserDataSlot<Method<D>>.Allocate();
 
             internal static Method<D> GetOrCreate(MethodInfo ctor)
-                => constructors.GetValue(ctor, Method<D>.Unreflect);
+                => ctor.GetUserData().GetOrSet(UnreflectedMethod, ctor, Factory);
         }
 
         /// <summary>
@@ -40,14 +39,17 @@ namespace DotNext.Reflection
         public static M MemberOf<M>(Expression<Action> exprTree)
             where M : MemberInfo
         {
-            if (exprTree.Body is MemberExpression member)
-                return member.Member as M;
-            else if (exprTree.Body is MethodCallExpression method)
-                return method.Method as M;
-            else if (exprTree.Body is NewExpression ctor)
-                return ctor.Constructor as M;
-            else
-                return null;
+            switch(exprTree.Body)
+            {
+                case MemberExpression body:
+                    return body.Member as M;
+                case MethodCallExpression body:
+                    return body.Method as M;
+                case NewExpression body:
+                    return body.Constructor as M;
+                default:
+                    return null;
+            }
         }
 
         /// <summary>
@@ -56,9 +58,7 @@ namespace DotNext.Reflection
         /// <typeparam name="D">A delegate representing signature of constructor.</typeparam>
         /// <param name="ctor">Constructor to unreflect.</param>
         /// <returns>Unreflected constructor.</returns>
-        public static Constructor<D> Unreflect<D>(this ConstructorInfo ctor)
-            where D : MulticastDelegate
-            => ConstructorCache<D>.GetOrCreate(ctor);
+        public static Constructor<D> Unreflect<D>(this ConstructorInfo ctor) where D : MulticastDelegate => ConstructorCache<D>.GetOrCreate(ctor);
 
         /// <summary>
         /// Unreflects method to its typed and callable representation.
@@ -66,8 +66,6 @@ namespace DotNext.Reflection
         /// <typeparam name="D">A delegate representing signature of method.</typeparam>
         /// <param name="method">A method to unreflect.</param>
         /// <returns>Unreflected method.</returns>
-        public static Method<D> Unreflect<D>(this MethodInfo method)
-            where D : MulticastDelegate
-            => MethodCache<D>.GetOrCreate(method);
+        public static Method<D> Unreflect<D>(this MethodInfo method) where D : MulticastDelegate => MethodCache<D>.GetOrCreate(method);
     }
 }
