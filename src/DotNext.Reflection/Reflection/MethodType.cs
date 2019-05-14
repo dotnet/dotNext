@@ -45,7 +45,7 @@ namespace DotNext.Reflection
             internal Cache(bool nonPublic) : base(nonPublic) { }
 
             private protected sealed override Reflection.Method<D> Create(string methodName)
-                => Reflection.Method<D>.Reflect<T>(methodName, nonPublic);
+                => Method<D>.Reflect<T>(methodName, nonPublic);
         }
 
         private sealed class PublicMethodsCache<T, D> : Cache<T, D>
@@ -77,7 +77,7 @@ namespace DotNext.Reflection
             internal Cache(bool nonPublic) : base(nonPublic) { }
 
             private protected sealed override Reflection.Method<D> Create(string methodName)
-                    => Reflection.Method<D>.Reflect(methodName, nonPublic);
+                => Method<D>.Reflect(methodName, nonPublic);
         }
 
         private sealed class PublicMethodsCache<T, D> : Cache<T, D>
