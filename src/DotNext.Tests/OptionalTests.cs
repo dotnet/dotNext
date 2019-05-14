@@ -56,5 +56,17 @@ namespace DotNext
 			False(new Optional<Delegate>(default).IsPresent);
 			True(new Optional<EventHandler>((sender, args) => { }).IsPresent);
 		}
+
+        [Fact]
+        public static void OrElse()
+        {
+            var result = new Optional<int>(10) || Optional<int>.Empty;
+            True(result.IsPresent);
+            Equal(10, result.Value);
+
+            result = Optional<int>.Empty || new Optional<int>(20);
+            True(result.IsPresent);
+            Equal(20, result.Value);
+        }
 	}
 }

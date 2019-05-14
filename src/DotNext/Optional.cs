@@ -328,11 +328,7 @@ namespace DotNext
         /// <returns><see langword="true"/> if this contauner stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         [CLSCompliant(false)]
         public bool Equals(in Optional<T> other)
-        {
-            var present1 = IsPresent;
-            var present2 = other.IsPresent;
-            return present1 & present2 ? value.Equals(other.value) : present1 == present2;
-        }
+            => IsPresent ? other.IsPresent && value.Equals(other.value) : !other.IsPresent;
 
         /// <summary>
         /// Determines whether this container stores
