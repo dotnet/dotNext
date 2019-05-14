@@ -20,11 +20,23 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="nonPublic">True to reflect non-public constructor.</param>
         /// <typeparam name="A">A structure describing constructor signature.</typeparam>
-        /// <returns>Constructor for type <typeparamref name="T"/></returns>
+        /// <returns>Constructor for type <typeparamref name="T"/>.</returns>
         /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
         public static Reflection.Constructor<Function<A, T>> RequireConstructor<A>(bool nonPublic = false)
             where A : struct
             => GetConstructor<A>(nonPublic) ?? throw MissingConstructorException.Create<T, A>();
+        
+        /// <summary>
+        /// Creates a new instance of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="args">The structure containing arguments to be passed into constructor.</param>
+        /// <param name="nonPublic">True to reflect non-public constructor.</param>
+        /// <typeparam name="A">A structure describing constructor signature.</typeparam>
+        /// <returns>A new instance of type <typeparamref name="T"/>.</returns>
+        /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
+        public static T NewInstance<A>(in A args, bool nonPublic = false)
+            where A : struct
+             => RequireConstructor<A>(nonPublic).Invoke(args);
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> without parameters.

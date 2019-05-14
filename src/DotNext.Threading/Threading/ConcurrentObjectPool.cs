@@ -14,7 +14,7 @@ namespace DotNext.Threading
     /// The object pool implements two scheduling strategies:
     /// <list type="number">
     /// <item>
-    /// <term>Round-robin</term>
+    /// <term>Round-robin.</term>
     /// <description>
     /// This strategy requires that all objects should be created and initialized before instantiation
     /// of object pool. All objects are placed into pool and shared between concurrent threads.
@@ -24,7 +24,7 @@ namespace DotNext.Threading
     /// </description>
     /// </item>
     /// <item>
-    /// <term>Shortest Job First</term>
+    /// <term>Shortest Job First.</term>
     /// <description>
     /// This stategy instantiates objects in the pool on-demand depends on workload.
     /// The first released object will be passed to the one of waiting threads.

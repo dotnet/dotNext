@@ -59,7 +59,7 @@ namespace DotNext.Reflection
         /// <param name="ctor">Constructor to unreflect.</param>
         /// <returns>Unreflected constructor.</returns>
         public static Constructor<D> Unreflect<D>(this ConstructorInfo ctor) where D : MulticastDelegate => ConstructorCache<D>.GetOrCreate(ctor);
-
+        
         /// <summary>
         /// Unreflects method to its typed and callable representation.
         /// </summary>
