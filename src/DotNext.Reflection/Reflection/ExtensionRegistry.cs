@@ -22,68 +22,43 @@ namespace DotNext.Reflection
 
         }
 
-        internal static IEnumerable<MethodInfo> GetMethods(Type target, MethodLookup lookup)
+        private static IEnumerable<MethodInfo> GetMethods(IEnumerable<Type> lookup, UserDataSlot<ExtensionRegistry> registrySlot)
+        {
+            foreach(var t in lookup)
+                foreach(var method in t.GetUserData().Get(registrySlot) ?? Enumerable.Empty<MethodInfo>())
+                    yield return method;
+        }
+
+        internal static IEnumerable<MethodInfo> GetStaticMethods(Type target)
+            => GetMethods(Sequence.Singleton(target.IsByRef ? target.GetElementType() : target), StaticMethods);
+
+        internal static IEnumerable<MethodInfo> GetInstanceMethods(Type target)
         {
             var result = Enumerable.Empty<MethodInfo>();
             IEnumerable<Type> types;
-            switch (lookup)
-            {
-                case MethodLookup.Static:
-                    types = Sequence.Singleton(target.IsByRef ? target.GetElementType() : target);
-                    break;
-                default:
-                    if (target.IsValueType)
-                        types = Sequence.Singleton(target);
-                    else if (target.IsByRef)
-                        types = Sequence.Singleton(target.GetElementType());
-                    else
-                        types = target.GetBaseTypes(includeTopLevel: true, includeInterfaces: true);
-                    break;
-            }
-            foreach (var t in types)
-            {
-                IEnumerable<MethodInfo> methods;
-                switch (lookup)
-                {
-                    case MethodLookup.Instance:
-                        methods = t.GetUserData().Get(InstanceMethods) ?? Enumerable.Empty<MethodInfo>();
-                        break;
-                    case MethodLookup.Static:
-                        methods = t.GetUserData().Get(StaticMethods) ?? Enumerable.Empty<MethodInfo>();
-                        break;
-                    default:
-                        methods = Enumerable.Empty<MethodInfo>();
-                        break;
-                }
-                result = result.Concat(methods);
-            }
-            return result;
+            if (target.IsValueType)
+                types = Sequence.Singleton(target);
+            else if (target.IsByRef)
+                types = Sequence.Singleton(target.GetElementType());
+            else
+                types = target.GetBaseTypes(includeTopLevel: true, includeInterfaces: true);
+            return GetMethods(types, InstanceMethods);
         }
 
-        private static ExtensionRegistry GetOrCreateRegistry(Type target, MethodLookup lookup)
-        {
-            switch (lookup)
-            {
-                case MethodLookup.Instance:
-                    return target.GetUserData().GetOrSet(InstanceMethods, () => new ExtensionRegistry());
-                case MethodLookup.Static:
-                    return target.GetUserData().GetOrSet(StaticMethods, () => new ExtensionRegistry());
-                default:
-                    return null;
-            }
-        }
+        private static ExtensionRegistry GetOrCreateRegistry(Type target, UserDataSlot<ExtensionRegistry> registrySlot)
+            => target.GetUserData().GetOrSet(registrySlot, () => new ExtensionRegistry());
 
         /// <summary>
         /// Registers static method for the specified type in ad-hoc manner so
-        /// it will be available using <see cref="Type{T}.Method.Get{D}(string, MethodLookup, bool)"/> and related methods.
+        /// it will be available using <see cref="Type{T}.Method.Get{D}(string, MethodType, bool)"/> and related methods.
         /// </summary>
         /// <typeparam name="T">The type to be extended with static method.</typeparam>
         /// <param name="method">The static method implementation.</param>
-        public static void RegisterStatic<T>(MethodInfo method) => GetOrCreateRegistry(typeof(T), MethodLookup.Static).Add(method);
+        public static void RegisterStatic<T>(MethodInfo method) => GetOrCreateRegistry(typeof(T), StaticMethods).Add(method);
 
         /// <summary>
         /// Registers static method for the specified type in ad-hoc manner so
-        /// it will be available using <see cref="Type{T}.Method.Get{D}(string, MethodLookup, bool)"/> and related methods.
+        /// it will be available using <see cref="Type{T}.Method.Get{D}(string, MethodType, bool)"/> and related methods.
         /// </summary>
         /// <typeparam name="T">The type to be extended with static method.</typeparam>
         /// <typeparam name="D">The type of the delegate.</typeparam>
@@ -94,7 +69,7 @@ namespace DotNext.Reflection
 
         /// <summary>
         /// Registers extension method as instance method which will be included into strongly typed
-        /// reflection lookup performed by <see cref="Type{T}.Method.Get{D}(string, MethodLookup, bool)"/> and related methods.
+        /// reflection lookup performed by <see cref="Type{T}.Method.Get{D}(string, MethodType, bool)"/> and related methods.
         /// </summary>
         /// <param name="method">Static method to register. Cannot be <see langword="null"/>.</param>
         public static void RegisterInstance(MethodInfo method)
@@ -104,13 +79,13 @@ namespace DotNext.Reflection
                 throw new ArgumentException(ExceptionMessages.ExtensionMethodExpected(method), nameof(method));
             if (thisParam.IsByRef)
                 thisParam = thisParam.GetElementType();
-            GetOrCreateRegistry(thisParam, MethodLookup.Instance).Add(method);
+            GetOrCreateRegistry(thisParam, InstanceMethods).Add(method);
         }
 
         /// <summary>
         /// Registers extension method which will be included into strongly typed
         /// reflection lookup performed by <see cref="Reflector.Unreflect{D}(MethodInfo)"/>
-        /// or <see cref="Type{T}.Method.Get{D}(string, MethodLookup, bool)"/> methods.
+        /// or <see cref="Type{T}.Method.Get{D}(string, MethodType, bool)"/> methods.
         /// </summary>
         /// <typeparam name="D">The type of the delegate.</typeparam>
         /// <param name="delegate">The delegate instance representing extension method.</param>
