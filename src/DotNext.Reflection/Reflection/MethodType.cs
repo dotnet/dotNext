@@ -22,7 +22,7 @@ namespace DotNext.Reflection
 
         private protected abstract Cache<T, D> GetNonPublicMethods<T, D>() where D : MulticastDelegate;
 
-        internal Method<D> GetOrCreate<T, D>(string methodName, bool nonPublic) 
+        internal Method<D> Reflect<T, D>(string methodName, bool nonPublic) 
             where D : MulticastDelegate
             => (nonPublic ? GetNonPublicMethods<T, D>() : GetPublicMethods<T, D>()).GetOrCreate(methodName);
         

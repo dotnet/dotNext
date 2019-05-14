@@ -174,7 +174,7 @@ namespace DotNext.Reflection
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
             public static Reflection.Method<D> Get<D>(string methodName, MethodType methodType, bool nonPublic = false)
                 where D : MulticastDelegate
-                => methodType.GetOrCreate<T, D>(methodName, nonPublic);
+                => methodType.Reflect<T, D>(methodName, nonPublic);
 
             /// <summary>
             /// Reflects class method.
