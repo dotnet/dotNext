@@ -104,7 +104,7 @@ namespace DotNext.Runtime.CompilerServices
                     statements.Push(statement);
                     isStatement = true;
                     break;
-                case AwaitExpression await:
+                case AwaitExpression _:
                     attr.ContainsAwait = true;
                     ContainsAwait();
                     break;
