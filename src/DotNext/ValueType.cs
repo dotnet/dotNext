@@ -187,7 +187,7 @@ namespace DotNext
         /// <param name="input">A value to convert.</param>
         /// <param name="output">Conversion result.</param>
         /// <typeparam name="To">The type of output struct.</typeparam>
-        public static void BitCast<To>(in T input, out To output)
+        public static void Bitcast<To>(in T input, out To output)
             where To : unmanaged
         {
             if (Size >= ValueType<To>.Size)
