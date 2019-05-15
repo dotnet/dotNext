@@ -15,7 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>unsafe;unmanaged;pointer;pinvoke;interop</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>UnmanagedArray now supports Reverse() method</PackageReleaseNotes>
+    <PackageReleaseNotes>Minor optimizations</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
