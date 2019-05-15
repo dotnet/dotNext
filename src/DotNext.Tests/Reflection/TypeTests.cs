@@ -38,14 +38,14 @@ namespace DotNext.Reflection
 			var result = indexOf("aba", 'b');
 			Equal(1, result);
 
-			ByRefFunc<string, char, int> indexOf2 = Type<string>.Method.Get<ByRefFunc<string, char, int>>(nameof(string.IndexOf), MethodType.Instance);
+			ByRefFunc<string, char, int> indexOf2 = Type<string>.Method.Get<ByRefFunc<string, char, int>>(nameof(string.IndexOf), MethodLookup.Instance);
 			NotNull(indexOf2);
 			Equal(2, indexOf("abca", 'c'));
 
 			Func<string, char, int, int> indexOf3 = Type<string>.Method<char, int>.Require<int>(nameof(string.IndexOf));
 			Equal(1, indexOf3("aba", 'b', 1));
 
-			ByRefAction<Point> zero = Type<Point>.Method.Get<ByRefAction<Point>>(nameof(Point.Zero), MethodType.Instance);
+			ByRefAction<Point> zero = Type<Point>.Method.Get<ByRefAction<Point>>(nameof(Point.Zero), MethodLookup.Instance);
 			NotNull(zero);
 			var point = new Point() { X = 10, Y = 20 };
 			zero(point);

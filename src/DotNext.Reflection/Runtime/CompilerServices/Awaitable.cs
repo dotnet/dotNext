@@ -15,7 +15,7 @@ namespace DotNext.Runtime.CompilerServices
     public readonly struct Awaitable<T, [Constraint(typeof(Awaiter<>))] TAwaiter>
         where TAwaiter : ICriticalNotifyCompletion
     {
-        private static readonly Operator<T, TAwaiter> getAwaiter = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodType.Instance);
+        private static readonly Operator<T, TAwaiter> getAwaiter = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance);
 
         static Awaitable() => Concept.Assert<Awaiter<TAwaiter>>();
 
@@ -59,7 +59,7 @@ namespace DotNext.Runtime.CompilerServices
     public readonly struct Awaitable<T, [Constraint(typeof(Awaiter<,>))] TAwaiter, R>
         where TAwaiter : ICriticalNotifyCompletion
     {
-        private static readonly Operator<T, TAwaiter> getAwaiter = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodType.Instance);
+        private static readonly Operator<T, TAwaiter> getAwaiter = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance);
 
         static Awaitable() => Concept.Assert<Awaiter<TAwaiter, R>>();
 

@@ -18,7 +18,7 @@ namespace DotNext.Runtime.CompilerServices
     public readonly struct Awaiter<[Constraint(typeof(NotifyCompletion<>))]TAwaiter, R> : INotifyCompletion
         where TAwaiter : INotifyCompletion
     {
-        private static readonly MemberGetter<TAwaiter, R> getResult = Type<TAwaiter>.Method.Get<MemberGetter<TAwaiter, R>>(nameof(TaskAwaiter<R>.GetResult), MethodType.Instance);
+        private static readonly MemberGetter<TAwaiter, R> getResult = Type<TAwaiter>.Method.Get<MemberGetter<TAwaiter, R>>(nameof(TaskAwaiter<R>.GetResult), MethodLookup.Instance);
 
         static Awaiter() => Concept.Assert(typeof(NotifyCompletion<TAwaiter>));
 
@@ -77,7 +77,7 @@ namespace DotNext.Runtime.CompilerServices
 
         static Awaiter() => Concept.Assert(typeof(NotifyCompletion<TAwaiter>));
 
-        private static readonly GetResultMethod getResult = Type<TAwaiter>.Method.Get<GetResultMethod>(nameof(TaskAwaiter.GetResult), MethodType.Instance);
+        private static readonly GetResultMethod getResult = Type<TAwaiter>.Method.Get<GetResultMethod>(nameof(TaskAwaiter.GetResult), MethodLookup.Instance);
 
         private readonly TAwaiter awaiter;
 

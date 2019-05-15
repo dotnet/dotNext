@@ -12,7 +12,7 @@ namespace DotNext.Reflection
         private delegate bool TryParseDelegate(string text, out decimal result);
 
         private static readonly MethodInfo ReflectedMethod = typeof(decimal).GetMethod(nameof(decimal.TryParse), new[]{typeof(string), typeof(decimal).MakeByRefType()});
-        private static readonly TryParseDelegate StronglyTyped = Type<decimal>.Method.Get<TryParseDelegate>(nameof(decimal.TryParse), MethodType.Static);
+        private static readonly TryParseDelegate StronglyTyped = Type<decimal>.Method.Get<TryParseDelegate>(nameof(decimal.TryParse), MethodLookup.Static);
 
         private static readonly Function<(string text, Ref<decimal> result), bool> StronglyTypedSpecial = Type<decimal>.GetStaticMethod<(string, Ref<decimal>), bool>(nameof(decimal.TryParse));
 

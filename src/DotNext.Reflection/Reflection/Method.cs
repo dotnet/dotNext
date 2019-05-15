@@ -308,7 +308,7 @@ namespace DotNext.Reflection
             if (targetMethod is null || returnType != targetMethod.ReturnType)
             {
                 targetMethod = null;
-                foreach (var candidate in ExtensionRegistry.GetStaticMethods(declaringType))
+                foreach (var candidate in ExtensionRegistry.GetMethods(declaringType, MethodLookup.Static))
                     if (candidate.Name == methodName && candidate.SignatureEquals(parameters) && candidate.ReturnType == returnType)
                     {
                         targetMethod = candidate;
@@ -331,7 +331,7 @@ namespace DotNext.Reflection
             if (targetMethod is null || returnType != targetMethod.ReturnType)
             {
                 targetMethod = null;
-                foreach (var candidate in ExtensionRegistry.GetStaticMethods(declaringType))
+                foreach (var candidate in ExtensionRegistry.GetMethods(declaringType, MethodLookup.Static))
                     if (candidate.Name == methodName && candidate.SignatureEquals(parameters) && candidate.ReturnType == returnType)
                     {
                         targetMethod = candidate;
@@ -355,7 +355,7 @@ namespace DotNext.Reflection
             if (targetMethod is null || returnType != targetMethod.ReturnType)
             {
                 targetMethod = null;
-                foreach (var candidate in ExtensionRegistry.GetInstanceMethods(thisParam))
+                foreach (var candidate in ExtensionRegistry.GetMethods(thisParam, MethodLookup.Instance))
                     if (candidate.Name == methodName && Enumerable.SequenceEqual(candidate.GetParameterTypes().RemoveFirst(1), parameters) && candidate.ReturnType == returnType)
                     {
                         targetMethod = candidate;
@@ -399,7 +399,7 @@ namespace DotNext.Reflection
             if (targetMethod is null || returnType != targetMethod.ReturnType)
             {
                 targetMethod = null;
-                foreach (var candidate in ExtensionRegistry.GetInstanceMethods(thisParam))
+                foreach (var candidate in ExtensionRegistry.GetMethods(thisParam, MethodLookup.Instance))
                     if (candidate.Name == methodName && Enumerable.SequenceEqual(candidate.GetParameterTypes().RemoveFirst(1), parameters) && candidate.ReturnType == returnType)
                     {
                         targetMethod = candidate;

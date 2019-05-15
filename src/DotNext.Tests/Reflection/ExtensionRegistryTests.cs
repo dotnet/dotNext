@@ -31,7 +31,7 @@ namespace DotNext.Reflection
             Func<string, int> length = Type<CharEnumerator>.Method<string>.RequireStatic<int>(nameof(GetLength));
             var str = "123";
             Equal(3, length(str));
-            ContainsMethod contains = Type<CharEnumerator>.Method.Require<ContainsMethod>(nameof(Contains), MethodType.Static);
+            ContainsMethod contains = Type<CharEnumerator>.Method.Require<ContainsMethod>(nameof(Contains), MethodLookup.Static);
             True(contains(ref str, '3'));
         }
 
@@ -41,7 +41,7 @@ namespace DotNext.Reflection
             Func<int, string> toHex = Type<int>.Method.Require<string>(nameof(ToHex));
             int value = 0xBB;
             Equal("BB", toHex(value));
-            ZeroMethod zero = Type<int>.Method.Require<ZeroMethod>(nameof(Zero), MethodType.Instance);
+            ZeroMethod zero = Type<int>.Method.Require<ZeroMethod>(nameof(Zero), MethodLookup.Instance);
             zero(ref value);
             Equal(0, value);
             Func<string, string> reverse = Type<string>.Method.Require<string>(nameof(StringExtensions.Reverse));
