@@ -10,6 +10,8 @@ namespace DotNext.Reflection
     public static class TypeExtensions
     {
         private const string IsUnmanagedAttributeName = "System.Runtime.CompilerServices.IsUnmanagedAttribute";
+        //TODO: should be removed in .NET Standard 2.1
+        private const string IsReadOnlyAttributeName = "System.Runtime.CompilerServices.IsReadOnlyAttribute";
 
         private static bool IsGenericParameter(Type type)
         {
@@ -19,16 +21,32 @@ namespace DotNext.Reflection
         }
 
         /// <summary>
+        /// Determines whether the type is read-only (immutable) value type.
+        /// </summary>
+        /// <param name="type">The type to inspect.</param>
+        /// <returns><see langword="true"/>, if the specified type is immutable value type; otherwise, <see langword="false"/>.</returns>
+        public static bool IsImmutable(this Type type)
+        {
+            if(type.IsPrimitive)
+                return true;
+            else if(type.IsValueType)
+                foreach(var attribute in type.GetCustomAttributesData())
+                    if(attribute.AttributeType.FullName == IsReadOnlyAttributeName)
+                        return true;
+            return false;
+        }
+
+        /// <summary>
         /// Determines whether the type is unmanaged value type.
         /// </summary>
-        /// <param name="type">The type to be checked.</param>
+        /// <param name="type">The type to inspect.</param>
         /// <returns><see langword="true"/>, if the specified type is unmanaged value type; otherwise, <see langword="false"/>.</returns>
         public static bool IsUnmanaged(this Type type)
         {
             if (type.IsGenericType || type.IsGenericTypeDefinition || type.IsGenericParameter)
             {
-                foreach(var data in type.GetCustomAttributesData())
-                    if(data.AttributeType.FullName == IsUnmanagedAttributeName)
+                foreach(var attribute in type.GetCustomAttributesData())
+                    if(attribute.AttributeType.FullName == IsUnmanagedAttributeName)
                         return true;
                 return false;
             }

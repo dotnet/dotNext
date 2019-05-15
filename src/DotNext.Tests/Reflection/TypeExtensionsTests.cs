@@ -82,5 +82,13 @@ namespace DotNext.Reflection
             method = method.GetGenericMethodDefinition();
             True(method.GetGenericArguments()[0].IsUnmanaged());
         }
+
+        [Fact]
+        public static void IsImmutable()
+        {
+            True(typeof(ReadOnlySpan<int>).IsImmutable());
+            False(typeof(Guid).IsImmutable());
+            True(typeof(long).IsImmutable());
+        }
     }
 }
