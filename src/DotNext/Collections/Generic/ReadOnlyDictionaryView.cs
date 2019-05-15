@@ -250,7 +250,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="first">The first dictionary to compare.</param>
         /// <param name="second">The second collection to compare.</param>
-        /// <returns><see langword="true"/> if the first view wraps the diferent source dictionary and contains the different converter as the second view; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if the first view wraps the different source dictionary and contains the different converter as the second view; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(ReadOnlyDictionaryView<K, I, O> first, ReadOnlyDictionaryView<K, I, O> second)
             => !first.Equals(second);
     }

@@ -8,7 +8,7 @@ namespace DotNext.Collections.Generic
         [Fact]
         public static void ReadOnlyIndexer()
         {
-            IReadOnlyList<long> array = new long[] {5L, 6L, 20L };
+            IReadOnlyList<long> array = new[] {5L, 6L, 20L };
             Equal(20L, List.Indexer<long>.ReadOnly(array, 2));
             Equal(6L, array.IndexerGetter().Invoke(1));
         }
@@ -16,7 +16,7 @@ namespace DotNext.Collections.Generic
         [Fact]
         public static void Indexer()
         {
-            IList<long> array = new long[] { 5L, 6L, 30L };
+            IList<long> array = new[] { 5L, 6L, 30L };
             Equal(30L, List.Indexer<long>.Getter(array, 2));
             List.Indexer<long>.Setter(array, 1, 10L);
             Equal(10L, array.IndexerGetter().Invoke(1));

@@ -36,7 +36,7 @@ namespace DotNext.Reflection
             }
 
             /// <summary>
-            /// Gets instane event.
+            /// Gets instance event.
             /// </summary>
             /// <param name="eventName">Name of event.</param>
             /// <param name="nonPublic">True to reflect non-public event.</param>

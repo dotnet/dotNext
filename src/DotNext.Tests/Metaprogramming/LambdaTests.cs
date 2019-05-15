@@ -79,7 +79,7 @@ namespace DotNext.Metaprogramming
             {
                 var (arg1, arg2) = fun;
                 var temp = DeclareVariable<long>("tmp");
-                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(false));
+                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await());
                 Return((U)temp + 20L);
             });
             var fn = lambda.Compile();

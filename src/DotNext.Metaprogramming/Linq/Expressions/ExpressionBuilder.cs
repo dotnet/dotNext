@@ -856,7 +856,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="obj">The object to be converted into string.</param>
         /// <returns>The expression representing <c>ToString()</c> method call.</returns>
-        public static MethodCallExpression AsString(this Expression obj) => Call(obj, nameof(object.ToString));
+        public static MethodCallExpression AsString(this Expression obj) => Call(obj, nameof(ToString));
 
         /// <summary>
         /// Constructs loop statement.
@@ -1085,7 +1085,7 @@ namespace DotNext.Linq.Expressions
         /// <remarks>
         /// The equivalent code is <c>new T()</c>.
         /// </remarks>
-        /// <param name="type">The expression representung the type to be instantiated.</param>
+        /// <param name="type">The expression representing the type to be instantiated.</param>
         /// <param name="args">The list of arguments to be passed into constructor.</param>
         /// <returns>Instantiation expression.</returns>
         public static MethodCallExpression New(this Expression type, params Expression[] args)

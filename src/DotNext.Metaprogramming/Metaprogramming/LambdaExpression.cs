@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Linq.Expressions;
-using DebugInfoGenerator = System.Runtime.CompilerServices.DebugInfoGenerator;
 
 namespace DotNext.Metaprogramming
 {
-    using static Collections.Generic.Collection;
     using static Reflection.DelegateType;
 
     /// <summary>

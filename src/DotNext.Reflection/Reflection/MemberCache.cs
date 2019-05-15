@@ -45,7 +45,7 @@ namespace DotNext.Reflection
                 syncObject.EnterWriteLock();
                 try
                 {
-                    return elements[cacheKey] = item = Create(cacheKey);
+                    return elements[cacheKey] = Create(cacheKey);
                 }
                 finally
                 {

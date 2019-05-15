@@ -284,10 +284,10 @@ namespace DotNext.Runtime.CompilerServices
                     Method() + await a;
                     --transformed into--
                     state.field = Method();
-                    state.awaitor = a.GetAwaitor();
-                    MoveNext(state.awaitor, newState);
+                    state.awaiter = a.GetAwaiter();
+                    MoveNext(state.awaiter, newState);
                     return;
-                    newState: state.field + state.awaitor.GetResult();
+                    newState: state.field + state.awaiter.GetResult();
                  */
                 var leftTemp = NewStateSlot(node.Left.Type);
                 codeInsertionPoint(Expression.Assign(leftTemp, node.Left));
@@ -493,7 +493,7 @@ namespace DotNext.Runtime.CompilerServices
             return stateMachine;
         }
 
-        //replace local vairables with appropriate state fields
+        //replace local variables with appropriate state fields
         protected override Expression VisitParameter(ParameterExpression node)
         {
             if (methodBuilder.Variables.TryGetValue(node, out var stateSlot))

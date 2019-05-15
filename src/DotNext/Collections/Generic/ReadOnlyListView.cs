@@ -180,7 +180,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="first">The first list view to compare.</param>
         /// <param name="second">The second list view to compare.</param>
-        /// <returns><see langword="true"/> if the first view wraps the diferent source collection and contains the different converter as the second view; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if the first view wraps the different source collection and contains the different converter as the second view; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(ReadOnlyListView<I, O> first, ReadOnlyListView<I, O> second)
             => !first.Equals(second);
     }

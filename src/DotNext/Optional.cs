@@ -296,7 +296,7 @@ namespace DotNext
         /// <summary>
         /// Returns textual representation of this object.
         /// </summary>
-        /// <returns>The textual representatin of this object.</returns>
+        /// <returns>The textual representation of this object.</returns>
 		public override string ToString() => IsPresent ? value.ToString() : "<EMPTY>";
 
         /// <summary>
@@ -325,7 +325,7 @@ namespace DotNext
         /// the same value as other.
         /// </summary>
         /// <param name="other">Other container to compare.</param>
-        /// <returns><see langword="true"/> if this contauner stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         [CLSCompliant(false)]
         public bool Equals(in Optional<T> other)
             => IsPresent ? other.IsPresent && value.Equals(other.value) : !other.IsPresent;
@@ -335,7 +335,7 @@ namespace DotNext
         /// the same value as other.
         /// </summary>
         /// <param name="other">Other container to compare.</param>
-        /// <returns><see langword="true"/> if this contauner stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
             switch (other)

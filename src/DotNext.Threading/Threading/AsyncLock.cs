@@ -86,14 +86,14 @@ namespace DotNext.Threading
             /// Indicates that the object holds successfully acquired lock.
             /// </summary>
             /// <param name="holder">The lock holder.</param>
-            /// <returns><see langword="true"/>, if the object holds successfully acqured lock; otherwise, <see langword="false"/>.</returns>
+            /// <returns><see langword="true"/>, if the object holds successfully acquired lock; otherwise, <see langword="false"/>.</returns>
             public static bool operator true(in Holder holder) => !(holder.lockedObject is null);
 
             /// <summary>
             /// Indicates that the object doesn't hold the lock.
             /// </summary>
             /// <param name="holder">The lock holder.</param>
-            /// <returns><see langword="false"/>, if the object holds successfully acqured lock; otherwise, <see langword="true"/>.</returns>
+            /// <returns><see langword="false"/>, if the object holds successfully acquired lock; otherwise, <see langword="true"/>.</returns>
             public static bool operator false(in Holder holder) => holder.lockedObject is null;
         }
 

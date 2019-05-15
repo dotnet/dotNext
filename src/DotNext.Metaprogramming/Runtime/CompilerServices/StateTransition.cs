@@ -8,9 +8,9 @@ namespace DotNext.Runtime.CompilerServices
         internal readonly LabelTarget Successful;
         internal readonly LabelTarget Failure;
 
-        internal StateTransition(LabelTarget successul, LabelTarget failed)
+        internal StateTransition(LabelTarget successful, LabelTarget failed)
         {
-            Successful = successul;
+            Successful = successful;
             Failure = failed;
         }
 

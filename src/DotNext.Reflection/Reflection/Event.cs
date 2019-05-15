@@ -26,11 +26,11 @@ namespace DotNext.Reflection
             {
                 if (target is null)
                 {
-                    modifier(target, handler);
+                    modifier(null, handler);
                     return true;
                 }
             }
-            else if (@event.DeclaringType.IsInstanceOfType(target))
+            else if (@event.DeclaringType?.IsInstanceOfType(target) ?? false)
             {
                 modifier(target, handler);
                 return true;

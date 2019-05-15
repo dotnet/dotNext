@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace DotNext.Threading.Tasks
 {
-    using Collections.Generic;
-
     /// <summary>
     /// Provides a set of methods for synchronization and combination of multiple <see cref="ValueTask"/>s.
     /// </summary>
@@ -143,7 +138,7 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="T1">The type of the first task.</typeparam>
         /// <typeparam name="T2">The type of the second task.</typeparam>
         /// <typeparam name="T3">The type of the third task.</typeparam>
-        /// <typeparam name="T4">The type of the fouth task.</typeparam>
+        /// <typeparam name="T4">The type of the fourth task.</typeparam>
         /// <typeparam name="T5">The type of the fifth task.</typeparam>
         /// <param name="task1">The first task to await.</param>
         /// <param name="task2">The second task to await.</param>

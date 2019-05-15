@@ -211,7 +211,7 @@ namespace DotNext
         /// <summary>
         /// Gets pinnable reference to the boxed value.
         /// </summary>
-        /// <returns>Pinnnable reference.</returns>
+        /// <returns>Pinnable reference.</returns>
         public ref T GetPinnableReference() => ref Value;
 
         /// <summary>

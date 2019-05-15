@@ -247,7 +247,7 @@ namespace DotNext.Reflection
 	}
 
 	/// <summary>
-	/// Represents statix indexer property.
+	/// Represents static indexer property.
 	/// </summary>
 	/// <typeparam name="A">A structure representing parameters of indexer.</typeparam>
 	/// <typeparam name="V">Property value.</typeparam>
@@ -354,7 +354,7 @@ namespace DotNext.Reflection
 	}
 
     /// <summary>
-	/// Represents statix indexer property.
+	/// Represents static indexer property.
 	/// </summary>
     /// <typeparam name="T">Type of instance with indexer property.</typeparam>
 	/// <typeparam name="A">A structure representing parameters of indexer.</typeparam>

@@ -316,20 +316,20 @@ namespace DotNext
         public override string ToString() => owner.ToString();
 
         /// <summary>
-        /// Determines whether two storages are for the same object.
+        /// Determines whether two stores are for the same object.
         /// </summary>
         /// <param name="first">The first storage to compare.</param>
         /// <param name="second">The second storage to compare.</param>
-        /// <returns><see langword="true"/>, if two storages are for the same object; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/>, if two stores are for the same object; otherwise, <see langword="false"/>.</returns>
         public static bool operator ==(UserDataStorage first, UserDataStorage second)
             => ReferenceEquals(first.owner, second.owner);
 
         /// <summary>
-        /// Determines whether two storages are not for the same object.
+        /// Determines whether two stores are not for the same object.
         /// </summary>
         /// <param name="first">The first storage to compare.</param>
         /// <param name="second">The second storage to compare.</param>
-        /// <returns><see langword="true"/>, if two storages are not for the same object; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/>, if two stores are not for the same object; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(UserDataStorage first, UserDataStorage second)
             => !ReferenceEquals(first.owner, second.owner);
     }

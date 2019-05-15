@@ -7,7 +7,7 @@ namespace DotNext.Metaprogramming
     using Linq.Expressions;
 
     /// <summary>
-    /// Represents compound expresssion builder.
+    /// Represents compound expression builder.
     /// </summary>
     /// <remarks>
     /// Any derived expression builder is not thread-safe and event cannot

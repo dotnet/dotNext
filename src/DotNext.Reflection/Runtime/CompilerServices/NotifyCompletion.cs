@@ -30,9 +30,9 @@ namespace DotNext.Runtime.CompilerServices
         /// Schedules the continuation action that's invoked when the instance completes.
         /// </summary>
         /// <param name="awaiter">An object that waits for the completion of an asynchronous task.</param>
-        /// <param name="continutation">The action to invoke when the operation completes.</param>
+        /// <param name="continuation">The action to invoke when the operation completes.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void OnCompleted(in TAwaiter awaiter, Action continutation)
-            => (Unsafe.AsRef(in awaiter)).OnCompleted(continutation);
+        public static void OnCompleted(in TAwaiter awaiter, Action continuation)
+            => (Unsafe.AsRef(in awaiter)).OnCompleted(continuation);
     }
 }
