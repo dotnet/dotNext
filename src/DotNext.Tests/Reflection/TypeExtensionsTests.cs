@@ -66,6 +66,8 @@ namespace DotNext.Reflection
             }
         }
 
+        private static int SizeOf<T>() where T : unmanaged => System.Runtime.CompilerServices.Unsafe.SizeOf<T>();
+
         [Fact]
         public static void IsUnmanaged()
         {
@@ -76,6 +78,9 @@ namespace DotNext.Reflection
             True(typeof(DateTime).IsUnmanaged());
             False(typeof(Runtime.InteropServices.Pointer<int>).IsUnmanaged());
             False(typeof(ManagedStruct).IsUnmanaged());
+            var method = new Func<int>(SizeOf<long>).Method;
+            method = method.GetGenericMethodDefinition();
+            True(method.GetGenericArguments()[0].IsUnmanaged());
         }
     }
 }

@@ -9,6 +9,8 @@ namespace DotNext.Reflection
     /// </summary>
     public static class TypeExtensions
     {
+        private const string IsUnmanagedAttributeName = "System.Runtime.CompilerServices.IsUnmanagedAttribute";
+
         private static bool IsGenericParameter(Type type)
         {
             if (type.IsByRef || type.IsArray)
@@ -24,7 +26,12 @@ namespace DotNext.Reflection
         public static bool IsUnmanaged(this Type type)
         {
             if (type.IsGenericType || type.IsGenericTypeDefinition || type.IsGenericParameter)
+            {
+                foreach(var data in type.GetCustomAttributesData())
+                    if(data.AttributeType.FullName == IsUnmanagedAttributeName)
+                        return true;
                 return false;
+            }
             else if (type.IsPrimitive || type.IsPointer || type.IsEnum)
                 return true;
             else if (type.IsValueType)
