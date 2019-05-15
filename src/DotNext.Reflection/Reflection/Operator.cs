@@ -67,7 +67,7 @@ namespace DotNext.Reflection
             internal readonly Expression Argument;
             internal readonly ParameterExpression Source;
 
-            private Operand(ParameterExpression operand) => this.Argument = Source = operand;
+            private Operand(ParameterExpression operand) => Argument = Source = operand;
 
             internal Operand(ParameterExpression supplier, Type expectedType) => Argument = Expression.Convert(this.Source = supplier, expectedType);
 
