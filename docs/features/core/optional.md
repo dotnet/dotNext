@@ -1,6 +1,6 @@
 Optional Type
 ====
-[Optional](../../api/DotNext.Optional-1.yml) is a container which may or may not contain a value. [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1) type can work with value types only. `Optional<T>` data type can work with reference and value type both. Moreover, the underlying type can implement optional interface [IOptional](../../api/DotNext.IOptional.yml) indicating that the object doesn't have meaningful content, event if stored value is not **null**.
+[Optional](../../api/DotNext.Optional-1.yml) is a container which may or may not contain a value. [Nullable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.nullable-1) type can work with value types only. `Optional<T>` data type can work with reference and value type both.
 
 The following example demonstrates usage of this type:
 ```csharp

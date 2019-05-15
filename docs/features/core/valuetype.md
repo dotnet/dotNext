@@ -38,12 +38,12 @@ public struct MyStruct: IEquatable<MyStruct>
 Additionally, _BitwiseHashCode_ method may accept custom hash code algorithm. Check API documentation for more information.
 
 # Fast bitwise cast between value types
-The library provides fast way to convert one unmanaged value type into another even if value type doesn't provide custom implicit or explicit type cast operator. This logic is provided by extension method _BitCast_. Bitwise cast can be performed between two value types of different size.
+The library provides fast way to convert one unmanaged value type into another even if value type doesn't provide custom implicit or explicit type cast operator. This logic is provided by extension method `Bitcast`. Bitwise cast can be performed between two value types of different size.
 ```csharp
 using DotNext;
 
-20.BitCast(out bool value); //value is true
-0.BitCast(out bool value);  //value is false
+20.Bitcast(out bool value); //value is true
+0.Bitcast(out bool value);  //value is false
 ```
 
 The following example demonstrates how to extract content of the _Guid_ data type.
@@ -56,9 +56,9 @@ internal struct GuidRawData //Guid size is 16 bytes
     internal ulong Component2;
 }
 
-var data = Guid.NewGuid().BitCast<Guid, GuidRawData>();
+var data = Guid.NewGuid().Bitcast<Guid, GuidRawData>();
 data.Component1 = 0;
-var guid = data.BitCast<GuidRawData, Guid>(); //convert back to Guid
+var guid = data.Bitcast<GuidRawData, Guid>(); //convert back to Guid
 ```
 
-_BitCast_ provides bitwise copy of the original structure so it is very fast.
+`Bitcast` provides bitwise copy of the original structure so it is very fast.
