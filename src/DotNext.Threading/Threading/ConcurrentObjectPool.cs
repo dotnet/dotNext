@@ -26,7 +26,7 @@ namespace DotNext.Threading
     /// <item>
     /// <term>Shortest Job First.</term>
     /// <description>
-    /// This stategy instantiates objects in the pool on-demand depends on workload.
+    /// This strategy instantiates objects in the pool on-demand depends on workload.
     /// The first released object will be passed to the one of waiting threads.
     /// Fairness policy is not supported so the longest waiting thread may not obtain
     /// the object first.
@@ -197,9 +197,7 @@ namespace DotNext.Threading
         {
             if(capacity < 1)
                 throw new ArgumentOutOfRangeException(nameof(capacity));
-            if (factory is null)
-                throw new ArgumentNullException(nameof(factory));
-            this.factory = factory;
+            this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
             var rental = default(Rental);
             Action<Rental> callback = AdjustAvailableObjectAndCheckStarvation;
             for(var index = 0; index < capacity; index++)
@@ -287,13 +285,11 @@ namespace DotNext.Threading
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
                 var rental = current.UpdateAndGet(SelectNextRental);
-                if (rental.TryAcquire())
-                {
-                    waitCount.DecrementAndGet();
-                    if (!(factory is null))
-                        rental.Renew(lifetime, factory);
-                    return rental;
-                }
+                if (!rental.TryAcquire()) continue;
+                waitCount.DecrementAndGet();
+                if (!(factory is null))
+                    rental.Renew(lifetime, factory);
+                return rental;
             }
         }
 
@@ -303,7 +299,7 @@ namespace DotNext.Threading
         /// <remarks>
         /// This method is not thread-safe and may not be used concurrently with other members of this instance.
         /// Additionally, this method disposes all objects stored in the pool if it was created
-        /// with <see cref="ConcurrentObjectPool(int, Func{T})"/> constructor.
+        /// with <see cref="ConcurrentObjectPool{T}(int, Func{T})"/> constructor.
         /// </remarks>
         /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
         protected override void Dispose(bool disposing)

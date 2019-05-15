@@ -8,7 +8,11 @@ namespace DotNext.Threading.Tasks
         private AsyncValueTaskMethodBuilder<ValueTask<R>> builder;
         private AtomicBoolean completed;
 
-        private protected ValueTaskCompletionSource() => builder = AsyncValueTaskMethodBuilder<ValueTask<R>>.Create();
+        private protected ValueTaskCompletionSource()
+        {
+            builder = AsyncValueTaskMethodBuilder<ValueTask<R>>.Create();
+            completed = new AtomicBoolean(false);
+        }
 
         private protected void Complete(ValueTask<R> task)
         {
@@ -24,7 +28,11 @@ namespace DotNext.Threading.Tasks
         private AsyncValueTaskMethodBuilder<ValueTask> builder;
         private AtomicBoolean completed;
 
-        private protected ValueTaskCompletionSource() => builder = AsyncValueTaskMethodBuilder<ValueTask>.Create();
+        private protected ValueTaskCompletionSource()
+        {
+            builder = AsyncValueTaskMethodBuilder<ValueTask>.Create();
+            completed = new AtomicBoolean(false);
+        }
 
         private protected void Complete(ValueTask task)
         {

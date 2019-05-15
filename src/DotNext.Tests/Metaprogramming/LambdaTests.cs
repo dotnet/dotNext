@@ -139,7 +139,7 @@ namespace DotNext.Metaprogramming
                     If(arg < 0L).Then(Throw<InvalidOperationException>).End();
                     If(arg > 10L).Then(Throw<ArgumentException>).Else(() => Return(arg)).End();
                 })
-                .Catch<ArgumentException>(() => Return(ExpressionBuilder.Const(-42L)))
+                .Catch<ArgumentException>(() => Return((-42L).Const()))
                 .Catch<InvalidOperationException>(Rethrow)
                 .End();
             });

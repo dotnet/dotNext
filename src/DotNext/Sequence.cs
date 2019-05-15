@@ -19,7 +19,7 @@ namespace DotNext
         {
             var hashCode = -910176598;
             foreach (var item in sequence)
-                hashCode = hashCode * -1521134295 + (item is null ? 0 : item.GetHashCode());
+                hashCode = hashCode * -1521134295 + (item?.GetHashCode() ?? 0);
             return salted ? hashCode * -1521134295 + RandomExtensions.BitwiseHashSalt : hashCode;
         }
 
@@ -121,25 +121,30 @@ namespace DotNext
         /// <returns><see langword="true"/>, if element is available in the collection and obtained successfully; otherwise, <see langword="false"/>.</returns>
         public static bool ElementAt<T>(this IEnumerable<T> collection, int index, out T element)
         {
-            if (collection is IList<T> list)
-                return ElementAt(list, index, out element);
-            else if (collection is IReadOnlyList<T> readOnlyList)
-                return ElementAt(readOnlyList, index, out element);
-            else
-                using (var enumerator = collection.GetEnumerator())
+            switch (collection)
+            {
+                case IList<T> list:
+                    return ElementAt(list, index, out element);
+                case IReadOnlyList<T> readOnlyList:
+                    return ElementAt(readOnlyList, index, out element);
+                default:
                 {
-                    enumerator.Skip(index);
-                    if (enumerator.MoveNext())
+                    using (var enumerator = collection.GetEnumerator())
                     {
-                        element = enumerator.Current;
-                        return true;
-                    }
-                    else
-                    {
-                        element = default;
-                        return false;
+                        enumerator.Skip(index);
+                        if (enumerator.MoveNext())
+                        {
+                            element = enumerator.Current;
+                            return true;
+                        }
+                        else
+                        {
+                            element = default;
+                            return false;
+                        }
                     }
                 }
+            }
         }
 
         /// <summary>
@@ -171,5 +176,25 @@ namespace DotNext
         /// <returns>Sequence of single element.</returns>
         public static IEnumerable<T> Singleton<T>(T item)
             => Collections.Generic.List.Singleton(item);
+
+        /// <summary>
+        /// Adds <paramref name="items"/> to the beginning of <paramref name="collection"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the collection.</typeparam>
+        /// <param name="collection">The collection to be concatenated with the items.</param>
+        /// <param name="items">The items to be added to the beginning of the collection.</param>
+        /// <returns>The concatenated collection.</returns>
+        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> collection, params T[] items)
+            => items.Concat(collection);
+
+        /// <summary>
+        /// Adds <paramref name="items"/> to the end of <paramref name="collection"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the collection.</typeparam>
+        /// <param name="collection">The collection to be concatenated with the items.</param>
+        /// <param name="items">The items to be added to the end of the collection.</param>
+        /// <returns>The concatenated collection.</returns>
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> collection, params T[] items)
+            => collection.Concat(items);
     }
 }

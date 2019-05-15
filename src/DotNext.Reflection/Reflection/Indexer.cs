@@ -322,7 +322,7 @@ namespace DotNext.Reflection
 		internal static Indexer<A, V> Reflect<T>(string propertyName, bool nonPublic)
 		{
 			var property = typeof(T).GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
-			if (property.PropertyType != typeof(V))
+			if (property is null || property.PropertyType != typeof(V))
 				return null;
 			var (actualParams, arglist, input) = Signature.Reflect<A>();
 			//reflect getter
@@ -433,7 +433,7 @@ namespace DotNext.Reflection
 		internal static Indexer<T, A, V> Reflect(string propertyName, bool nonPublic)
 		{
 			var property = typeof(T).GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
-			if (property.PropertyType != typeof(V))
+			if (property is null || property.PropertyType != typeof(V))
 				return null;
 			var (actualParams, arglist, input) = Signature.Reflect<A>();
 			var thisParam = Expression.Parameter(property.DeclaringType.MakeByRefType(), "this");

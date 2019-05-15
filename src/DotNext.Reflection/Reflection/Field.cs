@@ -324,7 +324,7 @@ namespace DotNext.Reflection
         public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
         {
             if (IsInitOnly)
-                new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
+                throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
             else if (!(obj is T))
                 throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(obj, typeof(T)));
             else if (value is null)
@@ -347,7 +347,7 @@ namespace DotNext.Reflection
             set
             {
                 if (setter is null)
-                    new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
+                    throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
                 else
                     setter(@this, value);
             }

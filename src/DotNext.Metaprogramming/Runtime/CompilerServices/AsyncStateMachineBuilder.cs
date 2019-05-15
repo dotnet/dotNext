@@ -112,8 +112,8 @@ namespace DotNext.Runtime.CompilerServices
                 var prologue = context.CurrentStatement.PrologueCodeInserter();
                 {
                     var result = context.Rewrite(node, base.VisitConditional);
-                    if (result is ConditionalExpression)
-                        node = (ConditionalExpression)result;
+                    if (result is ConditionalExpression conditional)
+                        node = conditional;
                     else
                         return result;
                 }
@@ -268,8 +268,8 @@ namespace DotNext.Runtime.CompilerServices
         {
             var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
             var newNode = base.VisitBinary(node);
-            if (newNode is BinaryExpression)
-                node = (BinaryExpression)newNode;
+            if (newNode is BinaryExpression binary)
+                node = binary;
             else
                 return newNode;
             //do not place left operand at statement level because it has no side effects
@@ -310,8 +310,8 @@ namespace DotNext.Runtime.CompilerServices
         {
             var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
             var newNode = visitor(node);
-            if (newNode is E)
-                node = (E)newNode;
+            if (newNode is E typedExpr)
+                node = typedExpr;
             else
                 return newNode;
             var hasAwait = false;
@@ -476,7 +476,8 @@ namespace DotNext.Runtime.CompilerServices
             MemberExpression[] slots;
             using (var builder = new ValueTupleBuilder())
             {
-                variables.ForEach(variable => builder.Add(variable.Type));
+                foreach(var v in variables)
+                    builder.Add(v.Type);
                 slots = builder.Build(MakeStateHolder, out _);
             }
             stateMachine = sm;

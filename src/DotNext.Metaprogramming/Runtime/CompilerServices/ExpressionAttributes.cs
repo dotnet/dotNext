@@ -31,6 +31,6 @@ namespace DotNext.Runtime.CompilerServices
             => node.GetUserData().Set(AttributesSlot, this);
 
         internal static ExpressionAttributes Get(Expression node)
-            => node is null ? null : node.GetUserData().Get(AttributesSlot);
+            => node?.GetUserData().Get(AttributesSlot);
     }
 }

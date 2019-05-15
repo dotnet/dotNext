@@ -26,7 +26,7 @@ namespace DotNext.Reflection
             this.invoker = invoker.Compile();
         }
 
-        private Constructor(ConstructorInfo ctor, Expression[] args, ParameterExpression[] parameters)
+        private Constructor(ConstructorInfo ctor, IReadOnlyList<Expression> args, ParameterExpression[] parameters)
         {
             DeclaringType = ctor.DeclaringType;
             this.ctor = ctor;

@@ -36,19 +36,19 @@ namespace DotNext
         internal static TypeCode GetTypeCode<T>() where T : struct, IConvertible => new T().GetTypeCode();
 
         /// <summary>
-        /// Obtain a value of type <typeparamref name="TO"/> by 
-        /// reinterpreting the object representation of <typeparamref name="FROM"/>.
+        /// Obtain a value of type <typeparamref name="To"/> by 
+        /// reinterpreting the object representation of <typeparamref name="From"/>.
         /// </summary>
         /// <param name="input">A value to convert.</param>
         /// <param name="output">Conversion result.</param>
-        /// <typeparam name="FROM">The type of input struct.</typeparam>
-        /// <typeparam name="TO">The type of output struct.</typeparam>
-        /// <seealso cref="ValueType{T}.BitCast{TO}(in T, out TO)"/>
+        /// <typeparam name="From">The type of input struct.</typeparam>
+        /// <typeparam name="To">The type of output struct.</typeparam>
+        /// <seealso cref="ValueType{T}.BitCast{To}"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void BitCast<FROM, TO>(this FROM input, out TO output)
-            where FROM : unmanaged
-            where TO : unmanaged
-            => ValueType<FROM>.BitCast(in input, out output);
+        public static void BitCast<From, To>(this From input, out To output)
+            where From : unmanaged
+            where To : unmanaged
+            => ValueType<From>.BitCast(in input, out output);
 
         /// <summary>
         /// Obtain a value of type <typeparamref name="TO"/> by 

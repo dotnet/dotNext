@@ -408,7 +408,7 @@ namespace DotNext
         /// <param name="first">The first container.</param>
         /// <param name="second">The second container.</param>
         /// <returns>The first non-empty container.</returns>
-        /// <see cref="Optional.Coalesce{T}(in Optional{T}, in Optional{T})"/>
+        /// <seealso cref="Optional.Coalesce{T}"/>
 		public static Optional<T> operator |(in Optional<T> first, in Optional<T> second)
             => first.IsPresent ? first : second;
 

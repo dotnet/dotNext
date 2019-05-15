@@ -28,20 +28,20 @@ namespace DotNext.Reflection
             Invoker = lambda.Compile();
         }
 
-        internal Method(MethodInfo method, Expression[] args, ParameterExpression[] parameters)
+        internal Method(MethodInfo method, IEnumerable<Expression> args, IEnumerable<ParameterExpression> parameters)
             : this(method, Expression.Lambda<D>(Expression.Call(method, args), true, parameters))
         {
         }
 
-        internal Method(MethodInfo method, ParameterExpression instance, Expression[] args, ParameterExpression[] parameters)
-            : this(method, Expression.Lambda<D>(Expression.Call(instance, method, args), true, parameters.Insert(instance, 0)))
+        internal Method(MethodInfo method, ParameterExpression instance, IEnumerable<Expression> args, IEnumerable<ParameterExpression> parameters)
+            : this(method, Expression.Lambda<D>(Expression.Call(instance, method, args), true, parameters.Prepend(instance)))
         {
         }
 
         private Method(MethodInfo method)
         {
             this.method = method;
-            Invoker = DelegateHelpers.CreateDelegate<D>(method);
+            Invoker = method.CreateDelegate<D>();
         }
 
         /// <summary>
