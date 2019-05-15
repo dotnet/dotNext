@@ -57,7 +57,7 @@ namespace DotNext.Linq.Expressions
         /// <summary>
         /// The expression representing referred object inside of <see cref="Body"/>.
         /// </summary>
-        public ParameterExpression Variable { get; }
+        public new ParameterExpression Variable { get; }
 
         /// <summary>
         /// Gets body of the statement.
