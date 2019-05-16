@@ -93,5 +93,9 @@ namespace DotNext.Reflection
         where E : class, IMember<M>
     {
         internal E GetOrCreate(string memberName, bool nonPublic) => GetOrCreate(new MemberKey(memberName, nonPublic));
+
+        private protected abstract E Create(string memberName, bool nonPublic);
+
+        private protected sealed override E Create(MemberKey key) => Create(key.Name, key.NonPublic);
     }
 }

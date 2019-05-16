@@ -21,13 +21,13 @@ namespace DotNext.Reflection
         private sealed class InstanceCache : Cache
         {
             internal static readonly UserDataSlot<InstanceCache> Slot = UserDataSlot<InstanceCache>.Allocate();
-            private protected override Method<D> Create(MemberKey key) => Method<D>.Reflect(key.Name, key.NonPublic);
+            private protected override Method<D> Create(string methodName, bool nonPublic) => Method<D>.Reflect(methodName, nonPublic);
         }
 
         private sealed class StaticCache<T> : Cache
         {
             internal static readonly UserDataSlot<StaticCache<T>> Slot = UserDataSlot<StaticCache<T>>.Allocate();
-            private protected override Method<D> Create(MemberKey key) => Method<D>.Reflect(typeof(T), key.Name, key.NonPublic);
+            private protected override Method<D> Create(string methodName, bool nonPublic) => Method<D>.Reflect(typeof(T), methodName, nonPublic);
         }
 
         private static readonly UserDataSlot<Method<D>> CacheSlot = UserDataSlot<Method<D>>.Allocate();

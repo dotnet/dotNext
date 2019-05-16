@@ -242,7 +242,7 @@ namespace DotNext.Reflection
         {
             internal static readonly UserDataSlot<Cache> Slot = UserDataSlot<Cache>.Allocate();
 
-            private protected override Field<T, V> Create(MemberKey key) => Reflect(key.Name, key.NonPublic);
+            private protected override Field<T, V> Create(string fieldName, bool nonPublic) => Reflect(fieldName, nonPublic);
         }
         private const BindingFlags PubicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
@@ -381,7 +381,7 @@ namespace DotNext.Reflection
         {
             internal static readonly UserDataSlot<Cache<T>> Slot = UserDataSlot<Cache<T>>.Allocate();
 
-            private protected override Field<V> Create(MemberKey key) => Reflect(typeof(T), key.Name, key.NonPublic);
+            private protected override Field<V> Create(string fieldName, bool nonPublic) => Reflect(typeof(T), fieldName, nonPublic);
         }
         private const BindingFlags PubicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
