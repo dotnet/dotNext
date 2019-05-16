@@ -68,6 +68,12 @@ namespace DotNext
             V ISupplier<V>.Supply() => new V();
         }
 
+        internal readonly struct CtorSupplier<B, D> : ISupplier<B>
+            where D : class, B, new()
+        {
+            B ISupplier<B>.Supply() => new D();
+        }
+
         [SuppressMessage("Performance", "CA1812", Justification = "It is instantiated by method GetOrCreateValue")]
         private sealed class BackingStorage : Dictionary<long, object>, IDisposable
         {
@@ -196,6 +202,19 @@ namespace DotNext
             return GetStorage(true).GetOrSet(slot, ref supplier);
         }
         
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="B">The type of user data associated with arbitrary object.</typeparam>
+        /// <typeparam name="D">The derived type with public parameterless constructor.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public B GetOrSet<B, D>(UserDataSlot<B> slot)
+            where D : class, B, new()
+        {
+            var supplier = new CtorSupplier<B, D>();
+            return GetStorage(true).GetOrSet(slot, ref supplier);
+        }
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.

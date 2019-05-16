@@ -256,8 +256,6 @@ namespace DotNext.Reflection
 	{
         private sealed class Cache<T> : MemberCache<PropertyInfo, Indexer<A, V>>
         {
-            internal static readonly UserDataSlot<Cache<T>> Slot = UserDataSlot<Cache<T>>.Allocate();
-
             private protected override Indexer<A, V> Create(string propertyName, bool nonPublic) => Reflect(typeof(T), propertyName, nonPublic);
         }
 		private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
@@ -359,7 +357,7 @@ namespace DotNext.Reflection
 		}
 
         internal static Indexer<A, V> GetOrCreate<T>(string propertyName, bool nonPublic)
-            => typeof(T).GetUserData().GetOrSet<Cache<T>>(Cache<T>.Slot).GetOrCreate(propertyName, nonPublic);
+            => Cache<T>.Of<Cache<T>>(typeof(T)).GetOrCreate(propertyName, nonPublic);
 	}
 
     /// <summary>
@@ -373,8 +371,6 @@ namespace DotNext.Reflection
     {
         private sealed class Cache : MemberCache<PropertyInfo, Indexer<T, A, V>>
         {
-            internal static readonly UserDataSlot<Cache> Slot = UserDataSlot<Cache>.Allocate();
-
             private protected override Indexer<T, A, V> Create(string propertyName, bool nonPublic) => Reflect(propertyName, nonPublic);
         }
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
@@ -479,6 +475,6 @@ namespace DotNext.Reflection
 		}
 
         internal static Indexer<T, A, V> GetOrCreate(string propertyName, bool nonPublic)
-            => typeof(T).GetUserData().GetOrSet<Cache>(Cache.Slot).GetOrCreate(propertyName, nonPublic);
+            => Cache.Of<Cache>(typeof(T)).GetOrCreate(propertyName, nonPublic);
     }
 }

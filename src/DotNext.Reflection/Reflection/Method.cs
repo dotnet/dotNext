@@ -14,19 +14,13 @@ namespace DotNext.Reflection
     public sealed class Method<D> : MethodInfo, IMethod<D>, IEquatable<MethodInfo>
         where D : MulticastDelegate
     {
-        private abstract class Cache : MemberCache<MethodInfo, Method<D>>
+        private sealed class Cache : MemberCache<MethodInfo, Method<D>>
         {
-        }
-
-        private sealed class InstanceCache : Cache
-        {
-            internal static readonly UserDataSlot<InstanceCache> Slot = UserDataSlot<InstanceCache>.Allocate();
             private protected override Method<D> Create(string methodName, bool nonPublic) => Method<D>.Reflect(methodName, nonPublic);
         }
 
-        private sealed class StaticCache<T> : Cache
+        private sealed class Cache<T> : MemberCache<MethodInfo, Method<D>>
         {
-            internal static readonly UserDataSlot<StaticCache<T>> Slot = UserDataSlot<StaticCache<T>>.Allocate();
             private protected override Method<D> Create(string methodName, bool nonPublic) => Method<D>.Reflect(typeof(T), methodName, nonPublic);
         }
 
@@ -554,15 +548,14 @@ namespace DotNext.Reflection
 
         internal static Method<D> GetOrCreate<T>(string methodName, bool nonPublic, MethodLookup lookup)
         {
-            var userData = typeof(T).GetUserData();
-            Cache cache;
+            MemberCache<MethodInfo, Method<D>> cache;
             switch(lookup)
             {
                 case MethodLookup.Instance:
-                    cache = userData.GetOrSet<InstanceCache>(InstanceCache.Slot);
+                    cache = Cache.Of<Cache>(typeof(T));
                     break;
                 case MethodLookup.Static:
-                    cache = userData.GetOrSet<StaticCache<T>>(StaticCache<T>.Slot);
+                    cache = Cache.Of<Cache<T>>(typeof(T));
                     break;
                 default:
                     cache = null;

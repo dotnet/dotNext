@@ -92,10 +92,16 @@ namespace DotNext.Reflection
         where M : MemberInfo
         where E : class, IMember<M>
     {
+        private static readonly UserDataSlot<MemberCache<M, E>> Slot = UserDataSlot<MemberCache<M, E>>.Allocate();
+
         internal E GetOrCreate(string memberName, bool nonPublic) => GetOrCreate(new MemberKey(memberName, nonPublic));
 
         private protected abstract E Create(string memberName, bool nonPublic);
 
         private protected sealed override E Create(MemberKey key) => Create(key.Name, key.NonPublic);
+
+        internal static MemberCache<M, E> Of<C>(MemberInfo member) 
+            where C : MemberCache<M, E>, new()
+            => member.GetUserData().GetOrSet<MemberCache<M, E>, C>(Slot);
     }
 }

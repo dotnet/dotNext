@@ -238,8 +238,6 @@ namespace DotNext.Reflection
     {
         private sealed class Cache<T> : MemberCache<EventInfo, Event<D>>
         {
-            internal static readonly UserDataSlot<Cache<T>> Slot = UserDataSlot<Cache<T>>.Allocate();
-
             private protected override Event<D> Create(string eventName, bool nonPublic) => Reflect(typeof(T), eventName, nonPublic);
         }
         private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
@@ -352,7 +350,7 @@ namespace DotNext.Reflection
         }
 
         internal static Event<D> GetOrCreate<T>(string eventName, bool nonPublic)
-            => typeof(T).GetUserData().GetOrSet<Cache<T>>(Cache<T>.Slot).GetOrCreate(eventName, nonPublic);
+            => Cache<T>.Of<Cache<T>>(typeof(T)).GetOrCreate(eventName, nonPublic);
     }
 
     /// <summary>
@@ -365,7 +363,6 @@ namespace DotNext.Reflection
     {
         private sealed class Cache : MemberCache<EventInfo, Event<T, D>>
         {
-            internal static readonly UserDataSlot<Cache> Slot = UserDataSlot<Cache>.Allocate();
             private protected override Event<T, D> Create(string eventName, bool nonPublic) => Reflect(eventName, nonPublic);
         }
 
@@ -507,6 +504,6 @@ namespace DotNext.Reflection
         }
 
         internal static Event<T, D> GetOrCreate(string eventName, bool nonPublic)
-            => typeof(T).GetUserData().GetOrSet<Cache>(Cache.Slot).GetOrCreate(eventName, nonPublic);
+            => Cache.Of<Cache>(typeof(T)).GetOrCreate(eventName, nonPublic);
     }
 }

@@ -8,32 +8,6 @@ namespace DotNext.Reflection
         /// </summary>
         public static class Operator
         {
-            private sealed class Operators<R> : Cache<Reflection.Operator.Kind, UnaryOperator<T, R>>
-            {
-                private static readonly Cache<Reflection.Operator.Kind, UnaryOperator<T, R>> Instance = new Operators<R>();
-                private Operators()
-                {
-                }
-
-                private protected override UnaryOperator<T, R> Create(Reflection.Operator.Kind @operator) => UnaryOperator<T, R>.Reflect(@operator);
-
-                internal static UnaryOperator<T, R> GetOrCreate(UnaryOperator @operator, OperatorLookup lookup)
-                {
-                    switch (lookup)
-                    {
-                        case OperatorLookup.Predefined:
-                            return Instance.GetOrCreate(new Reflection.Operator.Kind(@operator, false));
-                        case OperatorLookup.Overloaded:
-                            return Instance.GetOrCreate(new Reflection.Operator.Kind(@operator, true));
-                        case OperatorLookup.Any:
-                            return Instance.GetOrCreate(new Reflection.Operator.Kind(@operator, true)) ??
-                                Instance.GetOrCreate(new Reflection.Operator.Kind(@operator, false));
-                        default:
-                            return null;
-                    }
-                }
-            }
-
             /// <summary>
             /// Gets unary operator. 
             /// </summary>
@@ -41,7 +15,7 @@ namespace DotNext.Reflection
             /// <param name="lookup">Operator resolution strategy.</param>
             /// <typeparam name="R">Result of unary operator.</typeparam>
             /// <returns>Unary operator; or null, if it doesn't exist.</returns>
-            public static UnaryOperator<T, R> Get<R>(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => Operators<R>.GetOrCreate(op, lookup);
+            public static UnaryOperator<T, R> Get<R>(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => UnaryOperator<T, R>.GetOrCreate(op, lookup);
 
             /// <summary>
             /// Gets unary operator of the same result type as its operand.
@@ -77,32 +51,6 @@ namespace DotNext.Reflection
         /// <typeparam name="U">Type of second operand.</typeparam>
         public static class Operator<U>
         {
-            private sealed class Operators<R> : Cache<Reflection.Operator.Kind, BinaryOperator<T, U, R>>
-            {
-                private static readonly Cache<Reflection.Operator.Kind, BinaryOperator<T, U, R>> Instance = new Operators<R>();
-                private Operators()
-                {
-                }
-
-                private protected override BinaryOperator<T, U, R> Create(Reflection.Operator.Kind @operator) => BinaryOperator<T, U, R>.Reflect(@operator);
-
-                internal static BinaryOperator<T, U, R> GetOrCreate(BinaryOperator @operator, OperatorLookup lookup)
-                {
-                    switch (lookup)
-                    {
-                        case OperatorLookup.Predefined:
-                            return Instance.GetOrCreate(new Reflection.Operator.Kind(@operator, false));
-                        case OperatorLookup.Overloaded:
-                            return Instance.GetOrCreate(new Reflection.Operator.Kind(@operator, true));
-                        case OperatorLookup.Any:
-                            return Instance.GetOrCreate(new Reflection.Operator.Kind(@operator, true)) ??
-                                Instance.GetOrCreate(new Reflection.Operator.Kind(@operator, false));
-                        default:
-                            return null;
-                    }
-                }
-            }
-
             /// <summary>
             /// Gets binary operator. 
             /// </summary>
@@ -110,7 +58,7 @@ namespace DotNext.Reflection
             /// <param name="lookup">Operator resolution strategy.</param>
             /// <typeparam name="R">Result of binary operator.</typeparam>
             /// <returns>Binary operator; or null, if it doesn't exist.</returns>
-            public static BinaryOperator<T, U, R> Get<R>(BinaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => Operators<R>.GetOrCreate(op, lookup);
+            public static BinaryOperator<T, U, R> Get<R>(BinaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => BinaryOperator<T, U, R>.GetOrCreate(op, lookup);
 
             /// <summary>
             /// Gets binary operator. 

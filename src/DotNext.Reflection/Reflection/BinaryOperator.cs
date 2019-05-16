@@ -120,6 +120,11 @@ namespace DotNext.Reflection
     /// <typeparam name="R">The type of the operator result.</typeparam>
 	public sealed class BinaryOperator<OP1, OP2, R> : Operator<Operator<OP1, OP2, R>>
     {
+        private sealed class Cache : Cache<BinaryOperator<OP1, OP2, R>>
+        {
+            private protected override BinaryOperator<OP1, OP2, R> Create(Operator.Kind kind) => Reflect(kind);
+        }
+
         private BinaryOperator(Expression<Operator<OP1, OP2, R>> invoker, BinaryOperator type, MethodInfo overloaded)
             : base(invoker.Compile(), type.ToExpressionType(), overloaded)
         {
@@ -173,12 +178,29 @@ namespace DotNext.Reflection
             }
         }
 
-        internal static BinaryOperator<OP1, OP2, R> Reflect(Operator.Kind op)
+        private static BinaryOperator<OP1, OP2, R> Reflect(Operator.Kind op)
         {
             var first = Expression.Parameter(typeof(OP1).MakeByRefType(), "first");
             var second = Expression.Parameter(typeof(OP2).MakeByRefType(), "second");
             var expr = MakeBinary(op, first, second, out var overloaded);
             return expr is null ? null : new BinaryOperator<OP1, OP2, R>(expr, op, overloaded);
+        }
+
+        private static BinaryOperator<OP1, OP2, R> GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(OP1)).GetOrCreate(op);
+
+        internal static BinaryOperator<OP1, OP2, R> GetOrCreate(BinaryOperator @operator, OperatorLookup lookup)
+        {
+            switch (lookup)
+            {
+                case OperatorLookup.Predefined:
+                    return GetOrCreate(new Reflection.Operator.Kind(@operator, false));
+                case OperatorLookup.Overloaded:
+                    return GetOrCreate(new Reflection.Operator.Kind(@operator, true));
+                case OperatorLookup.Any:
+                    return GetOrCreate(new Reflection.Operator.Kind(@operator, true)) ?? GetOrCreate(new Reflection.Operator.Kind(@operator, false));
+                default:
+                    return null;
+            }
         }
     }
 }

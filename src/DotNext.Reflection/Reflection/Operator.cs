@@ -110,6 +110,16 @@ namespace DotNext.Reflection
     public abstract class Operator<D> : IOperator<D>
         where D : Delegate
     {
+        private protected abstract class Cache<Op> : Cache<Operator.Kind, Op>
+            where Op : class, IOperator<D>
+        {
+            private static readonly UserDataSlot<Cache<Op>> Slot = UserDataSlot<Cache<Op>>.Allocate();
+
+            internal static Cache<Op> Of<C>(Type cacheHolder) 
+                where C : Cache<Op>, new()
+                => cacheHolder.GetUserData().GetOrSet<Cache<Op>, C>(Slot);
+        }
+
         private protected readonly D invoker;
 
         private protected Operator(D invoker, ExpressionType type, MethodInfo overloaded)
