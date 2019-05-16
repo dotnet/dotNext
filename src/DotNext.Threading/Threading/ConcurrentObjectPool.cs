@@ -243,9 +243,8 @@ namespace DotNext.Threading
                     rental = next;
                 }
             }
-            if(index == 0)
+            if(rental is null)
                 throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
-            Debug.Assert(!(rental is null));
             rental.Attach(current.Value);
             current = new AtomicReference<Rental>(rental);
             Capacity = index;
