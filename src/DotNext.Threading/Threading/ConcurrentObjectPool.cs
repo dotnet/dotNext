@@ -76,8 +76,6 @@ namespace DotNext.Threading
          */
         private sealed class Rental : IRental
         {
-            //cached delegate to avoid memory allocations and increase chance of inline caching
-            private static readonly WaitCallback DisposeResource = resource => ((IDisposable) resource).Dispose();
             private AtomicBoolean lockState;
             private T resource; //this is not volatile because it's consistency is protected by lockState memory barrier
             private readonly int position;
@@ -141,9 +139,8 @@ namespace DotNext.Threading
                     if(success = timeToLive.DecrementAndGet() <= 0) //decrease weight because this object was accessed a long time ago
                     {
                         //prevent this method from blocking so dispose resource asynchronously
-                        //TODO: Should be replaced with typed QueueUserWorkItem method in .NET Standard 2.1
-                        if(resource is IDisposable)
-                            ThreadPool.QueueUserWorkItem(DisposeResource, resource);
+                        if (resource is IDisposable disposable)
+                            QueueDispose(disposable);
                         resource = null;
                     }
                     lockState.Value = false;

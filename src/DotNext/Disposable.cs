@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace DotNext
 {
@@ -11,6 +12,8 @@ namespace DotNext
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
     public abstract class Disposable : IDisposable
     {
+        private static readonly WaitCallback DisposeResource = resource => ((IDisposable)resource).Dispose();
+
         /// <summary>
         /// Indicates that this object is disposed.
         /// </summary>
@@ -45,6 +48,13 @@ namespace DotNext
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Places <see cref="IDisposable.Dispose"/> method call into thread pool.
+        /// </summary>
+        /// <param name="resource">The resource to be disposed.</param>
+        protected static void QueueDispose(IDisposable resource) =>
+            ThreadPool.QueueUserWorkItem(DisposeResource, resource);
 
         /// <summary>
         /// Disposes many objects.
