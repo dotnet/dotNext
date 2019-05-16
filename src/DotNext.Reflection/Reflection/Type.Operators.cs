@@ -2,7 +2,6 @@ namespace DotNext.Reflection
 {
     public static partial class Type<T>
     {
-
         /// <summary>
         /// Represents unary operator applicable to type <typeparamref name="T"/>.
         /// </summary>
