@@ -14,6 +14,7 @@ namespace DotNext.Reflection
     public sealed class Method<D> : MethodInfo, IMethod<D>, IEquatable<MethodInfo>
         where D : MulticastDelegate
     {
+        private static readonly UserDataSlot<Method<D>> CacheSlot = UserDataSlot<Method<D>>.Allocate();
         private const BindingFlags StaticPublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags StaticNonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
         private const BindingFlags InstancePublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
@@ -517,7 +518,7 @@ namespace DotNext.Reflection
             }
         }
 
-        internal static Method<D> Unreflect(MethodInfo method)
+        private static Method<D> Unreflect(MethodInfo method)
         {
             var delegateType = typeof(D);
             if (delegateType.IsAbstract)
@@ -531,5 +532,8 @@ namespace DotNext.Reflection
             else
                 return UnreflectInstance(method);
         }
+
+        internal static Method<D> GetOrCreate(MethodInfo ctor)
+            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, Unreflect);
     }
 }

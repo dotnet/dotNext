@@ -15,6 +15,7 @@ namespace DotNext.Reflection
     public sealed class Constructor<D> : ConstructorInfo, IConstructor<D>, IEquatable<ConstructorInfo>
         where D : MulticastDelegate
     {
+        private static readonly UserDataSlot<Constructor<D>> CacheSlot = UserDataSlot<Constructor<D>>.Allocate();
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
 
@@ -57,7 +58,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets name of the constructor.
         /// </summary>
-        public override string Name => ctor?.Name ?? ".ctor";
+        public override string Name => ConstructorName;
 
         ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctor;
 
@@ -331,7 +332,7 @@ namespace DotNext.Reflection
             return new Constructor<D>(ctor, Expression.Lambda<D>(body, input));
         }
 
-        internal static Constructor<D> Unreflect(ConstructorInfo ctor)
+        private static Constructor<D> Unreflect(ConstructorInfo ctor)
         {
             var delegateType = typeof(D);
             if (delegateType.IsAbstract)
@@ -350,5 +351,8 @@ namespace DotNext.Reflection
                     null;
             }
         }
+
+        internal static Constructor<D> GetOrCreate(ConstructorInfo ctor)
+            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, Unreflect);
     }
 }
