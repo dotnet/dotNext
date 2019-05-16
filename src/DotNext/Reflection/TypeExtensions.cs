@@ -71,7 +71,7 @@ namespace DotNext.Reflection
         /// <param name="includeTopLevel"><see langword="true"/> to return <paramref name="type"/> as first element in the collection.</param>
         /// <param name="includeInterfaces"><see langword="true"/> to include implemented interfaces; <see langword="false"/> to return inheritance hierarchy only.</param>
         /// <returns>Read-only collection of base types and, optionally, all implemented interfaces.</returns>
-        public static IEnumerable<Type> GetBaseTypes(this Type type, bool includeTopLevel = false, bool includeInterfaces = true)
+        public static IEnumerable<Type> GetBaseTypes(this Type type, bool includeTopLevel = false, bool includeInterfaces = false)
         {
             for (var lookup = includeTopLevel ? type : type.BaseType; !(lookup is null); lookup = lookup.BaseType)
                 yield return lookup;
@@ -105,7 +105,7 @@ namespace DotNext.Reflection
                         {
                             var actual = actualParams[i];
                             var expected = parameters[i];
-                            success = ((IsGenericParameter(actual) && expected is null) || actual == expected);
+                            success = IsGenericParameter(actual) && expected is null || actual == expected;
                         }
                     if (success)
                         return method;

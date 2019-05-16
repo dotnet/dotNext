@@ -85,7 +85,7 @@ namespace DotNext
 
         private static IEnumerable<FieldInfo> GetAllFields(Type type)
         {
-            foreach (var t in type.GetBaseTypes(includeTopLevel: true, includeInterfaces: false))
+            foreach (var t in type.GetBaseTypes(includeTopLevel: true))
                 foreach (var field in t.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
                     yield return field;
         }

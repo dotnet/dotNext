@@ -114,10 +114,8 @@ namespace DotNext.Runtime.CompilerServices
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
                 items.Clear();
-                Rest?.Dispose(disposing);
-            }
+            Rest?.Dispose(disposing);
             base.Dispose(disposing);
         }
     }

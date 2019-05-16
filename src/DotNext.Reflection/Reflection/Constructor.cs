@@ -22,23 +22,22 @@ namespace DotNext.Reflection
 
         private Constructor(ConstructorInfo ctor, Expression<D> invoker)
         {
+            DeclaringType = ctor.DeclaringType;
             this.ctor = ctor;
             this.invoker = invoker.Compile();
         }
 
-        private Constructor(ConstructorInfo ctor, IReadOnlyList<Expression> args, ParameterExpression[] parameters)
+        private Constructor(ConstructorInfo ctor, IEnumerable<Expression> args, IEnumerable<ParameterExpression> parameters)
+            : this(ctor, Expression.Lambda<D>(Expression.New(ctor, args), parameters))
         {
-            DeclaringType = ctor.DeclaringType;
-            this.ctor = ctor;
-            invoker = Expression.Lambda<D>(Expression.New(ctor, args), parameters).Compile();
         }
 
-        private Constructor(ConstructorInfo ctor, ParameterExpression[] parameters)
+        private Constructor(ConstructorInfo ctor, IEnumerable<ParameterExpression> parameters)
             : this(ctor, parameters, parameters)
         {
         }
 
-        private Constructor(Type valueType, ParameterExpression[] parameters)
+        private Constructor(Type valueType, IEnumerable<ParameterExpression> parameters)
         {
             DeclaringType = valueType;
             invoker = Expression.Lambda<D>(Expression.Default(valueType), parameters).Compile();
