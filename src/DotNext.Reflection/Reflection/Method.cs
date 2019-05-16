@@ -14,6 +14,22 @@ namespace DotNext.Reflection
     public sealed class Method<D> : MethodInfo, IMethod<D>, IEquatable<MethodInfo>
         where D : MulticastDelegate
     {
+        private abstract class Cache : MemberCache<MethodInfo, Method<D>>
+        {
+        }
+
+        private sealed class InstanceCache : Cache
+        {
+            internal static readonly UserDataSlot<InstanceCache> Slot = UserDataSlot<InstanceCache>.Allocate();
+            private protected override Method<D> Create(MemberKey key) => Method<D>.Reflect(key.Name, key.NonPublic);
+        }
+
+        private sealed class StaticCache<T> : Cache
+        {
+            internal static readonly UserDataSlot<StaticCache<T>> Slot = UserDataSlot<StaticCache<T>>.Allocate();
+            private protected override Method<D> Create(MemberKey key) => Method<D>.Reflect(typeof(T), key.Name, key.NonPublic);
+        }
+
         private static readonly UserDataSlot<Method<D>> CacheSlot = UserDataSlot<Method<D>>.Allocate();
         private const BindingFlags StaticPublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags StaticNonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
@@ -400,7 +416,7 @@ namespace DotNext.Reflection
         /// <param name="methodName"></param>
         /// <param name="nonPublic"></param>
         /// <returns></returns>
-        internal static Method<D> Reflect(string methodName, bool nonPublic)
+        private static Method<D> Reflect(string methodName, bool nonPublic)
         {
             var delegateType = typeof(D);
             if (delegateType.IsAbstract)
@@ -420,23 +436,23 @@ namespace DotNext.Reflection
         /// <summary>
         /// Reflects static method.
         /// </summary>
+        /// <param name="declaringType">Declaring type.</param>
         /// <param name="methodName">Name of method.</param>
         /// <param name="nonPublic">True to reflect non-public static method.</param>
-        /// <typeparam name="T">Declaring type.</typeparam>
         /// <returns>Reflected static method.</returns>
-        internal static Method<D> Reflect<T>(string methodName, bool nonPublic)
+        private static Method<D> Reflect(Type declaringType, string methodName, bool nonPublic)
         {
             var delegateType = typeof(D);
             if (delegateType.IsAbstract)
                 throw new AbstractDelegateException<D>();
             else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
-                return ReflectStatic(typeof(T), argumentsType, returnType, methodName, nonPublic);
+                return ReflectStatic(declaringType, argumentsType, returnType, methodName, nonPublic);
             else if (delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
-                return ReflectStatic(typeof(T), delegateType.GetGenericArguments()[0], typeof(void), methodName, nonPublic);
+                return ReflectStatic(declaringType, delegateType.GetGenericArguments()[0], typeof(void), methodName, nonPublic);
             else
             {
                 DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
-                return ReflectStatic(typeof(T), parameters, returnType, methodName, nonPublic);
+                return ReflectStatic(declaringType, parameters, returnType, methodName, nonPublic);
             }
         }
 
@@ -533,7 +549,26 @@ namespace DotNext.Reflection
                 return UnreflectInstance(method);
         }
 
-        internal static Method<D> GetOrCreate(MethodInfo ctor)
-            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, Unreflect);
+        internal static Method<D> GetOrCreate(MethodInfo method)
+            => method.GetUserData().GetOrSet(CacheSlot, method, Unreflect);
+
+        internal static Method<D> GetOrCreate<T>(string methodName, bool nonPublic, MethodLookup lookup)
+        {
+            var userData = typeof(T).GetUserData();
+            Cache cache;
+            switch(lookup)
+            {
+                case MethodLookup.Instance:
+                    cache = userData.GetOrSet<InstanceCache>(InstanceCache.Slot);
+                    break;
+                case MethodLookup.Static:
+                    cache = userData.GetOrSet<StaticCache<T>>(StaticCache<T>.Slot);
+                    break;
+                default:
+                    cache = null;
+                    break;
+            }
+            return cache?.GetOrCreate(methodName, nonPublic);
+        }
     }
 }

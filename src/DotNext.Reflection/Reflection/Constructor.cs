@@ -47,8 +47,6 @@ namespace DotNext.Reflection
             invoker = Expression.Lambda<D>(Expression.Default(valueType), parameters).Compile();
         }
 
-        internal Constructor<D> OfType<T>() => DeclaringType == typeof(T) ? this : null;
-
         /// <summary>
         /// Extracts delegate which can be used to invoke this constructor.
         /// </summary>
@@ -287,7 +285,7 @@ namespace DotNext.Reflection
             return ctor is null ? null : new Constructor<D>(ctor, arglist, new[] { input });
         }
 
-        internal static Constructor<D> Reflect(bool nonPublic)
+        private static Constructor<D> Reflect(bool nonPublic)
         {
             var delegateType = typeof(D);
             if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType) == 2L)
@@ -300,7 +298,6 @@ namespace DotNext.Reflection
                 return Reflect(returnType, parameters, nonPublic);
             }
         }
-
         private static Constructor<D> Unreflect(ConstructorInfo ctor, Type argumentsType, Type returnType)
         {
             var (_, arglist, input) = Signature.Reflect(argumentsType);
@@ -354,5 +351,12 @@ namespace DotNext.Reflection
 
         internal static Constructor<D> GetOrCreate(ConstructorInfo ctor)
             => ctor.GetUserData().GetOrSet(CacheSlot, ctor, Unreflect);
+        
+        internal static Constructor<D> GetOrCreate<T>(bool nonPublic)
+        {
+            var type = typeof(T);
+            var ctor = type.GetUserData().GetOrSet(CacheSlot, nonPublic, Reflect);
+            return ctor?.DeclaringType == type ? ctor : null;
+        }
     }
 }

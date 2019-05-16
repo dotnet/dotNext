@@ -1,5 +1,5 @@
 using System;
-using System.Reflection;
+using DefaultMemberAttribute = System.Reflection.DefaultMemberAttribute;
 
 namespace DotNext.Reflection
 {
@@ -44,18 +44,6 @@ namespace DotNext.Reflection
         [DefaultMember("Invoke")]
         public static class Constructor
         {
-            private static class Public<D>
-                where D : MulticastDelegate
-            {
-                internal static readonly Reflection.Constructor<D> Value = Reflection.Constructor<D>.Reflect(false)?.OfType<T>();
-            }
-
-            private static class NonPublic<D>
-                where D : MulticastDelegate
-            {
-                internal static readonly Reflection.Constructor<D> Value = Reflection.Constructor<D>.Reflect(true)?.OfType<T>();
-            }
-
             /// <summary>
             /// Reflects constructor of type <typeparamref name="T"/> which signature
             /// is specified by delegate type.
@@ -65,7 +53,7 @@ namespace DotNext.Reflection
             /// <returns>Reflected constructor; or null, if constructor doesn't exist.</returns>
             public static Reflection.Constructor<D> Get<D>(bool nonPublic = false)
                 where D : MulticastDelegate
-                => nonPublic ? NonPublic<D>.Value : Public<D>.Value;
+                => Reflection.Constructor<D>.GetOrCreate<T>(nonPublic);
 
             /// <summary>
             /// Reflects constructor of type <typeparamref name="T"/> which signature

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 
 namespace DotNext.Reflection
 {
-    [SuppressMessage("Design", "CA1001", Justification = "Member Cache lifetime is the same as application")]
-    internal abstract class Cache<K, V>
+    internal abstract class Cache<K, V> : Disposable
         where V : class
     {
         private readonly Dictionary<K, V> elements;
@@ -54,15 +52,46 @@ namespace DotNext.Reflection
                 }
             }
         }
+
+        protected sealed override void Dispose(bool disposing)
+        {
+            if(disposing)
+            {
+                syncObject.Dispose();
+                elements.Clear();
+            }
+            base.Dispose(disposing);
+        }
     }
 
-    internal abstract class MemberCache<M, E> : Cache<string, E>
+    internal readonly struct MemberKey : IEquatable<MemberKey>
+    {
+        internal readonly bool NonPublic;
+        internal readonly string Name;
+
+        internal MemberKey(string name, bool nonPublic)
+        {
+            NonPublic = nonPublic;
+            Name = name;
+        }
+
+        public bool Equals(MemberKey other) => NonPublic == other.NonPublic && Name == other.Name;
+
+        public override bool Equals(object other) => other is MemberKey key && Equals(key);
+
+        public override int GetHashCode()
+        {
+            var hashCode = -910176598;
+            hashCode = hashCode * -1521134295 + NonPublic.GetHashCode();
+            hashCode = hashCode * -1521134295 + Name?.GetHashCode() ?? 0;
+            return hashCode;
+        }
+    }
+
+    internal abstract class MemberCache<M, E> : Cache<MemberKey, E>
         where M : MemberInfo
         where E : class, IMember<M>
     {
-        private protected MemberCache()
-            : base(StringComparer.Ordinal)
-        {
-        }
+        internal E GetOrCreate(string memberName, bool nonPublic) => GetOrCreate(new MemberKey(memberName, nonPublic));
     }
 }

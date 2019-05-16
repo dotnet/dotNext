@@ -68,9 +68,8 @@ namespace DotNext
             V ISupplier<V>.Supply() => new V();
         }
 
-        [SuppressMessage("Design", "CA1001", Justification = "Object should be reclaimed by GC, no way to do Dispose manually")]
         [SuppressMessage("Performance", "CA1812", Justification = "It is instantiated by method GetOrCreateValue")]
-        private sealed class BackingStorage : Dictionary<long, object>
+        private sealed class BackingStorage : Dictionary<long, object>, IDisposable
         {
             private readonly ReaderWriterLockSlim synchronizer = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
@@ -143,6 +142,13 @@ namespace DotNext
                     userData = slot.GetUserData(this, default);
                     return slot.RemoveUserData(this);
                 }
+            }
+
+            void IDisposable.Dispose()
+            {
+                synchronizer.Dispose();
+                Clear();
+                GC.SuppressFinalize(this);
             }
         }
 

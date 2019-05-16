@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 
 namespace DotNext.Reflection
 {
@@ -12,29 +11,6 @@ namespace DotNext.Reflection
         public static class Event<H>
             where H : MulticastDelegate
         {
-            private sealed class InstanceEvents : MemberCache<EventInfo, Event<T, H>>
-            {
-                internal static readonly InstanceEvents Public = new InstanceEvents(false);
-                internal static readonly InstanceEvents NonPublic = new InstanceEvents(true);
-
-                private readonly bool nonPublic;
-                private InstanceEvents(bool nonPublic) => this.nonPublic = nonPublic;
-
-                private protected override Event<T, H> Create(string eventName)
-                    => Event<T, H>.Reflect(eventName, nonPublic);
-            }
-
-            private sealed class StaticEvents : MemberCache<EventInfo, Reflection.Event<H>>
-            {
-                internal static readonly StaticEvents Public = new StaticEvents(false);
-                internal static readonly StaticEvents NonPublic = new StaticEvents(true);
-                private readonly bool nonPublic;
-                private StaticEvents(bool nonPublic) => this.nonPublic = nonPublic;
-
-                private protected override Reflection.Event<H> Create(string eventName)
-                    => Reflection.Event<H>.Reflect<T>(eventName, nonPublic);
-            }
-
             /// <summary>
             /// Gets instance event.
             /// </summary>
@@ -42,7 +18,7 @@ namespace DotNext.Reflection
             /// <param name="nonPublic">True to reflect non-public event.</param>
             /// <returns>Instance event; or null, if event doesn't exist.</returns>
             public static Event<T, H> Get(string eventName, bool nonPublic = false)
-                => (nonPublic ? InstanceEvents.NonPublic : InstanceEvents.Public).GetOrCreate(eventName);
+                => Event<T, H>.GetOrCreate(eventName, nonPublic);
 
             /// <summary>
             /// Gets instance event.
@@ -61,7 +37,7 @@ namespace DotNext.Reflection
             /// <param name="nonPublic">True to reflect non-public event.</param>
             /// <returns>Static event; or null, if event doesn't exist.</returns>
             public static Reflection.Event<H> GetStatic(string eventName, bool nonPublic = false)
-                => (nonPublic ? StaticEvents.NonPublic : StaticEvents.Public).GetOrCreate(eventName);
+                => Reflection.Event<H>.GetOrCreate<T>(eventName, nonPublic);
 
             /// <summary>
             /// Gets static event.

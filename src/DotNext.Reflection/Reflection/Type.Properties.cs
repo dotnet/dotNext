@@ -1,5 +1,3 @@
-using System.Reflection;
-
 namespace DotNext.Reflection
 {
     public static partial class Type<T>
@@ -10,30 +8,6 @@ namespace DotNext.Reflection
         /// <typeparam name="V">Type of property.</typeparam>
         public static class Property<V>
         {
-            private sealed class InstanceProperties : MemberCache<PropertyInfo, Property<T, V>>
-            {
-                internal static readonly InstanceProperties Public = new InstanceProperties(false);
-                internal static readonly InstanceProperties NonPublic = new InstanceProperties(true);
-
-                private readonly bool nonPublic;
-                private InstanceProperties(bool nonPublic) => this.nonPublic = nonPublic;
-
-                private protected override Property<T, V> Create(string propertyName)
-                    => Property<T, V>.Reflect(propertyName, nonPublic);
-            }
-
-            private sealed class StaticProperties : MemberCache<PropertyInfo, Reflection.Property<V>>
-            {
-                internal static readonly StaticProperties Public = new StaticProperties(false);
-                internal static readonly StaticProperties NonPublic = new StaticProperties(true);
-
-                private readonly bool nonPublic;
-                private StaticProperties(bool nonPublic) => this.nonPublic = nonPublic;
-
-                private protected override Reflection.Property<V> Create(string propertyName)
-                    => Reflection.Property<V>.Reflect<T>(propertyName, nonPublic);
-            }
-
             /// <summary>
             /// Reflects instance property.
             /// </summary>
@@ -41,7 +15,7 @@ namespace DotNext.Reflection
             /// <param name="nonPublic">True to reflect non-public property.</param>
             /// <returns>Property field; or null, if property doesn't exist.</returns>
             public static Property<T, V> Get(string propertyName, bool nonPublic = false)
-                => (nonPublic ? InstanceProperties.NonPublic : InstanceProperties.Public).GetOrCreate(propertyName);
+                => Property<T, V>.GetOrCreate(propertyName, nonPublic);
 
             /// <summary>
             /// Reflects instance property.
@@ -98,7 +72,7 @@ namespace DotNext.Reflection
             /// <param name="nonPublic">True to reflect non-public property.</param>
             /// <returns>Instance property; or null, if property doesn't exist.</returns>
             public static Reflection.Property<V> GetStatic(string propertyName, bool nonPublic = false)
-                => (nonPublic ? StaticProperties.NonPublic : StaticProperties.Public).GetOrCreate(propertyName);
+                => Reflection.Property<V>.GetOrCreate<T>(propertyName, nonPublic);
 
             /// <summary>
             /// Reflects static property.

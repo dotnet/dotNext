@@ -254,6 +254,12 @@ namespace DotNext.Reflection
 	public sealed class Indexer<A, V>: IndexerBase<A, V>
 		where A: struct
 	{
+        private sealed class Cache<T> : MemberCache<PropertyInfo, Indexer<A, V>>
+        {
+            internal static readonly UserDataSlot<Cache<T>> Slot = UserDataSlot<Cache<T>>.Allocate();
+
+            private protected override Indexer<A, V> Create(MemberKey key) => Reflect(typeof(T), key.Name, key.NonPublic);
+        }
 		private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 		private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -319,9 +325,9 @@ namespace DotNext.Reflection
         /// <param name="indexer">The reflected property instance.</param>
         public static implicit operator Setter(Indexer<A, V> indexer) => indexer?.SetMethod;
 		
-		internal static Indexer<A, V> Reflect<T>(string propertyName, bool nonPublic)
+		private static Indexer<A, V> Reflect(Type declaringType, string propertyName, bool nonPublic)
 		{
-			var property = typeof(T).GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
+			var property = declaringType.GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
 			if (property is null || property.PropertyType != typeof(V))
 				return null;
 			var (actualParams, arglist, input) = Signature.Reflect<A>();
@@ -351,6 +357,9 @@ namespace DotNext.Reflection
             
             return new Indexer<A, V>(property, getter, setter);
 		}
+
+        internal static Indexer<A, V> GetOrCreate<T>(string propertyName, bool nonPublic)
+            => typeof(T).GetUserData().GetOrSet<Cache<T>>(Cache<T>.Slot).GetOrCreate(propertyName, nonPublic);
 	}
 
     /// <summary>
@@ -362,6 +371,12 @@ namespace DotNext.Reflection
     public sealed class Indexer<T, A, V>: IndexerBase<A, V>
         where A: struct
     {
+        private sealed class Cache : MemberCache<PropertyInfo, Indexer<T, A, V>>
+        {
+            internal static readonly UserDataSlot<Cache> Slot = UserDataSlot<Cache>.Allocate();
+
+            private protected override Indexer<T, A, V> Create(MemberKey key) => Reflect(key.Name, key.NonPublic);
+        }
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -430,7 +445,7 @@ namespace DotNext.Reflection
 			}
 		}
 
-		internal static Indexer<T, A, V> Reflect(string propertyName, bool nonPublic)
+		private static Indexer<T, A, V> Reflect(string propertyName, bool nonPublic)
 		{
 			var property = typeof(T).GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
 			if (property?.DeclaringType is null || property.PropertyType != typeof(V))
@@ -462,5 +477,8 @@ namespace DotNext.Reflection
                 setter = null;
 			return new Indexer<T, A, V>(property, getter, setter);
 		}
+
+        internal static Indexer<T, A, V> GetOrCreate(string propertyName, bool nonPublic)
+            => typeof(T).GetUserData().GetOrSet<Cache>(Cache.Slot).GetOrCreate(propertyName, nonPublic);
     }
 }

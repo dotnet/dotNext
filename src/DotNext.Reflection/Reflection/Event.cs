@@ -236,6 +236,12 @@ namespace DotNext.Reflection
     public sealed class Event<D> : EventBase<D>, IEvent<D>
         where D : MulticastDelegate
     {
+        private sealed class Cache<T> : MemberCache<EventInfo, Event<D>>
+        {
+            internal static readonly UserDataSlot<Cache<T>> Slot = UserDataSlot<Cache<T>>.Allocate();
+
+            private protected override Event<D> Create(MemberKey key) => Reflect(typeof(T), key.Name, key.NonPublic);
+        }
         private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -339,11 +345,14 @@ namespace DotNext.Reflection
         /// <returns>The delegate which can be used to detach from the event.</returns>
         public static Action<D> operator -(Event<D> @event) => @event?.removeMethod;
 
-        internal static Event<D> Reflect<T>(string eventName, bool nonPublic)
+        private static Event<D> Reflect(Type declaringType, string eventName, bool nonPublic)
         {
-            var @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
+            var @event = declaringType.GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
             return @event is null ? null : new Event<D>(@event);
         }
+
+        internal static Event<D> GetOrCreate<T>(string eventName, bool nonPublic)
+            => typeof(T).GetUserData().GetOrSet<Cache<T>>(Cache<T>.Slot).GetOrCreate(eventName, nonPublic);
     }
 
     /// <summary>
@@ -354,6 +363,12 @@ namespace DotNext.Reflection
     public sealed class Event<T, D> : EventBase<D>, IEvent<T, D>
         where D : MulticastDelegate
     {
+        private sealed class Cache : MemberCache<EventInfo, Event<T, D>>
+        {
+            internal static readonly UserDataSlot<Cache> Slot = UserDataSlot<Cache>.Allocate();
+            private protected override Event<T, D> Create(MemberKey key) => Reflect(key.Name, key.NonPublic);
+        }
+
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -485,10 +500,13 @@ namespace DotNext.Reflection
         /// <returns>The delegate which can be used to detach from the event.</returns>
         public static Accessor operator -(Event<T, D> @event) => @event.removeMethod;
 
-        internal static Event<T, D> Reflect(string eventName, bool nonPublic)
+        private static Event<T, D> Reflect(string eventName, bool nonPublic)
         {
             var @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
             return @event is null ? null : new Event<T, D>(@event);
         }
+
+        internal static Event<T, D> GetOrCreate(string eventName, bool nonPublic)
+            => typeof(T).GetUserData().GetOrSet<Cache>(Cache.Slot).GetOrCreate(eventName, nonPublic);
     }
 }

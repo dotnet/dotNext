@@ -238,6 +238,12 @@ namespace DotNext.Reflection
     /// <typeparam name="V">Type of field value.</typeparam>
     public sealed class Field<T, V> : FieldBase<V>, IField<T, V>
     {
+        private sealed class Cache : MemberCache<FieldInfo, Field<T, V>>
+        {
+            internal static readonly UserDataSlot<Cache> Slot = UserDataSlot<Cache>.Allocate();
+
+            private protected override Field<T, V> Create(MemberKey key) => Reflect(key.Name, key.NonPublic);
+        }
         private const BindingFlags PubicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -355,11 +361,14 @@ namespace DotNext.Reflection
             }
         }
 
-        internal static Field<T, V> Reflect(string fieldName, bool nonPublic)
+        private static Field<T, V> Reflect(string fieldName, bool nonPublic)
         {
             var field = typeof(T).GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
             return field is null ? null : new Field<T, V>(field);
         }
+
+        internal static Field<T, V> GetOrCreate(string fieldName, bool nonPublic)
+            => typeof(T).GetUserData().GetOrSet<Cache>(Cache.Slot).GetOrCreate(fieldName, nonPublic);
     }
 
     /// <summary>
@@ -367,7 +376,13 @@ namespace DotNext.Reflection
     /// </summary>
     /// <typeparam name="V">Type of field value.</typeparam>
     public sealed class Field<V> : FieldBase<V>, IField<V>
-    {
+    {  
+        private sealed class Cache<T> : MemberCache<FieldInfo, Field<V>>
+        {
+            internal static readonly UserDataSlot<Cache<T>> Slot = UserDataSlot<Cache<T>>.Allocate();
+
+            private protected override Field<V> Create(MemberKey key) => Reflect(typeof(T), key.Name, key.NonPublic);
+        }
         private const BindingFlags PubicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -477,10 +492,13 @@ namespace DotNext.Reflection
             }
         }
 
-        internal static Field<V> Reflect<T>(string fieldName, bool nonPublic)
+        private static Field<V> Reflect(Type declaringType, string fieldName, bool nonPublic)
         {
-            var field = typeof(T).GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
+            var field = declaringType.GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
             return field is null ? null : new Field<V>(field);
         }
+
+        internal static Field<V> GetOrCreate<T>(string fieldName, bool nonPublic)
+            => typeof(T).GetUserData().GetOrSet<Cache<T>>(Cache<T>.Slot).GetOrCreate(fieldName, nonPublic);
     }
 }
