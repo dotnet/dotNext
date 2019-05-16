@@ -36,7 +36,7 @@ namespace DotNext.Linq.Expressions
             const string EnumeratorVarName = "enumerator";
             if (enumerable is null)
             {
-                getEnumerator = collection.Call(collection.GetType().GetMethod(GetEnumeratorMethod, Array.Empty<Type>()) ?? throw new ArgumentException(ExceptionMessages.EnumerablePatternExpected));
+                getEnumerator = collection.Call(collection.Type.GetMethod(GetEnumeratorMethod, Array.Empty<Type>()) ?? throw new ArgumentException(ExceptionMessages.EnumerablePatternExpected));
                 enumeratorVar = Variable(getEnumerator.Method.ReturnType, EnumeratorVarName);
                 moveNextCall = Call(enumeratorVar, nameof(IEnumerator.MoveNext), Array.Empty<Type>());
             }
