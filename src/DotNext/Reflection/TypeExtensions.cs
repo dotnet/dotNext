@@ -17,7 +17,7 @@ namespace DotNext.Reflection
         {
             if (type.IsByRef || type.IsArray)
                 type = type.GetElementType();
-            return type.IsGenericParameter;
+            return type?.IsGenericParameter ?? false;
         }
 
         /// <summary>

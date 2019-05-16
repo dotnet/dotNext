@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
@@ -21,7 +22,12 @@ namespace DotNext.Runtime.CompilerServices
         public override bool CanReduce => stateId.HasValue;
         public override ExpressionType NodeType => ExpressionType.Extension;
         public override Type Type => typeof(uint);
-        public override Expression Reduce() => Constant(stateId.Value);
+
+        public override Expression Reduce()
+        {
+            Debug.Assert(stateId.HasValue);
+            return Constant(stateId.Value);
+        }
         protected override Expression VisitChildren(ExpressionVisitor visitor) => this;
     }
 }

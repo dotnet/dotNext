@@ -245,10 +245,8 @@ namespace DotNext.Reflection
         private Event(EventInfo @event)
             : base(@event)
         {
-            var addMethod = @event.AddMethod;
-            var removeMethod = @event.RemoveMethod;
-            this.addMethod = addMethod?.CreateDelegate<Action<D>>();
-            this.removeMethod = removeMethod?.CreateDelegate<Action<D>>();
+            addMethod = @event.AddMethod?.CreateDelegate<Action<D>>();
+            removeMethod = @event.RemoveMethod?.CreateDelegate<Action<D>>();
         }
 
         /// <summary>
@@ -346,16 +344,6 @@ namespace DotNext.Reflection
             var @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
             return @event is null ? null : new Event<D>(@event);
         }
-
-        internal static Event<D> Reflect(EventInfo @event)
-        {
-            if (@event is Event<D> other)
-                return other;
-            else if (@event.EventHandlerType == typeof(D))
-                return new Event<D>(@event);
-            else
-                return null;
-        }
     }
 
     /// <summary>
@@ -382,6 +370,8 @@ namespace DotNext.Reflection
         private Event(EventInfo @event)
             : base(@event)
         {
+            if (@event.DeclaringType is null)
+                throw new ArgumentException(ExceptionMessages.ModuleMemberDetected(@event), nameof(@event));
             var instanceParam = Expression.Parameter(@event.DeclaringType.MakeByRefType());
             var handlerParam = Expression.Parameter(@event.EventHandlerType);
 
@@ -389,14 +379,18 @@ namespace DotNext.Reflection
             removeMethod = CompileAccessor(@event.RemoveMethod, instanceParam, handlerParam);
         }
 
-        private static Accessor CompileAccessor(MethodInfo accessor, ParameterExpression instanceParam, ParameterExpression handlerParam)
+        private static Accessor CompileAccessor(MethodInfo accessor, ParameterExpression instanceParam,
+            ParameterExpression handlerParam)
         {
             if (accessor is null)
                 return null;
+            else if (accessor.DeclaringType is null)
+                throw new ArgumentException(ExceptionMessages.ModuleMemberDetected(accessor), nameof(accessor));
             else if (accessor.DeclaringType.IsValueType)
                 return accessor.CreateDelegate<Accessor>();
             else
-                return Expression.Lambda<Accessor>(Expression.Call(instanceParam, accessor, handlerParam), instanceParam, handlerParam).Compile();
+                return Expression.Lambda<Accessor>(Expression.Call(instanceParam, accessor, handlerParam),
+                    instanceParam, handlerParam).Compile();
         }
 
         /// <summary>
@@ -495,16 +489,6 @@ namespace DotNext.Reflection
         {
             var @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
             return @event is null ? null : new Event<T, D>(@event);
-        }
-
-        internal static Event<T, D> Reflect(EventInfo @event)
-        {
-            if (@event is Event<T, D> other)
-                return other;
-            else if (@event.EventHandlerType == typeof(D) && @event.DeclaringType == typeof(T))
-                return new Event<T, D>(@event);
-            else
-                return null;
         }
     }
 }

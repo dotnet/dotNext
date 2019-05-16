@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -19,10 +20,12 @@ namespace DotNext.Reflection
 
         private readonly D invoker;
         private readonly ConstructorInfo ctor;
+        private readonly Type valueType;
 
         private Constructor(ConstructorInfo ctor, Expression<D> invoker)
         {
-            DeclaringType = ctor.DeclaringType;
+            if (ctor.IsStatic || ctor.DeclaringType is null)
+                throw new ArgumentException(ExceptionMessages.StaticCtorDetected, nameof(ctor));
             this.ctor = ctor;
             this.invoker = invoker.Compile();
         }
@@ -39,7 +42,7 @@ namespace DotNext.Reflection
 
         private Constructor(Type valueType, IEnumerable<ParameterExpression> parameters)
         {
-            DeclaringType = valueType;
+            this.valueType = valueType;
             invoker = Expression.Lambda<D>(Expression.Default(valueType), parameters).Compile();
         }
 
@@ -73,7 +76,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the class that declares this constructor.
         /// </summary>
-        public override Type DeclaringType { get; }
+        public override Type DeclaringType => ctor?.DeclaringType ?? valueType;
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance.
@@ -159,7 +162,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the module in which the type that declares the constructor represented by the current instance is defined.
         /// </summary>
-        public override Module Module => ctor is null ? DeclaringType.Module : ctor.Module;
+        public override Module Module => DeclaringType.Module;
 
         /// <summary>
         /// Invokes this constructor.
@@ -259,7 +262,7 @@ namespace DotNext.Reflection
         /// Computes hash code uniquely identifies the reflected constructor.
         /// </summary>
         /// <returns>The hash code of the constructor.</returns>
-        public override int GetHashCode() => ctor is null ? DeclaringType.GetHashCode() : ctor.GetHashCode();
+        public override int GetHashCode() => DeclaringType.GetHashCode();
 
         private static Constructor<D> Reflect(Type declaringType, Type[] parameters, bool nonPublic)
         {

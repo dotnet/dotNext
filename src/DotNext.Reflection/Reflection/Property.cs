@@ -353,7 +353,7 @@ namespace DotNext.Reflection
         internal static Property<V> Reflect<T>(string propertyName, bool nonPublic)
         {
             var property = typeof(T).GetProperty(propertyName, (nonPublic ? NonPublicFlags : PublicFlags));
-            return property.PropertyType == typeof(V) && property.GetIndexParameters().IsNullOrEmpty() ?
+            return property?.PropertyType == typeof(V) && property.GetIndexParameters().IsNullOrEmpty() ?
                 new Property<V>(property) :
                 null;
         }
@@ -460,7 +460,7 @@ namespace DotNext.Reflection
         internal static Property<T, V> Reflect(string propertyName, bool nonPublic)
         {
             var property = typeof(T).GetProperty(propertyName, (nonPublic ? NonPublicFlags : PublicFlags));
-            return property.PropertyType == typeof(V) && property.GetIndexParameters().IsNullOrEmpty() ?
+            return property?.PropertyType == typeof(V) && property.GetIndexParameters().IsNullOrEmpty() ?
                 new Property<T, V>(property) :
                 null;
         }

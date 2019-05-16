@@ -21,7 +21,7 @@ namespace DotNext.Threading
             private Operations() { }
 
             internal override bool CompareAndSet(ref double value, double expected, double update)
-                => Interlocked.CompareExchange(ref value, update, expected) == expected;
+                => Interlocked.CompareExchange(ref value, update, expected).CompareTo(expected) == 0;
             
             private protected override double VolatileRead(ref double value) => Volatile.Read(ref value);
         }

@@ -69,7 +69,7 @@ namespace DotNext.Reflection
 
             private Operand(ParameterExpression operand) => Argument = Source = operand;
 
-            internal Operand(ParameterExpression supplier, Type expectedType) => Argument = Expression.Convert(this.Source = supplier, expectedType);
+            internal Operand(ParameterExpression supplier, Type expectedType) => Argument = Expression.Convert(Source = supplier, expectedType);
 
             public static implicit operator Operand(ParameterExpression operand) => new Operand(operand);
         }
@@ -205,7 +205,7 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Type of operand.</typeparam>
     /// <typeparam name="R">Type of operator result.</typeparam>
     /// <returns>Result of unary operation.</returns>
-    public delegate R Operator<T, R>(in T operand);
+    public delegate R Operator<T, out R>(in T operand);
 
     /// <summary>
     /// Represents binary operator.
@@ -216,5 +216,5 @@ namespace DotNext.Reflection
     /// <typeparam name="T2">Type of second operand.</typeparam>
     /// <typeparam name="R">Type of operator result.</typeparam>
     /// <returns>Result of binary operator.</returns>
-    public delegate R Operator<T1, T2, R>(in T1 first, in T2 second);
+    public delegate R Operator<T1, T2, out R>(in T1 first, in T2 second);
 }

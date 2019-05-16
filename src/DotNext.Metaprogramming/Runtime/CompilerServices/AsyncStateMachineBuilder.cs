@@ -26,7 +26,7 @@ namespace DotNext.Runtime.CompilerServices
         private sealed class VariableEqualityComparer : IEqualityComparer<ParameterExpression>
         {
             public bool Equals(ParameterExpression x, ParameterExpression y)
-                => AwaitExpression.IsAwaiterHolder(x) && AwaitExpression.IsAwaiterHolder(y) ? x.Type == y.Type : object.Equals(x, y);
+                => AwaitExpression.IsAwaiterHolder(x) && AwaitExpression.IsAwaiterHolder(y) ? x?.Type == y?.Type : object.Equals(x, y);
 
             public int GetHashCode(ParameterExpression variable)
                 => AwaitExpression.IsAwaiterHolder(variable) ? variable.Type.GetHashCode() : variable.GetHashCode();
@@ -409,10 +409,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         private Expression Rewrite(Statement body)
-        {
-            var result = Visit(body).Reduce();
-            return result.AddPrologue(false, MakeSwitch()).AddEpilogue(false, AsyncMethodEnd.LandingSite());
-        }
+            => Visit(body)?.Reduce().AddPrologue(false, MakeSwitch()).AddEpilogue(false, AsyncMethodEnd.LandingSite());
 
         internal Expression Rewrite(Expression body)
             => Rewrite(body is BlockExpression block ?

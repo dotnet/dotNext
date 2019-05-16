@@ -248,6 +248,8 @@ namespace DotNext.Reflection
         private Field(FieldInfo field)
             : base(field)
         {
+            if (field.DeclaringType is null)
+                throw new ArgumentException(ExceptionMessages.ModuleMemberDetected(field), nameof(field));
             var instanceParam = Parameter(field.DeclaringType.MakeByRefType());
             var valueParam = Parameter(field.FieldType);
             getter = Lambda<MemberGetter<T, V>>(Field(instanceParam, field), instanceParam).Compile();

@@ -8,16 +8,14 @@ namespace DotNext
     [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
     internal static class ExceptionMessages
     {
-        private static readonly ResourceManager resourceManager = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
+        private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-        internal static string OptionalNoValue => resourceManager.GetString("OptionalNoValue");
+        internal static string OptionalNoValue => Resources.GetString("OptionalNoValue");
 
-        internal static string InvalidUserDataSlot => resourceManager.GetString("InvalidUserDataSlot");
+        internal static string InvalidUserDataSlot => Resources.GetString("InvalidUserDataSlot");
 
-        internal static string ConcreteDelegateExpected => resourceManager.GetString("ConcreteDelegateExpected");
+        internal static string IndexShouldBeZero => Resources.GetString("IndexShouldBeZero");
 
-        internal static string IndexShouldBeZero => resourceManager.GetString("IndexShouldBeZero");
-
-        internal static string CastNullToValueType => resourceManager.GetString("CastNullToValueType");
+        internal static string CastNullToValueType => Resources.GetString("CastNullToValueType");
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -212,6 +213,7 @@ namespace DotNext.Threading
                     rental = next;
                 }
             }
+            Debug.Assert(!(rental is null));
             rental.Attach(current.Value);
             current = new AtomicReference<Rental>(rental);
             Capacity = capacity;
@@ -243,6 +245,7 @@ namespace DotNext.Threading
             }
             if(index == 0)
                 throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
+            Debug.Assert(!(rental is null));
             rental.Attach(current.Value);
             current = new AtomicReference<Rental>(rental);
             Capacity = index;
