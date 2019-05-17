@@ -5,11 +5,9 @@ using Xunit;
 
 namespace DotNext
 {
-	using Collections.Generic;
-
-	public sealed class SequenceTests : Assert
+    public sealed class SequenceTests : Assert
 	{
-		public sealed class Counter<T>
+        private sealed class Counter<T>
 		{
 			public int value;
 
@@ -75,5 +73,27 @@ namespace DotNext
 			var str = array.ToString(":");
 			Equal("10:20:30", str);
 		}
+
+        [Fact]
+        public static void Prepend()
+        {
+            IEnumerable<string> items = new[] { "One", "Two" };
+            items = items.Prepend("Zero");
+            NotEmpty(items);
+            Equal(3, items.Count());
+            Equal("Zero", items.First());
+            Equal("Two", items.Last());
+        }
+
+        [Fact]
+        public static void Append()
+        {
+            IEnumerable<string> items = new[] { "One", "Two" };
+            items = items.Append("Three", "Four");
+            NotEmpty(items);
+            Equal(4, items.Count());
+            Equal("One", items.First());
+            Equal("Four", items.Last());
+        }
 	}
 }
