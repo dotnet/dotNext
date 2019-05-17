@@ -12,8 +12,8 @@ namespace DotNext.Reflection
             /// Reflects instance property.
             /// </summary>
             /// <param name="propertyName">Name of property.</param>
-            /// <param name="nonPublic">True to reflect non-public property.</param>
-            /// <returns>Property field; or null, if property doesn't exist.</returns>
+            /// <param name="nonPublic"><see langword="true"/> to reflect non-public property.</param>
+            /// <returns>Property field; or <see langword="null"/>, if property doesn't exist.</returns>
             public static Property<T, V> Get(string propertyName, bool nonPublic = false)
                 => Property<T, V>.GetOrCreate(propertyName, nonPublic);
 
@@ -70,7 +70,7 @@ namespace DotNext.Reflection
             /// </summary>
             /// <param name="propertyName">Name of property.</param>
             /// <param name="nonPublic">True to reflect non-public property.</param>
-            /// <returns>Instance property; or null, if property doesn't exist.</returns>
+            /// <returns>Instance property; or <see langword="null"/>, if property doesn't exist.</returns>
             public static Reflection.Property<V> GetStatic(string propertyName, bool nonPublic = false)
                 => Reflection.Property<V>.GetOrCreate<T>(propertyName, nonPublic);
 
