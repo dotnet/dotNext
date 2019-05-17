@@ -46,13 +46,6 @@ namespace DotNext.Threading
                 this.type = type;
             }
 
-            internal void ThrowIfEmpty<E>()
-                where E : Exception, new()
-            {
-                if (lockedObject is null)
-                    throw new E();
-            }
-
             /// <summary>
             /// Releases the acquired lock.
             /// </summary>
