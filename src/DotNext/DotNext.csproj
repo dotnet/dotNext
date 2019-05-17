@@ -18,7 +18,7 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Optional&lt;T&gt; type no longer depends on dynamic code generation</PackageReleaseNotes>
+	<PackageReleaseNotes>Optional&lt;T&gt; type doesn't rely on dynamic code generation anymore</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

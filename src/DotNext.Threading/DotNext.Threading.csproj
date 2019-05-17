@@ -14,7 +14,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>async;lock;objectpool</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>First class support of ConcurrentObjectPool. It is rewritten and provide two scheduling methods: round-robin and shortest job first.</PackageReleaseNotes>
+    <PackageReleaseNotes>Minor optimizations</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
