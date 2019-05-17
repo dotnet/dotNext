@@ -90,12 +90,6 @@ namespace DotNext.Reflection
             => !AreSame(in first.Value, in second.Value);
 
         /// <summary>
-        /// Converts this reference into unmanaged address.
-        /// </summary>
-        [CLSCompliant(false)]
-        public IntPtr Address => AddressOf(in Value);
-
-        /// <summary>
         /// Gets hash code of this reference based on its address.
         /// </summary>
         /// <returns>Hash code of the reference.</returns>
