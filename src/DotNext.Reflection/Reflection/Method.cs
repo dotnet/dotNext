@@ -16,12 +16,12 @@ namespace DotNext.Reflection
     {
         private sealed class Cache : MemberCache<MethodInfo, Method<D>>
         {
-            private protected override Method<D> Create(string methodName, bool nonPublic) => Method<D>.Reflect(methodName, nonPublic);
+            private protected override Method<D> Create(string methodName, bool nonPublic) => Reflect(methodName, nonPublic);
         }
 
         private sealed class Cache<T> : MemberCache<MethodInfo, Method<D>>
         {
-            private protected override Method<D> Create(string methodName, bool nonPublic) => Method<D>.Reflect(typeof(T), methodName, nonPublic);
+            private protected override Method<D> Create(string methodName, bool nonPublic) => Reflect(typeof(T), methodName, nonPublic);
         }
 
         private static readonly UserDataSlot<Method<D>> CacheSlot = UserDataSlot<Method<D>>.Allocate();

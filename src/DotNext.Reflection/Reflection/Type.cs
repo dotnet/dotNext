@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 using static System.Linq.Expressions.Expression;
@@ -65,6 +66,7 @@ namespace DotNext.Reflection
                     method = typeof(ValueType<>)
                                 .MakeGenericType(RuntimeType)
                                 .GetMethod(nameof(ValueType<int>.BitwiseHashCode), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, typeof(T), typeof(bool));
+                    Debug.Assert(!(method is null));
                     GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam, Constant(true)), inputParam).Compile();
                 }
                 else
@@ -75,6 +77,7 @@ namespace DotNext.Reflection
                     if(typeof(IEquatable<T>).IsAssignableFrom(RuntimeType))
                     {
                         method = typeof(IEquatable<T>).GetMethod(nameof(IEquatable<T>.Equals), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                        Debug.Assert(!(method is null));
                         Equals = Lambda<Operator<T, T, bool>>(Call(inputParam, method, secondParam), inputParam, secondParam).Compile();
                     }
                     //3. Use bitwise equality
@@ -83,6 +86,7 @@ namespace DotNext.Reflection
                         method = typeof(ValueType<>)
                             .MakeGenericType(RuntimeType)
                             .GetMethod(nameof(ValueType<int>.BitwiseEquals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public, typeof(T), typeof(T));
+                        Debug.Assert(!(method is null));
                         Equals = Lambda<Operator<T, T, bool>>(Call(null, method, inputParam, secondParam), inputParam, secondParam).Compile();
                     }
             }
@@ -94,7 +98,7 @@ namespace DotNext.Reflection
                 GetHashCode = Lambda<Operator<T, int>>(Call(inputParam, typeof(object).GetHashCodeMethod()), inputParam).Compile();
                 //equality checker
                 if(Equals is null)
-                    Equals = Lambda<Operator<T, T, bool>>(Call(null, typeof(object).GetMethod(nameof(object.Equals), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly), inputParam, secondParam), inputParam, secondParam).Compile();
+                    Equals = Lambda<Operator<T, T, bool>>(Call(null, typeof(object).GetMethod(nameof(Equals), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly), inputParam, secondParam), inputParam, secondParam).Compile();
             }
         }
 

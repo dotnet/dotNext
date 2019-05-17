@@ -120,12 +120,12 @@ namespace DotNext.Reflection
                 => cacheHolder.GetUserData().GetOrSet<Cache<Op>, C>(Slot);
         }
 
-        private protected readonly D invoker;
+        private protected readonly D Invoker;
 
         private protected Operator(D invoker, ExpressionType type, MethodInfo overloaded)
         {
             Type = type;
-            this.invoker = invoker;
+            Invoker = invoker;
             Method = overloaded;
         }
 
@@ -134,13 +134,13 @@ namespace DotNext.Reflection
         /// </summary>
         public MethodInfo Method { get; }
 
-        D IOperator<D>.Invoker => invoker;
+        D IOperator<D>.Invoker => Invoker;
 
         /// <summary>
         /// Returns the delegate instance that can be used to invoke operator.
         /// </summary>
         /// <param name="operator">The reflected operator.</param>
-        public static implicit operator D(Operator<D> @operator) => @operator?.invoker;
+        public static implicit operator D(Operator<D> @operator) => @operator?.Invoker;
 
         /// <summary>
         /// Gets type of operator.
@@ -181,7 +181,7 @@ namespace DotNext.Reflection
                 case Operator<D> op:
                     return Type == op.Type && Method == op.Method;
                 case D invoker:
-                    return Equals(this.invoker, invoker);
+                    return Equals(this.Invoker, invoker);
                 default:
                     return false;
             }

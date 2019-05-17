@@ -106,7 +106,7 @@ namespace DotNext.Reflection
         /// <param name="operand">An operand.</param>
         /// <returns>Result of unary operator.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public R Invoke(in T operand) => invoker(in operand);
+        public R Invoke(in T operand) => Invoker(in operand);
 
         private static Expression<Operator<T, R>> MakeUnary(Operator.Kind @operator, Operator.Operand operand, out MethodInfo overloaded)
         {
@@ -169,11 +169,11 @@ namespace DotNext.Reflection
             switch (lookup)
             {
                 case OperatorLookup.Predefined:
-                    return GetOrCreate(new Reflection.Operator.Kind(@operator, false));
+                    return GetOrCreate(new Operator.Kind(@operator, false));
                 case OperatorLookup.Overloaded:
-                    return GetOrCreate(new Reflection.Operator.Kind(@operator, true));
+                    return GetOrCreate(new Operator.Kind(@operator, true));
                 case OperatorLookup.Any:
-                    return GetOrCreate(new Reflection.Operator.Kind(@operator, true)) ?? GetOrCreate(new Reflection.Operator.Kind(@operator, false));
+                    return GetOrCreate(new Operator.Kind(@operator, true)) ?? GetOrCreate(new Operator.Kind(@operator, false));
                 default:
                     return null;
             }
