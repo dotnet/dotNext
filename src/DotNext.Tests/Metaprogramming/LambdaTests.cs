@@ -79,7 +79,7 @@ namespace DotNext.Metaprogramming
             {
                 var (arg1, arg2) = fun;
                 var temp = DeclareVariable<long>("tmp");
-                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await(false));
+                Assign(temp, Expression.Call(null, sumMethod, arg1, arg2).Await());
                 Return((U)temp + 20L);
             });
             var fn = lambda.Compile();
@@ -139,7 +139,7 @@ namespace DotNext.Metaprogramming
                     If(arg < 0L).Then(Throw<InvalidOperationException>).End();
                     If(arg > 10L).Then(Throw<ArgumentException>).Else(() => Return(arg)).End();
                 })
-                .Catch<ArgumentException>(() => Return(ExpressionBuilder.Const(-42L)))
+                .Catch<ArgumentException>(() => Return((-42L).Const()))
                 .Catch<InvalidOperationException>(Rethrow)
                 .End();
             });

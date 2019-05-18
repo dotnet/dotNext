@@ -67,9 +67,9 @@ namespace DotNext.Reflection
             internal readonly Expression Argument;
             internal readonly ParameterExpression Source;
 
-            private Operand(ParameterExpression operand) => this.Argument = Source = operand;
+            private Operand(ParameterExpression operand) => Argument = Source = operand;
 
-            internal Operand(ParameterExpression supplier, Type expectedType) => Argument = Expression.Convert(this.Source = supplier, expectedType);
+            internal Operand(ParameterExpression supplier, Type expectedType) => Argument = Expression.Convert(Source = supplier, expectedType);
 
             public static implicit operator Operand(ParameterExpression operand) => new Operand(operand);
         }
@@ -110,12 +110,22 @@ namespace DotNext.Reflection
     public abstract class Operator<D> : IOperator<D>
         where D : Delegate
     {
-        private protected readonly D invoker;
+        private protected abstract class Cache<Op> : Cache<Operator.Kind, Op>
+            where Op : class, IOperator<D>
+        {
+            private static readonly UserDataSlot<Cache<Op>> Slot = UserDataSlot<Cache<Op>>.Allocate();
+
+            internal static Cache<Op> Of<C>(Type cacheHolder) 
+                where C : Cache<Op>, new()
+                => cacheHolder.GetUserData().GetOrSet<Cache<Op>, C>(Slot);
+        }
+
+        private protected readonly D Invoker;
 
         private protected Operator(D invoker, ExpressionType type, MethodInfo overloaded)
         {
             Type = type;
-            this.invoker = invoker;
+            Invoker = invoker;
             Method = overloaded;
         }
 
@@ -124,13 +134,13 @@ namespace DotNext.Reflection
         /// </summary>
         public MethodInfo Method { get; }
 
-        D IOperator<D>.Invoker => invoker;
+        D IOperator<D>.Invoker => Invoker;
 
         /// <summary>
         /// Returns the delegate instance that can be used to invoke operator.
         /// </summary>
         /// <param name="operator">The reflected operator.</param>
-        public static implicit operator D(Operator<D> @operator) => @operator?.invoker;
+        public static implicit operator D(Operator<D> @operator) => @operator?.Invoker;
 
         /// <summary>
         /// Gets type of operator.
@@ -171,7 +181,7 @@ namespace DotNext.Reflection
                 case Operator<D> op:
                     return Type == op.Type && Method == op.Method;
                 case D invoker:
-                    return Equals(this.invoker, invoker);
+                    return Equals(this.Invoker, invoker);
                 default:
                     return false;
             }
@@ -205,7 +215,7 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Type of operand.</typeparam>
     /// <typeparam name="R">Type of operator result.</typeparam>
     /// <returns>Result of unary operation.</returns>
-    public delegate R Operator<T, R>(in T operand);
+    public delegate R Operator<T, out R>(in T operand);
 
     /// <summary>
     /// Represents binary operator.
@@ -216,5 +226,5 @@ namespace DotNext.Reflection
     /// <typeparam name="T2">Type of second operand.</typeparam>
     /// <typeparam name="R">Type of operator result.</typeparam>
     /// <returns>Result of binary operator.</returns>
-    public delegate R Operator<T1, T2, R>(in T1 first, in T2 second);
+    public delegate R Operator<T1, T2, out R>(in T1 first, in T2 second);
 }

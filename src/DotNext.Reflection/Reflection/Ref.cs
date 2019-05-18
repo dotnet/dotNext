@@ -35,7 +35,7 @@ namespace DotNext.Reflection
     /// This type has special semantics when used as argument type
     /// for delegates <see cref="Function{T, A, R}"/>, <see cref="Function{A, R}"/>,
     /// <see cref="Procedure{T, A}"/>, <see cref="Procedure{A}"/> when
-    /// using statically typed reflection. Argument of this type
+    /// using strongly typed reflection. Argument of this type
     /// means that it should be passed into reflected method or constructor
     /// by reference. In all other scenarios, including <see cref="Reflector.Unreflect{D}(ConstructorInfo)"/>
     /// or <see cref="Reflector.Unreflect{D}(MethodInfo)"/>, this type treated as regular value type
@@ -88,12 +88,6 @@ namespace DotNext.Reflection
         /// <returns>True, if both references are not equal.</returns>
         public static bool operator !=(in Ref<T> first, in Ref<T> second)
             => !AreSame(in first.Value, in second.Value);
-
-        /// <summary>
-        /// Converts this reference into unmanaged address.
-        /// </summary>
-        [CLSCompliant(false)]
-        public IntPtr Address => AddressOf(in Value);
 
         /// <summary>
         /// Gets hash code of this reference based on its address.

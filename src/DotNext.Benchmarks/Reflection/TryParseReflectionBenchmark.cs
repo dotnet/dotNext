@@ -1,7 +1,6 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
-using System;
 using System.Reflection;
 
 namespace DotNext.Reflection
@@ -26,7 +25,7 @@ namespace DotNext.Reflection
         [Benchmark]
         public void NoReflection()
         {
-            decimal.TryParse(StringValue, out var result);
+            decimal.TryParse(StringValue, out var _);
         }
 
         [Benchmark]

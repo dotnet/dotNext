@@ -388,7 +388,7 @@ namespace DotNext.Runtime.InteropServices
         /// Sets all bits of allocated memory to zero.
         /// </summary>
         /// <remarks>
-        /// This method has the same behavior as <see cref="Unsafe.InitBlockUnaligned(void*, byte, uint)"/> but
+        /// This method has the same behavior as <see cref="Unsafe.InitBlockUnaligned(ref byte,byte,uint)"/> but
         /// without restriction on <see cref="uint"/> data type for the length of the memory block.
         /// </remarks>
         /// <param name="ptr">The pointer to the memory to be cleared.</param>

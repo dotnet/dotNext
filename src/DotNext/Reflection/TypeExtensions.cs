@@ -9,22 +9,47 @@ namespace DotNext.Reflection
     /// </summary>
     public static class TypeExtensions
     {
+        private const string IsUnmanagedAttributeName = "System.Runtime.CompilerServices.IsUnmanagedAttribute";
+        //TODO: should be removed in .NET Standard 2.1
+        private const string IsReadOnlyAttributeName = "System.Runtime.CompilerServices.IsReadOnlyAttribute";
+
         private static bool IsGenericParameter(Type type)
         {
             if (type.IsByRef || type.IsArray)
                 type = type.GetElementType();
-            return type.IsGenericParameter;
+            return type?.IsGenericParameter ?? false;
+        }
+
+        /// <summary>
+        /// Determines whether the type is read-only (immutable) value type.
+        /// </summary>
+        /// <param name="type">The type to inspect.</param>
+        /// <returns><see langword="true"/>, if the specified type is immutable value type; otherwise, <see langword="false"/>.</returns>
+        public static bool IsImmutable(this Type type)
+        {
+            if(type.IsPrimitive)
+                return true;
+            else if(type.IsValueType)
+                foreach(var attribute in type.GetCustomAttributesData())
+                    if(attribute.AttributeType.FullName == IsReadOnlyAttributeName)
+                        return true;
+            return false;
         }
 
         /// <summary>
         /// Determines whether the type is unmanaged value type.
         /// </summary>
-        /// <param name="type">The type to be checked.</param>
+        /// <param name="type">The type to inspect.</param>
         /// <returns><see langword="true"/>, if the specified type is unmanaged value type; otherwise, <see langword="false"/>.</returns>
         public static bool IsUnmanaged(this Type type)
         {
             if (type.IsGenericType || type.IsGenericTypeDefinition || type.IsGenericParameter)
+            {
+                foreach(var attribute in type.GetCustomAttributesData())
+                    if(attribute.AttributeType.FullName == IsUnmanagedAttributeName)
+                        return true;
                 return false;
+            }
             else if (type.IsPrimitive || type.IsPointer || type.IsEnum)
                 return true;
             else if (type.IsValueType)
@@ -44,9 +69,9 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="type">The type to be discovered.</param>
         /// <param name="includeTopLevel"><see langword="true"/> to return <paramref name="type"/> as first element in the collection.</param>
-        /// <param name="includeInterfaces"><see langword="true"/> to include implemented interfaces; <see langword="false"/> to return inheriance hierarchy only.</param>
+        /// <param name="includeInterfaces"><see langword="true"/> to include implemented interfaces; <see langword="false"/> to return inheritance hierarchy only.</param>
         /// <returns>Read-only collection of base types and, optionally, all implemented interfaces.</returns>
-        public static IEnumerable<Type> GetBaseTypes(this Type type, bool includeTopLevel = false, bool includeInterfaces = true)
+        public static IEnumerable<Type> GetBaseTypes(this Type type, bool includeTopLevel = false, bool includeInterfaces = false)
         {
             for (var lookup = includeTopLevel ? type : type.BaseType; !(lookup is null); lookup = lookup.BaseType)
                 yield return lookup;
@@ -72,18 +97,15 @@ namespace DotNext.Reflection
             foreach (var method in type.GetMethods(flags))
                 if (method.Name == methodName && method.GetGenericArguments().LongLength == genericParamCount)
                 {
-                    var success = false;
+                    bool success;
                     //check signature
                     var actualParams = method.GetParameterTypes();
                     if (success = (actualParams.LongLength == parameters.LongLength))
-                        for (var i = 0L; i < actualParams.LongLength; i++)
+                        for (var i = 0L; success && i < actualParams.LongLength; i++)
                         {
                             var actual = actualParams[i];
                             var expected = parameters[i];
-                            if (success = ((IsGenericParameter(actual) && expected is null) || actual == expected))
-                                continue;
-                            else
-                                break;
+                            success = IsGenericParameter(actual) && expected is null || actual == expected;
                         }
                     if (success)
                         return method;
@@ -198,7 +220,7 @@ namespace DotNext.Reflection
         }
 
         /// <summary>
-        /// Indicates that object of one type can be implicitly converted into another whithout boxing.
+        /// Indicates that object of one type can be implicitly converted into another without boxing.
         /// </summary>
         /// <param name="to">Type of conversion result.</param>
         /// <param name="from">The type check.</param>

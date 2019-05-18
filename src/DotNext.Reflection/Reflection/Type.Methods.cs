@@ -1,5 +1,5 @@
 using System;
-using System.Reflection;
+using Missing = System.Reflection.Missing;
 
 namespace DotNext.Reflection
 {
@@ -158,31 +158,6 @@ namespace DotNext.Reflection
         /// </summary>
         public static class Method
         {
-            private sealed class InstanceMethods<D> : MemberCache<MethodInfo, Reflection.Method<D>>
-                where D : MulticastDelegate
-            {
-                internal static readonly InstanceMethods<D> Public = new InstanceMethods<D>(false);
-                internal static readonly InstanceMethods<D> NonPublic = new InstanceMethods<D>(true);
-
-                private readonly bool nonPublic;
-                private InstanceMethods(bool nonPublic) => this.nonPublic = nonPublic;
-
-                private protected override Reflection.Method<D> Create(string methodName)
-                    => Reflection.Method<D>.Reflect(methodName, nonPublic);
-            }
-
-            private sealed class StaticMethods<D> : MemberCache<MethodInfo, Reflection.Method<D>>
-                where D : MulticastDelegate
-            {
-                internal static readonly StaticMethods<D> Public = new StaticMethods<D>(false);
-                internal static readonly StaticMethods<D> NonPublic = new StaticMethods<D>(true);
-                private readonly bool nonPublic;
-                private StaticMethods(bool nonPublic) => this.nonPublic = nonPublic;
-
-                private protected override Reflection.Method<D> Create(string methodName)
-                    => Reflection.Method<D>.Reflect<T>(methodName, nonPublic);
-            }
-
             /// <summary>
             /// Reflects class method.
             /// </summary>
@@ -199,21 +174,7 @@ namespace DotNext.Reflection
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
             public static Reflection.Method<D> Get<D>(string methodName, MethodLookup methodType, bool nonPublic = false)
                 where D : MulticastDelegate
-            {
-                MemberCache<MethodInfo, Reflection.Method<D>> cache;
-                switch (methodType)
-                {
-                    case MethodLookup.Static:
-                        cache = nonPublic ? StaticMethods<D>.NonPublic : StaticMethods<D>.Public;
-                        break;
-                    case MethodLookup.Instance:
-                        cache = nonPublic ? InstanceMethods<D>.NonPublic : InstanceMethods<D>.Public;
-                        break;
-                    default:
-                        return null;
-                }
-                return cache.GetOrCreate(methodName);
-            }
+                => Reflection.Method<D>.GetOrCreate<T>(methodName, nonPublic, methodType);
 
             /// <summary>
             /// Reflects class method.

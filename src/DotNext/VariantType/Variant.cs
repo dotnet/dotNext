@@ -36,7 +36,7 @@ namespace DotNext.VariantType
         /// <summary>
         /// Indicates that this container stores non-<see langword="null"/> value.
         /// </summary>
-        public bool IsPresent => !(Value is null);
+        public bool IsNull => Value is null;
 
         object IVariant.Value => Value;
 
@@ -241,7 +241,7 @@ namespace DotNext.VariantType
         /// <summary>
         /// Indicates that this container stores non-<see langword="null"/> value.
         /// </summary>
-        public bool IsPresent => !(Value is null);
+        public bool IsNull => Value is null;
 
         /// <summary>
         /// Change order of type parameters.
@@ -427,7 +427,7 @@ namespace DotNext.VariantType
         /// <summary>
         /// Indicates that this container stores non-<see langword="null"/> value.
         /// </summary>
-        public bool IsPresent => !(Value is null);
+        public bool IsNull => Value is null;
 
         /// <summary>
         /// Change order of type parameters.

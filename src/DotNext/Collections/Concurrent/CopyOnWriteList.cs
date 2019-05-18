@@ -9,7 +9,7 @@ namespace DotNext.Collections.Concurrent
     /// A thread-safe variant of <see cref="List{T}"/> in which all mutative operations are implemented by making a snapshot copy of the underlying array. 
     /// </summary>
     /// <remarks>
-    /// This list is perfrect for scenarios when reads are frequent and concurrent but writes not. Read operation never cause synchronization of the list.
+    /// This list is perfect for scenarios when reads are frequent and concurrent but writes not. Read operation never cause synchronization of the list.
     /// The enumerator doesn't track additions, removals or changes in the list since enumerator was created. As a result, dirty reads are possible.
     /// </remarks>
     /// <typeparam name="T">The type of elements held in this collection.</typeparam>

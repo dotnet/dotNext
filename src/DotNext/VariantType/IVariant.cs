@@ -5,7 +5,7 @@ namespace DotNext.VariantType
     /// <summary>
     /// A root interface for all variant data containers.
     /// </summary>
-    public interface IVariant : IDynamicMetaObjectProvider, IOptional
+    public interface IVariant : IDynamicMetaObjectProvider
     {
         /// <summary>
         /// Gets value stored in the container.

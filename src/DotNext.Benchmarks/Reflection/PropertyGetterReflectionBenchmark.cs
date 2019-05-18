@@ -33,8 +33,6 @@ namespace DotNext.Reflection
         private static readonly MemberGetter<IndexOfCalculator, int> StaticallyReflected = Type<IndexOfCalculator>.Property<int>.RequireGetter(nameof(IndexOfCalculator.IndexOf));
         
         private static readonly Function<object, ValueTuple, object> UntypedReflected = ReflectedGetter.Unreflect<Function<object, ValueTuple, object>>();
-        
-        private static readonly object ExpectedIndex = 11;
 
         private static void DummyReceiver(object first)
         {

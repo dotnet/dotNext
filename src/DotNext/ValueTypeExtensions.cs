@@ -36,41 +36,41 @@ namespace DotNext
         internal static TypeCode GetTypeCode<T>() where T : struct, IConvertible => new T().GetTypeCode();
 
         /// <summary>
-        /// Obtain a value of type <typeparamref name="TO"/> by 
-        /// reinterpreting the object representation of <typeparamref name="FROM"/>.
+        /// Obtain a value of type <typeparamref name="To"/> by 
+        /// reinterpreting the object representation of <typeparamref name="From"/>.
         /// </summary>
         /// <param name="input">A value to convert.</param>
         /// <param name="output">Conversion result.</param>
-        /// <typeparam name="FROM">The type of input struct.</typeparam>
-        /// <typeparam name="TO">The type of output struct.</typeparam>
-        /// <seealso cref="ValueType{T}.BitCast{TO}(in T, out TO)"/>
+        /// <typeparam name="From">The type of input struct.</typeparam>
+        /// <typeparam name="To">The type of output struct.</typeparam>
+        /// <seealso cref="ValueType{T}.Bitcast{To}"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void BitCast<FROM, TO>(this FROM input, out TO output)
-            where FROM : unmanaged
-            where TO : unmanaged
-            => ValueType<FROM>.BitCast(in input, out output);
+        public static void Bitcast<From, To>(this From input, out To output)
+            where From : unmanaged
+            where To : unmanaged
+            => ValueType<From>.Bitcast(in input, out output);
 
         /// <summary>
-        /// Obtain a value of type <typeparamref name="TO"/> by 
-        /// reinterpreting the object representation of <typeparamref name="FROM"/>. 
+        /// Obtain a value of type <typeparamref name="To"/> by 
+        /// reinterpreting the object representation of <typeparamref name="From"/>. 
         /// </summary>
         /// <remarks>
-        /// Every bit in the value representation of the returned <typeparamref name="TO"/> object 
-        /// is equal to the corresponding bit in the object representation of <typeparamref name="FROM"/>. 
-        /// The values of padding bits in the returned <typeparamref name="TO"/> object are unspecified. 
-        /// The method takes into account size of <typeparamref name="FROM"/> and <typeparamref name="TO"/> types
+        /// Every bit in the value representation of the returned <typeparamref name="To"/> object 
+        /// is equal to the corresponding bit in the object representation of <typeparamref name="From"/>. 
+        /// The values of padding bits in the returned <typeparamref name="To"/> object are unspecified. 
+        /// The method takes into account size of <typeparamref name="From"/> and <typeparamref name="To"/> types
         /// and able to provide conversion between types of different size.
         /// </remarks>
         /// <param name="input">A value to convert.</param>
-        /// <typeparam name="FROM">The type of input struct.</typeparam>
-        /// <typeparam name="TO">The type of output struct.</typeparam>
+        /// <typeparam name="From">The type of input struct.</typeparam>
+        /// <typeparam name="To">The type of output struct.</typeparam>
         /// <returns>Conversion result.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TO BitCast<FROM, TO>(this FROM input)
-            where FROM : unmanaged
-            where TO : unmanaged
+        public static To Bitcast<From, To>(this From input)
+            where From : unmanaged
+            where To : unmanaged
         {
-            ValueType<FROM>.BitCast<TO>(in input, out var output);
+            ValueType<From>.Bitcast<To>(in input, out var output);
             return output;
         }
 

@@ -5,7 +5,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<Version>0.9.0</Version>
+	<Version>0.10.0</Version>
 	<Authors>Roman Sakno</Authors>
 	<Product>.NEXT Family of Libraries</Product>
 	<Description>Strongly typed reflection, concept types (type classes), fast reflection</Description>
@@ -16,7 +16,7 @@
 	<RepositoryType>git</RepositoryType>
 	<PackageTags>Concept;Reflection;Typeclass</PackageTags>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Improved Awaitable and Awaiter concept types</PackageReleaseNotes>
+	<PackageReleaseNotes>Optimized caching subsystem for reflected program elements</PackageReleaseNotes>
   </PropertyGroup>
 
 
@@ -37,7 +37,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.2" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.9.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.10.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
   <ItemGroup>

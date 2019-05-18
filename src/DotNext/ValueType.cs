@@ -174,28 +174,28 @@ namespace DotNext
                     Size.CompareTo(ValueType<U>.Size);
 
         /// <summary>
-        /// Obtain a value of type <typeparamref name="TO"/> by 
+        /// Obtain a value of type <typeparamref name="To"/> by 
         /// reinterpreting the object representation of <typeparamref name="T"/>. 
         /// </summary>
         /// <remarks>
-        /// Every bit in the value representation of the returned <typeparamref name="TO"/> object 
+        /// Every bit in the value representation of the returned <typeparamref name="To"/> object 
         /// is equal to the corresponding bit in the object representation of <typeparamref name="T"/>. 
-        /// The values of padding bits in the returned <typeparamref name="TO"/> object are unspecified. 
-        /// The method takes into account size of <typeparamref name="T"/> and <typeparamref name="TO"/> types
+        /// The values of padding bits in the returned <typeparamref name="To"/> object are unspecified. 
+        /// The method takes into account size of <typeparamref name="T"/> and <typeparamref name="To"/> types
         /// and able to provide conversion between types of different size.
         /// </remarks>
         /// <param name="input">A value to convert.</param>
         /// <param name="output">Conversion result.</param>
-        /// <typeparam name="TO">The type of output struct.</typeparam>
-        public static void BitCast<TO>(in T input, out TO output)
-            where TO : unmanaged
+        /// <typeparam name="To">The type of output struct.</typeparam>
+        public static void Bitcast<To>(in T input, out To output)
+            where To : unmanaged
         {
-            if (Size >= ValueType<TO>.Size)
-                output = Unsafe.As<T, TO>(ref Unsafe.AsRef(in input));
+            if (Size >= ValueType<To>.Size)
+                output = Unsafe.As<T, To>(ref Unsafe.AsRef(in input));
             else
             {
                 output = default;
-                Unsafe.As<TO, T>(ref output) = input;
+                Unsafe.As<To, T>(ref output) = input;
             }
         }
 
@@ -211,7 +211,7 @@ namespace DotNext
         /// <summary>
         /// Gets pinnable reference to the boxed value.
         /// </summary>
-        /// <returns>Pinnnable reference.</returns>
+        /// <returns>Pinnable reference.</returns>
         public ref T GetPinnableReference() => ref Value;
 
         /// <summary>

@@ -26,11 +26,11 @@ namespace DotNext.Threading
 
                 bool ILockManager<State, WriteLockNode>.CheckState(ref State state)
                 {
-                    if (state.writeLock || state.readLocks > 1L)
+                    if (state.WriteLock || state.ReadLocks > 1L)
                         return false;
-                    else if (state.readLocks == 0L || state.readLocks == 1L && state.upgreadable)    //no readers or single upgradeable read lock
+                    else if (state.ReadLocks == 0L || state.ReadLocks == 1L && state.Upgradeable)    //no readers or single upgradeable read lock
                     {
-                        state.writeLock = true;
+                        state.WriteLock = true;
                         return true;
                     }
                     else
@@ -50,11 +50,11 @@ namespace DotNext.Threading
 
                 bool ILockManager<State, ReadLockNode>.CheckState(ref State state)
                 {
-                    if (state.writeLock)
+                    if (state.WriteLock)
                         return false;
                     else
                     {
-                        state.readLocks++;
+                        state.ReadLocks++;
                         return true;
                     }
                 }
@@ -66,12 +66,12 @@ namespace DotNext.Threading
 
                 bool ILockManager<State, ReadLockNode>.CheckState(ref State state)
                 {
-                    if (state.writeLock || state.upgreadable)
+                    if (state.WriteLock || state.Upgradeable)
                         return false;
                     else
                     {
-                        state.readLocks++;
-                        state.upgreadable = true;
+                        state.ReadLocks++;
+                        state.Upgradeable = true;
                         return true;
                     }
                 }
@@ -95,15 +95,15 @@ namespace DotNext.Threading
         //describes internal state of reader/writer lock
         private struct State
         {
-            internal long readLocks;
+            internal long ReadLocks;
             /*
              * writeLock = false, upgradeable = false: regular read lock
              * writeLock = true,  upgradeable = true : regular write lock
              * writeLock = false, upgradeable = true : upgradeable read lock
              * writeLock = true,  upgradeable = true : upgraded write lock
              */
-            internal volatile bool writeLock;
-            internal volatile bool upgreadable;
+            internal volatile bool WriteLock;
+            internal volatile bool Upgradeable;
         }
 
         private State state;
@@ -111,7 +111,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Gets the total number of unique readers.
         /// </summary>
-        public long CurrentReadCount => AtomicInt64.VolatileRead(ref state.readLocks);
+        public long CurrentReadCount => AtomicInt64.VolatileRead(ref state.ReadLocks);
 
         /// <summary>
         /// Gets a value that indicates whether the read lock taken.
@@ -121,12 +121,12 @@ namespace DotNext.Threading
         /// <summary>
         /// Gets a value that indicates whether the current upgradeable read lock taken.
         /// </summary>
-        public bool IsUpgradeableReadLockHeld => state.upgreadable && !state.writeLock;
+        public bool IsUpgradeableReadLockHeld => state.Upgradeable && !state.WriteLock;
 
         /// <summary>
         /// Gets a value that indicates whether the write lock taken.
         /// </summary>
-        public bool IsWriteLockHeld => state.writeLock;
+        public bool IsWriteLockHeld => state.WriteLock;
 
         /// <summary>
         /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -250,13 +250,13 @@ namespace DotNext.Threading
                     next = readLock.Next;
                     //remove all read locks and leave upgradeable read locks until first write lock
                     if (readLock.Upgradeable)
-                        if (state.upgreadable)    //already in upgradeable lock, leave the current node alive
+                        if (state.Upgradeable)    //already in upgradeable lock, leave the current node alive
                             continue;
                         else
-                            state.upgreadable = true;    //enter upgradeable read lock
+                            state.Upgradeable = true;    //enter upgradeable read lock
                     RemoveNode(readLock);
                     readLock.Complete();
-                    state.readLocks += 1L;
+                    state.ReadLocks += 1L;
                 }
         }
 
@@ -273,14 +273,14 @@ namespace DotNext.Threading
         public void ExitUpgradeableReadLock()
         {
             ThrowIfDisposed();
-            if (state.writeLock || !state.upgreadable || state.readLocks == 0L)
+            if (state.WriteLock || !state.Upgradeable || state.ReadLocks == 0L)
                 throw new SynchronizationLockException(ExceptionMessages.NotInUpgradeableReadLock);
-            state.upgreadable = false;
-            if (--state.readLocks == 0L && head is WriteLockNode writeLock) //no more readers, write lock can be acquired
+            state.Upgradeable = false;
+            if (--state.ReadLocks == 0L && head is WriteLockNode writeLock) //no more readers, write lock can be acquired
             {
                 RemoveNode(writeLock);
                 writeLock.Complete();
-                state.writeLock = true;
+                state.WriteLock = true;
             }
             else
                 ProcessReadLocks();
@@ -299,7 +299,7 @@ namespace DotNext.Threading
         public void ExitWriteLock()
         {
             ThrowIfDisposed();
-            if (!state.writeLock)
+            if (!state.WriteLock)
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
             else if (head is WriteLockNode writeLock)
             {
@@ -307,7 +307,7 @@ namespace DotNext.Threading
                 writeLock.Complete();
                 return;
             }
-            state.writeLock = false;
+            state.WriteLock = false;
             ProcessReadLocks();
         }
 
@@ -324,13 +324,13 @@ namespace DotNext.Threading
         public void ExitReadLock()
         {
             ThrowIfDisposed();
-            if (state.writeLock || state.readLocks == 1L && state.upgreadable || state.readLocks == 0L)
+            if (state.WriteLock || state.ReadLocks == 1L && state.Upgradeable || state.ReadLocks == 0L)
                 throw new SynchronizationLockException(ExceptionMessages.NotInReadLock);
-            else if (--state.readLocks == 0L && head is WriteLockNode writeLock)
+            else if (--state.ReadLocks == 0L && head is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
                 writeLock.Complete();
-                state.writeLock = true;
+                state.WriteLock = true;
             }
         }
     }

@@ -856,7 +856,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="obj">The object to be converted into string.</param>
         /// <returns>The expression representing <c>ToString()</c> method call.</returns>
-        public static MethodCallExpression AsString(this Expression obj) => Call(obj, nameof(object.ToString));
+        public static MethodCallExpression AsString(this Expression obj) => Call(obj, nameof(ToString));
 
         /// <summary>
         /// Constructs loop statement.
@@ -1060,7 +1060,7 @@ namespace DotNext.Linq.Expressions
             else if (expression is BlockExpression block)
                 return Expression.Block(inferType ? block.Type : typeof(void), block.Variables, instructions.Concat(block.Expressions));
             else
-                return Expression.Block(inferType ? expression.Type : typeof(void), instructions.Concat(Sequence.Singleton(expression)));
+                return Expression.Block(inferType ? expression.Type : typeof(void), instructions.Append(expression));
         }
 
         internal static Expression AddEpilogue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)
@@ -1070,7 +1070,7 @@ namespace DotNext.Linq.Expressions
             else if (expression is BlockExpression block)
                 return Expression.Block(inferType ? block.Type : typeof(void), block.Variables, block.Expressions.Concat(instructions));
             else
-                return Expression.Block(inferType ? instructions.Last().Type : typeof(void), Sequence.Singleton(expression).Concat(instructions));
+                return Expression.Block(inferType ? instructions.Last().Type : typeof(void), instructions.Prepend(expression));
         }
 
         internal static Expression AddPrologue(this Expression expression, bool inferType, params Expression[] instructions)
@@ -1085,7 +1085,7 @@ namespace DotNext.Linq.Expressions
         /// <remarks>
         /// The equivalent code is <c>new T()</c>.
         /// </remarks>
-        /// <param name="type">The expression representung the type to be instantiated.</param>
+        /// <param name="type">The expression representing the type to be instantiated.</param>
         /// <param name="args">The list of arguments to be passed into constructor.</param>
         /// <returns>Instantiation expression.</returns>
         public static MethodCallExpression New(this Expression type, params Expression[] args)

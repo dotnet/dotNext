@@ -238,6 +238,10 @@ namespace DotNext.Reflection
     /// <typeparam name="V">Type of field value.</typeparam>
     public sealed class Field<T, V> : FieldBase<V>, IField<T, V>
     {
+        private sealed class Cache : MemberCache<FieldInfo, Field<T, V>>
+        {
+            private protected override Field<T, V> Create(string fieldName, bool nonPublic) => Reflect(fieldName, nonPublic);
+        }
         private const BindingFlags PubicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -248,6 +252,8 @@ namespace DotNext.Reflection
         private Field(FieldInfo field)
             : base(field)
         {
+            if (field.DeclaringType is null)
+                throw new ArgumentException(ExceptionMessages.ModuleMemberDetected(field), nameof(field));
             var instanceParam = Parameter(field.DeclaringType.MakeByRefType());
             var valueParam = Parameter(field.FieldType);
             getter = Lambda<MemberGetter<T, V>>(Field(instanceParam, field), instanceParam).Compile();
@@ -324,7 +330,7 @@ namespace DotNext.Reflection
         public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
         {
             if (IsInitOnly)
-                new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
+                throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
             else if (!(obj is T))
                 throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(obj, typeof(T)));
             else if (value is null)
@@ -347,17 +353,20 @@ namespace DotNext.Reflection
             set
             {
                 if (setter is null)
-                    new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
+                    throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
                 else
                     setter(@this, value);
             }
         }
 
-        internal static Field<T, V> Reflect(string fieldName, bool nonPublic)
+        private static Field<T, V> Reflect(string fieldName, bool nonPublic)
         {
             var field = typeof(T).GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
             return field is null ? null : new Field<T, V>(field);
         }
+
+        internal static Field<T, V> GetOrCreate(string fieldName, bool nonPublic)
+            => Cache.Of<Cache>(typeof(T)).GetOrCreate(fieldName, nonPublic);
     }
 
     /// <summary>
@@ -365,7 +374,11 @@ namespace DotNext.Reflection
     /// </summary>
     /// <typeparam name="V">Type of field value.</typeparam>
     public sealed class Field<V> : FieldBase<V>, IField<V>
-    {
+    {  
+        private sealed class Cache<T> : MemberCache<FieldInfo, Field<V>>
+        {
+            private protected override Field<V> Create(string fieldName, bool nonPublic) => Reflect(typeof(T), fieldName, nonPublic);
+        }
         private const BindingFlags PubicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -475,10 +488,13 @@ namespace DotNext.Reflection
             }
         }
 
-        internal static Field<V> Reflect<T>(string fieldName, bool nonPublic)
+        private static Field<V> Reflect(Type declaringType, string fieldName, bool nonPublic)
         {
-            var field = typeof(T).GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
+            var field = declaringType.GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
             return field is null ? null : new Field<V>(field);
         }
+
+        internal static Field<V> GetOrCreate<T>(string fieldName, bool nonPublic)
+            => Cache<T>.Of<Cache<T>>(typeof(T)).GetOrCreate(fieldName, nonPublic);
     }
 }

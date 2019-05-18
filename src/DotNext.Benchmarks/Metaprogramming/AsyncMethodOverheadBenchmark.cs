@@ -3,7 +3,6 @@ using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using System;
 using System.Threading.Tasks;
-using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {

@@ -498,7 +498,7 @@ namespace DotNext.Runtime.InteropServices
         /// another located in the memory represented by given unmanaged pointer.
         /// </summary>
         /// <param name="destination">The managed pointer which points to the destination memory block.</param>
-        public void WriteTo(ref T destination)
+        public void WriteTo(out T destination)
             => destination = Value;
 
         /// <summary>
@@ -641,7 +641,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Returns address of this memory in hexadecimal format.
         /// </summary>
-        /// <returns>The addres of this memory.</returns>
+        /// <returns>The address of this memory.</returns>
 		public override string ToString() => pointer.ToString();
 
         /// <summary>

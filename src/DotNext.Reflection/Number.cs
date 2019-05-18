@@ -137,7 +137,7 @@ namespace DotNext
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns><see langword="true"/>, if two numers are equal; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/>, if two numbers are equal; otherwise, <see langword="false"/>.</returns>
 		public static bool operator ==(Number<T> left, T right)
             => left.value.Equals(right);
 
@@ -146,7 +146,7 @@ namespace DotNext
         /// </summary>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
-        /// <returns><see langword="true"/>, if two numers are not equal; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/>, if two numbers are not equal; otherwise, <see langword="false"/>.</returns>
 		public static bool operator !=(Number<T> left, T right)
             => !left.value.Equals(right);
         
@@ -186,7 +186,7 @@ namespace DotNext
         /// Determines whether this number is equal to the specified number.
         /// </summary>
         /// <param name="other">The number to compare.</param>
-        /// <returns><see langword="true"/>, if two numers are equal; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/>, if two numbers are equal; otherwise, <see langword="false"/>.</returns>
 		public override bool Equals(object other)
         {
             switch (other)

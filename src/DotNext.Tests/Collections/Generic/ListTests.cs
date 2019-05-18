@@ -10,7 +10,7 @@ namespace DotNext.Collections.Generic
         {
             var list = new List<long>() { 10, 40, 100 };
             var array = list.ToArray(i => i.ToString());
-            True(array.SequenceEqual(new string[] { "10", "40", "100" }));
+            True(array.SequenceEqual(new[] { "10", "40", "100" }));
         }
     }
 }

@@ -14,8 +14,8 @@ namespace DotNext
 		public static void Bitcast()
 		{
 			var point = new Point{X = 40, Y = 100};
-			point.BitCast(out decimal dec);
-			dec.BitCast(out point);
+			point.Bitcast(out decimal dec);
+			dec.Bitcast(out point);
 			Equal(40, point.X);
 			Equal(100, point.Y);
 		}

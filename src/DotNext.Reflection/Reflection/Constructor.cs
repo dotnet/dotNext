@@ -14,37 +14,37 @@ namespace DotNext.Reflection
     public sealed class Constructor<D> : ConstructorInfo, IConstructor<D>, IEquatable<ConstructorInfo>
         where D : MulticastDelegate
     {
+        private static readonly UserDataSlot<Constructor<D>> CacheSlot = UserDataSlot<Constructor<D>>.Allocate();
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
 
         private readonly D invoker;
         private readonly ConstructorInfo ctor;
+        private readonly Type valueType;
 
         private Constructor(ConstructorInfo ctor, Expression<D> invoker)
         {
+            if (ctor.IsStatic || ctor.DeclaringType is null)
+                throw new ArgumentException(ExceptionMessages.StaticCtorDetected, nameof(ctor));
             this.ctor = ctor;
             this.invoker = invoker.Compile();
         }
 
-        private Constructor(ConstructorInfo ctor, Expression[] args, ParameterExpression[] parameters)
+        private Constructor(ConstructorInfo ctor, IEnumerable<Expression> args, IEnumerable<ParameterExpression> parameters)
+            : this(ctor, Expression.Lambda<D>(Expression.New(ctor, args), parameters))
         {
-            DeclaringType = ctor.DeclaringType;
-            this.ctor = ctor;
-            invoker = Expression.Lambda<D>(Expression.New(ctor, args), parameters).Compile();
         }
 
-        private Constructor(ConstructorInfo ctor, ParameterExpression[] parameters)
+        private Constructor(ConstructorInfo ctor, IEnumerable<ParameterExpression> parameters)
             : this(ctor, parameters, parameters)
         {
         }
 
-        private Constructor(Type valueType, ParameterExpression[] parameters)
+        private Constructor(Type valueType, IEnumerable<ParameterExpression> parameters)
         {
-            DeclaringType = valueType;
+            this.valueType = valueType;
             invoker = Expression.Lambda<D>(Expression.Default(valueType), parameters).Compile();
         }
-
-        internal Constructor<D> OfType<T>() => DeclaringType == typeof(T) ? this : null;
 
         /// <summary>
         /// Extracts delegate which can be used to invoke this constructor.
@@ -55,7 +55,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets name of the constructor.
         /// </summary>
-        public override string Name => ctor?.Name ?? ".ctor";
+        public override string Name => ConstructorName;
 
         ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctor;
 
@@ -74,7 +74,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the class that declares this constructor.
         /// </summary>
-        public override Type DeclaringType { get; }
+        public override Type DeclaringType => ctor?.DeclaringType ?? valueType;
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance.
@@ -160,7 +160,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the module in which the type that declares the constructor represented by the current instance is defined.
         /// </summary>
-        public override Module Module => ctor is null ? DeclaringType.Module : ctor.Module;
+        public override Module Module => DeclaringType.Module;
 
         /// <summary>
         /// Invokes this constructor.
@@ -260,7 +260,7 @@ namespace DotNext.Reflection
         /// Computes hash code uniquely identifies the reflected constructor.
         /// </summary>
         /// <returns>The hash code of the constructor.</returns>
-        public override int GetHashCode() => ctor is null ? DeclaringType.GetHashCode() : ctor.GetHashCode();
+        public override int GetHashCode() => DeclaringType.GetHashCode();
 
         private static Constructor<D> Reflect(Type declaringType, Type[] parameters, bool nonPublic)
         {
@@ -284,7 +284,7 @@ namespace DotNext.Reflection
             return ctor is null ? null : new Constructor<D>(ctor, arglist, new[] { input });
         }
 
-        internal static Constructor<D> Reflect(bool nonPublic)
+        private static Constructor<D> Reflect(bool nonPublic)
         {
             var delegateType = typeof(D);
             if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType) == 2L)
@@ -297,7 +297,6 @@ namespace DotNext.Reflection
                 return Reflect(returnType, parameters, nonPublic);
             }
         }
-
         private static Constructor<D> Unreflect(ConstructorInfo ctor, Type argumentsType, Type returnType)
         {
             var (_, arglist, input) = Signature.Reflect(argumentsType);
@@ -329,7 +328,7 @@ namespace DotNext.Reflection
             return new Constructor<D>(ctor, Expression.Lambda<D>(body, input));
         }
 
-        internal static Constructor<D> Unreflect(ConstructorInfo ctor)
+        private static Constructor<D> Unreflect(ConstructorInfo ctor)
         {
             var delegateType = typeof(D);
             if (delegateType.IsAbstract)
@@ -347,6 +346,16 @@ namespace DotNext.Reflection
                     new Constructor<D>(ctor, Array.ConvertAll(ctor.GetParameterTypes(), Expression.Parameter)) :
                     null;
             }
+        }
+
+        internal static Constructor<D> GetOrCreate(ConstructorInfo ctor)
+            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, Unreflect);
+        
+        internal static Constructor<D> GetOrCreate<T>(bool nonPublic)
+        {
+            var type = typeof(T);
+            var ctor = type.GetUserData().GetOrSet(CacheSlot, nonPublic, Reflect);
+            return ctor?.DeclaringType == type ? ctor : null;
         }
     }
 }

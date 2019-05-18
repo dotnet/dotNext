@@ -28,15 +28,7 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Gets this lambda expression suitable for recursive call.
         /// </summary>
-        internal override Expression Self
-        {
-            get
-            {
-                if (recursion is null)
-                    recursion = Expression.Variable(typeof(D), "self");
-                return recursion;
-            }
-        }
+        internal override Expression Self => recursion ?? (recursion = Expression.Variable(typeof(D), "self"));
 
         /// <summary>
         /// The list lambda function parameters.

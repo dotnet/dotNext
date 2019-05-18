@@ -30,7 +30,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Initializes a new asynchronous reset event in the specified state.
         /// </summary>
-        /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to nonsignaled.</param>
+        /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
         public AsyncAutoResetEvent(bool initialState)
         {
             signaled = initialState;
@@ -42,7 +42,7 @@ namespace DotNext.Threading
         public bool IsSet => signaled;
 
         /// <summary>
-        /// Sets the state of this event to nonsignaled, causing consumers to wait asynchronously.
+        /// Sets the state of this event to non signaled, causing consumers to wait asynchronously.
         /// </summary>
         /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>

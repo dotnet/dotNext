@@ -59,7 +59,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Returns address of this memory in hexadecimal format.
         /// </summary>
-        /// <returns>The addres of this memory.</returns>
+        /// <returns>The address of this memory.</returns>
         public override string ToString() => handle.ToString("X");
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="first">The first unmanaged memory handle.</param>
         /// <param name="second">The second unmanaged memory handle.</param>
-        /// <returns><see langword="true"/>, if both handles point to the differemt blocks of unmanaged memory; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/>, if both handles point to the different blocks of unmanaged memory; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(UnmanagedMemoryHandle first, UnmanagedMemoryHandle second) => first is null || !first.Equals(second);
     }
 

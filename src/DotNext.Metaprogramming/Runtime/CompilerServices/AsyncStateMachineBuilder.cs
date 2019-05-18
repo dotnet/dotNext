@@ -26,7 +26,7 @@ namespace DotNext.Runtime.CompilerServices
         private sealed class VariableEqualityComparer : IEqualityComparer<ParameterExpression>
         {
             public bool Equals(ParameterExpression x, ParameterExpression y)
-                => AwaitExpression.IsAwaiterHolder(x) && AwaitExpression.IsAwaiterHolder(y) ? x.Type == y.Type : object.Equals(x, y);
+                => AwaitExpression.IsAwaiterHolder(x) && AwaitExpression.IsAwaiterHolder(y) ? x?.Type == y?.Type : object.Equals(x, y);
 
             public int GetHashCode(ParameterExpression variable)
                 => AwaitExpression.IsAwaiterHolder(variable) ? variable.Type.GetHashCode() : variable.GetHashCode();
@@ -112,8 +112,8 @@ namespace DotNext.Runtime.CompilerServices
                 var prologue = context.CurrentStatement.PrologueCodeInserter();
                 {
                     var result = context.Rewrite(node, base.VisitConditional);
-                    if (result is ConditionalExpression)
-                        node = (ConditionalExpression)result;
+                    if (result is ConditionalExpression conditional)
+                        node = conditional;
                     else
                         return result;
                 }
@@ -268,8 +268,8 @@ namespace DotNext.Runtime.CompilerServices
         {
             var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
             var newNode = base.VisitBinary(node);
-            if (newNode is BinaryExpression)
-                node = (BinaryExpression)newNode;
+            if (newNode is BinaryExpression binary)
+                node = binary;
             else
                 return newNode;
             //do not place left operand at statement level because it has no side effects
@@ -284,10 +284,10 @@ namespace DotNext.Runtime.CompilerServices
                     Method() + await a;
                     --transformed into--
                     state.field = Method();
-                    state.awaitor = a.GetAwaitor();
-                    MoveNext(state.awaitor, newState);
+                    state.awaiter = a.GetAwaiter();
+                    MoveNext(state.awaiter, newState);
                     return;
-                    newState: state.field + state.awaitor.GetResult();
+                    newState: state.field + state.awaiter.GetResult();
                  */
                 var leftTemp = NewStateSlot(node.Left.Type);
                 codeInsertionPoint(Expression.Assign(leftTemp, node.Left));
@@ -310,8 +310,8 @@ namespace DotNext.Runtime.CompilerServices
         {
             var codeInsertionPoint = context.CurrentStatement.PrologueCodeInserter();
             var newNode = visitor(node);
-            if (newNode is E)
-                node = (E)newNode;
+            if (newNode is E typedExpr)
+                node = typedExpr;
             else
                 return newNode;
             var hasAwait = false;
@@ -409,10 +409,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         private Expression Rewrite(Statement body)
-        {
-            var result = Visit(body).Reduce();
-            return result.AddPrologue(false, MakeSwitch()).AddEpilogue(false, AsyncMethodEnd.LandingSite());
-        }
+            => Visit(body)?.Reduce().AddPrologue(false, MakeSwitch()).AddEpilogue(false, AsyncMethodEnd.LandingSite());
 
         internal Expression Rewrite(Expression body)
             => Rewrite(body is BlockExpression block ?
@@ -476,7 +473,8 @@ namespace DotNext.Runtime.CompilerServices
             MemberExpression[] slots;
             using (var builder = new ValueTupleBuilder())
             {
-                variables.ForEach(variable => builder.Add(variable.Type));
+                foreach(var v in variables)
+                    builder.Add(v.Type);
                 slots = builder.Build(MakeStateHolder, out _);
             }
             stateMachine = sm;
@@ -492,7 +490,7 @@ namespace DotNext.Runtime.CompilerServices
             return stateMachine;
         }
 
-        //replace local vairables with appropriate state fields
+        //replace local variables with appropriate state fields
         protected override Expression VisitParameter(ParameterExpression node)
         {
             if (methodBuilder.Variables.TryGetValue(node, out var stateSlot))
