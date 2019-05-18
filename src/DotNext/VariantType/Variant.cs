@@ -43,12 +43,12 @@ namespace DotNext.VariantType
         /// <summary>
         /// Interprets stored value as <typeparamref name="T1"/>.
         /// </summary>
-        public Optional<T1> First => (Value as T1).EmptyIfNull();
+        public Optional<T1> First => Value as T1;
 
         /// <summary>
         /// Interprets stored value as <typeparamref name="T2"/>.
         /// </summary>
-        public Optional<T2> Second => (Value as T2).EmptyIfNull();
+        public Optional<T2> Second => Value as T2;
 
         /// <summary>
         /// Converts the stored value.

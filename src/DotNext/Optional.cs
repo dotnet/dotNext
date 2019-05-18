@@ -93,7 +93,7 @@ namespace DotNext
         /// Indicates that specified type is optional type.
         /// </summary>
         /// <returns><see langword="true"/>, if specified type is optional type; otherwise, <see langword="false"/>.</returns>
-        public static bool IsOptional(Type optionalType) => optionalType.IsGenericInstanceOf(typeof(Optional<>));
+        public static bool IsOptional(this Type optionalType) => optionalType.IsGenericInstanceOf(typeof(Optional<>));
 
         /// <summary>
         /// Returns the underlying type argument of the specified optional type.
@@ -111,16 +111,6 @@ namespace DotNext
         public static Optional<T> ToOptional<T>(this in T? value)
             where T : struct
             => value ?? Optional<T>.Empty;
-
-        /// <summary>
-        /// Converts value of reference type into Optional value.
-        /// </summary>
-        /// <param name="value">The value to convert. May be <see langword="null"/>.</param>
-        /// <typeparam name="T">Type of object to convert.</typeparam>
-        /// <returns>A value converted into Optional container.</returns>
-        public static Optional<T> EmptyIfNull<T>(this T value)
-            where T : class
-            => value is null ? default : new Optional<T>(value);
 
         /// <summary>
         /// If a value is present, returns the value, otherwise null.
@@ -163,7 +153,7 @@ namespace DotNext
             if (targetType.IsOneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
                 type = byte.MaxValue;
             else if (targetType.IsValueType)
-                type = Nullable.GetUnderlyingType(targetType) is null && Optional.GetUnderlyingType(targetType) is null ? ValueType : NullableType;
+                type = Nullable.GetUnderlyingType(targetType) is null && !targetType.IsOptional() ? ValueType : NullableType;
             else
                 type = ReferenceType;
         }
