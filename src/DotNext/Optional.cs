@@ -153,7 +153,7 @@ namespace DotNext
             if (targetType.IsOneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
                 type = byte.MaxValue;
             else if (targetType.IsValueType)
-                type = Nullable.GetUnderlyingType(targetType) is null && !targetType.IsOptional() ? ValueType : NullableType;
+                type = targetType.IsGenericInstanceOf(typeof(Nullable<>)) || targetType.IsOptional() ? NullableType : ValueType;
             else
                 type = ReferenceType;
         }
