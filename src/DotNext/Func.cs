@@ -14,6 +14,43 @@ namespace DotNext
             internal static readonly Func<I, O> Value = Converter.Identity<I, O>;
         }
 
+        private static class IsNullFunc<T>
+            where T : class
+        {
+            internal static readonly Func<T, bool> Value = ObjectExtensions.IsNull;
+        }
+
+        private static class IsNotNullFunc<T>
+            where T : class
+        {
+            internal static readonly Func<T, bool> Value = ObjectExtensions.IsNotNull;
+        }
+
+        /// <summary>
+        /// Returns predicate implementing nullability check.
+        /// </summary>
+        /// <typeparam name="T">Type of predicate argument.</typeparam>
+        /// <returns>The predicate instance.</returns>
+        /// <remarks>
+        /// This method returns the same instance of predicate on every call.
+        /// </remarks>
+        public static Func<T, bool> IsNull<T>()
+            where T : class
+            => IsNullFunc<T>.Value;
+
+        /// <summary>
+        /// Returns predicate checking that input argument 
+        /// is not <see langword="null"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the predicate argument.</typeparam>
+        /// <returns>The predicate instance.</returns>
+        /// <remarks>
+        /// This method returns the same instance of predicate on every call.
+        /// </remarks>
+        public static Func<T, bool> IsNotNull<T>()
+            where T : class
+            => IsNotNullFunc<T>.Value;
+
         /// <summary>
         /// The function which returns input argument
         /// without any modifications.

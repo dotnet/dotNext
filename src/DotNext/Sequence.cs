@@ -155,7 +155,7 @@ namespace DotNext
         /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
         public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T> collection)
             where T : class
-            => collection.Where(ObjectExtensions.IsNotNull);
+            => collection.Where(Func.IsNotNull<T>());
 
         /// <summary>
         /// Concatenates each element from the collection into single string.
