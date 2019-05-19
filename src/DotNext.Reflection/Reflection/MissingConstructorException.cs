@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace DotNext.Reflection
 {
@@ -16,13 +16,13 @@ namespace DotNext.Reflection
 		public MissingConstructorException(Type target, params Type[] parameters)
 			: base(target, ExceptionMessages.MissingCtor(target, parameters))
 		{
-			Parameters = Array.AsReadOnly(parameters);
+			Parameters = parameters;
 		}
 
         /// <summary>
         /// An array of types representing constructor parameters.
         /// </summary>
-		public ReadOnlyCollection<Type> Parameters { get; }
+		public IReadOnlyList<Type> Parameters { get; }
 
 		internal static MissingConstructorException Create<D>()
 			where D: Delegate

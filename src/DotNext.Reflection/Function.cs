@@ -11,8 +11,7 @@ namespace DotNext
     /// <typeparam name="A">Type of structure with function arguments allocated on the stack.</typeparam>
     /// <typeparam name="R">Type of function return value.</typeparam>
     /// <returns>Function return value.</returns>
-    public delegate R Function<A, R>(in A arguments)
-        where A : struct;
+    public delegate R Function<A, out R>(in A arguments) where A : struct;
 
     /// <summary>
     /// Represents an instance function with arbitrary number of arguments
@@ -24,7 +23,7 @@ namespace DotNext
     /// <typeparam name="A">Type of structure with function arguments allocated on the stack.</typeparam>
     /// <typeparam name="R">Type of function return value.</typeparam>
     /// <returns>Function return value.</returns>
-    public delegate R Function<T, A, R>(in T @this, in A arguments);
+    public delegate R Function<T, A, out R>(in T @this, in A arguments) where A : struct;
 
     /// <summary>
     /// Provides extension methods for delegates <see cref="Function{A, R}"/> and <see cref="Function{T, A, R}"/>.

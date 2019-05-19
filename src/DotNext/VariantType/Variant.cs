@@ -17,38 +17,38 @@ namespace DotNext.VariantType
         where T1 : class
         where T2 : class
     {
-        private readonly object Value;
+        private readonly object value;
 
-        private Variant(object value) => Value = value;
+        private Variant(object value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T1"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-		public Variant(T1 value) => Value = value;
+		public Variant(T1 value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T2 value) => Value = value;
+        public Variant(T2 value) => this.value = value;
 
         /// <summary>
         /// Indicates that this container stores non-<see langword="null"/> value.
         /// </summary>
-        public bool IsPresent => !(Value is null);
+        public bool IsNull => value is null;
 
-        object IVariant.Value => Value;
+        object IVariant.Value => value;
 
         /// <summary>
         /// Interprets stored value as <typeparamref name="T1"/>.
         /// </summary>
-        public Optional<T1> First => (Value as T1).EmptyIfNull();
+        public Optional<T1> First => value as T1;
 
         /// <summary>
         /// Interprets stored value as <typeparamref name="T2"/>.
         /// </summary>
-        public Optional<T2> Second => (Value as T2).EmptyIfNull();
+        public Optional<T2> Second => value as T2;
 
         /// <summary>
         /// Converts the stored value.
@@ -59,7 +59,7 @@ namespace DotNext.VariantType
         /// <returns>Conversion result; or <see cref="Optional{T}.Empty"/> if stored value is <see langword="null"/>.</returns>
         public Optional<R> Convert<R>(Converter<T1, R> mapper1, Converter<T2, R> mapper2)
         {
-            switch (Value)
+            switch (value)
             {
                 case T1 first: return mapper1(first);
                 case T2 second: return mapper2(second);
@@ -79,7 +79,7 @@ namespace DotNext.VariantType
             where U1 : class
             where U2 : class
         {
-            switch (Value)
+            switch (value)
             {
                 case T1 first: return new Variant<U1, U2>(mapper1(first));
                 case T2 second: return new Variant<U1, U2>(mapper2(second));
@@ -91,7 +91,7 @@ namespace DotNext.VariantType
         /// Change order of type parameters.
         /// </summary>
         /// <returns>A copy of variant value with changed order of type parameters.</returns>
-        public Variant<T2, T1> Permute() => new Variant<T2, T1>(Value);
+        public Variant<T2, T1> Permute() => new Variant<T2, T1>(value);
 
         /// <summary>
         /// Converts value of type <typeparamref name="T1"/> into variant.
@@ -103,7 +103,7 @@ namespace DotNext.VariantType
         /// Converts variant value into type <typeparamref name="T1"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T1"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T1"/>.</param>
-        public static explicit operator T1(Variant<T1, T2> var) => var.Value as T1;
+        public static explicit operator T1(Variant<T1, T2> var) => var.value as T1;
 
         /// <summary>
         /// Converts value of type <typeparamref name="T2"/> into variant.
@@ -115,7 +115,7 @@ namespace DotNext.VariantType
         /// Converts variant value into type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T2"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T2"/>.</param>
-        public static explicit operator T2(Variant<T1, T2> var) => var.Value as T2;
+        public static explicit operator T2(Variant<T1, T2> var) => var.value as T2;
 
         /// <summary>
         /// Determines whether the value stored in this variant
@@ -131,7 +131,7 @@ namespace DotNext.VariantType
         /// </returns>
         public bool Equals<V>(V other)
             where V : IVariant
-            => Equals(Value, other.Value);
+            => Equals(value, other.Value);
 
         bool IEquatable<Variant<T1, T2>>.Equals(Variant<T1, T2> other) => Equals(other);
 
@@ -162,12 +162,12 @@ namespace DotNext.VariantType
         /// <summary>
         /// Indicates that variant value is non-<see langword="null"/> value.
         /// </summary>
-		public static bool operator true(Variant<T1, T2> variant) => !(variant.Value is null);
+		public static bool operator true(Variant<T1, T2> variant) => !(variant.value is null);
 
         /// <summary>
         /// Indicates that variant value is <see langword="null"/> value.
         /// </summary>
-		public static bool operator false(Variant<T1, T2> variant) => variant.Value is null;
+		public static bool operator false(Variant<T1, T2> variant) => variant.value is null;
 
         /// <summary>
         /// Provides textual representation of the stored value.
@@ -177,13 +177,13 @@ namespace DotNext.VariantType
         /// for the stored value.
         /// </remarks>
         /// <returns>The textual representation of the stored value.</returns>
-        public override string ToString() => Value?.ToString() ?? "";
+        public override string ToString() => value?.ToString() ?? "";
 
         /// <summary>
         /// Computes hash code for the stored value.
         /// </summary>
         /// <returns>The hash code of the stored value.</returns>
-        public override int GetHashCode() => Value is null ? 0 : Value.GetHashCode();
+        public override int GetHashCode() => value is null ? 0 : value.GetHashCode();
 
         /// <summary>
         /// Determines whether stored value is equal to the given value.
@@ -191,7 +191,7 @@ namespace DotNext.VariantType
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
-            => other is IVariant variant ? Equals(Value, variant.Value) : Equals(Value, other);
+            => other is IVariant variant ? Equals(value, variant.Value) : Equals(value, other);
 
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
             => new VariantImmutableMetaObject(parameter, this);
@@ -212,27 +212,27 @@ namespace DotNext.VariantType
         where T2 : class
         where T3 : class
     {
-        private readonly object Value;
+        private readonly object value;
 
-        private Variant(object value) => Value = value;
+        private Variant(object value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T1"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T1 value) => Value = value;
+        public Variant(T1 value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T2 value) => Value = value;
+        public Variant(T2 value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T3"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T3 value) => Value = value;
+        public Variant(T3 value) => this.value = value;
 
         private static Variant<T1, T2, T3> Create<V>(V variant)
             where V : struct, IVariant
@@ -241,15 +241,15 @@ namespace DotNext.VariantType
         /// <summary>
         /// Indicates that this container stores non-<see langword="null"/> value.
         /// </summary>
-        public bool IsPresent => !(Value is null);
+        public bool IsNull => value is null;
 
         /// <summary>
         /// Change order of type parameters.
         /// </summary>
         /// <returns>A copy of variant value with changed order of type parameters.</returns>
-        public Variant<T3, T1, T2> Permute() => new Variant<T3, T1, T2>(Value);
+        public Variant<T3, T1, T2> Permute() => new Variant<T3, T1, T2>(value);
 
-        object IVariant.Value => Value;
+        object IVariant.Value => value;
 
         /// <summary>
         /// Determines whether the value stored in this variant
@@ -265,7 +265,7 @@ namespace DotNext.VariantType
         /// </returns>
         public bool Equals<V>(V other)
             where V : IVariant
-            => Equals(Value, other.Value);
+            => Equals(value, other.Value);
 
         bool IEquatable<Variant<T1, T2, T3>>.Equals(Variant<T1, T2, T3> other) => Equals(other);
 
@@ -303,7 +303,7 @@ namespace DotNext.VariantType
         /// Converts variant value into type <typeparamref name="T1"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T1"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T1"/>.</param>
-        public static explicit operator T1(Variant<T1, T2, T3> var) => var.Value as T1;
+        public static explicit operator T1(Variant<T1, T2, T3> var) => var.value as T1;
 
         /// <summary>
         /// Converts value of type <typeparamref name="T2"/> into variant.
@@ -315,7 +315,7 @@ namespace DotNext.VariantType
         /// Converts variant value into type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T2"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T2"/>.</param>
-        public static explicit operator T2(Variant<T1, T2, T3> var) => var.Value as T2;
+        public static explicit operator T2(Variant<T1, T2, T3> var) => var.value as T2;
 
         /// <summary>
         /// Converts value of type <typeparamref name="T3"/> into variant.
@@ -327,7 +327,7 @@ namespace DotNext.VariantType
         /// Converts variant value into type <typeparamref name="T3"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T3"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T3"/>.</param>
-        public static explicit operator T3(Variant<T1, T2, T3> var) => var.Value as T3;
+        public static explicit operator T3(Variant<T1, T2, T3> var) => var.value as T3;
 
         /// <summary>
         /// Converts variant value of two possible types into variant value
@@ -340,12 +340,12 @@ namespace DotNext.VariantType
         /// <summary>
         /// Indicates that variant value is non-<see langword="null"/> value.
         /// </summary>
-		public static bool operator true(Variant<T1, T2, T3> variant) => !(variant.Value is null);
+		public static bool operator true(Variant<T1, T2, T3> variant) => !(variant.value is null);
 
         /// <summary>
         /// Indicates that variant value is <see langword="null"/> value.
         /// </summary>
-		public static bool operator false(Variant<T1, T2, T3> variant) => variant.Value is null;
+		public static bool operator false(Variant<T1, T2, T3> variant) => variant.value is null;
 
         /// <summary>
         /// Provides textual representation of the stored value.
@@ -355,13 +355,13 @@ namespace DotNext.VariantType
         /// for the stored value.
         /// </remarks>
         /// <returns>The textual representation of the stored value.</returns>
-        public override string ToString() => Value?.ToString() ?? "";
+        public override string ToString() => value?.ToString() ?? "";
 
         /// <summary>
         /// Computes hash code for the stored value.
         /// </summary>
         /// <returns>The hash code of the stored value.</returns>
-        public override int GetHashCode() => Value is null ? 0 : Value.GetHashCode();
+        public override int GetHashCode() => value is null ? 0 : value.GetHashCode();
 
         /// <summary>
         /// Determines whether stored value is equal to the given value.
@@ -369,7 +369,7 @@ namespace DotNext.VariantType
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
-            => other is IVariant variant ? Equals(Value, variant.Value) : Equals(Value, other);
+            => other is IVariant variant ? Equals(value, variant.Value) : Equals(value, other);
 
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
             => new VariantImmutableMetaObject(parameter, this);
@@ -392,33 +392,33 @@ namespace DotNext.VariantType
         where T3 : class
         where T4 : class
     {
-        private readonly object Value;
+        private readonly object value;
 
-        private Variant(object value) => Value = value;
+        private Variant(object value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T1"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T1 value) => Value = value;
+        public Variant(T1 value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T2 value) => Value = value;
+        public Variant(T2 value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T3"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T3 value) => Value = value;
+        public Variant(T3 value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T4"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T4 value) => Value = value;
+        public Variant(T4 value) => this.value = value;
 
         private static Variant<T1, T2, T3, T4> Create<V>(V variant)
             where V : struct, IVariant
@@ -427,15 +427,15 @@ namespace DotNext.VariantType
         /// <summary>
         /// Indicates that this container stores non-<see langword="null"/> value.
         /// </summary>
-        public bool IsPresent => !(Value is null);
+        public bool IsNull => value is null;
 
         /// <summary>
         /// Change order of type parameters.
         /// </summary>
         /// <returns>A copy of variant value with changed order of type parameters.</returns>
-        public Variant<T4, T1, T2, T3> Permute() => new Variant<T4, T1, T2, T3>(Value);
+        public Variant<T4, T1, T2, T3> Permute() => new Variant<T4, T1, T2, T3>(value);
 
-        object IVariant.Value => Value;
+        object IVariant.Value => value;
 
         /// <summary>
         /// Determines whether the value stored in this variant
@@ -451,9 +451,9 @@ namespace DotNext.VariantType
         /// </returns>
         public bool Equals<V>(V other)
             where V : IVariant
-            => Equals(Value, other.Value);
+            => Equals(value, other.Value);
 
-        bool IEquatable<Variant<T1, T2, T3, T4>>.Equals(Variant<T1, T2, T3, T4> other) => Equals(Value, other.Value);
+        bool IEquatable<Variant<T1, T2, T3, T4>>.Equals(Variant<T1, T2, T3, T4> other) => Equals(value, other.value);
 
         /// <summary>
         /// Determines whether the two variant values are equal.
@@ -489,7 +489,7 @@ namespace DotNext.VariantType
         /// Converts variant value into type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T1"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T1"/>.</param>
-        public static explicit operator T1(Variant<T1, T2, T3, T4> var) => var.Value as T1;
+        public static explicit operator T1(Variant<T1, T2, T3, T4> var) => var.value as T1;
 
         /// <summary>
         /// Converts value of type <typeparamref name="T2"/> into variant.
@@ -501,7 +501,7 @@ namespace DotNext.VariantType
         /// Converts variant value into type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T2"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T2"/>.</param>
-        public static explicit operator T2(Variant<T1, T2, T3, T4> var) => var.Value as T2;
+        public static explicit operator T2(Variant<T1, T2, T3, T4> var) => var.value as T2;
 
         /// <summary>
         /// Converts value of type <typeparamref name="T3"/> into variant.
@@ -513,7 +513,7 @@ namespace DotNext.VariantType
         /// Converts variant value into type <typeparamref name="T3"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T3"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T3"/>.</param>
-        public static explicit operator T3(Variant<T1, T2, T3, T4> var) => var.Value as T3;
+        public static explicit operator T3(Variant<T1, T2, T3, T4> var) => var.value as T3;
 
         /// <summary>
         /// Converts value of type <typeparamref name="T4"/> into variant.
@@ -525,7 +525,7 @@ namespace DotNext.VariantType
         /// Converts variant value into type <typeparamref name="T4"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T4"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T4"/>.</param>
-        public static explicit operator T4(Variant<T1, T2, T3, T4> var) => var.Value as T4;
+        public static explicit operator T4(Variant<T1, T2, T3, T4> var) => var.value as T4;
 
         /// <summary>
         /// Converts variant value of three possible types into variant value
@@ -546,12 +546,12 @@ namespace DotNext.VariantType
         /// <summary>
         /// Indicates that variant value is non-<see langword="null"/> value.
         /// </summary>
-        public static bool operator true(Variant<T1, T2, T3, T4> variant) => !(variant.Value is null);
+        public static bool operator true(Variant<T1, T2, T3, T4> variant) => !(variant.value is null);
 
         /// <summary>
         /// Indicates that variant value is <see langword="null"/> value.
         /// </summary>
-		public static bool operator false(Variant<T1, T2, T3, T4> variant) => variant.Value is null;
+		public static bool operator false(Variant<T1, T2, T3, T4> variant) => variant.value is null;
 
         /// <summary>
         /// Provides textual representation of the stored value.
@@ -561,13 +561,13 @@ namespace DotNext.VariantType
         /// for the stored value.
         /// </remarks>
         /// <returns>The textual representation of the stored value.</returns>
-        public override string ToString() => Value?.ToString() ?? "";
+        public override string ToString() => value?.ToString() ?? "";
 
         /// <summary>
         /// Computes hash code for the stored value.
         /// </summary>
         /// <returns>The hash code of the stored value.</returns>
-        public override int GetHashCode() => Value is null ? 0 : Value.GetHashCode();
+        public override int GetHashCode() => value is null ? 0 : value.GetHashCode();
 
         /// <summary>
         /// Determines whether stored value is equal to the given value.
@@ -575,7 +575,7 @@ namespace DotNext.VariantType
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
-            => other is IVariant variant ? Equals(Value, variant.Value) : Equals(Value, other);
+            => other is IVariant variant ? Equals(value, variant.Value) : Equals(value, other);
 
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
             => new VariantImmutableMetaObject(parameter, this);

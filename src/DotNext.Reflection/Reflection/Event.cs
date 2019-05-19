@@ -26,11 +26,11 @@ namespace DotNext.Reflection
             {
                 if (target is null)
                 {
-                    modifier(target, handler);
+                    modifier(null, handler);
                     return true;
                 }
             }
-            else if (@event.DeclaringType.IsInstanceOfType(target))
+            else if (@event.DeclaringType?.IsInstanceOfType(target) ?? false)
             {
                 modifier(target, handler);
                 return true;
@@ -236,6 +236,10 @@ namespace DotNext.Reflection
     public sealed class Event<D> : EventBase<D>, IEvent<D>
         where D : MulticastDelegate
     {
+        private sealed class Cache<T> : MemberCache<EventInfo, Event<D>>
+        {
+            private protected override Event<D> Create(string eventName, bool nonPublic) => Reflect(typeof(T), eventName, nonPublic);
+        }
         private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -245,10 +249,8 @@ namespace DotNext.Reflection
         private Event(EventInfo @event)
             : base(@event)
         {
-            var addMethod = @event.AddMethod;
-            var removeMethod = @event.RemoveMethod;
-            this.addMethod = addMethod?.CreateDelegate<Action<D>>();
-            this.removeMethod = removeMethod?.CreateDelegate<Action<D>>();
+            addMethod = @event.AddMethod?.CreateDelegate<Action<D>>();
+            removeMethod = @event.RemoveMethod?.CreateDelegate<Action<D>>();
         }
 
         /// <summary>
@@ -341,21 +343,14 @@ namespace DotNext.Reflection
         /// <returns>The delegate which can be used to detach from the event.</returns>
         public static Action<D> operator -(Event<D> @event) => @event?.removeMethod;
 
-        internal static Event<D> Reflect<T>(string eventName, bool nonPublic)
+        private static Event<D> Reflect(Type declaringType, string eventName, bool nonPublic)
         {
-            var @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
+            var @event = declaringType.GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
             return @event is null ? null : new Event<D>(@event);
         }
 
-        internal static Event<D> Reflect(EventInfo @event)
-        {
-            if (@event is Event<D> other)
-                return other;
-            else if (@event.EventHandlerType == typeof(D))
-                return new Event<D>(@event);
-            else
-                return null;
-        }
+        internal static Event<D> GetOrCreate<T>(string eventName, bool nonPublic)
+            => Cache<T>.Of<Cache<T>>(typeof(T)).GetOrCreate(eventName, nonPublic);
     }
 
     /// <summary>
@@ -366,6 +361,11 @@ namespace DotNext.Reflection
     public sealed class Event<T, D> : EventBase<D>, IEvent<T, D>
         where D : MulticastDelegate
     {
+        private sealed class Cache : MemberCache<EventInfo, Event<T, D>>
+        {
+            private protected override Event<T, D> Create(string eventName, bool nonPublic) => Reflect(eventName, nonPublic);
+        }
+
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -382,6 +382,8 @@ namespace DotNext.Reflection
         private Event(EventInfo @event)
             : base(@event)
         {
+            if (@event.DeclaringType is null)
+                throw new ArgumentException(ExceptionMessages.ModuleMemberDetected(@event), nameof(@event));
             var instanceParam = Expression.Parameter(@event.DeclaringType.MakeByRefType());
             var handlerParam = Expression.Parameter(@event.EventHandlerType);
 
@@ -389,14 +391,18 @@ namespace DotNext.Reflection
             removeMethod = CompileAccessor(@event.RemoveMethod, instanceParam, handlerParam);
         }
 
-        private static Accessor CompileAccessor(MethodInfo accessor, ParameterExpression instanceParam, ParameterExpression handlerParam)
+        private static Accessor CompileAccessor(MethodInfo accessor, ParameterExpression instanceParam,
+            ParameterExpression handlerParam)
         {
             if (accessor is null)
                 return null;
+            else if (accessor.DeclaringType is null)
+                throw new ArgumentException(ExceptionMessages.ModuleMemberDetected(accessor), nameof(accessor));
             else if (accessor.DeclaringType.IsValueType)
                 return accessor.CreateDelegate<Accessor>();
             else
-                return Expression.Lambda<Accessor>(Expression.Call(instanceParam, accessor, handlerParam), instanceParam, handlerParam).Compile();
+                return Expression.Lambda<Accessor>(Expression.Call(instanceParam, accessor, handlerParam),
+                    instanceParam, handlerParam).Compile();
         }
 
         /// <summary>
@@ -491,20 +497,13 @@ namespace DotNext.Reflection
         /// <returns>The delegate which can be used to detach from the event.</returns>
         public static Accessor operator -(Event<T, D> @event) => @event.removeMethod;
 
-        internal static Event<T, D> Reflect(string eventName, bool nonPublic)
+        private static Event<T, D> Reflect(string eventName, bool nonPublic)
         {
             var @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
             return @event is null ? null : new Event<T, D>(@event);
         }
 
-        internal static Event<T, D> Reflect(EventInfo @event)
-        {
-            if (@event is Event<T, D> other)
-                return other;
-            else if (@event.EventHandlerType == typeof(D) && @event.DeclaringType == typeof(T))
-                return new Event<T, D>(@event);
-            else
-                return null;
-        }
+        internal static Event<T, D> GetOrCreate(string eventName, bool nonPublic)
+            => Cache.Of<Cache>(typeof(T)).GetOrCreate(eventName, nonPublic);
     }
 }

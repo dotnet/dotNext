@@ -70,7 +70,7 @@ namespace DotNext
         private static MethodInfo EqualsMethodForArrayElementType(Type itemType)
             => itemType.IsValueType ?
                     typeof(OneDimensionalArray)
-                        .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, new Type[] { null, null })
+                        .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, null)
                         .MakeGenericMethod(itemType) :
                         typeof(OneDimensionalArray)
                         .GetMethod(nameof(OneDimensionalArray.SequenceEqual), new[] { typeof(object[]), typeof(object[]) });
@@ -78,14 +78,14 @@ namespace DotNext
         private static MethodInfo HashCodeMethodForArrayElementType(Type itemType)
             => itemType.IsValueType ?
                 typeof(OneDimensionalArray)
-                        .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, new Type[] { null, typeof(bool) })
+                        .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, typeof(bool))
                         .MakeGenericMethod(itemType) :
                 typeof(Sequence)
                         .GetMethod(nameof(Sequence.SequenceHashCode), new[] { typeof(IEnumerable<object>), typeof(bool) });
 
         private static IEnumerable<FieldInfo> GetAllFields(Type type)
         {
-            foreach (var t in type.GetBaseTypes(includeTopLevel: true, includeInterfaces: false))
+            foreach (var t in type.GetBaseTypes(includeTopLevel: true))
                 foreach (var field in t.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
                     yield return field;
         }
@@ -101,7 +101,7 @@ namespace DotNext
             {
                 var x = Expression.Parameter(type);
                 var y = Expression.Parameter(type);
-                //collect all fields in the hierachy
+                //collect all fields in the hierarchy
                 Expression expr = type.IsClass ? Expression.ReferenceNotEqual(y, Expression.Constant(null, y.Type)) : null;
                 foreach (var field in GetAllFields(type))
                     if(IsIncluded(field))
@@ -141,7 +141,7 @@ namespace DotNext
             {
                 var hashCodeTemp = Expression.Parameter(typeof(int));
                 ICollection<Expression> expressions = new LinkedList<Expression>();
-                //collect all fields in the hierachy
+                //collect all fields in the hierarchy
                 foreach (var field in GetAllFields(type))
                     if(IsIncluded(field))
                     {

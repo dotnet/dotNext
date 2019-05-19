@@ -22,42 +22,39 @@ namespace DotNext.Reflection
 
         }
 
+        private static IEnumerable<MethodInfo> GetMethods(IEnumerable<Type> types, UserDataSlot<ExtensionRegistry> registrySlot)
+        {
+            foreach (var type in types)
+                foreach (var method in type.GetUserData().Get(registrySlot) ?? Enumerable.Empty<MethodInfo>())
+                    yield return method;
+        }
+
+        private static IEnumerable<MethodInfo> GetStaticMethods(Type target)
+            => GetMethods(Sequence.Singleton(target.IsByRef ? target.GetElementType() : target), StaticMethods);
+
+        private static IEnumerable<MethodInfo> GetInstanceMethods(Type target)
+        {
+            IEnumerable<Type> types;
+            if (target.IsValueType)
+                types = Sequence.Singleton(target);
+            else if (target.IsByRef)
+                types = Sequence.Singleton(target.GetElementType());
+            else
+                types = target.GetBaseTypes(includeTopLevel: true, includeInterfaces: true);
+            return GetMethods(types, InstanceMethods);
+        }
+
         internal static IEnumerable<MethodInfo> GetMethods(Type target, MethodLookup lookup)
         {
-            var result = Enumerable.Empty<MethodInfo>();
-            IEnumerable<Type> types;
             switch (lookup)
             {
                 case MethodLookup.Static:
-                    types = Sequence.Singleton(target.IsByRef ? target.GetElementType() : target);
-                    break;
+                    return GetStaticMethods(target);
+                case MethodLookup.Instance:
+                    return GetInstanceMethods(target);
                 default:
-                    if (target.IsValueType)
-                        types = Sequence.Singleton(target);
-                    else if (target.IsByRef)
-                        types = Sequence.Singleton(target.GetElementType());
-                    else
-                        types = target.GetBaseTypes(includeTopLevel: true, includeInterfaces: true);
-                    break;
+                    return Enumerable.Empty<MethodInfo>();
             }
-            foreach (var t in types)
-            {
-                IEnumerable<MethodInfo> methods;
-                switch (lookup)
-                {
-                    case MethodLookup.Instance:
-                        methods = t.GetUserData().Get(InstanceMethods) ?? Enumerable.Empty<MethodInfo>();
-                        break;
-                    case MethodLookup.Static:
-                        methods = t.GetUserData().Get(StaticMethods) ?? Enumerable.Empty<MethodInfo>();
-                        break;
-                    default:
-                        methods = Enumerable.Empty<MethodInfo>();
-                        break;
-                }
-                result = result.Concat(methods);
-            }
-            return result;
         }
 
         private static ExtensionRegistry GetOrCreateRegistry(Type target, MethodLookup lookup)

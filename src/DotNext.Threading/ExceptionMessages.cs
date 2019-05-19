@@ -8,16 +8,14 @@ namespace DotNext.Threading
     [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
     internal static class ExceptionMessages
     {
-        private static readonly ResourceManager resourceManager = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
+        private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-        internal static string ReleasedLock => resourceManager.GetString("ReleasedLock");
+        internal static string CollectionIsEmpty => Resources.GetString("CollectionIsEmpty");
 
-        internal static string CollectionIsEmpty => resourceManager.GetString("CollectionIsEmpty");
+        internal static string NotInWriteLock => Resources.GetString("NotInWriteLock");
 
-        internal static string NotInWriteLock => resourceManager.GetString("NotInWriteLock");
+        internal static string NotInReadLock => Resources.GetString("NotInReadLock");
 
-        internal static string NotInReadLock => resourceManager.GetString("NotInReadLock");
-
-        internal static string NotInUpgradeableReadLock => resourceManager.GetString("NotInUpgradeableReadLock");
+        internal static string NotInUpgradeableReadLock => Resources.GetString("NotInUpgradeableReadLock");
     }
 }

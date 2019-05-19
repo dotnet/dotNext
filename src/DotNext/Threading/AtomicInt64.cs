@@ -134,7 +134,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long AccumulateAndGet(ref this long value, long x, Func<long, long, long> accumulator)
-            => Operations.Instance.Accumulute(ref value, x, accumulator).NewValue;
+            => Operations.Instance.Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -149,7 +149,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndAccumulate(ref this long value, long x, Func<long, long, long> accumulator)
-            => Operations.Instance.Accumulute(ref value, x, accumulator).OldValue;
+            => Operations.Instance.Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 

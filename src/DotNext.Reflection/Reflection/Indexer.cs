@@ -247,13 +247,17 @@ namespace DotNext.Reflection
 	}
 
 	/// <summary>
-	/// Represents statix indexer property.
+	/// Represents static indexer property.
 	/// </summary>
 	/// <typeparam name="A">A structure representing parameters of indexer.</typeparam>
 	/// <typeparam name="V">Property value.</typeparam>
 	public sealed class Indexer<A, V>: IndexerBase<A, V>
 		where A: struct
 	{
+        private sealed class Cache<T> : MemberCache<PropertyInfo, Indexer<A, V>>
+        {
+            private protected override Indexer<A, V> Create(string propertyName, bool nonPublic) => Reflect(typeof(T), propertyName, nonPublic);
+        }
 		private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
 		private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -319,10 +323,10 @@ namespace DotNext.Reflection
         /// <param name="indexer">The reflected property instance.</param>
         public static implicit operator Setter(Indexer<A, V> indexer) => indexer?.SetMethod;
 		
-		internal static Indexer<A, V> Reflect<T>(string propertyName, bool nonPublic)
+		private static Indexer<A, V> Reflect(Type declaringType, string propertyName, bool nonPublic)
 		{
-			var property = typeof(T).GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
-			if (property.PropertyType != typeof(V))
+			var property = declaringType.GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
+			if (property is null || property.PropertyType != typeof(V))
 				return null;
 			var (actualParams, arglist, input) = Signature.Reflect<A>();
 			//reflect getter
@@ -351,10 +355,13 @@ namespace DotNext.Reflection
             
             return new Indexer<A, V>(property, getter, setter);
 		}
+
+        internal static Indexer<A, V> GetOrCreate<T>(string propertyName, bool nonPublic)
+            => Cache<T>.Of<Cache<T>>(typeof(T)).GetOrCreate(propertyName, nonPublic);
 	}
 
     /// <summary>
-	/// Represents statix indexer property.
+	/// Represents static indexer property.
 	/// </summary>
     /// <typeparam name="T">Type of instance with indexer property.</typeparam>
 	/// <typeparam name="A">A structure representing parameters of indexer.</typeparam>
@@ -362,6 +369,10 @@ namespace DotNext.Reflection
     public sealed class Indexer<T, A, V>: IndexerBase<A, V>
         where A: struct
     {
+        private sealed class Cache : MemberCache<PropertyInfo, Indexer<T, A, V>>
+        {
+            private protected override Indexer<T, A, V> Create(string propertyName, bool nonPublic) => Reflect(propertyName, nonPublic);
+        }
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -430,10 +441,10 @@ namespace DotNext.Reflection
 			}
 		}
 
-		internal static Indexer<T, A, V> Reflect(string propertyName, bool nonPublic)
+		private static Indexer<T, A, V> Reflect(string propertyName, bool nonPublic)
 		{
 			var property = typeof(T).GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
-			if (property.PropertyType != typeof(V))
+			if (property?.DeclaringType is null || property.PropertyType != typeof(V))
 				return null;
 			var (actualParams, arglist, input) = Signature.Reflect<A>();
 			var thisParam = Expression.Parameter(property.DeclaringType.MakeByRefType(), "this");
@@ -462,5 +473,8 @@ namespace DotNext.Reflection
                 setter = null;
 			return new Indexer<T, A, V>(property, getter, setter);
 		}
+
+        internal static Indexer<T, A, V> GetOrCreate(string propertyName, bool nonPublic)
+            => Cache.Of<Cache>(typeof(T)).GetOrCreate(propertyName, nonPublic);
     }
 }

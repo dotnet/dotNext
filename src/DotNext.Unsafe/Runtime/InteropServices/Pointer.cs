@@ -129,7 +129,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="value">The value to assign to each element of the array.</param>
         /// <param name="count">The length of the array.</param>
         /// <exception cref="NullPointerException">This pointer is zero.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is lesst than zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
         public unsafe void Fill(T value, long count)
         {
             if (this.value == Memory.NullPtr)
@@ -748,14 +748,14 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer value.</param>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static implicit operator T* (Pointer<T> ptr) => ptr.value;
+        public static unsafe implicit operator T* (Pointer<T> ptr) => ptr.value;
 
         /// <summary>
         /// Obtains pointer value (address) as <see cref="IntPtr"/>.
         /// </summary>
         /// <param name="ptr">The pointer to be converted.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static implicit operator IntPtr(Pointer<T> ptr) => ptr.Address;
+        public static implicit operator IntPtr(Pointer<T> ptr) => ptr.Address;
 
         /// <summary>
         /// Obtains pointer value (address) as <see cref="UIntPtr"/>.
@@ -763,7 +763,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer to be converted.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public unsafe static implicit operator UIntPtr(Pointer<T> ptr) => new UIntPtr(ptr.value);
+        public static unsafe implicit operator UIntPtr(Pointer<T> ptr) => new UIntPtr(ptr.value);
 
         /// <summary>
         /// Checks whether this pointer is not zero.

@@ -9,7 +9,7 @@ namespace DotNext.Reflection
     public static class Method
     {
         /// <summary>
-        /// Returns method parameter types respecting orded of parameters.
+        /// Returns method parameter types respecting order of parameters.
         /// </summary>
         /// <param name="method">The method to reflect.</param>
         /// <returns>The array of parameter types.</returns>

@@ -101,7 +101,7 @@ namespace DotNext.Reflection
 			=> member.Invoke(default);
 
         /// <summary>
-        /// Allocates unitialized structure for placing arguments.
+        /// Allocates uninitialized structure for placing arguments.
         /// </summary>
         /// <typeparam name="M">The type of the member.</typeparam>
         /// <typeparam name="T">The type of the instance.</typeparam>
@@ -116,7 +116,7 @@ namespace DotNext.Reflection
 			=> member.Invoker.ArgList();
 
         /// <summary>
-        /// Allocates unitialized structure for placing arguments.
+        /// Allocates uninitialized structure for placing arguments.
         /// </summary>
         /// <param name="member">Callable member.</param>
         /// <typeparam name="M">Type of callable member.</typeparam>
@@ -130,7 +130,7 @@ namespace DotNext.Reflection
 			=> member.Invoker.ArgList();
 
         /// <summary>
-        /// Allocates unitialized structure for placing arguments.
+        /// Allocates uninitialized structure for placing arguments.
         /// </summary>
         /// <typeparam name="M">The type of the member.</typeparam>
         /// <typeparam name="T">The type of the instance.</typeparam>
@@ -143,7 +143,7 @@ namespace DotNext.Reflection
 			=> member.Invoker.ArgList();
 
         /// <summary>
-        /// Allocates unitialized structure for placing arguments.
+        /// Allocates uninitialized structure for placing arguments.
         /// </summary>
         /// <typeparam name="M">The type of the member.</typeparam>
         /// <typeparam name="A">Type of arguments list.</typeparam>

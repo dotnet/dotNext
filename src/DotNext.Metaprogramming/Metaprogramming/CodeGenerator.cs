@@ -7,7 +7,6 @@ using System.Diagnostics;
 namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
-    using Runtime.CompilerServices;
 
     /// <summary>
     /// Represents code generator.
@@ -601,7 +600,7 @@ namespace DotNext.Metaprogramming
         /// Adds generic loop statement.
         /// </summary>
         /// <remarks>
-        /// This loop is equvalent to <c>while(true){ }</c>
+        /// This loop is equivalent to <c>while(true){ }</c>
         /// </remarks>
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
@@ -1082,7 +1081,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Constructs multi-line lamdba function capturing the current lexical scope.
+        /// Constructs multi-line lambda function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
@@ -1096,7 +1095,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Constructs single-line lamdba function capturing the current lexical scope.
+        /// Constructs single-line lambda function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
@@ -1110,7 +1109,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Constructs single-line lamdba function capturing the current lexical scope.
+        /// Constructs single-line lambda function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>
@@ -1120,7 +1119,7 @@ namespace DotNext.Metaprogramming
             => Lambda<D>(false, body);
 
         /// <summary>
-        /// Constructs multi-line lamdba function capturing the current lexical scope.
+        /// Constructs multi-line lambda function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
@@ -1134,7 +1133,7 @@ namespace DotNext.Metaprogramming
         }
 
         /// <summary>
-        /// Constructs multi-line lamdba function capturing the current lexical scope.
+        /// Constructs multi-line lambda function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>
@@ -1144,7 +1143,7 @@ namespace DotNext.Metaprogramming
             => Lambda<D>(false, body);
 
         /// <summary>
-        /// Constructs multi-line lamdba function capturing the current lexical scope.
+        /// Constructs multi-line lambda function capturing the current lexical scope.
         /// </summary>
         /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
         /// <param name="body">Lambda function builder.</param>

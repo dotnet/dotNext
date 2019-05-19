@@ -14,6 +14,17 @@ namespace DotNext.Reflection
     public sealed class Method<D> : MethodInfo, IMethod<D>, IEquatable<MethodInfo>
         where D : MulticastDelegate
     {
+        private sealed class Cache : MemberCache<MethodInfo, Method<D>>
+        {
+            private protected override Method<D> Create(string methodName, bool nonPublic) => Reflect(methodName, nonPublic);
+        }
+
+        private sealed class Cache<T> : MemberCache<MethodInfo, Method<D>>
+        {
+            private protected override Method<D> Create(string methodName, bool nonPublic) => Reflect(typeof(T), methodName, nonPublic);
+        }
+
+        private static readonly UserDataSlot<Method<D>> CacheSlot = UserDataSlot<Method<D>>.Allocate();
         private const BindingFlags StaticPublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags StaticNonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
         private const BindingFlags InstancePublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
@@ -28,43 +39,43 @@ namespace DotNext.Reflection
             Invoker = lambda.Compile();
         }
 
-        internal Method(MethodInfo method, Expression[] args, ParameterExpression[] parameters)
+        internal Method(MethodInfo method, IEnumerable<Expression> args, IEnumerable<ParameterExpression> parameters)
             : this(method, Expression.Lambda<D>(Expression.Call(method, args), true, parameters))
         {
         }
 
-        internal Method(MethodInfo method, ParameterExpression instance, Expression[] args, ParameterExpression[] parameters)
-            : this(method, Expression.Lambda<D>(Expression.Call(instance, method, args), true, parameters.Insert(instance, 0)))
+        internal Method(MethodInfo method, ParameterExpression instance, IEnumerable<Expression> args, IEnumerable<ParameterExpression> parameters)
+            : this(method, Expression.Lambda<D>(Expression.Call(instance, method, args), true, parameters.Prepend(instance)))
         {
         }
 
         private Method(MethodInfo method)
         {
             this.method = method;
-            Invoker = DelegateHelpers.CreateDelegate<D>(method);
+            Invoker = method.CreateDelegate<D>();
         }
 
         /// <summary>
         /// Gets the attributes associated with this method.
         /// </summary>
-        public sealed override MethodAttributes Attributes => method.Attributes;
+        public override MethodAttributes Attributes => method.Attributes;
 
         /// <summary>
         /// Gets a value indicating the calling conventions for this constructor.
         /// </summary>
-        public sealed override CallingConventions CallingConvention => method.CallingConvention;
+        public override CallingConventions CallingConvention => method.CallingConvention;
 
         /// <summary>
         /// Gets a value indicating whether the generic method contains unassigned generic type parameters.
         /// </summary>
-        public sealed override bool ContainsGenericParameters => method.ContainsGenericParameters;
+        public override bool ContainsGenericParameters => method.ContainsGenericParameters;
 
         /// <summary>
         /// Creates a delegate of the specified type from this method.
         /// </summary>
         /// <param name="delegateType">The type of the delegate to create.</param>
         /// <returns>The delegate for this method.</returns>
-        public sealed override Delegate CreateDelegate(Type delegateType) => method.CreateDelegate(delegateType);
+        public override Delegate CreateDelegate(Type delegateType) => method.CreateDelegate(delegateType);
 
         /// <summary>
         /// Creates a delegate of the specified type from this method.
@@ -72,30 +83,30 @@ namespace DotNext.Reflection
         /// <param name="delegateType">The type of the delegate to create.</param>
         /// <param name="target">The object targeted by the delegate.</param>
         /// <returns>The delegate for this method.</returns>
-        public sealed override Delegate CreateDelegate(Type delegateType, object target) => method.CreateDelegate(delegateType, target);
+        public override Delegate CreateDelegate(Type delegateType, object target) => method.CreateDelegate(delegateType, target);
 
         /// <summary>
         /// Gets a collection that contains this member's custom attributes.
         /// </summary>
-        public sealed override IEnumerable<CustomAttributeData> CustomAttributes => method.CustomAttributes;
+        public override IEnumerable<CustomAttributeData> CustomAttributes => method.CustomAttributes;
 
         /// <summary>
         /// Gets the class that declares this method.
         /// </summary>
-        public sealed override Type DeclaringType => method.DeclaringType;
+        public override Type DeclaringType => method.DeclaringType;
 
         /// <summary>
         /// Returns the method on the direct or indirect base class in which the method represented by this instance was first declared.
         /// </summary>
         /// <returns>The first implementation of this method.</returns>
-        public sealed override MethodInfo GetBaseDefinition() => method.GetBaseDefinition();
+        public override MethodInfo GetBaseDefinition() => method.GetBaseDefinition();
 
         /// <summary>
         /// Returns an array of all custom attributes applied to this method.
         /// </summary>
         /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
         /// <returns>An array that contains all the custom attributes applied to this method.</returns>
-        public sealed override object[] GetCustomAttributes(bool inherit) => method.GetCustomAttributes(inherit);
+        public override object[] GetCustomAttributes(bool inherit) => method.GetCustomAttributes(inherit);
 
         /// <summary>
         /// Returns an array of all custom attributes applied to this method.
@@ -103,43 +114,43 @@ namespace DotNext.Reflection
         /// <param name="attributeType">The type of attribute to search for. Only attributes that are assignable to this type are returned.</param>
         /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
         /// <returns>An array that contains all the custom attributes applied to this method.</returns>
-        public sealed override object[] GetCustomAttributes(Type attributeType, bool inherit) => method.GetCustomAttributes(attributeType, inherit);
+        public override object[] GetCustomAttributes(Type attributeType, bool inherit) => method.GetCustomAttributes(attributeType, inherit);
 
         /// <summary>
         /// Returns a list of custom attributes that have been applied to the target method.
         /// </summary>
         /// <returns>The data about the attributes that have been applied to the target method.</returns>
-        public sealed override IList<CustomAttributeData> GetCustomAttributesData() => method.GetCustomAttributesData();
+        public override IList<CustomAttributeData> GetCustomAttributesData() => method.GetCustomAttributesData();
 
         /// <summary>
         /// Returns the type arguments of a generic method or the type parameters of a generic method definition.
         /// </summary>
         /// <returns>The list of generic arguments.</returns>
-        public sealed override Type[] GetGenericArguments() => method.GetGenericArguments();
+        public override Type[] GetGenericArguments() => method.GetGenericArguments();
 
         /// <summary>
         /// Returns generic method definition from which the current method can be constructed.
         /// </summary>
         /// <returns>Generic method definition from which the current method can be constructed.</returns>
-        public sealed override MethodInfo GetGenericMethodDefinition() => method.GetGenericMethodDefinition();
+        public override MethodInfo GetGenericMethodDefinition() => method.GetGenericMethodDefinition();
 
         /// <summary>
         /// Provides access to the MSIL stream, local variables, and exceptions for the current method.
         /// </summary>
         /// <returns>An object that provides access to the MSIL stream, local variables, and exceptions for the current method.</returns>
-        public sealed override MethodBody GetMethodBody() => method.GetMethodBody();
+        public override MethodBody GetMethodBody() => method.GetMethodBody();
 
         /// <summary>
         /// Gets method implementation attributes.
         /// </summary>
         /// <returns>Implementation attributes.</returns>
-        public sealed override MethodImplAttributes GetMethodImplementationFlags() => method.GetMethodImplementationFlags();
+        public override MethodImplAttributes GetMethodImplementationFlags() => method.GetMethodImplementationFlags();
 
         /// <summary>
         /// Gets method parameters.
         /// </summary>
         /// <returns>The array of method parameters.</returns>
-        public sealed override ParameterInfo[] GetParameters() => method.GetParameters();
+        public override ParameterInfo[] GetParameters() => method.GetParameters();
 
         /// <summary>
         /// Invokes this method.
@@ -150,7 +161,7 @@ namespace DotNext.Reflection
         /// <param name="parameters">A list of method arguments.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
         /// <returns>The return value of the invoked method.</returns>
-        public sealed override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
+        public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
             => method.Invoke(obj, invokeAttr, binder, parameters, culture);
 
         /// <summary>
@@ -159,36 +170,36 @@ namespace DotNext.Reflection
         /// <param name="attributeType">The type of custom attribute to search for. The search includes derived types.</param>
         /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
         /// <returns><see langword="true"/> if one or more instances of <paramref name="attributeType"/> or any of its derived types is applied to this method; otherwise, <see langword="false"/>.</returns>
-        public sealed override bool IsDefined(Type attributeType, bool inherit)
+        public override bool IsDefined(Type attributeType, bool inherit)
             => method.IsDefined(attributeType, inherit);
 
         /// <summary>
         /// Gets a value indicating whether the method is generic.
         /// </summary>
-        public sealed override bool IsGenericMethod => method.IsGenericMethod;
+        public override bool IsGenericMethod => method.IsGenericMethod;
 
         /// <summary>
         /// Gets a value indicating whether the method is a generic method definition.
         /// </summary>
-        public sealed override bool IsGenericMethodDefinition => method.IsGenericMethodDefinition;
+        public override bool IsGenericMethodDefinition => method.IsGenericMethodDefinition;
 
         /// <summary>
         /// Gets a value that indicates whether the method is security-critical or security-safe-critical at the current trust level, 
         /// and therefore can perform critical operations.
         /// </summary>
-        public sealed override bool IsSecurityCritical => method.IsSecurityCritical;
+        public override bool IsSecurityCritical => method.IsSecurityCritical;
 
         /// <summary>
         /// Gets a value that indicates whether the method is security-safe-critical at the current trust level; that is, 
         /// whether it can perform critical operations and can be accessed by transparent code.
         /// </summary>
-        public sealed override bool IsSecuritySafeCritical => method.IsSecuritySafeCritical;
+        public override bool IsSecuritySafeCritical => method.IsSecuritySafeCritical;
 
         /// <summary>
         /// Gets a value that indicates whether the current method is transparent at the current trust level, 
         /// and therefore cannot perform critical operations.
         /// </summary>
-        public sealed override bool IsSecurityTransparent => method.IsSecurityTransparent;
+        public override bool IsSecurityTransparent => method.IsSecurityTransparent;
 
         /// <summary>
         /// Substitutes the elements of an array of types for the type parameters of the current generic method definition, 
@@ -196,57 +207,57 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="typeArguments">An array of types to be substituted for the type parameters of the current generic method definition.</param>
         /// <returns>The constructed method formed by substituting the elements of <paramref name="typeArguments"/> for the type parameters of the current generic method definition.</returns>
-        public sealed override MethodInfo MakeGenericMethod(params Type[] typeArguments) => method.MakeGenericMethod(typeArguments);
+        public override MethodInfo MakeGenericMethod(params Type[] typeArguments) => method.MakeGenericMethod(typeArguments);
 
         /// <summary>
         /// Always returns <see cref="MemberTypes.Method"/>.
         /// </summary>
-        public sealed override MemberTypes MemberType => MemberTypes.Method;
+        public override MemberTypes MemberType => MemberTypes.Method;
 
         /// <summary>
         /// Gets a value that identifies a metadata element.
         /// </summary>
-        public sealed override int MetadataToken => method.MetadataToken;
+        public override int MetadataToken => method.MetadataToken;
 
         /// <summary>
         /// Gets a handle to the internal metadata representation of a method.
         /// </summary>
-        public sealed override RuntimeMethodHandle MethodHandle => method.MethodHandle;
+        public override RuntimeMethodHandle MethodHandle => method.MethodHandle;
 
         /// <summary>
         /// Gets method implementation attributes.
         /// </summary>
-        public sealed override MethodImplAttributes MethodImplementationFlags => method.MethodImplementationFlags;
+        public override MethodImplAttributes MethodImplementationFlags => method.MethodImplementationFlags;
 
         /// <summary>
         /// Gets the module in which the type that declares the method represented by the current instance is defined.
         /// </summary>
-        public sealed override Module Module => method.Module;
+        public override Module Module => method.Module;
 
         /// <summary>
         /// Gets name of this method.
         /// </summary>
-        public sealed override string Name => method.Name;
+        public override string Name => method.Name;
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance.
         /// </summary>
-        public sealed override Type ReflectedType => method.ReflectedType;
+        public override Type ReflectedType => method.ReflectedType;
 
         /// <summary>
         /// Gets information about the return type of the method, such as whether the return type has custom modifiers.
         /// </summary>
-        public sealed override ParameterInfo ReturnParameter => method.ReturnParameter;
+        public override ParameterInfo ReturnParameter => method.ReturnParameter;
 
         /// <summary>
         /// Gets the return type of this method.
         /// </summary>
-        public sealed override Type ReturnType => method.ReturnType;
+        public override Type ReturnType => method.ReturnType;
 
         /// <summary>
         /// Gets the custom attributes for the return type.
         /// </summary>
-        public sealed override ICustomAttributeProvider ReturnTypeCustomAttributes => method.ReturnTypeCustomAttributes;
+        public override ICustomAttributeProvider ReturnTypeCustomAttributes => method.ReturnTypeCustomAttributes;
 
         /// <summary>
         /// Determines whether this method is equal to the given method.
@@ -296,7 +307,8 @@ namespace DotNext.Reflection
         /// <returns>The textual representation of this method.</returns>
         public override string ToString() => method.ToString();
 
-        private static Method<D> ReflectStatic(Type declaringType, Type[] parameters, Type returnType, string methodName, bool nonPublic)
+        private static Method<D> ReflectStatic(Type declaringType, Type[] parameters, Type returnType,
+            string methodName, bool nonPublic)
         {
             //lookup in declaring type
             var targetMethod = declaringType.GetMethod(methodName,
@@ -306,19 +318,15 @@ namespace DotNext.Reflection
                 Array.Empty<ParameterModifier>());
             //lookup in extension methods
             if (targetMethod is null || returnType != targetMethod.ReturnType)
-            {
-                targetMethod = null;
-                foreach (var candidate in ExtensionRegistry.GetMethods(declaringType, MethodLookup.Static))
-                    if (candidate.Name == methodName && candidate.SignatureEquals(parameters) && candidate.ReturnType == returnType)
-                    {
-                        targetMethod = candidate;
-                        break;
-                    }
-            }
+                targetMethod = ExtensionRegistry.GetMethods(declaringType, MethodLookup.Static)
+                    .FirstOrDefault(candidate =>
+                        candidate.Name == methodName && candidate.SignatureEquals(parameters) &&
+                        candidate.ReturnType == returnType);
             return targetMethod is null ? null : new Method<D>(targetMethod);
         }
 
-        private static Method<D> ReflectStatic(Type declaringType, Type argumentsType, Type returnType, string methodName, bool nonPublic)
+        private static Method<D> ReflectStatic(Type declaringType, Type argumentsType, Type returnType,
+            string methodName, bool nonPublic)
         {
             var (parameters, arglist, input) = Signature.Reflect(argumentsType);
             //lookup in declaring type
@@ -329,16 +337,11 @@ namespace DotNext.Reflection
                 Array.Empty<ParameterModifier>());
             //lookup in extension methods
             if (targetMethod is null || returnType != targetMethod.ReturnType)
-            {
-                targetMethod = null;
-                foreach (var candidate in ExtensionRegistry.GetMethods(declaringType, MethodLookup.Static))
-                    if (candidate.Name == methodName && candidate.SignatureEquals(parameters) && candidate.ReturnType == returnType)
-                    {
-                        targetMethod = candidate;
-                        break;
-                    }
-            }
-            return targetMethod is null ? null : new Method<D>(targetMethod, arglist, new[] { input });
+                targetMethod = ExtensionRegistry.GetMethods(declaringType, MethodLookup.Static)
+                    .FirstOrDefault(candidate =>
+                        candidate.Name == methodName && candidate.SignatureEquals(parameters) &&
+                        candidate.ReturnType == returnType);
+            return targetMethod is null ? null : new Method<D>(targetMethod, arglist, new[] {input});
         }
 
         private static Type NonRefType(Type type) => type.IsByRef ? type.GetElementType() : type;
@@ -353,15 +356,7 @@ namespace DotNext.Reflection
                 Array.Empty<ParameterModifier>());
             //lookup in extension methods
             if (targetMethod is null || returnType != targetMethod.ReturnType)
-            {
-                targetMethod = null;
-                foreach (var candidate in ExtensionRegistry.GetMethods(thisParam, MethodLookup.Instance))
-                    if (candidate.Name == methodName && Enumerable.SequenceEqual(candidate.GetParameterTypes().RemoveFirst(1), parameters) && candidate.ReturnType == returnType)
-                    {
-                        targetMethod = candidate;
-                        break;
-                    }
-            }
+                targetMethod = ExtensionRegistry.GetMethods(thisParam, MethodLookup.Instance).FirstOrDefault(candidate => candidate.Name == methodName && Enumerable.SequenceEqual(candidate.GetParameterTypes().RemoveFirst(1), parameters) && candidate.ReturnType == returnType);
             //this parameter can be passed as REF so handle this situation
             //first parameter should be passed by REF for structure types
             if (targetMethod is null)
@@ -415,7 +410,7 @@ namespace DotNext.Reflection
         /// <param name="methodName"></param>
         /// <param name="nonPublic"></param>
         /// <returns></returns>
-        internal static Method<D> Reflect(string methodName, bool nonPublic)
+        private static Method<D> Reflect(string methodName, bool nonPublic)
         {
             var delegateType = typeof(D);
             if (delegateType.IsAbstract)
@@ -435,23 +430,23 @@ namespace DotNext.Reflection
         /// <summary>
         /// Reflects static method.
         /// </summary>
+        /// <param name="declaringType">Declaring type.</param>
         /// <param name="methodName">Name of method.</param>
         /// <param name="nonPublic">True to reflect non-public static method.</param>
-        /// <typeparam name="T">Declaring type.</typeparam>
         /// <returns>Reflected static method.</returns>
-        internal static Method<D> Reflect<T>(string methodName, bool nonPublic)
+        private static Method<D> Reflect(Type declaringType, string methodName, bool nonPublic)
         {
             var delegateType = typeof(D);
             if (delegateType.IsAbstract)
                 throw new AbstractDelegateException<D>();
             else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
-                return ReflectStatic(typeof(T), argumentsType, returnType, methodName, nonPublic);
+                return ReflectStatic(declaringType, argumentsType, returnType, methodName, nonPublic);
             else if (delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
-                return ReflectStatic(typeof(T), delegateType.GetGenericArguments()[0], typeof(void), methodName, nonPublic);
+                return ReflectStatic(declaringType, delegateType.GetGenericArguments()[0], typeof(void), methodName, nonPublic);
             else
             {
                 DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
-                return ReflectStatic(typeof(T), parameters, returnType, methodName, nonPublic);
+                return ReflectStatic(declaringType, parameters, returnType, methodName, nonPublic);
             }
         }
 
@@ -463,7 +458,7 @@ namespace DotNext.Reflection
             var locals = new LinkedList<ParameterExpression>();
             //adjust THIS
             Expression thisArg;
-            if (thisParam is null)
+            if (thisParam is null || method.DeclaringType is null)
                 thisArg = null;
             else if (method.DeclaringType.IsAssignableFromWithoutBoxing(thisParam.Type))
                 thisArg = thisParam;
@@ -522,7 +517,7 @@ namespace DotNext.Reflection
                 thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
                 parameters = parameters.RemoveFirst(1);
                 if (method.SignatureEquals(parameters) && method.ReturnType == returnType)
-                    if (thisParam.IsByRef ^ method.DeclaringType.IsValueType)
+                    if (thisParam.IsByRef ^ method.DeclaringType?.IsValueType ?? false)
                     {
                         var arguments = Array.ConvertAll(parameters, Expression.Parameter);
                         return new Method<D>(method, Expression.Parameter(thisParam), arguments, arguments);
@@ -533,7 +528,7 @@ namespace DotNext.Reflection
             }
         }
 
-        internal static Method<D> Unreflect(MethodInfo method)
+        private static Method<D> Unreflect(MethodInfo method)
         {
             var delegateType = typeof(D);
             if (delegateType.IsAbstract)
@@ -546,6 +541,27 @@ namespace DotNext.Reflection
                 return UnreflectStatic(method);
             else
                 return UnreflectInstance(method);
+        }
+
+        internal static Method<D> GetOrCreate(MethodInfo method)
+            => method.GetUserData().GetOrSet(CacheSlot, method, Unreflect);
+
+        internal static Method<D> GetOrCreate<T>(string methodName, bool nonPublic, MethodLookup lookup)
+        {
+            MemberCache<MethodInfo, Method<D>> cache;
+            switch(lookup)
+            {
+                case MethodLookup.Instance:
+                    cache = Cache.Of<Cache>(typeof(T));
+                    break;
+                case MethodLookup.Static:
+                    cache = Cache.Of<Cache<T>>(typeof(T));
+                    break;
+                default:
+                    cache = null;
+                    break;
+            }
+            return cache?.GetOrCreate(methodName, nonPublic);
         }
     }
 }

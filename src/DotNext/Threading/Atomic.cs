@@ -18,7 +18,7 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-        internal (T OldValue, T NewValue) Accumulute(ref T value, T x, Func<T, T, T> accumulator)
+        internal (T OldValue, T NewValue) Accumulate(ref T value, T x, Func<T, T, T> accumulator)
         {
             T oldValue, newValue;
             do

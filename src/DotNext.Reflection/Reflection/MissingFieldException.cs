@@ -7,7 +7,13 @@ namespace DotNext.Reflection
 	/// </summary>
 	public sealed class MissingFieldException : ConstraintViolationException
 	{
-		private MissingFieldException(Type declaringType, string fieldName, Type fieldType)
+		/// <summary>
+		/// Initializes a new exception indicating that requested field doesn't exist.
+		/// </summary>
+		/// <param name="declaringType">The inspected type.</param>
+		/// <param name="fieldName">The name of the missing field.</param>
+		/// <param name="fieldType">The type of the missing field.</param>
+		public MissingFieldException(Type declaringType, string fieldName, Type fieldType)
 			: base(declaringType, ExceptionMessages.MissingField(fieldName, fieldType, declaringType))
 		{
 			FieldType = fieldType;

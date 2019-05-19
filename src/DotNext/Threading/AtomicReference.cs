@@ -52,7 +52,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T AccumulateAndGet<T>(ref T value, T x, Func<T, T, T> accumulator)
             where T : class
-            => Operations<T>.Instance.Accumulute(ref value, x, accumulator).NewValue;
+            => Operations<T>.Instance.Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -69,7 +69,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetAndAccumulate<T>(ref T value, T x, Func<T, T, T> accumulator)
             where T : class
-            => Operations<T>.Instance.Accumulute(ref value, x, accumulator).OldValue;
+            => Operations<T>.Instance.Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 

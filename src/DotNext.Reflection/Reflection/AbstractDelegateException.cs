@@ -6,7 +6,7 @@ namespace DotNext.Reflection
         where D : Delegate
     {
         internal AbstractDelegateException()
-            : base(ExceptionMessages.AbstractDelegate)
+            : base(ExceptionMessages.AbstractDelegate, typeof(D).FullName)
         {
         }
     }

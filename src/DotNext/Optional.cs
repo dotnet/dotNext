@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace DotNext
 {
-    using Runtime.CompilerServices;
     using static Reflection.TypeExtensions;
 
     /// <summary>
@@ -95,7 +93,7 @@ namespace DotNext
         /// Indicates that specified type is optional type.
         /// </summary>
         /// <returns><see langword="true"/>, if specified type is optional type; otherwise, <see langword="false"/>.</returns>
-        public static bool IsOptional(Type optionalType) => optionalType.IsGenericInstanceOf(typeof(Optional<>));
+        public static bool IsOptional(this Type optionalType) => optionalType.IsGenericInstanceOf(typeof(Optional<>));
 
         /// <summary>
         /// Returns the underlying type argument of the specified optional type.
@@ -113,16 +111,6 @@ namespace DotNext
         public static Optional<T> ToOptional<T>(this in T? value)
             where T : struct
             => value ?? Optional<T>.Empty;
-
-        /// <summary>
-        /// Converts value of reference type into Optional value.
-        /// </summary>
-        /// <param name="value">The value to convert. May be <see langword="null"/>.</param>
-        /// <typeparam name="T">Type of object to convert.</typeparam>
-        /// <returns>A value converted into Optional container.</returns>
-        public static Optional<T> EmptyIfNull<T>(this T value)
-            where T : class
-            => value is null ? default : new Optional<T>(value);
 
         /// <summary>
         /// If a value is present, returns the value, otherwise null.
@@ -144,77 +132,33 @@ namespace DotNext
         public static ref readonly Optional<T> Coalesce<T>(this in Optional<T> first, in Optional<T> second) => ref first.IsPresent ? ref first : ref second;
     }
 
-    internal static class OptionalMethods
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool HasValue<T>(ref T value) where T : class, IOptional => !(value is null) && value.IsPresent;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool IsNotNull<T>(ref T value) where T : class => !(value is null);
-    }
-
-    internal static class NullableOptionalMethods
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool HasValue<T>(ref T? value) where T : struct, IOptional => value.HasValue && value.Value.IsPresent;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool IsNotNull<T>(ref T? value) where T : struct => value.HasValue;
-    }
-
     /// <summary>
     /// A container object which may or may not contain a value.
     /// </summary>
     /// <typeparam name="T">Type of value.</typeparam>
     [Serializable]
-    public readonly struct Optional<T> : IOptional, IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable, ISerializable
+    public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable, ISerializable
     {
         private const string IsPresentSerData = "IsPresent";
         private const string ValueSerData = "Value";
+        private const byte ReferenceType = 0;
+        private const byte ValueType = 1;
+        private const byte NullableType = 2;
 
-        private delegate bool ByRefPredicate(in T value);
+        private static readonly byte type;
 
-        /// <summary>
-        /// Highly optimized checker of the content.
-        /// </summary>
-        private static readonly ByRefPredicate HasValueChecker; //null means always has value
-
-        [RuntimeFeatures(RuntimeGenericInstantiation = true)]
         static Optional()
         {
-            const BindingFlags NonPublicStatic = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
             var targetType = typeof(T);
-            MethodInfo checkerMethod;
             if (targetType.IsOneOf(typeof(void), typeof(ValueTuple), typeof(DBNull)))
-                checkerMethod = typeof(Optional<T>).GetMethod(nameof(HasNoValue), NonPublicStatic);
-            else if (targetType.IsPrimitive)//primitive always has value
-                checkerMethod = null;
+                type = byte.MaxValue;
             else if (targetType.IsValueType)
-                //value type which implements IOptional
-                if (typeof(IOptional).IsAssignableFrom(targetType))
-                    checkerMethod = targetType.GetInterfaceMap(typeof(IOptional)).TargetMethods[0];
-                else
-                {
-                    var nullableType = Nullable.GetUnderlyingType(targetType);
-                    if (nullableType is null)   //non-nullable value type always has value
-                        checkerMethod = null;
-                    //nullable type with optional
-                    else if (typeof(IOptional).IsAssignableFrom(nullableType))
-                        checkerMethod = typeof(NullableOptionalMethods).GetMethod(nameof(NullableOptionalMethods.HasValue), NonPublicStatic).MakeGenericMethod(nullableType);
-                    //nullable type but not optional
-                    else
-                        checkerMethod = typeof(NullableOptionalMethods).GetMethod(nameof(NullableOptionalMethods.IsNotNull), NonPublicStatic).MakeGenericMethod(nullableType);
-                }
-            //reference type implementing IOptional
-            else if (typeof(IOptional).IsAssignableFrom(targetType))
-                checkerMethod = typeof(OptionalMethods).GetMethod(nameof(OptionalMethods.HasValue), NonPublicStatic).MakeGenericMethod(targetType);
+                type = targetType.IsGenericInstanceOf(typeof(Nullable<>)) || targetType.IsOptional() ? NullableType : ValueType;
             else
-                checkerMethod = typeof(OptionalMethods).GetMethod(nameof(OptionalMethods.IsNotNull), NonPublicStatic).MakeGenericMethod(targetType);
-            HasValueChecker = checkerMethod?.CreateDelegate<ByRefPredicate>();
+                type = ReferenceType;
         }
 
         private readonly T value;
-        private readonly bool isPresent;
 
         /// <summary>
         /// Constructs non-empty container.
@@ -223,14 +167,28 @@ namespace DotNext
         public Optional(T value)
         {
             this.value = value;
-            isPresent = true;
+            switch (type)
+            {
+                case ReferenceType:
+                    IsPresent = !(value is null);
+                    break;
+                case ValueType:
+                    IsPresent = true;
+                    break;
+                case NullableType:
+                    IsPresent = !value.Equals(null);
+                    break;
+                default:
+                    IsPresent = false;
+                    break;
+            }
         }
 
         [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private Optional(SerializationInfo info, StreamingContext context)
         {
             value = (T)info.GetValue(ValueSerData, typeof(T));
-            isPresent = info.GetBoolean(IsPresentSerData);
+            IsPresent = info.GetBoolean(IsPresentSerData);
         }
 
         /// <summary>
@@ -241,19 +199,7 @@ namespace DotNext
         /// <summary>
         /// Indicates whether the value is present.
         /// </summary>
-        public bool IsPresent => isPresent && HasValue(value);
-
-        /// <summary>
-        /// Indicates that specified value has meaningful content.
-        /// </summary>
-        /// <param name="value">The value to check.</param>
-        /// <returns><see langword="true"/>, if value has meaningful content; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool HasValue(in T value) => HasValueChecker is null || HasValueChecker(in value);
-
-        [SuppressMessage("Usage", "CA1801")]
-        [SuppressMessage("Usage", "IDE0060")]
-        private static bool HasNoValue(ref T value) => false;
+        public bool IsPresent { get; }
 
         /// <summary>
         /// Attempts to extract value from container if it is present.
@@ -340,7 +286,7 @@ namespace DotNext
         /// <summary>
         /// Returns textual representation of this object.
         /// </summary>
-        /// <returns>The textual representatin of this object.</returns>
+        /// <returns>The textual representation of this object.</returns>
 		public override string ToString() => IsPresent ? value.ToString() : "<EMPTY>";
 
         /// <summary>
@@ -369,25 +315,23 @@ namespace DotNext
         /// the same value as other.
         /// </summary>
         /// <param name="other">Other container to compare.</param>
-        /// <returns><see langword="true"/> if this contauner stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         [CLSCompliant(false)]
         public bool Equals(in Optional<T> other)
-        {
-            var present1 = IsPresent;
-            var present2 = other.IsPresent;
-            return present1 & present2 ? value.Equals(other.value) : present1 == present2;
-        }
+            => IsPresent ? other.IsPresent && value.Equals(other.value) : !other.IsPresent;
 
         /// <summary>
         /// Determines whether this container stores
         /// the same value as other.
         /// </summary>
         /// <param name="other">Other container to compare.</param>
-        /// <returns><see langword="true"/> if this contauner stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
             switch (other)
             {
+                case null:
+                    return IsPresent == false;
                 case Optional<T> optional:
                     return Equals(optional);
                 case T value:
@@ -454,7 +398,7 @@ namespace DotNext
         /// <param name="first">The first container.</param>
         /// <param name="second">The second container.</param>
         /// <returns>The first non-empty container.</returns>
-        /// <see cref="Optional.Coalesce{T}(in Optional{T}, in Optional{T})"/>
+        /// <seealso cref="Optional.Coalesce{T}"/>
 		public static Optional<T> operator |(in Optional<T> first, in Optional<T> second)
             => first.IsPresent ? first : second;
 
@@ -492,7 +436,7 @@ namespace DotNext
 
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(IsPresentSerData, isPresent);
+            info.AddValue(IsPresentSerData, IsPresent);
             info.AddValue(ValueSerData, value, typeof(T));
         }
     }

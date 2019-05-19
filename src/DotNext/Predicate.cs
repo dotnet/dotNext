@@ -99,7 +99,7 @@ namespace DotNext
         /// </summary>
         /// <typeparam name="T">Type of the predicate argument.</typeparam>
         /// <param name="predicate">The predicate to negate.</param>
-        /// <returns>The predicate which negates evalutation result of the original predicate.</returns>
+        /// <returns>The predicate which negates evaluation result of the original predicate.</returns>
         public static Predicate<T> Negate<T>(this Predicate<T> predicate) => input => !predicate(input);
 
         /// <summary>

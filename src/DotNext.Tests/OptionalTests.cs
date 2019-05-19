@@ -5,57 +5,11 @@ namespace DotNext
 {
 	public sealed class OptionalTest : Assert
 	{
-		private struct HasContentMutableStruct : IOptional
-		{
-			internal int counter;
-
-			bool IOptional.IsPresent
-			{
-				get
-				{
-					counter += 1;
-					return false;
-				}
-			}
-		}
-
-		private readonly struct HasContentStruct : IOptional
-		{
-			internal HasContentStruct(bool hasContent)
-				=> IsPresent = hasContent;
-
-			public bool IsPresent { get; }
-		}
-
-		private sealed class HasContentClass : IOptional
-		{
-			public HasContentClass(bool hasContent)
-				=> IsPresent = hasContent;
-
-			public bool IsPresent { get; }
-		}
-
 		[Fact]
 		public static void NullableTest()
 		{
-            False(Optional<int?>.HasValue(null));
-			True(Optional<long?>.HasValue(10L));
-			False(Optional<HasContentStruct?>.HasValue(null));
-			False(Optional<HasContentStruct?>.HasValue(new HasContentStruct(false)));
-			True(Optional<HasContentStruct?>.HasValue(new HasContentStruct(true)));
-		}
-
-		/// <summary>
-		/// This test checks whether the
-		/// optional test doesn't cause boxing.
-		/// </summary>
-		[Fact]
-		public static void MutableStructTest()
-		{
-			var value = new HasContentMutableStruct();
-			Optional<HasContentMutableStruct>.HasValue(value);
-			Optional<HasContentMutableStruct>.HasValue(value);
-			Equal(2, value.counter);
+            False(new Optional<int?>(null).IsPresent);
+			True(new Optional<long?>(10L).IsPresent);
 		}
 
 		[Fact]
@@ -87,25 +41,32 @@ namespace DotNext
 		[Fact]
 		public static void StructTest()
 		{
-			False(Optional<ValueTuple>.HasValue(default));
-			True(Optional<long>.HasValue(default));
-			False(Optional<HasContentStruct>.HasValue(default));
-			False(Optional<HasContentStruct>.HasValue(new HasContentStruct(false)));
-			True(Optional<HasContentStruct>.HasValue(new HasContentStruct(true)));
-			True(Optional<Base64FormattingOptions>.HasValue(Base64FormattingOptions.InsertLineBreaks));
+			False(new Optional<ValueTuple>(default).IsPresent);
+			True(new Optional<long>(default).IsPresent);
+            True(new Optional<Base64FormattingOptions>(Base64FormattingOptions.InsertLineBreaks).IsPresent);
 		}
 
 		[Fact]
 		public static void ClassTest()
 		{
-			True(Optional<Optional<string>>.HasValue((Optional<string>)""));
-			False(Optional<string>.HasValue(default));
-			True(Optional<string>.HasValue(""));
-			False(Optional<HasContentClass>.HasValue(default));
-			False(Optional<HasContentClass>.HasValue(new HasContentClass(false)));
-			True(Optional<HasContentClass>.HasValue(new HasContentClass(true)));
-			False(Optional<Delegate>.HasValue(default));
-			True(Optional<EventHandler>.HasValue((sender, args) => { }));
+			True(new Optional<Optional<string>>((Optional<string>)"").IsPresent);
+            False(new Optional<Optional<string>>((Optional<string>)null).IsPresent);
+            False(new Optional<string>(default).IsPresent);
+			True(new Optional<string>("").IsPresent);
+			False(new Optional<Delegate>(default).IsPresent);
+			True(new Optional<EventHandler>((sender, args) => { }).IsPresent);
 		}
+
+        [Fact]
+        public static void OrElse()
+        {
+            var result = new Optional<int>(10) || Optional<int>.Empty;
+            True(result.IsPresent);
+            Equal(10, result.Value);
+
+            result = Optional<int>.Empty || new Optional<int>(20);
+            True(result.IsPresent);
+            Equal(20, result.Value);
+        }
 	}
 }

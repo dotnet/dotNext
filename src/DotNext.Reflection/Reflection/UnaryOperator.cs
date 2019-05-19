@@ -85,6 +85,11 @@ namespace DotNext.Reflection
 	[DefaultMember("Invoke")]
     public sealed class UnaryOperator<T, R> : Operator<Operator<T, R>>
     {
+        private sealed class Cache : Cache<UnaryOperator<T, R>>
+        {
+            private protected override UnaryOperator<T, R> Create(Operator.Kind kind) => Reflect(kind);
+        }
+
         private UnaryOperator(Expression<Operator<T, R>> invoker, UnaryOperator type, MethodInfo overloaded)
             : base(invoker.Compile(), type.ToExpressionType(), overloaded)
         {
@@ -101,7 +106,7 @@ namespace DotNext.Reflection
         /// <param name="operand">An operand.</param>
         /// <returns>Result of unary operator.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public R Invoke(in T operand) => invoker(in operand);
+        public R Invoke(in T operand) => Invoker(in operand);
 
         private static Expression<Operator<T, R>> MakeUnary(Operator.Kind @operator, Operator.Operand operand, out MethodInfo overloaded)
         {
@@ -144,7 +149,7 @@ namespace DotNext.Reflection
         }
 
 
-        internal static UnaryOperator<T, R> Reflect(Operator.Kind op)
+        private static UnaryOperator<T, R> Reflect(Operator.Kind op)
         {
             var parameter = Expression.Parameter(typeof(T).MakeByRefType(), "operand");
             var result = MakeUnary(op, parameter, out var overloaded);
@@ -155,6 +160,23 @@ namespace DotNext.Reflection
                 return null;
             else
                 return new UnaryOperator<T, R>(result, op, overloaded);
+        }
+
+        private static UnaryOperator<T, R> GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(T)).GetOrCreate(op);
+        
+        internal static UnaryOperator<T, R> GetOrCreate(UnaryOperator @operator, OperatorLookup lookup)
+        {
+            switch (lookup)
+            {
+                case OperatorLookup.Predefined:
+                    return GetOrCreate(new Operator.Kind(@operator, false));
+                case OperatorLookup.Overloaded:
+                    return GetOrCreate(new Operator.Kind(@operator, true));
+                case OperatorLookup.Any:
+                    return GetOrCreate(new Operator.Kind(@operator, true)) ?? GetOrCreate(new Operator.Kind(@operator, false));
+                default:
+                    return null;
+            }
         }
     }
 }

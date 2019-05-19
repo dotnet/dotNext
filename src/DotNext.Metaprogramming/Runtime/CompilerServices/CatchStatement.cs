@@ -13,7 +13,7 @@ namespace DotNext.Runtime.CompilerServices
         internal CatchStatement(CatchBlock handler, LabelTarget faultLabel)
             : base(handler.Body, faultLabel)
         {
-            var recovery = new RecoverFromExceptionExpression(handler.Variable is null ? Variable(handler.Test, "e") : handler.Variable);
+            var recovery = new RecoverFromExceptionExpression(handler.Variable ?? Variable(handler.Test, "e"));
             filter = handler.Filter is null ? (Expression)recovery : recovery.AndAlso(handler.Filter);
             ExceptionVar = recovery.Receiver;
         }

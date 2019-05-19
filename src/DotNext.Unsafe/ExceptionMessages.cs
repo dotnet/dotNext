@@ -9,32 +9,32 @@ namespace DotNext
     [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
     internal static class ExceptionMessages
     {
-        private static readonly ResourceManager resourceManager = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
+        private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-        internal static string NullSource => resourceManager.GetString("NullSource");
+        internal static string NullSource => Resources.GetString("NullSource");
 
-        internal static string NullDestination => resourceManager.GetString("NullDestination");
+        internal static string NullDestination => Resources.GetString("NullDestination");
 
-        internal static string WrongTargetTypeSize => resourceManager.GetString("WrongTargetTypeSize");
+        internal static string WrongTargetTypeSize => Resources.GetString("WrongTargetTypeSize");
 
-        internal static string NullPtr => resourceManager.GetString("NullPtr");
+        internal static string NullPtr => Resources.GetString("NullPtr");
 
-        internal static string HandleClosed => resourceManager.GetString("HandleClosed");
+        internal static string HandleClosed => Resources.GetString("HandleClosed");
 
-        internal static string ArrayNegativeLength => resourceManager.GetString("ArrayNegativeLength");
+        internal static string ArrayNegativeLength => Resources.GetString("ArrayNegativeLength");
 
-        internal static string InvalidIndexValue(long length) => string.Format(resourceManager.GetString("InvalidIndexValue"), length);
+        internal static string InvalidIndexValue(long length) => string.Format(Resources.GetString("InvalidIndexValue"), length);
 
-        internal static string InvalidOffsetValue(long size) => string.Format(resourceManager.GetString("InvalidOffsetValue"), size);
+        internal static string InvalidOffsetValue(long size) => string.Format(Resources.GetString("InvalidOffsetValue"), size);
 
-        internal static string TargetSizeMustBeMultipleOf => resourceManager.GetString("TargetSizeMustBeMultipleOf");
+        internal static string TargetSizeMustBeMultipleOf => Resources.GetString("TargetSizeMustBeMultipleOf");
 
-        internal static string ExpectedType(Type t) => string.Format(resourceManager.GetString("ExpectedType"), t.FullName);
+        internal static string ExpectedType(Type t) => string.Format(Resources.GetString("ExpectedType"), t.FullName);
 
-        internal static string StreamNotReadable => resourceManager.GetString("StreamNotReadable");
+        internal static string StreamNotReadable => Resources.GetString("StreamNotReadable");
 
-        internal static string StreamNotWritable => resourceManager.GetString("StreamNotWritable");
+        internal static string StreamNotWritable => Resources.GetString("StreamNotWritable");
 
-        internal static string ArrayTooLong => resourceManager.GetString("ArrayTooLong");
+        internal static string ArrayTooLong => Resources.GetString("ArrayTooLong");
     }
 }

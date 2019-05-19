@@ -27,7 +27,7 @@ namespace DotNext
         /// Reverse string characters.
         /// </summary>
         /// <param name="str">The string to reverse.</param>
-        /// <returns>The string with inversed orded of characters.</returns>
+        /// <returns>The string in inverse order of characters.</returns>
         public static unsafe string Reverse(this string str)
         {
             if (str.Length == 0)

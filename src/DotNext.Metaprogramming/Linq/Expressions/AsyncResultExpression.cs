@@ -80,20 +80,20 @@ namespace DotNext.Linq.Expressions
         public override Expression Reduce()
         {
             Expression completedTask, failedTask;
-            var catchedException = Variable(typeof(Exception));
+            var caughtException = Variable(typeof(Exception));
             if (AsyncResult.Type == typeof(void))
             {
                 completedTask = Block(AsyncResult, Default(typeof(CompletedTask)));
-                failedTask = typeof(CompletedTask).New(catchedException);
+                failedTask = typeof(CompletedTask).New(caughtException);
             }
             else
             {
                 completedTask = typeof(CompletedTask<>).MakeGenericType(AsyncResult.Type).New(AsyncResult);
-                failedTask = completedTask.Type.New(catchedException);
+                failedTask = completedTask.Type.New(caughtException);
             }
             return AsyncResult is ConstantExpression || AsyncResult is DefaultExpression ?
                 completedTask.Convert(taskType) :
-                TryCatch(completedTask, Catch(catchedException, failedTask)).Convert(taskType);
+                TryCatch(completedTask, Catch(caughtException, failedTask)).Convert(taskType);
         }
 
         internal Expression Reduce(ParameterExpression stateMachine, LabelTarget endOfAsyncMethod)

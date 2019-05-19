@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq.Expressions;
 using Xunit;
 
 namespace DotNext.Reflection
@@ -146,7 +145,7 @@ namespace DotNext.Reflection
 		}
 
 		[Fact]
-		public void InstancePropertyTest()
+		public static void InstanceProperty()
 		{
 			var instance = new StructWithProperties();
 			var rwProperty = Type<StructWithProperties>.Property<string>.Require(nameof(StructWithProperties.ReadWriteProperty));
@@ -157,6 +156,8 @@ namespace DotNext.Reflection
 			rwProperty[instance] = "Hello, world";
 			Equal("Hello, world", instance.ReadWriteProperty);
 			Equal("Hello, world", rwProperty[instance]);
+            True(rwProperty.GetValue(instance, out var str));
+            Equal("Hello, world", str);
 			var wProperty = Type<StructWithProperties>.Property<int>.Require(nameof(StructWithProperties.WriteOnlyProp));
 			True(wProperty.CanWrite);
 			False(wProperty.CanRead);
@@ -165,10 +166,10 @@ namespace DotNext.Reflection
 			wProperty[instance] = 42;
 			var rProperty = Type<StructWithProperties>.Property<int>.Require(nameof(StructWithProperties.ReadOnlyProp));
 			Equal(42, rProperty[instance]);
-		}
+        }
 
 		[Fact]
-		public void StructPropertyTest()
+		public static void StructProperty()
 		{
 			var instance = new StructWithProperties();
 			var rwProperty = Type<StructWithProperties>.Property<string>.Require(nameof(StructWithProperties.ReadWriteProperty));
@@ -189,7 +190,7 @@ namespace DotNext.Reflection
 		}
 
 		[Fact]
-		public void StaticPropertyTest()
+		public static void StaticProperty()
 		{
 			var property = Type<ClassWithProperties>.Property<long>.RequireStatic(nameof(ClassWithProperties.StaticProp), true);
 			True(property.CanRead);
@@ -215,7 +216,7 @@ namespace DotNext.Reflection
 		}
 
 		[Fact]
-		public void StaticEventTest()
+		public static void StaticEventTest()
 		{
 			var ev = Type<TypeTests>.Event<EventHandler>.RequireStatic(nameof(StaticEvent), true);
 			EventHandler handler = (sender, args) => { };
@@ -228,7 +229,7 @@ namespace DotNext.Reflection
         private static long Field = 0;
 
         [Fact]
-		public void StaticFieldTest()
+		public static void StaticFieldTest()
 		{
 			MemberGetter<Guid> structField = Type<Guid>.Field<Guid>.RequireStatic(nameof(Guid.Empty));
 			Guid.Empty.Equals(structField());
@@ -256,7 +257,7 @@ namespace DotNext.Reflection
 		}
 
 		[Fact]
-		public void InvalidConversionTest()
+		public static void InvalidConversionTest()
 		{
 			False(Type<string>.TryConvert(23, out _));
 			False(Type<string>.TryConvert(new object(), out _));
@@ -265,7 +266,7 @@ namespace DotNext.Reflection
 		}
 
 		[Fact]
-		public void GetHashCodeTest()
+		public static void GetHashCodeTest()
 		{
 			Equal("Hello".GetHashCode(), Type<string>.GetHashCode("Hello"));
 			NotEqual(new object().GetHashCode(), Type<object>.GetHashCode(new object()));
@@ -278,7 +279,7 @@ namespace DotNext.Reflection
 		}
 		
 		[Fact]
-		public void BitwiseEqualityTest()
+		public static void BitwiseEqualityTest()
 		{
 			var guid = Guid.NewGuid();
 			True(Type<Guid>.Equals(in guid, in guid));

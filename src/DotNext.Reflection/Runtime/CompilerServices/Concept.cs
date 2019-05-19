@@ -7,7 +7,7 @@ namespace DotNext.Runtime.CompilerServices
     using Reflection;
 
     /// <summary>
-    /// Provides a check of constaints defined by concept types.
+    /// Provides a check of constraints defined by concept types.
     /// </summary>
     public static class Concept
     {
@@ -15,7 +15,7 @@ namespace DotNext.Runtime.CompilerServices
         /// Applies constraints described by concept type.
         /// </summary>
         /// <param name="conceptType">A static type describing concept.</param>
-        /// <exception cref="ConstraintViolationException">One or more constaints defined by concept type are violated.</exception>
+        /// <exception cref="ConstraintViolationException">One or more constraints defined by concept type are violated.</exception>
         /// <exception cref="ArgumentException"><paramref name="conceptType"/> is not marked with <see cref="ConceptAttribute"/>.</exception>
         public static void Assert(Type conceptType)
         {
@@ -40,7 +40,7 @@ namespace DotNext.Runtime.CompilerServices
         /// Applies constraints described by concept type.
         /// </summary>
         /// <typeparam name="C">A type describing concept.</typeparam>
-        /// <exception cref="ConstraintViolationException">One or more constaints defined by concept type are violated.</exception>
+        /// <exception cref="ConstraintViolationException">One or more constraints defined by concept type are violated.</exception>
         /// <exception cref="ArgumentException"><typeparamref name="C"/> is not marked with <see cref="ConceptAttribute"/>.</exception>
         public static void Assert<C>() => Assert(typeof(C));
 

@@ -98,8 +98,7 @@ namespace DotNext.Collections.Generic
         public void Add(T item)
         {
             EnsureCapacity(count + 1);
-            array[count] = item;
-            count += 1;
+            array[count++] = item;
         }
 
         /// <summary>

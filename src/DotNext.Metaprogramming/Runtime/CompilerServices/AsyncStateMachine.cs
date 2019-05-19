@@ -63,7 +63,7 @@ namespace DotNext.Runtime.CompilerServices
         /// Enters guarded code block which represents <c>try</c> block of code
         /// inside of async lambda function.
         /// </summary>
-        /// <param name="newState">The identifier of the async state machine representing guared code.</param>
+        /// <param name="newState">The identifier of the async state machine representing guarded code.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void EnterGuardedCode(uint newState)
@@ -254,7 +254,7 @@ namespace DotNext.Runtime.CompilerServices
         /// Enters guarded code block which represents <c>try</c> block of code
         /// inside of async lambda function.
         /// </summary>
-        /// <param name="newState">The identifier of the async machine state representing guared code.</param>
+        /// <param name="newState">The identifier of the async machine state representing guarded code.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public void EnterGuardedCode(uint newState)

@@ -20,7 +20,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <summary>
         /// Number of elements in the tuple.
         /// </summary>
-        public int Count => items.Count + (Rest is null ? 0 : Rest.Count);
+        public int Count => items.Count + (Rest?.Count ?? 0);
 
         /// <summary>
         /// Constructs value tuple.
@@ -103,7 +103,7 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <returns>An enumerator over all tuple components.</returns>
         public IEnumerator<Type> GetEnumerator()
-            => (Rest is null ? items : Enumerable.Concat(items, Rest)).GetEnumerator();
+            => (Rest is null ? items : items.Concat(Rest)).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
@@ -114,10 +114,8 @@ namespace DotNext.Runtime.CompilerServices
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
                 items.Clear();
-                Rest?.Dispose(disposing);
-            }
+            Rest?.Dispose(disposing);
             base.Dispose(disposing);
         }
     }

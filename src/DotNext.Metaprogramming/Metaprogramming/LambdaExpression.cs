@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Linq.Expressions;
-using DebugInfoGenerator = System.Runtime.CompilerServices.DebugInfoGenerator;
 
 namespace DotNext.Metaprogramming
 {
-    using static Collections.Generic.Collection;
     using static Reflection.DelegateType;
 
     /// <summary>
@@ -71,15 +68,7 @@ namespace DotNext.Metaprogramming
         /// <remarks>
         /// This property can be used to make recursive calls.
         /// </remarks>
-        internal override Expression Self
-        {
-            get
-            {
-                if (recursion is null)
-                    recursion = Expression.Variable(typeof(D), "self");
-                return recursion;
-            }
-        }
+        internal override Expression Self => recursion ?? (recursion = Expression.Variable(typeof(D), "self"));
 
         /// <summary>
         /// Gets lambda parameters.

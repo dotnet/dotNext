@@ -104,7 +104,7 @@ namespace DotNext.Metaprogramming
 
         private sealed class MatchByTwoMembersStatement : MatchStatement<Action<MemberExpression, MemberExpression>>
         {
-            private readonly new struct CaseStatementBuilder : ICaseStatementBuilder
+            private new readonly struct CaseStatementBuilder : ICaseStatementBuilder
             {
                 private readonly string memberName1, memberName2;
                 private readonly Action<MemberExpression, MemberExpression> memberHandler;
@@ -345,7 +345,8 @@ namespace DotNext.Metaprogramming
         internal MatchStatement<Action<MemberExpression, MemberExpression, MemberExpression>> Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3)
             => new MatchByThreeMembersStatement(this, memberName1, memberValue1, memberName2, memberValue2, memberName3, memberValue3);
 
-        internal MatchStatement<Action<ParameterExpression>> Case(object structPattern) => Case(GetProperties(structPattern));
+        internal MatchStatement<Action<ParameterExpression>> Case(object structPattern) =>
+            Case(StructuralPattern(GetProperties(structPattern)));
 
         /// <summary>
         /// Defines pattern matching based on the expected type of value.

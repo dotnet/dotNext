@@ -168,7 +168,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
-		public bool GetAndAcummulate(bool x, Func<bool, bool, bool> accumulator)
+		public bool GetAndAccumulate(bool x, Func<bool, bool, bool> accumulator)
             => Accumulate(x, accumulator).OldValue;
 
         /// <summary>

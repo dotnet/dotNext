@@ -200,7 +200,7 @@ namespace DotNext.Runtime.InteropServices
         public UnmanagedArray<T> Slice(long startIndex) => Slice(startIndex, Length);
 
         /// <summary>
-        /// Forms a slice out of the current sarraypan starting at a specified index for a specified length.
+        /// Forms a slice out of the current array starting at a specified index for a specified length.
         /// </summary>
         /// <remarks>
         /// This method doesn't allocate a new array, just returns a view of the current array.

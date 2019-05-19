@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -14,7 +15,7 @@ namespace DotNext.Threading
     /// The object pool implements two scheduling strategies:
     /// <list type="number">
     /// <item>
-    /// <term>Round-robin</term>
+    /// <term>Round-robin.</term>
     /// <description>
     /// This strategy requires that all objects should be created and initialized before instantiation
     /// of object pool. All objects are placed into pool and shared between concurrent threads.
@@ -24,9 +25,9 @@ namespace DotNext.Threading
     /// </description>
     /// </item>
     /// <item>
-    /// <term>Shortest Job First</term>
+    /// <term>Shortest Job First.</term>
     /// <description>
-    /// This stategy instantiates objects in the pool on-demand depends on workload.
+    /// This strategy instantiates objects in the pool on-demand depends on workload.
     /// The first released object will be passed to the one of waiting threads.
     /// Fairness policy is not supported so the longest waiting thread may not obtain
     /// the object first.
@@ -75,8 +76,6 @@ namespace DotNext.Threading
          */
         private sealed class Rental : IRental
         {
-            //cached delegate to avoid memory allocations and increase chance of inline caching
-            private static readonly WaitCallback DisposeResource = resource => ((IDisposable) resource).Dispose();
             private AtomicBoolean lockState;
             private T resource; //this is not volatile because it's consistency is protected by lockState memory barrier
             private readonly int position;
@@ -140,9 +139,8 @@ namespace DotNext.Threading
                     if(success = timeToLive.DecrementAndGet() <= 0) //decrease weight because this object was accessed a long time ago
                     {
                         //prevent this method from blocking so dispose resource asynchronously
-                        //TODO: Should be replaced with typed QueueUserWorkItem method in .NET Standard 2.1
-                        if(resource is IDisposable)
-                            ThreadPool.QueueUserWorkItem(DisposeResource, resource);
+                        if (resource is IDisposable disposable)
+                            QueueDispose(disposable);
                         resource = null;
                     }
                     lockState.Value = false;
@@ -197,9 +195,7 @@ namespace DotNext.Threading
         {
             if(capacity < 1)
                 throw new ArgumentOutOfRangeException(nameof(capacity));
-            if (factory is null)
-                throw new ArgumentNullException(nameof(factory));
-            this.factory = factory;
+            this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
             var rental = default(Rental);
             Action<Rental> callback = AdjustAvailableObjectAndCheckStarvation;
             for(var index = 0; index < capacity; index++)
@@ -214,6 +210,7 @@ namespace DotNext.Threading
                     rental = next;
                 }
             }
+            Debug.Assert(!(rental is null));
             rental.Attach(current.Value);
             current = new AtomicReference<Rental>(rental);
             Capacity = capacity;
@@ -243,7 +240,7 @@ namespace DotNext.Threading
                     rental = next;
                 }
             }
-            if(index == 0)
+            if(rental is null)
                 throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
             rental.Attach(current.Value);
             current = new AtomicReference<Rental>(rental);
@@ -287,13 +284,11 @@ namespace DotNext.Threading
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
                 var rental = current.UpdateAndGet(SelectNextRental);
-                if (rental.TryAcquire())
-                {
-                    waitCount.DecrementAndGet();
-                    if (!(factory is null))
-                        rental.Renew(lifetime, factory);
-                    return rental;
-                }
+                if (!rental.TryAcquire()) continue;
+                waitCount.DecrementAndGet();
+                if (!(factory is null))
+                    rental.Renew(lifetime, factory);
+                return rental;
             }
         }
 
@@ -303,7 +298,7 @@ namespace DotNext.Threading
         /// <remarks>
         /// This method is not thread-safe and may not be used concurrently with other members of this instance.
         /// Additionally, this method disposes all objects stored in the pool if it was created
-        /// with <see cref="ConcurrentObjectPool(int, Func{T})"/> constructor.
+        /// with <see cref="ConcurrentObjectPool{T}(int, Func{T})"/> constructor.
         /// </remarks>
         /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
         protected override void Dispose(bool disposing)

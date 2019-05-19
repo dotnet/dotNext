@@ -78,9 +78,9 @@ namespace DotNext
         public static void ArrayOfRefTypeComparer()
         {
             new EqualityComparerBuilder<string[]>().Build(out var equality, out var hashCode);
-            var array = new string[] { "a", "b" };
-            Equal(hashCode(array), hashCode(new string[] { "a", "b" }));
-            True(equality(array, new string[] { "a", "b" }));
+            var array = new[] { "a", "b" };
+            Equal(hashCode(array), hashCode(new[] { "a", "b" }));
+            True(equality(array, new[] { "a", "b" }));
         }
 
         [Fact]
