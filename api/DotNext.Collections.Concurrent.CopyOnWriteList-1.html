@@ -139,7 +139,7 @@ public class CopyOnWriteList&lt;T&gt; : IReadOnlyList&lt;T&gt;, IReadOnlyCollect
     </tbody>
   </table>
   <h5 id="DotNext_Collections_Concurrent_CopyOnWriteList_1_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>This list is perfrect for scenarios when reads are frequent and concurrent but writes not. Read operation never cause synchronization of the list.
+  <div class="markdown level0 remarks"><p>This list is perfect for scenarios when reads are frequent and concurrent but writes not. Read operation never cause synchronization of the list.
 The enumerator doesn't track additions, removals or changes in the list since enumerator was created. As a result, dirty reads are possible.</p>
 </div>
   <h3 id="constructors">Constructors
@@ -1529,7 +1529,7 @@ The enumerator doesn't track additions, removals or changes in the list since en
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Optional.html#DotNext_Optional_EmptyIfNull__1___0_">Optional.EmptyIfNull&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_TryUnbox__1_System_Object_">ObjectExtensions.TryUnbox&lt;T&gt;(Object)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
@@ -1542,6 +1542,12 @@ The enumerator doesn't track additions, removals or changes in the list since en
   </div>
   <div>
       <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Sequence.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, String, String)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Append__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Append&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>

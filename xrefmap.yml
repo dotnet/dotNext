@@ -3393,6 +3393,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Disposable.IsDisposed
   nameWithType: Disposable.IsDisposed
+- uid: DotNext.Disposable.QueueDispose(System.IDisposable)
+  name: QueueDispose(IDisposable)
+  href: api/DotNext.Disposable.html#DotNext_Disposable_QueueDispose_System_IDisposable_
+  commentId: M:DotNext.Disposable.QueueDispose(System.IDisposable)
+  fullName: DotNext.Disposable.QueueDispose(System.IDisposable)
+  nameWithType: Disposable.QueueDispose(IDisposable)
+- uid: DotNext.Disposable.QueueDispose*
+  name: QueueDispose
+  href: api/DotNext.Disposable.html#DotNext_Disposable_QueueDispose_
+  commentId: Overload:DotNext.Disposable.QueueDispose
+  isSpec: "True"
+  fullName: DotNext.Disposable.QueueDispose
+  nameWithType: Disposable.QueueDispose
 - uid: DotNext.Disposable.ThrowIfDisposed
   name: ThrowIfDisposed()
   href: api/DotNext.Disposable.html#DotNext_Disposable_ThrowIfDisposed
@@ -4479,6 +4492,38 @@ references:
   fullName.vb: DotNext.Func.Identity(Of I, O)()
   nameWithType: Func.Identity<I, O>()
   nameWithType.vb: Func.Identity(Of I, O)()
+- uid: DotNext.Func.IsNotNull*
+  name: IsNotNull
+  href: api/DotNext.Func.html#DotNext_Func_IsNotNull_
+  commentId: Overload:DotNext.Func.IsNotNull
+  isSpec: "True"
+  fullName: DotNext.Func.IsNotNull
+  nameWithType: Func.IsNotNull
+- uid: DotNext.Func.IsNotNull``1
+  name: IsNotNull<T>()
+  href: api/DotNext.Func.html#DotNext_Func_IsNotNull__1
+  commentId: M:DotNext.Func.IsNotNull``1
+  name.vb: IsNotNull(Of T)()
+  fullName: DotNext.Func.IsNotNull<T>()
+  fullName.vb: DotNext.Func.IsNotNull(Of T)()
+  nameWithType: Func.IsNotNull<T>()
+  nameWithType.vb: Func.IsNotNull(Of T)()
+- uid: DotNext.Func.IsNull*
+  name: IsNull
+  href: api/DotNext.Func.html#DotNext_Func_IsNull_
+  commentId: Overload:DotNext.Func.IsNull
+  isSpec: "True"
+  fullName: DotNext.Func.IsNull
+  nameWithType: Func.IsNull
+- uid: DotNext.Func.IsNull``1
+  name: IsNull<T>()
+  href: api/DotNext.Func.html#DotNext_Func_IsNull__1
+  commentId: M:DotNext.Func.IsNull``1
+  name.vb: IsNull(Of T)()
+  fullName: DotNext.Func.IsNull<T>()
+  fullName.vb: DotNext.Func.IsNull(Of T)()
+  nameWithType: Func.IsNull<T>()
+  nameWithType.vb: Func.IsNull(Of T)()
 - uid: DotNext.Function
   name: Function
   href: api/DotNext.Function.html
@@ -5220,25 +5265,6 @@ references:
   fullName.vb: DotNext.GenericArgumentException(Of G).GenericArgumentException
   nameWithType: GenericArgumentException<G>.GenericArgumentException
   nameWithType.vb: GenericArgumentException(Of G).GenericArgumentException
-- uid: DotNext.IOptional
-  name: IOptional
-  href: api/DotNext.IOptional.html
-  commentId: T:DotNext.IOptional
-  fullName: DotNext.IOptional
-  nameWithType: IOptional
-- uid: DotNext.IOptional.IsPresent
-  name: IsPresent
-  href: api/DotNext.IOptional.html#DotNext_IOptional_IsPresent
-  commentId: P:DotNext.IOptional.IsPresent
-  fullName: DotNext.IOptional.IsPresent
-  nameWithType: IOptional.IsPresent
-- uid: DotNext.IOptional.IsPresent*
-  name: IsPresent
-  href: api/DotNext.IOptional.html#DotNext_IOptional_IsPresent_
-  commentId: Overload:DotNext.IOptional.IsPresent
-  isSpec: "True"
-  fullName: DotNext.IOptional.IsPresent
-  nameWithType: IOptional.IsPresent
 - uid: DotNext.ItemAction`2
   name: ItemAction<I, V>
   href: api/DotNext.ItemAction-2.html
@@ -10769,6 +10795,22 @@ references:
   fullName.vb: DotNext.ObjectExtensions.IsOneOf(Of T)(T, System.Collections.Generic.IEnumerable(Of T))
   nameWithType: ObjectExtensions.IsOneOf<T>(T, IEnumerable<T>)
   nameWithType.vb: ObjectExtensions.IsOneOf(Of T)(T, IEnumerable(Of T))
+- uid: DotNext.ObjectExtensions.TryUnbox*
+  name: TryUnbox
+  href: api/DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_TryUnbox_
+  commentId: Overload:DotNext.ObjectExtensions.TryUnbox
+  isSpec: "True"
+  fullName: DotNext.ObjectExtensions.TryUnbox
+  nameWithType: ObjectExtensions.TryUnbox
+- uid: DotNext.ObjectExtensions.TryUnbox``1(System.Object)
+  name: TryUnbox<T>(Object)
+  href: api/DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_TryUnbox__1_System_Object_
+  commentId: M:DotNext.ObjectExtensions.TryUnbox``1(System.Object)
+  name.vb: TryUnbox(Of T)(Object)
+  fullName: DotNext.ObjectExtensions.TryUnbox<T>(System.Object)
+  fullName.vb: DotNext.ObjectExtensions.TryUnbox(Of T)(System.Object)
+  nameWithType: ObjectExtensions.TryUnbox<T>(Object)
+  nameWithType.vb: ObjectExtensions.TryUnbox(Of T)(Object)
 - uid: DotNext.OneDimensionalArray
   name: OneDimensionalArray
   href: api/DotNext.OneDimensionalArray.html
@@ -11064,22 +11106,6 @@ references:
   fullName.vb: DotNext.Optional.Convert(Of I, O)(System.Threading.Tasks.Task(Of DotNext.Optional(Of I)), System.Converter(Of I, O))
   nameWithType: Optional.Convert<I, O>(Task<Optional<I>>, Converter<I, O>)
   nameWithType.vb: Optional.Convert(Of I, O)(Task(Of Optional(Of I)), Converter(Of I, O))
-- uid: DotNext.Optional.EmptyIfNull*
-  name: EmptyIfNull
-  href: api/DotNext.Optional.html#DotNext_Optional_EmptyIfNull_
-  commentId: Overload:DotNext.Optional.EmptyIfNull
-  isSpec: "True"
-  fullName: DotNext.Optional.EmptyIfNull
-  nameWithType: Optional.EmptyIfNull
-- uid: DotNext.Optional.EmptyIfNull``1(``0)
-  name: EmptyIfNull<T>(T)
-  href: api/DotNext.Optional.html#DotNext_Optional_EmptyIfNull__1___0_
-  commentId: M:DotNext.Optional.EmptyIfNull``1(``0)
-  name.vb: EmptyIfNull(Of T)(T)
-  fullName: DotNext.Optional.EmptyIfNull<T>(T)
-  fullName.vb: DotNext.Optional.EmptyIfNull(Of T)(T)
-  nameWithType: Optional.EmptyIfNull<T>(T)
-  nameWithType.vb: Optional.EmptyIfNull(Of T)(T)
 - uid: DotNext.Optional.GetUnderlyingType(System.Type)
   name: GetUnderlyingType(Type)
   href: api/DotNext.Optional.html#DotNext_Optional_GetUnderlyingType_System_Type_
@@ -11364,24 +11390,6 @@ references:
   fullName.vb: DotNext.Optional(Of T).GetHashCode
   nameWithType: Optional<T>.GetHashCode
   nameWithType.vb: Optional(Of T).GetHashCode
-- uid: DotNext.Optional`1.HasValue(`0@)
-  name: HasValue(T)
-  href: api/DotNext.Optional-1.html#DotNext_Optional_1_HasValue__0__
-  commentId: M:DotNext.Optional`1.HasValue(`0@)
-  name.vb: HasValue(ByRef T)
-  fullName: DotNext.Optional<T>.HasValue(T)
-  fullName.vb: DotNext.Optional(Of T).HasValue(ByRef T)
-  nameWithType: Optional<T>.HasValue(T)
-  nameWithType.vb: Optional(Of T).HasValue(ByRef T)
-- uid: DotNext.Optional`1.HasValue*
-  name: HasValue
-  href: api/DotNext.Optional-1.html#DotNext_Optional_1_HasValue_
-  commentId: Overload:DotNext.Optional`1.HasValue
-  isSpec: "True"
-  fullName: DotNext.Optional<T>.HasValue
-  fullName.vb: DotNext.Optional(Of T).HasValue
-  nameWithType: Optional<T>.HasValue
-  nameWithType.vb: Optional(Of T).HasValue
 - uid: DotNext.Optional`1.If(System.Predicate{`0})
   name: If(Predicate<T>)
   href: api/DotNext.Optional-1.html#DotNext_Optional_1_If_System_Predicate__0__
@@ -12391,49 +12399,49 @@ references:
   fullName: DotNext.Reflection.BinaryOperator.Xor
   nameWithType: BinaryOperator.Xor
 - uid: DotNext.Reflection.BinaryOperator`3
-  name: BinaryOperator<OP1, OP2, R>
+  name: BinaryOperator<Op1, Op2, R>
   href: api/DotNext.Reflection.BinaryOperator-3.html
   commentId: T:DotNext.Reflection.BinaryOperator`3
-  name.vb: BinaryOperator(Of OP1, OP2, R)
-  fullName: DotNext.Reflection.BinaryOperator<OP1, OP2, R>
-  fullName.vb: DotNext.Reflection.BinaryOperator(Of OP1, OP2, R)
-  nameWithType: BinaryOperator<OP1, OP2, R>
-  nameWithType.vb: BinaryOperator(Of OP1, OP2, R)
+  name.vb: BinaryOperator(Of Op1, Op2, R)
+  fullName: DotNext.Reflection.BinaryOperator<Op1, Op2, R>
+  fullName.vb: DotNext.Reflection.BinaryOperator(Of Op1, Op2, R)
+  nameWithType: BinaryOperator<Op1, Op2, R>
+  nameWithType.vb: BinaryOperator(Of Op1, Op2, R)
 - uid: DotNext.Reflection.BinaryOperator`3.Invoke(`0@,`1@)
-  name: Invoke(OP1, OP2)
+  name: Invoke(Op1, Op2)
   href: api/DotNext.Reflection.BinaryOperator-3.html#DotNext_Reflection_BinaryOperator_3_Invoke__0___1__
   commentId: M:DotNext.Reflection.BinaryOperator`3.Invoke(`0@,`1@)
-  name.vb: Invoke(ByRef OP1, ByRef OP2)
-  fullName: DotNext.Reflection.BinaryOperator<OP1, OP2, R>.Invoke(OP1, OP2)
-  fullName.vb: DotNext.Reflection.BinaryOperator(Of OP1, OP2, R).Invoke(ByRef OP1, ByRef OP2)
-  nameWithType: BinaryOperator<OP1, OP2, R>.Invoke(OP1, OP2)
-  nameWithType.vb: BinaryOperator(Of OP1, OP2, R).Invoke(ByRef OP1, ByRef OP2)
+  name.vb: Invoke(ByRef Op1, ByRef Op2)
+  fullName: DotNext.Reflection.BinaryOperator<Op1, Op2, R>.Invoke(Op1, Op2)
+  fullName.vb: DotNext.Reflection.BinaryOperator(Of Op1, Op2, R).Invoke(ByRef Op1, ByRef Op2)
+  nameWithType: BinaryOperator<Op1, Op2, R>.Invoke(Op1, Op2)
+  nameWithType.vb: BinaryOperator(Of Op1, Op2, R).Invoke(ByRef Op1, ByRef Op2)
 - uid: DotNext.Reflection.BinaryOperator`3.Invoke*
   name: Invoke
   href: api/DotNext.Reflection.BinaryOperator-3.html#DotNext_Reflection_BinaryOperator_3_Invoke_
   commentId: Overload:DotNext.Reflection.BinaryOperator`3.Invoke
   isSpec: "True"
-  fullName: DotNext.Reflection.BinaryOperator<OP1, OP2, R>.Invoke
-  fullName.vb: DotNext.Reflection.BinaryOperator(Of OP1, OP2, R).Invoke
-  nameWithType: BinaryOperator<OP1, OP2, R>.Invoke
-  nameWithType.vb: BinaryOperator(Of OP1, OP2, R).Invoke
+  fullName: DotNext.Reflection.BinaryOperator<Op1, Op2, R>.Invoke
+  fullName.vb: DotNext.Reflection.BinaryOperator(Of Op1, Op2, R).Invoke
+  nameWithType: BinaryOperator<Op1, Op2, R>.Invoke
+  nameWithType.vb: BinaryOperator(Of Op1, Op2, R).Invoke
 - uid: DotNext.Reflection.BinaryOperator`3.Type
   name: Type
   href: api/DotNext.Reflection.BinaryOperator-3.html#DotNext_Reflection_BinaryOperator_3_Type
   commentId: P:DotNext.Reflection.BinaryOperator`3.Type
-  fullName: DotNext.Reflection.BinaryOperator<OP1, OP2, R>.Type
-  fullName.vb: DotNext.Reflection.BinaryOperator(Of OP1, OP2, R).Type
-  nameWithType: BinaryOperator<OP1, OP2, R>.Type
-  nameWithType.vb: BinaryOperator(Of OP1, OP2, R).Type
+  fullName: DotNext.Reflection.BinaryOperator<Op1, Op2, R>.Type
+  fullName.vb: DotNext.Reflection.BinaryOperator(Of Op1, Op2, R).Type
+  nameWithType: BinaryOperator<Op1, Op2, R>.Type
+  nameWithType.vb: BinaryOperator(Of Op1, Op2, R).Type
 - uid: DotNext.Reflection.BinaryOperator`3.Type*
   name: Type
   href: api/DotNext.Reflection.BinaryOperator-3.html#DotNext_Reflection_BinaryOperator_3_Type_
   commentId: Overload:DotNext.Reflection.BinaryOperator`3.Type
   isSpec: "True"
-  fullName: DotNext.Reflection.BinaryOperator<OP1, OP2, R>.Type
-  fullName.vb: DotNext.Reflection.BinaryOperator(Of OP1, OP2, R).Type
-  nameWithType: BinaryOperator<OP1, OP2, R>.Type
-  nameWithType.vb: BinaryOperator(Of OP1, OP2, R).Type
+  fullName: DotNext.Reflection.BinaryOperator<Op1, Op2, R>.Type
+  fullName.vb: DotNext.Reflection.BinaryOperator(Of Op1, Op2, R).Type
+  nameWithType: BinaryOperator<Op1, Op2, R>.Type
+  nameWithType.vb: BinaryOperator(Of Op1, Op2, R).Type
 - uid: DotNext.Reflection.CollectionType
   name: CollectionType
   href: api/DotNext.Reflection.CollectionType.html
@@ -16137,24 +16145,6 @@ references:
   fullName.vb: DotNext.Reflection.Member.Invoke(Of M, P1, P2, P3, P4, P5, P6, P7, R)(DotNext.Reflection.IMember(Of M, System.Func(Of P1, P2, P3, P4, P5, P6, P7, R)), P1, P2, P3, P4, P5, P6, P7)
   nameWithType: Member.Invoke<M, P1, P2, P3, P4, P5, P6, P7, R>(IMember<M, Func<P1, P2, P3, P4, P5, P6, P7, R>>, P1, P2, P3, P4, P5, P6, P7)
   nameWithType.vb: Member.Invoke(Of M, P1, P2, P3, P4, P5, P6, P7, R)(IMember(Of M, Func(Of P1, P2, P3, P4, P5, P6, P7, R)), P1, P2, P3, P4, P5, P6, P7)
-- uid: DotNext.Reflection.MemberAction
-  name: MemberAction
-  href: api/DotNext.Reflection.MemberAction.html
-  commentId: T:DotNext.Reflection.MemberAction
-  fullName: DotNext.Reflection.MemberAction
-  nameWithType: MemberAction
-- uid: DotNext.Reflection.MemberAction.GetValue
-  name: GetValue
-  href: api/DotNext.Reflection.MemberAction.html#DotNext_Reflection_MemberAction_GetValue
-  commentId: F:DotNext.Reflection.MemberAction.GetValue
-  fullName: DotNext.Reflection.MemberAction.GetValue
-  nameWithType: MemberAction.GetValue
-- uid: DotNext.Reflection.MemberAction.SetValue
-  name: SetValue
-  href: api/DotNext.Reflection.MemberAction.html#DotNext_Reflection_MemberAction_SetValue
-  commentId: F:DotNext.Reflection.MemberAction.SetValue
-  fullName: DotNext.Reflection.MemberAction.SetValue
-  nameWithType: MemberAction.SetValue
 - uid: DotNext.Reflection.MemberGetter`1
   name: MemberGetter<V>
   href: api/DotNext.Reflection.MemberGetter-1.html
@@ -17061,6 +17051,19 @@ references:
   commentId: T:DotNext.Reflection.MissingFieldException
   fullName: DotNext.Reflection.MissingFieldException
   nameWithType: MissingFieldException
+- uid: DotNext.Reflection.MissingFieldException.#ctor(System.Type,System.String,System.Type)
+  name: MissingFieldException(Type, String, Type)
+  href: api/DotNext.Reflection.MissingFieldException.html#DotNext_Reflection_MissingFieldException__ctor_System_Type_System_String_System_Type_
+  commentId: M:DotNext.Reflection.MissingFieldException.#ctor(System.Type,System.String,System.Type)
+  fullName: DotNext.Reflection.MissingFieldException.MissingFieldException(System.Type, System.String, System.Type)
+  nameWithType: MissingFieldException.MissingFieldException(Type, String, Type)
+- uid: DotNext.Reflection.MissingFieldException.#ctor*
+  name: MissingFieldException
+  href: api/DotNext.Reflection.MissingFieldException.html#DotNext_Reflection_MissingFieldException__ctor_
+  commentId: Overload:DotNext.Reflection.MissingFieldException.#ctor
+  isSpec: "True"
+  fullName: DotNext.Reflection.MissingFieldException.MissingFieldException
+  nameWithType: MissingFieldException.MissingFieldException
 - uid: DotNext.Reflection.MissingFieldException.FieldName
   name: FieldName
   href: api/DotNext.Reflection.MissingFieldException.html#DotNext_Reflection_MissingFieldException_FieldName
@@ -17173,6 +17176,19 @@ references:
   commentId: T:DotNext.Reflection.MissingPropertyException
   fullName: DotNext.Reflection.MissingPropertyException
   nameWithType: MissingPropertyException
+- uid: DotNext.Reflection.MissingPropertyException.#ctor(System.Type,System.String,System.Type)
+  name: MissingPropertyException(Type, String, Type)
+  href: api/DotNext.Reflection.MissingPropertyException.html#DotNext_Reflection_MissingPropertyException__ctor_System_Type_System_String_System_Type_
+  commentId: M:DotNext.Reflection.MissingPropertyException.#ctor(System.Type,System.String,System.Type)
+  fullName: DotNext.Reflection.MissingPropertyException.MissingPropertyException(System.Type, System.String, System.Type)
+  nameWithType: MissingPropertyException.MissingPropertyException(Type, String, Type)
+- uid: DotNext.Reflection.MissingPropertyException.#ctor*
+  name: MissingPropertyException
+  href: api/DotNext.Reflection.MissingPropertyException.html#DotNext_Reflection_MissingPropertyException__ctor_
+  commentId: Overload:DotNext.Reflection.MissingPropertyException.#ctor
+  isSpec: "True"
+  fullName: DotNext.Reflection.MissingPropertyException.MissingPropertyException
+  nameWithType: MissingPropertyException.MissingPropertyException
 - uid: DotNext.Reflection.MissingPropertyException.PropertyName
   name: PropertyName
   href: api/DotNext.Reflection.MissingPropertyException.html#DotNext_Reflection_MissingPropertyException_PropertyName
@@ -18203,23 +18219,6 @@ references:
   fullName.vb: DotNext.Reflection.Ref(Of T)
   nameWithType: Ref<T>
   nameWithType.vb: Ref(Of T)
-- uid: DotNext.Reflection.Ref`1.Address
-  name: Address
-  href: api/DotNext.Reflection.Ref-1.html#DotNext_Reflection_Ref_1_Address
-  commentId: P:DotNext.Reflection.Ref`1.Address
-  fullName: DotNext.Reflection.Ref<T>.Address
-  fullName.vb: DotNext.Reflection.Ref(Of T).Address
-  nameWithType: Ref<T>.Address
-  nameWithType.vb: Ref(Of T).Address
-- uid: DotNext.Reflection.Ref`1.Address*
-  name: Address
-  href: api/DotNext.Reflection.Ref-1.html#DotNext_Reflection_Ref_1_Address_
-  commentId: Overload:DotNext.Reflection.Ref`1.Address
-  isSpec: "True"
-  fullName: DotNext.Reflection.Ref<T>.Address
-  fullName.vb: DotNext.Reflection.Ref(Of T).Address
-  nameWithType: Ref<T>.Address
-  nameWithType.vb: Ref(Of T).Address
 - uid: DotNext.Reflection.Ref`1.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.Reflection.Ref-1.html#DotNext_Reflection_Ref_1_Equals_System_Object_
@@ -20604,6 +20603,24 @@ references:
   fullName.vb: DotNext.Reflection.Type(Of T).Method(Of P1, P2, P3, P4, P5, P6).RequireStatic(Of R)(System.String, System.Boolean)
   nameWithType: Type<T>.Method<P1, P2, P3, P4, P5, P6>.RequireStatic<R>(String, Boolean)
   nameWithType.vb: Type(Of T).Method(Of P1, P2, P3, P4, P5, P6).RequireStatic(Of R)(String, Boolean)
+- uid: DotNext.Reflection.Type`1.NewInstance*
+  name: NewInstance
+  href: api/DotNext.Reflection.Type-1.html#DotNext_Reflection_Type_1_NewInstance_
+  commentId: Overload:DotNext.Reflection.Type`1.NewInstance
+  isSpec: "True"
+  fullName: DotNext.Reflection.Type<T>.NewInstance
+  fullName.vb: DotNext.Reflection.Type(Of T).NewInstance
+  nameWithType: Type<T>.NewInstance
+  nameWithType.vb: Type(Of T).NewInstance
+- uid: DotNext.Reflection.Type`1.NewInstance``1(``0@,System.Boolean)
+  name: NewInstance<A>(A, Boolean)
+  href: api/DotNext.Reflection.Type-1.html#DotNext_Reflection_Type_1_NewInstance__1___0__System_Boolean_
+  commentId: M:DotNext.Reflection.Type`1.NewInstance``1(``0@,System.Boolean)
+  name.vb: NewInstance(Of A)(ByRef A, Boolean)
+  fullName: DotNext.Reflection.Type<T>.NewInstance<A>(A, System.Boolean)
+  fullName.vb: DotNext.Reflection.Type(Of T).NewInstance(Of A)(ByRef A, System.Boolean)
+  nameWithType: Type<T>.NewInstance<A>(A, Boolean)
+  nameWithType.vb: Type(Of T).NewInstance(Of A)(ByRef A, Boolean)
 - uid: DotNext.Reflection.Type`1.Operator
   name: Type<T>.Operator
   href: api/DotNext.Reflection.Type-1.Operator.html
@@ -21148,6 +21165,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Reflection.TypeExtensions.IsGenericInstanceOf
   nameWithType: TypeExtensions.IsGenericInstanceOf
+- uid: DotNext.Reflection.TypeExtensions.IsImmutable(System.Type)
+  name: IsImmutable(Type)
+  href: api/DotNext.Reflection.TypeExtensions.html#DotNext_Reflection_TypeExtensions_IsImmutable_System_Type_
+  commentId: M:DotNext.Reflection.TypeExtensions.IsImmutable(System.Type)
+  fullName: DotNext.Reflection.TypeExtensions.IsImmutable(System.Type)
+  nameWithType: TypeExtensions.IsImmutable(Type)
+- uid: DotNext.Reflection.TypeExtensions.IsImmutable*
+  name: IsImmutable
+  href: api/DotNext.Reflection.TypeExtensions.html#DotNext_Reflection_TypeExtensions_IsImmutable_
+  commentId: Overload:DotNext.Reflection.TypeExtensions.IsImmutable
+  isSpec: "True"
+  fullName: DotNext.Reflection.TypeExtensions.IsImmutable
+  nameWithType: TypeExtensions.IsImmutable
 - uid: DotNext.Reflection.TypeExtensions.IsUnmanaged(System.Type)
   name: IsUnmanaged(Type)
   href: api/DotNext.Reflection.TypeExtensions.html#DotNext_Reflection_TypeExtensions_IsUnmanaged_System_Type_
@@ -25245,13 +25275,13 @@ references:
   nameWithType: UnmanagedMemory<T>.Value
   nameWithType.vb: UnmanagedMemory(Of T).Value
 - uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo(`0@)
-  name: WriteTo(ref T)
+  name: WriteTo(out T)
   href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo__0__
   commentId: M:DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo(`0@)
   name.vb: WriteTo(ByRef T)
-  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.WriteTo(ref T)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.WriteTo(out T)
   fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).WriteTo(ByRef T)
-  nameWithType: UnmanagedMemory<T>.WriteTo(ref T)
+  nameWithType: UnmanagedMemory<T>.WriteTo(out T)
   nameWithType.vb: UnmanagedMemory(Of T).WriteTo(ByRef T)
 - uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo*
   name: WriteTo
@@ -25698,6 +25728,22 @@ references:
   commentId: T:DotNext.Sequence
   fullName: DotNext.Sequence
   nameWithType: Sequence
+- uid: DotNext.Sequence.Append*
+  name: Append
+  href: api/DotNext.Sequence.html#DotNext_Sequence_Append_
+  commentId: Overload:DotNext.Sequence.Append
+  isSpec: "True"
+  fullName: DotNext.Sequence.Append
+  nameWithType: Sequence.Append
+- uid: DotNext.Sequence.Append``1(System.Collections.Generic.IEnumerable{``0},``0[])
+  name: Append<T>(IEnumerable<T>, T[])
+  href: api/DotNext.Sequence.html#DotNext_Sequence_Append__1_System_Collections_Generic_IEnumerable___0____0___
+  commentId: M:DotNext.Sequence.Append``1(System.Collections.Generic.IEnumerable{``0},``0[])
+  name.vb: Append(Of T)(IEnumerable(Of T), T())
+  fullName: DotNext.Sequence.Append<T>(System.Collections.Generic.IEnumerable<T>, T[])
+  fullName.vb: DotNext.Sequence.Append(Of T)(System.Collections.Generic.IEnumerable(Of T), T())
+  nameWithType: Sequence.Append<T>(IEnumerable<T>, T[])
+  nameWithType.vb: Sequence.Append(Of T)(IEnumerable(Of T), T())
 - uid: DotNext.Sequence.ElementAt*
   name: ElementAt
   href: api/DotNext.Sequence.html#DotNext_Sequence_ElementAt_
@@ -25762,6 +25808,22 @@ references:
   fullName.vb: DotNext.Sequence.ForEach(Of T)(System.Collections.Generic.IEnumerable(Of T), System.Action(Of T))
   nameWithType: Sequence.ForEach<T>(IEnumerable<T>, Action<T>)
   nameWithType.vb: Sequence.ForEach(Of T)(IEnumerable(Of T), Action(Of T))
+- uid: DotNext.Sequence.Prepend*
+  name: Prepend
+  href: api/DotNext.Sequence.html#DotNext_Sequence_Prepend_
+  commentId: Overload:DotNext.Sequence.Prepend
+  isSpec: "True"
+  fullName: DotNext.Sequence.Prepend
+  nameWithType: Sequence.Prepend
+- uid: DotNext.Sequence.Prepend``1(System.Collections.Generic.IEnumerable{``0},``0[])
+  name: Prepend<T>(IEnumerable<T>, T[])
+  href: api/DotNext.Sequence.html#DotNext_Sequence_Prepend__1_System_Collections_Generic_IEnumerable___0____0___
+  commentId: M:DotNext.Sequence.Prepend``1(System.Collections.Generic.IEnumerable{``0},``0[])
+  name.vb: Prepend(Of T)(IEnumerable(Of T), T())
+  fullName: DotNext.Sequence.Prepend<T>(System.Collections.Generic.IEnumerable<T>, T[])
+  fullName.vb: DotNext.Sequence.Prepend(Of T)(System.Collections.Generic.IEnumerable(Of T), T())
+  nameWithType: Sequence.Prepend<T>(IEnumerable<T>, T[])
+  nameWithType.vb: Sequence.Prepend(Of T)(IEnumerable(Of T), T())
 - uid: DotNext.Sequence.SequenceHashCode(System.Collections.Generic.IEnumerable{System.Object},System.Boolean)
   name: SequenceHashCode(IEnumerable<Object>, Boolean)
   href: api/DotNext.Sequence.html#DotNext_Sequence_SequenceHashCode_System_Collections_Generic_IEnumerable_System_Object__System_Boolean_
@@ -27582,22 +27644,22 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AtomicBoolean.FalseToTrue
   nameWithType: AtomicBoolean.FalseToTrue
-- uid: DotNext.Threading.AtomicBoolean.GetAndAcummulate(System.Boolean,System.Func{System.Boolean,System.Boolean,System.Boolean})
-  name: GetAndAcummulate(Boolean, Func<Boolean, Boolean, Boolean>)
-  href: api/DotNext.Threading.AtomicBoolean.html#DotNext_Threading_AtomicBoolean_GetAndAcummulate_System_Boolean_System_Func_System_Boolean_System_Boolean_System_Boolean__
-  commentId: M:DotNext.Threading.AtomicBoolean.GetAndAcummulate(System.Boolean,System.Func{System.Boolean,System.Boolean,System.Boolean})
-  name.vb: GetAndAcummulate(Boolean, Func(Of Boolean, Boolean, Boolean))
-  fullName: DotNext.Threading.AtomicBoolean.GetAndAcummulate(System.Boolean, System.Func<System.Boolean, System.Boolean, System.Boolean>)
-  fullName.vb: DotNext.Threading.AtomicBoolean.GetAndAcummulate(System.Boolean, System.Func(Of System.Boolean, System.Boolean, System.Boolean))
-  nameWithType: AtomicBoolean.GetAndAcummulate(Boolean, Func<Boolean, Boolean, Boolean>)
-  nameWithType.vb: AtomicBoolean.GetAndAcummulate(Boolean, Func(Of Boolean, Boolean, Boolean))
-- uid: DotNext.Threading.AtomicBoolean.GetAndAcummulate*
-  name: GetAndAcummulate
-  href: api/DotNext.Threading.AtomicBoolean.html#DotNext_Threading_AtomicBoolean_GetAndAcummulate_
-  commentId: Overload:DotNext.Threading.AtomicBoolean.GetAndAcummulate
+- uid: DotNext.Threading.AtomicBoolean.GetAndAccumulate(System.Boolean,System.Func{System.Boolean,System.Boolean,System.Boolean})
+  name: GetAndAccumulate(Boolean, Func<Boolean, Boolean, Boolean>)
+  href: api/DotNext.Threading.AtomicBoolean.html#DotNext_Threading_AtomicBoolean_GetAndAccumulate_System_Boolean_System_Func_System_Boolean_System_Boolean_System_Boolean__
+  commentId: M:DotNext.Threading.AtomicBoolean.GetAndAccumulate(System.Boolean,System.Func{System.Boolean,System.Boolean,System.Boolean})
+  name.vb: GetAndAccumulate(Boolean, Func(Of Boolean, Boolean, Boolean))
+  fullName: DotNext.Threading.AtomicBoolean.GetAndAccumulate(System.Boolean, System.Func<System.Boolean, System.Boolean, System.Boolean>)
+  fullName.vb: DotNext.Threading.AtomicBoolean.GetAndAccumulate(System.Boolean, System.Func(Of System.Boolean, System.Boolean, System.Boolean))
+  nameWithType: AtomicBoolean.GetAndAccumulate(Boolean, Func<Boolean, Boolean, Boolean>)
+  nameWithType.vb: AtomicBoolean.GetAndAccumulate(Boolean, Func(Of Boolean, Boolean, Boolean))
+- uid: DotNext.Threading.AtomicBoolean.GetAndAccumulate*
+  name: GetAndAccumulate
+  href: api/DotNext.Threading.AtomicBoolean.html#DotNext_Threading_AtomicBoolean_GetAndAccumulate_
+  commentId: Overload:DotNext.Threading.AtomicBoolean.GetAndAccumulate
   isSpec: "True"
-  fullName: DotNext.Threading.AtomicBoolean.GetAndAcummulate
-  nameWithType: AtomicBoolean.GetAndAcummulate
+  fullName: DotNext.Threading.AtomicBoolean.GetAndAccumulate
+  nameWithType: AtomicBoolean.GetAndAccumulate
 - uid: DotNext.Threading.AtomicBoolean.GetAndNegate
   name: GetAndNegate()
   href: api/DotNext.Threading.AtomicBoolean.html#DotNext_Threading_AtomicBoolean_GetAndNegate
@@ -31505,6 +31567,33 @@ references:
   fullName.vb: DotNext.UserDataStorage.GetOrSet(Of V)(DotNext.UserDataSlot(Of V), System.Func(Of V))
   nameWithType: UserDataStorage.GetOrSet<V>(UserDataSlot<V>, Func<V>)
   nameWithType.vb: UserDataStorage.GetOrSet(Of V)(UserDataSlot(Of V), Func(Of V))
+- uid: DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``0})
+  name: GetOrSet<B, D>(UserDataSlot<B>)
+  href: api/DotNext.UserDataStorage.html#DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0__
+  commentId: M:DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``0})
+  name.vb: GetOrSet(Of B, D)(UserDataSlot(Of B))
+  fullName: DotNext.UserDataStorage.GetOrSet<B, D>(DotNext.UserDataSlot<B>)
+  fullName.vb: DotNext.UserDataStorage.GetOrSet(Of B, D)(DotNext.UserDataSlot(Of B))
+  nameWithType: UserDataStorage.GetOrSet<B, D>(UserDataSlot<B>)
+  nameWithType.vb: UserDataStorage.GetOrSet(Of B, D)(UserDataSlot(Of B))
+- uid: DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``1},``0,System.Func{``0,``1})
+  name: GetOrSet<T, V>(UserDataSlot<V>, T, Func<T, V>)
+  href: api/DotNext.UserDataStorage.html#DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0_System_Func___0___1__
+  commentId: M:DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``1},``0,System.Func{``0,``1})
+  name.vb: GetOrSet(Of T, V)(UserDataSlot(Of V), T, Func(Of T, V))
+  fullName: DotNext.UserDataStorage.GetOrSet<T, V>(DotNext.UserDataSlot<V>, T, System.Func<T, V>)
+  fullName.vb: DotNext.UserDataStorage.GetOrSet(Of T, V)(DotNext.UserDataSlot(Of V), T, System.Func(Of T, V))
+  nameWithType: UserDataStorage.GetOrSet<T, V>(UserDataSlot<V>, T, Func<T, V>)
+  nameWithType.vb: UserDataStorage.GetOrSet(Of T, V)(UserDataSlot(Of V), T, Func(Of T, V))
+- uid: DotNext.UserDataStorage.GetOrSet``3(DotNext.UserDataSlot{``2},``0,``1,System.Func{``0,``1,``2})
+  name: GetOrSet<T1, T2, V>(UserDataSlot<V>, T1, T2, Func<T1, T2, V>)
+  href: api/DotNext.UserDataStorage.html#DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1_System_Func___0___1___2__
+  commentId: M:DotNext.UserDataStorage.GetOrSet``3(DotNext.UserDataSlot{``2},``0,``1,System.Func{``0,``1,``2})
+  name.vb: GetOrSet(Of T1, T2, V)(UserDataSlot(Of V), T1, T2, Func(Of T1, T2, V))
+  fullName: DotNext.UserDataStorage.GetOrSet<T1, T2, V>(DotNext.UserDataSlot<V>, T1, T2, System.Func<T1, T2, V>)
+  fullName.vb: DotNext.UserDataStorage.GetOrSet(Of T1, T2, V)(DotNext.UserDataSlot(Of V), T1, T2, System.Func(Of T1, T2, V))
+  nameWithType: UserDataStorage.GetOrSet<T1, T2, V>(UserDataSlot<V>, T1, T2, Func<T1, T2, V>)
+  nameWithType.vb: UserDataStorage.GetOrSet(Of T1, T2, V)(UserDataSlot(Of V), T1, T2, Func(Of T1, T2, V))
 - uid: DotNext.UserDataStorage.op_Equality(DotNext.UserDataStorage,DotNext.UserDataStorage)
   name: Equality(UserDataStorage, UserDataStorage)
   href: api/DotNext.UserDataStorage.html#DotNext_UserDataStorage_op_Equality_DotNext_UserDataStorage_DotNext_UserDataStorage_
@@ -31644,24 +31733,24 @@ references:
   fullName.vb: DotNext.ValueType(Of T).AsBinary
   nameWithType: ValueType<T>.AsBinary
   nameWithType.vb: ValueType(Of T).AsBinary
-- uid: DotNext.ValueType`1.BitCast*
-  name: BitCast
-  href: api/DotNext.ValueType-1.html#DotNext_ValueType_1_BitCast_
-  commentId: Overload:DotNext.ValueType`1.BitCast
+- uid: DotNext.ValueType`1.Bitcast*
+  name: Bitcast
+  href: api/DotNext.ValueType-1.html#DotNext_ValueType_1_Bitcast_
+  commentId: Overload:DotNext.ValueType`1.Bitcast
   isSpec: "True"
-  fullName: DotNext.ValueType<T>.BitCast
-  fullName.vb: DotNext.ValueType(Of T).BitCast
-  nameWithType: ValueType<T>.BitCast
-  nameWithType.vb: ValueType(Of T).BitCast
-- uid: DotNext.ValueType`1.BitCast``1(`0@,``0@)
-  name: BitCast<TO>(T, out TO)
-  href: api/DotNext.ValueType-1.html#DotNext_ValueType_1_BitCast__1__0____0__
-  commentId: M:DotNext.ValueType`1.BitCast``1(`0@,``0@)
-  name.vb: BitCast(Of TO)(ByRef T, ByRef TO)
-  fullName: DotNext.ValueType<T>.BitCast<TO>(T, out TO)
-  fullName.vb: DotNext.ValueType(Of T).BitCast(Of TO)(ByRef T, ByRef TO)
-  nameWithType: ValueType<T>.BitCast<TO>(T, out TO)
-  nameWithType.vb: ValueType(Of T).BitCast(Of TO)(ByRef T, ByRef TO)
+  fullName: DotNext.ValueType<T>.Bitcast
+  fullName.vb: DotNext.ValueType(Of T).Bitcast
+  nameWithType: ValueType<T>.Bitcast
+  nameWithType.vb: ValueType(Of T).Bitcast
+- uid: DotNext.ValueType`1.Bitcast``1(`0@,``0@)
+  name: Bitcast<To>(T, out To)
+  href: api/DotNext.ValueType-1.html#DotNext_ValueType_1_Bitcast__1__0____0__
+  commentId: M:DotNext.ValueType`1.Bitcast``1(`0@,``0@)
+  name.vb: Bitcast(Of To)(ByRef T, ByRef To)
+  fullName: DotNext.ValueType<T>.Bitcast<To>(T, out To)
+  fullName.vb: DotNext.ValueType(Of T).Bitcast(Of To)(ByRef T, ByRef To)
+  nameWithType: ValueType<T>.Bitcast<To>(T, out To)
+  nameWithType.vb: ValueType(Of T).Bitcast(Of To)(ByRef T, ByRef To)
 - uid: DotNext.ValueType`1.BitwiseCompare(`0,`0)
   name: BitwiseCompare(T, T)
   href: api/DotNext.ValueType-1.html#DotNext_ValueType_1_BitwiseCompare__0__0_
@@ -31917,31 +32006,31 @@ references:
   commentId: T:DotNext.ValueTypeExtensions
   fullName: DotNext.ValueTypeExtensions
   nameWithType: ValueTypeExtensions
-- uid: DotNext.ValueTypeExtensions.BitCast*
-  name: BitCast
-  href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_BitCast_
-  commentId: Overload:DotNext.ValueTypeExtensions.BitCast
+- uid: DotNext.ValueTypeExtensions.Bitcast*
+  name: Bitcast
+  href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_Bitcast_
+  commentId: Overload:DotNext.ValueTypeExtensions.Bitcast
   isSpec: "True"
-  fullName: DotNext.ValueTypeExtensions.BitCast
-  nameWithType: ValueTypeExtensions.BitCast
-- uid: DotNext.ValueTypeExtensions.BitCast``2(``0)
-  name: BitCast<FROM, TO>(FROM)
-  href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_BitCast__2___0_
-  commentId: M:DotNext.ValueTypeExtensions.BitCast``2(``0)
-  name.vb: BitCast(Of FROM, TO)(FROM)
-  fullName: DotNext.ValueTypeExtensions.BitCast<FROM, TO>(FROM)
-  fullName.vb: DotNext.ValueTypeExtensions.BitCast(Of FROM, TO)(FROM)
-  nameWithType: ValueTypeExtensions.BitCast<FROM, TO>(FROM)
-  nameWithType.vb: ValueTypeExtensions.BitCast(Of FROM, TO)(FROM)
-- uid: DotNext.ValueTypeExtensions.BitCast``2(``0,``1@)
-  name: BitCast<FROM, TO>(FROM, out TO)
-  href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_BitCast__2___0___1__
-  commentId: M:DotNext.ValueTypeExtensions.BitCast``2(``0,``1@)
-  name.vb: BitCast(Of FROM, TO)(FROM, ByRef TO)
-  fullName: DotNext.ValueTypeExtensions.BitCast<FROM, TO>(FROM, out TO)
-  fullName.vb: DotNext.ValueTypeExtensions.BitCast(Of FROM, TO)(FROM, ByRef TO)
-  nameWithType: ValueTypeExtensions.BitCast<FROM, TO>(FROM, out TO)
-  nameWithType.vb: ValueTypeExtensions.BitCast(Of FROM, TO)(FROM, ByRef TO)
+  fullName: DotNext.ValueTypeExtensions.Bitcast
+  nameWithType: ValueTypeExtensions.Bitcast
+- uid: DotNext.ValueTypeExtensions.Bitcast``2(``0)
+  name: Bitcast<From, To>(From)
+  href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_Bitcast__2___0_
+  commentId: M:DotNext.ValueTypeExtensions.Bitcast``2(``0)
+  name.vb: Bitcast(Of From, To)(From)
+  fullName: DotNext.ValueTypeExtensions.Bitcast<From, To>(From)
+  fullName.vb: DotNext.ValueTypeExtensions.Bitcast(Of From, To)(From)
+  nameWithType: ValueTypeExtensions.Bitcast<From, To>(From)
+  nameWithType.vb: ValueTypeExtensions.Bitcast(Of From, To)(From)
+- uid: DotNext.ValueTypeExtensions.Bitcast``2(``0,``1@)
+  name: Bitcast<From, To>(From, out To)
+  href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_Bitcast__2___0___1__
+  commentId: M:DotNext.ValueTypeExtensions.Bitcast``2(``0,``1@)
+  name.vb: Bitcast(Of From, To)(From, ByRef To)
+  fullName: DotNext.ValueTypeExtensions.Bitcast<From, To>(From, out To)
+  fullName.vb: DotNext.ValueTypeExtensions.Bitcast(Of From, To)(From, ByRef To)
+  nameWithType: ValueTypeExtensions.Bitcast<From, To>(From, out To)
+  nameWithType.vb: ValueTypeExtensions.Bitcast(Of From, To)(From, ByRef To)
 - uid: DotNext.ValueTypeExtensions.Box*
   name: Box
   href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_Box_
@@ -31958,6 +32047,15 @@ references:
   fullName.vb: DotNext.ValueTypeExtensions.Box(Of T)(T)
   nameWithType: ValueTypeExtensions.Box<T>(T)
   nameWithType.vb: ValueTypeExtensions.Box(Of T)(T)
+- uid: DotNext.ValueTypeExtensions.Box``1(System.Nullable{``0})
+  name: Box<T>(Nullable<T>)
+  href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_Box__1_System_Nullable___0__
+  commentId: M:DotNext.ValueTypeExtensions.Box``1(System.Nullable{``0})
+  name.vb: Box(Of T)(Nullable(Of T))
+  fullName: DotNext.ValueTypeExtensions.Box<T>(System.Nullable<T>)
+  fullName.vb: DotNext.ValueTypeExtensions.Box(Of T)(System.Nullable(Of T))
+  nameWithType: ValueTypeExtensions.Box<T>(Nullable<T>)
+  nameWithType.vb: ValueTypeExtensions.Box(Of T)(Nullable(Of T))
 - uid: DotNext.ValueTypeExtensions.IsOneOf*
   name: IsOneOf
   href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf_
@@ -32180,23 +32278,23 @@ references:
   fullName.vb: DotNext.VariantType.Variant(Of T1, T2).GetHashCode
   nameWithType: Variant<T1, T2>.GetHashCode
   nameWithType.vb: Variant(Of T1, T2).GetHashCode
-- uid: DotNext.VariantType.Variant`2.IsPresent
-  name: IsPresent
-  href: api/DotNext.VariantType.Variant-2.html#DotNext_VariantType_Variant_2_IsPresent
-  commentId: P:DotNext.VariantType.Variant`2.IsPresent
-  fullName: DotNext.VariantType.Variant<T1, T2>.IsPresent
-  fullName.vb: DotNext.VariantType.Variant(Of T1, T2).IsPresent
-  nameWithType: Variant<T1, T2>.IsPresent
-  nameWithType.vb: Variant(Of T1, T2).IsPresent
-- uid: DotNext.VariantType.Variant`2.IsPresent*
-  name: IsPresent
-  href: api/DotNext.VariantType.Variant-2.html#DotNext_VariantType_Variant_2_IsPresent_
-  commentId: Overload:DotNext.VariantType.Variant`2.IsPresent
+- uid: DotNext.VariantType.Variant`2.IsNull
+  name: IsNull
+  href: api/DotNext.VariantType.Variant-2.html#DotNext_VariantType_Variant_2_IsNull
+  commentId: P:DotNext.VariantType.Variant`2.IsNull
+  fullName: DotNext.VariantType.Variant<T1, T2>.IsNull
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2).IsNull
+  nameWithType: Variant<T1, T2>.IsNull
+  nameWithType.vb: Variant(Of T1, T2).IsNull
+- uid: DotNext.VariantType.Variant`2.IsNull*
+  name: IsNull
+  href: api/DotNext.VariantType.Variant-2.html#DotNext_VariantType_Variant_2_IsNull_
+  commentId: Overload:DotNext.VariantType.Variant`2.IsNull
   isSpec: "True"
-  fullName: DotNext.VariantType.Variant<T1, T2>.IsPresent
-  fullName.vb: DotNext.VariantType.Variant(Of T1, T2).IsPresent
-  nameWithType: Variant<T1, T2>.IsPresent
-  nameWithType.vb: Variant(Of T1, T2).IsPresent
+  fullName: DotNext.VariantType.Variant<T1, T2>.IsNull
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2).IsNull
+  nameWithType: Variant<T1, T2>.IsNull
+  nameWithType.vb: Variant(Of T1, T2).IsNull
 - uid: DotNext.VariantType.Variant`2.op_Equality(DotNext.VariantType.Variant{`0,`1},DotNext.VariantType.Variant{`0,`1})
   name: Equality(Variant<T1, T2>, Variant<T1, T2>)
   href: api/DotNext.VariantType.Variant-2.html#DotNext_VariantType_Variant_2_op_Equality_DotNext_VariantType_Variant__0__1__DotNext_VariantType_Variant__0__1__
@@ -32518,23 +32616,23 @@ references:
   fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3).GetHashCode
   nameWithType: Variant<T1, T2, T3>.GetHashCode
   nameWithType.vb: Variant(Of T1, T2, T3).GetHashCode
-- uid: DotNext.VariantType.Variant`3.IsPresent
-  name: IsPresent
-  href: api/DotNext.VariantType.Variant-3.html#DotNext_VariantType_Variant_3_IsPresent
-  commentId: P:DotNext.VariantType.Variant`3.IsPresent
-  fullName: DotNext.VariantType.Variant<T1, T2, T3>.IsPresent
-  fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3).IsPresent
-  nameWithType: Variant<T1, T2, T3>.IsPresent
-  nameWithType.vb: Variant(Of T1, T2, T3).IsPresent
-- uid: DotNext.VariantType.Variant`3.IsPresent*
-  name: IsPresent
-  href: api/DotNext.VariantType.Variant-3.html#DotNext_VariantType_Variant_3_IsPresent_
-  commentId: Overload:DotNext.VariantType.Variant`3.IsPresent
+- uid: DotNext.VariantType.Variant`3.IsNull
+  name: IsNull
+  href: api/DotNext.VariantType.Variant-3.html#DotNext_VariantType_Variant_3_IsNull
+  commentId: P:DotNext.VariantType.Variant`3.IsNull
+  fullName: DotNext.VariantType.Variant<T1, T2, T3>.IsNull
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3).IsNull
+  nameWithType: Variant<T1, T2, T3>.IsNull
+  nameWithType.vb: Variant(Of T1, T2, T3).IsNull
+- uid: DotNext.VariantType.Variant`3.IsNull*
+  name: IsNull
+  href: api/DotNext.VariantType.Variant-3.html#DotNext_VariantType_Variant_3_IsNull_
+  commentId: Overload:DotNext.VariantType.Variant`3.IsNull
   isSpec: "True"
-  fullName: DotNext.VariantType.Variant<T1, T2, T3>.IsPresent
-  fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3).IsPresent
-  nameWithType: Variant<T1, T2, T3>.IsPresent
-  nameWithType.vb: Variant(Of T1, T2, T3).IsPresent
+  fullName: DotNext.VariantType.Variant<T1, T2, T3>.IsNull
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3).IsNull
+  nameWithType: Variant<T1, T2, T3>.IsNull
+  nameWithType.vb: Variant(Of T1, T2, T3).IsNull
 - uid: DotNext.VariantType.Variant`3.op_Equality(DotNext.VariantType.Variant{`0,`1,`2},DotNext.VariantType.Variant{`0,`1,`2})
   name: Equality(Variant<T1, T2, T3>, Variant<T1, T2, T3>)
   href: api/DotNext.VariantType.Variant-3.html#DotNext_VariantType_Variant_3_op_Equality_DotNext_VariantType_Variant__0__1__2__DotNext_VariantType_Variant__0__1__2__
@@ -32874,23 +32972,23 @@ references:
   fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3, T4).GetHashCode
   nameWithType: Variant<T1, T2, T3, T4>.GetHashCode
   nameWithType.vb: Variant(Of T1, T2, T3, T4).GetHashCode
-- uid: DotNext.VariantType.Variant`4.IsPresent
-  name: IsPresent
-  href: api/DotNext.VariantType.Variant-4.html#DotNext_VariantType_Variant_4_IsPresent
-  commentId: P:DotNext.VariantType.Variant`4.IsPresent
-  fullName: DotNext.VariantType.Variant<T1, T2, T3, T4>.IsPresent
-  fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3, T4).IsPresent
-  nameWithType: Variant<T1, T2, T3, T4>.IsPresent
-  nameWithType.vb: Variant(Of T1, T2, T3, T4).IsPresent
-- uid: DotNext.VariantType.Variant`4.IsPresent*
-  name: IsPresent
-  href: api/DotNext.VariantType.Variant-4.html#DotNext_VariantType_Variant_4_IsPresent_
-  commentId: Overload:DotNext.VariantType.Variant`4.IsPresent
+- uid: DotNext.VariantType.Variant`4.IsNull
+  name: IsNull
+  href: api/DotNext.VariantType.Variant-4.html#DotNext_VariantType_Variant_4_IsNull
+  commentId: P:DotNext.VariantType.Variant`4.IsNull
+  fullName: DotNext.VariantType.Variant<T1, T2, T3, T4>.IsNull
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3, T4).IsNull
+  nameWithType: Variant<T1, T2, T3, T4>.IsNull
+  nameWithType.vb: Variant(Of T1, T2, T3, T4).IsNull
+- uid: DotNext.VariantType.Variant`4.IsNull*
+  name: IsNull
+  href: api/DotNext.VariantType.Variant-4.html#DotNext_VariantType_Variant_4_IsNull_
+  commentId: Overload:DotNext.VariantType.Variant`4.IsNull
   isSpec: "True"
-  fullName: DotNext.VariantType.Variant<T1, T2, T3, T4>.IsPresent
-  fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3, T4).IsPresent
-  nameWithType: Variant<T1, T2, T3, T4>.IsPresent
-  nameWithType.vb: Variant(Of T1, T2, T3, T4).IsPresent
+  fullName: DotNext.VariantType.Variant<T1, T2, T3, T4>.IsNull
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3, T4).IsNull
+  nameWithType: Variant<T1, T2, T3, T4>.IsNull
+  nameWithType.vb: Variant(Of T1, T2, T3, T4).IsNull
 - uid: DotNext.VariantType.Variant`4.op_Equality(DotNext.VariantType.Variant{`0,`1,`2,`3},DotNext.VariantType.Variant{`0,`1,`2,`3})
   name: Equality(Variant<T1, T2, T3, T4>, Variant<T1, T2, T3, T4>)
   href: api/DotNext.VariantType.Variant-4.html#DotNext_VariantType_Variant_4_op_Equality_DotNext_VariantType_Variant__0__1__2__3__DotNext_VariantType_Variant__0__1__2__3__

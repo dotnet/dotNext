@@ -80,7 +80,6 @@
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.VariantType.IVariant.html">IVariant</a></div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.dynamic.idynamicmetaobjectprovider">IDynamicMetaObjectProvider</a></div>
-    <div><a class="xref" href="DotNext.IOptional.html">IOptional</a></div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.VariantType.Variant-4.html">Variant</a>&lt;T1, T2, T3, T4&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
@@ -99,7 +98,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_VariantType_Variant_4_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct Variant&lt;T1, T2, T3, T4&gt; : IVariant, IDynamicMetaObjectProvider, IOptional, IEquatable&lt;Variant&lt;T1, T2, T3, T4&gt;&gt; where T1 : class where T2 : class where T3 : class where T4 : class</code></pre>
+    <pre><code class="lang-csharp hljs">public struct Variant&lt;T1, T2, T3, T4&gt; : IVariant, IDynamicMetaObjectProvider, IEquatable&lt;Variant&lt;T1, T2, T3, T4&gt;&gt; where T1 : class where T2 : class where T3 : class where T4 : class</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -278,19 +277,19 @@ keyword and late binding.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_4_IsPresent.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%604.IsPresent%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_4_IsNull.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%604.IsNull%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L430">View Source</a>
   </span>
-  <a id="DotNext_VariantType_Variant_4_IsPresent_" data-uid="DotNext.VariantType.Variant`4.IsPresent*"></a>
-  <h4 id="DotNext_VariantType_Variant_4_IsPresent" data-uid="DotNext.VariantType.Variant`4.IsPresent">IsPresent</h4>
+  <a id="DotNext_VariantType_Variant_4_IsNull_" data-uid="DotNext.VariantType.Variant`4.IsNull*"></a>
+  <h4 id="DotNext_VariantType_Variant_4_IsNull" data-uid="DotNext.VariantType.Variant`4.IsNull">IsNull</h4>
   <div class="markdown level1 summary"><p>Indicates that this container stores non-<span class="xref">null</span> value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool IsPresent { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public bool IsNull { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1381,14 +1380,14 @@ to compare stored values.</p>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.dynamic.idynamicmetaobjectprovider">System.Dynamic.IDynamicMetaObjectProvider</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IOptional.html">IOptional</a>
-  </div>
-  <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_TryUnbox__1_System_Object_">ObjectExtensions.TryUnbox&lt;T&gt;(Object)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>

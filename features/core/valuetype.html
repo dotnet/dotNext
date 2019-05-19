@@ -100,11 +100,11 @@ public struct MyStruct: IEquatable&lt;MyStruct&gt;
 </code></pre>
 <p>Additionally, <em>BitwiseHashCode</em> method may accept custom hash code algorithm. Check API documentation for more information.</p>
 <h1 id="fast-bitwise-cast-between-value-types">Fast bitwise cast between value types</h1>
-<p>The library provides fast way to convert one unmanaged value type into another even if value type doesn't provide custom implicit or explicit type cast operator. This logic is provided by extension method <em>BitCast</em>. Bitwise cast can be performed between two value types of different size.</p>
+<p>The library provides fast way to convert one unmanaged value type into another even if value type doesn't provide custom implicit or explicit type cast operator. This logic is provided by extension method <code>Bitcast</code>. Bitwise cast can be performed between two value types of different size.</p>
 <pre><code class="lang-csharp">using DotNext;
 
-20.BitCast(out bool value); //value is true
-0.BitCast(out bool value);  //value is false
+20.Bitcast(out bool value); //value is true
+0.Bitcast(out bool value);  //value is false
 </code></pre>
 <p>The following example demonstrates how to extract content of the <em>Guid</em> data type.</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -115,11 +115,11 @@ internal struct GuidRawData //Guid size is 16 bytes
     internal ulong Component2;
 }
 
-var data = Guid.NewGuid().BitCast&lt;Guid, GuidRawData&gt;();
+var data = Guid.NewGuid().Bitcast&lt;Guid, GuidRawData&gt;();
 data.Component1 = 0;
-var guid = data.BitCast&lt;GuidRawData, Guid&gt;(); //convert back to Guid
+var guid = data.Bitcast&lt;GuidRawData, Guid&gt;(); //convert back to Guid
 </code></pre>
-<p><em>BitCast</em> provides bitwise copy of the original structure so it is very fast.</p>
+<p><code>Bitcast</code> provides bitwise copy of the original structure so it is very fast.</p>
 </article>
           </div>
           

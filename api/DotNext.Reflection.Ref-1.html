@@ -122,7 +122,7 @@
   <div class="markdown level0 remarks"><p>This type has special semantics when used as argument type
 for delegates <a class="xref" href="DotNext.Function-3.html">Function&lt;T, A, R&gt;</a>, <a class="xref" href="DotNext.Function-2.html">Function&lt;A, R&gt;</a>,
 <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, A&gt;</a>, <a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;A&gt;</a> when
-using statically typed reflection. Argument of this type
+using strongly typed reflection. Argument of this type
 means that it should be passed into reflected method or constructor
 by reference. In all other scenarios, including <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__1_System_Reflection_ConstructorInfo_">Unreflect&lt;D&gt;(ConstructorInfo)</a>
 or <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__1_System_Reflection_MethodInfo_">Unreflect&lt;D&gt;(MethodInfo)</a>, this type treated as regular value type
@@ -160,40 +160,6 @@ without special semantics.</p>
       </tr>
     </tbody>
   </table>
-  <h3 id="properties">Properties
-  </h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Ref_1_Address.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Ref%601.Address%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Ref.cs/#L95">View Source</a>
-  </span>
-  <a id="DotNext_Reflection_Ref_1_Address_" data-uid="DotNext.Reflection.Ref`1.Address*"></a>
-  <h4 id="DotNext_Reflection_Ref_1_Address" data-uid="DotNext.Reflection.Ref`1.Address">Address</h4>
-  <div class="markdown level1 summary"><p>Converts this reference into unmanaged address.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public IntPtr Address { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
@@ -201,7 +167,7 @@ public IntPtr Address { get; }</code></pre>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Ref_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Ref%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Ref.cs/#L113">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Ref.cs/#L107">View Source</a>
   </span>
   <a id="DotNext_Reflection_Ref_1_Equals_" data-uid="DotNext.Reflection.Ref`1.Equals*"></a>
   <h4 id="DotNext_Reflection_Ref_1_Equals_System_Object_" data-uid="DotNext.Reflection.Ref`1.Equals(System.Object)">Equals(Object)</h4>
@@ -257,7 +223,7 @@ have different address.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Ref_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Ref%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Ref.cs/#L102">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Ref.cs/#L96">View Source</a>
   </span>
   <a id="DotNext_Reflection_Ref_1_GetHashCode_" data-uid="DotNext.Reflection.Ref`1.GetHashCode*"></a>
   <h4 id="DotNext_Reflection_Ref_1_GetHashCode" data-uid="DotNext.Reflection.Ref`1.GetHashCode">GetHashCode()</h4>
@@ -507,7 +473,7 @@ have different address.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Ref_1_System_IEquatable_DotNext_Reflection_Ref_T___Equals_DotNext_Reflection_Ref__0__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Ref%601.System%23IEquatable%7BDotNext%23Reflection%23Ref%7BT%7D%7D%23Equals(DotNext.Reflection.Ref%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Ref.cs/#L115">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Ref.cs/#L109">View Source</a>
   </span>
   <a id="DotNext_Reflection_Ref_1_System_IEquatable_DotNext_Reflection_Ref_T___Equals_" data-uid="DotNext.Reflection.Ref`1.System#IEquatable{DotNext#Reflection#Ref{T}}#Equals*"></a>
   <h4 id="DotNext_Reflection_Ref_1_System_IEquatable_DotNext_Reflection_Ref_T___Equals_DotNext_Reflection_Ref__0__" data-uid="DotNext.Reflection.Ref`1.System#IEquatable{DotNext#Reflection#Ref{T}}#Equals(DotNext.Reflection.Ref{`0})">IEquatable&lt;Ref&lt;T&gt;&gt;.Equals(Ref&lt;T&gt;)</h4>
@@ -589,6 +555,9 @@ have different address.</p>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_TryUnbox__1_System_Object_">ObjectExtensions.TryUnbox&lt;T&gt;(Object)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>

@@ -1005,7 +1005,7 @@ hardware architecture and endianess of bytes in memory.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td><p>The addres of this memory.</p>
+        <td><p>The address of this memory.</p>
 </td>
       </tr>
     </tbody>
@@ -1020,14 +1020,14 @@ hardware architecture and endianess of bytes in memory.</p>
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedMemory.cs/#L501">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo(`0@)">WriteTo(ref T)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedMemory_1_WriteTo__0__" data-uid="DotNext.Runtime.InteropServices.UnmanagedMemory`1.WriteTo(`0@)">WriteTo(out T)</h4>
   <div class="markdown level1 summary"><p>Copies the value located at the memory block identified by this instance to
 another located in the memory represented by given unmanaged pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void WriteTo(ref T destination)</code></pre>
+    <pre><code class="lang-csharp hljs">public void WriteTo(out T destination)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1729,6 +1729,9 @@ hardware architecture and endianess of bytes in memory.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_TryUnbox__1_System_Object_">ObjectExtensions.TryUnbox&lt;T&gt;(Object)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>

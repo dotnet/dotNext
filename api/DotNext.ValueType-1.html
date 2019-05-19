@@ -325,22 +325,22 @@ public sealed class ValueType&lt;T&gt; : StrongBox&lt;T&gt;, IStrongBox where T 
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueType_1_BitCast__1__0____0__.md&amp;value=---%0Auid%3A%20DotNext.ValueType%601.BitCast%60%601(%600%40%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueType_1_Bitcast__1__0____0__.md&amp;value=---%0Auid%3A%20DotNext.ValueType%601.Bitcast%60%601(%600%40%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueType.cs/#L190">View Source</a>
   </span>
-  <a id="DotNext_ValueType_1_BitCast_" data-uid="DotNext.ValueType`1.BitCast*"></a>
-  <h4 id="DotNext_ValueType_1_BitCast__1__0____0__" data-uid="DotNext.ValueType`1.BitCast``1(`0@,``0@)">BitCast&lt;TO&gt;(T, out TO)</h4>
-  <div class="markdown level1 summary"><p>Obtain a value of type <code data-dev-comment-type="typeparamref" class="typeparamref">TO</code> by
+  <a id="DotNext_ValueType_1_Bitcast_" data-uid="DotNext.ValueType`1.Bitcast*"></a>
+  <h4 id="DotNext_ValueType_1_Bitcast__1__0____0__" data-uid="DotNext.ValueType`1.Bitcast``1(`0@,``0@)">Bitcast&lt;To&gt;(T, out To)</h4>
+  <div class="markdown level1 summary"><p>Obtain a value of type <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> by
 reinterpreting the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void BitCast&lt;TO&gt;(in T input, out TO output)
+    <pre><code class="lang-csharp hljs">public static void Bitcast&lt;To&gt;(in T input, out To output)
 
-    where TO : struct</code></pre>
+    where To : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -359,7 +359,7 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
 </td>
       </tr>
       <tr>
-        <td><span class="xref">TO</span></td>
+        <td><span class="xref">To</span></td>
         <td><span class="parametername">output</span></td>
         <td><p>Conversion result.</p>
 </td>
@@ -376,17 +376,17 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">TO</span></td>
+        <td><span class="parametername">To</span></td>
         <td><p>The type of output struct.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_ValueType_1_BitCast__1__0____0___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Every bit in the value representation of the returned <code data-dev-comment-type="typeparamref" class="typeparamref">TO</code> object
+  <h5 id="DotNext_ValueType_1_Bitcast__1__0____0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Every bit in the value representation of the returned <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> object
 is equal to the corresponding bit in the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.
-The values of padding bits in the returned <code data-dev-comment-type="typeparamref" class="typeparamref">TO</code> object are unspecified.
-The method takes into account size of <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> and <code data-dev-comment-type="typeparamref" class="typeparamref">TO</code> types
+The values of padding bits in the returned <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> object are unspecified.
+The method takes into account size of <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> and <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> types
 and able to provide conversion between types of different size.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -862,7 +862,7 @@ even if it is overridden by value type.</p>
     <tbody>
       <tr>
         <td><span class="xref">T</span></td>
-        <td><p>Pinnnable reference.</p>
+        <td><p>Pinnable reference.</p>
 </td>
       </tr>
     </tbody>
@@ -1016,7 +1016,7 @@ even if it is overridden by value type.</p>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Optional.html#DotNext_Optional_EmptyIfNull__1___0_">Optional.EmptyIfNull&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_TryUnbox__1_System_Object_">ObjectExtensions.TryUnbox&lt;T&gt;(Object)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>

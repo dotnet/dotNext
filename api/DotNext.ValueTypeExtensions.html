@@ -115,22 +115,22 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_BitCast__2___0_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.BitCast%60%602(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Bitcast__2___0_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Bitcast%60%602(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L68">View Source</a>
   </span>
-  <a id="DotNext_ValueTypeExtensions_BitCast_" data-uid="DotNext.ValueTypeExtensions.BitCast*"></a>
-  <h4 id="DotNext_ValueTypeExtensions_BitCast__2___0_" data-uid="DotNext.ValueTypeExtensions.BitCast``2(``0)">BitCast&lt;FROM, TO&gt;(FROM)</h4>
-  <div class="markdown level1 summary"><p>Obtain a value of type <code data-dev-comment-type="typeparamref" class="typeparamref">TO</code> by
-reinterpreting the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">FROM</code>.</p>
+  <a id="DotNext_ValueTypeExtensions_Bitcast_" data-uid="DotNext.ValueTypeExtensions.Bitcast*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Bitcast__2___0_" data-uid="DotNext.ValueTypeExtensions.Bitcast``2(``0)">Bitcast&lt;From, To&gt;(From)</h4>
+  <div class="markdown level1 summary"><p>Obtain a value of type <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> by
+reinterpreting the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">From</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TO BitCast&lt;FROM, TO&gt;(this FROM input)
+    <pre><code class="lang-csharp hljs">public static To Bitcast&lt;From, To&gt;(this From input)
 
-    where FROM : struct where TO : struct</code></pre>
+    where From : struct where To : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -143,7 +143,7 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">FROM</span></td>
+        <td><span class="xref">From</span></td>
         <td><span class="parametername">input</span></td>
         <td><p>A value to convert.</p>
 </td>
@@ -160,7 +160,7 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TO</span></td>
+        <td><span class="xref">To</span></td>
         <td><p>Conversion result.</p>
 </td>
       </tr>
@@ -176,42 +176,42 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">FROM</span></td>
+        <td><span class="parametername">From</span></td>
         <td><p>The type of input struct.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">TO</span></td>
+        <td><span class="parametername">To</span></td>
         <td><p>The type of output struct.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_ValueTypeExtensions_BitCast__2___0__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Every bit in the value representation of the returned <code data-dev-comment-type="typeparamref" class="typeparamref">TO</code> object
-is equal to the corresponding bit in the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">FROM</code>.
-The values of padding bits in the returned <code data-dev-comment-type="typeparamref" class="typeparamref">TO</code> object are unspecified.
-The method takes into account size of <code data-dev-comment-type="typeparamref" class="typeparamref">FROM</code> and <code data-dev-comment-type="typeparamref" class="typeparamref">TO</code> types
+  <h5 id="DotNext_ValueTypeExtensions_Bitcast__2___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Every bit in the value representation of the returned <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> object
+is equal to the corresponding bit in the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">From</code>.
+The values of padding bits in the returned <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> object are unspecified.
+The method takes into account size of <code data-dev-comment-type="typeparamref" class="typeparamref">From</code> and <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> types
 and able to provide conversion between types of different size.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_BitCast__2___0___1__.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.BitCast%60%602(%60%600%2C%60%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Bitcast__2___0___1__.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Bitcast%60%602(%60%600%2C%60%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L47">View Source</a>
   </span>
-  <a id="DotNext_ValueTypeExtensions_BitCast_" data-uid="DotNext.ValueTypeExtensions.BitCast*"></a>
-  <h4 id="DotNext_ValueTypeExtensions_BitCast__2___0___1__" data-uid="DotNext.ValueTypeExtensions.BitCast``2(``0,``1@)">BitCast&lt;FROM, TO&gt;(FROM, out TO)</h4>
-  <div class="markdown level1 summary"><p>Obtain a value of type <code data-dev-comment-type="typeparamref" class="typeparamref">TO</code> by
-reinterpreting the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">FROM</code>.</p>
+  <a id="DotNext_ValueTypeExtensions_Bitcast_" data-uid="DotNext.ValueTypeExtensions.Bitcast*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Bitcast__2___0___1__" data-uid="DotNext.ValueTypeExtensions.Bitcast``2(``0,``1@)">Bitcast&lt;From, To&gt;(From, out To)</h4>
+  <div class="markdown level1 summary"><p>Obtain a value of type <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> by
+reinterpreting the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">From</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void BitCast&lt;FROM, TO&gt;(this FROM input, out TO output)
+    <pre><code class="lang-csharp hljs">public static void Bitcast&lt;From, To&gt;(this From input, out To output)
 
-    where FROM : struct where TO : struct</code></pre>
+    where From : struct where To : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -224,13 +224,13 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">FROM</span></td>
+        <td><span class="xref">From</span></td>
         <td><span class="parametername">input</span></td>
         <td><p>A value to convert.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">TO</span></td>
+        <td><span class="xref">To</span></td>
         <td><span class="parametername">output</span></td>
         <td><p>Conversion result.</p>
 </td>
@@ -247,20 +247,20 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">FROM</span></td>
+        <td><span class="parametername">From</span></td>
         <td><p>The type of input struct.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">TO</span></td>
+        <td><span class="parametername">To</span></td>
         <td><p>The type of output struct.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_ValueTypeExtensions_BitCast__2___0___1___seealso">See Also</h5>
+  <h5 id="DotNext_ValueTypeExtensions_Bitcast__2___0___1___seealso">See Also</h5>
   <div class="seealso">
-      <div><a class="xref" href="DotNext.ValueType-1.html#DotNext_ValueType_1_BitCast__1__0____0__">BitCast&lt;TO&gt;(T, out TO)</a></div>
+      <div><a class="xref" href="DotNext.ValueType-1.html#DotNext_ValueType_1_Bitcast__1__0____0__">Bitcast&lt;To&gt;(T, out To)</a></div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
@@ -310,6 +310,74 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
       <tr>
         <td><a class="xref" href="DotNext.ValueType-1.html">ValueType</a>&lt;T&gt;</td>
         <td><p>Boxed representation of value type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Value type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Box__1_System_Nullable___0__.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Box%60%601(System.Nullable%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L131">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Box_" data-uid="DotNext.ValueTypeExtensions.Box*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Box__1_System_Nullable___0__" data-uid="DotNext.ValueTypeExtensions.Box``1(System.Nullable{``0})">Box&lt;T&gt;(Nullable&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Create boxed representation of the nullable value type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueType&lt;T&gt; Box&lt;T&gt;(this T? value)
+
+    where T : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;T&gt;</td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Value to be placed into heap.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueType-1.html">ValueType</a>&lt;T&gt;</td>
+        <td><p>Boxed representation of nullable value type; or <span class="xref">null</span>.</p>
 </td>
       </tr>
     </tbody>
@@ -493,7 +561,7 @@ to check equality between two values.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_TryGet__1_System_Nullable___0____0__.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.TryGet%60%601(System.Nullable%7B%60%600%7D%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L132">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L142">View Source</a>
   </span>
   <a id="DotNext_ValueTypeExtensions_TryGet_" data-uid="DotNext.ValueTypeExtensions.TryGet*"></a>
   <h4 id="DotNext_ValueTypeExtensions_TryGet__1_System_Nullable___0____0__" data-uid="DotNext.ValueTypeExtensions.TryGet``1(System.Nullable{``0},``0@)">TryGet&lt;T&gt;(Nullable&lt;T&gt;, out T)</h4>
