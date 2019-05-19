@@ -158,6 +158,8 @@ namespace DotNext
             {
                 case T vt:
                     return vt;
+                case Optional<T> optional:
+                    return optional.OrNull();
                 case ValueType<T> vt:
                     return vt.Value;
                 default:
