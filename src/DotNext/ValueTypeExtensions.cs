@@ -121,6 +121,16 @@ namespace DotNext
         public static ValueType<T> Box<T>(this T value)
             where T : struct
             => new ValueType<T>(value);
+        
+        /// <summary>
+        /// Create boxed representation of the nullable value type.
+        /// </summary>
+        /// <param name="value">Value to be placed into heap.</param>
+        /// <typeparam name="T">Value type.</typeparam>
+        /// <returns>Boxed representation of nullable value type; or <see langword="null"/>.</returns>        
+        public static ValueType<T> Box<T>(this T? value)
+            where T : struct
+            => value.HasValue ? new ValueType<T>(value.Value) : null;
 
         /// <summary>
         /// Create boxed representation of the nullable value type.
