@@ -144,25 +144,5 @@ namespace DotNext
             value = nullable.GetValueOrDefault();
             return nullable.HasValue;
         }
-
-        /// <summary>
-        /// Attempts to unbox value type.
-        /// </summary>
-        /// <param name="boxed">The boxed struct.</param>
-        /// <typeparam name="T">The type of the struct.</typeparam>
-        /// <returns>Unboxed representation of <typeparamref name="T"/>.</returns>
-        public static T? TryUnbox<T>(this object boxed)
-            where T : struct
-        {
-            switch(boxed)
-            {
-                case T vt:
-                    return vt;
-                case ValueType<T> vt:
-                    return vt.Value;
-                default:
-                    return null;
-            }
-        }
     }
 }
