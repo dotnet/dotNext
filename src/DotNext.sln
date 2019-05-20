@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2019
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext", "DotNext\DotNext.csproj", "{9F11A994-0CC6-4982-963B-1255D2F82B2F}"
 EndProject
@@ -17,7 +17,11 @@ Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "VisualBasicElements", "Visu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Metaprogramming", "DotNext.Metaprogramming\DotNext.Metaprogramming.csproj", "{C8415985-3BC5-44EB-BDB4-551777B73AB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNext.Threading", "DotNext.Threading\DotNext.Threading.csproj", "{956A2A3E-F151-4FA4-9932-862BC5CB2F87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Threading", "DotNext.Threading\DotNext.Threading.csproj", "{956A2A3E-F151-4FA4-9932-862BC5CB2F87}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Net.Cluster", "DotNext.Net.Cluster\DotNext.Net.Cluster.csproj", "{89E2D94F-E278-4365-B05F-2C8BEC2F94DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNext.AspNetCore.Cluster", "DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj", "{D9A4D7A3-A948-465A-B679-546411DC885D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +61,14 @@ Global
 		{956A2A3E-F151-4FA4-9932-862BC5CB2F87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{956A2A3E-F151-4FA4-9932-862BC5CB2F87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{956A2A3E-F151-4FA4-9932-862BC5CB2F87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89E2D94F-E278-4365-B05F-2C8BEC2F94DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89E2D94F-E278-4365-B05F-2C8BEC2F94DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89E2D94F-E278-4365-B05F-2C8BEC2F94DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89E2D94F-E278-4365-B05F-2C8BEC2F94DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9A4D7A3-A948-465A-B679-546411DC885D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9A4D7A3-A948-465A-B679-546411DC885D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9A4D7A3-A948-465A-B679-546411DC885D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9A4D7A3-A948-465A-B679-546411DC885D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

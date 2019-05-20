@@ -45,10 +45,6 @@
     <PackageReference Include="System.Buffers" Version="4.5.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="ExceptionMessages.restext">
-      <Generator></Generator>
-    </EmbeddedResource>
-  </ItemGroup>
+  
 
 </Project>
