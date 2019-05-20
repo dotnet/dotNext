@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    internal class RaftClusterNode : IRaftClusterNode
+    internal sealed class RaftClusterNode : IRaftClusterNode
     {
         private protected const string RaftTermHeader = "X-Raft-Term";
 

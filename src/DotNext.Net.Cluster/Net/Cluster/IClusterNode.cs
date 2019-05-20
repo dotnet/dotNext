@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster
     /// <summary>
     /// Represents cluster node in distributed environment.
     /// </summary>
-    public interface IClusterNode : IClusterMember
+    public interface IClusterNode : IClusterMember, IDisposable
     {
         /// <summary>
         /// Gets cluster status.
