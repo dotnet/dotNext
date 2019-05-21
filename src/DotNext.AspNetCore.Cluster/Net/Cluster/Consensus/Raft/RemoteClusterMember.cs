@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -24,9 +25,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        internal void Vote()
+        //null means that node is unreachable
+        //true means that node votes successfully for the new leader
+        //false means that node is in candidate state and rejects voting
+        internal Task<bool?> Vote(Guid sender, CancellationToken token)
         {
-
+            
         }
 
         public IPEndPoint Endpoint { get; }
@@ -36,13 +40,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         public Guid Id { get; private set; }
         public string Name { get; private set; }
-        public bool IsAvailable { get; private set; }
-
-        internal void UpdateStatus(Guid id, string name, bool available)
-        {
-            Id = id;
-            Name = name;
-            IsAvailable = available;
-        }
+        public ClusterMemberStatus Status { get; private set; }
     }
 }

@@ -71,10 +71,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (nodeStatus.CompareAndSet(FollowerStatus, CandidateStatus))
                 using (await members.AcquireUpgradeableReadLockAsync(token).ConfigureAwait(false))
                 {
-                    var majority = members.Count / 2;
+                    var voters = 0;
                     //send vote request to all members
                     foreach (var member in members)
-                        member.Vote();
+                        switch(await member.Vote(Id, token))
+                        {
+                            case null:
+                                continue;
+                            case true:
+                                voters += 1;
+                                goto default;
+                            default:
+                                voters -= 1;
+                                break;
+                        }
                     nodeStatus.VolatileWrite(LeaderStatus);
                 }
         }

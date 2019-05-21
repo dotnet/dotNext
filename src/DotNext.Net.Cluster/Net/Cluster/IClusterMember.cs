@@ -34,8 +34,8 @@ namespace DotNext.Net.Cluster
         string Name { get; }
 
         /// <summary>
-        /// Indicates that this member is available through the network.
+        /// Gets status of this member.
         /// </summary>
-        bool IsAvailable { get; }
+        ClusterMemberStatus Status { get; }
     }
 }
