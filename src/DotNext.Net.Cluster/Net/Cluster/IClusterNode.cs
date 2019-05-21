@@ -26,14 +26,19 @@ namespace DotNext.Net.Cluster
         IClusterMember Leader { get; }
 
         /// <summary>
-        /// Represents an event raised when leader has been changed.
+        /// An event raised when leader has been changed.
         /// </summary>
         event LeaderChangedEventHandler LeaderChanged;
 
         /// <summary>
-        /// Represents an event raised when cluster status has been changed.
+        /// An event raised when cluster status has been changed.
         /// </summary>
         event ClusterStatusChangedEventHandler ClusterStatusChanged;
+
+        /// <summary>
+        /// An event raised when cluster member becomes available or unavailable.
+        /// </summary>
+        event ClusterMemberStatusChanged MemberStatusChanged;
 
         /// <summary>
         /// Represents an event raised when message has been received
@@ -44,8 +49,7 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// Revokes leadership and starts new election process.
         /// </summary>
-        /// <returns>The task representing asynchronous result of this operation.</returns>
-        Task Resign();
+        void Resign();
 
         /// <summary>
         /// Waits until the current node becomes a leader.
