@@ -12,5 +12,7 @@ namespace DotNext
 
         internal static string UnresolvedHostName(string hostName) =>
             string.Format(Resources.GetString("UnresolvedHostName"), hostName);
+        
+        internal static string MissingNodeEndpoint => Resources.GetString("MissingNodeEndpoint");
     }
 }

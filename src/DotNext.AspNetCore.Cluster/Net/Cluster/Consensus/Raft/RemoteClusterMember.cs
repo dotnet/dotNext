@@ -2,10 +2,11 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    internal sealed class RemoteClusterMember : HttpClient, IClusterMember
+    internal sealed class RemoteClusterMember : HttpClient, IRaftClusterMember
     {
         internal RemoteClusterMember(Uri remoteMember)
         {
@@ -28,9 +29,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         //null means that node is unreachable
         //true means that node votes successfully for the new leader
         //false means that node is in candidate state and rejects voting
-        internal Task<bool?> Vote(Guid sender, CancellationToken token)
+        public async Task<bool?> Vote(Guid sender, CancellationToken token)
         {
-            
+            return null;
         }
 
         public IPEndPoint Endpoint { get; }

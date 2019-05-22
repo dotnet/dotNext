@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNext.Threading;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    internal sealed class RaftClusterNode : Disposable, IRaftClusterNode, IHostedService
+    internal sealed class RaftClusterNode : BackgroundService, IRaftClusterNode, IHostedService
     {
         private const int FollowerStatus = (int)ClusterNodeStatus.Follower;
         private const int CandidateStatus = (int) ClusterNodeStatus.Candidate;
@@ -18,15 +19,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private const string RaftTermHeader = "X-Raft-Term";
 
         private long consensusTerm;
-        private readonly LinkedList<RemoteClusterMember> members;
+        private readonly LinkedList<IRaftClusterMember> members;
         private readonly TimeSpan electionTimeout;
         private readonly AsyncAutoResetEvent electionTimeoutRefresher;
+        private readonly CancellationTokenSource stoppingTokenSource;
         private int nodeStatus;
 
         internal RaftClusterNode(ClusterMemberConfiguration config)
         {
             Id = Guid.NewGuid();
             electionTimeoutRefresher = new AsyncAutoResetEvent(false);
+            stoppingTokenSource = new CancellationTokenSource();
+            electionTimeout = config.ElectionTimeout;
             foreach (var memberUri in config.Members)
                 members.AddLast(new RemoteClusterMember(memberUri));
         }
@@ -111,40 +115,50 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private void RefreshElectionTimeout() => electionTimeoutRefresher.Set();
 
-        Task IHostedService.StartAsync(CancellationToken token)
+        private void DetectMe(CancellationToken token)
+        {
+            var detected = false;
+            foreach(var endpoint in IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners())
+                for(var member = members.First; !(member is null); member = member.Next, token.ThrowIfCancellationRequested())
+                    if(member.Value.Endpoint.Equals(endpoint))
+                    {
+                        member.Value = this;
+                        detected = true;
+                        break;
+                    }
+            if(!detected)
+                throw new InvalidOperationException(ExceptionMessages.MissingNodeEndpoint);
+        }
+
+        public override Task StartAsync(CancellationToken token)
         {
             //start node in Follower state
             consensusTerm = 0L;
             ClusterStatus = ClusterStatus.NoConsensus;
             nodeStatus.VolatileWrite(FollowerStatus);
             electionTimeoutRefresher.Reset();
-            ThreadPool.QueueUserWorkItem(StartTracking, CancellationTokenSource.CreateLinkedTokenSource(token));
-            return Task.CompletedTask;
+            //detect this node using network information
+            DetectMe(token);
+            return base.StartAsync(token);
         }
 
-        private void RemoveMembers()
+        public override async Task StopAsync(CancellationToken token)
         {
-            for (var current = members.First; !(current is null); current = current.Next)
-            {
-                current.Value.Dispose();
-                members.Remove(current);
-                current.Value = null;
-            }
+            await base.StopAsync(token);  //stop backgroud task
+            foreach(var member in members)
+                member.CancelPendingRequests();
         }
 
-        Task IHostedService.StopAsync(CancellationToken token)
+        public override void Dispose()
         {
-            RemoveMembers();
-            return Task.CompletedTask;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                RemoveMembers();
-            }
-            base.Dispose(disposing);
+            for(var current = members.First; !(current is null); current = current.Next)
+                if(current.Value.IsRemote)
+                {
+                    current.Value.Dispose();
+                    current.Value = null;
+                    current.List.Remove(current);
+                }
+            base.Dispose();
         }
     }
 }

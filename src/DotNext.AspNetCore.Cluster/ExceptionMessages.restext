@@ -1,1 +1,2 @@
 UnresolvedHostName = Unable to resolve host name {0}
+MissingNodeEndpoint=The current cluster node is not listed in configuration
