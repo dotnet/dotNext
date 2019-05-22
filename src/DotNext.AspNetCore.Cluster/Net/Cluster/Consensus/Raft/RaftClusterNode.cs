@@ -25,14 +25,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly CancellationTokenSource stoppingTokenSource;
         private int nodeStatus;
 
-        internal RaftClusterNode(ClusterMemberConfiguration config)
+        private RaftClusterNode(ClusterMemberConfiguration config)
         {
+            members = new LinkedList<IRaftClusterMember>();
             Id = Guid.NewGuid();
+            Name = config.MemberName;
             electionTimeoutRefresher = new AsyncAutoResetEvent(false);
             stoppingTokenSource = new CancellationTokenSource();
             electionTimeout = config.ElectionTimeout;
             foreach (var memberUri in config.Members)
                 members.AddLast(new RemoteClusterMember(memberUri));
+        }
+
+        internal RaftClusterNode(IOptions<ClusterMemberConfiguration> config)
+            : this(config.Value)
+        {
         }
 
         ClusterNodeStatus IRaftClusterNode.NodeStatus => (ClusterNodeStatus) nodeStatus.VolatileRead();
@@ -41,7 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         bool IClusterMember.IsLeader => nodeStatus.VolatileRead() == LeaderStatus;
         bool IClusterMember.IsRemote => false;
         public Guid Id { get; }
-        public string Name { get; private set; }
+        public string Name { get; }
         public bool IsAvailable { get; }
 
         public ClusterStatus ClusterStatus { get; private set; }
