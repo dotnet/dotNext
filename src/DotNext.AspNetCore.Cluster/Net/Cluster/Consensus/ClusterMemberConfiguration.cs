@@ -14,6 +14,8 @@ namespace DotNext.Net.Cluster.Consensus
         {
             //recommended election timeout is between 150ms and 300ms
             ElectionTimeout = TimeSpan.FromMilliseconds(new Random().Next(150, 301));
+            AbsoluteMajority = true;
+            ResourcePath = new Uri("/coordination", UriKind.Relative);
         }
 
         /// <summary>
@@ -38,5 +40,9 @@ namespace DotNext.Net.Cluster.Consensus
         public bool KeepAlive { get; set; }
 
         public TimeSpan ElectionTimeout { get; set; }
+
+        public bool AbsoluteMajority { get; set; }
+
+        public Uri ResourcePath { get; set; }
     }
 }

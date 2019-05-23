@@ -1,2 +1,3 @@
 UnresolvedHostName = Unable to resolve host name {0}
-MissingNodeEndpoint=The current cluster node is not listed in configuration
+MissingHeader=Raft protocol header {0} is missing
+IncorrectResponse=Incorrect response according with Raft protocol

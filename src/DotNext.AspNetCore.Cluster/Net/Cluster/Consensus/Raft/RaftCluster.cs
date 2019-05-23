@@ -1,48 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using DotNext.Threading;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using AsyncAutoResetEvent = Threading.AsyncAutoResetEvent;
-    using static Threading.AtomicInt32;
-
-    internal sealed class RaftCluster : BackgroundService, IHostedService, ICluster
+    internal sealed class RaftCluster : BackgroundService, ICluster, IMiddleware, ILocalMember
     {
-        private const int Unstarted = 0;
-        private const int FollowerStatus = 1;
-        private const int CandidateStatus = 2;
-        private const int LeaderStatus = 3;
-
-        private const string RaftTermHeader = "X-Raft-Term";
+        private const int UnstartedState = 0;
+        private const int FollowerState = 1;
+        private const int CandidateState = 2;
+        private const int LeaderState = 3;
 
         private long consensusTerm;
         private readonly LinkedList<RaftClusterMember> members;
         private readonly TimeSpan electionTimeout;
         private readonly AsyncAutoResetEvent electionTimeoutRefresher;
-        private readonly CancellationTokenSource stoppingTokenSource;
-        private int nodeStatus;
-        private volatile IClusterMember leader;
-        private readonly Guid id;
+        private int state;
+        private volatile IClusterMember leader, local;
         private readonly string name;
-        private RaftClusterMember local;
+        private readonly Guid id;
+        private readonly AsyncExclusiveLock monitor;
+        private ClusterStatus status;
+        private readonly bool absoluteMajority;
 
         private RaftCluster(ClusterMemberConfiguration config)
         {
+            absoluteMajority = config.AbsoluteMajority;
             id = Guid.NewGuid();
             name = config.MemberName;
             members = new LinkedList<RaftClusterMember>();
             electionTimeoutRefresher = new AsyncAutoResetEvent(false);
-            stoppingTokenSource = new CancellationTokenSource();
             electionTimeout = config.ElectionTimeout;
-            nodeStatus = Unstarted;
+            state = UnstartedState;
             foreach (var memberUri in config.Members)
-                members.AddLast(new RaftClusterMember(id, memberUri));
+                members.AddLast(new RaftClusterMember(memberUri, config.ResourcePath));
+            monitor = new AsyncExclusiveLock();
         }
 
         internal RaftCluster(IOptions<ClusterMemberConfiguration> config)
@@ -50,13 +48,41 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
         }
 
-        public ClusterStatus Status { get; private set; }
+        string ILocalMember.Name => name;
+        Guid ILocalMember.Id => id;
+        long ILocalMember.Term => consensusTerm.VolatileRead();
+
+        public ClusterStatus Status
+        {
+            get => status;
+            private set
+            {
+                var oldStatus = status;
+                var newStatus = status = value;
+                if (oldStatus != newStatus)
+                    StatusChanged?.Invoke(this, oldStatus, newStatus);
+            }
+        }
 
         IReadOnlyCollection<IClusterMember> ICluster.Members 
-            => nodeStatus.VolatileRead() == Unstarted ? Array.Empty<IClusterMember>() : (IReadOnlyCollection<IClusterMember>)members;
+            => state.VolatileRead() == UnstartedState ? Array.Empty<IClusterMember>() : (IReadOnlyCollection<IClusterMember>)members;
 
-        IClusterMember ICluster.Leader => leader;
-        IClusterMember ICluster.LocalMember => local;
+        public IClusterMember Leader
+        {
+            get => leader;
+            private set => LeaderChanged?.Invoke(this, leader = value);
+        }
+
+        public IClusterMember LocalMember
+        {
+            get => local;
+            private set
+            {
+                if (!value.IsRemote)
+                    local = value;
+            }
+        }
+
         public event ClusterLeaderChangedEventHandler LeaderChanged;
         public event ClusterStatusChangedEventHandler StatusChanged;
         public event ClusterMemberStatusChanged MemberStatusChanged;
@@ -72,44 +98,89 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             throw new NotImplementedException();
         }
 
-        private void UpdateLocal(LinkedListNode<RaftClusterMember> member)
-        {
-            if(member.Value.IsLocal && local is null)
-                local = member.Value;
-        }
-
         private async Task StartElection(CancellationToken token)
         {
-            //becomes a candidate
-            if (!token.IsCancellationRequested && nodeStatus.CompareAndSet(FollowerStatus, CandidateStatus))
+            using (await monitor.AcquireLock(token).ConfigureAwait(false))
             {
-                var voters = new LinkedList<(RaftClusterMember, Task<bool?>)>();
-                var votes = 0;
+                if (state > FollowerState || electionTimeoutRefresher.IsSet)
+                    return;
+                //becomes a candidate
+                state.VolatileWrite(CandidateState);
+                consensusTerm += 1L;
+                var voters = new LinkedList<(RaftClusterMember member, Task<bool?> task)>();
                 //send vote request to all members in parallel
-                for(var member = members.First; !(member is null); member = member.Next)
-                    voters.AddLast((member.Value, member.Value.Vote(token)));
-                
-                nodeStatus.VolatileWrite(LeaderStatus);
+                for (var member = members.First; !(member is null); member = member.Next)
+                    voters.AddLast((member.Value, member.Value.Vote(this, MemberStatusChanged, token)));
+                //calculate votes
+                var votes = 0;
+                for (var member = voters.First; !(member is null); LocalMember = member.Value.member, member = member.Next)
+                {
+                    switch (await member.Value.task.ConfigureAwait(false))
+                    {
+                        case true:
+                            votes += 1;
+                            break;
+                        case false:
+                            votes -= 1;
+                            break;
+                        default:
+                            if (absoluteMajority)
+                                votes -= 1;
+                            break;
+                    }
+                    member.Value.task.Dispose();
+                }
+
+                voters.Clear(); //help GC
+                if (votes > 0)  //becomes a leader
+                {
+                    state.VolatileWrite(LeaderState);
+                    Leader = LocalMember;
+                    Status = ClusterStatus.Operating;
+                }
+                else
+                    state.VolatileWrite(FollowerState); //no clear consensus, back to Follower state
             }
         }
 
-        private void RefreshElectionTimeout() => electionTimeoutRefresher.Set();
-        
+        //election process can be started in this state
+        private async Task ProcessFollowerState(CancellationToken stoppingToken)
+        {
+            using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken))
+            {
+                var timer = Task.Delay(electionTimeout, tokenSource.Token);
+                var completedTask = await Task.WhenAny(electionTimeoutRefresher.Wait(tokenSource.Token), timer).ConfigureAwait(false);
+                if (tokenSource.IsCancellationRequested)    //execution aborted
+                    return;
+                else if (ReferenceEquals(timer, completedTask)) //timeout happened
+                    await StartElection(tokenSource.Token).ConfigureAwait(false);
+                else
+                    tokenSource.Cancel();   //ensure that Delay or AutoResetEvent is destroyed
+            }
+        }
+
+        //heartbeat broadcasting
+        private async Task ProcessLeaderState(CancellationToken stoppingToken)
+        {
+
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while(!stoppingToken.IsCancellationRequested)
             {
-                using(var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken))
+                switch (state.VolatileRead())
                 {
-                    var timer = Task.Delay(electionTimeout, tokenSource.Token);
-                    var completedTask = await Task.WhenAny(electionTimeoutRefresher.Wait(tokenSource.Token), timer).ConfigureAwait(false);
-                    if (tokenSource.IsCancellationRequested)    //execution aborted
+                    case FollowerState:
+                        await ProcessFollowerState(stoppingToken).ConfigureAwait(false);
+                        continue;
+                    case LeaderState:
+                        await ProcessLeaderState(stoppingToken).ConfigureAwait(false);
+                        continue;
+                    default:
                         return;
-                    else if (ReferenceEquals(timer, completedTask)) //timeout happened
-                        await StartElection(tokenSource.Token).ConfigureAwait(false);
-                    else
-                        tokenSource.Cancel();   //ensure that Delay or AutoResetEvent is destroyed
                 }
+                
             }
         }
 
@@ -118,18 +189,48 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //start node in Follower state
             consensusTerm = 0L;
             Status = ClusterStatus.NoConsensus;
-            nodeStatus.VolatileWrite(FollowerStatus);
+            state.VolatileWrite(FollowerState);
             electionTimeoutRefresher.Reset();
             return base.StartAsync(token);
         }
 
         public override async Task StopAsync(CancellationToken token)
         {
-            await base.StopAsync(token);  //stop backgroud task
+            await base.StopAsync(token).ConfigureAwait(false);  //stop background task
             foreach(var member in members)
                 member.CancelPendingRequests();
-            nodeStatus.VolatileWrite(Unstarted);
+            state.VolatileWrite(UnstartedState);
             local = null;
+        }
+
+        private async Task ReceiveVoteRequest(RaftHttpMessage request, HttpResponse response)
+        {
+            bool vote;
+            using (await monitor.AcquireLock(CancellationToken.None).ConfigureAwait(false))
+            {
+                if (consensusTerm > request.ConsensusTerm || state.VolatileRead() > FollowerState)
+                    vote = false;
+                else
+                {
+                    consensusTerm = request.ConsensusTerm;
+                    vote = true;
+                }
+
+                electionTimeoutRefresher.Set();
+            }
+
+            await RequestVoteMessage.CreateResponse(response, id, name, vote).ConfigureAwait(false);
+        }
+
+        public Task InvokeAsync(HttpContext context, RequestDelegate next)
+        {
+            switch (RaftHttpMessage.GetMessageType(context.Request))
+            {
+                case RequestVoteMessage.MessageType:
+                    return ReceiveVoteRequest(new RequestVoteMessage(context.Request),  context.Response);
+                default:
+                    return next(context);
+            }
         }
 
         public override void Dispose()
@@ -140,7 +241,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 current.Value = null;
                 current.List.Remove(current);
             }
-            local = null;
+            monitor.Dispose();
+            electionTimeoutRefresher.Dispose();
+            local = leader = null;
             base.Dispose();
         }
     }
