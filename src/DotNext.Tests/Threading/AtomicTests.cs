@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System;
+using Xunit;
 
 namespace DotNext.Threading
 {
@@ -137,6 +138,17 @@ namespace DotNext.Threading
 			True(value.NegateAndGet());
 			True(value.GetAndNegate());
 			False(value.Value);
+		}
+
+		[Fact]
+		public static void AtomicEnumTest()
+		{
+			var value = new AtomicEnum<EnvironmentVariableTarget>();
+			Equal(EnvironmentVariableTarget.Process, value.Value);
+			Equal(EnvironmentVariableTarget.Process, value.GetAndSet(EnvironmentVariableTarget.Machine));
+			Equal(EnvironmentVariableTarget.Machine, value.Value);
+			Equal(EnvironmentVariableTarget.Machine, value.GetAndUpdate(x => EnvironmentVariableTarget.User));
+			Equal(EnvironmentVariableTarget.User, value.Value);
 		}
 	}
 }
