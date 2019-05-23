@@ -185,24 +185,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             foreach(var member in members)
                 member.CancelPendingRequests();
             state.VolatileWrite(UnstartedState);
-            local = null;
+            local = leader = null;
         }
 
         private async Task ReceiveVoteRequest(RaftHttpMessage request, HttpResponse response)
         {
             bool vote;
-            using (await monitor.AcquireLock(CancellationToken.None).ConfigureAwait(false))
-            {
-                if (consensusTerm > request.ConsensusTerm || state.VolatileRead() > FollowerState)
-                    vote = false;
-                else
+            if(request.MemberId == id)  //sender node and receiver are same, fast response without synchronization
+                vote = true;
+            else
+                using (await monitor.AcquireLock(CancellationToken.None).ConfigureAwait(false))
                 {
-                    consensusTerm = request.ConsensusTerm;
-                    vote = true;
-                }
+                    if (consensusTerm > request.ConsensusTerm || state.VolatileRead() > FollowerState)
+                        vote = false;
+                    else
+                    {
+                        consensusTerm = request.ConsensusTerm;
+                        vote = true;
+                    }
 
-                electionTimeoutRefresher.Set();
-            }
+                    electionTimeoutRefresher.Set();
+                }
 
             await RequestVoteMessage.CreateResponse(response, id, name, vote).ConfigureAwait(false);
         }
@@ -226,8 +229,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 current.Value = null;
                 current.List.Remove(current);
             }
-            monitor.Dispose();
-            electionTimeoutRefresher.Dispose();
+            Disposable.Dispose(monitor, electionTimeoutRefresher);
             local = leader = null;
             base.Dispose();
         }
