@@ -17,15 +17,19 @@ namespace DotNext.Threading
     {
         private sealed class Operations : Atomic<long>
         {
-            internal static readonly Operations Instance = new Operations();
+            internal Operations() { }
 
-            private Operations() { }
+            internal override long Exchange(ref long value, long update) => Interlocked.Exchange(ref value, update);
 
-            internal override bool CompareAndSet(ref long value, long expected, long update)
-                => Interlocked.CompareExchange(ref value, update, expected) == expected;
+            internal override long CompareExchange(ref long value, long update, long expected)
+                => Interlocked.CompareExchange(ref value, update, expected);
             
-            private protected override long VolatileRead(ref long value) => Volatile.Read(ref value);
+            internal override long VolatileRead(ref long value) => Volatile.Read(ref value);
+
+            private protected override bool Equals(long x, long y) => x == y;
         }
+
+        internal static readonly Atomic<long> Atomic = new Operations();
 
         /// <summary>
         /// Reads the value of the specified field. On systems that require it, inserts a
@@ -85,7 +89,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet(ref this long value, long expected, long update)
-            => Operations.Instance.CompareAndSet(ref value, expected, update);
+            => Atomic.CompareAndSet(ref value, expected, update);
 
         /// <summary>
         /// Adds two 64-bit integers and replaces referenced integer with the sum, 
@@ -134,7 +138,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long AccumulateAndGet(ref this long value, long x, Func<long, long, long> accumulator)
-            => Operations.Instance.Accumulate(ref value, x, accumulator).NewValue;
+            => Atomic.Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -149,7 +153,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndAccumulate(ref this long value, long x, Func<long, long, long> accumulator)
-            => Operations.Instance.Accumulate(ref value, x, accumulator).OldValue;
+            => Atomic.Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -160,7 +164,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long UpdateAndGet(ref this long value, Func<long, long> updater)
-            => Operations.Instance.Update(ref value, updater).NewValue;
+            => Atomic.Update(ref value, updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -171,7 +175,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndUpdate(ref this long value, Func<long, long> updater)
-            => Operations.Instance.Update(ref value, updater).OldValue;
+            => Atomic.Update(ref value, updater).OldValue;
 
         /// <summary>
         /// Performs volatile read of the array element.

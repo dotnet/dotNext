@@ -170,7 +170,7 @@ namespace DotNext
             switch (type)
             {
                 case ReferenceType:
-                    IsPresent = !(value is null);
+                    IsPresent = value != null;
                     break;
                 case ValueType:
                     IsPresent = true;

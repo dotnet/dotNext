@@ -148,7 +148,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         //heartbeat broadcasting
         private async Task ProcessLeaderState(CancellationToken stoppingToken)
         {
-
+            stoppingToken.ThrowIfCancellationRequested();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
