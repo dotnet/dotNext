@@ -11,11 +11,6 @@ namespace DotNext.Net.Cluster
     public interface ICluster
     {
         /// <summary>
-        /// Gets cluster status.
-        /// </summary>
-        ClusterStatus Status { get; }
-
-        /// <summary>
         /// Gets collection of members in the cluster node.
         /// </summary>
         IReadOnlyCollection<IClusterMember> Members { get; }
@@ -34,11 +29,6 @@ namespace DotNext.Net.Cluster
         /// An event raised when leader has been changed.
         /// </summary>
         event ClusterLeaderChangedEventHandler LeaderChanged;
-
-        /// <summary>
-        /// An event raised when cluster status has been changed.
-        /// </summary>
-        event ClusterStatusChangedEventHandler StatusChanged;
 
         /// <summary>
         /// An event raised when cluster member becomes available or unavailable.

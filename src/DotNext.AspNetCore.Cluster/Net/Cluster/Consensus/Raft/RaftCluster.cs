@@ -26,7 +26,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly string name;
         private readonly Guid id;
         private readonly AsyncExclusiveLock monitor;
-        private ClusterStatus status;
         private readonly bool absoluteMajority;
 
         private RaftCluster(ClusterMemberConfiguration config)
@@ -52,18 +51,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Guid ILocalMember.Id => id;
         long ILocalMember.Term => consensusTerm.VolatileRead();
 
-        public ClusterStatus Status
-        {
-            get => status;
-            private set
-            {
-                var oldStatus = status;
-                var newStatus = status = value;
-                if (oldStatus != newStatus)
-                    StatusChanged?.Invoke(this, oldStatus, newStatus);
-            }
-        }
-
         IReadOnlyCollection<IClusterMember> ICluster.Members 
             => state.VolatileRead() == UnstartedState ? Array.Empty<IClusterMember>() : (IReadOnlyCollection<IClusterMember>)members;
 
@@ -84,7 +71,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         public event ClusterLeaderChangedEventHandler LeaderChanged;
-        public event ClusterStatusChangedEventHandler StatusChanged;
         public event ClusterMemberStatusChanged MemberStatusChanged;
         public event MessageHandler MessageReceived;
 
@@ -104,6 +90,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (state > FollowerState || electionTimeoutRefresher.IsSet)
                     return;
+                Leader = null;  //leader is not known, so erase it
                 //becomes a candidate
                 state.VolatileWrite(CandidateState);
                 consensusTerm += 1L;
@@ -136,7 +123,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     state.VolatileWrite(LeaderState);
                     Leader = LocalMember;
-                    Status = ClusterStatus.Operating;
                 }
                 else
                     state.VolatileWrite(FollowerState); //no clear consensus, back to Follower state
@@ -188,7 +174,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             //start node in Follower state
             consensusTerm = 0L;
-            Status = ClusterStatus.NoConsensus;
             state.VolatileWrite(FollowerState);
             electionTimeoutRefresher.Reset();
             return base.StartAsync(token);
