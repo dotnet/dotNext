@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    internal sealed class RemoteClusterMember : HttpClient, IRaftClusterMember
+    internal sealed class RaftClusterMember : HttpClient, IClusterMember
     {
-        internal RemoteClusterMember(Uri remoteMember)
+        private readonly Guid owner;
+
+        internal RaftClusterMember(Guid owner, Uri remoteMember)
         {
+            this.owner = owner;
             BaseAddress = remoteMember;
             switch (remoteMember.HostNameType)
             {
@@ -26,18 +29,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        internal bool IsLocal { get; private set; }
+
         //null means that node is unreachable
         //true means that node votes successfully for the new leader
         //false means that node is in candidate state and rejects voting
-        public async Task<bool?> Vote(Guid sender, CancellationToken token)
+        internal async Task<bool?> Vote(CancellationToken token)
         {
+            if(IsLocal)
+                return true;
             return null;
         }
 
         public IPEndPoint Endpoint { get; }
         public bool IsLeader { get; private set; }
 
-        bool IClusterMember.IsRemote => true;
+        bool IClusterMember.IsRemote => !IsLocal;
 
         public Guid Id { get; private set; }
         public string Name { get; private set; }

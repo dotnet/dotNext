@@ -1,5 +1,5 @@
 ﻿namespace DotNext.Net.Cluster
 {
-    public delegate void ClusterStatusChangedEventHandler(IClusterNode sender, ClusterStatus oldStatus,
+    public delegate void ClusterStatusChangedEventHandler(ICluster sender, ClusterStatus oldStatus,
         ClusterStatus newStatus);
 }

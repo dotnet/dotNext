@@ -9,11 +9,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         public static IServiceCollection EnableCluster(this IServiceCollection services)
         {
-            Func<IServiceProvider, RaftClusterNode> clusterNodeCast =
-                ServiceProviderServiceExtensions.GetRequiredService<RaftClusterNode>;
-            return services.AddSingleton<RaftClusterNode>()
+            Func<IServiceProvider, RaftCluster> clusterNodeCast =
+                ServiceProviderServiceExtensions.GetRequiredService<RaftCluster>;
+            return services.AddSingleton<RaftCluster>()
                 .AddSingleton<IHostedService>(clusterNodeCast)
-                .AddSingleton<IClusterNode>(clusterNodeCast)
+                .AddSingleton<ICluster>(clusterNodeCast)
                 .AddSingleton<IClusterMember>(clusterNodeCast);
         }
 

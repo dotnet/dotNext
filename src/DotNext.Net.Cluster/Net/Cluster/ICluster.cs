@@ -8,12 +8,12 @@ namespace DotNext.Net.Cluster
     /// <summary>
     /// Represents cluster node in distributed environment.
     /// </summary>
-    public interface IClusterNode : IClusterMember
+    public interface ICluster
     {
         /// <summary>
         /// Gets cluster status.
         /// </summary>
-        ClusterStatus ClusterStatus { get; }
+        ClusterStatus Status { get; }
 
         /// <summary>
         /// Gets collection of members in the cluster node.
@@ -26,14 +26,19 @@ namespace DotNext.Net.Cluster
         IClusterMember Leader { get; }
 
         /// <summary>
+        /// Gets cluster member represented by entire application.
+        /// </summary>
+        IClusterMember LocalMember { get; }
+
+        /// <summary>
         /// An event raised when leader has been changed.
         /// </summary>
-        event LeaderChangedEventHandler LeaderChanged;
+        event ClusterLeaderChangedEventHandler LeaderChanged;
 
         /// <summary>
         /// An event raised when cluster status has been changed.
         /// </summary>
-        event ClusterStatusChangedEventHandler ClusterStatusChanged;
+        event ClusterStatusChangedEventHandler StatusChanged;
 
         /// <summary>
         /// An event raised when cluster member becomes available or unavailable.
@@ -52,14 +57,6 @@ namespace DotNext.Net.Cluster
         void Resign();
 
         /// <summary>
-        /// Waits until the current node becomes a leader.
-        /// </summary>
-        /// <param name="timeout"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        Task<bool> WaitForLeadershipAsync(TimeSpan timeout, CancellationToken token);
-
-        /// <summary>
         /// Enqueues replication one-way asynchronous message.
         /// </summary>
         /// <remarks>
@@ -69,7 +66,7 @@ namespace DotNext.Net.Cluster
         /// <param name="timeout"></param>
         /// <param name="token"></param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        /// <exception cref="InvalidOperationException">This node is not the leader.</exception>
+        /// <exception cref="InvalidOperationException">The caller node is not the leader.</exception>
         /// <exception cref="ClusterSynchronizationException">The message was not delivered to one or more members.</exception>
         Task EnqueueMessageAsync(IMessage message, TimeSpan timeout, CancellationToken token);
     }
