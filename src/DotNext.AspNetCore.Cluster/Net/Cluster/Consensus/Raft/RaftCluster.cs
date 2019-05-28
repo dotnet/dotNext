@@ -196,7 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             else
                 using (await monitor.AcquireLock(CancellationToken.None).ConfigureAwait(false))
                 {
-                    if (consensusTerm > request.ConsensusTerm || state.VolatileRead() > FollowerState)
+                    if (state.VolatileRead() > FollowerState || consensusTerm > request.ConsensusTerm)
                         vote = false;
                     else
                     {
