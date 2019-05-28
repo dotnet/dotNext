@@ -150,5 +150,27 @@ namespace DotNext.Threading
 			Equal(EnvironmentVariableTarget.Machine, value.GetAndUpdate(x => EnvironmentVariableTarget.User));
 			Equal(EnvironmentVariableTarget.User, value.Value);
 		}
+
+		[Fact]
+        public static void AtomicIntPtrTest()
+        {
+            var i = new IntPtr(10);
+            Equal(new IntPtr(11), i.IncrementAndGet());
+            Equal(new IntPtr(10), i.DecrementAndGet());
+            i = new IntPtr(20);
+            True(i.CompareAndSet(new IntPtr(20), new IntPtr(30)));
+            Equal(new IntPtr(30), i);
+            False(i.CompareAndSet(new IntPtr(20), new IntPtr(50)));
+            Equal(new IntPtr(30), i);
+            Equal(new IntPtr(30), i.GetAndAccumulate(new IntPtr(60), (x, y) => x + y.ToInt32()));
+            Equal(new IntPtr(90), i);
+            Equal(new IntPtr(10), i.AccumulateAndGet(new IntPtr(80), (x, y) => x - y.ToInt32()));
+            Equal(new IntPtr(10), i);
+            Equal(new IntPtr(10), i.GetAndSet(new IntPtr(25)));
+            Equal(new IntPtr(25), i);
+            Equal(new IntPtr(42), i.UpdateAndGet(current => new IntPtr(42)));
+            Equal(new IntPtr(42), i.GetAndUpdate(current => new IntPtr(52)));
+            Equal(new IntPtr(52), i);
+        }
 	}
 }
