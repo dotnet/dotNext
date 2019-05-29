@@ -7,7 +7,7 @@
     <Version>0.1.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
-    <Description>Implementation of network conensus algorithm for fault-tolerant distributed microservices based on ASP.NET Core</Description>
+    <Description>Basic framework for building clusters of microservices</Description>
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
@@ -15,7 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Consensus;Raft;ASP.NET Core</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Initial implementation of Raft consensus algorithm</PackageReleaseNotes>
+    <PackageReleaseNotes>Initial set of interfaces</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -35,24 +35,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="ExceptionMessages.restext">
-      <Generator></Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.2" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
-    <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
+    <ProjectReference Include="..\..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext" Version="0.11.0" Condition="'$(Configuration)'=='Release'" />
-    <ProjectReference Include="..\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Net.Cluster" Version="0.1.0" Condition="'$(Configuration)'=='Release'" />
-    <ProjectReference Include="..\DotNext.Threading\DotNext.Threading.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Threading" Version="0.11.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 </Project>
