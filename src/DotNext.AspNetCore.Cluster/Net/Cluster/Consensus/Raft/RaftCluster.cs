@@ -209,6 +209,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await RequestVoteMessage.CreateResponse(response, id, name, vote).ConfigureAwait(false);
         }
 
+        private async Task ReceiveAppendEntries(RaftHttpMessage request, HttpResponse response)
+        {
+            if(request.MemberId == id)  //sender node and receiver are same, ignore message
+                return;
+        }
+
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             switch (RaftHttpMessage.GetMessageType(context.Request))
