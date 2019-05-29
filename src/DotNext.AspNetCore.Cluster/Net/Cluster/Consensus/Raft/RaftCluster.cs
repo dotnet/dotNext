@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNext.Threading;
@@ -20,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private long consensusTerm;
         private readonly LinkedList<RaftClusterMember> members;
         private readonly TimeSpan electionTimeout;
-        private readonly AsyncAutoResetEvent electionTimeoutRefresher;
+        private readonly AsyncManualResetEvent electionTimeoutRefresher;
         private int state;
         private volatile IClusterMember leader, local;
         private readonly string name;
@@ -34,7 +33,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             id = Guid.NewGuid();
             name = config.MemberName;
             members = new LinkedList<RaftClusterMember>();
-            electionTimeoutRefresher = new AsyncAutoResetEvent(false);
+            electionTimeoutRefresher = new AsyncManualResetEvent(false);
             electionTimeout = config.ElectionTimeout;
             state = UnstartedState;
             foreach (var memberUri in config.Members)
@@ -204,7 +203,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         vote = true;
                     }
 
-                    electionTimeoutRefresher.Set();
+                    electionTimeoutRefresher.Set(true);
                 }
 
             await RequestVoteMessage.CreateResponse(response, id, name, vote).ConfigureAwait(false);
