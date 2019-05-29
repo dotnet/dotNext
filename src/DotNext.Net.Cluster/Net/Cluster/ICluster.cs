@@ -47,7 +47,7 @@ namespace DotNext.Net.Cluster
         void Resign();
 
         /// <summary>
-        /// Enqueues replication one-way asynchronous message.
+        /// Enqueues one-way asynchronous message represents data replication.
         /// </summary>
         /// <remarks>
         /// The message can placed into queue of the leader node only.
