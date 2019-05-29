@@ -25,15 +25,24 @@ namespace DotNext.Threading
         /// </summary>
         /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+        public bool Set() => Set(false);
+
+        /// <summary>
+        /// Sets the state of the event to signaled, allowing one or more awaiters to proceed;
+        /// and, optionally, reverts the state of the event to initial state. 
+        /// </summary>
+        /// <param name="autoReset"><see langword="true"/> to reset this object to non-signaled state automatically; <see langword="false"/> to leave this object in signaled state.</param>
+        /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool Set()
+        public bool Set(bool autoReset)
         {
             ThrowIfDisposed();
             if (node is null)    //already in signaled state
                 return false;
             else if (node.TrySetResult(true))
             {
-                node = null;
+                node = autoReset ? new WaitNode() : null;
                 return true;
             }
             else
