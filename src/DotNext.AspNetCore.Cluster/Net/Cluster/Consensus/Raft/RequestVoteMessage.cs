@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     internal sealed class RequestVoteMessage : RaftHttpMessage<bool>
     {
-        internal const string MessageType = "Vote";
+        internal const string MessageType = "RequestVote";
 
         internal RequestVoteMessage(Guid memberId, long consensusTerm)
             : base(MessageType, memberId, consensusTerm)
