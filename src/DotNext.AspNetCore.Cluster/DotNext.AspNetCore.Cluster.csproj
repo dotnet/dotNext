@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.10.0</Version>
+    <Version>0.1.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Implementation of network conensus algorithm for fault-tolerant distributed microservices based on ASP.NET Core</Description>
@@ -49,10 +49,10 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.10.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.11.0" Condition="'$(Configuration)'=='Release'" />
     <ProjectReference Include="..\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Net.Cluster" Version="0.10.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext.Net.Cluster" Version="0.1.0" Condition="'$(Configuration)'=='Release'" />
     <ProjectReference Include="..\DotNext.Threading\DotNext.Threading.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Threading" Version="0.10.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext.Threading" Version="0.11.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 </Project>

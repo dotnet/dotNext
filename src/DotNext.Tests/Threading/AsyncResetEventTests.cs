@@ -56,6 +56,30 @@ namespace DotNext.Threading
         }
 
         [Fact]
+        public static async Task SetAutoresetForManualEvent()
+        {
+            using(var resetEvent = new AsyncManualResetEvent(false))
+            {
+                False(resetEvent.IsSet);
+                var t = new Thread(() =>
+                {
+                    resetEvent.Wait().Wait();
+                })
+                {
+                    IsBackground = true
+                };
+                t.Start();
+                var spinner = new SpinWait();
+                while((t.ThreadState & ThreadState.WaitSleepJoin) == 0)
+                    spinner.SpinOnce();
+                True(resetEvent.Set(true));
+                t.Join();
+                False(resetEvent.IsSet);
+                False(await resetEvent.Wait(TimeSpan.Zero));
+            }
+        }
+
+        [Fact]
         public static async Task SetResetForAutoEvent()
         {
             using (var are = new AsyncAutoResetEvent(false))
