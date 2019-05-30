@@ -44,6 +44,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             callback?.Invoke(this, (ClusterMemberStatus) previousState, (ClusterMemberStatus) newState);
         }
 
+        internal async Task<bool> AppendEntries(ILocalMember sender, IMessage message, CancellationToken token)
+        {
+            if(IsLocal)
+                return true;
+            var request = (HttpRequestMessage) new AppendEntriesMessage(sender.Id, sender.Term) { CustomPayload = message };
+            var response = default(HttpResponseMessage);
+            try
+            {
+
+            }
+            catch(HttpRequestException e)
+            {
+                response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).ConfigureAwait(false);
+            }
+        }
+
         //null means that node is unreachable
         //true means that node votes successfully for the new leader
         //false means that node is in candidate state and rejects voting

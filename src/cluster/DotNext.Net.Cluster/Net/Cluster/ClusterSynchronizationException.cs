@@ -1,10 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace DotNext.Net.Cluster
 {
-    public abstract class ClusterSynchronizationException : Exception
+    [Serializable]
+    public abstract class ClusterSynchronizationException : ConsensusProtocolException
     {
+        protected ClusterSynchronizationException(string message)
+            : base(message)
+        {
+        }
+
+        protected ClusterSynchronizationException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
         /// <summary>
         /// Gets collection of members that are unavailable during synchronization.
         /// </summary>
