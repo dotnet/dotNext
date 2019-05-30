@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -7,14 +8,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class RaftHttpCluster : RaftCluster, IMiddleware, IHostedService, IRaftLocalMember
     {
-        internal RaftHttpCluster(IOptions<RaftClusterMemberConfiguration> config)
+        private readonly IRaftClusterConfigurer configurer;
+
+        public RaftHttpCluster(IOptions<RaftClusterMemberConfiguration> config)
             : base(config.Value)
         {
         }
 
-        long IRaftLocalMember.Term => Term;
-
-        bool IRaftLocalMember.IsLeader(IClusterMember member) => ReferenceEquals(Leader, member);
+        public RaftHttpCluster(IOptions<RaftClusterMemberConfiguration> config, IRaftClusterConfigurer configurer)
+            : this(config)
+        {
+            this.configurer = configurer;
+        }
 
         private async Task Vote(RequestVoteMessage request, HttpResponse response)
             => await RequestVoteMessage.CreateResponse(response, this, await Vote(request, request.ConsensusTerm).ConfigureAwait(false))
@@ -28,6 +33,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             if(request.MemberId == id)  //sender node and receiver are same, ignore message
                 return;
+        }
+
+        Task IHostedService.StartAsync(CancellationToken token)
+        {
+            configurer?.Initialize(this);
+            return StartAsync(token);
+        }
+
+        Task IHostedService.StopAsync(CancellationToken token)
+        {
+            configurer?.Cleanup(this);
+            return StopAsync(token);
         }
 
         public Task InvokeAsync(HttpContext context, RequestDelegate next)

@@ -13,6 +13,7 @@ namespace DotNext.Net.Cluster.Consensus
         {
             //recommended election timeout is between 150ms and 300ms
             ElectionTimeout = TimeSpan.FromMilliseconds(new Random().Next(150, 301));
+            MessageProcessingTimeout = TimeSpan.FromSeconds(30);
             AbsoluteMajority = true;
             
         }
@@ -28,6 +29,8 @@ namespace DotNext.Net.Cluster.Consensus
         }
 
         public TimeSpan ElectionTimeout { get; set; }
+
+        public TimeSpan MessageProcessingTimeout { get; set; }
 
         public bool AbsoluteMajority { get; set; }
     }

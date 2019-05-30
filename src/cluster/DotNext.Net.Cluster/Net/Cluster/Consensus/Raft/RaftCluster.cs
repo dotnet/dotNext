@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.
     /// </summary>
-    public abstract class RaftCluster : Disposable, ICluster, IClusterMemberIdentity
+    public abstract class RaftCluster : Disposable, IRaftCluster, IClusterMemberIdentity
     {
         private const int UnstartedState = 0;
         private const int FollowerState = 1;
@@ -48,7 +48,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             monitor = new AsyncExclusiveLock();
         }
 
-        protected long Term => consensusTerm.VolatileRead();
+        public long Term => consensusTerm.VolatileRead();
+
+        bool IRaftCluster.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
         string IClusterMemberIdentity.Name => name;
         Guid IClusterMemberIdentity.Id => id;
@@ -59,6 +61,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public event ClusterLeaderChangedEventHandler LeaderChanged;
         public event ClusterMemberStatusChanged MemberStatusChanged;
         public event MessageHandler MessageReceived;
+
+        private RequestContext Context => new RequestContext(MemberStatusChanged);
 
         /// <summary>
         /// Gets leader of the cluster.
@@ -93,7 +97,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return true;
                 }
                 else if (leader is IRaftClusterMember member)
-                    return await member.Resign(token).ConfigureAwait(false);
+                    return await member.Resign(Context, token).ConfigureAwait(false);
                 else
                     return false;
             }
@@ -117,7 +121,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var voters = new LinkedList<(IRaftClusterMember member, Task<bool?> task)>();
                 //send vote request to all members in parallel
                 foreach (var member in (IEnumerable<IRaftClusterMember>)members)
-                    voters.AddLast((member, member.Vote(MemberStatusChanged, token)));
+                    voters.AddLast((member, member.Vote(Context, token)));
                 //calculate votes
                 var votes = 0;
                 for (var member = voters.First; !(member is null); LocalMember = member.Value.member, member = member.Next)

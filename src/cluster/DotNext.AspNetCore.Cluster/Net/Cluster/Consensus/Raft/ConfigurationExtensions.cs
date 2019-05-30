@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using RaftHttpCluster = Http.RaftHttpCluster;
+
     public static class ConfigurationExtensions
     {
-        [CLSCompliant(false)]
-        public static IServiceCollection EnableCluster(this IServiceCollection services)
+        private static IServiceCollection EnableCluster(this IServiceCollection services, Action<RaftCluster> initializer = null)
         {
             Func<IServiceProvider, RaftHttpCluster> clusterNodeCast =
                 ServiceProviderServiceExtensions.GetRequiredService<RaftHttpCluster>;
@@ -20,7 +22,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [CLSCompliant(false)]
-        public static IServiceCollection EnableCluster(this IServiceCollection services, IConfiguration clusterConfig)
+        public static IServiceCollection EnableCluster(this IServiceCollection services, IConfiguration clusterConfig, Action<RaftCluster> initializer = null)
             => services.Configure<ClusterMemberConfiguration>(clusterConfig).EnableCluster();
+        
+        [CLSCompliant(false)]
+        public static IServiceCollection ConfigureCluster<TConfig>(this IServiceCollection services)
+            where TConfig : class, IRaftClusterConfigurer
+            => services.AddSingleton<IRaftClusterConfigurer, TConfig>();
     }
 }

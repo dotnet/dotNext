@@ -1,13 +1,13 @@
 using System;
 
-namespace DotNext.Net.Cluster.Consensus.Raft
+namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class AppendEntriesMessage : RaftHttpMessage
     {
         internal const string MessageType = "AppendEntries";
 
-        internal AppendEntriesMessage(Guid memberId, long consensusTerm)
-            : base(MessageType, memberId, consensusTerm)
+        internal AppendEntriesMessage(IRaftLocalMember sender)
+            : base(MessageType, sender)
         {
         }
 

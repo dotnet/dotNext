@@ -42,10 +42,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal bool IsLocal { get; private set; }
 
-        private void ChangeStatus(int newState, ClusterMemberStatusChanged callback)
+        private void ChangeStatus(in RequestContext context, int newState)
         {
             var previousState = status.GetAndSet(newState);
-            callback?.Invoke(this, (ClusterMemberStatus) previousState, (ClusterMemberStatus) newState);
+            if(previousState != newState)
+                context.MemberStatusChanged(this, (ClusterMemberStatus) previousState, (ClusterMemberStatus) newState);
         }
 
         private async Task<TBody> ParseResponse<TBody>(HttpResponseMessage response, ResponseParser<TBody> parser)
@@ -53,14 +54,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var reply = await parser(response).ConfigureAwait(false);
             IsLocal = reply.MemberId == owner.Id;
             Id = reply.MemberId;
-            Name = reply.MemberName;
+            if(!string.Equals(Name, reply.MemberName))  //allows not to store the same string value but represented by different instances
+                Name = reply.MemberName;
             return reply.Body;
         }
 
         //null means that node is unreachable
         //true means that node votes successfully for the new leader
         //false means that node is in candidate state and rejects voting
-        public async Task<bool?> Vote(ClusterMemberStatusChanged callback, CancellationToken token)
+        public async Task<bool?> Vote(RequestContext context, CancellationToken token)
         {
             if (IsLocal)
                 return true;
@@ -70,12 +72,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
                 var result = await ParseResponse<bool>(response, RequestVoteMessage.GetResponse).ConfigureAwait(false);
-                ChangeStatus(AvailableStatus, callback);
+                ChangeStatus(context, AvailableStatus);
                 return result;
             }
             catch (HttpRequestException)
             {
-                ChangeStatus(UnavailableStatus, callback);
+                ChangeStatus(context, UnavailableStatus);
                 return null;
             }
             finally
@@ -85,7 +87,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        public async Task<bool> Resign(CancellationToken token)
+        public async Task<bool> Resign(RequestContext context, CancellationToken token)
         {
             var request = (HttpRequestMessage) new ResignMessage(owner);
             var response = default(HttpResponseMessage);
@@ -93,10 +95,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
                     .ConfigureAwait(false);
-                return await ParseResponse<bool>(response, ResignMessage.GetResponse).ConfigureAwait(false);
+                var result = await ParseResponse<bool>(response, ResignMessage.GetResponse).ConfigureAwait(false);
+                ChangeStatus(context, AvailableStatus);
+                return result;
             }
             catch (HttpRequestException)
             {
+                ChangeStatus(context, UnavailableStatus);
                 return false;
             }
             finally
