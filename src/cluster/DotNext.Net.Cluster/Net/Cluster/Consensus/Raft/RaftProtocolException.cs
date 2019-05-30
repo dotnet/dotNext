@@ -1,25 +1,24 @@
-using System;
-using System.Net;
+﻿using System;
 using System.Runtime.Serialization;
 
-namespace DotNext.Net.Cluster
+namespace DotNext.Net.Cluster.Consensus.Raft
 {
     /// <summary>
-    /// Represents violation of network consensus protocol.
+    /// Represents violation of Raft protocol.
     /// </summary>
     [Serializable]
-    public abstract class ConsensusProtocolException : ProtocolViolationException
+    public sealed class RaftProtocolException : ConsensusProtocolException
     {
         /// <summary>
         /// Initializes a new exception.
         /// </summary>
         /// <param name="message">Human-readable text describing problem.</param>
-        protected ConsensusProtocolException(string message)
+        public RaftProtocolException(string message)
             : base(message)
         {
         }
 
-        protected ConsensusProtocolException(SerializationInfo info, StreamingContext context)
+        private RaftProtocolException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

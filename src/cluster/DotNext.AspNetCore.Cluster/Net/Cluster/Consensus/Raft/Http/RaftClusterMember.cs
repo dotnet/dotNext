@@ -5,19 +5,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotNext.Threading;
 
-namespace DotNext.Net.Cluster.Consensus.Raft
+namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal sealed class RaftClusterMember : HttpClient, IClusterMember
+    internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember
     {
+        private delegate Task<RaftHttpMessage<TBody>.Response> ResponseParser<TBody>(HttpResponseMessage response);
+
         private const int UnknownStatus = (int) ClusterMemberStatus.Unknown;
         private const int UnavailableStatus = (int) ClusterMemberStatus.Unavailable;
         private const int AvailableStatus = (int) ClusterMemberStatus.Available;
 
         private readonly Uri resourcePath;
         private int status;
+        private readonly IRaftLocalMember owner;
 
-        internal RaftClusterMember(Uri remoteMember, Uri resourcePath)
+        internal RaftClusterMember(IRaftLocalMember owner, Uri remoteMember, Uri resourcePath)
         {
+            this.owner = owner;
             status = UnknownStatus;
             this.resourcePath = resourcePath;
             BaseAddress = remoteMember;
@@ -44,41 +48,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             callback?.Invoke(this, (ClusterMemberStatus) previousState, (ClusterMemberStatus) newState);
         }
 
-        internal async Task<bool> AppendEntries(ILocalMember sender, IMessage message, CancellationToken token)
+        private async Task<TBody> ParseResponse<TBody>(HttpResponseMessage response, ResponseParser<TBody> parser)
         {
-            if(IsLocal)
-                return true;
-            var request = (HttpRequestMessage) new AppendEntriesMessage(sender.Id, sender.Term) { CustomPayload = message };
-            var response = default(HttpResponseMessage);
-            try
-            {
-
-            }
-            catch(HttpRequestException e)
-            {
-                response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).ConfigureAwait(false);
-            }
+            var reply = await parser(response).ConfigureAwait(false);
+            IsLocal = reply.MemberId == owner.Id;
+            Id = reply.MemberId;
+            Name = reply.MemberName;
+            return reply.Body;
         }
 
         //null means that node is unreachable
         //true means that node votes successfully for the new leader
         //false means that node is in candidate state and rejects voting
-        internal async Task<bool?> Vote(ILocalMember sender, ClusterMemberStatusChanged callback, CancellationToken token)
+        public async Task<bool?> Vote(ClusterMemberStatusChanged callback, CancellationToken token)
         {
             if (IsLocal)
                 return true;
-            var request = (HttpRequestMessage) new RequestVoteMessage(sender.Id, sender.Term);
+            var request = (HttpRequestMessage) new RequestVoteMessage(owner);
             var response = default(HttpResponseMessage);
             try
             {
-                response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
-                    .ConfigureAwait(false);
+                response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
+                var result = await ParseResponse<bool>(response, RequestVoteMessage.GetResponse).ConfigureAwait(false);
                 ChangeStatus(AvailableStatus, callback);
-                var reply = await RequestVoteMessage.GetResponse(response).ConfigureAwait(false);
-                IsLocal = reply.MemberId == sender.Id;
-                Id = reply.MemberId;
-                Name = reply.MemberName;
-                return reply.Body;
+                return result;
             }
             catch (HttpRequestException)
             {
@@ -92,8 +85,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        public async Task<bool> Resign(CancellationToken token)
+        {
+            var request = (HttpRequestMessage) new ResignMessage(owner);
+            var response = default(HttpResponseMessage);
+            try
+            {
+                response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
+                    .ConfigureAwait(false);
+                return await ParseResponse<bool>(response, ResignMessage.GetResponse).ConfigureAwait(false);
+            }
+            catch (HttpRequestException)
+            {
+                return false;
+            }
+            finally
+            {
+                response?.Dispose();
+                request.Dispose();
+            }
+        }
+
         public IPEndPoint Endpoint { get; }
-        public bool IsLeader { get; private set; }
+        bool IClusterMember.IsLeader => owner.IsLeader(this);
 
         bool IClusterMember.IsRemote => !IsLocal;
 

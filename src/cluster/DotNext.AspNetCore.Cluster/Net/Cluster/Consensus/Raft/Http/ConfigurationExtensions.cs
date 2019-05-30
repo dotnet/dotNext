@@ -11,9 +11,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [CLSCompliant(false)]
         public static IServiceCollection EnableCluster(this IServiceCollection services)
         {
-            Func<IServiceProvider, RaftCluster> clusterNodeCast =
-                ServiceProviderServiceExtensions.GetRequiredService<RaftCluster>;
-            return services.AddSingleton<RaftCluster>()
+            Func<IServiceProvider, RaftHttpCluster> clusterNodeCast =
+                ServiceProviderServiceExtensions.GetRequiredService<RaftHttpCluster>;
+            return services.AddSingleton<RaftHttpCluster>()
                 .AddSingleton<IHostedService>(clusterNodeCast)
                 .AddSingleton<ICluster>(clusterNodeCast)
                 .AddSingleton<IMiddleware>(clusterNodeCast);

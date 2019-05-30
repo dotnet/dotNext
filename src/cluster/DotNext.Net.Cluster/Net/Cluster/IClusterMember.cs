@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster
     /// <summary>
     /// Represents cluster member.
     /// </summary>
-    public interface IClusterMember
+    public interface IClusterMember : IClusterMemberIdentity
     {
         /// <summary>
         /// Represents cluster member endpoint.
@@ -22,16 +22,6 @@ namespace DotNext.Net.Cluster
         /// Indicates that this instance represents remote or local cluster member.
         /// </summary>
         bool IsRemote { get; }
-
-        /// <summary>
-        /// Gets unique identifier of the current node in the cluster.
-        /// </summary>
-        Guid Id { get; }
-
-        /// <summary>
-        /// Gets optional name of the current node in the cluster.
-        /// </summary>
-        string Name { get; }
 
         /// <summary>
         /// Gets status of this member.

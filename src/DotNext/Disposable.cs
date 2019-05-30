@@ -64,7 +64,7 @@ namespace DotNext
         public static void Dispose(IEnumerable<IDisposable> objects)
         {
             foreach (var obj in objects)
-                obj.Dispose();
+                obj?.Dispose();
         }
 
         /// <summary>

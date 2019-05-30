@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using DotNext.Threading;
 
 namespace DotNext.Collections.Concurrent
 {
@@ -165,11 +167,37 @@ namespace DotNext.Collections.Concurrent
         /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         public void CopyTo(T[] array, int arrayIndex) => backingStore.CopyTo(array, arrayIndex);
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private T[] ReplaceStore(T[] newStore)
+        {
+            var oldStore = backingStore;
+            backingStore = newStore;
+            return oldStore;
+        }
+
         /// <summary>
         /// Removes all items from this list.
         /// </summary>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Clear() => backingStore = Array.Empty<T>();
+        public void Clear()
+        {
+            var oldStore = ReplaceStore(Array.Empty<T>());
+            Array.Clear(oldStore, 0, oldStore.Length);  //help GC
+        }
+
+        /// <summary>
+        /// Removes all items from this list and performs cleanup operation for each item.
+        /// </summary>
+        /// <param name="cleaner">The action used to clean item from this list.</param>
+        public void Clear(Action<T> cleaner)
+        {
+            var oldStore = ReplaceStore(Array.Empty<T>());
+
+            oldStore.ForEach((long index, ref T item) =>
+            {
+                cleaner(item);
+                item = default;
+            });
+        }
 
         /// <summary>
         /// Removes the element at the specified index of this list.

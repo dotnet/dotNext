@@ -44,7 +44,8 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// Revokes leadership and starts new election process.
         /// </summary>
-        void Resign();
+        /// <returns><see langword="true"/> if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
+        Task<bool> ResignAsync(CancellationToken token);
 
         /// <summary>
         /// Enqueues one-way asynchronous message represents data replication.

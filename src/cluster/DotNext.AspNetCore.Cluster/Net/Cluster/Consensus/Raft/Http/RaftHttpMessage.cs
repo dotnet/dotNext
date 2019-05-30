@@ -5,9 +5,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace DotNext.Net.Cluster.Consensus.Raft
+namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal abstract class RaftHttpMessage
+    internal abstract class RaftHttpMessage : IClusterMemberIdentity
     {
         //request - represents ID of sender node
         //response - represents ID of reply node
@@ -16,6 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         //request - represents Term value according with Raft protocol
         private const string TermHeader = "X-Raft-Term";
 
+        //request - represents name of sender node
         //response - represents name of reply node
         private const string NodeNameHeader = "X-Raft-Node-Name";
 
@@ -23,15 +24,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private const string MessageTypeHeader = "X-Raft-Message";
 
         internal readonly Guid MemberId;
+        private readonly string memberName;
         internal readonly long ConsensusTerm;
         private readonly string messageType;
 
-        private protected RaftHttpMessage(string messageType, Guid memberId, long consensusTerm)
+        private protected RaftHttpMessage(string messageType, IRaftLocalMember sender)
         {
-            MemberId = memberId;
-            this.ConsensusTerm = consensusTerm;
+            MemberId = sender.Id;
+            ConsensusTerm = sender.Term;
+            memberName = sender.Name;
             this.messageType = messageType;
         }
+
+        string IClusterMemberIdentity.Name => memberName;
+
+        Guid IClusterMemberIdentity.Id => MemberId;
 
         private protected RaftHttpMessage(HttpRequest request)
         {
@@ -63,10 +70,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             request.Headers.Add(MessageTypeHeader, messageType);
         }
 
-        private protected static void FillResponse(HttpResponse response, Guid memberId, string memberName)
+        private protected static void FillResponse(HttpResponse response, IClusterMemberIdentity identity)
         {
-            response.Headers.Add(NodeIdHeader, memberId.ToString());
-            response.Headers.Add(NodeNameHeader, memberName);
+            response.Headers.Add(NodeIdHeader, identity.Id.ToString());
+            response.Headers.Add(NodeNameHeader, identity.Name);
         }
 
         public static explicit operator HttpRequestMessage(RaftHttpMessage message)
@@ -83,7 +90,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         internal delegate Task<TResponse> ResponseParser(HttpResponseMessage response);
 
-        internal readonly struct Response
+        internal readonly struct Response : IClusterMemberIdentity
         {
             internal readonly string MemberName;
             internal readonly Guid MemberId;
@@ -95,10 +102,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 MemberName = GetMemberName(response);
                 MemberId = GetMemberId(response);
             }
+
+            Guid IClusterMemberIdentity.Id => MemberId;
+            string IClusterMemberIdentity.Name => MemberName;
         }
 
-        private protected RaftHttpMessage(string messageType, Guid memberId, long consensusTerm) 
-            : base(messageType, memberId, consensusTerm)
+        private protected RaftHttpMessage(string messageType, IRaftLocalMember sender) 
+            : base(messageType, sender)
         {
         }
 
