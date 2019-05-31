@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Net.Mime;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster
 {
@@ -22,7 +23,7 @@ namespace DotNext.Net.Cluster
         /// Copies the message into the specified stream.
         /// </summary>
         /// <param name="output">The output stream receiving message content.</param>
-        void CopyToAsync(Stream output);
+        Task CopyToAsync(Stream output);
 
         /// <summary>
         /// MIME type of the message.

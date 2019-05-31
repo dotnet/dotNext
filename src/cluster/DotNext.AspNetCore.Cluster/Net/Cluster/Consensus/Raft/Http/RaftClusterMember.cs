@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var reply = await parser(response).ConfigureAwait(false);
             IsLocal = reply.MemberId == owner.Id;
             Id = reply.MemberId;
-            if(!string.Equals(Name, reply.MemberName))  //allows not to store the same string value but represented by different instances
+            if(!string.Equals(Name, reply.MemberName, StringComparison.Ordinal))  //allows not to store the same string value but represented by different instances
                 Name = reply.MemberName;
             return reply.Body;
         }
