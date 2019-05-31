@@ -172,7 +172,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         //heartbeat broadcasting
         private async Task ProcessLeaderState(CancellationToken stoppingToken)
         {
-            stoppingToken.ThrowIfCancellationRequested();
+            using (await monitor.AcquireLock(stoppingToken).ConfigureAwait(false))
+            {
+
+            }
         }
 
         private async Task Serve(CancellationToken stoppingToken)
