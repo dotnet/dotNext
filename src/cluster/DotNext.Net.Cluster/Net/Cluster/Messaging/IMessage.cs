@@ -2,7 +2,7 @@
 using System.Net.Mime;
 using System.Threading.Tasks;
 
-namespace DotNext.Net.Cluster
+namespace DotNext.Net.Cluster.Messaging
 {
     /// <summary>
     /// Represents message that can be transferred between cluster nodes.

@@ -35,16 +35,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 return;
         }
 
-        Task IHostedService.StartAsync(CancellationToken token)
+        public override Task StartAsync(CancellationToken token)
         {
             configurer?.Initialize(this);
-            return StartAsync(token);
+            return base.StartAsync(token);
         }
 
-        Task IHostedService.StopAsync(CancellationToken token)
+        public override Task StopAsync(CancellationToken token)
         {
             configurer?.Cleanup(this);
-            return StopAsync(token);
+            return base.StopAsync(token);
         }
 
         public Task InvokeAsync(HttpContext context, RequestDelegate next)

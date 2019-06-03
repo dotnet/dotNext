@@ -36,29 +36,9 @@ namespace DotNext.Net.Cluster
         event ClusterMemberStatusChanged MemberStatusChanged;
 
         /// <summary>
-        /// Represents an event raised when message has been received
-        /// by another cluster member using <see cref="EnqueueMessageAsync"/>.
-        /// </summary>
-        event MessageHandler MessageReceived;
-
-        /// <summary>
         /// Revokes leadership and starts new election process.
         /// </summary>
         /// <returns><see langword="true"/> if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
         Task<bool> ResignAsync(CancellationToken token);
-
-        /// <summary>
-        /// Enqueues one-way asynchronous message represents data replication.
-        /// </summary>
-        /// <remarks>
-        /// The message can placed into queue of the leader node only.
-        /// </remarks>
-        /// <param name="message">The message to send.</param>
-        /// <param name="timeout"></param>
-        /// <param name="token"></param>
-        /// <returns>The task representing asynchronous execution of the method.</returns>
-        /// <exception cref="InvalidOperationException">The caller node is not the leader.</exception>
-        /// <exception cref="ClusterSynchronizationException">The message was not delivered to one or more members.</exception>
-        Task EnqueueMessageAsync(IMessage message, TimeSpan timeout, CancellationToken token);
     }
 }
