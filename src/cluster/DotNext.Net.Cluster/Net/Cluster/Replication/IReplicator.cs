@@ -1,11 +1,9 @@
 namespace DotNext.Net.Cluster.Replication
 {
-    using Messaging;
-
     /// <summary>
     /// Represents cluster with support of data replication.
     /// </summary>
-    public interface IReplicationSupport : ICluster
+    public interface IReplicator : ICluster
     {
          /// <summary>
         /// Represents an event raised when replication message
@@ -13,6 +11,9 @@ namespace DotNext.Net.Cluster.Replication
         /// </summary>
         event ReplicationEventHandler Replication;
 
+        /// <summary>
+        /// Specifies transaction log to be tracked by this replicator.
+        /// </summary>
         IAuditTrail AuditTrail { set; }
     }
 }
