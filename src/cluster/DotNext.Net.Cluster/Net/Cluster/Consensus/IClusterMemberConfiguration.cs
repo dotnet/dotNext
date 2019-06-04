@@ -7,11 +7,6 @@ namespace DotNext.Net.Cluster.Consensus
     /// </summary>
     public interface IClusterMemberConfiguration
     {
-        /// <summary>
-        /// Gets name of the cluster member.
-        /// </summary>
-        string MemberName { get; }
-
         bool AbsoluteMajority { get; }
 
         TimeSpan ElectionTimeout { get; }

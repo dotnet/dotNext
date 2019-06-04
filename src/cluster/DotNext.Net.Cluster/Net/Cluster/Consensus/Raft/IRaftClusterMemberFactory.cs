@@ -4,6 +4,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     public interface IRaftClusterMemberFactory : IClusterMemberConfiguration
     {
-        IReadOnlyCollection<IRaftClusterMember> CreateMembers(IClusterMemberIdentity localMember);
+        IReadOnlyCollection<IRaftClusterMember> CreateMembers();
     }
 }

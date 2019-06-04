@@ -7,13 +7,8 @@ namespace DotNext.Net.Cluster
     /// <summary>
     /// Represents cluster node in distributed environment.
     /// </summary>
-    public interface ICluster
+    public interface ICluster : IReadOnlyCollection<IClusterMember>
     {
-        /// <summary>
-        /// Gets collection of members in the cluster node.
-        /// </summary>
-        IReadOnlyCollection<IClusterMember> Members { get; }
-
         /// <summary>
         /// Gets the leader node.
         /// </summary>

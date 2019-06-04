@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
@@ -11,7 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.
     /// </summary>
-    public abstract class RaftCluster : Disposable, IRaftCluster, IClusterMemberIdentity
+    public abstract class RaftCluster : Disposable, IRaftCluster
     {
         private const int UnstartedState = 0;
         private const int FollowerState = 1;
@@ -44,25 +45,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             electionTimeout = config.ElectionTimeout;
             messageProcessingTimeout = config.MessageProcessingTimeout;
             absoluteMajority = config.AbsoluteMajority;
-            members = new CopyOnWriteList<IRaftClusterMember>(config.CreateMembers(this));
+            members = new CopyOnWriteList<IRaftClusterMember>(config.CreateMembers());
             electionTimeoutRefresher = new AsyncManualResetEvent(false);
             state = UnstartedState;
             monitor = new AsyncExclusiveLock();
         }
 
+        private IReadOnlyCollection<IClusterMember> Members => state.VolatileRead() == UnstartedState ? Array.Empty<IClusterMember>() : (IReadOnlyCollection<IClusterMember>)members;
+
+        int IReadOnlyCollection<IClusterMember>.Count => Members.Count;
+
+        IEnumerator<IClusterMember> IEnumerable<IClusterMember>.GetEnumerator() => Members.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => Members.GetEnumerator();
+
         public long Term => consensusTerm.VolatileRead();
 
         bool IRaftCluster.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-        string IClusterMemberIdentity.Name => name;
-        Guid IClusterMemberIdentity.Id => id;
-
-        IReadOnlyCollection<IClusterMember> ICluster.Members
-            => state.VolatileRead() == UnstartedState ? Array.Empty<IClusterMember>() : (IReadOnlyCollection<IClusterMember>)members;
-
         public event ClusterLeaderChangedEventHandler LeaderChanged;
         public event ClusterMemberStatusChanged MemberStatusChanged;
-        public event MessageHandler MessageReceived;
 
         private RequestContext Context => new RequestContext(MemberStatusChanged);
 
@@ -103,14 +105,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                     return false;
             }
-        }
-
-        public async Task PostMessageAsync(IMessage message, CancellationToken token)
-        {
-            Task messageTask;
-            using(await monitor.AcquireLock(token).ConfigureAwait(false))
-                messageTask = messages.Enqueue(message, ref token);
-            await messageTask.ConfigureAwait(false);
         }
 
         private async Task StartElection(CancellationToken token)
@@ -260,10 +254,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Votes for the new candidate.
         /// </summary>
-        /// <param name="sender">The sender of the vote request.</param>
         /// <param name="senderTerm">Term value provided by sender of the request.</param>
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        protected async Task<bool> Vote(IClusterMemberIdentity sender, long senderTerm)
+        protected async Task<bool> Vote(long senderTerm)
         {
             if (sender.Id == id) //sender node and receiver are same, fast response without synchronization
                 return true;

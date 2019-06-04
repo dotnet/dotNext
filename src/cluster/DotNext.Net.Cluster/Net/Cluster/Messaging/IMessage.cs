@@ -15,8 +15,11 @@ namespace DotNext.Net.Cluster.Messaging
         string Name { get; }
 
         /// <summary>
-        /// Gets length of the message payload.
+        /// Gets length of the message payload, in bytes.
         /// </summary>
+        /// <remarks>
+        /// If value is <see langword="null"/> then length of the message cannot be determined.
+        /// </remarks>
         long? Length { get; }
 
         /// <summary>
@@ -29,5 +32,17 @@ namespace DotNext.Net.Cluster.Messaging
         /// MIME type of the message.
         /// </summary>
         ContentType Type { get; }
+    }
+
+    /// <summary>
+    /// Represents typed message.
+    /// </summary>
+    /// <typeparam name="T">The type of the message content.</typeparam>
+    public interface IMessage<T> : IMessage
+    {
+        /// <summary>
+        /// Gets content of this message.
+        /// </summary>
+        T Content { get; }
     }
 }

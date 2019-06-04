@@ -8,7 +8,7 @@ namespace DotNext.Threading.Tasks
     /// Represents cancelable producer of <see cref="Task{TResult}"/>.
     /// </summary>
     /// <typeparam name="TResult">The type of the result value associated with the task.</typeparam>
-    public class CancelableTaskCompletionSource<TResult> : TaskCompletionSource<TResult>, IDisposable
+    internal class CancelableTaskCompletionSource<TResult> : TaskCompletionSource<TResult>, IDisposable
     {
         private CancellationTokenRegistration registration;
 
@@ -17,7 +17,7 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <param name="token">The token that can be used to cancel <see cref="TaskCompletionSource{TResult}.Task"/>.</param>
         /// <param name="options">The task options.</param>
-        public CancelableTaskCompletionSource(ref CancellationToken token, TaskCreationOptions options = TaskCreationOptions.RunContinuationsAsynchronously)
+        internal CancelableTaskCompletionSource(ref CancellationToken token, TaskCreationOptions options = TaskCreationOptions.RunContinuationsAsynchronously)
             : base(options)
         {
             registration = token.CanBeCanceled ? token.Register(Dispose) : default;
