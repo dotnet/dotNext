@@ -10,7 +10,5 @@ namespace DotNext.Net.Cluster.Consensus
         bool AbsoluteMajority { get; }
 
         TimeSpan ElectionTimeout { get; }
-
-        TimeSpan MessageProcessingTimeout { get; }
     }
 }

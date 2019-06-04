@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ namespace DotNext.Net.Cluster
     /// <summary>
     /// Represents cluster member.
     /// </summary>
-    public interface IClusterMember
+    public interface IClusterMember : IEquatable<IClusterMember>
     {
         /// <summary>
         /// Represents cluster member endpoint that can be used to send messages specific to consensus protocol.

@@ -22,10 +22,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public Uri ResourcePath { get; set; }
 
-        IReadOnlyCollection<IRaftClusterMember> IRaftClusterMemberFactory.CreateMembers(
-            IClusterMemberIdentity localMember)
+        IReadOnlyCollection<IRaftClusterMember> IRaftClusterMemberFactory.CreateMembers()
         {
-            Debug.Assert(localMember is IRaftLocalMember);
             var builder = new ReadOnlyCollectionBuilder<IRaftClusterMember>();
             foreach (var member in Members)
             {

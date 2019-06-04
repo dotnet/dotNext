@@ -11,5 +11,9 @@ namespace DotNext
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
         internal static string IsNotLeader => Resources.GetString("IsNotLeader");
+
+        internal static string UnavailableMember => Resources.GetString("UnavailableMember");
+
+        internal static string ReplicationRejected => Resources.GetString("ReplicationRejected");
     }
 }

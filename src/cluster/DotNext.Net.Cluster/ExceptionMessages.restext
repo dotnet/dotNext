@@ -1,1 +1,3 @@
 IsNotLeader=Replication message cannot be sent by follower or candidate node
+UnavailableMember=Cluster member is not reachable
+ReplicationRejected=Cluster member rejects replication

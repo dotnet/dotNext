@@ -1,36 +1,65 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNext.Collections.Concurrent;
-using DotNext.Threading;
+using DotNext.Net.Cluster.Consensus.Raft.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Collections.Concurrent;
+    using Messaging;
+    using Threading;
+
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.
     /// </summary>
-    public abstract class RaftCluster : Disposable, IRaftCluster
+    public abstract class RaftCluster<TMember> : Disposable, IRaftCluster
+        where TMember : class, IRaftClusterMember
     {
+        /// <summary>
+        /// Represents replicator.
+        /// </summary>
+        /// <param name="sender">The leader node that initiates cluster-wide replication.</param>
+        /// <param name="entries">Log entries.</param>
+        /// <returns><see langword="true"/>, if replication is accepted; otherwise, <see langword="false"/>.</returns>
+        protected delegate Task<bool> Replicator(TMember sender, IMessage entries);
+
+        private readonly struct MemberProcessingContext<T> : IDisposable
+            where T : Task
+        {
+            internal readonly TMember Member;
+            internal readonly T Task;
+
+            internal MemberProcessingContext(TMember member, Func<TMember, T> asyncMethod)
+                => Task = asyncMethod(Member = member);
+
+            public void Dispose() => Task.Dispose();
+        }
+
+        protected readonly ref struct MemberProducer
+        {
+            private readonly ICollection<TMember> members;
+
+            internal MemberProducer(ICollection<TMember> members) => this.members = members;
+
+            public void Add(TMember member) => members.Add(member);
+        }
+
         private const int UnstartedState = 0;
         private const int FollowerState = 1;
         private const int CandidateState = 2;
         private const int LeaderState = 3;
 
-        private readonly CopyOnWriteList<IRaftClusterMember> members;
+        private readonly CopyOnWriteList<TMember> members;
         
         private readonly AsyncManualResetEvent electionTimeoutRefresher;
-        private readonly OutboundMessageQueue messages;
         private int state;
-        private volatile IClusterMember leader, local;
-        private readonly AsyncExclusiveLock monitor;
+        private volatile TMember leader, local;
         private long consensusTerm;
-        private readonly string name;
-        private readonly Guid id;
         private readonly bool absoluteMajority;
-        private readonly TimeSpan electionTimeout, messageProcessingTimeout;
+        private readonly TimeSpan electionTimeout;
 
         private BackgroundTask servingProcess;
 
@@ -38,17 +67,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Initializes a new cluster manager for the local node.
         /// </summary>
         /// <param name="config">The configuration of the local node.</param>
-        protected RaftCluster(IRaftClusterMemberFactory config)
+        /// <param name="producer">The object that can be used to add members at construction stage.</param>
+        protected RaftCluster(IClusterMemberConfiguration config, out MemberProducer producer)
         {
-            name = config.MemberName;
-            id = Guid.NewGuid();
             electionTimeout = config.ElectionTimeout;
-            messageProcessingTimeout = config.MessageProcessingTimeout;
             absoluteMajority = config.AbsoluteMajority;
-            members = new CopyOnWriteList<IRaftClusterMember>(config.CreateMembers());
+            producer = new MemberProducer(members = new CopyOnWriteList<TMember>());
             electionTimeoutRefresher = new AsyncManualResetEvent(false);
             state = UnstartedState;
-            monitor = new AsyncExclusiveLock();
         }
 
         private IReadOnlyCollection<IClusterMember> Members => state.VolatileRead() == UnstartedState ? Array.Empty<IClusterMember>() : (IReadOnlyCollection<IClusterMember>)members;
@@ -66,12 +92,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public event ClusterLeaderChangedEventHandler LeaderChanged;
         public event ClusterMemberStatusChanged MemberStatusChanged;
 
-        private RequestContext Context => new RequestContext(MemberStatusChanged);
+        IClusterMember ICluster.Leader => Leader;
+        IClusterMember ICluster.LocalMember => LocalMember;
+
 
         /// <summary>
         /// Gets leader of the cluster.
         /// </summary>
-        public IClusterMember Leader
+        public TMember Leader
         {
             get => leader;
             private set => LeaderChanged?.Invoke(this, leader = value);
@@ -80,7 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets local cluster node.
         /// </summary>
-        public IClusterMember LocalMember
+        public TMember LocalMember
         {
             get => local;
             private set
@@ -92,67 +120,66 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async Task<bool> ICluster.ResignAsync(CancellationToken token)
         {
-            using (await monitor.AcquireLock(token).ConfigureAwait(false))
+            var result = electionTimeoutRefresher.Set();
+            if (result)
             {
                 if (state == LeaderState)
                 {
                     state = FollowerState;
                     Leader = null;
-                    return true;
                 }
-                else if (leader is IRaftClusterMember member)
-                    return await member.Resign(Context, token).ConfigureAwait(false);
                 else
-                    return false;
+                {
+                    var leader = Leader;
+                    result = !(leader is null) && await leader.ResignAsync(token).ConfigureAwait(false);
+                }
             }
+
+            return result;
         }
 
         private async Task StartElection(CancellationToken token)
         {
-            using (await monitor.AcquireLock(token).ConfigureAwait(false))
+            if (state > FollowerState)
+                return;
+            Leader = null; //leader is not known, so erase it
+            //becomes a candidate
+            state.VolatileWrite(CandidateState);
+            consensusTerm.IncrementAndGet();
+            var voters = new LinkedList<MemberProcessingContext<Task<bool?>>>();
+            //send vote request to all members in parallel
+            Task<bool?> VoteMethod(TMember member) => member.VoteAsync(token);
+            foreach (var member in members as IEnumerable<TMember>)
+                voters.AddLast(new MemberProcessingContext<Task<bool?>>(member, VoteMethod));
+            //calculate votes
+            var votes = 0;
+            for (var context = voters.First; !(context is null); LocalMember = context.Value.Member, context = context.Next)
             {
-                if (state > FollowerState || electionTimeoutRefresher.IsSet)
+                switch (await context.Value.Task.ConfigureAwait(false))
                 {
-                    electionTimeoutRefresher.Reset();
-                    return;
-                }
-                Leader = null;  //leader is not known, so erase it
-                //becomes a candidate
-                state.VolatileWrite(CandidateState);
-                consensusTerm.IncrementAndGet();
-                var voters = new LinkedList<(IRaftClusterMember member, Task<bool?> task)>();
-                //send vote request to all members in parallel
-                foreach (var member in (IEnumerable<IRaftClusterMember>)members)
-                    voters.AddLast((member, member.Vote(Context, token)));
-                //calculate votes
-                var votes = 0;
-                for (var member = voters.First; !(member is null); LocalMember = member.Value.member, member = member.Next)
-                {
-                    switch (await member.Value.task.ConfigureAwait(false))
-                    {
-                        case true:
-                            votes += 1;
-                            break;
-                        case false:
+                    case true:
+                        votes += 1;
+                        break;
+                    case false:
+                        votes -= 1;
+                        break;
+                    default:
+                        if (absoluteMajority)
                             votes -= 1;
-                            break;
-                        default:
-                            if (absoluteMajority)
-                                votes -= 1;
-                            break;
-                    }
-                    member.Value.task.Dispose();
+                        break;
                 }
-
-                voters.Clear(); //help GC
-                if (votes > 0)  //becomes a leader
-                {
-                    state.VolatileWrite(LeaderState);
-                    Leader = LocalMember;
-                }
-                else
-                    state.VolatileWrite(FollowerState); //no clear consensus, back to Follower state
+                context.Value.Dispose();
+                context.Value = default;
             }
+
+            voters.Clear(); //help GC
+            if (votes > 0) //becomes a leader
+            {
+                state.VolatileWrite(LeaderState);
+                Leader = LocalMember;
+            }
+            else
+                state.VolatileWrite(FollowerState); //no clear consensus, back to Follower state
         }
 
         //election process can be started in this state
@@ -164,22 +191,59 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var completedTask = await Task.WhenAny(electionTimeoutRefresher.Wait(tokenSource.Token), timer).ConfigureAwait(false);
                 if (tokenSource.IsCancellationRequested)    //execution aborted
                     return;
-                else if (ReferenceEquals(timer, completedTask)) //timeout happened
-                    await StartElection(tokenSource.Token).ConfigureAwait(false);
+                else if (ReferenceEquals(timer, completedTask) && electionTimeoutRefresher.Set()) //timeout happened
+                    try
+                    {
+                        await StartElection(tokenSource.Token).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        electionTimeoutRefresher.Reset();
+                    }
                 else
-                {
                     tokenSource.Cancel();   //ensure that Delay is destroyed
-                    electionTimeoutRefresher.Reset();
-                }
             }
         }
 
-        //heartbeat broadcasting
-        private async Task ProcessLeaderState(CancellationToken stoppingToken)
+        private async Task ProcessLeaderState(IMessage message, CancellationToken stoppingToken)
         {
-            using (await monitor.AcquireLock(stoppingToken).ConfigureAwait(false))
-            {
+            var tasks = new LinkedList<MemberProcessingContext<Task<bool>>>();
 
+            Task<bool> AppendEntriesMethod(TMember member) =>
+                member.AppendEntriesAsync(message, stoppingToken);
+            //send requests in parallel
+            foreach (var member in members as IEnumerable<TMember>)
+                tasks.AddLast(new MemberProcessingContext<Task<bool>>(member, AppendEntriesMethod));
+            var exceptions = new LinkedList<ConsensusProtocolException>();
+            for (var current = tasks.First; !(current is null); current = current.Next)
+                try
+                {
+                    if (!await current.Value.Task.ConfigureAwait(false))
+                        exceptions.AddLast(new ReplicationRejectedException(current.Value.Member));
+                }
+                catch (Exception e)
+                {
+                    exceptions.AddLast(new MemberUnavailableException(current.Value.Member,
+                        ExceptionMessages.UnavailableMember, e));
+                }
+
+            if (exceptions.Count > 0)
+                throw new AggregateException(exceptions);
+        }
+
+        //heartbeat broadcasting
+        private async Task ProcessLeaderState(MessageFactory entries, CancellationToken stoppingToken)
+        {
+            if (state.VolatileRead() != LeaderState)
+                throw new InvalidOperationException(ExceptionMessages.IsNotLeader);
+            electionTimeoutRefresher.Set();
+            try
+            {
+                await ProcessLeaderState(entries?.Invoke(), stoppingToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                electionTimeoutRefresher.Reset();
             }
         }
 
@@ -193,7 +257,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         await ProcessFollowerState(stoppingToken).ConfigureAwait(false);
                         continue;
                     case LeaderState:
-                        await ProcessLeaderState(stoppingToken).ConfigureAwait(false);
+                        await ProcessLeaderState(default(MessageFactory), stoppingToken).ConfigureAwait(false);
                         continue;
                     default:
                         return;
@@ -222,34 +286,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             local = leader = null;
         }
 
-        protected async Task<bool> ReceiveMessage(IClusterMemberIdentity sender, long senderTerm, IMessage message)
+        protected async Task<bool> ReceiveEntries(TMember sender, long senderTerm, IMessage entries,
+            Replicator replicator)
         {
-            if (sender.Id == id)
-                return true;
-            var monitorLock = await monitor.AcquireLock(messageProcessingTimeout).ConfigureAwait(false);
-            try
-            {
-                if (consensusTerm.VolatileRead() <= senderTerm)
-                     return false;
-                var leader = Leader;
-                if(!sender.Represents(leader))  //leader node was changed
+            var result = electionTimeoutRefresher.Set();
+            if (result)
+                try
                 {
-                    leader = members.Find(sender.Represents);
-                    if(leader is null)   //sender is not in member list, ignores message
-                        return false;
-                    Leader = leader;
+                    if (consensusTerm.VolatileRead() <= senderTerm)
+                        result = false;
+                    else
+                    {
+                        var leader = Leader;
+                        if (!sender.Equals(leader)) //leader node was changed
+                            Leader = leader;
+                        consensusTerm.VolatileWrite(senderTerm);
+                        state.VolatileWrite(FollowerState); //new leader detected
+                        result = await replicator(sender, entries).ConfigureAwait(false);
+                    }
                 }
-                consensusTerm.VolatileWrite(senderTerm);
-                state.VolatileWrite(FollowerState); //new leader detected
-                MessageReceived?.Invoke(leader, message);
-                return true;
-            }
-            finally
-            {
-                electionTimeoutRefresher.Set();
-                monitorLock.Dispose();
-            }
+                finally
+                {
+                    electionTimeoutRefresher.Reset();
+                }
+
+            return result;
         }
+
+        public Task ReplicateAsync(MessageFactory entries) => ProcessLeaderState(entries, CancellationToken.None);
 
         /// <summary>
         /// Votes for the new candidate.
@@ -258,24 +322,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
         protected async Task<bool> Vote(long senderTerm)
         {
-            if (sender.Id == id) //sender node and receiver are same, fast response without synchronization
-                return true;
-            var monitorLock = await monitor.AcquireLock(messageProcessingTimeout).ConfigureAwait(false);
-            try
+            var vote = electionTimeoutRefresher.Set();
+            if (vote)
             {
                 if (state.VolatileRead() > FollowerState || consensusTerm.VolatileRead() > senderTerm)
-                    return false;
+                    vote = false;
                 else
-                {
                     consensusTerm.VolatileWrite(senderTerm);
-                    return true;
-                }
+                electionTimeoutRefresher.Reset();
             }
-            finally
-            {
-                electionTimeoutRefresher.Set();
-                monitorLock.Dispose();
-            }
+
+            return vote;
         }
 
         /// <summary>
@@ -284,15 +341,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
         protected async Task<bool> Resign()
         {
-            using (await monitor.AcquireLock(messageProcessingTimeout).ConfigureAwait(false))
+            var result = electionTimeoutRefresher.Set();
+            if (result)
+            {
                 if (state == LeaderState)
                 {
                     state = FollowerState;
                     Leader = null;
-                    return true;
                 }
                 else
-                    return false;
+                    result = false;
+
+                electionTimeoutRefresher.Reset();
+            }
+
+            return result;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -301,8 +364,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 servingProcess.Dispose();
                 members.Clear(member => member.Dispose());
-                Dispose(monitor, electionTimeoutRefresher);
-                messages.CancelAll();
+                electionTimeoutRefresher.Dispose();
                 local = leader = null;
             }
         }

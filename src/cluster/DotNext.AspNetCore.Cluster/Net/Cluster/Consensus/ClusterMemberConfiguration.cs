@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Consensus
     /// </summary>
     public class ClusterMemberConfiguration : IClusterMemberConfiguration
     {
-        private string memberName;
+        internal readonly Guid MemberId;
 
         public ClusterMemberConfiguration()
         {
@@ -15,17 +15,7 @@ namespace DotNext.Net.Cluster.Consensus
             ElectionTimeout = TimeSpan.FromMilliseconds(new Random().Next(150, 301));
             MessageProcessingTimeout = TimeSpan.FromSeconds(30);
             AbsoluteMajority = true;
-            
-        }
-
-        /// <summary>
-        /// Gets or sets name of cluster member.
-        /// </summary>
-        /// <seealso cref="IClusterMemberIdentity.Name"/>
-        public string MemberName
-        {
-            get => string.IsNullOrEmpty(memberName) ? Environment.MachineName : memberName;
-            set => memberName = value;
+            MemberId = Guid.NewGuid();
         }
 
         public TimeSpan ElectionTimeout { get; set; }
