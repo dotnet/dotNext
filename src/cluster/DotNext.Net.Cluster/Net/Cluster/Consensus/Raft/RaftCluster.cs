@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private readonly CopyOnWriteList<TMember> members;
         
-        private readonly AsyncManualResetEvent electionTimeoutRefresher;
+        private readonly AsyncManualResetEvent transitionSync;  //used to synchronize state transitions
         private int state;
         private volatile TMember leader, local;
         private long consensusTerm;
@@ -73,7 +73,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             electionTimeout = config.ElectionTimeout;
             absoluteMajority = config.AbsoluteMajority;
             producer = new MemberProducer(members = new CopyOnWriteList<TMember>());
-            electionTimeoutRefresher = new AsyncManualResetEvent(false);
+            transitionSync = new AsyncManualResetEvent(false);
             state = UnstartedState;
         }
 
@@ -120,7 +120,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async Task<bool> ICluster.ResignAsync(CancellationToken token)
         {
-            var result = electionTimeoutRefresher.Set();
+            var result = transitionSync.Set();
             if (result)
             {
                 if (state == LeaderState)
@@ -188,17 +188,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken))
             {
                 var timer = Task.Delay(electionTimeout, tokenSource.Token);
-                var completedTask = await Task.WhenAny(electionTimeoutRefresher.Wait(tokenSource.Token), timer).ConfigureAwait(false);
+                var completedTask = await Task.WhenAny(transitionSync.Wait(tokenSource.Token), timer).ConfigureAwait(false);
                 if (tokenSource.IsCancellationRequested)    //execution aborted
                     return;
-                else if (ReferenceEquals(timer, completedTask) && electionTimeoutRefresher.Set()) //timeout happened
+                else if (ReferenceEquals(timer, completedTask) && transitionSync.Set()) //timeout happened
                     try
                     {
                         await StartElection(tokenSource.Token).ConfigureAwait(false);
                     }
                     finally
                     {
-                        electionTimeoutRefresher.Reset();
+                        transitionSync.Reset();
                     }
                 else
                     tokenSource.Cancel();   //ensure that Delay is destroyed
@@ -234,14 +234,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         //heartbeat broadcasting
         private async Task ProcessLeaderState(MessageFactory entries, CancellationToken stoppingToken)
         {
-            electionTimeoutRefresher.Set();
+            transitionSync.Set();
             try
             {
                 await ProcessLeaderState(entries?.Invoke(), stoppingToken).ConfigureAwait(false);
             }
             finally
             {
-                electionTimeoutRefresher.Reset();
+                transitionSync.Reset();
             }
         }
 
@@ -268,7 +268,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //start node in Follower state
             consensusTerm.VolatileWrite(0L);
             state.VolatileWrite(FollowerState);
-            electionTimeoutRefresher.Reset();
+            transitionSync.Reset();
             servingProcess = new BackgroundTask(Serve);
             return Task.CompletedTask;
         }
@@ -287,7 +287,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected async Task<bool> ReceiveEntries(TMember sender, long senderTerm, IMessage entries,
             Replicator replicator)
         {
-            var result = electionTimeoutRefresher.Set();
+            var result = transitionSync.Set();
             if (result)
                 try
                 {
@@ -305,7 +305,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 finally
                 {
-                    electionTimeoutRefresher.Reset();
+                    transitionSync.Reset();
                 }
 
             return result;
@@ -323,14 +323,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
         protected bool Vote(long senderTerm)
         {
-            var vote = electionTimeoutRefresher.Set();
+            var vote = transitionSync.Set();
             if (vote)
             {
                 if (state.VolatileRead() > FollowerState || consensusTerm.VolatileRead() > senderTerm)
                     vote = false;
                 else
                     consensusTerm.VolatileWrite(senderTerm);
-                electionTimeoutRefresher.Reset();
+                transitionSync.Reset();
             }
 
             return vote;
@@ -356,7 +356,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 servingProcess.Dispose();
                 members.Clear(member => member.Dispose());
-                electionTimeoutRefresher.Dispose();
+                transitionSync.Dispose();
                 local = leader = null;
             }
         }
