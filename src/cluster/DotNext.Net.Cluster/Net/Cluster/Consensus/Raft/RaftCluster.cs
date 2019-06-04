@@ -234,8 +234,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         //heartbeat broadcasting
         private async Task ProcessLeaderState(MessageFactory entries, CancellationToken stoppingToken)
         {
-            if (state.VolatileRead() != LeaderState)
-                throw new InvalidOperationException(ExceptionMessages.IsNotLeader);
             electionTimeoutRefresher.Set();
             try
             {
@@ -313,14 +311,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         }
 
-        public Task ReplicateAsync(MessageFactory entries) => ProcessLeaderState(entries, CancellationToken.None);
+        public Task ReplicateAsync(MessageFactory entries)
+            => state.VolatileRead() == LeaderState
+                ? ProcessLeaderState(entries, CancellationToken.None)
+                : throw new InvalidOperationException(ExceptionMessages.IsNotLeader);
 
         /// <summary>
         /// Votes for the new candidate.
         /// </summary>
         /// <param name="senderTerm">Term value provided by sender of the request.</param>
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        protected async Task<bool> Vote(long senderTerm)
+        protected bool Vote(long senderTerm)
         {
             var vote = electionTimeoutRefresher.Set();
             if (vote)
@@ -339,23 +340,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Revokes leadership of the local node.
         /// </summary>
         /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
-        protected async Task<bool> Resign()
+        protected bool Resign()
         {
-            var result = electionTimeoutRefresher.Set();
-            if (result)
+            if (state.CompareAndSet(LeaderState, FollowerState))
             {
-                if (state == LeaderState)
-                {
-                    state = FollowerState;
-                    Leader = null;
-                }
-                else
-                    result = false;
-
-                electionTimeoutRefresher.Reset();
+                Leader = null;
+                return true;
             }
-
-            return result;
+            return false;
         }
 
         protected virtual void Dispose(bool disposing)
