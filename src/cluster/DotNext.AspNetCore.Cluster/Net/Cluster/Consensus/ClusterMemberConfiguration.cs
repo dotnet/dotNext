@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Linq;
 
 namespace DotNext.Net.Cluster.Consensus
 {
@@ -16,6 +18,8 @@ namespace DotNext.Net.Cluster.Consensus
         }
 
         public ISet<string> AllowedNetworks { get; } = new HashSet<string>();
+
+        internal ISet<IPNetwork> ParseAllowedNetworks() => new HashSet<IPNetwork>(AllowedNetworks.Select(IPNetwork.Parse));
 
         public TimeSpan ElectionTimeout { get; set; }
 

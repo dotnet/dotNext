@@ -21,19 +21,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public ISet<Uri> Members { get; } = new HashSet<Uri>();
 
         public Uri ResourcePath { get; set; }
-
-        IReadOnlyCollection<IRaftClusterMember> IRaftClusterMemberFactory.CreateMembers()
-        {
-            var builder = new ReadOnlyCollectionBuilder<IRaftClusterMember>();
-            foreach (var member in Members)
-            {
-                var client = new RaftClusterMember((ISite) localMember, member, ResourcePath);
-                client.DefaultRequestHeaders.ConnectionClose = true;    //to avoid network storm
-                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, GetType().Assembly.GetName().Version.ToString()));
-                builder.Add(client);
-            }
-
-            return builder.ToReadOnlyCollection();
-        }
     }
 }

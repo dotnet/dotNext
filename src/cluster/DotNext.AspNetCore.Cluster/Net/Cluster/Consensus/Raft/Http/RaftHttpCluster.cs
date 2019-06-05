@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -9,12 +11,13 @@ using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Generic;
     using Messaging;
     using Replication;
+    using Threading.Tasks;
 
-    internal sealed class RaftHttpCluster : RaftCluster<RaftClusterMember>, IMiddleware, IHostedService, ISite, IRaftCluster, IExpandableCluster
+    internal sealed class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, ISite, IRaftCluster, IExpandableCluster
     {
-        
 
         private readonly IRaftClusterConfigurer configurer;
         private readonly IMessageHandler messageHandler;
@@ -23,6 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly Guid id;
         private readonly IDisposable configurationTracker;
         private volatile Dictionary<string, string> metadata;
+        private volatile ISet<IPNetwork> allowedNetworks;
 
         private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies)
             : base(config.CurrentValue)
@@ -32,6 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             messageHandler = dependencies.GetService<IMessageHandler>();
             replicator = dependencies.GetService<IReplicator>();
             metadata = config.CurrentValue.Metadata;
+            allowedNetworks = config.CurrentValue.ParseAllowedNetworks();
             //track changes in configuration
             configurationTracker = config.OnChange(ConfigurationChanged);
             //create members
@@ -49,9 +54,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
         {
             metadata = configuration.Metadata;
+            allowedNetworks = configuration.ParseAllowedNetworks();
         }
 
         ref readonly Guid ISite.LocalMemberId => ref id;
+
+        IReadOnlyDictionary<string, string> ISite.LocalMemberMetadata => metadata;
 
         bool ISite.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
@@ -65,7 +73,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 .ConfigureAwait(false);
 
         private async Task Resign(HttpResponse response) =>
-            await ResignMessage.CreateResponse(response, this, await Resign().ConfigureAwait(false))
+            await ResignMessage.CreateResponse(response, this, Resign())
                 .ConfigureAwait(false);
 
         private async Task ReceiveAppendEntries(RaftHttpMessage request, HttpResponse response)
@@ -86,16 +94,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return base.StopAsync(token);
         }
 
-        public Task InvokeAsync(HttpContext context, RequestDelegate next)
+        private protected Task<bool> ProcessRequest(HttpContext context)
         {
+            var networks = allowedNetworks;
+            //checks whether the client's address is allowed
+            if(networks.Count > 0 || networks.FirstOrDefault(context.Connection.RemoteIpAddress.IsIn) is null)
+            {
+                context.Response.StatusCode = (int) HttpStatusCode.Forbidden;
+                return CompletedTask<bool, BooleanConst.True>.Task;
+            }
+            const TaskContinuationOptions SyncOptions = TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously;
+            bool SuccessProcessingResult(Task task) => true;
+            //process request
             switch (RaftHttpMessage.GetMessageType(context.Request))
             {
                 case RequestVoteMessage.MessageType:
-                    return Vote(new RequestVoteMessage(context.Request),  context.Response);
+                    return Vote(new RequestVoteMessage(context.Request),  context.Response).ContinueWith(SuccessProcessingResult, SyncOptions);
                 case ResignMessage.MessageType:
-                    return Resign(context.Response);
+                    return Resign(context.Response).ContinueWith(SuccessProcessingResult, SyncOptions);
                 default:
-                    return next(context);
+                    return CompletedTask<bool, BooleanConst.False>.Task;
             }
         }
 

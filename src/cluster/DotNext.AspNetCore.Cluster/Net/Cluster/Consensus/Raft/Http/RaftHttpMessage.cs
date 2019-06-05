@@ -68,6 +68,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Headers.Add(NodeIdHeader, MemberId.ToString());
             request.Headers.Add(TermHeader, Convert.ToString(ConsensusTerm, InvariantCulture));
             request.Headers.Add(MessageTypeHeader, messageType);
+            request.Method = HttpMethod.Post;
         }
 
         private protected static void FillResponse(HttpResponse response, IClusterMemberIdentity identity)
