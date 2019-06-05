@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DotNext.Net.Cluster.Consensus
 {
@@ -17,6 +18,8 @@ namespace DotNext.Net.Cluster.Consensus
             AbsoluteMajority = true;
             MemberId = Guid.NewGuid();
         }
+
+        public ISet<string> AllowedNetworks { get; } = new HashSet<string>();
 
         public TimeSpan ElectionTimeout { get; set; }
 
