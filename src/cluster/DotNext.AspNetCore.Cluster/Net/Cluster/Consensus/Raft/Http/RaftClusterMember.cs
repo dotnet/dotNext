@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNext.Threading;
@@ -9,6 +11,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember
     {
+        private const string UserAgent = "Raft.NET";
+
         private delegate Task<RaftHttpMessage<TBody>.Response> ResponseParser<TBody>(HttpResponseMessage response);
 
         private const int UnknownStatus = (int) ClusterMemberStatus.Unknown;
@@ -17,13 +21,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private readonly Uri resourcePath;
         private int status;
-        private readonly IRaftLocalMember owner;
+        private readonly ISite owner;
 
-        internal RaftClusterMember(IRaftLocalMember owner, Uri remoteMember, Uri resourcePath)
+        internal RaftClusterMember(ISite owner, Uri remoteMember)
         {
             this.owner = owner;
             status = UnknownStatus;
-            this.resourcePath = resourcePath;
             BaseAddress = remoteMember;
             switch (remoteMember.HostNameType)
             {
@@ -38,31 +41,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 default:
                     throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
             }
+            DefaultRequestHeaders.ConnectionClose = true;   //to avoid network storm
+            DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, GetType().Assembly.GetName().Version.ToString()));
         }
 
         internal bool IsLocal { get; private set; }
 
-        private void ChangeStatus(in RequestContext context, int newState)
+        private void ChangeStatus(int newState)
         {
             var previousState = status.GetAndSet(newState);
             if(previousState != newState)
-                context.MemberStatusChanged(this, (ClusterMemberStatus) previousState, (ClusterMemberStatus) newState);
+                owner.MemberStatusChanged(this, (ClusterMemberStatus) previousState, (ClusterMemberStatus) newState);
         }
 
         private async Task<TBody> ParseResponse<TBody>(HttpResponseMessage response, ResponseParser<TBody> parser)
         {
             var reply = await parser(response).ConfigureAwait(false);
-            IsLocal = reply.MemberId == owner.Id;
-            Id = reply.MemberId;
-            if(!string.Equals(Name, reply.MemberName, StringComparison.Ordinal))  //allows not to store the same string value but represented by different instances
-                Name = reply.MemberName;
+            IsLocal = owner.LocalMemberId.Equals(Id = reply.MemberId);
             return reply.Body;
         }
 
         //null means that node is unreachable
         //true means that node votes successfully for the new leader
         //false means that node is in candidate state and rejects voting
-        public async Task<bool?> Vote(RequestContext context, CancellationToken token)
+        public async Task<bool?> VoteAsync(CancellationToken token)
         {
             if (IsLocal)
                 return true;
@@ -72,12 +74,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
                 var result = await ParseResponse<bool>(response, RequestVoteMessage.GetResponse).ConfigureAwait(false);
-                ChangeStatus(context, AvailableStatus);
+                ChangeStatus(AvailableStatus);
                 return result;
             }
             catch (HttpRequestException)
             {
-                ChangeStatus(context, UnavailableStatus);
+                ChangeStatus(UnavailableStatus);
                 return null;
             }
             finally
@@ -87,7 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        public async Task<bool> Resign(RequestContext context, CancellationToken token)
+        public async Task<bool> ResignAsync(CancellationToken token)
         {
             var request = (HttpRequestMessage) new ResignMessage(owner);
             var response = default(HttpResponseMessage);
@@ -96,12 +98,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
                     .ConfigureAwait(false);
                 var result = await ParseResponse<bool>(response, ResignMessage.GetResponse).ConfigureAwait(false);
-                ChangeStatus(context, AvailableStatus);
+                ChangeStatus(AvailableStatus);
                 return result;
             }
             catch (HttpRequestException)
             {
-                ChangeStatus(context, UnavailableStatus);
+                ChangeStatus(UnavailableStatus);
                 return false;
             }
             finally
@@ -111,13 +113,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
+        async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh, CancellationToken token)
+        {
+            if(IsLocal)
+                return owner.LocalMemberMetadata;
+        } 
+
         public IPEndPoint Endpoint { get; }
         bool IClusterMember.IsLeader => owner.IsLeader(this);
 
         bool IClusterMember.IsRemote => !IsLocal;
 
         public Guid Id { get; private set; }
-        public string Name { get; private set; }
         ClusterMemberStatus IClusterMember.Status => (ClusterMemberStatus) status.VolatileRead();
     }
 }

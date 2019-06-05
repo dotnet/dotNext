@@ -28,9 +28,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly long ConsensusTerm;
         private readonly string messageType;
 
-        private protected RaftHttpMessage(string messageType, IRaftLocalMember sender)
+        private protected RaftHttpMessage(string messageType, ISite sender)
         {
-            MemberId = sender.Id;
+            MemberId = sender.LocalMemberId;
             ConsensusTerm = sender.Term;
             memberName = sender.Name;
             this.messageType = messageType;
@@ -107,7 +107,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             string IClusterMemberIdentity.Name => MemberName;
         }
 
-        private protected RaftHttpMessage(string messageType, IRaftLocalMember sender) 
+        private protected RaftHttpMessage(string messageType, ISite sender) 
             : base(messageType, sender)
         {
         }

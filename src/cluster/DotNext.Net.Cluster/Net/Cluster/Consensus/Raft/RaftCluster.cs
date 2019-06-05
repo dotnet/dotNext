@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
@@ -38,15 +39,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public void Dispose() => Task.Dispose();
         }
 
-        protected readonly ref struct MemberProducer
-        {
-            private readonly ICollection<TMember> members;
-
-            internal MemberProducer(ICollection<TMember> members) => this.members = members;
-
-            public void Add(TMember member) => members.Add(member);
-        }
-
         private const int UnstartedState = 0;
         private const int FollowerState = 1;
         private const int CandidateState = 2;
@@ -68,13 +60,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="config">The configuration of the local node.</param>
         /// <param name="producer">The object that can be used to add members at construction stage.</param>
-        protected RaftCluster(IClusterMemberConfiguration config, out MemberProducer producer)
+        protected RaftCluster(IClusterMemberConfiguration config)
         {
             electionTimeout = config.ElectionTimeout;
             absoluteMajority = config.AbsoluteMajority;
-            producer = new MemberProducer(members = new CopyOnWriteList<TMember>());
+            members = new CopyOnWriteList<TMember>();
             transitionSync = new AsyncManualResetEvent(false);
             state = UnstartedState;
+        }
+
+        protected void SetMembers<T>(ICollection<T> items, Converter<T, TMember> converter)
+            => members.Set(items, converter);
+
+        protected void AddMember(TMember member, ClusterChangedEventHandler handlers)
+        {
+            members.Add(member);
+            handlers?.Invoke(this, member);
+        }
+
+        protected void RemoveMember(IPEndPoint endpoint, ClusterChangedEventHandler handlers)
+        {
+            ICollection<TMember> removedMembers = new LinkedList<TMember>();
+            members.RemoveAll(member => member.Endpoint.Equals(endpoint), removedMembers.Add);
+            foreach(var member in removedMembers)
+            {
+                handlers?.Invoke(this, member);
+                member.Dispose();
+            }
         }
 
         private IReadOnlyCollection<IClusterMember> Members => state.VolatileRead() == UnstartedState ? Array.Empty<IClusterMember>() : (IReadOnlyCollection<IClusterMember>)members;
@@ -86,11 +98,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         IEnumerator IEnumerable.GetEnumerator() => Members.GetEnumerator();
 
         public long Term => consensusTerm.VolatileRead();
-
-        bool IRaftCluster.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
-
+        
         public event ClusterLeaderChangedEventHandler LeaderChanged;
-        public event ClusterMemberStatusChanged MemberStatusChanged;
+        public abstract event ClusterMemberStatusChanged MemberStatusChanged;
 
         IClusterMember ICluster.Leader => Leader;
         IClusterMember ICluster.LocalMember => LocalMember;
@@ -228,7 +238,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
 
             if (exceptions.Count > 0)
-                throw new AggregateException(exceptions);
+                throw new AggregateException(ExceptionMessages.ReplicationFailed, exceptions);
         }
 
         //heartbeat broadcasting
@@ -359,6 +369,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 transitionSync.Dispose();
                 local = leader = null;
             }
+            base.Dispose(disposing);
         }
     }
 }

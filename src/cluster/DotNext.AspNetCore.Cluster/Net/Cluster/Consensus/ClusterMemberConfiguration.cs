@@ -8,23 +8,22 @@ namespace DotNext.Net.Cluster.Consensus
     /// </summary>
     public class ClusterMemberConfiguration : IClusterMemberConfiguration
     {
-        internal readonly Guid MemberId;
-
         public ClusterMemberConfiguration()
         {
             //recommended election timeout is between 150ms and 300ms
             ElectionTimeout = TimeSpan.FromMilliseconds(new Random().Next(150, 301));
-            MessageProcessingTimeout = TimeSpan.FromSeconds(30);
             AbsoluteMajority = true;
-            MemberId = Guid.NewGuid();
         }
 
         public ISet<string> AllowedNetworks { get; } = new HashSet<string>();
 
         public TimeSpan ElectionTimeout { get; set; }
 
-        public TimeSpan MessageProcessingTimeout { get; set; }
-
         public bool AbsoluteMajority { get; set; }
+
+        /// <summary>
+        /// Gets metadata associated with local cluster member.
+        /// </summary>
+        public Dictionary<string, string> Metadata { get; } = new Dictionary<string, string>();
     }
 }

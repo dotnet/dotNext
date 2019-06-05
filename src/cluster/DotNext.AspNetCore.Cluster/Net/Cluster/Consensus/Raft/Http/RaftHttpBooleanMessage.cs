@@ -9,7 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal abstract class RaftHttpBooleanMessage : RaftHttpMessage<bool>
     {
-        private protected RaftHttpBooleanMessage(string messageType, IRaftLocalMember sender)
+        private protected RaftHttpBooleanMessage(string messageType, ISite sender)
             : base(messageType, sender)
         {
         }

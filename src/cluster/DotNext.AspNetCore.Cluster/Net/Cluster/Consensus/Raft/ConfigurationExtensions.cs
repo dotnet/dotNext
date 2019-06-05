@@ -11,18 +11,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     public static class ConfigurationExtensions
     {
-        private static IServiceCollection EnableCluster(this IServiceCollection services, Action<RaftCluster> initializer = null)
+        private static IServiceCollection EnableCluster(this IServiceCollection services, Action<IRaftCluster> initializer = null)
         {
             Func<IServiceProvider, RaftHttpCluster> clusterNodeCast =
                 ServiceProviderServiceExtensions.GetRequiredService<RaftHttpCluster>;
             return services.AddSingleton<RaftHttpCluster>()
                 .AddSingleton<IHostedService>(clusterNodeCast)
                 .AddSingleton<ICluster>(clusterNodeCast)
+                .AddSingleton<IRaftCluster>(clusterNodeCast)
+                .AddSingleton<IExpandableCluster>(clusterNodeCast)
                 .AddSingleton<IMiddleware>(clusterNodeCast);
         }
 
         [CLSCompliant(false)]
-        public static IServiceCollection EnableCluster(this IServiceCollection services, IConfiguration clusterConfig, Action<RaftCluster> initializer = null)
+        public static IServiceCollection EnableCluster(this IServiceCollection services, IConfiguration clusterConfig, Action<IRaftCluster> initializer = null)
             => services.Configure<ClusterMemberConfiguration>(clusterConfig).EnableCluster();
         
         [CLSCompliant(false)]

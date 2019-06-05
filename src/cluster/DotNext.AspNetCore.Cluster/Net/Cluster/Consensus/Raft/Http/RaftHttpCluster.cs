@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,19 +12,53 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Messaging;
     using Replication;
 
-    internal sealed class RaftHttpCluster : RaftCluster, IMiddleware, IHostedService, IRaftLocalMember
+    internal sealed class RaftHttpCluster : RaftCluster<RaftClusterMember>, IMiddleware, IHostedService, ISite, IRaftCluster, IExpandableCluster
     {
+        
+
         private readonly IRaftClusterConfigurer configurer;
         private readonly IMessageHandler messageHandler;
         private readonly IReplicator replicator;
 
-        public RaftHttpCluster(IServiceProvider config)
-            : base(config.GetRequiredService<IOptions<RaftClusterMemberConfiguration>>().Value)
+        private readonly Guid id;
+        private readonly IDisposable configurationTracker;
+        private volatile Dictionary<string, string> metadata;
+
+        private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies)
+            : base(config.CurrentValue)
         {
-            configurer = config.GetService<IRaftClusterConfigurer>();
-            messageHandler = config.GetService<IMessageHandler>();
-            replicator = config.GetService<IReplicator>();
+            id = Guid.NewGuid();
+            configurer = dependencies.GetService<IRaftClusterConfigurer>();
+            messageHandler = dependencies.GetService<IMessageHandler>();
+            replicator = dependencies.GetService<IReplicator>();
+            metadata = config.CurrentValue.Metadata;
+            //track changes in configuration
+            configurationTracker = config.OnChange(ConfigurationChanged);
+            //create members
+            SetMembers<Uri>(config.CurrentValue.Members, CreateMember);
         }
+
+        private RaftClusterMember CreateMember(Uri address) => new RaftClusterMember(this, address);
+
+        public RaftHttpCluster(IServiceProvider dependencies)
+            : this(dependencies.GetRequiredService<IOptionsMonitor<RaftClusterMemberConfiguration>>(), dependencies)
+        {
+            
+        }
+
+        private void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
+        {
+            metadata = configuration.Metadata;
+        }
+
+        ref readonly Guid ISite.LocalMemberId => ref id;
+
+        bool ISite.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
+
+        public override event ClusterMemberStatusChanged MemberStatusChanged;
+
+        void ISite.MemberStatusChanged(IRaftClusterMember member, ClusterMemberStatus previousStatus, ClusterMemberStatus newStatus)
+            => MemberStatusChanged?.Invoke(member, previousStatus, newStatus);
 
         private async Task Vote(RequestVoteMessage request, HttpResponse response)
             => await RequestVoteMessage.CreateResponse(response, this, await Vote(request, request.ConsensusTerm).ConfigureAwait(false))
@@ -62,6 +97,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 default:
                     return next(context);
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if(disposing)
+                configurationTracker.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

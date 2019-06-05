@@ -17,13 +17,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         long Term { get; }
 
         /// <summary>
-        /// Determines whether the specified member is a leader.
-        /// </summary>
-        /// <param name="member">The member to check for leadership.</param>
-        /// <returns><see langword="true"/> if <paramref name="member"/> is a leader; otherwise, <see langword="false"/>.</returns>
-        bool IsLeader(IRaftClusterMember member);
-
-        /// <summary>
         /// Replicates cluster members.
         /// </summary>
         /// <param name="entries">The message containing log entries to be sent to other cluster members.</param>

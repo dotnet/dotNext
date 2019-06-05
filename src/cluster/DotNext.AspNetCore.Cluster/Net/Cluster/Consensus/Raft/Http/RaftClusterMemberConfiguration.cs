@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal sealed class RaftClusterMemberConfiguration : ClusterMemberConfiguration, IRaftClusterMemberFactory
+    internal sealed class RaftClusterMemberConfiguration : ClusterMemberConfiguration
     {
         private const string UserAgent = "Raft.NET";
 
@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var builder = new ReadOnlyCollectionBuilder<IRaftClusterMember>();
             foreach (var member in Members)
             {
-                var client = new RaftClusterMember((IRaftLocalMember) localMember, member, ResourcePath);
+                var client = new RaftClusterMember((ISite) localMember, member, ResourcePath);
                 client.DefaultRequestHeaders.ConnectionClose = true;    //to avoid network storm
                 client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, GetType().Assembly.GetName().Version.ToString()));
                 builder.Add(client);

@@ -124,7 +124,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
-        internal AppendEntriesMessage(IRaftLocalMember sender)
+        internal AppendEntriesMessage(ISite sender)
             : base(MessageType, sender)
         {
             Members = new ClusterMemberCollection();
