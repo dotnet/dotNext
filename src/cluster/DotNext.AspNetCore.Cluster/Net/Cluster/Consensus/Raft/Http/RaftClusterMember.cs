@@ -22,9 +22,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly Uri resourcePath;
         private int status;
         private readonly ISite owner;
+        private volatile MemberMetadata metadata;
+        private Guid id;
 
-        internal RaftClusterMember(ISite owner, Uri remoteMember)
+        internal RaftClusterMember(ISite owner, Uri remoteMember, Uri resourcePath)
         {
+            this.resourcePath = resourcePath;
             this.owner = owner;
             status = UnknownStatus;
             BaseAddress = remoteMember;
@@ -34,10 +37,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 case UriHostNameType.IPv6:
                     Endpoint = new IPEndPoint(IPAddress.Parse(remoteMember.Host), remoteMember.Port);
                     break;
-                case UriHostNameType.Dns:
-                    var entry = Dns.GetHostEntry(remoteMember.Host);
-                    Endpoint = new IPEndPoint(entry.AddressList[0], remoteMember.Port);
-                    break;
                 default:
                     throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
             }
@@ -45,7 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, GetType().Assembly.GetName().Version.ToString()));
         }
 
-        internal bool IsLocal { get; private set; }
+        internal bool IsLocal => owner.LocalMember.Id.Equals(id);
 
         private void ChangeStatus(int newState)
         {
@@ -57,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async Task<TBody> ParseResponse<TBody>(HttpResponseMessage response, ResponseParser<TBody> parser)
         {
             var reply = await parser(response).ConfigureAwait(false);
-            IsLocal = owner.LocalMemberId.Equals(Id = reply.MemberId);
+            id = reply.MemberId;
             return reply.Body;
         }
 
@@ -69,6 +68,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (IsLocal)
                 return true;
             var request = (HttpRequestMessage) new RequestVoteMessage(owner);
+            request.RequestUri = resourcePath;
             var response = default(HttpResponseMessage);
             try
             {
@@ -91,7 +91,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public async Task<bool> ResignAsync(CancellationToken token)
         {
-            var request = (HttpRequestMessage) new ResignMessage(owner);
+            var request = (HttpRequestMessage) new ResignMessage(owner.LocalMember);
+            request.RequestUri = resourcePath;
             var response = default(HttpResponseMessage);
             try
             {
@@ -115,16 +116,43 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh, CancellationToken token)
         {
-            if(IsLocal)
-                return owner.LocalMemberMetadata;
-        } 
+            if (IsLocal)
+                return owner.LocalMember.Metadata;
+            else if (metadata is null || refresh)
+            {
+                var request = (HttpRequestMessage) new MetadataMessage(owner.LocalMember);
+                request.RequestUri = resourcePath;
+                var response = default(HttpResponseMessage);
+                try
+                {
+                    response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
+                        .ConfigureAwait(false);
+                    metadata = await ParseResponse<MemberMetadata>(response, MetadataMessage.GetResponse)
+                        .ConfigureAwait(false);
+                    ChangeStatus(AvailableStatus);
+                }
+                catch (HttpRequestException)
+                {
+                    ChangeStatus(UnavailableStatus);
+                    throw;
+                }
+                finally
+                {
+                    response?.Dispose();
+                    request.Dispose();
+                }
+            }
+
+            return metadata;
+        }
 
         public IPEndPoint Endpoint { get; }
         bool IClusterMember.IsLeader => owner.IsLeader(this);
 
         bool IClusterMember.IsRemote => !IsLocal;
 
-        public Guid Id { get; private set; }
         ClusterMemberStatus IClusterMember.Status => (ClusterMemberStatus) status.VolatileRead();
+
+        bool IEquatable<IClusterMember>.Equals(IClusterMember other) => Endpoint.Equals(other?.Endpoint);
     }
 }

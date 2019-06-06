@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DotNext.Net.Cluster.Consensus.Raft.Http
+﻿namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal interface ISite
     {
-        ref readonly Guid LocalMemberId { get; }
-
-        IReadOnlyDictionary<string, string> LocalMemberMetadata { get; }
+        ILocalClusterMember LocalMember { get; }
 
         bool IsLeader(IRaftClusterMember member);
 

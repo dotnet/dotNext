@@ -9,12 +9,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal abstract class RaftHttpBooleanMessage : RaftHttpMessage<bool>
     {
-        private protected RaftHttpBooleanMessage(string messageType, ISite sender)
+        private protected RaftHttpBooleanMessage(string messageType, ILocalClusterMember sender)
             : base(messageType, sender)
         {
         }
 
-        private protected RaftHttpBooleanMessage(HttpRequest request) : base(request)
+        private protected RaftHttpBooleanMessage(HttpRequest request) 
+            : base(request)
         {
         }
 
@@ -25,7 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal static Task<Response> GetResponse(HttpResponseMessage response) => GetResponse(response, ParseResponse);
 
-        internal static Task CreateResponse(HttpResponse response, IClusterMemberIdentity identity, bool result)
+        internal static Task CreateResponse(HttpResponse response, ILocalClusterMember identity, bool result)
         {
             response.StatusCode = (int) HttpStatusCode.OK;
             FillResponse(response, identity);

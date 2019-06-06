@@ -1,35 +1,34 @@
 ﻿using System;
-using Microsoft.AspNetCore.Http;
+using DotNext.Net.Cluster.Consensus.Raft.Http;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using RaftHttpCluster = Http.RaftHttpCluster;
-
+    [CLSCompliant(false)]
     public static class ConfigurationExtensions
     {
-        private static IServiceCollection EnableCluster(this IServiceCollection services, Action<IRaftCluster> initializer = null)
+        private static IServiceCollection EnableCluster(this IServiceCollection services)
         {
             Func<IServiceProvider, RaftHttpCluster> clusterNodeCast =
                 ServiceProviderServiceExtensions.GetRequiredService<RaftHttpCluster>;
-            return services.AddSingleton<RaftHttpCluster>()
+            return services
                 .AddSingleton<IHostedService>(clusterNodeCast)
                 .AddSingleton<ICluster>(clusterNodeCast)
                 .AddSingleton<IRaftCluster>(clusterNodeCast)
-                .AddSingleton<IExpandableCluster>(clusterNodeCast)
-                .AddSingleton<IMiddleware>(clusterNodeCast);
+                .AddSingleton<IExpandableCluster>(clusterNodeCast);
         }
 
-        [CLSCompliant(false)]
-        public static IServiceCollection EnableCluster(this IServiceCollection services, IConfiguration clusterConfig, Action<IRaftCluster> initializer = null)
-            => services.Configure<ClusterMemberConfiguration>(clusterConfig).EnableCluster();
+        public static IServiceCollection EmbedClusterSupport(this IServiceCollection services, IConfiguration clusterConfig)
+            => services.Configure<ClusterMemberConfiguration>(clusterConfig).AddSingleton<RaftHttpCluster>().EnableCluster();
         
-        [CLSCompliant(false)]
         public static IServiceCollection ConfigureCluster<TConfig>(this IServiceCollection services)
             where TConfig : class, IRaftClusterConfigurer
             => services.AddSingleton<IRaftClusterConfigurer, TConfig>();
+
+        public static IApplicationBuilder UseConsensusProtocolHandler(this IApplicationBuilder builder)
+            => builder.Use(RaftProtocolMiddleware.Create);
     }
 }

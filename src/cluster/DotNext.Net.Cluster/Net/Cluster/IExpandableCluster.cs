@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-
 namespace DotNext.Net.Cluster
 {
     /// <summary>
@@ -17,10 +14,5 @@ namespace DotNext.Net.Cluster
         /// An event raised when cluster member is removed gracefully.
         /// </summary>
         event ClusterChangedEventHandler MemberRemoved;
-
-        /// <summary>
-        /// Gracefully disconnects the entire application from the cluster. 
-        /// </summary>
-        Task DisconnectAsync();
     }
 }

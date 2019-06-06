@@ -28,6 +28,6 @@ namespace DotNext.Net.Cluster.Consensus
         /// <summary>
         /// Gets metadata associated with local cluster member.
         /// </summary>
-        public Dictionary<string, string> Metadata { get; } = new Dictionary<string, string>();
+        public IDictionary<string, string> Metadata { get; } = new Dictionary<string, string>();
     }
 }

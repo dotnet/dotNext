@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -11,12 +12,10 @@ using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Generic;
     using Messaging;
     using Replication;
-    using Threading.Tasks;
 
-    internal sealed class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, ISite, IRaftCluster, IExpandableCluster
+    internal sealed class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, ISite, IRaftCluster, IExpandableCluster, ILocalClusterMember
     {
 
         private readonly IRaftClusterConfigurer configurer;
@@ -25,25 +24,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private readonly Guid id;
         private readonly IDisposable configurationTracker;
-        private volatile Dictionary<string, string> metadata;
+        private volatile MemberMetadata metadata;
         private volatile ISet<IPNetwork> allowedNetworks;
+        private readonly Uri consensusResource;
+
+        private RaftHttpCluster(RaftClusterMemberConfiguration config)
+            : base(config)
+        {
+            consensusResource = config.ResourcePath;
+            id = Guid.NewGuid();
+            allowedNetworks = config.ParseAllowedNetworks();
+            SetMembers(config.Members, CreateMember);
+            metadata = new MemberMetadata(config.Metadata);
+        }
 
         private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies)
-            : base(config.CurrentValue)
+            : this(config.CurrentValue)
         {
-            id = Guid.NewGuid();
             configurer = dependencies.GetService<IRaftClusterConfigurer>();
             messageHandler = dependencies.GetService<IMessageHandler>();
             replicator = dependencies.GetService<IReplicator>();
-            metadata = config.CurrentValue.Metadata;
-            allowedNetworks = config.CurrentValue.ParseAllowedNetworks();
             //track changes in configuration
             configurationTracker = config.OnChange(ConfigurationChanged);
-            //create members
-            SetMembers<Uri>(config.CurrentValue.Members, CreateMember);
         }
-
-        private RaftClusterMember CreateMember(Uri address) => new RaftClusterMember(this, address);
 
         public RaftHttpCluster(IServiceProvider dependencies)
             : this(dependencies.GetRequiredService<IOptionsMonitor<RaftClusterMemberConfiguration>>(), dependencies)
@@ -51,34 +54,41 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             
         }
 
+        private RaftClusterMember CreateMember(Uri address) => new RaftClusterMember(this, address, consensusResource);
+
         private void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
         {
-            metadata = configuration.Metadata;
+            metadata = new MemberMetadata(configuration.Metadata);
             allowedNetworks = configuration.ParseAllowedNetworks();
+            //detect new members
+            //detect deleted members
         }
 
-        ref readonly Guid ISite.LocalMemberId => ref id;
+        ref readonly Guid ILocalClusterMember.Id => ref id;
 
-        IReadOnlyDictionary<string, string> ISite.LocalMemberMetadata => metadata;
+        IReadOnlyDictionary<string, string> ILocalClusterMember.Metadata => metadata;
+
+        ILocalClusterMember ISite.LocalMember => this;
 
         bool ISite.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
+        public event ClusterChangedEventHandler MemberAdded;
+        public event ClusterChangedEventHandler MemberRemoved;
         public override event ClusterMemberStatusChanged MemberStatusChanged;
 
         void ISite.MemberStatusChanged(IRaftClusterMember member, ClusterMemberStatus previousStatus, ClusterMemberStatus newStatus)
             => MemberStatusChanged?.Invoke(member, previousStatus, newStatus);
 
-        private async Task Vote(RequestVoteMessage request, HttpResponse response)
-            => await RequestVoteMessage.CreateResponse(response, this, await Vote(request, request.ConsensusTerm).ConfigureAwait(false))
-                .ConfigureAwait(false);
+        private Task Vote(RequestVoteMessage request, HttpResponse response)
+            => RequestVoteMessage.CreateResponse(response, this, request.MemberId == id || Vote(request.ConsensusTerm));
 
-        private async Task Resign(HttpResponse response) =>
-            await ResignMessage.CreateResponse(response, this, Resign())
-                .ConfigureAwait(false);
+        private Task Resign(HttpResponse response) => ResignMessage.CreateResponse(response, this, Resign());
+
+        private Task GetMetadata(HttpResponse response) => MetadataMessage.CreateResponse(response, this, metadata);
 
         private async Task ReceiveAppendEntries(RaftHttpMessage request, HttpResponse response)
         {
-            if(request.MemberId == LocalMemberId)  //sender node and receiver are same, ignore message
+            if(request.MemberId == id)  //sender node and receiver are same, ignore message
                 return;
         }
 
@@ -94,26 +104,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return base.StopAsync(token);
         }
 
-        private protected Task<bool> ProcessRequest(HttpContext context)
+        internal Task ProcessRequest(HttpContext context)
         {
             var networks = allowedNetworks;
             //checks whether the client's address is allowed
             if(networks.Count > 0 || networks.FirstOrDefault(context.Connection.RemoteIpAddress.IsIn) is null)
             {
                 context.Response.StatusCode = (int) HttpStatusCode.Forbidden;
-                return CompletedTask<bool, BooleanConst.True>.Task;
+                return Task.CompletedTask;
             }
-            const TaskContinuationOptions SyncOptions = TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously;
-            bool SuccessProcessingResult(Task task) => true;
             //process request
             switch (RaftHttpMessage.GetMessageType(context.Request))
             {
                 case RequestVoteMessage.MessageType:
-                    return Vote(new RequestVoteMessage(context.Request),  context.Response).ContinueWith(SuccessProcessingResult, SyncOptions);
+                    return Vote(new RequestVoteMessage(context.Request),  context.Response);
                 case ResignMessage.MessageType:
-                    return Resign(context.Response).ContinueWith(SuccessProcessingResult, SyncOptions);
+                    return Resign(context.Response);
+                case MetadataMessage.MessageType:
+                    return GetMetadata(context.Response);
                 default:
-                    return CompletedTask<bool, BooleanConst.False>.Task;
+                    context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+                    return Task.CompletedTask;
             }
         }
 
