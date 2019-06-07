@@ -23,7 +23,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         public static IServiceCollection EmbedClusterSupport(this IServiceCollection services, IConfiguration clusterConfig)
             => services.Configure<ClusterMemberConfiguration>(clusterConfig).AddSingleton<RaftHttpCluster>().EnableCluster();
-        
+
+        /// <summary>
+        /// Registers configurator of <see cref="ICluster"/> service registered as a service
+        /// in DI container.
+        /// </summary>
+        /// <typeparam name="TConfig">The type implementing <see cref="IRaftClusterConfigurer"/>.</typeparam>
+        /// <param name="services">A collection of services provided by DI container.</param>
+        /// <returns>A collection of services provided by DI container.</returns>
         public static IServiceCollection ConfigureCluster<TConfig>(this IServiceCollection services)
             where TConfig : class, IRaftClusterConfigurer
             => services.AddSingleton<IRaftClusterConfigurer, TConfig>();

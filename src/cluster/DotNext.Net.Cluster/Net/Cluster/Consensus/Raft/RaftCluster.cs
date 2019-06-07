@@ -20,6 +20,103 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         where TMember : class, IRaftClusterMember
     {
         /// <summary>
+        /// Represents cluster member.
+        /// </summary>
+        protected readonly ref struct MemberHolder
+        {
+            private readonly LinkedListNode<TMember> node;
+
+            internal MemberHolder(LinkedListNode<TMember> node) => this.node = node;
+
+            /// <summary>
+            /// Gets actual cluster member.
+            /// </summary>
+            public TMember Member => node?.Value;
+
+            /// <summary>
+            /// Removes the current member from the list.
+            /// </summary>
+            /// <remarks>
+            /// Removed member is not disposed so it can be reused.
+            /// </remarks>
+            /// <returns>The removed member.</returns>
+            public TMember Remove()
+            {
+                node.List.Remove(node);
+                var member = node.Value;
+                node.Value = null;
+                return member;
+            }
+            
+            /// <summary>
+            /// Obtains actual cluster member.
+            /// </summary>
+            /// <param name="holder"></param>
+            public static implicit operator TMember(MemberHolder holder) => holder.Member;
+        }
+
+        /// <summary>
+        /// Represents collection of cluster members stored in the memory of the current process.
+        /// </summary>
+        protected readonly ref struct MemberCollection
+        {
+            /// <summary>
+            /// Represents enumerator over cluster members.
+            /// </summary>
+            public ref struct Enumerator
+            {
+                private LinkedListNode<TMember> current;
+                private bool started;
+
+                internal Enumerator(LinkedList<TMember> members)
+                {
+                    current = members.First;
+                    started = false;
+                }
+
+                /// <summary>
+                /// Adjusts position of this enumerator.
+                /// </summary>
+                /// <returns><see langword="true"/> if enumerator moved to the next member successfully; otherwise, <see langword="false"/>.</returns>
+                public bool MoveNext()
+                {
+                    if (started)
+                        current = current.Next;
+                    else
+                        started = true;
+                    return !(current is null);
+                }
+
+                /// <summary>
+                /// Gets holder of the member holder at the current position of enumerator.
+                /// </summary>
+                public MemberHolder Current => new MemberHolder(current);
+            }
+
+            private readonly LinkedList<TMember> members;
+
+            internal MemberCollection(LinkedList<TMember> members) => this.members = members;
+
+            /// <summary>
+            /// Adds new cluster member.
+            /// </summary>
+            /// <param name="member">A new member to be added into in-memory collection.</param>
+            public void Add(TMember member) => members.AddLast(member);
+
+            /// <summary>
+            /// Returns enumerator over cluster members.
+            /// </summary>
+            /// <returns>The enumerator over cluster members.</returns>
+            public Enumerator GetEnumerator() => new Enumerator(members);
+        }
+
+        /// <summary>
+        /// Represents mutator of collection of members.
+        /// </summary>
+        /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
+        protected delegate void MemberCollectionMutator(in MemberCollection members);
+
+        /// <summary>
         /// Represents replicator.
         /// </summary>
         /// <param name="sender">The leader node that initiates cluster-wide replication.</param>
@@ -44,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private const int CandidateState = 2;
         private const int LeaderState = 3;
 
-        private readonly CopyOnWriteList<TMember> members;
+        private readonly LinkedList<TMember> members;
         
         private readonly AsyncManualResetEvent transitionSync;  //used to synchronize state transitions
         private int state;
@@ -59,34 +156,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Initializes a new cluster manager for the local node.
         /// </summary>
         /// <param name="config">The configuration of the local node.</param>
-        /// <param name="producer">The object that can be used to add members at construction stage.</param>
-        protected RaftCluster(IClusterMemberConfiguration config)
+        /// <param name="members">The collection of members that can be modified at construction stage.</param>
+        protected RaftCluster(IClusterMemberConfiguration config, out MemberCollection members)
         {
             electionTimeout = config.ElectionTimeout;
             absoluteMajority = config.AbsoluteMajority;
-            members = new CopyOnWriteList<TMember>();
+            members = new MemberCollection(this.members = new LinkedList<TMember>());
             transitionSync = new AsyncManualResetEvent(false);
             state = UnstartedState;
         }
 
-        protected void SetMembers<T>(ICollection<T> items, Converter<T, TMember> converter)
-            => members.Set(items, converter);
-
-        protected void AddMember(TMember member, ClusterChangedEventHandler handlers)
+        /// <summary>
+        /// Modifies collection of cluster members.
+        /// </summary>
+        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
+        protected void ChangeMembers(MemberCollectionMutator mutator)
         {
-            members.Add(member);
-            handlers?.Invoke(this, member);
-        }
-
-        protected void RemoveMember(IPEndPoint endpoint, ClusterChangedEventHandler handlers)
-        {
-            ICollection<TMember> removedMembers = new LinkedList<TMember>();
-            members.RemoveAll(member => member.Endpoint.Equals(endpoint), removedMembers.Add);
-            foreach(var member in removedMembers)
-            {
-                handlers?.Invoke(this, member);
-                member.Dispose();
-            }
+            using (members.AcquireWriteLock())
+                mutator(new MemberCollection(members));
         }
 
         private IReadOnlyCollection<IClusterMember> Members => state.VolatileRead() == UnstartedState ? Array.Empty<IClusterMember>() : (IReadOnlyCollection<IClusterMember>)members;
@@ -159,8 +246,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var voters = new LinkedList<MemberProcessingContext<Task<bool?>>>();
             //send vote request to all members in parallel
             Task<bool?> VoteMethod(TMember member) => member.VoteAsync(token);
-            foreach (var member in members as IEnumerable<TMember>)
-                voters.AddLast(new MemberProcessingContext<Task<bool?>>(member, VoteMethod));
+            using(members.AcquireReadLock())
+                foreach (var member in members)
+                    voters.AddLast(new MemberProcessingContext<Task<bool?>>(member, VoteMethod));
             //calculate votes
             var votes = 0;
             for (var context = voters.First; !(context is null); LocalMember = context.Value.Member, context = context.Next)
@@ -221,9 +309,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             Task<bool> AppendEntriesMethod(TMember member) =>
                 member.AppendEntriesAsync(message, stoppingToken);
+
             //send requests in parallel
-            foreach (var member in members as IEnumerable<TMember>)
-                tasks.AddLast(new MemberProcessingContext<Task<bool>>(member, AppendEntriesMethod));
+            using(members.AcquireReadLock())
+                foreach (var member in members)
+                    tasks.AddLast(new MemberProcessingContext<Task<bool>>(member, AppendEntriesMethod));
             var exceptions = new LinkedList<ConsensusProtocolException>();
             for (var current = tasks.First; !(current is null); current = current.Next)
                 try
@@ -288,8 +378,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //stop serving process
             await servingProcess.Stop(token).ConfigureAwait(false);
             servingProcess = default;
-            foreach (var member in (IEnumerable<IRaftClusterMember>)members)
-                member.CancelPendingRequests();
+            using(members.AcquireReadLock())
+                members.ForEach(member => member.CancelPendingRequests());
             state.VolatileWrite(UnstartedState);
             local = leader = null;
         }
@@ -365,7 +455,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (disposing)
             {
                 servingProcess.Dispose();
-                members.Clear(member => member.Dispose());
+                for (var current = members.First; !(current is null); current = current.Next)
+                {
+                    current.Value.Dispose();
+                    current.Value = null;
+                }
+                members.Clear();
                 transitionSync.Dispose();
                 local = leader = null;
             }

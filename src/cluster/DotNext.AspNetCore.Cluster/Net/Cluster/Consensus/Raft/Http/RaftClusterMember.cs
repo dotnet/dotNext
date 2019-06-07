@@ -31,17 +31,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             this.owner = owner;
             status = UnknownStatus;
             BaseAddress = remoteMember;
-            switch (remoteMember.HostNameType)
+            Endpoint = TryGetEndpoint(remoteMember) ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
+            DefaultRequestHeaders.ConnectionClose = true;   //to avoid network storm
+            DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, GetType().Assembly.GetName().Version.ToString()));
+        }
+
+        private static IPEndPoint TryGetEndpoint(Uri memberUri)
+        {
+            switch (memberUri.HostNameType)
             {
                 case UriHostNameType.IPv4:
                 case UriHostNameType.IPv6:
-                    Endpoint = new IPEndPoint(IPAddress.Parse(remoteMember.Host), remoteMember.Port);
-                    break;
+                    return new IPEndPoint(IPAddress.Parse(memberUri.Host), memberUri.Port);
                 default:
-                    throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
+                    return null;
             }
-            DefaultRequestHeaders.ConnectionClose = true;   //to avoid network storm
-            DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, GetType().Assembly.GetName().Version.ToString()));
         }
 
         internal bool IsLocal => owner.LocalMember.Id.Equals(id);
