@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
@@ -13,10 +15,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal static RequestDelegate Create(RequestDelegate next)
             => new RaftProtocolMiddleware(next).FilterRequest;
 
-        private Task FilterRequest(HttpContext context)
+        private async Task FilterRequest(HttpContext context)
         {
             var cluster = context.RequestServices.GetService<RaftHttpCluster>();
-            return cluster is null ? next(context) : cluster.ProcessRequest(context);
+            if (cluster is null || !await cluster.ProcessRequest(context).ConfigureAwait(false))
+                await next(context).ConfigureAwait(false);
         }
     }
 }

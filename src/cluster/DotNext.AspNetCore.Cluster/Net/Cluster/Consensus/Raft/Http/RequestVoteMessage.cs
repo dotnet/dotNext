@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         internal const string MessageType = "RequestVote";
 
-        internal RequestVoteMessage(ISite sender)
+        internal RequestVoteMessage(ILocalClusterMember sender)
             : base(MessageType, sender)
         {
         }
