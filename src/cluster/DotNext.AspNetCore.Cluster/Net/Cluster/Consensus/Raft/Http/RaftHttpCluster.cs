@@ -61,6 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             metadata = new MemberMetadata(configuration.Metadata);
             allowedNetworks = configuration.ParseAllowedNetworks();
             //detect new members
+            
             //detect deleted members
         }
 
