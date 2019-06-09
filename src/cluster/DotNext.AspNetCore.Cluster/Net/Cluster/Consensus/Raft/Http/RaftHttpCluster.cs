@@ -118,6 +118,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public override Task StartAsync(CancellationToken token)
         {
+            //try to detect local member
             configurer?.Initialize(this);
             return base.StartAsync(token);
         }

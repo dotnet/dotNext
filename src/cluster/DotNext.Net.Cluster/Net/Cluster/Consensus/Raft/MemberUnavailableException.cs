@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Http
+namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Replication;
 

@@ -15,11 +15,6 @@ namespace DotNext.Net.Cluster
         IClusterMember Leader { get; }
 
         /// <summary>
-        /// Gets cluster member represented by entire application.
-        /// </summary>
-        IClusterMember LocalMember { get; }
-
-        /// <summary>
         /// An event raised when leader has been changed.
         /// </summary>
         event ClusterLeaderChangedEventHandler LeaderChanged;

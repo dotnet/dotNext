@@ -45,7 +45,6 @@ namespace DotNext.Threading
                     tokenSource.Cancel();   //ensure that Delay task is cancelled
                     return true;
                 }
-            token.ThrowIfCancellationRequested();
             return false;
         }
 
@@ -54,7 +53,6 @@ namespace DotNext.Threading
             using (var tracker = new CancelableTaskCompletionSource<bool>(ref token))
                 if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, tracker.Task).ConfigureAwait(false)))
                     return true;
-            token.ThrowIfCancellationRequested();
             return false;
         }
 
