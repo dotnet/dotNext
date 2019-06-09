@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -18,6 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal sealed class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, ISite, IRaftCluster, IExpandableCluster, ILocalClusterMember
     {
+        private delegate ICollection<IPEndPoint> HostingAddressesProvider();
 
         private readonly IRaftClusterConfigurer configurer;
         private readonly IMessageHandler messageHandler;
@@ -28,6 +30,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private volatile MemberMetadata metadata;
         private volatile ISet<IPNetwork> allowedNetworks;
         private readonly Uri consensusPath;
+        private RaftClusterMember localMember;
+        private readonly HostingAddressesProvider hostingAddresses;
 
         private RaftHttpCluster(RaftClusterMemberConfiguration config)
             : base(config, out var members)
@@ -46,6 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             configurer = dependencies.GetService<IRaftClusterConfigurer>();
             messageHandler = dependencies.GetService<IMessageHandler>();
             replicator = dependencies.GetService<IReplicator>();
+            hostingAddresses = dependencies.GetRequiredService<IServer>().GetHostingAddresses;
             //track changes in configuration
             configurationTracker = config.OnChange(ConfigurationChanged);
         }

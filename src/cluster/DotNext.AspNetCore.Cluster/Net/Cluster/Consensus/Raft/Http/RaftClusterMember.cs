@@ -5,10 +5,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNext.Threading;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Threading;
+
     internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember
     {
         private const string UserAgent = "Raft.NET";
@@ -31,24 +32,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             this.owner = owner;
             status = UnknownStatus;
             BaseAddress = remoteMember;
-            Endpoint = TryGetEndpoint(remoteMember) ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
+            Endpoint = remoteMember.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
             DefaultRequestHeaders.ConnectionClose = true;   //to avoid network storm
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, GetType().Assembly.GetName().Version.ToString()));
         }
 
-        private static IPEndPoint TryGetEndpoint(Uri memberUri)
-        {
-            switch (memberUri.HostNameType)
-            {
-                case UriHostNameType.IPv4:
-                case UriHostNameType.IPv6:
-                    return new IPEndPoint(IPAddress.Parse(memberUri.Host), memberUri.Port);
-                default:
-                    return null;
-            }
-        }
-
-        internal bool IsLocal => owner.LocalMember.Id.Equals(id);
+        
+        internal bool IsLocal { get; private set; }
 
         private void ChangeStatus(int newState)
         {

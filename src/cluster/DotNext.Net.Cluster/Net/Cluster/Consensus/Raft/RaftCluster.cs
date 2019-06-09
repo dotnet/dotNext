@@ -52,12 +52,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Removed member is not disposed so it can be reused.
             /// </remarks>
             /// <returns>The removed member.</returns>
+            /// <exception cref="InvalidOperationException">Attempt to remove local node.</exception>
             public TMember Remove()
             {
-                node.List.Remove(node);
-                var member = node.Value;
-                node.Value = null;
-                return member;
+                if(node is null)
+                    return null;
+                else if(!node.Value.IsRemote)
+                    throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
+                else
+                {
+                    node.List.Remove(node);
+                    var member = node.Value;
+                    node.Value = null;
+                    return member;
+                }
             }
             
             /// <summary>

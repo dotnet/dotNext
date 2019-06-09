@@ -12,6 +12,8 @@ namespace DotNext
 
         internal static string IsNotLeader => Resources.GetString("IsNotLeader");
 
+        internal static string CannotRemoveLocalNode => Resources.GetString("CannotRemoveLocalNode");
+
         internal static string UnavailableMember => Resources.GetString("UnavailableMember");
 
         internal static string ReplicationRejected => Resources.GetString("ReplicationRejected");
