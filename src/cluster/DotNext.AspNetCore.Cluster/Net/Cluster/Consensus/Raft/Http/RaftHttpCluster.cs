@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Replication;
     using Threading.Tasks;
 
-    internal sealed class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, ISite, IRaftCluster, IExpandableCluster, ILocalClusterMember
+    internal sealed class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IRaftCluster, IExpandableCluster, ILocalClusterMember
     {
         private delegate ICollection<IPEndPoint> HostingAddressesProvider();
 
@@ -25,7 +25,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly IMessageHandler messageHandler;
         private readonly IReplicator replicator;
 
-        private readonly Guid id;
         private readonly IDisposable configurationTracker;
         private volatile MemberMetadata metadata;
         private volatile ISet<IPNetwork> allowedNetworks;
@@ -37,7 +36,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             : base(config, out var members)
         {
             consensusPath = config.ResourcePath;
-            id = Guid.NewGuid();
             allowedNetworks = config.ParseAllowedNetworks();
             metadata = new MemberMetadata(config.Metadata);
             foreach (var memberUri in config.Members)
@@ -92,38 +90,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             });
         }
 
-        ref readonly Guid ILocalClusterMember.Id => ref id;
+        IReadOnlyDictionary<string, string> IHostingContext.Metadata => metadata;
 
-        IReadOnlyDictionary<string, string> ILocalClusterMember.Metadata => metadata;
+        bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-        ILocalClusterMember ISite.LocalMember => this;
-
-        bool ISite.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
+        IPEndPoint IHostingContext.LocalEndpoint => localMember?.Endpoint;
 
         public event ClusterChangedEventHandler MemberAdded;
         public event ClusterChangedEventHandler MemberRemoved;
         public override event ClusterMemberStatusChanged MemberStatusChanged;
 
-        void ISite.MemberStatusChanged(IRaftClusterMember member, ClusterMemberStatus previousStatus, ClusterMemberStatus newStatus)
+        void IHostingContext.MemberStatusChanged(IRaftClusterMember member, ClusterMemberStatus previousStatus, ClusterMemberStatus newStatus)
             => MemberStatusChanged?.Invoke(member, previousStatus, newStatus);
-
-        private Task Vote(RequestVoteMessage request, HttpResponse response)
-            => RequestVoteMessage.CreateResponse(response, this, request.MemberId == id || Vote(request.ConsensusTerm));
-
-        private Task Resign(HttpResponse response) => ResignMessage.CreateResponse(response, this, Resign());
-
-        private Task GetMetadata(HttpResponse response) => MetadataMessage.CreateResponse(response, this, metadata);
-
-        private async Task ReceiveEntries(RaftHttpMessage request, HttpResponse response)
-        {
-            if(request.MemberId == id)  //sender node and receiver are same, ignore message
-                return;
-            ReceiveEntries()
-        }
 
         public override Task StartAsync(CancellationToken token)
         {
-            //try to detect local member
+            //detect local member
+            localMember = Members.FirstOrDefault(hostingAddresses().Contains);
+            if (localMember is null)
+                throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             configurer?.Initialize(this);
             return base.StartAsync(token);
         }
@@ -135,6 +120,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         private static bool True(Task task) => true;
+
+        private async Task Vote(RequestVoteMessage request, HttpResponse response)
+            => await RequestVoteMessage.CreateResponse(response,
+                    await Vote(request.Sender, request.ConsensusTerm, ClusterMember.Represents).ConfigureAwait(false))
+                .ConfigureAwait(false);
+
+        private async Task Resign(HttpResponse response) => 
+            await ResignMessage.CreateResponse(response, await Resign().ConfigureAwait(false)).ConfigureAwait(false);
+
+        private Task GetMetadata(HttpResponse response) => MetadataMessage.CreateResponse(response, this, metadata);
+
+        private async Task ReceiveEntries(RaftHttpMessage request, HttpResponse response)
+        {
+            if (request.MemberId == id)  //sender node and receiver are same, ignore message
+                return;
+            ReceiveEntries()
+        }
 
         internal Task<bool> ProcessRequest(HttpContext context)
         {
@@ -148,6 +150,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 context.Response.StatusCode = (int) HttpStatusCode.Forbidden;
                 return CompletedTask<bool, BooleanConst.True>.Task;
             }
+
             Task task;
             //process request
             switch (RaftHttpMessage.GetMessageType(context.Request))
@@ -172,8 +175,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
+            {
+                localMember = null;
                 configurationTracker.Dispose();
+            }
+
             base.Dispose(disposing);
         }
     }

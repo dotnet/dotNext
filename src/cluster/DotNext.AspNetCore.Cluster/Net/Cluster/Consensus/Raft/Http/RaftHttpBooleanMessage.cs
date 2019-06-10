@@ -9,7 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal abstract class RaftHttpBooleanMessage : RaftHttpMessage<bool>
     {
-        private protected RaftHttpBooleanMessage(string messageType, ILocalClusterMember sender)
+        private protected RaftHttpBooleanMessage(string messageType, IPEndPoint sender)
             : base(messageType, sender)
         {
         }
@@ -19,17 +19,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
-        private static async Task<bool> ParseResponse(HttpResponseMessage response)
+        internal static async Task<bool> GetResponse(HttpResponseMessage response)
             => bool.TryParse(await response.Content.ReadAsStringAsync().ConfigureAwait(false), out var result)
                 ? result
                 : throw new RaftProtocolException(ExceptionMessages.IncorrectResponse);
 
-        internal static Task<Response> GetResponse(HttpResponseMessage response) => GetResponse(response, ParseResponse);
-
-        internal static Task CreateResponse(HttpResponse response, ILocalClusterMember identity, bool result)
+        internal static Task CreateResponse(HttpResponse response, bool result)
         {
             response.StatusCode = (int) HttpStatusCode.OK;
-            FillResponse(response, identity);
             return response.WriteAsync(Convert.ToString(result, InvariantCulture));
         }
     }

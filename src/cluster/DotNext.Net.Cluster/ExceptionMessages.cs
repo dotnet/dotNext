@@ -17,7 +17,5 @@ namespace DotNext
         internal static string UnavailableMember => Resources.GetString("UnavailableMember");
 
         internal static string ReplicationRejected => Resources.GetString("ReplicationRejected");
-
-        internal static string ReplicationFailed => Resources.GetString("ReplicationFailed");
     }
 }

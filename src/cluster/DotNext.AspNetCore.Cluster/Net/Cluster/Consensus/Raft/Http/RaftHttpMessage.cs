@@ -1,17 +1,18 @@
 ﻿using System;
 using static System.Globalization.CultureInfo;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal abstract class RaftHttpMessage
     {
-        //request - represents ID of sender node
-        //response - represents ID of reply node
-        private const string NodeIdHeader = "X-Raft-Node-Id";
+        //request - represents IP of sender node
+        private const string NodeIpHeader = "X-Raft-Node-IP";
+        //request - represents hosting port of sender node
+        private const string NodePortHeader = "X-Raft-Node-Port";
 
         //request - represents Term value according with Raft protocol
         private const string TermHeader = "X-Raft-Term";
@@ -19,22 +20,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         //request - represents request message type
         private const string MessageTypeHeader = "X-Raft-Message";
 
-        internal readonly Guid MemberId;
-        internal readonly long ConsensusTerm;
+        internal readonly IPEndPoint Sender;
         private readonly string messageType;
+        internal readonly long ConsensusTerm;
 
-        private protected RaftHttpMessage(string messageType, ILocalClusterMember sender)
+        private protected RaftHttpMessage(string messageType, IPEndPoint sender)
         {
-            MemberId = sender.Id;
-            ConsensusTerm = sender.Term;
+            Sender = sender;
             this.messageType = messageType;
         }
 
         private protected RaftHttpMessage(HttpRequest request)
         {
-            foreach (var header in request.Headers[NodeIdHeader])
-                if (Guid.TryParse(header, out MemberId))
+            var address = default(IPAddress);
+            var port = 0;
+            foreach (var header in request.Headers[NodeIpHeader])
+                if (IPAddress.TryParse(header, out address))
                     break;
+            foreach (var header in request.Headers[NodePortHeader])
+                if (int.TryParse(header, out port))
+                    break;
+            Sender = new IPEndPoint(address ?? throw new RaftProtocolException(ExceptionMessages.MissingHeader(NodeIpHeader)), port);
             foreach (var header in request.Headers[TermHeader])
                 if (long.TryParse(header, out ConsensusTerm))
                     break;
@@ -42,24 +48,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         internal static string GetMessageType(HttpRequest request) =>
-            request.Headers[MessageTypeHeader].FirstOrDefault();
-
-        private protected static Guid GetMemberId(HttpResponseMessage response)
-            => Guid.TryParse(response.Headers.GetValues(NodeIdHeader).FirstOrDefault(), out var id)
-                ? id
-                : throw new RaftProtocolException(ExceptionMessages.MissingHeader(NodeIdHeader));
+            request.Headers[MessageTypeHeader].FirstOrDefault() ??
+            throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageTypeHeader));
 
         private protected virtual void FillRequest(HttpRequestMessage request)
         {
-            request.Headers.Add(NodeIdHeader, MemberId.ToString());
+            request.Headers.Add(NodeIpHeader, Sender.Address.ToString());
+            request.Headers.Add(NodePortHeader, Convert.ToString(Sender.Port, InvariantCulture));
             request.Headers.Add(TermHeader, Convert.ToString(ConsensusTerm, InvariantCulture));
             request.Headers.Add(MessageTypeHeader, messageType);
             request.Method = HttpMethod.Post;
-        }
-
-        private protected static void FillResponse(HttpResponse response, ILocalClusterMember identity)
-        {
-            response.Headers.Add(NodeIdHeader, identity.Id.ToString());
         }
 
         public static explicit operator HttpRequestMessage(RaftHttpMessage message)
@@ -74,21 +72,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal abstract class RaftHttpMessage<TResponse> : RaftHttpMessage
     {
-        internal delegate Task<TResponse> ResponseParser(HttpResponseMessage response);
-
-        internal readonly struct Response
-        {
-            internal readonly Guid MemberId;
-            internal readonly TResponse Body;
-
-            internal Response(HttpResponseMessage response, TResponse body)
-            {
-                Body = body;
-                MemberId = GetMemberId(response);
-            }
-        }
-
-        private protected RaftHttpMessage(string messageType, ILocalClusterMember sender) 
+        private protected RaftHttpMessage(string messageType, IPEndPoint sender) 
             : base(messageType, sender)
         {
         }
@@ -96,8 +80,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected RaftHttpMessage(HttpRequest request) : base(request)
         {
         }
-
-        private protected static async Task<Response> GetResponse(HttpResponseMessage response, ResponseParser parser)
-            => new Response(response, await parser(response).ConfigureAwait(false));
     }
 }

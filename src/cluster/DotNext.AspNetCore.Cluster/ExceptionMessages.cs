@@ -17,5 +17,9 @@ namespace DotNext
             string.Format(Resources.GetString("MissingHeader"), headerName);
 
         internal static string IncorrectResponse => Resources.GetString("IncorrectResponse");
+
+        internal static string UnresolvedLocalMember => Resources.GetString("UnresolvedLocalMember");
+
+        internal static string NoMetadataPresent => Resources.GetString("NoMetadataPresent");
     }
 }

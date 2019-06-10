@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using DotNext.Net.Cluster.Messaging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -14,22 +15,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private const string UserAgent = "Raft.NET";
 
-        private delegate Task<RaftHttpMessage<TBody>.Response> ResponseParser<TBody>(HttpResponseMessage response);
-
         private const int UnknownStatus = (int) ClusterMemberStatus.Unknown;
         private const int UnavailableStatus = (int) ClusterMemberStatus.Unavailable;
         private const int AvailableStatus = (int) ClusterMemberStatus.Available;
 
+        private delegate Task<T> ResponseParser<T>(HttpResponseMessage response);
+
         private readonly Uri resourcePath;
         private int status;
-        private readonly ISite owner;
+        private readonly IHostingContext context;
         private volatile MemberMetadata metadata;
-        private Guid id;
 
-        internal RaftClusterMember(ISite owner, Uri remoteMember, Uri resourcePath)
+        internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath)
         {
             this.resourcePath = resourcePath;
-            this.owner = owner;
+            this.context = context;
             status = UnknownStatus;
             BaseAddress = remoteMember;
             Endpoint = remoteMember.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
@@ -37,69 +37,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, GetType().Assembly.GetName().Version.ToString()));
         }
 
-        
-        internal bool IsLocal { get; private set; }
-
         private void ChangeStatus(int newState)
         {
             var previousState = status.GetAndSet(newState);
             if(previousState != newState)
-                owner.MemberStatusChanged(this, (ClusterMemberStatus) previousState, (ClusterMemberStatus) newState);
+                context.MemberStatusChanged(this, (ClusterMemberStatus) previousState, (ClusterMemberStatus) newState);
         }
 
-        private async Task<TBody> ParseResponse<TBody>(HttpResponseMessage response, ResponseParser<TBody> parser)
+        private async Task<Optional<T>> SendAsync<T>(RaftHttpMessage message, ResponseParser<T> parser, bool throwIfFailed, CancellationToken token)
         {
-            var reply = await parser(response).ConfigureAwait(false);
-            id = reply.MemberId;
-            return reply.Body;
-        }
-
-        //null means that node is unreachable
-        //true means that node votes successfully for the new leader
-        //false means that node is in candidate state and rejects voting
-        public async Task<bool?> VoteAsync(CancellationToken token)
-        {
-            if (IsLocal)
-                return true;
-            var request = (HttpRequestMessage) new RequestVoteMessage(owner);
-            request.RequestUri = resourcePath;
-            var response = default(HttpResponseMessage);
-            try
-            {
-                response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
-                var result = await ParseResponse<bool>(response, RequestVoteMessage.GetResponse).ConfigureAwait(false);
-                ChangeStatus(AvailableStatus);
-                return result;
-            }
-            catch (HttpRequestException)
-            {
-                ChangeStatus(UnavailableStatus);
-                return null;
-            }
-            finally
-            {
-                response?.Dispose();
-                request.Dispose();
-            }
-        }
-
-        public async Task<bool> ResignAsync(CancellationToken token)
-        {
-            var request = (HttpRequestMessage) new ResignMessage(owner.LocalMember);
+            var request = (HttpRequestMessage) message;
             request.RequestUri = resourcePath;
             var response = default(HttpResponseMessage);
             try
             {
                 response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
                     .ConfigureAwait(false);
-                var result = await ParseResponse<bool>(response, ResignMessage.GetResponse).ConfigureAwait(false);
                 ChangeStatus(AvailableStatus);
-                return result;
+                return await parser(response).ConfigureAwait(false);
             }
             catch (HttpRequestException)
             {
                 ChangeStatus(UnavailableStatus);
-                return false;
+                if (throwIfFailed)
+                    throw;
+                else
+                    return Optional<T>.Empty;
             }
             finally
             {
@@ -108,42 +71,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh, CancellationToken token)
-        {
-            if (IsLocal)
-                return owner.LocalMember.Metadata;
-            else if (metadata is null || refresh)
-            {
-                var request = (HttpRequestMessage) new MetadataMessage(owner.LocalMember);
-                request.RequestUri = resourcePath;
-                var response = default(HttpResponseMessage);
-                try
-                {
-                    response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
-                        .ConfigureAwait(false);
-                    metadata = await ParseResponse<MemberMetadata>(response, MetadataMessage.GetResponse)
-                        .ConfigureAwait(false);
-                    ChangeStatus(AvailableStatus);
-                }
-                catch (HttpRequestException)
-                {
-                    ChangeStatus(UnavailableStatus);
-                    throw;
-                }
-                finally
-                {
-                    response?.Dispose();
-                    request.Dispose();
-                }
-            }
+        //null means that node is unreachable
+        //true means that node votes successfully for the new leader
+        //false means that node is in candidate state and rejects voting
+        public async Task<bool?> VoteAsync(CancellationToken token)
+            => this.Represents(context.LocalEndpoint)
+                ? true
+                : await SendAsync(new RequestVoteMessage(context.LocalEndpoint), RequestVoteMessage.GetResponse, false, token)
+                    .OrNull().ConfigureAwait(false);
 
-            return metadata;
-        }
+        public async Task<bool> ResignAsync(CancellationToken token)
+            => await SendAsync(new ResignMessage(context.LocalEndpoint), ResignMessage.GetResponse, false, token).OrDefault()
+                .ConfigureAwait(false);
+
+        public async Task<bool> AppendEntriesAsync(IMessage entries, CancellationToken token)
+            => await SendAsync(new AppendEntriesMessage(context.LocalEndpoint) {Message = entries},
+                AppendEntriesMessage.GetResponse, true, token).OrDefault().ConfigureAwait(false);
+
+        async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh,
+            CancellationToken token)
+            => this.Represents(context.LocalEndpoint)
+                ? context.Metadata
+                : await SendAsync(new MetadataMessage(context.LocalEndpoint), MetadataMessage.GetResponse, true, token)
+                    .OrThrow<MemberMetadata, NoMetadataException>().ConfigureAwait(false);
 
         public IPEndPoint Endpoint { get; }
-        bool IClusterMember.IsLeader => owner.IsLeader(this);
+        bool IClusterMember.IsLeader => context.IsLeader(this);
 
-        bool IClusterMember.IsRemote => !IsLocal;
+        bool IClusterMember.IsRemote => !this.Represents(Endpoint);
 
         ClusterMemberStatus IClusterMember.Status => (ClusterMemberStatus) status.VolatileRead();
 

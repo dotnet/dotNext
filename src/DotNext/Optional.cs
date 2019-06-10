@@ -15,9 +15,18 @@ namespace DotNext
     public static class Optional
     {
         /// <summary>
+        /// If a value is present, returns the value, otherwise null.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="task">The task returning optional value.</param>
+        /// <returns>Nullable value.</returns>
+        public static async Task<T?> OrNull<T>(this Task<Optional<T>> task) where T : struct
+            => (await task.ConfigureAwait(false)).OrNull();
+
+        /// <summary>
         /// Returns the value if present; otherwise return default value.
         /// </summary>
-        /// <typeparam name="T">Type of the value.</typeparam>
+        /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="task">The task returning optional value.</param>
         /// <param name="defaultValue">The value to be returned if there is no value present.</param>
         /// <returns>The value, if present, otherwise default</returns>

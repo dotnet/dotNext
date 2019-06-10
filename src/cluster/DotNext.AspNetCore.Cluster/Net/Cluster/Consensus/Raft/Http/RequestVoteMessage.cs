@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Net;
+using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -6,7 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         internal const string MessageType = "RequestVote";
 
-        internal RequestVoteMessage(ILocalClusterMember sender)
+        internal RequestVoteMessage(IPEndPoint sender)
             : base(MessageType, sender)
         {
         }
