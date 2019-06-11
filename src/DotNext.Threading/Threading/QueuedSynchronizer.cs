@@ -90,7 +90,13 @@ namespace DotNext.Threading
                     tokenSource.Cancel();   //ensure that Delay task is cancelled
                     return true;
                 }
-            return !RemoveNode(node) && await node.Task.ConfigureAwait(false);
+
+            if (RemoveNode(node))
+            {
+                token.ThrowIfCancellationRequested();
+                return false;
+            }
+            return await node.Task.ConfigureAwait(false);
         }
 
         private async Task<bool> Wait(WaitNode node, CancellationToken token)
@@ -98,7 +104,12 @@ namespace DotNext.Threading
             using (var tracker = new CancelableTaskCompletionSource<bool>(ref token))
                 if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, tracker.Task).ConfigureAwait(false)))
                     return true;
-            return !RemoveNode(node) && await node.Task.ConfigureAwait(false);
+            if (RemoveNode(node))
+            {
+                token.ThrowIfCancellationRequested();
+                return false;
+            }
+            return await node.Task.ConfigureAwait(false);
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]

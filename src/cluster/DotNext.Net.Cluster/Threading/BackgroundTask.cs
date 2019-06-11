@@ -15,12 +15,23 @@ namespace DotNext.Threading
             backgroundTask = task(cts.Token);
         }
 
+        internal CancellationTokenSource CreateLinkedTokenSource(CancellationToken token)
+            => CancellationTokenSource.CreateLinkedTokenSource(cts.Token, token);
+
         internal Task Stop(CancellationToken token)
         {
             if (cts is null || backgroundTask is null)
                 return Task.CompletedTask;
             cts.Cancel(false);
             return Task.WhenAny(backgroundTask, Task.Delay(System.Threading.Timeout.Infinite, token));
+        }
+
+        internal Task Stop()
+        {
+            if (cts is null || backgroundTask is null)
+                return Task.CompletedTask;
+            cts.Cancel(false);
+            return backgroundTask;
         }
 
         public void Dispose()

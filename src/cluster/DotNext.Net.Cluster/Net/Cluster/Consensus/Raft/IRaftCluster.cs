@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Replication;
-    using Messaging;
 
     /// <summary>
     /// Represents cluster of nodes coordinated using Raft consensus protocol.
@@ -25,6 +24,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of replication.</returns>
         /// <exception cref="AggregateException">Unable to replicate one or more cluster nodes. You can analyze inner exceptions which are derive from <see cref="ConsensusProtocolException"/> or <see cref="ReplicationException"/>.</exception>
         /// <exception cref="InvalidOperationException">The caller application is not a leader node.</exception>
-        Task ReplicateAsync(MessageFactory entries, CancellationToken token = default);
+        /// <exception cref="NotSupportedException">Audit trail is not defined for this instance.</exception>
+        Task ReplicateAsync(ILogEntry entries, CancellationToken token = default);
+
+        /// <summary>
+        /// Setup audit trail for the cluster.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Audit trail is already defined for this instance.</exception>
+        IAuditTrail AuditTrail { set; }
     }
 }

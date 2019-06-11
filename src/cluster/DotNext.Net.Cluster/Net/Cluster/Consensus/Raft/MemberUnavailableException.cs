@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
         }
 
-        internal MemberUnavailableException(IRaftClusterMember member, string message, Exception innerException)
+        public MemberUnavailableException(IRaftClusterMember member, string message, Exception innerException)
             : base(member, message)
             => this.innerException = innerException;
 

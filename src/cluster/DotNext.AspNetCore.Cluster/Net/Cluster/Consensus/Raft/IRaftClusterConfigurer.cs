@@ -6,6 +6,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public interface IRaftClusterConfigurer
     {
         /// <summary>
+        /// Gets term number of the local member
+        /// restored from the persistent storage.
+        /// </summary>
+        long Term { get; }
+
+        /// <summary>
         /// Configures instance of <see cref="IRaftCluster"/> after its construction.
         /// </summary>
         /// <remarks>

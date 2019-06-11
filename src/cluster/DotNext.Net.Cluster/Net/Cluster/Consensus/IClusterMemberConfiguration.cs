@@ -1,4 +1,4 @@
-﻿using System;
+﻿using DotNext.Net.Cluster.Consensus.Raft;
 
 namespace DotNext.Net.Cluster.Consensus
 {
@@ -9,6 +9,11 @@ namespace DotNext.Net.Cluster.Consensus
     {
         bool AbsoluteMajority { get; }
 
-        TimeSpan ElectionTimeout { get; }
+        /// <summary>
+        /// Gets leader election timeout settings.
+        /// </summary>
+        ElectionTimeout ElectionTimeout { get; }
+
+        bool IsVotedFor(IRaftClusterMember member);
     }
 }

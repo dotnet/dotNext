@@ -6,6 +6,12 @@ namespace DotNext.Net.Cluster.Replication
     [Serializable]
     public class ReplicationException : ConsensusProtocolException
     {
+        internal ReplicationException(IClusterMember member)
+            : this(member, ExceptionMessages.ReplicationRejected)
+        {
+
+        }
+
         protected ReplicationException(IClusterMember member, string message)
             : base(message)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,15 +15,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.
     /// </summary>
-    public abstract class RaftCluster<TMember> : Disposable, IRaftCluster
+    public abstract class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine
         where TMember : class, IRaftClusterMember
     {
-        private sealed class ElectionTimeoutSource : Random
-        {
-            //recommended election timeout is between 150ms and 300ms
-            internal int NextTimeout() => Next(150, 301);
-        }
-
         protected delegate bool MemberMatcher<MemberId>(TMember member, MemberId id);
 
         /// <summary>
@@ -134,43 +129,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
         protected delegate void MemberCollectionMutator(in MemberCollection members);
 
-        /// <summary>
-        /// Represents replicator.
-        /// </summary>
-        /// <param name="sender">The leader node that initiates cluster-wide replication.</param>
-        /// <param name="entries">Log entries.</param>
-        /// <returns><see langword="true"/>, if replication is accepted; otherwise, <see langword="false"/>.</returns>
-        protected delegate Task<bool> Replicator(TMember sender, IMessage entries);
-
-        private readonly struct MemberProcessingContext<T> : IDisposable
-            where T : Task
-        {
-            internal readonly TMember Member;
-            internal readonly T Task;
-
-            internal MemberProcessingContext(TMember member, Func<TMember, T> asyncMethod)
-                => Task = asyncMethod(Member = member);
-
-            public void Dispose() => Task.Dispose();
-        }
-
-        private const int UnstartedState = 0;
-        private const int FollowerState = 1;
-        private const int CandidateState = 2;
-        private const int LeaderState = 3;
 
         private volatile ICollection<TMember> members;
         
-        private CancellationTokenSource electionCancellation;
         private AsyncLock transitionSync;  //used to synchronize state transitions
-        private int state;
-        private volatile TMember leader, lastVote;
+        private volatile RaftState state;
+        private TMember votedFor;
+        private volatile IRaftClusterMember leader;
         private long consensusTerm;
         private readonly bool absoluteMajority;
-        private readonly ElectionTimeoutSource electionTimeoutRandomizer;
+        private readonly ElectionTimeout electionTimeoutProvider;
         private volatile int electionTimeout;
-
-        private BackgroundTask servingProcess;
+        private readonly CancellationTokenSource transitionCancellation;
+        private IAuditTrail auditTrail;
 
         /// <summary>
         /// Initializes a new cluster manager for the local node.
@@ -179,14 +150,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="members">The collection of members that can be modified at construction stage.</param>
         protected RaftCluster(IClusterMemberConfiguration config, out MemberCollection members)
         {
-            electionTimeout = (electionTimeoutRandomizer = new ElectionTimeoutSource()).NextTimeout();
+            electionTimeoutProvider = config.ElectionTimeout;
+            electionTimeout = electionTimeoutProvider.RandomTimeout();
             absoluteMajority = config.AbsoluteMajority;
             members = new MemberCollection(this.members = new LinkedList<TMember>());
             transitionSync = AsyncLock.Exclusive();
-            state = UnstartedState;
+            transitionCancellation = new CancellationTokenSource();
         }
 
-        protected virtual TimeSpan TransitionTimeout => TimeSpan.FromSeconds(20);
+        public IAuditTrail AuditTrail
+        {
+            set => auditTrail = auditTrail is null ? value : throw new InvalidOperationException(ExceptionMessages.AuditTrailAlreadyDefined);
+        }
 
         /// <summary>
         /// Modifies collection of cluster members.
@@ -203,13 +178,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets typed collection of cluster members.
         /// </summary>
-        protected IReadOnlyCollection<TMember> Members => state.VolatileRead() == UnstartedState ? Array.Empty<TMember>() : (IReadOnlyCollection<TMember>)members;
+        protected IReadOnlyCollection<TMember> Members => state is null ? Array.Empty<TMember>() : (IReadOnlyCollection<TMember>)members;
+
+        IEnumerable<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
         int IReadOnlyCollection<IClusterMember>.Count => Members.Count;
 
         IEnumerator<IClusterMember> IEnumerable<IClusterMember>.GetEnumerator() => Members.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => Members.GetEnumerator();
+
+        protected TMember VotedFor => votedFor;
 
         /// <summary>
         /// Gets Term value
@@ -224,7 +203,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets leader of the cluster.
         /// </summary>
-        public TMember Leader
+        public IRaftClusterMember Leader
         {
             get => leader;
             private set
@@ -235,196 +214,106 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        async Task<bool> ICluster.ResignAsync(CancellationToken token)
-        {
-            bool result;
-            using(var holder = await transitionSync.TryAcquire(TransitionTimeout, token).ConfigureAwait(false))
-            {
-                var leader = Leader;
-                result = holder && (state.CompareAndSet(LeaderState, FollowerState) || leader != null && await leader.ResignAsync(token).ConfigureAwait(false));
-                if(result)
-                    Leader = null;
-            }
-            return result;
-        }
-
-        private async Task StartElection(CancellationToken token)
-        {
-            using(var holder = await transitionSync.TryAcquire(TimeSpan.Zero, token).ConfigureAwait(false))
-            {
-                if(!holder || !state.CompareAndSet(FollowerState, CandidateState))
-                    return;
-                lastVote = null;
-                Leader = null; //leader is not known, so erase it
-                consensusTerm.IncrementAndGet();
-                var voters = new LinkedList<MemberProcessingContext<Task<bool?>>>();
-                //send vote request to all members in parallel
-                Task<bool?> VoteMethod(TMember member) => member.VoteAsync(token);
-                foreach (var member in members)
-                    voters.AddLast(new MemberProcessingContext<Task<bool?>>(member, VoteMethod));
-                //calculate votes
-                var votes = 0;
-                TMember localMember = null;
-                for (var context = voters.First; !(context is null); context = context.Next)
-                {
-                    switch (await context.Value.Task.ConfigureAwait(false))
-                    {
-                        case true:
-                            votes += 1;
-                            break;
-                        case false:
-                            votes -= 1;
-                            break;
-                        default:
-                            if (absoluteMajority)
-                                votes -= 1;
-                            break;
-                    }
-                    if(!context.Value.Member.IsRemote)
-                        localMember = context.Value.Member;
-                    context.Value.Dispose();
-                    context.Value = default;
-                }
-
-                voters.Clear(); //help GC
-                if (votes > 0 && localMember != null) //becomes a leader
-                {
-                    state.VolatileWrite(LeaderState);
-                    Leader = localMember;
-                }
-                else    //no clear consensus, back to Follower state
-                {
-                    state.VolatileWrite(FollowerState);
-                    electionTimeout = electionTimeoutRandomizer.NextTimeout();
-                }
-            }
-        }
-
-        /// <summary>
-        /// This method is called automatically if 
-        /// </summary>
-        /// <param name="exceptions">Set of exceptions </param>
-        /// <returns></returns>
-        protected virtual Task ReplicationFailed(IMessage message, IReadOnlyCollection<ReplicationException> exceptions) =>
-            Task.CompletedTask;
-
-        private static bool IsCompleted(Task task) => task.Status == TaskStatus.RanToCompletion;
-
-        private async Task ReplicateAsync(IMessage message, CancellationToken stoppingToken)
-        {
-            var tasks = new LinkedList<MemberProcessingContext<Task<bool>>>();
-
-            Task<bool> AppendEntriesMethod(TMember member) =>
-                member.AppendEntriesAsync(message, stoppingToken);
-
-            //send requests in parallel
-            foreach (var member in members)
-                tasks.AddLast(new MemberProcessingContext<Task<bool>>(member, AppendEntriesMethod));
-            var exceptions = new LinkedList<ReplicationException>();
-            for (var current = tasks.First; !(current is null); current = current.Next)
-                try
-                {
-                    if (!await current.Value.Task.ConfigureAwait(false))
-                        exceptions.AddLast(new ReplicationRejectedException(current.Value.Member));
-                }
-                catch (Exception e)
-                {
-                    exceptions.AddLast(new MemberUnavailableException(current.Value.Member,
-                        ExceptionMessages.UnavailableMember, e));
-                }
-
-            if (exceptions.Count > 0)
-                await ReplicationFailed(message, exceptions).ConfigureAwait(false);
-        }
-
-        private async Task Serve(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                switch (state.VolatileRead())
-                {
-                    case FollowerState:
-                        if(await Task.Delay(electionTimeout, Volatile.Read(ref electionCancellation).Token).ContinueWith(IsCompleted, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.NotOnFaulted))
-                            await StartElection(stoppingToken).ConfigureAwait(false);
-                        continue;
-                    case LeaderState:
-                        using(var holder = await transitionSync.TryAcquire(TransitionTimeout, stoppingToken).ConfigureAwait(false))
-                            if(holder && state.VolatileRead() == LeaderState)
-                                await ReplicateAsync(default(IMessage), stoppingToken).ConfigureAwait(false);
-                        continue;
-                    default:
-                        return;
-                }
-            }
-        }
-
         public virtual Task StartAsync(CancellationToken token)
         {
             //start node in Follower state
             consensusTerm.VolatileWrite(0L);
-            state.VolatileWrite(FollowerState);
-            Volatile.Write(ref electionCancellation, new CancellationTokenSource());
-            servingProcess = new BackgroundTask(Serve);
+            state = new FollowerState(this, electionTimeout);
             return Task.CompletedTask;
         }
 
         public virtual async Task StopAsync(CancellationToken token)
         {
-            var electionCancellation = Volatile.Read(ref this.electionCancellation);
-            electionCancellation.Cancel();
-            //stop serving process
-            await servingProcess.Stop(token).ConfigureAwait(false);
-            servingProcess = default;
+            transitionCancellation.Cancel(false);
             members.ForEach(member => member.CancelPendingRequests());
-            state.VolatileWrite(UnstartedState);
-            leader = lastVote = null;
-            electionCancellation.Dispose();
+            leader = votedFor = null;
+            switch (Interlocked.Exchange(ref state, null))
+            {
+                case FollowerState followerState:
+                    followerState.Dispose();
+                    return;
+                case CandidateState candidateState:
+                    await candidateState.StopVoting().ConfigureAwait(false);
+                    candidateState.Dispose();
+                    return;
+                case LeaderState leaderState:
+                    await leaderState.StopLeading(token).ConfigureAwait(false);
+                    leader.Dispose();
+                    return;
+            }
+        }
+
+        private async Task EnsureFollowerState()
+        {
+            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+            {
+                switch (state)
+                {
+                    case LeaderState leaderState:
+                        state = new FollowerState(this, electionTimeout);
+                        await leaderState.StopLeading(transitionCancellation.Token).ConfigureAwait(false);
+                        leaderState.Dispose();
+                        break;
+                    case CandidateState candidateState:
+                        state = new FollowerState(this, electionTimeout);
+                        await candidateState.StopVoting().ConfigureAwait(false);
+                        candidateState.Dispose();
+                        break;
+                    case FollowerState followerState:
+                        followerState.Refresh();
+                        break;
+                }
+            }
+        }
+
+        private TMember FindMember<MemberId>(MemberId id, MemberMatcher<MemberId> matcher)
+            => members.FirstOrDefault(member => matcher(member, id));
+
+        protected async Task DoHeartbeat<MemberId>(MemberId sender, long senderTerm, MemberMatcher<MemberId> matcher)
+        {
+            var currentTerm = consensusTerm.AccumulateAndGet(senderTerm, Math.Max);
+            if (currentTerm < senderTerm)
+                return; //already replicated
+            await EnsureFollowerState().ConfigureAwait(false);
+            Leader = FindMember(sender, matcher);
         }
 
         protected async Task<bool> ReceiveEntries<MemberId>(MemberId sender, long senderTerm,
-            MemberMatcher<MemberId> matcher, IMessage entries, Replicator replicator)
+            MemberMatcher<MemberId> matcher, LogEntryId prevId, ILogEntry entry)
         {
-            ResetElectionTimeout();
-            using (var holder = await transitionSync.TryAcquire(TransitionTimeout).ConfigureAwait(false))
-                if (holder && consensusTerm.VolatileRead() <= senderTerm)
-                {
-                    lastVote = null;
-                    state.VolatileWrite(FollowerState);
-                    foreach (var member in members)
-                        if (matcher(member, sender))
-                        {
-                            if (await replicator(member, entries).ConfigureAwait(false))
-                            {
-                                consensusTerm.VolatileWrite(senderTerm);
-                                Leader = member;
-                                return true;
-                            }
-
-                            break;
-                        }
-                }
-
-            return false;
+            var currentTerm = consensusTerm.AccumulateAndGet(senderTerm, Math.Max);
+            if (currentTerm > senderTerm || auditTrail is null || entry is null || auditTrail.Initial.Equals(entry.Id))
+                return true; //already replicated
+            await EnsureFollowerState().ConfigureAwait(false);
+            Leader = FindMember(sender, matcher);
+            return auditTrail.Contains(prevId) && await auditTrail.CommitAsync(entry).ConfigureAwait(false);
         }
 
-        public async Task ReplicateAsync(MessageFactory entries, CancellationToken token)
+        public Task ReplicateAsync(ILogEntry entry, CancellationToken token)
         {
-            using(var holder = await transitionSync.TryAcquire(TimeSpan.MaxValue, token).ConfigureAwait(false))
-            {
-                if(!holder)
-                    return;
-                else if(state.VolatileRead() != LeaderState)
-                    throw new InvalidOperationException(ExceptionMessages.IsNotLeader);
-                else 
-                    await ReplicateAsync(entries(), token).ConfigureAwait(false);
-            }
+            if (auditTrail is null)
+                throw new NotSupportedException();
+            else if (state is LeaderState leaderState)
+                return leaderState.AppendEntriesAsync(entry, auditTrail, token);
+            else
+                throw new InvalidOperationException(ExceptionMessages.IsNotLeader);
         }
-        
-        private void ResetElectionTimeout()
+
+        private static TMember UpdateLastVote(TMember current, TMember candidate)
+            => current ?? candidate;
+
+        private bool Vote(TMember sender, LogEntryId? senderLastId)
         {
-            var tokenSource = Interlocked.Exchange(ref electionCancellation, new CancellationTokenSource());
-            tokenSource.Cancel();
-            tokenSource.Dispose();
+            if (sender is null)
+                return false;
+            else if (ReferenceEquals(sender, AtomicReference.AccumulateAndGet(ref votedFor, sender, UpdateLastVote)))
+                return true;
+            else if (auditTrail is null)
+                return senderLastId is null;
+            else if (senderLastId is null)
+                return false;
+            else
+                return auditTrail.Contains(senderLastId.Value);
         }
 
         /// <summary>
@@ -433,32 +322,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="sender">The identifier of vote sender.</param>
         /// <param name="senderTerm">Term value provided by sender of the request.</param>
         /// <param name="matcher">The function allows to match member identifier with instance of <typeparamref name="TMember"/>.</param>
-        /// <param name="votingFunc">Extension point to add additional voting logic. Can be <see langword="null"/>.</param>
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        protected async Task<bool> Vote<MemberId>(MemberId sender, long senderTerm,
-            MemberMatcher<MemberId> matcher, Predicate<TMember> votingFunc = null)
+        protected async Task<bool> Vote<MemberId>(MemberId sender, long senderTerm, LogEntryId? senderLastId,
+            MemberMatcher<MemberId> matcher)
         {
-            using (var lockHolder = await transitionSync.TryAcquire(TimeSpan.Zero).ConfigureAwait(false))
-                if (lockHolder && state.VolatileRead() == FollowerState && consensusTerm.VolatileRead() <= senderTerm)
-                    if (lastVote is null)
+            var currentTerm = consensusTerm.AccumulateAndGet(senderTerm, Math.Max);
+            if (currentTerm > senderTerm)
+                return false;
+            await EnsureFollowerState().ConfigureAwait(false);
+            return Vote(FindMember(sender, matcher), senderLastId);
+        }
+
+        async Task<bool> ICluster.ResignAsync(CancellationToken token)
+        {
+            using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token, transitionCancellation.Token))
+            {
+                using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+                    if (state is LeaderState leaderState)
                     {
-                        foreach (var member in members)
-                            if (matcher(member, sender))
-                            {
-                                if (votingFunc is null || votingFunc(member))
-                                {
-                                    consensusTerm.VolatileWrite(senderTerm);
-                                    lastVote = member;
-                                    return true;
-                                }
-
-                                break;
-                            }
+                        await leaderState.StopLeading(tokenSource.Token).ConfigureAwait(false);
+                        leaderState.Dispose();
+                        state = new FollowerState(this, electionTimeout);
+                        return true;
                     }
-                    else
-                        return matcher(lastVote, sender);
 
-            return false;
+                var leader = Leader;
+                return !(leader is null) && await leader.ResignAsync(tokenSource.Token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -467,28 +357,59 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
         protected async Task<bool> Resign()
         {
-            using(var lockHolder = await transitionSync.TryAcquire(TimeSpan.Zero).ConfigureAwait(false))
-                if (lockHolder && state.VolatileRead() == LeaderState)
+            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+                if (state is LeaderState leaderState)
                 {
-                    lastVote = null;
-                    state.VolatileWrite(FollowerState);
-                    Leader = null;
+                    await leaderState.StopLeading(transitionCancellation.Token).ConfigureAwait(false);
+                    leaderState.Dispose();
+                    state = new FollowerState(this, electionTimeout);
                     return true;
                 }
                 else
                     return false;
         }
 
+        async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout)
+        {
+            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+            {
+                if (randomizeTimeout)
+                    electionTimeout = electionTimeoutProvider.RandomTimeout();
+                state = new FollowerState(this, electionTimeout);
+            }
+        }
+
+        async void IRaftStateMachine.MoveToCandidateState()
+        {
+            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+                if (state is FollowerState followerState)
+                {
+                    followerState.Dispose();
+                    var newState = new CandidateState(this, absoluteMajority);
+                    newState.StartVoting(electionTimeout, auditTrail);
+                    state = newState;
+                }
+        }
+
+        async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember leader)
+        {
+            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+                if (state is CandidateState candidateState)
+                {
+                    candidateState.Dispose();
+                    Leader = leader;
+                }
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
-                servingProcess.Dispose();
                 var members = Interlocked.Exchange(ref this.members, Array.Empty<TMember>());
                 Dispose(members);
                 members.Clear();
                 transitionSync.Dispose();
-                leader = lastVote = null;
+                leader = votedFor = null;
             }
             base.Dispose(disposing);
         }
