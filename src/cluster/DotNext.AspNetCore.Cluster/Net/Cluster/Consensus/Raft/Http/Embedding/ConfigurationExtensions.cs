@@ -1,11 +1,10 @@
 ﻿using System;
-using DotNext.Net.Cluster.Consensus.Raft.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace DotNext.Net.Cluster.Consensus.Raft
+namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
     [CLSCompliant(false)]
     public static class ConfigurationExtensions
@@ -21,8 +20,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 .AddSingleton<IExpandableCluster>(clusterNodeCast);
         }
 
-        public static IServiceCollection EmbedClusterSupport(this IServiceCollection services, IConfiguration clusterConfig)
-            => services.Configure<ClusterMemberConfiguration>(clusterConfig).AddSingleton<RaftHttpCluster>().EnableCluster();
+        /// <summary>
+        /// Allows to inject <see cref="ICluster"/>, <see cref="IRaftCluster"/>, <see cref="IExpandableCluster"/>
+        /// to application services and enables network communications necessary to serve cluster member.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="memberConfig">The configuration of cluster member.</param>
+        /// <returns>The collection of injectable services.</returns>
+        public static IServiceCollection EnableClusterSupport(this IServiceCollection services, IConfiguration memberConfig)
+            => services.Configure<ClusterMemberConfiguration>(memberConfig).AddSingleton<RaftHttpCluster>().EnableCluster();
 
         /// <summary>
         /// Registers configurator of <see cref="ICluster"/> service registered as a service
@@ -35,7 +41,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             where TConfig : class, IRaftClusterConfigurer
             => services.AddSingleton<IRaftClusterConfigurer, TConfig>();
 
-        public static IApplicationBuilder UseConsensusProtocolHandler(this IApplicationBuilder builder)
+        /// <summary>
+        /// Setup Raft protocol handler as middleware for the specified application.
+        /// </summary>
+        /// <param name="builder">The application builder.</param>
+        /// <returns>The configured application builder.</returns>
+        public static IApplicationBuilder BecomeClusterMember(this IApplicationBuilder builder)
             => builder.Use(RaftProtocolMiddleware.Create);
     }
 }

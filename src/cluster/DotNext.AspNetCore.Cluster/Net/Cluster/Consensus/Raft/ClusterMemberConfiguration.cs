@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Linq;
 
-namespace DotNext.Net.Cluster.Consensus
+namespace DotNext.Net.Cluster.Consensus.Raft
 {
     /// <summary>
     /// Represents configuration of cluster member.
@@ -13,7 +13,9 @@ namespace DotNext.Net.Cluster.Consensus
         public ClusterMemberConfiguration()
         {
             //recommended election timeout is between 150ms and 300ms
-            ElectionTimeout = TimeSpan.FromMilliseconds(new Random().Next(150, 301));
+            var timeout = Raft.ElectionTimeout.Recommended;
+            LowerElectionTimeout = timeout.LowerValue;
+            UpperElectionTimeout = timeout.UpperValue;
             AbsoluteMajority = true;
         }
 
@@ -21,7 +23,9 @@ namespace DotNext.Net.Cluster.Consensus
 
         internal ISet<IPNetwork> ParseAllowedNetworks() => new HashSet<IPNetwork>(AllowedNetworks.Select(IPNetwork.Parse));
 
-        public TimeSpan ElectionTimeout { get; set; }
+        public int LowerElectionTimeout { get; set; }
+
+        public int UpperElectionTimeout { get; set; }
 
         public bool AbsoluteMajority { get; set; }
 

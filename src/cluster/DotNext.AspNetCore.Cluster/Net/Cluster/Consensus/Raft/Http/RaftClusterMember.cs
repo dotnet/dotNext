@@ -9,9 +9,10 @@ using DotNext.Net.Cluster.Messaging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Replication;
     using Threading;
 
-    internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember
+    internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, IMessenger
     {
         private const string UserAgent = "Raft.NET";
 
@@ -71,29 +72,57 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
+        public async Task HeartbeatAsync(CancellationToken token)
+        {
+            if(this.Represents(context.LocalEndpoint))
+                return;
+            var request = (HttpRequestMessage) new HeartbeatMessage(context.LocalEndpoint);
+            request.RequestUri = resourcePath;
+            var response = default(HttpResponseMessage);
+            try
+            {
+                response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
+                ChangeStatus(AvailableStatus);
+            }
+            catch (HttpRequestException)
+            {
+                ChangeStatus(UnavailableStatus);
+            }
+            finally
+            {
+                response?.Dispose();
+                request.Dispose();
+            }
+        }
+
         //null means that node is unreachable
         //true means that node votes successfully for the new leader
         //false means that node is in candidate state and rejects voting
-        public async Task<bool?> VoteAsync(CancellationToken token)
+        public async Task<bool?> VoteAsync(LogEntryId? lastEntry, CancellationToken token)
             => this.Represents(context.LocalEndpoint)
                 ? true
-                : await SendAsync(new RequestVoteMessage(context.LocalEndpoint), RequestVoteMessage.GetResponse, false, token)
+                : await SendAsync(new RequestVoteMessage(context.LocalEndpoint, lastEntry), RequestVoteMessage.GetResponse, false, token)
                     .OrNull().ConfigureAwait(false);
 
         public async Task<bool> ResignAsync(CancellationToken token)
             => await SendAsync(new ResignMessage(context.LocalEndpoint), ResignMessage.GetResponse, false, token).OrDefault()
                 .ConfigureAwait(false);
 
-        public async Task<bool> AppendEntriesAsync(IMessage entries, CancellationToken token)
-            => await SendAsync(new AppendEntriesMessage(context.LocalEndpoint) {Message = entries},
+        public async Task<bool> AppendEntriesAsync(ILogEntry newEntry, LogEntryId precedingEntry, CancellationToken token)
+            => await SendAsync(new AppendEntriesMessage(context.LocalEndpoint, newEntry, precedingEntry),
                 AppendEntriesMessage.GetResponse, true, token).OrDefault().ConfigureAwait(false);
 
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh,
             CancellationToken token)
-            => this.Represents(context.LocalEndpoint)
-                ? context.Metadata
-                : await SendAsync(new MetadataMessage(context.LocalEndpoint), MetadataMessage.GetResponse, true, token)
+        {
+            if (this.Represents(context.LocalEndpoint))
+                return context.Metadata;
+            if (metadata is null || refresh)
+                metadata = await SendAsync(new MetadataMessage(context.LocalEndpoint), MetadataMessage.GetResponse,
+                        true, token)
                     .OrThrow<MemberMetadata, NoMetadataException>().ConfigureAwait(false);
+            return metadata;
+        }
 
         public IPEndPoint Endpoint { get; }
         bool IClusterMember.IsLeader => context.IsLeader(this);
@@ -103,5 +132,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         ClusterMemberStatus IClusterMember.Status => (ClusterMemberStatus) status.VolatileRead();
 
         bool IEquatable<IClusterMember>.Equals(IClusterMember other) => Endpoint.Equals(other?.Endpoint);
+
+        Task<IMessage> IMessenger.SendMessageAsync(IMessage message)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IMessenger.SendSignalAsync(IMessage message, bool requiresConfirmation)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

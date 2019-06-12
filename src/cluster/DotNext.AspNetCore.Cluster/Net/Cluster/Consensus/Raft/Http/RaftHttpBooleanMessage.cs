@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal abstract class RaftHttpBooleanMessage : RaftHttpMessage<bool>
+    internal abstract class RaftHttpBooleanMessage : RaftHttpMessage
     {
         private protected RaftHttpBooleanMessage(string messageType, IPEndPoint sender)
             : base(messageType, sender)

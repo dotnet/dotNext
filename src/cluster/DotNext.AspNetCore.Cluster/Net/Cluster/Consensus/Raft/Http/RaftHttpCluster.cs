@@ -17,13 +17,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Replication;
     using Threading.Tasks;
 
-    internal sealed class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IRaftCluster, IExpandableCluster, ILocalClusterMember
+    internal class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster
     {
+        private static readonly Func<Task, bool> TrueTaskContinuation = task => true;
         private delegate ICollection<IPEndPoint> HostingAddressesProvider();
 
         private readonly IRaftClusterConfigurer configurer;
         private readonly IMessageHandler messageHandler;
-        private readonly IReplicator replicator;
 
         private readonly IDisposable configurationTracker;
         private volatile MemberMetadata metadata;
@@ -47,7 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             configurer = dependencies.GetService<IRaftClusterConfigurer>();
             messageHandler = dependencies.GetService<IMessageHandler>();
-            replicator = dependencies.GetService<IReplicator>();
+            AuditTrail = dependencies.GetService<IAuditTrail>();
             hostingAddresses = dependencies.GetRequiredService<IServer>().GetHostingAddresses;
             //track changes in configuration
             configurationTracker = config.OnChange(ConfigurationChanged);
@@ -115,29 +115,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public override Task StopAsync(CancellationToken token)
         {
-            configurer?.Cleanup(this);
+            configurer?.Shutdown(this);
             return base.StopAsync(token);
         }
 
-        private static bool True(Task task) => true;
-
-        private async Task Vote(RequestVoteMessage request, HttpResponse response)
+        private async Task ReceiveVote(RequestVoteMessage request, HttpResponse response)
             => await RequestVoteMessage.CreateResponse(response,
-                    await Vote(request.Sender, request.ConsensusTerm, ClusterMember.Represents).ConfigureAwait(false))
-                .ConfigureAwait(false);
+                await ReceiveVote(request.Sender, request.ConsensusTerm, request.LastEntry, ClusterMember.Represents)
+                    .ConfigureAwait(false)).ConfigureAwait(false);
 
-        private async Task Resign(HttpResponse response) => 
-            await ResignMessage.CreateResponse(response, await Resign().ConfigureAwait(false)).ConfigureAwait(false);
-
-        private Task GetMetadata(HttpResponse response) => MetadataMessage.CreateResponse(response, this, metadata);
-
-        private async Task ReceiveEntries(RaftHttpMessage request, HttpResponse response)
+        private Task ReceiveHeartbeat(HeartbeatMessage request, HttpResponse response)
         {
-            if (request.MemberId == id)  //sender node and receiver are same, ignore message
-                return;
-            ReceiveEntries()
+            HeartbeatMessage.CreateResponse(response);
+            return ReceiveHeartbeat(request.Sender, request.ConsensusTerm, ClusterMember.Represents);
         }
 
+        private async Task Resign(HttpResponse response) => 
+            await ResignMessage.CreateResponse(response, await ReceiveResign().ConfigureAwait(false)).ConfigureAwait(false);
+
+        private Task GetMetadata(HttpResponse response) => MetadataMessage.CreateResponse(response, localMember.Endpoint, metadata);
+
+        private async Task ReceiveEntries(AppendEntriesMessage request, HttpResponse response)
+            => await AppendEntriesMessage.CreateResponse(response,
+                await ReceiveEntries(request.Sender, request.ConsensusTerm, ClusterMember.Represents, request.LogEntry,
+                    request.PrecedingEntry).ConfigureAwait(false)).ConfigureAwait(false);
+        
         internal Task<bool> ProcessRequest(HttpContext context)
         {
             var networks = allowedNetworks;
@@ -156,7 +158,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             switch (RaftHttpMessage.GetMessageType(context.Request))
             {
                 case RequestVoteMessage.MessageType:
-                    task = Vote(new RequestVoteMessage(context.Request), context.Response);
+                    task = ReceiveVote(new RequestVoteMessage(context.Request), context.Response);
+                    break;
+                case HeartbeatMessage.MessageType:
+                    task = ReceiveHeartbeat(new HeartbeatMessage(context.Request), context.Response);
                     break;
                 case ResignMessage.MessageType:
                     task = Resign(context.Response);
@@ -164,12 +169,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 case MetadataMessage.MessageType:
                     task = GetMetadata(context.Response);
                     break;
+                case AppendEntriesMessage.MessageType:
+                    task = ReceiveEntries(new AppendEntriesMessage(context.Request), context.Response);
+                    break;
                 default:
                     context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
                     return CompletedTask<bool, BooleanConst.True>.Task;
             }
 
-            return task.ContinueWith(True, TaskContinuationOptions.ExecuteSynchronously |
+            return task.ContinueWith(TrueTaskContinuation, TaskContinuationOptions.ExecuteSynchronously |
                                            TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 

@@ -1,6 +1,4 @@
-﻿using DotNext.Net.Cluster.Consensus.Raft;
-
-namespace DotNext.Net.Cluster.Consensus
+﻿namespace DotNext.Net.Cluster.Consensus.Raft
 {
     /// <summary>
     /// Represents configuration of cluster member.
@@ -13,7 +11,5 @@ namespace DotNext.Net.Cluster.Consensus
         /// Gets leader election timeout settings.
         /// </summary>
         ElectionTimeout ElectionTimeout { get; }
-
-        bool IsVotedFor(IRaftClusterMember member);
     }
 }

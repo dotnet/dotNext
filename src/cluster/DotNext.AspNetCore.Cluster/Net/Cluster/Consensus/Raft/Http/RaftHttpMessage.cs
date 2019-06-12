@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Replication;
+
     internal abstract class RaftHttpMessage
     {
         //request - represents IP of sender node
@@ -68,17 +70,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             message.FillRequest(request);
             return request;
         }
-    }
 
-    internal abstract class RaftHttpMessage<TResponse> : RaftHttpMessage
-    {
-        private protected RaftHttpMessage(string messageType, IPEndPoint sender) 
-            : base(messageType, sender)
+        private protected static LogEntryId? ParseLogEntryId(HttpRequest request, string indexHeader, string termHeader)
         {
-        }
+            long? term = null, index = null;
+            foreach (var header in request.Headers[indexHeader])
+                if (long.TryParse(header, out var value))
+                {
+                    index = value;
+                    break;
+                }
 
-        private protected RaftHttpMessage(HttpRequest request) : base(request)
-        {
+            foreach (var header in request.Headers[termHeader])
+                if (long.TryParse(header, out var value))
+                {
+                    term = value;
+                    break;
+                }
+
+            return term is null || index is null ? default(LogEntryId?) : new LogEntryId(term.Value, index.Value);
         }
     }
 }

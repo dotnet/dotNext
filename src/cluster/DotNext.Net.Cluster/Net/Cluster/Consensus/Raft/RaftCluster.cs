@@ -5,11 +5,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNext.Net.Cluster.Replication;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Messaging;
+    using Replication;
     using Threading;
 
     /// <summary>
@@ -18,7 +17,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public abstract class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine
         where TMember : class, IRaftClusterMember
     {
-        protected delegate bool MemberMatcher<MemberId>(TMember member, MemberId id);
+        /// <summary>
+        /// Represents predicate used for searching members stored in the memory
+        /// and maintained by <see cref="RaftCluster{TMember}"/>.
+        /// </summary>
+        /// <typeparam name="MemberId">The identifier of the member.</typeparam>
+        /// <param name="member">The member to check.</param>
+        /// <param name="id">The identifier of the member to match.</param>
+        /// <returns><see langword="true"/> if <paramref name="id"/> matches to <paramref name="member"/>; otherwise, <see langword="false"/>.</returns>
+        protected delegate bool MemberMatcher<in MemberId>(TMember member, MemberId id);
 
         /// <summary>
         /// Represents cluster member.
@@ -158,9 +165,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             transitionCancellation = new CancellationTokenSource();
         }
 
+        /// <summary>
+        /// Associates audit trail with the current instance.
+        /// </summary>
         public IAuditTrail AuditTrail
         {
             set => auditTrail = auditTrail is null ? value : throw new InvalidOperationException(ExceptionMessages.AuditTrailAlreadyDefined);
+        }
+
+        /// <summary>
+        /// Gets or sets the member for which the local member last voted.
+        /// </summary>
+        protected TMember VotedFor
+        {
+            set => votedFor = value;
+            get => votedFor;
         }
 
         /// <summary>
@@ -188,12 +207,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         IEnumerator IEnumerable.GetEnumerator() => Members.GetEnumerator();
 
-        protected TMember VotedFor => votedFor;
-
         /// <summary>
         /// Gets Term value
         /// </summary>
-        public long Term => consensusTerm.VolatileRead();
+        public long Term
+        {
+            get => consensusTerm.VolatileRead();
+            protected set => consensusTerm.VolatileWrite(value);
+        }
         
         public event ClusterLeaderChangedEventHandler LeaderChanged;
         public abstract event ClusterMemberStatusChanged MemberStatusChanged;
@@ -269,7 +290,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private TMember FindMember<MemberId>(MemberId id, MemberMatcher<MemberId> matcher)
             => members.FirstOrDefault(member => matcher(member, id));
 
-        protected async Task DoHeartbeat<MemberId>(MemberId sender, long senderTerm, MemberMatcher<MemberId> matcher)
+        protected async Task ReceiveHeartbeat<MemberId>(MemberId sender, long senderTerm, MemberMatcher<MemberId> matcher)
         {
             var currentTerm = consensusTerm.AccumulateAndGet(senderTerm, Math.Max);
             if (currentTerm < senderTerm)
@@ -279,14 +300,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         protected async Task<bool> ReceiveEntries<MemberId>(MemberId sender, long senderTerm,
-            MemberMatcher<MemberId> matcher, LogEntryId prevId, ILogEntry entry)
+            MemberMatcher<MemberId> matcher, ILogEntry newEntry, LogEntryId precedingEntry)
         {
             var currentTerm = consensusTerm.AccumulateAndGet(senderTerm, Math.Max);
-            if (currentTerm > senderTerm || auditTrail is null || entry is null || auditTrail.Initial.Equals(entry.Id))
+            if (currentTerm > senderTerm || auditTrail is null || newEntry is null || auditTrail.Initial.Equals(newEntry.Id))
                 return true; //already replicated
             await EnsureFollowerState().ConfigureAwait(false);
             Leader = FindMember(sender, matcher);
-            return auditTrail.Contains(prevId) && await auditTrail.CommitAsync(entry).ConfigureAwait(false);
+            return auditTrail.Contains(precedingEntry) && await auditTrail.CommitAsync(newEntry).ConfigureAwait(false);
         }
 
         public Task ReplicateAsync(ILogEntry entry, CancellationToken token)
@@ -302,7 +323,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private static TMember UpdateLastVote(TMember current, TMember candidate)
             => current ?? candidate;
 
-        private bool Vote(TMember sender, LogEntryId? senderLastId)
+        private bool ReceiveVote(TMember sender, LogEntryId? senderLastId)
         {
             if (sender is null)
                 return false;
@@ -323,14 +344,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="senderTerm">Term value provided by sender of the request.</param>
         /// <param name="matcher">The function allows to match member identifier with instance of <typeparamref name="TMember"/>.</param>
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        protected async Task<bool> Vote<MemberId>(MemberId sender, long senderTerm, LogEntryId? senderLastId,
+        protected async Task<bool> ReceiveVote<MemberId>(MemberId sender, long senderTerm, LogEntryId? senderLastId,
             MemberMatcher<MemberId> matcher)
         {
             var currentTerm = consensusTerm.AccumulateAndGet(senderTerm, Math.Max);
             if (currentTerm > senderTerm)
                 return false;
             await EnsureFollowerState().ConfigureAwait(false);
-            return Vote(FindMember(sender, matcher), senderLastId);
+            return ReceiveVote(FindMember(sender, matcher), senderLastId);
         }
 
         async Task<bool> ICluster.ResignAsync(CancellationToken token)
@@ -355,7 +376,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Revokes leadership of the local node.
         /// </summary>
         /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
-        protected async Task<bool> Resign()
+        protected async Task<bool> ReceiveResign()
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
                 if (state is LeaderState leaderState)
@@ -375,7 +396,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (randomizeTimeout)
                     electionTimeout = electionTimeoutProvider.RandomTimeout();
-                state = new FollowerState(this, electionTimeout);
+                switch (state)
+                {
+                    case LeaderState leaderState:
+                        state = new FollowerState(this, electionTimeout);
+                        await leaderState.StopLeading(transitionCancellation.Token).ConfigureAwait(false);
+                        leaderState.Dispose();
+                        return;
+                    case CandidateState candidateState:
+                        state = new FollowerState(this, electionTimeout);
+                        await candidateState.StopVoting().ConfigureAwait(false);
+                        candidateState.Dispose();
+                        return;
+                    default:
+                        return;
+                }
             }
         }
 
@@ -397,6 +432,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (state is CandidateState candidateState)
                 {
                     candidateState.Dispose();
+                    var newState = new LeaderState(this);
+                    newState.StartLeading();
+                    state = newState;
                     Leader = leader;
                 }
         }

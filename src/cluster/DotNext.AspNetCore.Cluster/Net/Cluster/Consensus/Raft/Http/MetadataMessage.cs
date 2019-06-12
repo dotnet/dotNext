@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal sealed class MetadataMessage : RaftHttpMessage<MemberMetadata>
+    internal sealed class MetadataMessage : RaftHttpMessage
     {
         internal const string MessageType = "Metadata";
 
@@ -25,7 +25,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal static Task CreateResponse(HttpResponse response, IPEndPoint identity, MemberMetadata metadata)
         {
             response.StatusCode = (int)HttpStatusCode.OK;
-            FillResponse(response, identity);
             var serializer = new DataContractJsonSerializer(typeof(MemberMetadata));
             serializer.WriteObject(response.Body, metadata);
             return Task.CompletedTask;

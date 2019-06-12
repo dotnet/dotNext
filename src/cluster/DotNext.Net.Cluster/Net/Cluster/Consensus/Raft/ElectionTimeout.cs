@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DotNext.Net.Cluster.Consensus
+namespace DotNext.Net.Cluster.Consensus.Raft
 {
     /// <summary>
     /// Represents election timeout.

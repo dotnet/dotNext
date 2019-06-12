@@ -1,36 +1,39 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using static System.Globalization.CultureInfo;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.Threading;
 using System.Threading.Tasks;
-using DotNext.Net.Cluster.Messaging;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
-using ContentDispositionHeaderValue = System.Net.Http.Headers.ContentDispositionHeaderValue;
 using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Collections.Generic;
+    using Messaging;
+    using Replication;
 
     internal sealed class AppendEntriesMessage : RaftHttpBooleanMessage
     {
         internal const string MessageType = "AppendEntries";
+        private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
+        private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
+        private const string RecordNameHeader = "X-Raft-Record-Name";
 
         private sealed class MessageContent : HttpContent
         {
             private readonly IMessage message;
 
-            internal MessageContent(IMessage message)
+            internal MessageContent(ILogEntry message, LogEntryId precedingEntry)
             {
                 this.message = message;
                 Headers.ContentType = MediaTypeHeaderValue.Parse(message.Type.ToString());
+                Headers.Add(PrecedingRecordIndexHeader, Convert.ToString(precedingEntry.Index, InvariantCulture));
+                Headers.Add(PrecedingRecordTermHeader, Convert.ToString(precedingEntry.Term, InvariantCulture));
+                Headers.Add(RequestVoteMessage.RecordIndexHeader, Convert.ToString(message.Id.Index, InvariantCulture));
+                Headers.Add(RequestVoteMessage.RecordTermHeader, Convert.ToString(message.Id.Term, InvariantCulture));
+                Headers.Add(RecordNameHeader, message.Name);
             }
 
             protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
@@ -39,20 +42,61 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             protected override bool TryComputeLength(out long length) => message.Length.TryGet(out length);
         }
 
-        internal AppendEntriesMessage(IPEndPoint sender)
-            : base(MessageType, sender)
+        private sealed class ReceivedLogEntry : ILogEntry
         {
+            private readonly LogEntryId recordId;
+            private readonly ContentType contentType;
+            private readonly long? length;
+            private readonly string name;
+            private readonly Stream content;
 
+            internal ReceivedLogEntry(HttpRequest request)
+            {
+                length = request.ContentLength;
+                recordId =
+                    ParseLogEntryId(request, RequestVoteMessage.RecordIndexHeader,
+                        RequestVoteMessage.RecordTermHeader) ??
+                    throw new RaftProtocolException(
+                        ExceptionMessages.MissingHeader(RequestVoteMessage.RecordIndexHeader));
+                contentType = new ContentType(request.ContentType);
+                name = request.Headers[RecordNameHeader].FirstOrDefault() ??
+                       throw new RaftProtocolException(ExceptionMessages.MissingHeader(RecordNameHeader));
+                content = request.Body;
+            }
+
+            string IMessage.Name => name;
+            long? IMessage.Length => length;
+            Task IMessage.CopyToAsync(Stream output) => content.CopyToAsync(output);
+
+            ContentType IMessage.Type => contentType;
+
+            ref readonly LogEntryId ILogEntry.Id => ref recordId;
         }
 
-        internal IMessage Message { get; set; }
+        internal AppendEntriesMessage(IPEndPoint sender, ILogEntry entry, LogEntryId precedingEntry)
+            : base(MessageType, sender)
+        {
+            LogEntry = entry;
+            PrecedingEntry = precedingEntry;
+        }
+
+        internal AppendEntriesMessage(HttpRequest request)
+            : base(request)
+        {
+            PrecedingEntry = ParseLogEntryId(request, PrecedingRecordIndexHeader, PrecedingRecordTermHeader) ??
+                             throw new RaftProtocolException(
+                                 ExceptionMessages.MissingHeader(PrecedingRecordIndexHeader));
+            LogEntry = new ReceivedLogEntry(request);
+        }
+
+        internal ILogEntry LogEntry { get; }
+
+        internal LogEntryId PrecedingEntry { get; }
 
         private protected override void FillRequest(HttpRequestMessage request)
         {
             base.FillRequest(request);
-            var message = Message;
-            if (!(message is null))
-                request.Content = new MessageContent(message);
+            request.Content = new MessageContent(LogEntry, PrecedingEntry);
         }
     }
 }

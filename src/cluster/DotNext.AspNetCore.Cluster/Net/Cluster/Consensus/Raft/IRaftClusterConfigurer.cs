@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     /// <summary>
@@ -12,13 +14,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         long Term { get; }
 
         /// <summary>
+        /// Gets the member for which the local member last voted.
+        /// </summary>
+        IPEndPoint VotedFor { get; }
+
+        /// <summary>
         /// Configures instance of <see cref="IRaftCluster"/> after its construction.
         /// </summary>
         /// <remarks>
         /// This method can be used to attach all necessary event handlers.
         /// </remarks>
         /// <param name="cluster">The instance to be configured.</param>
-        void Initialize(IRaftCluster cluster);
+        IRaftPersistentState Initialize(IRaftCluster cluster);
 
         /// <summary>
         /// Configures instance of <see cref="IRaftCluster"/> before its destruction.
@@ -27,6 +34,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// This method can be used to detach all event handlers attached in <see cref="Initialize"/> method.
         /// </remarks>
         /// <param name="cluster">The instance to be configured.</param>
-        void Cleanup(IRaftCluster cluster);
+        void Shutdown(IRaftCluster cluster);
     }
 }

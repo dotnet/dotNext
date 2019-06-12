@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNext.Net.Cluster.Replication;
@@ -66,7 +65,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var lastEntry = transactionLog.LastRecord;
                 ICollection<Task> tasks = new LinkedList<Task>();
                 foreach (var member in stateMachine.Members)
-                    tasks.Add(AppendEntriesAsync(member, entry, lastEntry, transactionLog, tokenSource.Token));
+                    if (member.IsRemote)
+                        tasks.Add(AppendEntriesAsync(member, entry, lastEntry, transactionLog, tokenSource.Token));
                 await Task.WhenAll(tasks).ConfigureAwait(false);
                 //now the record is accepted by other nodes, commit it locally
                 await transactionLog.CommitAsync(entry).ConfigureAwait(false);
