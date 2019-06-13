@@ -25,7 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             private readonly IMessage message;
 
-            internal MessageContent(ILogEntry message, LogEntryId precedingEntry)
+            internal MessageContent(ILogEntry<LogEntryId> message, LogEntryId precedingEntry)
             {
                 this.message = message;
                 Headers.ContentType = MediaTypeHeaderValue.Parse(message.Type.ToString());
@@ -42,7 +42,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             protected override bool TryComputeLength(out long length) => message.Length.TryGet(out length);
         }
 
-        private sealed class ReceivedLogEntry : ILogEntry
+        private sealed class ReceivedLogEntry : ILogEntry<LogEntryId>
         {
             private readonly LogEntryId recordId;
             private readonly ContentType contentType;
@@ -70,10 +70,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             ContentType IMessage.Type => contentType;
 
-            ref readonly LogEntryId ILogEntry.Id => ref recordId;
+            ref readonly LogEntryId ILogEntry<LogEntryId>.Id => ref recordId;
         }
 
-        internal AppendEntriesMessage(IPEndPoint sender, ILogEntry entry, LogEntryId precedingEntry)
+        internal AppendEntriesMessage(IPEndPoint sender, ILogEntry<LogEntryId> entry, LogEntryId precedingEntry)
             : base(MessageType, sender)
         {
             LogEntry = entry;
@@ -89,7 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             LogEntry = new ReceivedLogEntry(request);
         }
 
-        internal ILogEntry LogEntry { get; }
+        internal ILogEntry<LogEntryId> LogEntry { get; }
 
         internal LogEntryId PrecedingEntry { get; }
 

@@ -25,12 +25,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="AggregateException">Unable to replicate one or more cluster nodes. You can analyze inner exceptions which are derive from <see cref="ConsensusProtocolException"/> or <see cref="ReplicationException"/>.</exception>
         /// <exception cref="InvalidOperationException">The caller application is not a leader node.</exception>
         /// <exception cref="NotSupportedException">Audit trail is not defined for this instance.</exception>
-        Task ReplicateAsync(ILogEntry entries, CancellationToken token = default);
+        Task ReplicateAsync(ILogEntry<LogEntryId> entries, CancellationToken token = default);
 
         /// <summary>
         /// Setup audit trail for the cluster.
         /// </summary>
         /// <exception cref="InvalidOperationException">Audit trail is already defined for this instance.</exception>
-        IAuditTrail AuditTrail { set; }
+        IPersistentState AuditTrail { set; }
     }
 }

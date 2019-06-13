@@ -33,8 +33,8 @@ namespace DotNext.Net.Cluster.Messaging
 
         async Task IMessage.CopyToAsync(Stream output)
         {
-            using(var writer = new StreamWriter(output, Encoding, 256, true))
-                await writer.WriteAsync(Content);  
+            using (var writer = new StreamWriter(output, Encoding, 256, true))
+                await writer.WriteAsync(Content).ConfigureAwait(false);
         }
 
         /// <summary>

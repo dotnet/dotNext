@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DotNext.Net.Cluster.Replication
+namespace DotNext.Net.Cluster.Consensus.Raft
 {
     /// <summary>
     /// Represents identifier of the record in audit trail.

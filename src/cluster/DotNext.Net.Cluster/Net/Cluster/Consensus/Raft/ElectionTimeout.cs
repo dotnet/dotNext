@@ -10,10 +10,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly Random random;
 
         public ElectionTimeout(int lowerValue, int upperValue)
+            : this(lowerValue, upperValue, new Random())
+        {
+            
+        }
+
+        private ElectionTimeout(int lowerValue, int upperValue, Random rng)
         {
             LowerValue = lowerValue;
             UpperValue = upperValue;
-            random = new Random();
+            random = rng;
         }
 
         /// <summary>
@@ -31,5 +37,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public int LowerValue { get; }
 
         public int UpperValue { get; }
+
+        public ElectionTimeout ModifiedClone(int lowerValue, int upperValue)
+            => new ElectionTimeout(lowerValue, upperValue, random);
     }
 }

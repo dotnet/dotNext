@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Linq;
 
@@ -10,12 +9,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </summary>
     public class ClusterMemberConfiguration : IClusterMemberConfiguration
     {
+        private ElectionTimeout electionTimeout;
+
         public ClusterMemberConfiguration()
         {
             //recommended election timeout is between 150ms and 300ms
-            var timeout = Raft.ElectionTimeout.Recommended;
-            LowerElectionTimeout = timeout.LowerValue;
-            UpperElectionTimeout = timeout.UpperValue;
+            electionTimeout = Raft.ElectionTimeout.Recommended;
             AbsoluteMajority = true;
         }
 
@@ -23,9 +22,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal ISet<IPNetwork> ParseAllowedNetworks() => new HashSet<IPNetwork>(AllowedNetworks.Select(IPNetwork.Parse));
 
-        public int LowerElectionTimeout { get; set; }
+        public int LowerElectionTimeout
+        {
+            get => electionTimeout.LowerValue;
+            set => electionTimeout = electionTimeout.ModifiedClone(value, electionTimeout.UpperValue);
+        }
 
-        public int UpperElectionTimeout { get; set; }
+        public int UpperElectionTimeout
+        {
+            get => electionTimeout.UpperValue;
+            set => electionTimeout = electionTimeout.ModifiedClone(electionTimeout.LowerValue, value);
+        }
+
+        ElectionTimeout IClusterMemberConfiguration.ElectionTimeout => electionTimeout;
 
         public bool AbsoluteMajority { get; set; }
 

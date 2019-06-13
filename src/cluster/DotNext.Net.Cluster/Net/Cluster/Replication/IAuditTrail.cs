@@ -1,36 +1,45 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Replication
 {
     /// <summary>
     /// Represents replication log.
     /// </summary>
-    public interface IAuditTrail
+    /// <typeparam name="EntryId">The type representing unique identifier of log entry.</typeparam>
+    public interface IAuditTrail<EntryId>
+        where EntryId : struct, IEquatable<EntryId>
     {
         /// <summary>
         /// Gets last record in this audit trail.
         /// </summary>
-        LogEntryId LastRecord { get; }
+        EntryId LastRecord { get; }
 
         /// <summary>
         /// Gets record by its index.
         /// </summary>
         /// <param name="recordId">The index of the record.</param>
         /// <returns></returns>
-        ILogEntry this[in LogEntryId recordId] { get; }
+        ILogEntry<EntryId> this[in EntryId recordId] { get; }
 
-        bool Contains(in LogEntryId recordId);
+        /// <summary>
+        /// Determines whether the record with the specified
+        /// identifier already in transaction log.
+        /// </summary>
+        /// <param name="recordId">The identifier of the record to check.</param>
+        /// <returns><see langword="true"/> if the record identified by <paramref name="recordId"/> is in transaction log; otherwise, <see langword="false"/>.</returns>
+        bool Contains(in EntryId recordId);
 
-        LogEntryId GetPrevious(in LogEntryId recordId);
+        EntryId GetPrevious(in EntryId recordId);
 
-        LogEntryId? GetNext(in LogEntryId recordId);
+        EntryId? GetNext(in EntryId recordId);
 
         /// <summary>
         /// Commits log entry.
         /// </summary>
         /// <param name="entry">The record to be committed.</param>
         /// <returns><see langword="true"/> if entry is committed successfully; <see langword="false"/> if record is rejected.</returns>
-        Task<bool> CommitAsync(ILogEntry entry);
+        Task<bool> CommitAsync(ILogEntry<EntryId> entry);
 
         /// <summary>
         /// Gets identifier of ephemeral Initial log record.
@@ -39,6 +48,6 @@ namespace DotNext.Net.Cluster.Replication
         /// There is no other records in this log
         /// located before the initial record.
         /// </remarks>
-        ref readonly LogEntryId Initial { get; }
+        ref readonly EntryId Initial { get; }
     }
 }

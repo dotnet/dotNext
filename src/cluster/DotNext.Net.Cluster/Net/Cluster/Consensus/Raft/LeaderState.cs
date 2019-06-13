@@ -28,8 +28,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private static async Task AppendEntriesAsync(IRaftClusterMember member, ILogEntry newEntry,
-            LogEntryId lastEntry, IAuditTrail transactionLog, CancellationToken token)
+        private static async Task AppendEntriesAsync(IRaftClusterMember member, ILogEntry<LogEntryId> newEntry,
+            LogEntryId lastEntry, IAuditTrail<LogEntryId> transactionLog, CancellationToken token)
         {
             if (await member.AppendEntriesAsync(newEntry, lastEntry, token).ConfigureAwait(false))
                 return;
@@ -58,7 +58,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ReplicationException(member);
         }
 
-        internal async Task AppendEntriesAsync(ILogEntry entry, IAuditTrail transactionLog, CancellationToken token)
+        internal async Task AppendEntriesAsync(ILogEntry<LogEntryId> entry, IAuditTrail<LogEntryId> transactionLog, CancellationToken token)
         {
             using (var tokenSource = heartbeatTask.CreateLinkedTokenSource(token))
             {

@@ -40,7 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns><see langword="true"/> if message is handled successfully by this member; <see langword="false"/> if message is rejected due to invalid Term/Index number.</returns>
         /// <exception cref="MemberUnavailableException">The member is unreachable through network.</exception>
-        Task<bool> AppendEntriesAsync(ILogEntry newEntry, LogEntryId precedingEntry, CancellationToken token);
+        Task<bool> AppendEntriesAsync(ILogEntry<LogEntryId> newEntry, LogEntryId precedingEntry, CancellationToken token);
 
         /// <summary>
         /// Aborts all active outbound requests.

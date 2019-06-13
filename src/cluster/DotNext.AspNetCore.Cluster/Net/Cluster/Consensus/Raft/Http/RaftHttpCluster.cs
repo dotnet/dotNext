@@ -14,7 +14,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Generic;
     using Messaging;
-    using Replication;
     using Threading.Tasks;
 
     internal class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster
@@ -22,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private static readonly Func<Task, bool> TrueTaskContinuation = task => true;
         private delegate ICollection<IPEndPoint> HostingAddressesProvider();
 
-        private readonly IRaftClusterConfigurer configurer;
+        private readonly IRaftClusterConfigurator configurator;
         private readonly IMessageHandler messageHandler;
 
         private readonly IDisposable configurationTracker;
@@ -45,9 +44,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies)
             : this(config.CurrentValue)
         {
-            configurer = dependencies.GetService<IRaftClusterConfigurer>();
+            configurator = dependencies.GetService<IRaftClusterConfigurator>();
             messageHandler = dependencies.GetService<IMessageHandler>();
-            AuditTrail = dependencies.GetService<IAuditTrail>();
+            AuditTrail = dependencies.GetService<IPersistentState>();
             hostingAddresses = dependencies.GetRequiredService<IServer>().GetHostingAddresses;
             //track changes in configuration
             configurationTracker = config.OnChange(ConfigurationChanged);
@@ -109,13 +108,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             localMember = Members.FirstOrDefault(hostingAddresses().Contains);
             if (localMember is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-            configurer?.Initialize(this);
+            configurator?.Initialize(this, metadata);
             return base.StartAsync(token);
         }
 
         public override Task StopAsync(CancellationToken token)
         {
-            configurer?.Shutdown(this);
+            configurator?.Shutdown(this);
             return base.StopAsync(token);
         }
 

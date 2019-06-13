@@ -2,51 +2,37 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
+    /// <summary>
+    /// Allows to configure Raft-related stuff and turns
+    /// the web application into cluster member.
+    /// </summary>
+    /// <remarks>
+    /// Raft-related endpoint handler is embedded into
+    /// request processing pipeline of existing application.
+    /// </remarks>
     [CLSCompliant(false)]
     public static class ConfigurationExtensions
     {
-        private static IServiceCollection EnableCluster(this IServiceCollection services)
-        {
-            Func<IServiceProvider, RaftHttpCluster> clusterNodeCast =
-                ServiceProviderServiceExtensions.GetRequiredService<RaftHttpCluster>;
-            return services
-                .AddSingleton<IHostedService>(clusterNodeCast)
-                .AddSingleton<ICluster>(clusterNodeCast)
-                .AddSingleton<IRaftCluster>(clusterNodeCast)
-                .AddSingleton<IExpandableCluster>(clusterNodeCast);
-        }
-
         /// <summary>
         /// Allows to inject <see cref="ICluster"/>, <see cref="IRaftCluster"/>, <see cref="IExpandableCluster"/>
-        /// to application services and enables network communications necessary to serve cluster member.
+        /// to application services and establishes network communication with other cluster member.
         /// </summary>
-        /// <param name="services"></param>
+        /// <param name="services">The registry of services.</param>
         /// <param name="memberConfig">The configuration of cluster member.</param>
         /// <returns>The collection of injectable services.</returns>
-        public static IServiceCollection EnableClusterSupport(this IServiceCollection services, IConfiguration memberConfig)
-            => services.Configure<ClusterMemberConfiguration>(memberConfig).AddSingleton<RaftHttpCluster>().EnableCluster();
-
-        /// <summary>
-        /// Registers configurator of <see cref="ICluster"/> service registered as a service
-        /// in DI container.
-        /// </summary>
-        /// <typeparam name="TConfig">The type implementing <see cref="IRaftClusterConfigurer"/>.</typeparam>
-        /// <param name="services">A collection of services provided by DI container.</param>
-        /// <returns>A collection of services provided by DI container.</returns>
-        public static IServiceCollection ConfigureCluster<TConfig>(this IServiceCollection services)
-            where TConfig : class, IRaftClusterConfigurer
-            => services.AddSingleton<IRaftClusterConfigurer, TConfig>();
+        public static IServiceCollection BecomeClusterMember(this IServiceCollection services,
+            IConfiguration memberConfig)
+            => services.AddClusterAsSingleton<RaftHttpCluster>(memberConfig);
 
         /// <summary>
         /// Setup Raft protocol handler as middleware for the specified application.
         /// </summary>
         /// <param name="builder">The application builder.</param>
         /// <returns>The configured application builder.</returns>
-        public static IApplicationBuilder BecomeClusterMember(this IApplicationBuilder builder)
+        public static IApplicationBuilder ConsensusProtocolHandler(this IApplicationBuilder builder)
             => builder.Use(RaftProtocolMiddleware.Create);
     }
 }
