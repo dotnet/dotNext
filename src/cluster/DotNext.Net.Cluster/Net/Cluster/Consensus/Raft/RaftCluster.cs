@@ -516,8 +516,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var members = Interlocked.Exchange(ref this.members, Array.Empty<TMember>());
                 Dispose(members);
                 members.Clear();
-                transitionCancellation.Dispose();
-                transitionSync.Dispose();
+                Dispose(transitionCancellation, transitionSync);
                 leader = votedFor = null;
             }
             base.Dispose(disposing);
