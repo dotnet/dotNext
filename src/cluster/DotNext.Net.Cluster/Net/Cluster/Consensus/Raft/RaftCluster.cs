@@ -374,9 +374,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="sender">The identifier of vote sender.</param>
         /// <param name="senderTerm">Term value provided by sender of the request.</param>
+        /// <param name="senderLastEntry">The last log entry stored on the sender.</param>
         /// <param name="matcher">The function allows to match member identifier with instance of <typeparamref name="TMember"/>.</param>
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        protected async Task<bool> ReceiveVote<MemberId>(MemberId sender, long senderTerm, LogEntryId? senderLastId,
+        protected async Task<bool> ReceiveVote<MemberId>(MemberId sender, long senderTerm, LogEntryId? senderLastEntry,
             MemberMatcher<MemberId> matcher)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
@@ -395,7 +396,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (state is FollowerState followerState)
                 {
                     var member = FindMember(sender, matcher);
-                    if (ReceiveVote(member, senderLastId))
+                    if (ReceiveVote(member, senderLastEntry))
                     {
                         followerState.Refresh();
                         await SaveLastVoteAsync(auditTrail, member, transitionCancellation.Token).ConfigureAwait(false);
