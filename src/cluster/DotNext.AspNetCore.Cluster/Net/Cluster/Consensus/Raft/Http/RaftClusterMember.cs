@@ -108,7 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => await SendAsync(new ResignMessage(context.LocalEndpoint), ResignMessage.GetResponse, false, token).OrDefault()
                 .ConfigureAwait(false);
 
-        public async Task<bool> AppendEntriesAsync(ILogEntry newEntry, LogEntryId precedingEntry, CancellationToken token)
+        public async Task<bool> AppendEntriesAsync(ILogEntry<LogEntryId> newEntry, LogEntryId precedingEntry, CancellationToken token)
             => await SendAsync(new AppendEntriesMessage(context.LocalEndpoint, newEntry, precedingEntry),
                 AppendEntriesMessage.GetResponse, true, token).OrDefault().ConfigureAwait(false);
 
@@ -120,7 +120,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (metadata is null || refresh)
                 metadata = await SendAsync(new MetadataMessage(context.LocalEndpoint), MetadataMessage.GetResponse,
                         true, token)
-                    .OrThrow<MemberMetadata, NoMetadataException>().ConfigureAwait(false);
+                    .OrThrow<MemberMetadata, MissingMetadataException>().ConfigureAwait(false);
             return metadata;
         }
 
@@ -133,14 +133,48 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IEquatable<IClusterMember>.Equals(IClusterMember other) => Endpoint.Equals(other?.Endpoint);
 
-        Task<IMessage> IMessenger.SendMessageAsync(IMessage message)
+        Task<IMessage> IMessenger.SendMessageAsync(IMessage message, CancellationToken token)
+            => SendAsync(new CustomMessage(context.LocalEndpoint, message, false),
+                CustomMessage.GetResponse, true, token).OrThrow<IMessage, MissingReplyMessageException>();
+
+        private static HttpResponseMessage SuppressError(Task task) => null;
+
+        private async void SendUnreliableSignalAsync(HttpRequestMessage request, CancellationToken token)
         {
-            throw new NotImplementedException();
+            var response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
+                .ContinueWith(SuppressError, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.NotOnRanToCompletion)
+                .ConfigureAwait(false);
+            Disposable.Dispose(request, response);
         }
 
-        Task IMessenger.SendSignalAsync(IMessage message, bool requiresConfirmation)
+        async Task IMessenger.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
         {
-            throw new NotImplementedException();
+            var request = (HttpRequestMessage)new CustomMessage(context.LocalEndpoint, message, true);
+            request.RequestUri = resourcePath;
+            if (requiresConfirmation)
+            {
+                var response = default(HttpResponseMessage);
+                try
+                {
+                    response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
+                        .ConfigureAwait(false);
+                    ChangeStatus(AvailableStatus);
+                    if (response.StatusCode == HttpStatusCode.NotImplemented)
+                        throw new NotSupportedException(ExceptionMessages.MessagingNotSupported);
+                }
+                catch (HttpRequestException)
+                {
+                    ChangeStatus(UnavailableStatus);
+                    throw;
+                }
+                finally
+                {
+                    response?.Dispose();
+                    request.Dispose();
+                }
+            }
+            else
+                SendUnreliableSignalAsync(request, token);
         }
     }
 }

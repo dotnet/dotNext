@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using DotNext.Net.Cluster.Messaging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -285,7 +286,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private TMember FindMember<MemberId>(MemberId id, MemberMatcher<MemberId> matcher)
+        protected TMember FindMember<MemberId>(MemberId id, MemberMatcher<MemberId> matcher)
             => members.FirstOrDefault(member => matcher(member, id));
 
         protected async Task ReceiveHeartbeat<MemberId>(MemberId sender, long senderTerm,

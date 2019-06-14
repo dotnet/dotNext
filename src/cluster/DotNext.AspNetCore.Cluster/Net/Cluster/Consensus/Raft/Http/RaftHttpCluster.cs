@@ -132,13 +132,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async Task Resign(HttpResponse response) => 
             await ResignMessage.CreateResponse(response, await ReceiveResign().ConfigureAwait(false)).ConfigureAwait(false);
 
-        private Task GetMetadata(HttpResponse response) => MetadataMessage.CreateResponse(response, localMember.Endpoint, metadata);
+        private Task GetMetadata(HttpResponse response) => MetadataMessage.CreateResponse(response, metadata);
 
         private async Task ReceiveEntries(AppendEntriesMessage request, HttpResponse response)
             => await AppendEntriesMessage.CreateResponse(response,
                 await ReceiveEntries(request.Sender, request.ConsensusTerm, ClusterMember.Represents, request.LogEntry,
                     request.PrecedingEntry).ConfigureAwait(false)).ConfigureAwait(false);
-        
+
+        private async Task ReceiveMessage(CustomMessage message, HttpResponse response)
+        {
+            if (messageHandler is null)
+            {
+                response.StatusCode = (int) HttpStatusCode.NotImplemented;
+            }
+            else if (message.IsOneWay)
+            {
+                messageHandler.ReceiveSignal(FindMember(message.Sender, ClusterMember.Represents), message.Message);
+                response.StatusCode = (int) HttpStatusCode.OK;
+            }
+            else
+            {
+                var reply = await messageHandler
+                    .ReceiveMessage(FindMember(message.Sender, ClusterMember.Represents), message.Message)
+                    .ConfigureAwait(false);
+                await CustomMessage.CreateResponse(response, reply).ConfigureAwait(false);
+            }
+        }
+
         internal Task<bool> ProcessRequest(HttpContext context)
         {
             var networks = allowedNetworks;
@@ -170,6 +190,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     break;
                 case AppendEntriesMessage.MessageType:
                     task = ReceiveEntries(new AppendEntriesMessage(context.Request), context.Response);
+                    break;
+                case CustomMessage.MessageType:
+                    task = ReceiveMessage(new CustomMessage(context.Request), context.Response);
                     break;
                 default:
                     context.Response.StatusCode = (int) HttpStatusCode.BadRequest;

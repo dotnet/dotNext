@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
@@ -14,8 +15,8 @@ namespace DotNext.Net.Cluster.Messaging
             return Task.WhenAll(tasks);
         }
 
-        public static Task<IMessage> SendTextMessageAsync(this IMessenger messenger, string messageName, string text, string mediaType = null)
-            => messenger.SendMessageAsync(new TextMessage(messageName, text, mediaType));
+        public static Task<IMessage> SendTextMessageAsync(this IMessenger messenger, string messageName, string text, string mediaType = null, CancellationToken token = default)
+            => messenger.SendMessageAsync(new TextMessage(messageName, text, mediaType), token);
 
         public static Task SendTextSignalAsync(this IMessenger messenger, string messageName, string text, string mediaType = null, bool requiresConfirmation = true)
             => messenger.SendSignalAsync(new TextMessage(messageName, text, mediaType), requiresConfirmation);

@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// Represents violation of Raft protocol.
     /// </summary>
     [Serializable]
-    public sealed class RaftProtocolException : ConsensusProtocolException
+    public class RaftProtocolException : ConsensusProtocolException
     {
         /// <summary>
         /// Initializes a new exception.

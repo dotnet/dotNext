@@ -1,13 +1,17 @@
 ﻿using System;
+using System.IO;
 using static System.Globalization.CultureInfo;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Mime;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Replication;
+    using Messaging;
 
     internal abstract class RaftHttpMessage
     {
@@ -20,7 +24,83 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const string TermHeader = "X-Raft-Term";
 
         //request - represents request message type
-        private const string MessageTypeHeader = "X-Raft-Message";
+        private const string MessageTypeHeader = "X-Raft-Message-Type";
+
+        //request - represents custom message name
+        private const string MessageNameHeader = "X-Raft-Message-Name";
+
+        private protected class OutboundMessageContent : HttpContent
+        {
+            private readonly IMessage message;
+
+            internal OutboundMessageContent(IMessage message)
+            {
+                this.message = message;
+                Headers.ContentType = MediaTypeHeaderValue.Parse(message.Type.ToString());
+                Headers.Add(MessageNameHeader, message.Name);
+            }
+
+            internal static Task WriteTo(IMessage message, HttpResponse response)
+            {
+                response.ContentType = message.Type.ToString();
+                response.ContentLength = message.Length;
+                response.Headers.Add(MessageNameHeader, message.Name);
+                return message.CopyToAsync(response.Body);
+            }
+
+            protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext context)
+                => message.CopyToAsync(stream);
+
+            protected sealed override bool TryComputeLength(out long length)
+                => message.Length.TryGet(out length);
+        }
+
+        private protected class InboundMessageContent : IMessage
+        {
+            private readonly ContentType contentType;
+            private readonly long? length;
+            private readonly string name;
+            private readonly object content;
+
+            internal InboundMessageContent(HttpRequest request)
+            {
+                length = request.ContentLength;
+                contentType = new ContentType(request.ContentType);
+                name = request.Headers[MessageNameHeader].FirstOrDefault() ??
+                       throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageNameHeader));
+                content = request.Body;
+            }
+
+            internal InboundMessageContent(HttpResponseMessage response)
+            {
+                length = response.Content.Headers.ContentLength;
+                contentType = new ContentType(response.Content.Headers.ContentType.ToString());
+                name = response.Headers.TryGetValues(MessageNameHeader, out var values)
+                    ? values.FirstOrDefault()
+                    : null;
+                if (name is null)
+                    throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageNameHeader));
+                content = response.Content;
+            }
+
+            string IMessage.Name => name;
+            long? IMessage.Length => length;
+
+            Task IMessage.CopyToAsync(Stream output)
+            {
+                switch (content)
+                {
+                    case Stream stream:
+                        return stream.CopyToAsync(output);
+                    case HttpContent content:
+                        return content.CopyToAsync(output);
+                    default:
+                        throw new InvalidOperationException();
+                }
+            }
+
+            ContentType IMessage.Type => contentType;
+        }
 
         internal readonly IPEndPoint Sender;
         private readonly string messageType;

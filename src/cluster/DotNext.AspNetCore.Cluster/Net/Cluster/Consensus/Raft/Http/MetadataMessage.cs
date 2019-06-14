@@ -22,7 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 .ConfigureAwait(false));
         }
 
-        internal static Task CreateResponse(HttpResponse response, IPEndPoint identity, MemberMetadata metadata)
+        internal static Task CreateResponse(HttpResponse response, MemberMetadata metadata)
         {
             response.StatusCode = (int)HttpStatusCode.OK;
             var serializer = new DataContractJsonSerializer(typeof(MemberMetadata));

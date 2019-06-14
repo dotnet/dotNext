@@ -1,4 +1,5 @@
-﻿using static System.Globalization.CultureInfo;
+﻿using System;
+using static System.Globalization.CultureInfo;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,7 @@ using DefaultWebHostBuilder = Microsoft.AspNetCore.Hosting.WebHostBuilder;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
+    [CLSCompliant(false)]
     public static class ConfigurationExtensions
     {
         public const string HostPortConfigurationOption = "port";
