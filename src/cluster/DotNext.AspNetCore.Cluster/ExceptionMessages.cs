@@ -20,10 +20,8 @@ namespace DotNext
 
         internal static string UnresolvedLocalMember => Resources.GetString("UnresolvedLocalMember");
 
-        internal static string MissingMetadata => Resources.GetString("MissingMetadata");
-
-        internal static string MissingReply => Resources.GetString("MissingReply");
-
         internal static string MessagingNotSupported => Resources.GetString("MessagingNotSupported");
+
+        internal static string UnavailableMember => Resources.GetString("UnavailableMember");
     }
 }

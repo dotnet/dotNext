@@ -3,12 +3,17 @@
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     /// <summary>
-    /// Represents election timeout.
+    /// Represents leader election timeout.
     /// </summary>
     public struct ElectionTimeout
     {
         private readonly Random random;
 
+        /// <summary>
+        /// Initializes a new leader election timeout.
+        /// </summary>
+        /// <param name="lowerValue">The lower possible value of leader election timeout, in milliseconds.</param>
+        /// <param name="upperValue">The upper possible value of leader election timeout, in milliseconds.</param>
         public ElectionTimeout(int lowerValue, int upperValue)
             : this(lowerValue, upperValue, new Random())
         {
@@ -34,11 +39,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public int RandomTimeout()
             => random?.Next(LowerValue, UpperValue + 1) ?? 0;
 
+        /// <summary>
+        /// Gets lower possible value of leader election timeout, in milliseconds.
+        /// </summary>
         public int LowerValue { get; }
 
+        /// <summary>
+        /// Gets upper possible value of leader election timeout, in milliseconds.
+        /// </summary>
         public int UpperValue { get; }
 
-        public ElectionTimeout ModifiedClone(int lowerValue, int upperValue)
+        /// <summary>
+        /// Modifies the boundary of the timeout.
+        /// </summary>
+        /// <param name="lowerValue">The lower possible value of leader election timeout, in milliseconds.</param>
+        /// <param name="upperValue">The upper possible value of leader election timeout, in milliseconds.</param>
+        /// <returns>The modified leader election timeout.</returns>
+        public ElectionTimeout Modify(int lowerValue, int upperValue)
             => new ElectionTimeout(lowerValue, upperValue, random);
     }
 }

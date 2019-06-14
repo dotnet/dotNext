@@ -41,5 +41,12 @@ namespace DotNext.Net.Cluster
         /// </remarks>
         /// <returns>The task representing metadata read operation.</returns>
         ValueTask<IReadOnlyDictionary<string, string>> GetMetadata(bool refresh = false, CancellationToken token = default);
+
+        /// <summary>
+        /// Revokes leadership.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
+        Task<bool> ResignAsync(CancellationToken token);
     }
 }

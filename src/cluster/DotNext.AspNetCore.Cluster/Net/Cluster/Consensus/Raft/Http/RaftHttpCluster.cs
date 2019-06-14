@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
@@ -28,9 +30,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private volatile MemberMetadata metadata;
         private volatile ISet<IPNetwork> allowedNetworks;
         private readonly Uri consensusPath;
+
+        [SuppressMessage("Usage", "CA2213", Justification = "This object is disposed via RaftCluster.members collection")]
         private RaftClusterMember localMember;
         private readonly HostingAddressesProvider hostingAddresses;
 
+        [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
         private RaftHttpCluster(RaftClusterMemberConfiguration config)
             : base(config, out var members)
         {
@@ -48,6 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             messageHandler = dependencies.GetService<IMessageHandler>();
             AuditTrail = dependencies.GetService<IPersistentState>();
             hostingAddresses = dependencies.GetRequiredService<IServer>().GetHostingAddresses;
+            Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
             //track changes in configuration
             configurationTracker = config.OnChange(ConfigurationChanged);
         }
@@ -58,6 +64,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         private RaftClusterMember CreateMember(Uri address) => new RaftClusterMember(this, address, consensusPath);
+
+        protected override ILogger Logger { get; }
 
         private void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
         {
@@ -92,6 +100,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         IReadOnlyDictionary<string, string> IHostingContext.Metadata => metadata;
 
         bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
+
+        Task<bool> IHostingContext.LocalCommitAsync(Replication.ILogEntry<LogEntryId> entry)
+            => AuditTrail is null ? CompletedTask<bool, BooleanConst.False>.Task : AuditTrail.CommitAsync(entry);
 
         IPEndPoint IHostingContext.LocalEndpoint => localMember?.Endpoint;
 
@@ -199,8 +210,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     return CompletedTask<bool, BooleanConst.True>.Task;
             }
 
-            return task.ContinueWith(TrueTaskContinuation, TaskContinuationOptions.ExecuteSynchronously |
-                                           TaskContinuationOptions.OnlyOnRanToCompletion);
+            return task.ContinueWith(TrueTaskContinuation, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously |
+                                           TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current);
         }
 
         protected override void Dispose(bool disposing)

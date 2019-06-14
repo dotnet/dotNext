@@ -122,22 +122,22 @@ namespace DotNext
             => value ?? Optional<T>.Empty;
 
         /// <summary>
-        /// If a value is present, returns the value, otherwise null.
+        /// If a value is present, returns the value, otherwise <see langword="null"/>.
         /// </summary>
         /// <typeparam name="T">Value type.</typeparam>
         /// <param name="value">Optional value.</param>
         /// <returns>Nullable value.</returns>
         public static T? OrNull<T>(this in Optional<T> value)
             where T : struct
-            => value.IsPresent ? new T?(value.Value) : null;
+            => value.TryGet(out var result) ? new T?(result) : null;
 
         /// <summary>
-        /// Returns second value if first is empty.
+        /// Returns the second value if the first is empty.
         /// </summary>
         /// <param name="first">The first optional value.</param>
         /// <param name="second">The second optional value.</param>
         /// <typeparam name="T">Type of value.</typeparam>
-        /// <returns></returns>
+        /// <returns>The second value if the first is empty; otherwise, the first value.</returns>
         public static ref readonly Optional<T> Coalesce<T>(this in Optional<T> first, in Optional<T> second) => ref first.IsPresent ? ref first : ref second;
     }
 
@@ -225,7 +225,7 @@ namespace DotNext
         /// Returns the value if present; otherwise return default value.
         /// </summary>
         /// <param name="defaultValue">The value to be returned if there is no value present.</param>
-        /// <returns>The value, if present, otherwise default</returns>
+        /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
         public T Or(T defaultValue) => IsPresent ? value : defaultValue;
 
         /// <summary>

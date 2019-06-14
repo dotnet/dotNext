@@ -94,5 +94,313 @@ namespace DotNext
         /// <returns>A delegate of type <see cref="Converter{I, O}"/> referencing the same method as original delegate.</returns>
         public static Converter<I, O> AsConverter<I, O>(this Func<I, O> function)
             => function.ChangeType<Converter<I, O>>();
+        
+        /// <summary>
+        /// Invokes function without throwing the exception.
+        /// </summary>
+        /// <typeparam name="R">The result type.</typeparam>
+        /// <param name="function">The function to invoke.</param>
+        /// <returns>The invocation result.</returns>
+        public static Result<R> TryInvoke<R>(this Func<R> function)
+        {
+            try
+            {
+                return function();
+            }
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
+
+        /// <summary>
+        /// Invokes function without throwing the exception.
+        /// </summary>
+        /// <typeparam name="T">The type of the first function argument.</typeparam>
+        /// <typeparam name="R">The result type.</typeparam>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="arg">The first function argument.</param>
+        /// <returns>The invocation result.</returns>
+        public static Result<R> TryInvoke<T, R>(this Func<T, R> function, T arg)
+        {
+            try
+            {
+                return function(arg);
+            } 
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
+
+        /// <summary>
+        /// Invokes function without throwing the exception.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first function argument.</typeparam>
+        /// <typeparam name="T2">The type of the second function argument.</typeparam>
+        /// <typeparam name="R">The result type.</typeparam>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="arg1">The first function argument.</param>
+        /// <param name="arg2">The second function argument.</param>
+        /// <returns>The invocation result.</returns>
+        public static Result<R> TryInvoke<T1, T2, R>(this Func<T1, T2, R> function, T1 arg1, T2 arg2)
+        {
+            try
+            {
+                return function(arg1, arg2);
+            } 
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
+
+        /// <summary>
+        /// Invokes function without throwing the exception.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first function argument.</typeparam>
+        /// <typeparam name="T2">The type of the second function argument.</typeparam>
+        /// <typeparam name="T3">The type of the third function argument.</typeparam>
+        /// <typeparam name="R">The result type.</typeparam>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="arg1">The first function argument.</param>
+        /// <param name="arg2">The second function argument.</param>
+        /// <param name="arg3">The third function argument.</param>
+        /// <returns>The invocation result.</returns>
+        public static Result<R> TryInvoke<T1, T2, T3, R>(this Func<T1, T2, T3, R> function, T1 arg1, T2 arg2, T3 arg3)
+        {
+            try
+            {
+                return function(arg1, arg2, arg3);
+            } 
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
+
+        /// <summary>
+        /// Invokes function without throwing the exception.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first function argument.</typeparam>
+        /// <typeparam name="T2">The type of the second function argument.</typeparam>
+        /// <typeparam name="T3">The type of the third function argument.</typeparam>
+        /// <typeparam name="T4">The type of the fourth function argument.</typeparam>
+        /// <typeparam name="R">The result type.</typeparam>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="arg1">The first function argument.</param>
+        /// <param name="arg2">The second function argument.</param>
+        /// <param name="arg3">The third function argument.</param>
+        /// <param name="arg4">The fourth function argument.</param>
+        /// <returns>The invocation result.</returns>
+        public static Result<R> TryInvoke<T1, T2, T3, T4, R>(this Func<T1, T2, T3, T4, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        {
+            try
+            {
+                return function(arg1, arg2, arg3, arg4);
+            } 
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
+
+        /// <summary>
+        /// Invokes function without throwing the exception.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first function argument.</typeparam>
+        /// <typeparam name="T2">The type of the second function argument.</typeparam>
+        /// <typeparam name="T3">The type of the third function argument.</typeparam>
+        /// <typeparam name="T4">The type of the fourth function argument.</typeparam>
+        /// <typeparam name="T5">The type of the fifth function argument.</typeparam>
+        /// <typeparam name="R">The result type.</typeparam>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="arg1">The first function argument.</param>
+        /// <param name="arg2">The second function argument.</param>
+        /// <param name="arg3">The third function argument.</param>
+        /// <param name="arg4">The fourth function argument.</param>
+        /// <param name="arg5">The fifth function argument.</param>
+        /// <returns>The invocation result.</returns>
+        public static Result<R> TryInvoke<T1, T2, T3, T4, T5, R>(this Func<T1, T2, T3, T4, T5, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+        {
+            try
+            {
+                return function(arg1, arg2, arg3, arg4, arg5);
+            } 
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
+
+        /// <summary>
+        /// Invokes function without throwing the exception.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first function argument.</typeparam>
+        /// <typeparam name="T2">The type of the second function argument.</typeparam>
+        /// <typeparam name="T3">The type of the third function argument.</typeparam>
+        /// <typeparam name="T4">The type of the fourth function argument.</typeparam>
+        /// <typeparam name="T5">The type of the fifth function argument.</typeparam>
+        /// <typeparam name="T6">The type of the sixth function argument.</typeparam>
+        /// <typeparam name="R">The result type.</typeparam>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="arg1">The first function argument.</param>
+        /// <param name="arg2">The second function argument.</param>
+        /// <param name="arg3">The third function argument.</param>
+        /// <param name="arg4">The fourth function argument.</param>
+        /// <param name="arg5">The fifth function argument.</param>
+        /// <param name="arg6">The sixth function argument.</param>
+        /// <returns>The invocation result.</returns>
+        public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, R>(this Func<T1, T2, T3, T4, T5, T6, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
+        {
+            try
+            {
+                return function(arg1, arg2, arg3, arg4, arg5, arg6);
+            } 
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
+
+        /// <summary>
+        /// Invokes function without throwing the exception.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first function argument.</typeparam>
+        /// <typeparam name="T2">The type of the second function argument.</typeparam>
+        /// <typeparam name="T3">The type of the third function argument.</typeparam>
+        /// <typeparam name="T4">The type of the fourth function argument.</typeparam>
+        /// <typeparam name="T5">The type of the fifth function argument.</typeparam>
+        /// <typeparam name="T6">The type of the sixth function argument.</typeparam>
+        /// <typeparam name="T7">The type of the seventh function argument.</typeparam>
+        /// <typeparam name="R">The result type.</typeparam>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="arg1">The first function argument.</param>
+        /// <param name="arg2">The second function argument.</param>
+        /// <param name="arg3">The third function argument.</param>
+        /// <param name="arg4">The fourth function argument.</param>
+        /// <param name="arg5">The fifth function argument.</param>
+        /// <param name="arg6">The sixth function argument.</param>
+        /// <param name="arg7">The seventh function argument.</param>
+        /// <returns>The invocation result.</returns>
+        public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, T7, R>(this Func<T1, T2, T3, T4, T5, T6, T7, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
+        {
+            try
+            {
+                return function(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+            } 
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
+
+        /// <summary>
+        /// Invokes function without throwing the exception.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first function argument.</typeparam>
+        /// <typeparam name="T2">The type of the second function argument.</typeparam>
+        /// <typeparam name="T3">The type of the third function argument.</typeparam>
+        /// <typeparam name="T4">The type of the fourth function argument.</typeparam>
+        /// <typeparam name="T5">The type of the fifth function argument.</typeparam>
+        /// <typeparam name="T6">The type of the sixth function argument.</typeparam>
+        /// <typeparam name="T7">The type of the seventh function argument.</typeparam>
+        /// <typeparam name="T8">The type of the eighth function argument.</typeparam>
+        /// <typeparam name="R">The result type.</typeparam>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="arg1">The first function argument.</param>
+        /// <param name="arg2">The second function argument.</param>
+        /// <param name="arg3">The third function argument.</param>
+        /// <param name="arg4">The fourth function argument.</param>
+        /// <param name="arg5">The fifth function argument.</param>
+        /// <param name="arg6">The sixth function argument.</param>
+        /// <param name="arg7">The seventh function argument.</param>
+        /// <param name="arg8">The eighth function argument.</param>
+        /// <returns>The invocation result.</returns>
+        public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, R>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
+        {
+            try
+            {
+                return function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+            } 
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
+
+        /// <summary>
+        /// Invokes function without throwing the exception.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first function argument.</typeparam>
+        /// <typeparam name="T2">The type of the second function argument.</typeparam>
+        /// <typeparam name="T3">The type of the third function argument.</typeparam>
+        /// <typeparam name="T4">The type of the fourth function argument.</typeparam>
+        /// <typeparam name="T5">The type of the fifth function argument.</typeparam>
+        /// <typeparam name="T6">The type of the sixth function argument.</typeparam>
+        /// <typeparam name="T7">The type of the seventh function argument.</typeparam>
+        /// <typeparam name="T8">The type of the eighth function argument.</typeparam>
+        /// <typeparam name="T9">The type of the ninth function argument.</typeparam>
+        /// <typeparam name="R">The result type.</typeparam>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="arg1">The first function argument.</param>
+        /// <param name="arg2">The second function argument.</param>
+        /// <param name="arg3">The third function argument.</param>
+        /// <param name="arg4">The fourth function argument.</param>
+        /// <param name="arg5">The fifth function argument.</param>
+        /// <param name="arg6">The sixth function argument.</param>
+        /// <param name="arg7">The seventh function argument.</param>
+        /// <param name="arg8">The eighth function argument.</param>
+        /// <param name="arg9">The ninth function argument.</param>
+        /// <returns>The invocation result.</returns>
+        public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
+        {
+            try
+            {
+                return function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+            } 
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
+
+        /// <summary>
+        /// Invokes function without throwing the exception.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first function argument.</typeparam>
+        /// <typeparam name="T2">The type of the second function argument.</typeparam>
+        /// <typeparam name="T3">The type of the third function argument.</typeparam>
+        /// <typeparam name="T4">The type of the fourth function argument.</typeparam>
+        /// <typeparam name="T5">The type of the fifth function argument.</typeparam>
+        /// <typeparam name="T6">The type of the sixth function argument.</typeparam>
+        /// <typeparam name="T7">The type of the seventh function argument.</typeparam>
+        /// <typeparam name="T8">The type of the eighth function argument.</typeparam>
+        /// <typeparam name="T9">The type of the ninth function argument.</typeparam>
+        /// <typeparam name="T10">The type of the tenth function argument.</typeparam>
+        /// <typeparam name="R">The result type.</typeparam>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="arg1">The first function argument.</param>
+        /// <param name="arg2">The second function argument.</param>
+        /// <param name="arg3">The third function argument.</param>
+        /// <param name="arg4">The fourth function argument.</param>
+        /// <param name="arg5">The fifth function argument.</param>
+        /// <param name="arg6">The sixth function argument.</param>
+        /// <param name="arg7">The seventh function argument.</param>
+        /// <param name="arg8">The eighth function argument.</param>
+        /// <param name="arg9">The ninth function argument.</param>
+        /// <param name="arg10">The tenth function argument.</param>
+        /// <returns>The invocation result.</returns>
+        public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
+        {
+            try
+            {
+                return function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+            } 
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
     }
 }

@@ -19,13 +19,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<bool?> VoteAsync(LogEntryId? lastEntry, CancellationToken token);
 
         /// <summary>
-        /// Revokes leadership.
-        /// </summary>
-        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-        /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
-        Task<bool> ResignAsync(CancellationToken token);
-
-        /// <summary>
         /// Sends heartbeat message to the follower node.
         /// </summary>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>

@@ -181,6 +181,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public IPersistentState AuditTrail
         {
             set => auditTrail = auditTrail is null ? value : throw new InvalidOperationException(ExceptionMessages.AuditTrailAlreadyDefined);
+            protected get => auditTrail;
         }
 
         /// <summary>
@@ -209,11 +210,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         IEnumerator IEnumerable.GetEnumerator() => Members.GetEnumerator();
 
         /// <summary>
-        /// Gets Term value
+        /// Gets Term value maintained by local member.
         /// </summary>
         public long Term => currentTerm.VolatileRead();
 
+        /// <summary>
+        /// An event raised when leader has been changed.
+        /// </summary>
         public event ClusterLeaderChangedEventHandler LeaderChanged;
+
+        /// <summary>
+        /// An event raised when cluster member becomes available or unavailable.
+        /// </summary>
         public abstract event ClusterMemberStatusChanged MemberStatusChanged;
 
         IClusterMember ICluster.Leader => Leader;
@@ -232,6 +240,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        /// <summary>
+        /// Starts serving local member.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel initialization process.</param>
+        /// <returns>The task representing asynchronous execution of the method.</returns>
         public virtual async Task StartAsync(CancellationToken token)
         {
             if (auditTrail is null)
@@ -253,6 +266,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             state = new FollowerState(this, electionTimeout);
         }
 
+        /// <summary>
+        /// Stops serving local member.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel shutdown process.</param>
+        /// <returns>The task representing asynchronous execution of the method.</returns>
         public virtual async Task StopAsync(CancellationToken token)
         {
             transitionCancellation.Cancel(false);
@@ -297,9 +315,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Logger.DowngradedToFollowerState();
         }
 
+        /// <summary>
+        /// Finds cluster member using its identifier.
+        /// </summary>
+        /// <param name="id">The identifier of the member.</param>
+        /// <param name="matcher">The function allows to match the member with its identifier.</param>
+        /// <typeparam name="MemberId">The type of the member identifier.</typeparam>
+        /// <returns>The cluster member; or <see langword="null"/> if the member with the specified identifier doesn't exist.</returns>
         protected TMember FindMember<MemberId>(MemberId id, MemberMatcher<MemberId> matcher)
             => members.FirstOrDefault(member => matcher(member, id));
 
+        /// <summary>
+        /// Handles Heartbeat message received from remote cluster member.
+        /// </summary>
+        /// <param name="sender">The identifier of the Heartbeat message sender.</param>
+        /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
+        /// <param name="matcher">The function allows to match the member with its identifier.</param>
+        /// <typeparam name="MemberId">The type of the member identifier.</typeparam>
+        /// <returns>The task representing asynchronous execution of the method.</returns>
         protected async Task ReceiveHeartbeat<MemberId>(MemberId sender, long senderTerm,
             MemberMatcher<MemberId> matcher)
         {
@@ -324,6 +357,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        /// <summary>
+        /// Handles AppendEntries message received from remote cluster member.
+        /// </summary>
+        /// <param name="sender">The identifier of the Heartbeat message sender.</param>
+        /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
+        /// <param name="matcher">The function allows to match the member with its identifier.</param>
+        /// <param name="newEntry">A new entry to be committed locally.</param>
+        /// <param name="precedingEntry">The identifier of the log entry immediately preceding new one.</param>
+        /// <typeparam name="MemberId">The type of the member identifier.</typeparam>
+        /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> <paramref name="precedingEntry"/> is not present in local audit trail.</returns>
         protected async Task<bool> ReceiveEntries<MemberId>(MemberId sender, long senderTerm,
             MemberMatcher<MemberId> matcher, ILogEntry<LogEntryId> newEntry, LogEntryId precedingEntry)
         {
@@ -348,6 +391,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        /// <summary>
+        /// Send a new log entry to all cluster members if the local member is leader.
+        /// </summary>
+        /// <param name="entry">A new log entry.</param>
+        /// <param name="token">The token that can be used to cancel this operation.</param>
+        /// <returns>The task representing asynchronous execution of the method.</returns>
+        /// <exception cref="AggregateException">Unable to replicate one or more cluster nodes. You can analyze inner exceptions which are derive from <see cref="ConsensusProtocolException"/> or <see cref="ReplicationException"/>.</exception>
+        /// <exception cref="InvalidOperationException">The caller application is not a leader node.</exception>
+        /// <exception cref="NotSupportedException">Audit trail is not defined for this instance.</exception>
         public Task ReplicateAsync(ILogEntry<LogEntryId> entry, CancellationToken token)
         {
             if (auditTrail is null)
@@ -379,7 +431,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => state is null ? Task.CompletedTask : state.SaveTermAsync(term, token);
 
         private static Task SaveLastVoteAsync(IPersistentState state, TMember member, CancellationToken token)
-            => state is null ? Task.CompletedTask : state.SaveLastVoteAsync(member, token);
+            => state is null ? Task.CompletedTask : state.SaveVotedForAsync(member, token);
 
         /// <summary>
         /// Votes for the new candidate.
@@ -509,15 +561,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Logger.TransitionToLeaderStateCompleted();
         }
 
-        protected virtual void Dispose(bool disposing)
+        /// <summary>
+        /// Releases managed and unmanaged resources associated with this object.
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
                 var members = Interlocked.Exchange(ref this.members, Array.Empty<TMember>());
                 Dispose(members);
                 members.Clear();
-                Dispose(transitionCancellation, transitionSync);
+                transitionCancellation.Dispose();
+                transitionSync.Dispose();
                 leader = votedFor = null;
+                Interlocked.Exchange(ref state, null)?.Dispose();
             }
             base.Dispose(disposing);
         }

@@ -191,6 +191,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="factory"/> is <see langword="null"/>.</exception>
         /// <seealso href="https://en.wikipedia.org/wiki/Shortest_job_next">Shortest Job First</seealso>
+        [SuppressMessage("Reliability", "CA2000", Justification = "Rental object is reusable and should not be destroyed in ctor")]
         public ConcurrentObjectPool(int capacity, Func<T> factory)
         {
             if(capacity < 1)
@@ -224,6 +225,7 @@ namespace DotNext.Threading
         /// <param name="objects">The objects to be placed into the pool.</param>
         /// <exception cref="ArgumentException"><paramref name="objects"/> is empty.</exception>
         /// <seealso href="https://en.wikipedia.org/wiki/Round-robin_scheduling">Round-robin</seealso>
+        [SuppressMessage("Reliability", "CA2000", Justification = "Rental object is reusable and should not be destroyed in ctor")]
         public ConcurrentObjectPool(IEnumerable<T> objects)
         {
             factory = null;

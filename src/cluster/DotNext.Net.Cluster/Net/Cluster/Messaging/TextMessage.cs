@@ -5,8 +5,16 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    /// <summary>
+    /// Represents text message.
+    /// </summary>
     public sealed class TextMessage : IMessage<string>
     {
+        /// <summary>
+        /// Initializes a new text message.
+        /// </summary>
+        /// <param name="name">The name of the message.</param>
+        /// <param name="value">The message content.</param>
         public TextMessage(string name, string value)
             : this(name, value, null)
         {
@@ -29,6 +37,9 @@ namespace DotNext.Net.Cluster.Messaging
 
         long? IMessage.Length => Encoding.GetByteCount(Content);
 
+        /// <summary>
+        /// The message content.
+        /// </summary>
         public string Content { get; }
 
         async Task IMessage.CopyToAsync(Stream output)

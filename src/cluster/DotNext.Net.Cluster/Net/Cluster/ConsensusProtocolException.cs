@@ -19,6 +19,11 @@ namespace DotNext.Net.Cluster
         {
         }
 
+        /// <summary>
+        /// Deserialization constructor.
+        /// </summary>
+        /// <param name="info">The serialized information about object.</param>
+        /// <param name="context">The deserialization context.</param>
         protected ConsensusProtocolException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {

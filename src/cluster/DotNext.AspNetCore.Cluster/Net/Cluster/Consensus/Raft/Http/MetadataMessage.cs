@@ -18,8 +18,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal static async Task<MemberMetadata> GetResponse(HttpResponseMessage response)
         {
             var serializer = new DataContractJsonSerializer(typeof(MemberMetadata));
-            return (MemberMetadata)serializer.ReadObject(await response.Content.ReadAsStreamAsync()
-                .ConfigureAwait(false));
+            using(var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                return (MemberMetadata)serializer.ReadObject(stream);
         }
 
         internal static Task CreateResponse(HttpResponse response, MemberMetadata metadata)

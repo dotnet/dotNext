@@ -23,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal VotingState(IRaftClusterMember voter, LogEntryId? lastRecord, CancellationToken token)
             {
                 Voter = voter;
-                Task = voter.VoteAsync(lastRecord, token).ContinueWith(HandleTask, TaskContinuationOptions.ExecuteSynchronously);
+                Task = voter.VoteAsync(lastRecord, token).ContinueWith(HandleTask, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
             }
 
             private static VotingResult HandleTask(Task<bool?> task)
