@@ -44,7 +44,7 @@
     <PackageReference Include="IPNetwork2" Version="2.4.0.119" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.2" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <ProjectReference Include="..\..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext" Version="0.11.0" Condition="'$(Configuration)'=='Release'" />
     <ProjectReference Include="..\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" Condition="'$(Configuration)'=='Debug'" />
