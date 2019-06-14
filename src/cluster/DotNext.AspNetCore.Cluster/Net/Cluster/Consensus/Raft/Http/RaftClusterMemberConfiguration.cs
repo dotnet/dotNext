@@ -15,6 +15,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// </summary>
         public ISet<Uri> Members { get; } = new HashSet<Uri>();
 
+        /// <summary>
+        /// Gets or sets HTTP resource path used to capture
+        /// consensus protocol messages.
+        /// </summary>
         public Uri ResourcePath { get; set; }
     }
 }
