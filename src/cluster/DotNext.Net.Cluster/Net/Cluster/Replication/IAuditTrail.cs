@@ -30,8 +30,18 @@ namespace DotNext.Net.Cluster.Replication
         /// <returns><see langword="true"/> if the record identified by <paramref name="recordId"/> is in transaction log; otherwise, <see langword="false"/>.</returns>
         bool Contains(in EntryId recordId);
 
+        /// <summary>
+        /// Gets the record preceding to the specified record.
+        /// </summary>
+        /// <param name="recordId">The record identifier.</param>
+        /// <returns>The identifier of the record preceding to <paramref name="recordId"/>.</returns>
         EntryId GetPrevious(in EntryId recordId);
 
+        /// <summary>
+        /// Gets the record following the specified record.
+        /// </summary>
+        /// <param name="recordId">The record identifier.</param>
+        /// <returns>The identifier of the record following <paramref name="recordId"/>.</returns>
         EntryId? GetNext(in EntryId recordId);
 
         /// <summary>
