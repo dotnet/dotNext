@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotNext.Net.Cluster.Replication;
 using DotNext.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -22,17 +23,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 ICollection<Task> tasks = new LinkedList<Task>();
                 //send heartbeat in parallel
                 foreach (var member in stateMachine.Members)
+                {
+                    stateMachine.Logger.SendingHearbeat(member.Endpoint);
                     tasks.Add(member.HeartbeatAsync(token));
+                }
+
                 await Task.WhenAll(tasks).ConfigureAwait(false);
                 tasks.Clear();
             }
         }
 
         private static async Task AppendEntriesAsync(IRaftClusterMember member, ILogEntry<LogEntryId> newEntry,
-            LogEntryId lastEntry, IAuditTrail<LogEntryId> transactionLog, CancellationToken token)
+            LogEntryId lastEntry, IAuditTrail<LogEntryId> transactionLog, ILogger logger, CancellationToken token)
         {
+            logger.ReplicationStarted(member.Endpoint, newEntry.Id);
             if (await member.AppendEntriesAsync(newEntry, lastEntry, token).ConfigureAwait(false))
+            {
+                logger.ReplicationCompleted(member.Endpoint, newEntry.Id);
                 return;
+            }
+
             //unable to commit fresh entry, tries to commit older entries
             var lookup = lastEntry == transactionLog.Initial
                 ? throw new ReplicationException(member)
@@ -54,7 +64,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                     throw new ReplicationException(member);
             //now transaction log is restored on remote side, commit the fresh entry
-            if (!await member.AppendEntriesAsync(newEntry, lastEntry, token).ConfigureAwait(false))
+            if (await member.AppendEntriesAsync(newEntry, lastEntry, token).ConfigureAwait(false))
+                logger.ReplicationCompleted(member.Endpoint, newEntry.Id);
+            else
                 throw new ReplicationException(member);
         }
 
@@ -66,7 +78,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 ICollection<Task> tasks = new LinkedList<Task>();
                 foreach (var member in stateMachine.Members)
                     if (member.IsRemote)
-                        tasks.Add(AppendEntriesAsync(member, entry, lastEntry, transactionLog, tokenSource.Token));
+                        tasks.Add(AppendEntriesAsync(member, entry, lastEntry, transactionLog, stateMachine.Logger, tokenSource.Token));
                 await Task.WhenAll(tasks).ConfigureAwait(false);
                 //now the record is accepted by other nodes, commit it locally
                 await transactionLog.CommitAsync(entry).ConfigureAwait(false);

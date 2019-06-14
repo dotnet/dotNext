@@ -68,12 +68,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         stateMachine.MoveToFollowerState(false);
                         return;
                     case VotingResult.Granted:
+                        stateMachine.Logger.VoteGranted(state.Voter.Endpoint);
                         votes += 1;
                         break;
                     case VotingResult.Rejected:
+                        stateMachine.Logger.VoteGranted(state.Voter.Endpoint);
                         votes -= 1;
                         break;
                     case VotingResult.NotAvailable:
+                        stateMachine.Logger.MemberUnavailable(state.Voter.Endpoint);
                         if (absoluteMajority)
                             votes -= 1;
                         break;
@@ -84,6 +87,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     localMember = state.Voter;
             }
 
+            stateMachine.Logger.VotingCompleted(votes);
             if (!votingCancellation.IsCancellationRequested && votes > 0 && localMember != null)
                 stateMachine.MoveToLeaderState(localMember); //becomes a leader
             else
@@ -97,6 +101,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="timeout">Candidate state timeout.</param>
         internal void StartVoting(int timeout, IAuditTrail<LogEntryId> auditTrail = null)
         {
+            stateMachine.Logger.VotingStarted(timeout);
             ICollection<VotingState> voters = new LinkedList<VotingState>();
             votingCancellation.CancelAfter(timeout);
             //start voting in parallel

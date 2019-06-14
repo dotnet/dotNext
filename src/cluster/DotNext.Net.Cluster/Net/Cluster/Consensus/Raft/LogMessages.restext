@@ -1,0 +1,18 @@
+DowngradingToFollowerState=Member is downgrading to follower state
+DowngradedToFollowerState=Member is downgraded to follower state
+TransitionToFollowerStateStarted=Transition to Follower state started
+TransitionToFollowerStateCompleted=Transition to Follower state completed
+TransitionToCandidateStateStarted=Transition to Candidate state started
+TransitionToCandidateStateCompleted=Transition to Candidate state completed
+TransitionToLeaderStateStarted=Transition to Leader state started
+TransitionToLeaderStateCompleted=Transition to Leader state completed
+MemberStarted=Local cluster member is started in FollowerState
+VotingStarted=Voting is started with timeout {0}
+VotingCompleted=Voting is completed. Total vote weight is {0}
+VoteGranted=Vote is granted by member {0}
+VoteRejected=Vote is rejected by member {0}
+MemberUnavailable=Member {0} is unavailable
+TimeoutReset=Election timeout is refreshed
+SendingHearbeat=Sending heartbeat to member {0}
+ReplicationStarted=Replication of member {0} is started. Term={1}, Index={2}
+ReplicationCompleted=Replication of member {0} is completed. Term={1}, Index={2}

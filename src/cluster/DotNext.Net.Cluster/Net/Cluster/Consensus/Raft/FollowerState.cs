@@ -25,7 +25,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 refreshEvent.Reset();
         }
 
-        internal void Refresh() => refreshEvent.Set();
+        internal void Refresh()
+        {
+            refreshEvent.Set();
+            stateMachine.Logger.TimeoutReset();
+        }
 
         protected override void Dispose(bool disposing)
         {

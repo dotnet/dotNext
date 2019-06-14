@@ -5,7 +5,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNext.Net.Cluster.Messaging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -167,6 +168,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
+        /// Gets logger used by this object.
+        /// </summary>
+        [CLSCompliant(false)]
+        protected virtual ILogger Logger => NullLogger.Instance;
+
+        ILogger IRaftStateMachine.Logger => Logger;
+
+        /// <summary>
         /// Associates audit trail with the current instance.
         /// </summary>
         public IPersistentState AuditTrail
@@ -268,6 +277,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task StepDown()
         {
+            Logger.DowngradingToFollowerState();
             switch (state)
             {
                 case LeaderState leaderState:
@@ -284,6 +294,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     followerState.Refresh();
                     break;
             }
+            Logger.DowngradedToFollowerState();
         }
 
         protected TMember FindMember<MemberId>(MemberId id, MemberMatcher<MemberId> matcher)
@@ -446,6 +457,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout)
         {
+            Logger.TransitionToFollowerStateStarted();
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
             {
                 if (randomizeTimeout)
@@ -456,20 +468,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         state = new FollowerState(this, electionTimeout);
                         await leaderState.StopLeading(transitionCancellation.Token).ConfigureAwait(false);
                         leaderState.Dispose();
-                        return;
+                        break;
                     case CandidateState candidateState:
                         state = new FollowerState(this, electionTimeout);
                         await candidateState.StopVoting().ConfigureAwait(false);
                         candidateState.Dispose();
-                        return;
-                    default:
-                        return;
+                        break;
                 }
             }
+
+            Logger.TransitionToFollowerStateCompleted();
         }
 
         async void IRaftStateMachine.MoveToCandidateState()
         {
+            Logger.TransitionToCandidateStateStarted();
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
                 if (state is FollowerState followerState)
                 {
@@ -478,10 +491,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     newState.StartVoting(electionTimeout, auditTrail);
                     state = newState;
                 }
+            Logger.TransitionToCandidateStateCompleted();
         }
 
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember leader)
         {
+            Logger.TransitionToLeaderStateStarted();
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
                 if (state is CandidateState candidateState)
                 {
@@ -491,6 +506,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     state = newState;
                     Leader = leader;
                 }
+            Logger.TransitionToLeaderStateCompleted();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -500,6 +516,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var members = Interlocked.Exchange(ref this.members, Array.Empty<TMember>());
                 Dispose(members);
                 members.Clear();
+                transitionCancellation.Dispose();
                 transitionSync.Dispose();
                 leader = votedFor = null;
             }
