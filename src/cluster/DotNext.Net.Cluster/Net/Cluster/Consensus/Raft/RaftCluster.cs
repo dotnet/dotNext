@@ -542,8 +542,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     var newState = new CandidateState(this, absoluteMajority);
                     newState.StartVoting(electionTimeout, auditTrail);
                     state = newState;
+                    Logger.TransitionToCandidateStateCompleted();
                 }
-            Logger.TransitionToCandidateStateCompleted();
         }
 
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember leader)
@@ -553,12 +553,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (state is CandidateState candidateState)
                 {
                     candidateState.Dispose();
-                    var newState = new LeaderState(this);
+                    var newState = new LeaderState(this, absoluteMajority);
                     newState.StartLeading();
                     state = newState;
                     Leader = leader;
+                    Logger.TransitionToLeaderStateCompleted();
                 }
-            Logger.TransitionToLeaderStateCompleted();
         }
 
         /// <summary>

@@ -38,6 +38,9 @@
     <EmbeddedResource Include="ExceptionMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="Net/Cluster/Consensus/Raft/Http/LogMessages.restext">
+      <Generator></Generator>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

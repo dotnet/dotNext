@@ -103,13 +103,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         internal readonly IPEndPoint Sender;
-        private readonly string messageType;
+        internal readonly string MessageType;
         internal readonly long ConsensusTerm;
 
         private protected RaftHttpMessage(string messageType, IPEndPoint sender)
         {
             Sender = sender;
-            this.messageType = messageType;
+            this.MessageType = messageType;
         }
 
         private protected RaftHttpMessage(HttpRequest request)
@@ -126,7 +126,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             foreach (var header in request.Headers[TermHeader])
                 if (long.TryParse(header, out ConsensusTerm))
                     break;
-            messageType = GetMessageType(request);
+            MessageType = GetMessageType(request);
         }
 
         internal static string GetMessageType(HttpRequest request) =>
@@ -138,7 +138,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Headers.Add(NodeIpHeader, Sender.Address.ToString());
             request.Headers.Add(NodePortHeader, Convert.ToString(Sender.Port, InvariantCulture));
             request.Headers.Add(TermHeader, Convert.ToString(ConsensusTerm, InvariantCulture));
-            request.Headers.Add(MessageTypeHeader, messageType);
+            request.Headers.Add(MessageTypeHeader, MessageType);
             request.Method = HttpMethod.Post;
         }
 

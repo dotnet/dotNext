@@ -5,10 +5,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNext.Net.Cluster.Messaging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Messaging;
     using Replication;
     using Threading;
 
@@ -47,6 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private async Task<T> SendAsync<T>(RaftHttpMessage message, ResponseParser<T> parser, CancellationToken token)
         {
+            context.Logger.SendingRequestToMember(Endpoint, message.MessageType);
             var request = (HttpRequestMessage) message;
             request.RequestUri = resourcePath;
             var response = default(HttpResponseMessage);
@@ -55,10 +56,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
                     .ConfigureAwait(false);
                 ChangeStatus(AvailableStatus);
-                return await parser(response).ConfigureAwait(false);
+                return await parser(response.EnsureSuccessStatusCode()).ConfigureAwait(false);
             }
             catch (HttpRequestException e)
             {
+                context.Logger.MemberUnavailable(Endpoint, e);
                 ChangeStatus(UnavailableStatus);
                 throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
             }
@@ -73,17 +75,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             if(this.Represents(context.LocalEndpoint))
                 return;
+            context.Logger.SendingRequestToMember(Endpoint, HeartbeatMessage.MessageType);
             var request = (HttpRequestMessage) new HeartbeatMessage(context.LocalEndpoint);
             request.RequestUri = resourcePath;
             var response = default(HttpResponseMessage);
             try
             {
-                response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
+                response = (await SendAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false)).EnsureSuccessStatusCode();
                 ChangeStatus(AvailableStatus);
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException e)
             {
+                context.Logger.MemberUnavailable(Endpoint, e);
                 ChangeStatus(UnavailableStatus);
+                throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
             }
             finally
             {
@@ -145,6 +150,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         async Task IMessenger.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
         {
+            context.Logger.SendingRequestToMember(Endpoint, CustomMessage.MessageType);
             var request = (HttpRequestMessage)new CustomMessage(context.LocalEndpoint, message, true);
             request.RequestUri = resourcePath;
             if (requiresConfirmation)
@@ -157,9 +163,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     ChangeStatus(AvailableStatus);
                     if (response.StatusCode == HttpStatusCode.NotImplemented)
                         throw new NotSupportedException(ExceptionMessages.MessagingNotSupported);
+                    else
+                        response.EnsureSuccessStatusCode();
                 }
                 catch (HttpRequestException e)
                 {
+                    context.Logger.MemberUnavailable(Endpoint, e);
                     ChangeStatus(UnavailableStatus);
                     throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
                 }

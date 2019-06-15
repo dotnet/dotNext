@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class ResignMessage : RaftHttpBooleanMessage
     {
-        internal const string MessageType = "Resign";
+        internal new const string MessageType = "Resign";
 
         internal ResignMessage(IPEndPoint sender)
             : base(MessageType, sender)

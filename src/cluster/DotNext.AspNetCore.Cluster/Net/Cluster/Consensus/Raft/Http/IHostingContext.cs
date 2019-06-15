@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -9,6 +10,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     internal interface IHostingContext
     {
         bool IsLeader(IRaftClusterMember member);
+
+        ILogger Logger { get; }
 
         IPEndPoint LocalEndpoint { get; }
 

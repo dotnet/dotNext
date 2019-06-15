@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class HeartbeatMessage : RaftHttpMessage
     {
-        internal const string MessageType = "Heartbeat";
+        internal new const string MessageType = "Heartbeat";
 
         internal HeartbeatMessage(IPEndPoint sender)
             : base(MessageType, sender)

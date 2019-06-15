@@ -67,6 +67,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         protected override ILogger Logger { get; }
 
+        ILogger IHostingContext.Logger => Logger;
+
         private void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
         {
             metadata = new MemberMetadata(configuration.Metadata);

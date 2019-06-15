@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal sealed class AppendEntriesMessage : RaftHttpBooleanMessage
     {
-        internal const string MessageType = "AppendEntries";
+        internal new const string MessageType = "AppendEntries";
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
         private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
 

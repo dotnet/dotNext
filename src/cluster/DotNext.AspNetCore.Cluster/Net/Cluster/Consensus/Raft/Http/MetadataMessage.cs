@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class MetadataMessage : RaftHttpMessage
     {
-        internal const string MessageType = "Metadata";
+        internal new const string MessageType = "Metadata";
 
         internal MetadataMessage(IPEndPoint sender)
             : base(MessageType, sender)

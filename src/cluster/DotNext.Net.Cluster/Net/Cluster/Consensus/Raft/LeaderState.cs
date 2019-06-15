@@ -9,27 +9,63 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     internal sealed class LeaderState : RaftState
     {
-        private BackgroundTask heartbeatTask;
-
-        internal LeaderState(IRaftStateMachine stateMachine)
-            : base(stateMachine)
+        private enum MemberHealthStatus
         {
+            OK,
+            Canceled,
+            Unavailable
         }
+
+        private BackgroundTask heartbeatTask;
+        private readonly bool absoluteMajority;
+
+        internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority) : base(stateMachine) => this.absoluteMajority = absoluteMajority;
+        
+        private static MemberHealthStatus GetHealthStatus(Task task)
+        {
+            if(task.IsCanceled)
+                return MemberHealthStatus.Canceled;
+            else if(task.IsFaulted)
+                return MemberHealthStatus.Unavailable;
+            else
+                return MemberHealthStatus.OK;
+        }        
 
         private async Task DoHeartbeats(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
-                ICollection<Task> tasks = new LinkedList<Task>();
+                ICollection<Task<MemberHealthStatus>> tasks = new LinkedList<Task<MemberHealthStatus>>();
                 //send heartbeat in parallel
                 foreach (var member in stateMachine.Members)
                 {
                     stateMachine.Logger.SendingHearbeat(member.Endpoint);
-                    tasks.Add(member.HeartbeatAsync(token));
+                    tasks.Add(member.HeartbeatAsync(token).ContinueWith(GetHealthStatus, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current));
                 }
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);
+                var votes = 0;
+                if(absoluteMajority)
+                    foreach(var task in tasks)
+                        switch(task.Result)
+                        {
+                            case MemberHealthStatus.Canceled:
+                                return;
+                            case MemberHealthStatus.OK:
+                                votes += 1;
+                                break;
+                            case MemberHealthStatus.Unavailable:
+                                votes -= 1;
+                                break;
+                        }
+                else
+                    votes = int.MaxValue;
                 tasks.Clear();
+                if(votes <= 0)
+                {
+                    stateMachine.MoveToFollowerState(false);
+                    return;
+                }
             }
         }
 

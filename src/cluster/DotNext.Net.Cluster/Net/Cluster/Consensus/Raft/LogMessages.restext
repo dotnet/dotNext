@@ -7,12 +7,12 @@ TransitionToCandidateStateCompleted=Transition to Candidate state completed
 TransitionToLeaderStateStarted=Transition to Leader state started
 TransitionToLeaderStateCompleted=Transition to Leader state completed
 MemberStarted=Local cluster member is started in FollowerState
-VotingStarted=Voting is started with timeout {0}
-VotingCompleted=Voting is completed. Total vote weight is {0}
-VoteGranted=Vote is granted by member {0}
-VoteRejected=Vote is rejected by member {0}
-MemberUnavailable=Member {0} is unavailable
+VotingStarted=Voting is started with timeout {ElectionTimeout}
+VotingCompleted=Voting is completed. Total vote weight is {Votes}
+VoteGranted=Vote is granted by member {Member}
+VoteRejected=Vote is rejected by member {Member}
+MemberUnavailable=Member {Member} is unavailable
 TimeoutReset=Election timeout is refreshed
-SendingHearbeat=Sending heartbeat to member {0}
-ReplicationStarted=Replication of member {0} is started. Term={1}, Index={2}
-ReplicationCompleted=Replication of member {0} is completed. Term={1}, Index={2}
+SendingHearbeat=Sending heartbeat to member {Member}
+ReplicationStarted=Replication of member {Member} is started. Term={RecordTerm}, Index={RecordIndex}
+ReplicationCompleted=Replication of member {Member} is completed. Term={RecordTerm}, Index={RecordIndex}

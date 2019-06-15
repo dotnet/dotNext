@@ -37,30 +37,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => logger.LogInformation(Resources.GetString("TransitionToLeaderStateCompleted"));
 
         internal static void VotingStarted(this ILogger logger, int timeout)
-            => logger.LogDebug(string.Format(Resources.GetString("VotingStarted"), timeout));
+            => logger.LogDebug(Resources.GetString("VotingStarted"), timeout);
 
         internal static void VotingCompleted(this ILogger logger, int votes)
-            => logger.LogDebug(string.Format(Resources.GetString("VotingCompleted"), votes));
+            => logger.LogDebug(Resources.GetString("VotingCompleted"), votes);
 
         internal static void VoteGranted(this ILogger logger, IPEndPoint member)
-            => logger.LogDebug(string.Format(Resources.GetString("VoteGranted"), member));
+            => logger.LogDebug(Resources.GetString("VoteGranted"), member);
 
         internal static void VoteRejected(this ILogger logger, IPEndPoint member)
-            => logger.LogDebug(string.Format(Resources.GetString("VoteRejected"), member));
+            => logger.LogDebug(Resources.GetString("VoteRejected"), member);
 
         internal static void MemberUnavailable(this ILogger logger, IPEndPoint member)
-            => logger.LogDebug(string.Format(Resources.GetString("MemberUnavailable"), member));
+            => logger.LogDebug(Resources.GetString("MemberUnavailable"), member);
 
         internal static void TimeoutReset(this ILogger logger)
             => logger.LogDebug(Resources.GetString("TimeoutReset"));
 
         internal static void SendingHearbeat(this ILogger logger, IPEndPoint member)
-            => logger.LogDebug(string.Format(Resources.GetString("SendingHearbeat"), member));
+            => logger.LogDebug(Resources.GetString("SendingHearbeat"), member);
 
         internal static void ReplicationStarted(this ILogger logger, IPEndPoint member, in LogEntryId record)
-            => logger.LogInformation(string.Format(Resources.GetString("ReplicationStarted"), member, record.Term, record.Index));
+            => logger.LogInformation(Resources.GetString("ReplicationStarted"), member, record.Term, record.Index);
 
         internal static void ReplicationCompleted(this ILogger logger, IPEndPoint member, in LogEntryId record)
-            => logger.LogInformation(string.Format(Resources.GetString("ReplicationCompleted"), member, record.Term, record.Index));
+            => logger.LogInformation(Resources.GetString("ReplicationCompleted"), member, record.Term, record.Index);
     }
 }

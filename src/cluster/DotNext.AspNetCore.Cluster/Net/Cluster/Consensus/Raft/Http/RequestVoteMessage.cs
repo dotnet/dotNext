@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         internal const string RecordIndexHeader = "X-Raft-Record-Index";
         internal const string RecordTermHeader = "X-Raft-Record-Term";
-        internal const string MessageType = "RequestVote";
+        internal new const string MessageType = "RequestVote";
 
         internal readonly LogEntryId? LastEntry;
 

@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal sealed class CustomMessage : RaftHttpMessage
     {
-        internal const string MessageType = "CustomMessage";
+        internal new const string MessageType = "CustomMessage";
         private const string OneWayHeader = "X-OneWay";
 
         internal readonly bool IsOneWay;
