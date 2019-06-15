@@ -11,6 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Messaging;
     using Replication;
     using Threading;
+    using Threading.Tasks;
 
     internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, IMessenger
     {
@@ -104,7 +105,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => this.Represents(context.LocalEndpoint)
                 ? true
                 : await SendAsync(new RequestVoteMessage(context.LocalEndpoint, lastEntry), RequestVoteMessage.GetResponse, token)
-                    .ContinueWith(task => default(bool?), token, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Current)
+                    .ContinueWith(DefaultContinuation<bool?>.Value, token, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Current)
                     .ConfigureAwait(false);
 
         Task<bool> IClusterMember.ResignAsync(CancellationToken token) 
@@ -138,12 +139,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => SendAsync(new CustomMessage(context.LocalEndpoint, message, false),
                 CustomMessage.GetResponse, token);
 
-        private static HttpResponseMessage SuppressError(Task task) => null;
-
         private async void SendUnreliableSignalAsync(HttpRequestMessage request, CancellationToken token)
         {
             var response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
-                .ContinueWith(SuppressError, token, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.NotOnRanToCompletion, TaskScheduler.Current)
+                .ContinueWith(DefaultContinuation<HttpResponseMessage>.Value, token, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.NotOnRanToCompletion, TaskScheduler.Current)
                 .ConfigureAwait(false);
             Disposable.Dispose(request, response);
         }

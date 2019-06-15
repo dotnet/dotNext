@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNext.Net.Cluster.Replication;
@@ -16,12 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Unavailable
         }
 
-        private BackgroundTask heartbeatTask;
-        private readonly bool absoluteMajority;
-
-        internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority) : base(stateMachine) => this.absoluteMajority = absoluteMajority;
-        
-        private static MemberHealthStatus GetHealthStatus(Task task)
+        private static readonly Func<Task, MemberHealthStatus> HealthStatusContinuation = task =>
         {
             if(task.IsCanceled)
                 return MemberHealthStatus.Canceled;
@@ -29,7 +25,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return MemberHealthStatus.Unavailable;
             else
                 return MemberHealthStatus.OK;
-        }        
+        };
+
+        private BackgroundTask heartbeatTask;
+        private readonly bool absoluteMajority;
+
+        internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority) : base(stateMachine) => this.absoluteMajority = absoluteMajority;      
 
         private async Task DoHeartbeats(CancellationToken token)
         {
@@ -40,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 foreach (var member in stateMachine.Members)
                 {
                     stateMachine.Logger.SendingHearbeat(member.Endpoint);
-                    tasks.Add(member.HeartbeatAsync(token).ContinueWith(GetHealthStatus, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current));
+                    tasks.Add(member.HeartbeatAsync(token).ContinueWith(HealthStatusContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current));
                 }
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);

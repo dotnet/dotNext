@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNext.Net.Cluster.Replication;
@@ -17,16 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private readonly struct VotingState
         {
-            internal readonly IRaftClusterMember Voter;
-            internal readonly Task<VotingResult> Task;
-
-            internal VotingState(IRaftClusterMember voter, LogEntryId? lastRecord, CancellationToken token)
-            {
-                Voter = voter;
-                Task = voter.VoteAsync(lastRecord, token).ContinueWith(HandleTask, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
-            }
-
-            private static VotingResult HandleTask(Task<bool?> task)
+            private static readonly Func<Task<bool?>, VotingResult> HandleTaskContinuation = task =>
             {
                 if (task.IsCanceled)
                     return VotingResult.Canceled;
@@ -42,6 +34,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         default:
                             return VotingResult.NotAvailable;
                     }
+            };
+
+            internal readonly IRaftClusterMember Voter;
+            internal readonly Task<VotingResult> Task;
+
+            internal VotingState(IRaftClusterMember voter, LogEntryId? lastRecord, CancellationToken token)
+            {
+                Voter = voter;
+                Task = voter.VoteAsync(lastRecord, token).ContinueWith(HandleTaskContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
             }
         }
         
