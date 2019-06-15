@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
@@ -68,6 +69,7 @@ namespace DotNext
         /// <typeparam name="I">The type of the value to be</typeparam>
         /// <typeparam name="O">The type of the conversion result.</typeparam>
         /// <returns>The conversion result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<O> TryInvoke<I, O>(this Converter<I, O> converter, I input)
         {
             try

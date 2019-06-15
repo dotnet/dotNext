@@ -31,6 +31,52 @@ namespace DotNext
     public static class Function
     {
         /// <summary>
+        /// Invokes function without throwing exception in case of its failure.
+        /// </summary>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="arguments">Function arguments in the form of public structure fields.</param>
+        /// <typeparam name="A">Type of structure with function arguments allocated on the stack.</typeparam>
+        /// <typeparam name="R">Type of function return value.</typeparam>
+        /// <returns>Function return value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Result<R> TryInvoke<A, R>(this Function<A, R> function, in A arguments)
+            where A : struct
+        {
+            try
+            {
+                return function(in arguments);
+            }
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
+
+        /// <summary>
+        /// Invokes function without throwing exception in case of its failure.
+        /// </summary>
+        /// <param name="function">The function to invoke.</param>
+        /// <param name="this">Hidden <c>this</c> parameter.</param>
+        /// <param name="arguments">Function arguments in the form of public structure fields.</param>
+        /// <typeparam name="T">Type of instance to be passed into underlying method.</typeparam>
+        /// <typeparam name="A">Type of structure with function arguments allocated on the stack.</typeparam>
+        /// <typeparam name="R">Type of function return value.</typeparam>
+        /// <returns>Function return value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Result<R> TryInvoke<T, A, R>(this Function<T, A, R> function, in T @this, in A arguments)
+            where A : struct
+        {
+            try
+            {
+                return function(in @this, in arguments);
+            }
+            catch(Exception e)
+            {
+                return new Result<R>(e);
+            }
+        }
+
+        /// <summary>
         /// Allocates list of arguments on the stack.
         /// </summary>
         /// <typeparam name="A">The type representing list of arguments.</typeparam>

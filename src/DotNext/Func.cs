@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
@@ -101,6 +102,7 @@ namespace DotNext
         /// <typeparam name="R">The result type.</typeparam>
         /// <param name="function">The function to invoke.</param>
         /// <returns>The invocation result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<R>(this Func<R> function)
         {
             try
@@ -121,6 +123,7 @@ namespace DotNext
         /// <param name="function">The function to invoke.</param>
         /// <param name="arg">The first function argument.</param>
         /// <returns>The invocation result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T, R>(this Func<T, R> function, T arg)
         {
             try
@@ -143,6 +146,7 @@ namespace DotNext
         /// <param name="arg1">The first function argument.</param>
         /// <param name="arg2">The second function argument.</param>
         /// <returns>The invocation result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, R>(this Func<T1, T2, R> function, T1 arg1, T2 arg2)
         {
             try
@@ -167,6 +171,7 @@ namespace DotNext
         /// <param name="arg2">The second function argument.</param>
         /// <param name="arg3">The third function argument.</param>
         /// <returns>The invocation result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, R>(this Func<T1, T2, T3, R> function, T1 arg1, T2 arg2, T3 arg3)
         {
             try
@@ -193,6 +198,7 @@ namespace DotNext
         /// <param name="arg3">The third function argument.</param>
         /// <param name="arg4">The fourth function argument.</param>
         /// <returns>The invocation result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, R>(this Func<T1, T2, T3, T4, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             try
@@ -221,6 +227,7 @@ namespace DotNext
         /// <param name="arg4">The fourth function argument.</param>
         /// <param name="arg5">The fifth function argument.</param>
         /// <returns>The invocation result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, T5, R>(this Func<T1, T2, T3, T4, T5, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
             try
@@ -251,6 +258,7 @@ namespace DotNext
         /// <param name="arg5">The fifth function argument.</param>
         /// <param name="arg6">The sixth function argument.</param>
         /// <returns>The invocation result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, R>(this Func<T1, T2, T3, T4, T5, T6, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         {
             try
@@ -283,6 +291,7 @@ namespace DotNext
         /// <param name="arg6">The sixth function argument.</param>
         /// <param name="arg7">The seventh function argument.</param>
         /// <returns>The invocation result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, T7, R>(this Func<T1, T2, T3, T4, T5, T6, T7, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
         {
             try
@@ -317,6 +326,7 @@ namespace DotNext
         /// <param name="arg7">The seventh function argument.</param>
         /// <param name="arg8">The eighth function argument.</param>
         /// <returns>The invocation result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, R>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
         {
             try
@@ -353,6 +363,7 @@ namespace DotNext
         /// <param name="arg8">The eighth function argument.</param>
         /// <param name="arg9">The ninth function argument.</param>
         /// <returns>The invocation result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
         {
             try
@@ -391,6 +402,7 @@ namespace DotNext
         /// <param name="arg9">The ninth function argument.</param>
         /// <param name="arg10">The tenth function argument.</param>
         /// <returns>The invocation result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
         {
             try
