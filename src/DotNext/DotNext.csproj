@@ -18,7 +18,9 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>AtomicEnum and AtomicIntPtr are introduced</PackageReleaseNotes>
+	<PackageReleaseNotes>AtomicEnum and AtomicIntPtr are introduced
+Result&lt;T&gt; is the new type used for returning and propagating recoverable errors instead of classic try-catch approach
+System.Memory dependency is updated</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
