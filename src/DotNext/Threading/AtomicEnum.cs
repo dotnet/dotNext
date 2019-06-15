@@ -1,8 +1,7 @@
 using System;
-using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Threading;
 
 namespace DotNext.Threading
 {
@@ -57,14 +56,14 @@ namespace DotNext.Threading
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public E CompareExchange(E update, E expected)
             => Atomic<long, E, AtomicEnum<E>>.CompareExchange(ref this, ref value, update, expected);
-        
+
         /// <summary>
-		/// Atomically sets referenced value to the given updated value if the current value == the expected value.
-		/// </summary>
-		/// <param name="expected">The expected value.</param>
-		/// <param name="update">The new value.</param>
-		/// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// Atomically sets referenced value to the given updated value if the current value == the expected value.
+        /// </summary>
+        /// <param name="expected">The expected value.</param>
+        /// <param name="update">The new value.</param>
+        /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CompareAndSet(E expected, E update) => Atomic<long, E, AtomicEnum<E>>.CompareAndSet(ref this, ref value, expected, update);
 
         /// <summary>

@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext.Reflection
 {
-    public sealed class TaskTypeTests: Assert
+    public sealed class TaskTypeTests : Assert
     {
         [Fact]
         public static void ReflectTaskType()

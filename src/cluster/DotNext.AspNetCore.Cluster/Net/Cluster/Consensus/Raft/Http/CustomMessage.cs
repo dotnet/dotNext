@@ -1,9 +1,9 @@
-﻿using System;
-using static System.Globalization.CultureInfo;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {

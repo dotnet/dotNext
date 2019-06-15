@@ -71,7 +71,7 @@ namespace DotNext.Metaprogramming
         /// <typeparam name="E">Expected exception.</typeparam>
         /// <param name="handler">Exception handling block.</param>
         /// <returns><c>this</c> builder.</returns>
-        public TryBuilder Catch<E>(Handler handler) where E : Exception => Catch(typeof(E), handler); 
+        public TryBuilder Catch<E>(Handler handler) where E : Exception => Catch(typeof(E), handler);
 
         /// <summary>
         /// Constructs exception handling clause that can capture any exception.

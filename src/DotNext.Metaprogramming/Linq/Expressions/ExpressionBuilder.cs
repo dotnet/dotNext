@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using static System.Linq.Enumerable;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using static System.Linq.Enumerable;
 
 namespace DotNext.Linq.Expressions
 {
@@ -121,7 +121,7 @@ namespace DotNext.Linq.Expressions
 
         private static MethodCallExpression Concat(Expression[] strings)
         {
-            switch(strings.LongLength)
+            switch (strings.LongLength)
             {
                 case 2:
                     return CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1]);
@@ -833,7 +833,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Array length expression.</returns>
         public static UnaryExpression ArrayLength(this Expression array)
             => Expression.ArrayLength(array);
-        
+
         /// <summary>
         /// Constructs expression representing count of items in the collection or string.
         /// </summary>
@@ -845,7 +845,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>The expression providing access to the appropriate property indicating the number of items in the collection.</returns>
         public static MemberExpression Count(this Expression collection)
         {
-            if(collection.Type == typeof(string) || collection.Type == typeof(StringBuilder))
+            if (collection.Type == typeof(string) || collection.Type == typeof(StringBuilder))
                 return Expression.Property(collection, nameof(string.Length));
             var interfaceType = collection.Type.GetImplementedCollection() ?? throw new ArgumentException(ExceptionMessages.CollectionImplementationExpected);
             return Expression.Property(collection, interfaceType, nameof(Count));
@@ -1167,16 +1167,16 @@ namespace DotNext.Linq.Expressions
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
         public static WithExpression With(this Expression obj, WithExpression.Statement body)
             => WithExpression.Create(obj, body);
-        
+
         internal static MethodCallExpression Breakpoint() => CallStatic(typeof(Debugger), nameof(Debugger.Break));
 
         internal static MethodCallExpression Assert(this Expression test, string message)
         {
-            if(test is null)
+            if (test is null)
                 throw new ArgumentNullException(nameof(test));
-            else if(test.Type != typeof(bool))
+            else if (test.Type != typeof(bool))
                 throw new ArgumentException(ExceptionMessages.BoolExpressionExpected, nameof(test));
-            else if(string.IsNullOrEmpty(message))
+            else if (string.IsNullOrEmpty(message))
                 return CallStatic(typeof(Debug), nameof(Debug.Assert), test);
             else
                 return CallStatic(typeof(Debug), nameof(Debug.Assert), test, Const(message));

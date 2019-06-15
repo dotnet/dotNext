@@ -2,7 +2,7 @@
 
 namespace DotNext.Reflection
 {
-    public sealed class ConversionTest: Assert
+    public sealed class ConversionTest : Assert
     {
         [Fact]
         public static void ImplicitCast()

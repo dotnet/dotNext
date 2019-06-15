@@ -374,7 +374,7 @@ namespace DotNext.Reflection
     /// </summary>
     /// <typeparam name="V">Type of field value.</typeparam>
     public sealed class Field<V> : FieldBase<V>, IField<V>
-    {  
+    {
         private sealed class Cache<T> : MemberCache<FieldInfo, Field<V>>
         {
             private protected override Field<V> Create(string fieldName, bool nonPublic) => Reflect(typeof(T), fieldName, nonPublic);

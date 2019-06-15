@@ -149,7 +149,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if two numbers are not equal; otherwise, <see langword="false"/>.</returns>
 		public static bool operator !=(Number<T> left, T right)
             => !left.value.Equals(right);
-        
+
         /// <summary>
         /// Determines whether the first number is greater than the second number.
         /// </summary>

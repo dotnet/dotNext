@@ -95,7 +95,7 @@ namespace DotNext
         /// <returns>A delegate of type <see cref="Converter{I, O}"/> referencing the same method as original delegate.</returns>
         public static Converter<I, O> AsConverter<I, O>(this Func<I, O> function)
             => function.ChangeType<Converter<I, O>>();
-        
+
         /// <summary>
         /// Invokes function without throwing the exception.
         /// </summary>
@@ -109,7 +109,7 @@ namespace DotNext
             {
                 return function();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }
@@ -129,8 +129,8 @@ namespace DotNext
             try
             {
                 return function(arg);
-            } 
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }
@@ -152,8 +152,8 @@ namespace DotNext
             try
             {
                 return function(arg1, arg2);
-            } 
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }
@@ -177,8 +177,8 @@ namespace DotNext
             try
             {
                 return function(arg1, arg2, arg3);
-            } 
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }
@@ -204,8 +204,8 @@ namespace DotNext
             try
             {
                 return function(arg1, arg2, arg3, arg4);
-            } 
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }
@@ -233,8 +233,8 @@ namespace DotNext
             try
             {
                 return function(arg1, arg2, arg3, arg4, arg5);
-            } 
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }
@@ -264,8 +264,8 @@ namespace DotNext
             try
             {
                 return function(arg1, arg2, arg3, arg4, arg5, arg6);
-            } 
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }
@@ -297,8 +297,8 @@ namespace DotNext
             try
             {
                 return function(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-            } 
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }
@@ -332,8 +332,8 @@ namespace DotNext
             try
             {
                 return function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-            } 
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }
@@ -369,8 +369,8 @@ namespace DotNext
             try
             {
                 return function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
-            } 
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }
@@ -408,8 +408,8 @@ namespace DotNext
             try
             {
                 return function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
-            } 
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }

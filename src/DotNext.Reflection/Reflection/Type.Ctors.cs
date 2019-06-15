@@ -25,7 +25,7 @@ namespace DotNext.Reflection
         public static Reflection.Constructor<Function<A, T>> RequireConstructor<A>(bool nonPublic = false)
             where A : struct
             => GetConstructor<A>(nonPublic) ?? throw MissingConstructorException.Create<T, A>();
-        
+
         /// <summary>
         /// Creates a new instance of type <typeparamref name="T"/>.
         /// </summary>

@@ -201,7 +201,7 @@ namespace DotNext
             var supplier = new CtorSupplier<V>();
             return GetStorage(true).GetOrSet(slot, ref supplier);
         }
-        
+
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
         /// </summary>

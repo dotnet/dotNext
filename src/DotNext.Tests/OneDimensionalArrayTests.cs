@@ -1,9 +1,9 @@
-using Xunit;
 using System;
+using Xunit;
 
 namespace DotNext
 {
-    public sealed class OneDimensionalArrayTests: Assert
+    public sealed class OneDimensionalArrayTests : Assert
     {
         public sealed class Equatable
         {
@@ -28,17 +28,17 @@ namespace DotNext
         [Fact]
         public static void Insert()
         {
-            int[] array = {1, 2, 3};
-            True(new[]{1, 4, 2, 3}.SequenceEqual(array.Insert(4, 1)));
-            True(new[]{0, 1, 2, 3}.SequenceEqual(array.Insert(0, 0)));
-            True(new[]{1, 2, 3, 4}.SequenceEqual(array.Insert(4, 3)));
+            int[] array = { 1, 2, 3 };
+            True(new[] { 1, 4, 2, 3 }.SequenceEqual(array.Insert(4, 1)));
+            True(new[] { 0, 1, 2, 3 }.SequenceEqual(array.Insert(0, 0)));
+            True(new[] { 1, 2, 3, 4 }.SequenceEqual(array.Insert(4, 3)));
         }
 
         [Fact]
         public static void ArrayEquality()
         {
-            var array1 = new[]{Guid.Empty, Guid.NewGuid(), Guid.NewGuid() };
-            var array2 = new[]{Guid.Empty, array1[1], array1[2] };
+            var array1 = new[] { Guid.Empty, Guid.NewGuid(), Guid.NewGuid() };
+            var array2 = new[] { Guid.Empty, array1[1], array1[2] };
             False(array1.Equals(array2));
             True(array1.SequenceEqual(array2));
             True(array1.BitwiseEquals(array2));
@@ -51,8 +51,8 @@ namespace DotNext
         [Fact]
         public static void BitwiseComparison()
         {
-            var array1 = new[]{Guid.Empty, Guid.NewGuid(), Guid.NewGuid() };
-            var array2 = new[]{Guid.Empty, array1[1], array1[2] };
+            var array1 = new[] { Guid.Empty, Guid.NewGuid(), Guid.NewGuid() };
+            var array2 = new[] { Guid.Empty, array1[1], array1[2] };
             Equal(0, array1.BitwiseCompare(array2));
             array2[1] = Guid.Empty;
             True(array1.BitwiseCompare(array2) > 0);
@@ -61,7 +61,7 @@ namespace DotNext
         [Fact]
         public static void Slice()
         {
-            var array = new[]{1, 2, 3, 4};
+            var array = new[] { 1, 2, 3, 4 };
             array = array.Slice(0, 2);
             Equal(2, array.LongLength);
             Equal(1, array[0]);

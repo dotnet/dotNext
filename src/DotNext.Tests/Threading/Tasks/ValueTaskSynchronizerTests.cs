@@ -1,11 +1,11 @@
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace DotNext.Threading.Tasks
 {
-    public sealed class ValueTaskSynchronizerTests: Assert
+    public sealed class ValueTaskSynchronizerTests : Assert
     {
         private sealed class SharedCounter
         {
@@ -41,19 +41,19 @@ namespace DotNext.Threading.Tasks
             var source1 = new ValueTaskCompletionSource();
             var source2 = new ValueTaskCompletionSource();
             var source3 = new ValueTaskCompletionSource();
-            ThreadPool.QueueUserWorkItem(state => 
+            ThreadPool.QueueUserWorkItem(state =>
             {
                 box.Value.VolatileWrite(1);
                 Thread.Sleep(50);
                 source1.Complete();
             });
-            ThreadPool.QueueUserWorkItem(state => 
+            ThreadPool.QueueUserWorkItem(state =>
             {
                 box.Value.VolatileWrite(2);
                 Thread.Sleep(200);
                 source2.Complete();
             });
-            ThreadPool.QueueUserWorkItem(state => 
+            ThreadPool.QueueUserWorkItem(state =>
             {
                 box.Value.VolatileWrite(3);
                 Thread.Sleep(150);
@@ -71,17 +71,17 @@ namespace DotNext.Threading.Tasks
             var source1 = new ValueTaskCompletionSource<int>();
             var source2 = new ValueTaskCompletionSource<int>();
             var source3 = new ValueTaskCompletionSource<int>();
-            ThreadPool.QueueUserWorkItem(state => 
+            ThreadPool.QueueUserWorkItem(state =>
             {
                 Thread.Sleep(50);
                 source1.Complete(1);
             });
-            ThreadPool.QueueUserWorkItem(state => 
+            ThreadPool.QueueUserWorkItem(state =>
             {
                 Thread.Sleep(200);
                 source2.Complete(2);
             });
-            ThreadPool.QueueUserWorkItem(state => 
+            ThreadPool.QueueUserWorkItem(state =>
             {
                 Thread.Sleep(150);
                 source3.Complete(3);
@@ -100,19 +100,19 @@ namespace DotNext.Threading.Tasks
             var source1 = new ValueTaskCompletionSource();
             var source2 = new ValueTaskCompletionSource();
             var source3 = new ValueTaskCompletionSource();
-            ThreadPool.QueueUserWorkItem(state => 
+            ThreadPool.QueueUserWorkItem(state =>
             {
                 counter.Inc();
                 Thread.Sleep(100);
                 source1.Complete();
             });
-            ThreadPool.QueueUserWorkItem(state => 
+            ThreadPool.QueueUserWorkItem(state =>
             {
                 counter.Inc();
                 Thread.Sleep(200);
                 source2.Complete();
             });
-            ThreadPool.QueueUserWorkItem(state => 
+            ThreadPool.QueueUserWorkItem(state =>
             {
                 counter.Inc();
                 Thread.Sleep(150);

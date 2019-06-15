@@ -1,8 +1,8 @@
-﻿using System.Net;
+﻿using Microsoft.AspNetCore.Http;
+using System.Net;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal static async Task<MemberMetadata> GetResponse(HttpResponseMessage response)
         {
             var serializer = new DataContractJsonSerializer(typeof(MemberMetadata));
-            using(var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+            using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 return (MemberMetadata)serializer.ReadObject(stream);
         }
 

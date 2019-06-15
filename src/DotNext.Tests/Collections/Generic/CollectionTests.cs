@@ -3,12 +3,12 @@ using Xunit;
 
 namespace DotNext.Collections.Generic
 {
-    public sealed class CollectionTests: Assert
+    public sealed class CollectionTests : Assert
     {
         [Fact]
         public static void ReadOnlyIndexer()
         {
-            IReadOnlyList<long> array = new[] {5L, 6L, 20L };
+            IReadOnlyList<long> array = new[] { 5L, 6L, 20L };
             Equal(20L, List.Indexer<long>.ReadOnly(array, 2));
             Equal(6L, array.IndexerGetter().Invoke(1));
         }

@@ -1,11 +1,11 @@
-﻿using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
@@ -38,7 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         {
             if (await base.ProcessRequest(context).ConfigureAwait(false))
                 return;
-            context.Response.StatusCode = (int) HttpStatusCode.NotFound;
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }
 
         protected override void Dispose(bool disposing)

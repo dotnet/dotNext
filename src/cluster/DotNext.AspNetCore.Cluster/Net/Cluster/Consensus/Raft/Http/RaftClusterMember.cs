@@ -17,9 +17,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private const string UserAgent = "Raft.NET";
 
-        private const int UnknownStatus = (int) ClusterMemberStatus.Unknown;
-        private const int UnavailableStatus = (int) ClusterMemberStatus.Unavailable;
-        private const int AvailableStatus = (int) ClusterMemberStatus.Available;
+        private const int UnknownStatus = (int)ClusterMemberStatus.Unknown;
+        private const int UnavailableStatus = (int)ClusterMemberStatus.Unavailable;
+        private const int AvailableStatus = (int)ClusterMemberStatus.Available;
 
         private delegate Task<T> ResponseParser<T>(HttpResponseMessage response);
 
@@ -42,14 +42,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private void ChangeStatus(int newState)
         {
             var previousState = status.GetAndSet(newState);
-            if(previousState != newState)
-                context.MemberStatusChanged(this, (ClusterMemberStatus) previousState, (ClusterMemberStatus) newState);
+            if (previousState != newState)
+                context.MemberStatusChanged(this, (ClusterMemberStatus)previousState, (ClusterMemberStatus)newState);
         }
 
         private async Task<T> SendAsync<T>(RaftHttpMessage message, ResponseParser<T> parser, CancellationToken token)
         {
             context.Logger.SendingRequestToMember(Endpoint, message.MessageType);
-            var request = (HttpRequestMessage) message;
+            var request = (HttpRequestMessage)message;
             request.RequestUri = resourcePath;
             var response = default(HttpResponseMessage);
             try
@@ -74,10 +74,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public async Task HeartbeatAsync(CancellationToken token)
         {
-            if(this.Represents(context.LocalEndpoint))
+            if (this.Represents(context.LocalEndpoint))
                 return;
             context.Logger.SendingRequestToMember(Endpoint, HeartbeatMessage.MessageType);
-            var request = (HttpRequestMessage) new HeartbeatMessage(context.LocalEndpoint);
+            var request = (HttpRequestMessage)new HeartbeatMessage(context.LocalEndpoint);
             request.RequestUri = resourcePath;
             var response = default(HttpResponseMessage);
             try
@@ -108,12 +108,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     .ContinueWith(DefaultContinuation<bool?>.Value, token, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Current)
                     .ConfigureAwait(false);
 
-        Task<bool> IClusterMember.ResignAsync(CancellationToken token) 
+        Task<bool> IClusterMember.ResignAsync(CancellationToken token)
             => SendAsync(new ResignMessage(context.LocalEndpoint), ResignMessage.GetResponse, token);
 
         public Task<bool> AppendEntriesAsync(ILogEntry<LogEntryId> newEntry, LogEntryId precedingEntry, CancellationToken token)
-            => this.Represents(context.LocalEndpoint) ? 
-                context.LocalCommitAsync(newEntry) : 
+            => this.Represents(context.LocalEndpoint) ?
+                context.LocalCommitAsync(newEntry) :
                 SendAsync(new AppendEntriesMessage(context.LocalEndpoint, newEntry, precedingEntry), AppendEntriesMessage.GetResponse, token);
 
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh,
@@ -131,7 +131,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IClusterMember.IsRemote => !this.Represents(Endpoint);
 
-        ClusterMemberStatus IClusterMember.Status => (ClusterMemberStatus) status.VolatileRead();
+        ClusterMemberStatus IClusterMember.Status => (ClusterMemberStatus)status.VolatileRead();
 
         bool IEquatable<IClusterMember>.Equals(IClusterMember other) => Endpoint.Equals(other?.Endpoint);
 

@@ -55,7 +55,7 @@ namespace DotNext.Reflection
 
         protected sealed override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
                 syncObject.Dispose();
                 elements.Clear();
@@ -100,7 +100,7 @@ namespace DotNext.Reflection
 
         private protected sealed override E Create(MemberKey key) => Create(key.Name, key.NonPublic);
 
-        internal static MemberCache<M, E> Of<C>(MemberInfo member) 
+        internal static MemberCache<M, E> Of<C>(MemberInfo member)
             where C : MemberCache<M, E>, new()
             => member.GetUserData().GetOrSet<MemberCache<M, E>, C>(Slot);
     }

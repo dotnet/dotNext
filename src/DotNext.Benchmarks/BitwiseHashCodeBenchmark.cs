@@ -6,11 +6,11 @@ using System;
 namespace DotNext.Benchmarks
 {
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
-	[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class BitwiseHashCodeBenchmark
     {
         private static readonly Guid NonEmptyGuid = Guid.NewGuid();
-        private static readonly BitwiseEqualityBenchmark.BigStructure NonEmptyBigStruct = new BitwiseEqualityBenchmark.BigStructure{X = 10M, C=42M};
+        private static readonly BitwiseEqualityBenchmark.BigStructure NonEmptyBigStruct = new BitwiseEqualityBenchmark.BigStructure { X = 10M, C = 42M };
 
         [Benchmark]
         public void GuidHashCode()

@@ -23,7 +23,7 @@ namespace DotNext.Threading
 
             internal override float CompareExchange(ref float value, float update, float expected)
                 => Interlocked.CompareExchange(ref value, update, expected);
-            
+
             internal override float VolatileRead(ref float value) => Volatile.Read(ref value);
 
             private protected override bool Equals(float x, float y) => x.Equals(y);
@@ -132,8 +132,8 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]      
-		public static float AccumulateAndGet(ref this float value, float x, Func<float, float, float> accumulator)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float AccumulateAndGet(ref this float value, float x, Func<float, float, float> accumulator)
             => Atomic.Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
@@ -158,8 +158,8 @@ namespace DotNext.Threading
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]      
-		public static float UpdateAndGet(ref this float value, Func<float, float> updater)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float UpdateAndGet(ref this float value, Func<float, float> updater)
             => Atomic.Update(ref value, updater).NewValue;
 
         /// <summary>

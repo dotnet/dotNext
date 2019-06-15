@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using System.Runtime.ConstrainedExecution;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {

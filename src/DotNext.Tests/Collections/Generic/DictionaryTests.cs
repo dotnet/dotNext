@@ -1,10 +1,10 @@
-﻿using Xunit;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Xunit;
 
 namespace DotNext.Collections.Generic
 {
-	public sealed class DictionaryTests: Assert
-	{
+    public sealed class DictionaryTests : Assert
+    {
         [Fact]
         public static void ReadOnlyIndexer()
         {
@@ -33,17 +33,17 @@ namespace DotNext.Collections.Generic
             Equal(3, dict.IndexerGetter().Invoke("three"));
         }
 
-		[Fact]
-		public void ConversionTest()
-		{
-			var dict = new Dictionary<string, int>()
-			{
-				{"a", 1 },
-				{"b", 2 }
-			};
-			var view = dict.Convert(i => i + 10);
-			Equal(11, view["a"]);
-			Equal(12, view["b"]);
-		}
-	}
+        [Fact]
+        public void ConversionTest()
+        {
+            var dict = new Dictionary<string, int>()
+            {
+                {"a", 1 },
+                {"b", 2 }
+            };
+            var view = dict.Convert(i => i + 10);
+            Equal(11, view["a"]);
+            Equal(12, view["b"]);
+        }
+    }
 }

@@ -5,7 +5,7 @@ using Xunit;
 
 namespace DotNext.Threading
 {
-    public sealed class AsyncExclusiveLockTests: Assert
+    public sealed class AsyncExclusiveLockTests : Assert
     {
         [Fact]
         public static async Task TrivialLock()

@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets position of the entry in the log.
         /// </summary>
         public long Index { get; }
-        
+
         /// <summary>
         /// Determines whether this identifier is equal to other identifier.
         /// </summary>
@@ -38,7 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => Term == other.Term && Index == other.Index;
 
         bool IEquatable<LogEntryId>.Equals(LogEntryId other)
-            => Equals(other);    
+            => Equals(other);
 
         /// <summary>
         /// Determines whether this identifier is equal to other identifier.

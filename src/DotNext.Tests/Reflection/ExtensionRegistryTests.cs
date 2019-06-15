@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext.Reflection
 {
-    public sealed class ExtensionRegistryTest: Assert
+    public sealed class ExtensionRegistryTest : Assert
     {
         private delegate void ZeroMethod(ref int value);
         private delegate bool ContainsMethod(ref string value, char ch);
@@ -15,7 +15,7 @@ namespace DotNext.Reflection
         private static int GetLength(string value) => value.Length;
 
         private static bool Contains(ref string value, char ch) => value.IndexOf(ch) >= 0;
-        
+
         public ExtensionRegistryTest()
         {
             ExtensionRegistry.RegisterInstance(new Func<int, string>(ToHex));

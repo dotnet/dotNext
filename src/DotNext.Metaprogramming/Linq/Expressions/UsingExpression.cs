@@ -5,12 +5,12 @@ using System.Reflection;
 namespace DotNext.Linq.Expressions
 {
     using static Reflection.DisposableType;
-    
+
     /// <summary>
     /// Represents <c>using</c> expression.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">USING statement</seealso>
-    public sealed class UsingExpression: Expression
+    public sealed class UsingExpression : Expression
     {
         /// <summary>
         /// Represents constructor of <c>using</c> expression.
@@ -26,7 +26,7 @@ namespace DotNext.Linq.Expressions
         internal UsingExpression(Expression resource)
         {
             disposeMethod = resource.Type.GetDisposeMethod() ?? throw new ArgumentNullException(ExceptionMessages.DisposePatternExpected(resource.Type));
-            if(resource is ParameterExpression param)
+            if (resource is ParameterExpression param)
             {
                 assignment = null;
                 Resource = param;
@@ -106,7 +106,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
-            if(assignment is null)
+            if (assignment is null)
                 return TryFinally(Body, Block(typeof(void), Call(Resource, disposeMethod), Assign(Resource, Default(Resource.Type))));
             else
                 return Block(Sequence.Singleton(Resource), assignment, TryFinally(Body, Call(Resource, disposeMethod)));

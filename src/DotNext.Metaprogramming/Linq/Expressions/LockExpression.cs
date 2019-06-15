@@ -8,7 +8,7 @@ namespace DotNext.Linq.Expressions
     /// Represents synchronized block of code.
     /// </summary>
     /// <see href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</see>
-    public sealed class LockExpression: Expression
+    public sealed class LockExpression : Expression
     {
         /// <summary>
         /// Represents constructor of synchronized block of code.
@@ -56,7 +56,7 @@ namespace DotNext.Linq.Expressions
         /// <summary>
         /// Represents monitor object.
         /// </summary>
-        public ParameterExpression SyncRoot { get;  }
+        public ParameterExpression SyncRoot { get; }
 
         /// <summary>
         /// Gets body of the synchronized block of code.

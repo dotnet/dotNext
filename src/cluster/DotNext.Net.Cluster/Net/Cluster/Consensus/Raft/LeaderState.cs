@@ -1,10 +1,10 @@
-﻿using System;
+﻿using DotNext.Net.Cluster.Replication;
+using DotNext.Threading;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNext.Net.Cluster.Replication;
-using DotNext.Threading;
-using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -19,9 +19,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private static readonly Func<Task, MemberHealthStatus> HealthStatusContinuation = task =>
         {
-            if(task.IsCanceled)
+            if (task.IsCanceled)
                 return MemberHealthStatus.Canceled;
-            else if(task.IsFaulted)
+            else if (task.IsFaulted)
                 return MemberHealthStatus.Unavailable;
             else
                 return MemberHealthStatus.OK;
@@ -30,7 +30,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private BackgroundTask heartbeatTask;
         private readonly bool absoluteMajority;
 
-        internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority) : base(stateMachine) => this.absoluteMajority = absoluteMajority;      
+        internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority) : base(stateMachine) => this.absoluteMajority = absoluteMajority;
 
         private async Task DoHeartbeats(CancellationToken token)
         {
@@ -46,9 +46,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);
                 var votes = 0;
-                if(absoluteMajority)
-                    foreach(var task in tasks)
-                        switch(task.Result)
+                if (absoluteMajority)
+                    foreach (var task in tasks)
+                        switch (task.Result)
                         {
                             case MemberHealthStatus.Canceled:
                                 return;
@@ -62,7 +62,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                     votes = int.MaxValue;
                 tasks.Clear();
-                if(votes <= 0)
+                if (votes <= 0)
                 {
                     stateMachine.MoveToFollowerState(false);
                     return;

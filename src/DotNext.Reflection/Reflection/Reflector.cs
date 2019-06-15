@@ -18,7 +18,7 @@ namespace DotNext.Reflection
         public static M MemberOf<M>(Expression<Action> exprTree)
             where M : MemberInfo
         {
-            switch(exprTree.Body)
+            switch (exprTree.Body)
             {
                 case MemberExpression body:
                     return body.Member as M;
@@ -38,7 +38,7 @@ namespace DotNext.Reflection
         /// <param name="ctor">Constructor to unreflect.</param>
         /// <returns>Unreflected constructor.</returns>
         public static Constructor<D> Unreflect<D>(this ConstructorInfo ctor) where D : MulticastDelegate => Constructor<D>.GetOrCreate(ctor);
-        
+
         /// <summary>
         /// Unreflects method to its typed and callable representation.
         /// </summary>

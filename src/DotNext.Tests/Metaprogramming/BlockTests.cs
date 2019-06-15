@@ -9,9 +9,9 @@ namespace DotNext.Metaprogramming
 
     using U = Linq.Expressions.UniversalExpression;
 
-    public sealed class BlockTests: Assert
+    public sealed class BlockTests : Assert
     {
-        private sealed class DisposableClass: Disposable
+        private sealed class DisposableClass : Disposable
         {
             public new bool IsDisposed => base.IsDisposed;
         }

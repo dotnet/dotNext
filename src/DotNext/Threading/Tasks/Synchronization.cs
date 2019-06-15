@@ -19,12 +19,12 @@ namespace DotNext.Threading.Tasks
         /// <exception cref="TimeoutException">Task is not completed.</exception>
         public static Result<R> GetResult<R>(this Task<R> task, TimeSpan timeout)
         {
-            if(task.Wait(timeout))
+            if (task.Wait(timeout))
                 try
                 {
                     return task.Result;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     return new Result<R>(e);
                 }
@@ -46,7 +46,7 @@ namespace DotNext.Threading.Tasks
                 task.Wait(token);
                 return task.Result;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }

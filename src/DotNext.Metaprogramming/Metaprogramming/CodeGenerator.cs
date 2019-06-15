@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Diagnostics;
 
 namespace DotNext.Metaprogramming
 {
@@ -65,7 +65,7 @@ namespace DotNext.Metaprogramming
         /// <param name="test">The conditional expression to evaluate. If the condition is <see langword="true"/>, the specified message is not sent and the message box is not displayed.</param>
         /// <param name="message">The message to include into trace.</param>
         [Conditional("DEBUG")]
-        public static void Assert(Expression test, string message = null) 
+        public static void Assert(Expression test, string message = null)
             => LexicalScope.Current.AddStatement(test.Assert(message));
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace DotNext.Metaprogramming
         /// <param name="variable">The variable to modify.</param>
         /// <param name="value">The value to be assigned to the variable.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Assign(ParameterExpression variable, Expression value) 
+        public static void Assign(ParameterExpression variable, Expression value)
             => LexicalScope.Current.AddStatement(variable.Assign(value));
 
         /// <summary>
@@ -446,7 +446,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static ConditionalBuilder Then(this ConditionalBuilder builder, Action body)
         {
-            using(var statement = BranchStatement.Positive(builder))
+            using (var statement = BranchStatement.Positive(builder))
                 return statement.Build(body);
         }
 
@@ -459,7 +459,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static ConditionalBuilder Else(this ConditionalBuilder builder, Action body)
         {
-            using(var statement = BranchStatement.Negative(builder))
+            using (var statement = BranchStatement.Negative(builder))
                 return statement.Build(body);
         }
 
@@ -491,7 +491,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/while">while Statement</seealso>
         public static void While(Expression test, Action<LoopContext> body)
         {
-            using(var statement = WhileStatement.While(test))
+            using (var statement = WhileStatement.While(test))
                 statement.Place(body);
         }
 
@@ -504,7 +504,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/while">while Statement</seealso>
         public static void While(Expression test, Action body)
         {
-            using(var statement = WhileStatement.While(test))
+            using (var statement = WhileStatement.While(test))
                 statement.Place(body);
         }
 
@@ -517,7 +517,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/do">do-while Statement</seealso>
         public static void DoWhile(Expression test, Action<LoopContext> body)
         {
-            using(var statement = WhileStatement.Until(test))
+            using (var statement = WhileStatement.Until(test))
                 statement.Place(body);
         }
 
@@ -530,7 +530,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/do">do-while Statement</seealso>
         public static void DoWhile(Expression test, Action body)
         {
-            using(var statement = WhileStatement.Until(test))
+            using (var statement = WhileStatement.Until(test))
                 statement.Place(body);
         }
 
@@ -543,7 +543,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression, LoopContext> body)
         {
-            using(var statement = new ForEachStatement(collection))
+            using (var statement = new ForEachStatement(collection))
                 statement.Place(body);
         }
 
@@ -556,7 +556,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
         public static void ForEach(Expression collection, Action<MemberExpression> body)
         {
-            using(var statement = new ForEachStatement(collection))
+            using (var statement = new ForEachStatement(collection))
                 statement.Place(body);
         }
 
@@ -574,7 +574,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
         public static void For(Expression initializer, ForExpression.LoopBuilder.Condition condition, Action<ParameterExpression> iteration, Action<ParameterExpression, LoopContext> body)
         {
-            using(var statement = new ForStatement(initializer, condition, iteration))
+            using (var statement = new ForStatement(initializer, condition, iteration))
                 statement.Place(body);
         }
 
@@ -592,7 +592,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
         public static void For(Expression initializer, ForExpression.LoopBuilder.Condition condition, Action<ParameterExpression> iteration, Action<ParameterExpression> body)
         {
-            using(var statement = new ForStatement(initializer, condition, iteration))
+            using (var statement = new ForStatement(initializer, condition, iteration))
                 statement.Place(body);
         }
 
@@ -604,9 +604,9 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Loop(Action<LoopContext> body) 
+        public static void Loop(Action<LoopContext> body)
         {
-            using(var statement = new LoopStatement())
+            using (var statement = new LoopStatement())
                 statement.Place(body);
         }
 
@@ -615,9 +615,9 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <param name="body">Loop body.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Loop(Action body) 
+        public static void Loop(Action body)
         {
-            using(var statement = new LoopStatement())
+            using (var statement = new LoopStatement())
                 statement.Place(body);
         }
 
@@ -641,11 +641,11 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of catch clause.</exception>
         public static void Rethrow()
         {
-            if(LexicalScope.IsInScope<CatchStatement>())
+            if (LexicalScope.IsInScope<CatchStatement>())
                 LexicalScope.Current.AddStatement(Expression.Rethrow());
             else
                 throw new InvalidOperationException(ExceptionMessages.InvalidRethrow);
-                
+
         }
 
         /// <summary>
@@ -657,7 +657,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action<ParameterExpression> body)
         {
-            using(var statement = new UsingStatement(resource))
+            using (var statement = new UsingStatement(resource))
                 statement.Place(body);
         }
 
@@ -670,7 +670,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/using-statement">using Statement</seealso>
         public static void Using(Expression resource, Action body)
         {
-            using(var statement = new UsingStatement(resource))
+            using (var statement = new UsingStatement(resource))
                 statement.Place(body);
         }
 
@@ -683,7 +683,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
         public static void Lock(Expression syncRoot, Action<ParameterExpression> body)
         {
-            using(var statement = new LockStatement(syncRoot))
+            using (var statement = new LockStatement(syncRoot))
                 statement.Place(body);
         }
 
@@ -696,7 +696,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/lock-statement">lock Statement</seealso>
         public static void Lock(Expression syncRoot, Action body)
         {
-            using(var statement = new LockStatement(syncRoot))
+            using (var statement = new LockStatement(syncRoot))
                 statement.Place(body);
         }
 
@@ -711,7 +711,7 @@ namespace DotNext.Metaprogramming
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement">With..End Statement</seealso>
         public static void With(Expression expression, Action<ParameterExpression> body)
         {
-            using(var statement = new WithStatement(expression))
+            using (var statement = new WithStatement(expression))
                 statement.Place(body);
         }
 
@@ -777,7 +777,7 @@ namespace DotNext.Metaprogramming
         /// <returns><c>this</c> builder.</returns>
         public static MatchBuilder Case(this MatchBuilder builder, Type expectedType, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
         {
-            using(var statement = builder.Case(expectedType, pattern))
+            using (var statement = builder.Case(expectedType, pattern))
                 return statement.Build(body);
         }
 
@@ -801,7 +801,7 @@ namespace DotNext.Metaprogramming
         /// <returns><c>this</c> builder.</returns>
         public static MatchBuilder Case(this MatchBuilder builder, object structPattern, Action<ParameterExpression> body)
         {
-            using(var statement = builder.Case(structPattern))
+            using (var statement = builder.Case(structPattern))
                 return statement.Build(body);
         }
 
@@ -918,7 +918,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, TryBuilder.Filter filter, Action<ParameterExpression> handler)
         {
-            using(var statement = new CatchStatement(builder, exceptionType, filter))
+            using (var statement = new CatchStatement(builder, exceptionType, filter))
                 return statement.Build(handler);
         }
 
@@ -932,10 +932,10 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, Action handler)
         {
-            using(var statement = new CatchStatement(builder, exceptionType))
+            using (var statement = new CatchStatement(builder, exceptionType))
                 return statement.Build(handler);
         }
-        
+
         /// <summary>
         /// Constructs exception handling section.
         /// </summary>
@@ -958,7 +958,7 @@ namespace DotNext.Metaprogramming
         public static TryBuilder Catch<E>(this TryBuilder builder, Action<ParameterExpression> handler)
             where E : Exception
             => Catch(builder, typeof(E), handler);
-        
+
         /// <summary>
         /// Constructs exception handling section.
         /// </summary>
@@ -980,7 +980,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Catch(this TryBuilder builder, Action handler)
         {
-            using(var statement = new CatchStatement(builder))
+            using (var statement = new CatchStatement(builder))
                 return statement.Build(handler);
         }
 
@@ -994,7 +994,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static TryBuilder Fault(this TryBuilder builder, Action fault)
         {
-            using(var statement = new FaultStatement(builder))
+            using (var statement = new FaultStatement(builder))
                 return statement.Build(fault);
         }
 
@@ -1031,7 +1031,7 @@ namespace DotNext.Metaprogramming
         {
             using (var statement = new FinallyStatement(builder))
                 return statement.Build(body);
-        } 
+        }
 
         /// <summary>
         /// Restarts execution of the loop.
@@ -1104,7 +1104,7 @@ namespace DotNext.Metaprogramming
         public static Expression<D> Lambda<D>(bool tailCall, Func<LambdaContext, Expression> body)
             where D : Delegate
         {
-            using(var expression = new LambdaExpression<D>(tailCall))
+            using (var expression = new LambdaExpression<D>(tailCall))
                 return expression.Build(body);
         }
 

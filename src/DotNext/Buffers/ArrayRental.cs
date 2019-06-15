@@ -30,7 +30,7 @@ namespace DotNext.Buffers
         /// Obtains rented array.
         /// </summary>
         /// <param name="rental">Array rental.</param>
-        public static implicit operator T[] (in ArrayRental<T> rental) => rental.array;
+        public static implicit operator T[](in ArrayRental<T> rental) => rental.array;
 
         /// <summary>
         /// Returns array to the pool.

@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace DotNext.Threading.Tasks
 {
@@ -16,7 +16,7 @@ namespace DotNext.Threading.Tasks
 
         private protected void Complete(ValueTask<R> task)
         {
-            if(completed.FalseToTrue())
+            if (completed.FalseToTrue())
                 builder.SetResult(task);
         }
 
@@ -36,14 +36,14 @@ namespace DotNext.Threading.Tasks
 
         private protected void Complete(ValueTask task)
         {
-            if(completed.FalseToTrue())
+            if (completed.FalseToTrue())
                 builder.SetResult(task);
         }
 
         internal ValueTask<ValueTask> Task => builder.Task;
     }
 
-    internal class ValueTaskCompletionSource2<R>: ValueTaskCompletionSource<R>
+    internal class ValueTaskCompletionSource2<R> : ValueTaskCompletionSource<R>
     {
         private readonly ValueTask<R> first, second;
 
@@ -58,7 +58,7 @@ namespace DotNext.Threading.Tasks
         internal void CompleteSecond() => Complete(second);
     }
 
-    internal class ValueTaskCompletionSource2: ValueTaskCompletionSource
+    internal class ValueTaskCompletionSource2 : ValueTaskCompletionSource
     {
         private readonly ValueTask first, second;
 
@@ -73,7 +73,7 @@ namespace DotNext.Threading.Tasks
         internal void CompleteSecond() => Complete(second);
     }
 
-    internal class ValueTaskCompletionSource3: ValueTaskCompletionSource2
+    internal class ValueTaskCompletionSource3 : ValueTaskCompletionSource2
     {
         private readonly ValueTask third;
 
@@ -86,7 +86,7 @@ namespace DotNext.Threading.Tasks
         internal void CompleteThird() => Complete(third);
     }
 
-    internal class ValueTaskCompletionSource3<R>: ValueTaskCompletionSource2<R>
+    internal class ValueTaskCompletionSource3<R> : ValueTaskCompletionSource2<R>
     {
         private readonly ValueTask<R> third;
 
@@ -99,7 +99,7 @@ namespace DotNext.Threading.Tasks
         internal void CompleteThird() => Complete(third);
     }
 
-    internal class ValueTaskCompletionSource4: ValueTaskCompletionSource3
+    internal class ValueTaskCompletionSource4 : ValueTaskCompletionSource3
     {
         private readonly ValueTask fourth;
 
@@ -112,7 +112,7 @@ namespace DotNext.Threading.Tasks
         internal void CompleteFourth() => Complete(fourth);
     }
 
-    internal class ValueTaskCompletionSource4<R>: ValueTaskCompletionSource3<R>
+    internal class ValueTaskCompletionSource4<R> : ValueTaskCompletionSource3<R>
     {
         private readonly ValueTask<R> fourth;
 
@@ -125,7 +125,7 @@ namespace DotNext.Threading.Tasks
         internal void CompleteFourth() => Complete(fourth);
     }
 
-    internal class ValueTaskCompletionSource5: ValueTaskCompletionSource4
+    internal class ValueTaskCompletionSource5 : ValueTaskCompletionSource4
     {
         private readonly ValueTask fifth;
 
@@ -138,7 +138,7 @@ namespace DotNext.Threading.Tasks
         internal void CompleteFifth() => Complete(fifth);
     }
 
-    internal class ValueTaskCompletionSource5<R>: ValueTaskCompletionSource4<R>
+    internal class ValueTaskCompletionSource5<R> : ValueTaskCompletionSource4<R>
     {
         private readonly ValueTask<R> fifth;
 

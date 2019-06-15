@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Threading
 {
-    public sealed class AsyncBarrierTests: Assert
+    public sealed class AsyncBarrierTests : Assert
     {
         [Fact]
         public static async Task RemovingWaitingParticipants()
         {
-            using(var barrier = new AsyncBarrier(4))
+            using (var barrier = new AsyncBarrier(4))
             {
                 var task = barrier.SignalAndWait();
                 while (barrier.ParticipantsRemaining > 3)
@@ -31,7 +30,7 @@ namespace DotNext.Threading
         {
             for (var j = 0; j < 100; j++)
             {
-                using(var barrier = new AsyncBarrier(0))
+                using (var barrier = new AsyncBarrier(0))
                 {
                     var actions = new Action[4];
                     for (int k = 0; k < 4; k++)
@@ -61,7 +60,7 @@ namespace DotNext.Threading
             for (int j = 0; j < 10; j++)
             {
                 Task t1, t2;
-                using(var barrier = new AsyncBarrier(3))
+                using (var barrier = new AsyncBarrier(3))
                 {
                     t1 = barrier.SignalAndWait();
                     t2 = barrier.SignalAndWait();

@@ -31,7 +31,7 @@ namespace DotNext.Metaprogramming
         ForExpression ILexicalScope<ForExpression, Action<ParameterExpression, LoopContext>>.Build(Action<ParameterExpression, LoopContext> scope)
         {
             var result = new ForExpression(initialization, ContinueLabel, BreakLabel, condition);
-            using(var context = new LoopContext(result))
+            using (var context = new LoopContext(result))
                 scope(result.LoopVar, context);
             AddStatement(Expression.Label(result.ContinueLabel));
             iteration(result.LoopVar);

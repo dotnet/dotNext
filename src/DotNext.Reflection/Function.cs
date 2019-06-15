@@ -46,7 +46,7 @@ namespace DotNext
             {
                 return function(in arguments);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }
@@ -70,7 +70,7 @@ namespace DotNext
             {
                 return function(in @this, in arguments);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return new Result<R>(e);
             }

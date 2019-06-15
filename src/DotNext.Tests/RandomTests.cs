@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using Xunit;
 
 namespace DotNext
 {
-    public sealed class RandomTests: Assert
+    public sealed class RandomTests : Assert
     {
         private sealed class DummyRNG : RandomNumberGenerator
         {

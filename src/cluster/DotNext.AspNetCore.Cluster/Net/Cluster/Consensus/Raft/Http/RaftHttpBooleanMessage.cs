@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
-using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
-        private protected RaftHttpBooleanMessage(HttpRequest request) 
+        private protected RaftHttpBooleanMessage(HttpRequest request)
             : base(request)
         {
         }
@@ -26,7 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal static Task CreateResponse(HttpResponse response, bool result)
         {
-            response.StatusCode = (int) HttpStatusCode.OK;
+            response.StatusCode = (int)HttpStatusCode.OK;
             return response.WriteAsync(Convert.ToString(result, InvariantCulture));
         }
     }

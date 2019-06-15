@@ -1,8 +1,8 @@
-﻿using System;
-using static System.Globalization.CultureInfo;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using static System.Globalization.CultureInfo;
 using DefaultWebHostBuilder = Microsoft.AspNetCore.Hosting.WebHostBuilder;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting

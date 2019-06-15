@@ -11,7 +11,7 @@ namespace DotNext.Linq.Expressions
     /// Represents iteration over collection elements as expression.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
-    public sealed class ForEachExpression: Expression, ILoopLabels
+    public sealed class ForEachExpression : Expression, ILoopLabels
     {
         /// <summary>
         /// Represents constructor of iteration over collection elements.

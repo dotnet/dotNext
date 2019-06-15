@@ -34,7 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public MemberUnavailableException(IRaftClusterMember member, string message, Exception innerException)
             : base(member, message)
             => this.innerException = innerException;
-        
+
         /// <summary>
         /// Deserialization constructor.
         /// </summary>
@@ -43,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected MemberUnavailableException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            innerException = (Exception) info.GetValue(InnerExceptionSerEntry, typeof(Exception));
+            innerException = (Exception)info.GetValue(InnerExceptionSerEntry, typeof(Exception));
         }
 
         /// <summary>

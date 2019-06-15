@@ -57,7 +57,7 @@ namespace DotNext.Metaprogramming
 
         public Expression<D> Build(Action<LambdaContext> scope)
         {
-            using(var context = new LambdaContext(this))
+            using (var context = new LambdaContext(this))
                 scope(context);
             return Build();
         }

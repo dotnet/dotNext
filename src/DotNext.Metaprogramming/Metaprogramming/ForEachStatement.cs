@@ -22,7 +22,7 @@ namespace DotNext.Metaprogramming
         ForEachExpression ILexicalScope<ForEachExpression, Action<MemberExpression, LoopContext>>.Build(Action<MemberExpression, LoopContext> scope)
         {
             var result = new ForEachExpression(collection, ContinueLabel, BreakLabel);
-            using(var context = new LoopContext(result))
+            using (var context = new LoopContext(result))
                 scope(result.Element, context);
             result.Body = Build();
             return result;

@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster
         /// Represents cluster member endpoint that can be used to send messages specific to consensus protocol.
         /// </summary>
         IPEndPoint Endpoint { get; }
-        
+
         /// <summary>
         /// Indicates that executing host is a leader node in the cluster.
         /// </summary>

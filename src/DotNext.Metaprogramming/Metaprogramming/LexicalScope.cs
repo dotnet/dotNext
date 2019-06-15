@@ -37,7 +37,7 @@ namespace DotNext.Metaprogramming
             public bool MoveNext()
             {
                 current = Next;
-                if(current is null)
+                if (current is null)
                     return false;
                 else
                 {
@@ -65,8 +65,8 @@ namespace DotNext.Metaprogramming
         internal static S FindScope<S>()
             where S : class, ILexicalScope
         {
-            for(var current = LexicalScope.current; !(current is null); current = current.Parent)
-                if(current is S scope)
+            for (var current = LexicalScope.current; !(current is null); current = current.Parent)
+                if (current is S scope)
                     return scope;
             return null;
         }
@@ -82,7 +82,7 @@ namespace DotNext.Metaprogramming
 
         private protected LexicalScope(bool isStatement)
         {
-            if(isStatement && current is null)
+            if (isStatement && current is null)
                 throw new InvalidOperationException(ExceptionMessages.OutOfLexicalScope);
             Parent = current;
             current = this;
@@ -98,7 +98,7 @@ namespace DotNext.Metaprogramming
                 return null;
             }
         }
-        
+
         private protected IReadOnlyCollection<ParameterExpression> Variables => variables.Values;
 
         public void AddStatement(Expression statement)
@@ -108,9 +108,9 @@ namespace DotNext.Metaprogramming
 
         private protected Expression Build()
         {
-            if(first is null)
+            if (first is null)
                 return Expression.Empty();
-            else if(ReferenceEquals(first, last) && Variables.Count == 0)
+            else if (ReferenceEquals(first, last) && Variables.Count == 0)
                 return first.Statement;
             else
                 return Expression.Block(Variables, this);
@@ -124,7 +124,7 @@ namespace DotNext.Metaprogramming
 
         public virtual void Dispose()
         {
-            for(var current = first; !(current is null); current = current.Next)
+            for (var current = first; !(current is null); current = current.Next)
                 current.Dispose();
             first = last = null;
             variables.Clear();

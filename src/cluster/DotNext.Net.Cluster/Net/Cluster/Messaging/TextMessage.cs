@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.Messaging
         public TextMessage(string name, string value)
             : this(name, value, null)
         {
-            
+
         }
 
         internal TextMessage(string name, string value, string mediaType)
@@ -51,6 +51,6 @@ namespace DotNext.Net.Cluster.Messaging
         /// <summary>
         /// MIME type of the message.
         /// </summary>
-        public ContentType Type { get; } 
+        public ContentType Type { get; }
     }
 }

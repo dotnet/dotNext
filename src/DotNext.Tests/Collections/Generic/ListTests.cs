@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext.Collections.Generic
 {
-    public sealed class ListTests: Assert
+    public sealed class ListTests : Assert
     {
         [Fact]
         public static void ToArray()

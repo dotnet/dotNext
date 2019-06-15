@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
+using System;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {

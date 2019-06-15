@@ -18,7 +18,7 @@ namespace DotNext.Runtime.CompilerServices
             var isCompletedProperty = awaiterType.GetProperty(nameof(TaskAwaiter.IsCompleted), typeof(bool));
             if (isCompletedProperty is null)
                 IsCompleted = NotCompleted;
-            else if(awaiterType.IsValueType)
+            else if (awaiterType.IsValueType)
                 IsCompleted = isCompletedProperty.GetMethod.CreateDelegate<IsCompletedGetter>();
             else
             {

@@ -136,7 +136,7 @@ namespace DotNext.Threading
                 bool success;
                 if (success = lockState.FalseToTrue())  //acquire lock
                 {
-                    if(success = timeToLive.DecrementAndGet() <= 0) //decrease weight because this object was accessed a long time ago
+                    if (success = timeToLive.DecrementAndGet() <= 0) //decrease weight because this object was accessed a long time ago
                     {
                         //prevent this method from blocking so dispose resource asynchronously
                         if (resource is IDisposable disposable)
@@ -156,12 +156,12 @@ namespace DotNext.Threading
 
             internal void Destroy(bool disposeResource)
             {
-                if(!(Next is null))
+                if (!(Next is null))
                 {
                     Next.Previous = null;
                     Next = null;
                 }
-                if(!(Previous is null))
+                if (!(Previous is null))
                 {
                     Previous.Next = null;
                     Previous = null;
@@ -194,16 +194,16 @@ namespace DotNext.Threading
         [SuppressMessage("Reliability", "CA2000", Justification = "Rental object is reusable and should not be destroyed in ctor")]
         public ConcurrentObjectPool(int capacity, Func<T> factory)
         {
-            if(capacity < 1)
+            if (capacity < 1)
                 throw new ArgumentOutOfRangeException(nameof(capacity));
             this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
             var rental = default(Rental);
             Action<Rental> callback = AdjustAvailableObjectAndCheckStarvation;
-            for(var index = 0; index < capacity; index++)
+            for (var index = 0; index < capacity; index++)
             {
                 var next = new Rental(index);
-                next.Released += callback;  
-                if(rental is null)
+                next.Released += callback;
+                if (rental is null)
                     current = last = new AtomicReference<Rental>(rental = next);
                 else
                 {
@@ -231,10 +231,10 @@ namespace DotNext.Threading
             factory = null;
             var rental = default(Rental);
             var index = 0;
-            foreach(var resource in objects)
+            foreach (var resource in objects)
             {
                 var next = new Rental(index++, resource);
-                if(rental is null)
+                if (rental is null)
                     current = last = new AtomicReference<Rental>(rental = next);
                 else
                 {
@@ -242,7 +242,7 @@ namespace DotNext.Threading
                     rental = next;
                 }
             }
-            if(rental is null)
+            if (rental is null)
                 throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
             rental.Attach(current.Value);
             current = new AtomicReference<Rental>(rental);
@@ -307,7 +307,7 @@ namespace DotNext.Threading
         {
             if (disposing)
             {
-                for(Rental rental = current.Value, next; !(rental is null); rental = next)
+                for (Rental rental = current.Value, next; !(rental is null); rental = next)
                 {
                     next = rental.Next;
                     rental.Destroy(!(factory is null));

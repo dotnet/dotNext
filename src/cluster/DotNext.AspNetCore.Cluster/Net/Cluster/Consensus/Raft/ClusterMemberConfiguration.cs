@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Net;
 using System.Linq;
+using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {

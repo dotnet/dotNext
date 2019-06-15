@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using DotNext.Threading;
 
 namespace DotNext.Collections.Concurrent
 {
@@ -189,14 +187,14 @@ namespace DotNext.Collections.Concurrent
         /// <param name="converter">The convert of source items.</param>
         public void Set<G>(ICollection<G> items, Converter<G, T> converter)
         {
-            if(items.Count == 0)
+            if (items.Count == 0)
             {
                 ReplaceStore(Array.Empty<T>());
                 return;
             }
             var array = new T[items.Count];
             var index = 0L;
-            foreach(var item in items)
+            foreach (var item in items)
                 array[index++] = converter(item);
             ReplaceStore(array);
         }

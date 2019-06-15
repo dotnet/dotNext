@@ -1,7 +1,7 @@
-﻿using System;
+﻿using DotNext.Net.Cluster.Replication;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNext.Net.Cluster.Replication;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {

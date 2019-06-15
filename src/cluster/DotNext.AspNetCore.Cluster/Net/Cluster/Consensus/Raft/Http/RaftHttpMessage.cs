@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.IO;
-using static System.Globalization.CultureInfo;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -146,7 +146,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             if (message is null)
                 return null;
-            var request = new HttpRequestMessage {Method = HttpMethod.Post};
+            var request = new HttpRequestMessage { Method = HttpMethod.Post };
             message.FillRequest(request);
             return request;
         }

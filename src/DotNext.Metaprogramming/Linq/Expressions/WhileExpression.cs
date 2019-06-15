@@ -8,7 +8,7 @@ namespace DotNext.Linq.Expressions
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/while">while Statement</seealso>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/do">do-while Statement</seealso>
-    public sealed class WhileExpression: Expression, ILoopLabels
+    public sealed class WhileExpression : Expression, ILoopLabels
     {
         /// <summary>
         /// Represents constructor of the loop body.
@@ -23,13 +23,13 @@ namespace DotNext.Linq.Expressions
 
         internal WhileExpression(Expression test, LabelTarget continueLabel, LabelTarget breakLabel, bool checkConditionFirst)
         {
-            if(test is null)
+            if (test is null)
                 throw new ArgumentNullException(nameof(test));
-            else if(test.Type != typeof(bool))
+            else if (test.Type != typeof(bool))
                 throw new ArgumentException(ExceptionMessages.BoolExpressionExpected, nameof(test));
             Test = test;
             conditionFirst = checkConditionFirst;
-            
+
             ContinueLabel = continueLabel ?? Label(typeof(void), "continue");
             BreakLabel = breakLabel ?? Label(typeof(void), "break");
         }

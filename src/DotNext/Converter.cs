@@ -60,7 +60,7 @@ namespace DotNext
         /// <returns>A delegate of type <see cref="Predicate{T}"/> referencing the same method as original delegate.</returns>
         public static Predicate<T> AsPredicate<T>(this Converter<T, bool> converter)
             => converter.ChangeType<Predicate<T>>();
-        
+
         /// <summary>
         /// Converts the input value without throwing exception.
         /// </summary>
@@ -76,7 +76,7 @@ namespace DotNext
             {
                 return converter(input);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return new Result<O>(e);
             }

@@ -1,6 +1,6 @@
-using Assembly = System.Reflection.Assembly;
 using System.Diagnostics.CodeAnalysis;
 using System.Resources;
+using Assembly = System.Reflection.Assembly;
 
 namespace DotNext.Threading
 {

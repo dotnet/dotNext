@@ -1,8 +1,8 @@
-﻿using System;
+﻿using DotNext.Net.Cluster.Replication;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNext.Net.Cluster.Replication;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private enum VotingResult : byte
         {
             Rejected = 0,
-            Granted ,
+            Granted,
             Canceled,
             NotAvailable
         }
@@ -45,7 +45,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Task = voter.VoteAsync(lastRecord, token).ContinueWith(HandleTaskContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
             }
         }
-        
+
         private readonly CancellationTokenSource votingCancellation;
         private readonly bool absoluteMajority;
         private volatile Task votingTask;

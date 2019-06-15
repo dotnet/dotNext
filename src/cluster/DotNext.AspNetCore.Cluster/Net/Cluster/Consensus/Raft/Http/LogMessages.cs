@@ -1,9 +1,9 @@
+using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Resources;
 using System.Reflection;
-using Microsoft.Extensions.Logging;
+using System.Resources;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {

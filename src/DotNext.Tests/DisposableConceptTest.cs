@@ -4,19 +4,19 @@ using Xunit;
 
 namespace DotNext
 {
-    public sealed class DisposableConceptTest: Assert
+    public sealed class DisposableConceptTest : Assert
     {
-        public struct DisposableStruct: IDisposable
+        public struct DisposableStruct : IDisposable
         {
             public int Disposed;
-            
+
             void IDisposable.Dispose() => Disposed += 1;
         }
 
         public struct DisposableStruct2
         {
             public int Disposed;
-            
+
             public void Dispose() => Disposed += 1;
         }
 
@@ -43,7 +43,7 @@ namespace DotNext
         [Fact]
         public static void MemoryStreamTest()
         {
-            var ms = new MemoryStream(new byte[] {1, 2, 3});
+            var ms = new MemoryStream(new byte[] { 1, 2, 3 });
             Disposable<MemoryStream>.Dispose(ms);
             Throws<ObjectDisposedException>(() => ms.ReadByte());
         }

@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -142,7 +142,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return ReceiveHeartbeat(request.Sender, request.ConsensusTerm, ClusterMember.Represents);
         }
 
-        private async Task Resign(HttpResponse response) => 
+        private async Task Resign(HttpResponse response) =>
             await ResignMessage.CreateResponse(response, await ReceiveResign().ConfigureAwait(false)).ConfigureAwait(false);
 
         private Task GetMetadata(HttpResponse response) => MetadataMessage.CreateResponse(response, metadata);
@@ -156,12 +156,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             if (messageHandler is null)
             {
-                response.StatusCode = (int) HttpStatusCode.NotImplemented;
+                response.StatusCode = (int)HttpStatusCode.NotImplemented;
             }
             else if (message.IsOneWay)
             {
                 messageHandler.ReceiveSignal(FindMember(message.Sender, ClusterMember.Represents), message.Message);
-                response.StatusCode = (int) HttpStatusCode.OK;
+                response.StatusCode = (int)HttpStatusCode.OK;
             }
             else
             {
@@ -181,7 +181,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             //checks whether the client's address is allowed
             if (networks.Count > 0 || networks.FirstOrDefault(context.Connection.RemoteIpAddress.IsIn) is null)
             {
-                context.Response.StatusCode = (int) HttpStatusCode.Forbidden;
+                context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return CompletedTask<bool, BooleanConst.True>.Task;
             }
 
@@ -208,7 +208,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     task = ReceiveMessage(new CustomMessage(context.Request), context.Response);
                     break;
                 default:
-                    context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     return CompletedTask<bool, BooleanConst.True>.Task;
             }
 

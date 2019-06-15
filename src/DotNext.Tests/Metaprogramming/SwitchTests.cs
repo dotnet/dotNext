@@ -5,9 +5,8 @@ namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
     using static CodeGenerator;
-    using U = Linq.Expressions.UniversalExpression;
 
-    public sealed class SwitchTests: Assert
+    public sealed class SwitchTests : Assert
     {
         [Fact]
         public static void IntConversion()

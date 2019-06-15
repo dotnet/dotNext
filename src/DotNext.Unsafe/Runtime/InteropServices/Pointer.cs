@@ -748,7 +748,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer value.</param>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe implicit operator T* (Pointer<T> ptr) => ptr.value;
+        public static unsafe implicit operator T*(Pointer<T> ptr) => ptr.value;
 
         /// <summary>
         /// Obtains pointer value (address) as <see cref="IntPtr"/>.

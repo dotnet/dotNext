@@ -1,5 +1,5 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal static void CreateResponse(HttpResponse response)
         {
-            response.StatusCode = (int) HttpStatusCode.OK;
+            response.StatusCode = (int)HttpStatusCode.OK;
         }
     }
 }

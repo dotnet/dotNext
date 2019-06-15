@@ -1,17 +1,11 @@
+using Microsoft.AspNetCore.Http;
 using System;
-using System.IO;
-using System.Linq;
-using static System.Globalization.CultureInfo;
 using System.Net;
 using System.Net.Http;
-using System.Net.Mime;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
+using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Messaging;
     using Replication;
 
     internal sealed class AppendEntriesMessage : RaftHttpBooleanMessage
@@ -68,7 +62,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             LogEntry = new ReceivedLogEntry(request);
         }
 
-        
+
 
         private protected override void FillRequest(HttpRequestMessage request)
         {

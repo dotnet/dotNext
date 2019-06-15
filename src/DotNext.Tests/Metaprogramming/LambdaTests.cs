@@ -1,17 +1,17 @@
 using System;
 using System.IO;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using System.Reflection;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
-    using U = Linq.Expressions.UniversalExpression;
     using static CodeGenerator;
+    using U = Linq.Expressions.UniversalExpression;
 
-    public sealed class LambdaTests: Assert
+    public sealed class LambdaTests : Assert
     {
         private static long Fact(long value)
         {
@@ -21,7 +21,7 @@ namespace DotNext.Metaprogramming
         [Fact]
         public static void Recursion()
         {
-            var fact = Lambda<Func<long, long>>(fun => 
+            var fact = Lambda<Func<long, long>>(fun =>
             {
                 var arg = (U)fun[0];
                 If(arg > 1L).Then(arg * fun.Invoke(arg - 1L)).Else(arg).OfType<long>().End();

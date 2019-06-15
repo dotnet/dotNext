@@ -128,22 +128,22 @@ namespace DotNext
                 case IReadOnlyList<T> readOnlyList:
                     return ElementAt(readOnlyList, index, out element);
                 default:
-                {
-                    using (var enumerator = collection.GetEnumerator())
                     {
-                        enumerator.Skip(index);
-                        if (enumerator.MoveNext())
+                        using (var enumerator = collection.GetEnumerator())
                         {
-                            element = enumerator.Current;
-                            return true;
-                        }
-                        else
-                        {
-                            element = default;
-                            return false;
+                            enumerator.Skip(index);
+                            if (enumerator.MoveNext())
+                            {
+                                element = enumerator.Current;
+                                return true;
+                            }
+                            else
+                            {
+                                element = default;
+                                return false;
+                            }
                         }
                     }
-                }
             }
         }
 

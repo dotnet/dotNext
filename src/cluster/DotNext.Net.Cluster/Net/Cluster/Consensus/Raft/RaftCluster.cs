@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -53,9 +53,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="InvalidOperationException">Attempt to remove local node.</exception>
             public TMember Remove()
             {
-                if(node is null)
+                if (node is null)
                     return null;
-                else if(!node.Value.IsRemote)
+                else if (!node.Value.IsRemote)
                     throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
                 else
                 {
@@ -65,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return member;
                 }
             }
-            
+
             /// <summary>
             /// Obtains actual cluster member.
             /// </summary>
@@ -140,7 +140,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
 
         private volatile ICollection<TMember> members;
-        
+
         private AsyncLock transitionSync;  //used to synchronize state transitions
         private volatile RaftState state;
         private TMember votedFor;

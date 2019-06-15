@@ -48,7 +48,7 @@ namespace DotNext
         /// <param name="value">The value to be stored as result.</param>
         public Result(T value)
         {
-            if(value is Exception e)
+            if (value is Exception e)
             {
                 exception = ExceptionDispatchInfo.Capture(e);
                 this.value = default;
@@ -111,12 +111,12 @@ namespace DotNext
         /// <returns>The conversion result.</returns>
         public Result<U> Convert<U>(Converter<T, U> converter)
         {
-            if(exception is null)
+            if (exception is null)
                 try
                 {
                     return converter(value);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     return new Result<U>(e);
                 }

@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public ElectionTimeout(int lowerValue, int upperValue)
             : this(lowerValue, upperValue, new Random())
         {
-            
+
         }
 
         private ElectionTimeout(int lowerValue, int upperValue, Random rng)

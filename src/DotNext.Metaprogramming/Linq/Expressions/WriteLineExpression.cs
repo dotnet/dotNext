@@ -70,11 +70,11 @@ namespace DotNext.Linq.Expressions
 
         private static MethodCallExpression WriteLineTo(MemberExpression stream, Expression value)
         {
-            var writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new [] { value.Type });
-            if(value.Type.IsValueType)
+            var writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new[] { value.Type });
+            if (value.Type.IsValueType)
                 value = Convert(value, typeof(object));
-            if(writeLineMethod is null)
-                writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new [] { typeof(object) });
+            if (writeLineMethod is null)
+                writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new[] { typeof(object) });
             return Call(stream, writeLineMethod, value);
         }
 
@@ -92,7 +92,7 @@ namespace DotNext.Linq.Expressions
 
         private MethodCallExpression WriteLineToDebug()
         {
-            var writeLineMethod = typeof(System.Diagnostics.Debug).GetMethod(nameof(System.Diagnostics.Debug.WriteLine), new [] { typeof(object) });
+            var writeLineMethod = typeof(System.Diagnostics.Debug).GetMethod(nameof(System.Diagnostics.Debug.WriteLine), new[] { typeof(object) });
             return Call(writeLineMethod, value.Type.IsValueType ? Convert(value, typeof(object)) : value);
         }
 
@@ -103,7 +103,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
-            switch(kind)
+            switch (kind)
             {
                 case Kind.Out:
                     return WriteLineToOut();

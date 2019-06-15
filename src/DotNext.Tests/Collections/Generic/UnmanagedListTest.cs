@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext.Collections.Generic
 {
-    public sealed class UnmanagedListTest: Assert
+    public sealed class UnmanagedListTest : Assert
     {
         [Fact]
         public static void AddRead()
@@ -103,8 +103,8 @@ namespace DotNext.Collections.Generic
                 list.Add(30);
                 list.Add(40);
                 var index = 0;
-                foreach(var item in list)
-                    switch(index++)
+                foreach (var item in list)
+                    switch (index++)
                     {
                         case 0:
                             Equal(10, item);

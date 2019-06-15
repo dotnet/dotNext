@@ -104,13 +104,13 @@ namespace DotNext
     {
         private static E GetItem<E>(in ValueTuple<E> tuple, int index)
             => index == 0 ? tuple.Item1 : throw new ArgumentOutOfRangeException(nameof(index));
-        
+
         private static E GetItem<E>(in Tuple<E> tuple, int index)
             => index == 0 ? tuple.Item1 : throw new ArgumentOutOfRangeException(nameof(index));
 
         private static E GetItem<E>(in ValueTuple<E, E> tuple, int index)
         {
-            switch(index)
+            switch (index)
             {
                 case 0:
                     return tuple.Item1;
@@ -123,7 +123,7 @@ namespace DotNext
 
         private static E GetItem<E>(in Tuple<E, E> tuple, int index)
         {
-            switch(index)
+            switch (index)
             {
                 case 0:
                     return tuple.Item1;

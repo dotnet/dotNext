@@ -251,7 +251,7 @@ namespace DotNext.Metaprogramming
         private readonly ParameterExpression value;
         private readonly BinaryExpression assignment;
         private readonly ICollection<PatternMatch> patterns;
-        private CaseStatement defaultCase;        
+        private CaseStatement defaultCase;
 
         internal MatchBuilder(Expression value, ILexicalScope currentScope)
             : base(currentScope)
@@ -326,7 +326,7 @@ namespace DotNext.Metaprogramming
         /// <returns><c>this</c> builder.</returns>
         public MatchBuilder Case(Pattern pattern, CaseStatement body)
             => MatchByCondition<CaseStatementBuilder>(pattern, body);
-        
+
         /// <summary>
         /// Defines pattern matching.
         /// </summary>
@@ -467,7 +467,7 @@ namespace DotNext.Metaprogramming
         /// <returns><c>this</c> builder.</returns>
         public MatchBuilder Case(object structPattern, CaseStatement body)
             => Case(GetProperties(structPattern), body);
-        
+
         /// <summary>
         /// Defines pattern matching based on structural matching.
         /// </summary>
@@ -475,8 +475,8 @@ namespace DotNext.Metaprogramming
         /// <param name="value">The value to be supplied if the specified structural pattern matches to the passed object.</param>
         /// <returns><c>this</c> builder.</returns>
         public MatchBuilder Case(object structPattern, Expression value)
-            => Case(structPattern, MakeCaseStatement(value)); 
-        
+            => Case(structPattern, MakeCaseStatement(value));
+
         /// <summary>
         /// Defines default behavior in case when all defined patterns are false positive.
         /// </summary>

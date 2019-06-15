@@ -31,7 +31,7 @@ namespace DotNext.Reflection
         private static readonly ObjectAccessor Accessor = ObjectAccessor.Create(IndexOfCalc);
         private static readonly MethodInfo ReflectedGetter = IndexOfCalc.GetType().GetProperty(nameof(IndexOfCalculator.IndexOf)).GetMethod;
         private static readonly MemberGetter<IndexOfCalculator, int> StaticallyReflected = Type<IndexOfCalculator>.Property<int>.RequireGetter(nameof(IndexOfCalculator.IndexOf));
-        
+
         private static readonly Function<object, ValueTuple, object> UntypedReflected = ReflectedGetter.Unreflect<Function<object, ValueTuple, object>>();
 
         private static void DummyReceiver(object first)

@@ -1,6 +1,5 @@
-﻿using System.Net;
-using DotNext.Net.Cluster.Replication;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {

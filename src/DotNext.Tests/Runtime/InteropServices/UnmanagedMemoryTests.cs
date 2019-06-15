@@ -1,9 +1,8 @@
-﻿using System;
-using Xunit;
+﻿using Xunit;
 
 namespace DotNext.Runtime.InteropServices
 {
-    public sealed class UnmanagedMemoryTests: Assert
+    public sealed class UnmanagedMemoryTests : Assert
     {
         private struct Data
         {
@@ -13,7 +12,7 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static void BoxUnboxTest()
         {
-            using(var value = new UnmanagedMemory<Data>(new Data { Field1 = 10, Field2 = 20 }))
+            using (var value = new UnmanagedMemory<Data>(new Data { Field1 = 10, Field2 = 20 }))
             {
                 Data d = value;
                 Equal(10, d.Field1);

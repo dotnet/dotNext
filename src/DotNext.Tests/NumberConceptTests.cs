@@ -6,8 +6,8 @@ namespace DotNext
     using Concept = Runtime.CompilerServices.Concept;
     using ConstraintViolationException = Reflection.ConstraintViolationException;
 
-    public sealed class NumberConceptTests: Assert
-    { 
+    public sealed class NumberConceptTests : Assert
+    {
         [Fact]
         public static void ApplyConceptToLong()
         {

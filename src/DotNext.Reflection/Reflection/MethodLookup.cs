@@ -3,7 +3,7 @@ namespace DotNext.Reflection
     /// <summary>
     /// Represents method declaration type.
     /// </summary>
-    public enum MethodLookup: byte
+    public enum MethodLookup : byte
     {
         /// <summary>
 		/// Represents static method.

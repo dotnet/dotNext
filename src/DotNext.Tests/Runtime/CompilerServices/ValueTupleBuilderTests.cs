@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    public sealed class ValueTupleBuilderTests: Assert
+    public sealed class ValueTupleBuilderTests : Assert
     {
         [Fact]
         public static void TupleTypeConstructionTest()

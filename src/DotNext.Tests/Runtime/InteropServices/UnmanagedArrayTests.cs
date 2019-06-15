@@ -1,11 +1,10 @@
 ﻿using System;
-using System.IO;
 using Xunit;
 
 namespace DotNext.Runtime.InteropServices
 {
-    public sealed class UnmanagedArrayTests: Assert
-    {   
+    public sealed class UnmanagedArrayTests : Assert
+    {
         [Fact]
         public static void SliceTest()
         {
