@@ -160,7 +160,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             else if (message.IsOneWay)
             {
-                messageHandler.ReceiveSignal(FindMember(message.Sender, ClusterMember.Represents), message.Message);
+                await messageHandler.ReceiveSignal(FindMember(message.Sender, ClusterMember.Represents), message.Message);
                 response.StatusCode = (int)HttpStatusCode.OK;
             }
             else

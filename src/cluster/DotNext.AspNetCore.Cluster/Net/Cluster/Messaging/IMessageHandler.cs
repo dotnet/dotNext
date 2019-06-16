@@ -19,13 +19,14 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="message">The received message.</param>
         /// <returns>The response message.</returns>
         [ReliabilityContract(Consistency.MayCorruptProcess, Cer.Success)]
-        Task<IMessage> ReceiveMessage(IClusterMember sender, IMessage message);
+        ValueTask<IMessage> ReceiveMessage(IClusterMember sender, IMessage message);
 
         /// <summary>
         /// Handles incoming signal from the specified cluster member.
         /// </summary>
         /// <param name="sender">The sender of the message.</param>
         /// <param name="signal">The received message representing signal.</param>
-        void ReceiveSignal(IClusterMember sender, IMessage signal);
+        /// <returns>The task representing asynchronous execution of the method.</returns>
+        ValueTask ReceiveSignal(IClusterMember sender, IMessage signal);
     }
 }
