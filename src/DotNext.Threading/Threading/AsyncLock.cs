@@ -229,6 +229,14 @@ namespace DotNext.Threading
         }
 
         /// <summary>
+        /// Tries to acquire lock asynchronously
+        /// </summary>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The task returning the acquired lock holder; or empty lock holder if operation was canceled.</returns>
+        public Task<Holder> TryAcquire(CancellationToken token)
+            => TryAcquire(TimeSpan.MaxValue, token, true);
+
+        /// <summary>
         /// Destroy this lock and dispose underlying lock object if it is owned by the given lock.
         /// </summary>
         /// <remarks>
