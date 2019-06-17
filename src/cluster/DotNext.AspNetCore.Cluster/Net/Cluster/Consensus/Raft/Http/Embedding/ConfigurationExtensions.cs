@@ -25,14 +25,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         /// <returns>The collection of injectable services.</returns>
         public static IServiceCollection BecomeClusterMember(this IServiceCollection services,
             IConfiguration memberConfig)
-            => services.AddClusterAsSingleton<RaftHttpCluster>(memberConfig);
+            => services.AddClusterAsSingleton<RaftEmbeddedCluster, RaftEmbeddedClusterMemberConfiguration>(memberConfig);
 
         /// <summary>
         /// Setup Raft protocol handler as middleware for the specified application.
         /// </summary>
         /// <param name="builder">The application builder.</param>
         /// <returns>The configured application builder.</returns>
-        public static IApplicationBuilder ConsensusProtocolHandler(this IApplicationBuilder builder)
-            => builder.Use(RaftProtocolMiddleware.Create);
+        public static IApplicationBuilder UseConsensusProtocolHandler(this IApplicationBuilder builder)
+        {
+            var cluster = builder.ApplicationServices.GetRequiredService<RaftEmbeddedCluster>();
+            return builder.Use(cluster.CreateConsensusProtocolHandler);
+        }
     }
 }

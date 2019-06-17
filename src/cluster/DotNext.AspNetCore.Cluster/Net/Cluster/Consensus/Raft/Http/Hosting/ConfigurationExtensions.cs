@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using static System.Globalization.CultureInfo;
-using DefaultWebHostBuilder = Microsoft.AspNetCore.Hosting.WebHostBuilder;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
@@ -19,13 +17,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     public static class ConfigurationExtensions
     {
         /// <summary>
-        /// The name of the member configuration property
-        /// allows to specify hosting port for the consensus protocol
-        /// handler.
-        /// </summary>
-        public const string HostPortConfigurationOption = "port";
-
-        /// <summary>
         /// Allows to inject <see cref="ICluster"/>, <see cref="IRaftCluster"/>, <see cref="IExpandableCluster"/>
         /// to application services and establishes network communication with other cluster member.
         /// </summary>
@@ -39,15 +30,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         {
             if (appBuilder != null)
                 services = services.AddSingleton(appBuilder);
-            if (hostBuilder is null)
-            {
-                hostBuilder = new DefaultWebHostBuilder();
-                var port = int.Parse(memberConfig[HostPortConfigurationOption], InvariantCulture);
-                hostBuilder.UseKestrel(options => options.ListenAnyIP(port));
-            }
-
-            return services.AddSingleton(new WebHostBuilder(hostBuilder))
-                .AddClusterAsSingleton<RaftHostedCluster>(memberConfig);
+            return services.AddSingleton(hostBuilder is null ? new WebHostBuilder() : new WebHostBuilder(hostBuilder))
+                .AddClusterAsSingleton<RaftHostedCluster, RaftHostedClusterMemberConfiguration>(memberConfig);
         }
     }
 }

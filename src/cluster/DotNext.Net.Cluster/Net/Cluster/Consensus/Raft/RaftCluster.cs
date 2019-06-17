@@ -115,7 +115,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal MemberCollection(IEnumerable<TMember> members) => this.members = new LinkedList<TMember>(members);
 
-            internal MemberCollection(LinkedList<TMember> members) => this.members = members;
+            internal MemberCollection(out ICollection<TMember> members) 
+                => members = this.members = new LinkedList<TMember>();
 
             /// <summary>
             /// Adds new cluster member.
@@ -162,7 +163,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             electionTimeoutProvider = config.ElectionTimeout;
             electionTimeout = electionTimeoutProvider.RandomTimeout();
             absoluteMajority = config.AbsoluteMajority;
-            members = new MemberCollection(this.members = new LinkedList<TMember>());
+            members = new MemberCollection(out var collection);
+            this.members = collection;
             transitionSync = AsyncLock.Exclusive();
             transitionCancellation = new CancellationTokenSource();
         }
@@ -196,10 +198,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.members = members.AsLinkedList();
         }
 
-        /// <summary>
-        /// Gets typed collection of cluster members.
-        /// </summary>
-        protected IReadOnlyCollection<TMember> Members => state is null ? Array.Empty<TMember>() : (IReadOnlyCollection<TMember>)members;
+        private IReadOnlyCollection<TMember> Members => state is null ? Array.Empty<TMember>() : (IReadOnlyCollection<TMember>)members;
 
         IEnumerable<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
@@ -314,6 +313,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             Logger.DowngradedToFollowerState();
         }
+
+        protected TMember FindMember(Predicate<TMember> matcher)
+            => members.FirstOrDefault(matcher.AsFunc());
 
         /// <summary>
         /// Finds cluster member using its identifier.

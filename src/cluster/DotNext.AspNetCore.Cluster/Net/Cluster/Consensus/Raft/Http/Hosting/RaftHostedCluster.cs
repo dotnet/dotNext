@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,16 +10,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
     internal sealed class RaftHostedCluster : RaftHttpCluster
     {
+        private static readonly Uri Root = new Uri("/", UriKind.Relative);
         private readonly IWebHost host;
 
         public RaftHostedCluster(IServiceProvider services)
-            : base(services)
+            : base(services, out var members)
         {
+            var config = services.GetRequiredService<IOptions<RaftHostedClusterMemberConfiguration>>().Value;
             var appConfigurer = services.GetService<ApplicationBuilder>();
             host = services.GetRequiredService<WebHostBuilder>()
+                .Configure(config)
                 .Configure(app => (appConfigurer?.Invoke(app) ?? app).Run(ProcessRequest))
                 .Build();
+            foreach (var memberUri in config.Members)
+                members.Add(CreateMember(memberUri));
         }
+
+        private protected override RaftClusterMember CreateMember(Uri address)
+            => new RaftClusterMember(this, address, Root);
 
         public override async Task StartAsync(CancellationToken token)
         {
@@ -32,13 +39,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         {
             await host.StopAsync(token).ConfigureAwait(false);
             await base.StopAsync(token).ConfigureAwait(false);
-        }
-
-        private new async Task ProcessRequest(HttpContext context)
-        {
-            if (await base.ProcessRequest(context).ConfigureAwait(false))
-                return;
-            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }
 
         protected override void Dispose(bool disposing)

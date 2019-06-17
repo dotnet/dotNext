@@ -20,6 +20,10 @@ namespace DotNext.Net
                 case UriHostNameType.IPv4:
                 case UriHostNameType.IPv6:
                     return new IPEndPoint(IPAddress.Parse(memberUri.Host), memberUri.Port);
+                case UriHostNameType.Dns:
+                    if (memberUri.IsLoopback)
+                        return new IPEndPoint(IPAddress.Loopback, memberUri.Port);
+                    goto default;
                 default:
                     return null;
             }

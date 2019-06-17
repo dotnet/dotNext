@@ -18,9 +18,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Messaging;
     using Threading.Tasks;
 
-    internal class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster
+    internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster
     {
-        private static readonly Func<Task, bool> TrueTaskContinuation = task => true;
         private delegate ICollection<IPEndPoint> HostingAddressesProvider();
 
         private readonly IRaftClusterConfigurator configurator;
@@ -29,25 +28,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly IDisposable configurationTracker;
         private volatile MemberMetadata metadata;
         private volatile ISet<IPNetwork> allowedNetworks;
-        private readonly Uri consensusPath;
 
         [SuppressMessage("Usage", "CA2213", Justification = "This object is disposed via RaftCluster.members collection")]
         private RaftClusterMember localMember;
         private readonly HostingAddressesProvider hostingAddresses;
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
-        private RaftHttpCluster(RaftClusterMemberConfiguration config)
-            : base(config, out var members)
+        private RaftHttpCluster(RaftClusterMemberConfiguration config, out MemberCollection members)
+            : base(config, out members)
         {
-            consensusPath = config.ResourcePath;
-            allowedNetworks = config.ParseAllowedNetworks();
+            allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
-            foreach (var memberUri in config.Members)
-                members.Add(CreateMember(memberUri));
         }
 
-        private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies)
-            : this(config.CurrentValue)
+        private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MemberCollection members)
+            : this(config.CurrentValue, out members)
         {
             configurator = dependencies.GetService<IRaftClusterConfigurator>();
             messageHandler = dependencies.GetService<IMessageHandler>();
@@ -58,12 +53,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             configurationTracker = config.OnChange(ConfigurationChanged);
         }
 
-        public RaftHttpCluster(IServiceProvider dependencies)
-            : this(dependencies.GetRequiredService<IOptionsMonitor<RaftClusterMemberConfiguration>>(), dependencies)
+        private protected RaftHttpCluster(IServiceProvider dependencies, out MemberCollection members)
+            : this(dependencies.GetRequiredService<IOptionsMonitor<RaftClusterMemberConfiguration>>(), dependencies, out members)
         {
         }
 
-        private RaftClusterMember CreateMember(Uri address) => new RaftClusterMember(this, address, consensusPath);
+        private protected abstract RaftClusterMember CreateMember(Uri address);
 
         protected override ILogger Logger { get; }
 
@@ -72,7 +67,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
         {
             metadata = new MemberMetadata(configuration.Metadata);
-            allowedNetworks = configuration.ParseAllowedNetworks();
+            allowedNetworks = configuration.AllowedNetworks;
             ChangeMembers((in MemberCollection members) =>
             {
                 var existingMembers = new HashSet<Uri>();
@@ -118,7 +113,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public override Task StartAsync(CancellationToken token)
         {
             //detect local member
-            localMember = Members.FirstOrDefault(hostingAddresses().Contains);
+            localMember = FindMember(hostingAddresses().Contains);
             if (localMember is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             configurator?.Initialize(this, metadata);
@@ -172,48 +167,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        internal Task<bool> ProcessRequest(HttpContext context)
+        private protected Task ProcessRequest(HttpContext context)
         {
             var networks = allowedNetworks;
-            if (!string.Equals(consensusPath.GetComponents(UriComponents.Path, UriFormat.UriEscaped),
-                context.Request.PathBase.Value, StringComparison.Ordinal))
-                return CompletedTask<bool, BooleanConst.False>.Task;
             //checks whether the client's address is allowed
             if (networks.Count > 0 || networks.FirstOrDefault(context.Connection.RemoteIpAddress.IsIn) is null)
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                return CompletedTask<bool, BooleanConst.True>.Task;
+                return Task.CompletedTask;
             }
 
-            Task task;
             //process request
             switch (RaftHttpMessage.GetMessageType(context.Request))
             {
                 case RequestVoteMessage.MessageType:
-                    task = ReceiveVote(new RequestVoteMessage(context.Request), context.Response);
-                    break;
+                    return ReceiveVote(new RequestVoteMessage(context.Request), context.Response);
                 case HeartbeatMessage.MessageType:
-                    task = ReceiveHeartbeat(new HeartbeatMessage(context.Request), context.Response);
-                    break;
+                    return ReceiveHeartbeat(new HeartbeatMessage(context.Request), context.Response);
                 case ResignMessage.MessageType:
-                    task = Resign(context.Response);
-                    break;
+                    return Resign(context.Response);
                 case MetadataMessage.MessageType:
-                    task = GetMetadata(context.Response);
-                    break;
+                    return GetMetadata(context.Response);
                 case AppendEntriesMessage.MessageType:
-                    task = ReceiveEntries(new AppendEntriesMessage(context.Request), context.Response);
-                    break;
+                    return ReceiveEntries(new AppendEntriesMessage(context.Request), context.Response);
                 case CustomMessage.MessageType:
-                    task = ReceiveMessage(new CustomMessage(context.Request), context.Response);
-                    break;
+                    return ReceiveMessage(new CustomMessage(context.Request), context.Response);
                 default:
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return CompletedTask<bool, BooleanConst.True>.Task;
+                    return Task.CompletedTask;
             }
-
-            return task.ContinueWith(TrueTaskContinuation, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously |
-                                           TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Current);
         }
 
         protected override void Dispose(bool disposing)

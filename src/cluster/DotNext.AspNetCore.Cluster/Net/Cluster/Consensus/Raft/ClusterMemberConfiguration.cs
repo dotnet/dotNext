@@ -1,14 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using ComponentModel;
+
     /// <summary>
     /// Represents configuration of cluster member.
     /// </summary>
     public class ClusterMemberConfiguration : IClusterMemberConfiguration
     {
+        static ClusterMemberConfiguration() => IPNetworkConverter.Register();
+
         private ElectionTimeout electionTimeout;
 
         /// <summary>
@@ -18,7 +22,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             //recommended election timeout is between 150ms and 300ms
             electionTimeout = ElectionTimeout.Recommended;
-            AbsoluteMajority = true;
         }
 
         /// <summary>
@@ -29,9 +32,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Example of IPv6 network: 2001:0db8::/32
         /// Example of IPv4 network: 192.168.0.0/24
         /// </remarks>
-        public ISet<string> AllowedNetworks { get; } = new HashSet<string>();
-
-        internal ISet<IPNetwork> ParseAllowedNetworks() => new HashSet<IPNetwork>(AllowedNetworks.Select(IPNetwork.Parse));
+        [CLSCompliant(false)]
+        public HashSet<IPNetwork> AllowedNetworks { get; } = new HashSet<IPNetwork>();
 
         /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.

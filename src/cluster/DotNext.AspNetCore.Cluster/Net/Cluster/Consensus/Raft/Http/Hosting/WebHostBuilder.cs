@@ -2,14 +2,34 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using DefaultWebHostBuilder = Microsoft.AspNetCore.Hosting.WebHostBuilder;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
     internal sealed class WebHostBuilder : IWebHostBuilder
     {
         private readonly IWebHostBuilder builder;
+        private readonly bool isCustomBuilder;
 
-        internal WebHostBuilder(IWebHostBuilder builder) => this.builder = builder;
+        internal WebHostBuilder(IWebHostBuilder builder)
+        {
+            this.builder = builder;
+            isCustomBuilder = true;
+        }
+
+        internal WebHostBuilder()
+        {
+            this.builder = new DefaultWebHostBuilder();
+            isCustomBuilder = false;
+        }
+
+        internal IWebHostBuilder Configure(RaftHostedClusterMemberConfiguration memberConfig)
+        {
+            if (isCustomBuilder)
+                return this;
+            else
+                return builder.UseKestrel(options => options.ListenAnyIP(memberConfig.Port));
+        }
 
         public IWebHost Build() => builder.Build();
 
