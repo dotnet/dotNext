@@ -15,9 +15,7 @@ using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Generic;
     using Messaging;
-    using Threading.Tasks;
 
     internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster
     {
@@ -105,8 +103,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-        Task<bool> IHostingContext.LocalCommitAsync(Replication.ILogEntry<LogEntryId> entry)
-            => AuditTrail is null ? CompletedTask<bool, BooleanConst.False>.Task : AuditTrail.CommitAsync(entry);
+        async Task<bool> IHostingContext.LocalCommitAsync(Replication.ILogEntry<LogEntryId> entry)
+        {
+            if (AuditTrail is null)
+                throw new NotSupportedException();
+            await AuditTrail.CommitAsync(entry);
+            return true;
+        }
 
         IPEndPoint IHostingContext.LocalEndpoint => localMember?.Endpoint;
 

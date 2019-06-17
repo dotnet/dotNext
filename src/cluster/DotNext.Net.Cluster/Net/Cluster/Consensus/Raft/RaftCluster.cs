@@ -395,7 +395,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 await StepDown().ConfigureAwait(false);
                 Leader = FindMember(sender, matcher);
-                return auditTrail.Contains(precedingEntry) && await auditTrail.CommitAsync(newEntry).ConfigureAwait(false);
+                if (auditTrail.Contains(precedingEntry))
+                {
+                    await auditTrail.CommitAsync(newEntry);
+                    return true;
+                }
+                else
+                    return false;
             }
         }
 

@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Replication
         /// </summary>
         /// <param name="entry">The record to be committed.</param>
         /// <returns><see langword="true"/> if entry is committed successfully; <see langword="false"/> if record is rejected.</returns>
-        Task<bool> CommitAsync(ILogEntry<EntryId> entry);
+        ValueTask CommitAsync(ILogEntry<EntryId> entry);
 
         /// <summary>
         /// Gets identifier of ephemeral Initial log record.
