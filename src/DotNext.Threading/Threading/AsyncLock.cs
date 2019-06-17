@@ -196,9 +196,11 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <param name="suppressCancellation"><see langword="true"/> to return empty lock holder instead of throwing <see cref="OperationCanceledException"/>.</param>
         /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
-        public async Task<Holder> TryAcquire(TimeSpan timeout, CancellationToken token)
+        public async Task<Holder> TryAcquire(TimeSpan timeout, CancellationToken token, bool suppressCancellation = false)
         {
+
             Task<bool> task;
             switch (type)
             {
@@ -221,8 +223,18 @@ namespace DotNext.Threading
                     task = CompletedTask<bool, BooleanConst.False>.Task;
                     break;
             }
+            if(suppressCancellation)
+                task = task.OnCanceled<bool, BooleanConst.False>(token);
             return await task.ConfigureAwait(false) ? new Holder(lockedObject, type) : default;
         }
+
+        /// <summary>
+        /// Tries to acquire lock asynchronously
+        /// </summary>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The task returning the acquired lock holder; or empty lock holder if operation was canceled.</returns>
+        public Task<Holder> TryAcquire(CancellationToken token)
+            => TryAcquire(TimeSpan.MaxValue, token, true);
 
         /// <summary>
         /// Destroy this lock and dispose underlying lock object if it is owned by the given lock.

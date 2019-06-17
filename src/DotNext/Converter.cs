@@ -66,7 +66,7 @@ namespace DotNext
         /// </summary>
         /// <param name="converter">The converter to invoke.</param>
         /// <param name="input">The input value to be converted.</param>
-        /// <typeparam name="I">The type of the value to be</typeparam>
+        /// <typeparam name="I">The type of the value to be converted.</typeparam>
         /// <typeparam name="O">The type of the conversion result.</typeparam>
         /// <returns>The conversion result.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
