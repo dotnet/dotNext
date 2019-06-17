@@ -7,6 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal static class RaftHttpConfigurator
     {
+        
         internal static IServiceCollection AddClusterAsSingleton<TCluster, TConfig>(this IServiceCollection services, IConfiguration memberConfig)
             where TCluster : RaftHttpCluster
             where TConfig : RaftClusterMemberConfiguration, new()

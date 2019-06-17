@@ -41,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 foreach (var member in stateMachine.Members)
                 {
                     stateMachine.Logger.SendingHearbeat(member.Endpoint);
-                    tasks.Add(member.HeartbeatAsync(token).ContinueWith(HealthStatusContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current));
+                    tasks.Add(member.HeartbeatAsync(token).ContinueWith(HealthStatusContinuation, default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current));
                 }
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);

@@ -30,6 +30,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private volatile MemberMetadata metadata;
 
         internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath)
+            : base(context.CreateHttpHandler(), true)
         {
             this.resourcePath = resourcePath;
             this.context = context;
@@ -66,6 +67,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 ChangeStatus(UnavailableStatus);
                 throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
             }
+            catch(OperationCanceledException e) when (!token.IsCancellationRequested)
+            {
+                context.Logger.MemberUnavailable(Endpoint, e);
+                ChangeStatus(UnavailableStatus);
+                throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+            }
             finally
             {
                 response?.Dispose();
@@ -92,6 +99,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 ChangeStatus(UnavailableStatus);
                 throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
             }
+            catch(OperationCanceledException e) when (!token.IsCancellationRequested)
+            {
+                context.Logger.MemberUnavailable(Endpoint, e);
+                ChangeStatus(UnavailableStatus);
+                throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+            }
             finally
             {
                 response?.Dispose();
@@ -107,7 +120,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 ? true
                 : await SendAsync(new RequestVoteMessage(context.LocalEndpoint, lastEntry), RequestVoteMessage.GetResponse, token)
                     .ToNullable()
-                    .OnFaulted<bool?, DefaultConst<bool?>>(token)
+                    .OnFaulted<bool?, DefaultConst<bool?>>()
                     .ConfigureAwait(false);
 
         Task<bool> IClusterMember.ResignAsync(CancellationToken token)
@@ -131,7 +144,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public IPEndPoint Endpoint { get; }
         bool IClusterMember.IsLeader => context.IsLeader(this);
 
-        bool IClusterMember.IsRemote => !this.Represents(Endpoint);
+        bool IClusterMember.IsRemote => !this.Represents(context.LocalEndpoint);
 
         ClusterMemberStatus IClusterMember.Status => (ClusterMemberStatus)status.VolatileRead();
 
@@ -144,7 +157,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async void SendUnreliableSignalAsync(HttpRequestMessage request, CancellationToken token)
         {
             var response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
-                .OnFaultedOrCanceled<HttpResponseMessage, DefaultConst<HttpResponseMessage>>(token)
+                .OnFaultedOrCanceled<HttpResponseMessage, DefaultConst<HttpResponseMessage>>()
                 .ConfigureAwait(false);
             Disposable.Dispose(request, response);
         }
@@ -168,6 +181,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                         response.EnsureSuccessStatusCode();
                 }
                 catch (HttpRequestException e)
+                {
+                    context.Logger.MemberUnavailable(Endpoint, e);
+                    ChangeStatus(UnavailableStatus);
+                    throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+                }
+                catch(OperationCanceledException e) when (!token.IsCancellationRequested)
                 {
                     context.Logger.MemberUnavailable(Endpoint, e);
                     ChangeStatus(UnavailableStatus);

@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (timedOut)
             {
-                timerHandle.Unregister(refreshEvent);
+                timerHandle.Unregister(null);
                 stateMachine.MoveToCandidateState();
             }
             else

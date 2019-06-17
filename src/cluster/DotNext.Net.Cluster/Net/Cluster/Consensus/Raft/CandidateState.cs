@@ -42,7 +42,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal VotingState(IRaftClusterMember voter, LogEntryId? lastRecord, CancellationToken token)
             {
                 Voter = voter;
-                Task = voter.VoteAsync(lastRecord, token).ContinueWith(HandleTaskContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+                Task = voter.VoteAsync(lastRecord, token).ContinueWith(HandleTaskContinuation, default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
             }
         }
 
@@ -71,7 +71,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     case VotingResult.Granted:
                         stateMachine.Logger.VoteGranted(state.Voter.Endpoint);
                         votes += 1;
-                        break;
+                        break; 
                     case VotingResult.Rejected:
                         stateMachine.Logger.VoteGranted(state.Voter.Endpoint);
                         votes -= 1;
@@ -126,7 +126,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (disposing)
             {
                 votingCancellation.Dispose();
-                Interlocked.Exchange(ref votingTask, null)?.Dispose();
+                var task = Interlocked.Exchange(ref votingTask, null);
+                if (task != null && task.IsCompleted)
+                    task.Dispose();
             }
             base.Dispose(disposing);
         }

@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>Consensus;Raft;ASP.NET Core</PackageTags>
+    <PackageTags>consensus;raft;aspnetcore</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
     <PackageReleaseNotes>Initial implementation of Raft consensus algorithm</PackageReleaseNotes>
   </PropertyGroup>
@@ -46,6 +46,7 @@
   <ItemGroup>
     <PackageReference Include="IPNetwork2" Version="2.4.0.119" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <ProjectReference Include="..\..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />

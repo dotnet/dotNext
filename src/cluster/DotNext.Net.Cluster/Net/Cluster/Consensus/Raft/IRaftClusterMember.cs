@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents cluster member accessible through Raft protocol.
     /// </summary>
-    public interface IRaftClusterMember : IClusterMember, IDisposable
+    public interface IRaftClusterMember : IClusterMember
     {
         /// <summary>
         /// Requests vote from the member.

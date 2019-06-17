@@ -36,7 +36,9 @@ namespace DotNext.Threading
 
         public void Dispose()
         {
-            Disposable.Dispose(backgroundTask, cts);
+            cts?.Dispose();
+            if (backgroundTask != null && backgroundTask.IsCompleted)
+                backgroundTask.Dispose();
         }
     }
 }

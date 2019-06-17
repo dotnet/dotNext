@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
@@ -20,6 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster
     {
+        private const string RaftClientHandlerName = "raftClient";
         private delegate ICollection<IPEndPoint> HostingAddressesProvider();
 
         private readonly IRaftClusterConfigurator configurator;
@@ -32,6 +34,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         [SuppressMessage("Usage", "CA2213", Justification = "This object is disposed via RaftCluster.members collection")]
         private RaftClusterMember localMember;
         private readonly HostingAddressesProvider hostingAddresses;
+        private protected readonly IHttpMessageHandlerFactory httpHandlerFactory;
+        private protected readonly TimeSpan requestTimeout;
+
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
         private RaftHttpCluster(RaftClusterMemberConfiguration config, out MemberCollection members)
@@ -39,6 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
+            requestTimeout = TimeSpan.FromMilliseconds(config.LowerElectionTimeout);
         }
 
         private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MemberCollection members)
@@ -48,6 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             messageHandler = dependencies.GetService<IMessageHandler>();
             AuditTrail = dependencies.GetService<IPersistentState>();
             hostingAddresses = dependencies.GetRequiredService<IServer>().GetHostingAddresses;
+            httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
             //track changes in configuration
             configurationTracker = config.OnChange(ConfigurationChanged);
@@ -102,6 +109,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => AuditTrail is null ? CompletedTask<bool, BooleanConst.False>.Task : AuditTrail.CommitAsync(entry);
 
         IPEndPoint IHostingContext.LocalEndpoint => localMember?.Endpoint;
+
+        HttpMessageHandler IHostingContext.CreateHttpHandler()
+            => httpHandlerFactory?.CreateHandler(RaftClientHandlerName) ?? new HttpClientHandler();
 
         public event ClusterChangedEventHandler MemberAdded;
         public event ClusterChangedEventHandler MemberRemoved;

@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// Represents transport-independent implementation of Raft protocol.
     /// </summary>
     public abstract class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine
-        where TMember : class, IRaftClusterMember
+        where TMember : class, IRaftClusterMember, IDisposable
     {
         /// <summary>
         /// Represents predicate used for searching members stored in the memory
@@ -315,6 +315,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Logger.DowngradedToFollowerState();
         }
 
+        /// <summary>
+        /// Finds cluster member using predicate.
+        /// </summary>
+        /// <param name="matcher">The predicate used to find appropriate member.</param>
+        /// <returns>The cluster member; </returns>
         protected TMember FindMember(Predicate<TMember> matcher)
             => members.FirstOrDefault(matcher.AsFunc());
 
