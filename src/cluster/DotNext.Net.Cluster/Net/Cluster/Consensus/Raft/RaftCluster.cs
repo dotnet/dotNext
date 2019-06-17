@@ -12,6 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Replication;
     using Threading;
+    using static Threading.Tasks.Continuation;
 
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.
@@ -282,11 +283,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         followerState.Dispose();
                         return;
                     case CandidateState candidateState:
-                        await candidateState.StopVoting().ConfigureAwait(false);
+                        await candidateState.StopVoting().OnCompleted().ConfigureAwait(false);
                         candidateState.Dispose();
                         return;
                     case LeaderState leaderState:
-                        await leaderState.StopLeading(token).ConfigureAwait(false);
+                        await leaderState.StopLeading(token).OnCompleted().ConfigureAwait(false);
                         leaderState.Dispose();
                         return;
                 }
@@ -512,24 +513,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout)
         {
             Logger.TransitionToFollowerStateStarted();
-            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-            {
-                if (randomizeTimeout)
-                    electionTimeout = electionTimeoutProvider.RandomTimeout();
-                switch (state)
+            using (var lockHolder = await transitionSync.TryAcquire(transitionCancellation.Token).ConfigureAwait(false))
+                if (lockHolder)
                 {
-                    case LeaderState leaderState:
-                        state = new FollowerState(this, electionTimeout);
-                        await leaderState.StopLeading(transitionCancellation.Token).ConfigureAwait(false);
-                        leaderState.Dispose();
-                        break;
-                    case CandidateState candidateState:
-                        state = new FollowerState(this, electionTimeout);
-                        await candidateState.StopVoting().ConfigureAwait(false);
-                        candidateState.Dispose();
-                        break;
+                    if (randomizeTimeout)
+                        electionTimeout = electionTimeoutProvider.RandomTimeout();
+                    switch (state)
+                    {
+                        case LeaderState leaderState:
+                            state = new FollowerState(this, electionTimeout);
+                            await leaderState.StopLeading(transitionCancellation.Token).ConfigureAwait(false);
+                            leaderState.Dispose();
+                            break;
+                        case CandidateState candidateState:
+                            state = new FollowerState(this, electionTimeout);
+                            await candidateState.StopVoting().ConfigureAwait(false);
+                            candidateState.Dispose();
+                            break;
+                    }
                 }
-            }
 
             Logger.TransitionToFollowerStateCompleted();
         }
@@ -537,8 +539,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async void IRaftStateMachine.MoveToCandidateState()
         {
             Logger.TransitionToCandidateStateStarted();
-            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-                if (state is FollowerState followerState)
+            using (var lockHolder = await transitionSync.TryAcquire(transitionCancellation.Token).ConfigureAwait(false))
+                if (lockHolder && state is FollowerState followerState)
                 {
                     followerState.Dispose();
                     var newState = new CandidateState(this, absoluteMajority);
@@ -551,8 +553,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember leader)
         {
             Logger.TransitionToLeaderStateStarted();
-            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-                if (state is CandidateState candidateState)
+            using (var lockHolder = await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+                if (lockHolder && state is CandidateState candidateState)
                 {
                     candidateState.Dispose();
                     var newState = new LeaderState(this, absoluteMajority);
@@ -573,7 +575,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 var members = Interlocked.Exchange(ref this.members, Array.Empty<TMember>());
                 Dispose(members);
-                members.Clear();
+                if (members.Count > 0)
+                    members.Clear();
                 transitionCancellation.Dispose();
                 transitionSync.Dispose();
                 leader = votedFor = null;

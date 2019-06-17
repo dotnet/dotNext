@@ -35,7 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (disposing)
             {
-                timerHandle.Unregister(refreshEvent);
+                timerHandle.Unregister(null);
                 refreshEvent.Dispose();
             }
             base.Dispose(disposing);

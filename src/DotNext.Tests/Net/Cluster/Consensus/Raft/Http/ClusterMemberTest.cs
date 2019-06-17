@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     else
                         options.ListenAnyIP(port);
                 })
+                .UseShutdownTimeout(TimeSpan.FromHours(1))
                 .ConfigureLogging(builder => builder.AddDebug())
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
                 .UseStartup<TStartup>()

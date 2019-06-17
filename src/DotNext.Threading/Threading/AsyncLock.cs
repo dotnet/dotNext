@@ -200,7 +200,6 @@ namespace DotNext.Threading
         /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
         public async Task<Holder> TryAcquire(TimeSpan timeout, CancellationToken token, bool suppressCancellation = false)
         {
-
             Task<bool> task;
             switch (type)
             {
@@ -224,7 +223,7 @@ namespace DotNext.Threading
                     break;
             }
             if(suppressCancellation)
-                task = task.OnCanceled<bool, BooleanConst.False>(token);
+                task = task.OnCanceled<bool, BooleanConst.False>();
             return await task.ConfigureAwait(false) ? new Holder(lockedObject, type) : default;
         }
 

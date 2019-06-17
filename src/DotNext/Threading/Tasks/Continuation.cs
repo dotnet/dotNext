@@ -19,10 +19,28 @@ namespace DotNext.Threading.Tasks
     /// </summary>
     public static class Continuation
     {
-
         private static Task<T> ContinueWithConstant<T, C>(Task<T> task, bool completedSynchronously, Func<Task<T>, T> continuation, CancellationToken token = default, TaskScheduler scheduler = null)
             where C : Constant<T>, new()
             => completedSynchronously ? CompletedTask<T, C>.Task : task.ContinueWith(continuation, token, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current);
+
+        /// <summary>
+        /// Allows to obtain original <see cref="Task"/> in its final state after <c>await</c> without
+        /// throwing exception produced this task.
+        /// </summary>
+        /// <param name="task">The task to await.</param>
+        /// <returns><paramref name="task"/> in final state.</returns>
+        public static Task<Task> OnCompleted(this Task task)
+            => task.ContinueWith(Func.Identity<Task>(), default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+
+        /// <summary>
+        /// Allows to obtain original <see cref="Task{R}"/> in its final state after <c>await</c> without
+        /// throwing exception produced this task.
+        /// </summary>
+        /// <typeparam name="R">The type of the task result.</typeparam>
+        /// <param name="task">The task to await.</param>
+        /// <returns><paramref name="task"/> in final state.</returns>
+        public static Task<Task<R>> OnCompleted<R>(this Task<R> task)
+            => task.ContinueWith(Func.Identity<Task<R>>(), default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
         /// <summary>
         /// Returns constant value if underlying task is failed.
