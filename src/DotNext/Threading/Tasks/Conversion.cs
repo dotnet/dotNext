@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading.Tasks
 {
@@ -8,6 +9,12 @@ namespace DotNext.Threading.Tasks
     /// </summary>
     public static class Conversion
     {
+        private static class NullableConverter<T> 
+            where T : struct
+        {
+            internal static readonly Converter<T, T?> Value = value => new T?(value);
+        }
+
         /// <summary>
         /// Converts one type of task into another.
         /// </summary>
@@ -18,6 +25,17 @@ namespace DotNext.Threading.Tasks
         /// <returns>The converted task.</returns>
 		public static async Task<O> Convert<I, O>(this Task<I> task, Converter<I, O> converter)
             => converter(await task.ConfigureAwait(false));
+        
+        /// <summary>
+        /// Converts value type into nullable value type.
+        /// </summary>
+        /// <param name="task">The task to convert.</param>
+        /// <typeparam name="T">The value type.</typeparam>
+        /// <returns>The converted task.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Task<T?> ToNullable<T>(this Task<T> task)
+            where T : struct
+            => Convert<T, T?>(task, NullableConverter<T>.Value);
 
         /// <summary>
         /// Converts one type of task into another.

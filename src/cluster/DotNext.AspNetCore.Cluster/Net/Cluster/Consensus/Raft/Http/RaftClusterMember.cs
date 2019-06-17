@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Generic;
     using Messaging;
     using Replication;
     using Threading;
@@ -105,7 +106,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => this.Represents(context.LocalEndpoint)
                 ? true
                 : await SendAsync(new RequestVoteMessage(context.LocalEndpoint, lastEntry), RequestVoteMessage.GetResponse, token)
-                    .ContinueWith(DefaultContinuation<bool?>.Value, token, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Current)
+                    .ToNullable()
+                    .OnFaulted<bool?, DefaultConst<bool?>>(token)
                     .ConfigureAwait(false);
 
         Task<bool> IClusterMember.ResignAsync(CancellationToken token)
@@ -142,7 +144,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async void SendUnreliableSignalAsync(HttpRequestMessage request, CancellationToken token)
         {
             var response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
-                .ContinueWith(DefaultContinuation<HttpResponseMessage>.Value, token, TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.NotOnRanToCompletion, TaskScheduler.Current)
+                .OnFaultedOrCanceled<HttpResponseMessage, DefaultConst<HttpResponseMessage>>(token)
                 .ConfigureAwait(false);
             Disposable.Dispose(request, response);
         }
