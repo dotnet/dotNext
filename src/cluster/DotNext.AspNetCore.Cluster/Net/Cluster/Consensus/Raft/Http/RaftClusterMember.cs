@@ -59,13 +59,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
                     .ConfigureAwait(false);
                 ChangeStatus(AvailableStatus);
-                return await parser(response.EnsureSuccessStatusCode()).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+                return await parser(response).ConfigureAwait(false);
             }
             catch (HttpRequestException e)
             {
-                context.Logger.MemberUnavailable(Endpoint, e);
-                ChangeStatus(UnavailableStatus);
-                throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+                if (response is null)
+                {
+                    context.Logger.MemberUnavailable(Endpoint, e);
+                    ChangeStatus(UnavailableStatus);
+                    throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+                }
+                else
+                    throw new UnexpectedStatusCodeException(response, e);
             }
             catch(OperationCanceledException e) when (!token.IsCancellationRequested)
             {
@@ -90,14 +96,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var response = default(HttpResponseMessage);
             try
             {
-                response = (await SendAsync(request, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false)).EnsureSuccessStatusCode();
+                response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
+                    .ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
                 ChangeStatus(AvailableStatus);
             }
             catch (HttpRequestException e)
             {
-                context.Logger.MemberUnavailable(Endpoint, e);
-                ChangeStatus(UnavailableStatus);
-                throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+                if (response is null)
+                {
+                    context.Logger.MemberUnavailable(Endpoint, e);
+                    ChangeStatus(UnavailableStatus);
+                    throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+                }
+                else
+                    throw new UnexpectedStatusCodeException(response, e);
             }
             catch(OperationCanceledException e) when (!token.IsCancellationRequested)
             {
@@ -174,17 +187,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {
                     response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
                         .ConfigureAwait(false);
-                    ChangeStatus(AvailableStatus);
                     if (response.StatusCode == HttpStatusCode.NotImplemented)
                         throw new NotSupportedException(ExceptionMessages.MessagingNotSupported);
                     else
                         response.EnsureSuccessStatusCode();
+                    ChangeStatus(AvailableStatus);
                 }
                 catch (HttpRequestException e)
                 {
-                    context.Logger.MemberUnavailable(Endpoint, e);
-                    ChangeStatus(UnavailableStatus);
-                    throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+                    if (response is null)
+                    {
+                        context.Logger.MemberUnavailable(Endpoint, e);
+                        ChangeStatus(UnavailableStatus);
+                        throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+                    }
+                    else
+                        throw new UnexpectedStatusCodeException(response, e);
                 }
                 catch(OperationCanceledException e) when (!token.IsCancellationRequested)
                 {

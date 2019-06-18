@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,6 +20,7 @@ namespace DotNext.Threading.Tasks
     /// </summary>
     public static class Continuation
     {
+        [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         private static Task<T> ContinueWithConstant<T, C>(Task<T> task, bool completedSynchronously, Func<Task<T>, T> continuation, CancellationToken token = default, TaskScheduler scheduler = null)
             where C : Constant<T>, new()
             => completedSynchronously ? CompletedTask<T, C>.Task : task.ContinueWith(continuation, token, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current);
@@ -29,6 +31,7 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <param name="task">The task to await.</param>
         /// <returns><paramref name="task"/> in final state.</returns>
+        [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<Task> OnCompleted(this Task task)
             => task.ContinueWith(Func.Identity<Task>(), default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
@@ -39,6 +42,7 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="R">The type of the task result.</typeparam>
         /// <param name="task">The task to await.</param>
         /// <returns><paramref name="task"/> in final state.</returns>
+        [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<Task<R>> OnCompleted<R>(this Task<R> task)
             => task.ContinueWith(Func.Identity<Task<R>>(), default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
@@ -55,6 +59,7 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="T">The type of task result.</typeparam>
         /// <typeparam name="C">The type describing constant value.</typeparam>
         /// <returns>The task representing continuation.</returns>
+        [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<T> OnFaulted<T, C>(this Task<T> task, CancellationToken token = default, TaskScheduler scheduler = null)
             where C : Constant<T>, new()
             => ContinueWithConstant<T, C>(task, task.IsFaulted, Continuation<T, C>.WhenFaulted, token, scheduler);
@@ -72,10 +77,11 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="T">The type of task result.</typeparam>
         /// <typeparam name="C">The type describing constant value.</typeparam>
         /// <returns>The task representing continuation.</returns>        
+        [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<T> OnFaultedOrCanceled<T, C>(this Task<T> task, CancellationToken token = default, TaskScheduler scheduler = null)
             where C : Constant<T>, new()
             => ContinueWithConstant<T, C>(task, task.IsFaulted | task.IsCanceled, Continuation<T, C>.WhenFaultedOrCanceled , token, scheduler);
-        
+
         /// <summary>
         /// Returns constant value if underlying task is canceled.
         /// </summary>
@@ -89,6 +95,7 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="T">The type of task result.</typeparam>
         /// <typeparam name="C">The type describing constant value.</typeparam>
         /// <returns>The task representing continuation.</returns>
+        [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<T> OnCanceled<T, C>(this Task<T> task, CancellationToken token = default, TaskScheduler scheduler = null)
             where C : Constant<T>, new()
             => ContinueWithConstant<T, C>(task, task.IsCanceled, Continuation<T, C>.WhenCanceled, token, scheduler);
