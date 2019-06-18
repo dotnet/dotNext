@@ -18,7 +18,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
         }
 
-        private RaftProtocolException(SerializationInfo info, StreamingContext context)
+        /// <summary>
+        /// Deserialization constructor.
+        /// </summary>
+        /// <param name="info">The serialized information about object.</param>
+        /// <param name="context">The deserialization context.</param>
+        protected RaftProtocolException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
