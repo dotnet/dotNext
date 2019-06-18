@@ -79,11 +79,12 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The new number of elements in the unmanaged array.</param>
         public void Reallocate(int length)
         {
-            var oldSize = Size;
-            this.length = length;
-            handle = Marshal.ReAllocHGlobal(handle, new IntPtr(Size));
-            GC.RemoveMemoryPressure(oldSize);
-            GC.AddMemoryPressure(Size);
+            long oldSize = Size, newSize = GetSize(this.length = length);
+            handle = Marshal.ReAllocHGlobal(handle, new IntPtr(newSize));
+            if(newSize > oldSize)
+                GC.AddMemoryPressure(newSize - oldSize);
+            else if(newSize < oldSize)
+                GC.RemoveMemoryPressure(oldSize - newSize);
         }
 
         /// <summary>
