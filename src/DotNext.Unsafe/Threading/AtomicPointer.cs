@@ -81,7 +81,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to write.</param>
         /// <param name="value">The value to write. The value is written immediately so that it is visible to all processors in the computer.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileWrite(this Pointer<IntPtr> pointer, IntPtr value) => Volatile.Write(ref pointer.Ref, value);
+        public static void VolatileWrite(this Pointer<IntPtr> pointer, IntPtr value) => AtomicIntPtr.VolatileWrite(ref pointer.Ref, value);
 
         /// <summary>
         /// Writes a value to the memory location identified by the pointer . 
@@ -242,7 +242,7 @@ namespace DotNext.Threading
         /// <param name="pointer">The pointer to read.</param>
         /// <returns>The value that was read. This value is the latest written by any processor in the computer, regardless of the number of processors or the state of processor cache.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr VolatileRead(this Pointer<IntPtr> pointer) => Volatile.Read(ref pointer.Ref);
+        public static IntPtr VolatileRead(this Pointer<IntPtr> pointer) => AtomicIntPtr.VolatileRead(ref pointer.Ref);
 
         /// <summary>
         /// Reads the value from the memory location identified by the pointer. 
@@ -347,6 +347,14 @@ namespace DotNext.Threading
         /// <param name="pointer">A pointer to a value to be incremented.</param>
         /// <returns>The incremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr IncrementValue(this Pointer<IntPtr> pointer) => AtomicIntPtr.IncrementAndGet(ref pointer.Ref);
+
+        /// <summary>
+        /// Increments a value located in the memory at the address specified by pointer and stores the result, as an atomic operation.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be incremented.</param>
+        /// <returns>The incremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IncrementValue(this Pointer<int> pointer) => AtomicInt32.IncrementAndGet(ref pointer.Ref);
 
         /// <summary>
@@ -372,6 +380,14 @@ namespace DotNext.Threading
         /// <returns>The decremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long DecrementValue(this Pointer<long> pointer) => AtomicInt64.DecrementAndGet(ref pointer.Ref);
+
+        /// <summary>
+        /// Decrements a value located in the memory at the address specified by pointer and stores the result, as an atomic operation.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be decremented.</param>
+        /// <returns>The decremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr DecrementValue(this Pointer<IntPtr> pointer) => AtomicIntPtr.DecrementAndGet(ref pointer.Ref);
 
         /// <summary>
         /// Decrements a value located in the memory at the address specified by pointer and stores the result, as an atomic operation.
@@ -440,7 +456,7 @@ namespace DotNext.Threading
         /// <param name="update">The value to which the memory is set.</param>
         /// <returns>The original value that was in the memory before.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr GetAndSetValue(this Pointer<IntPtr> pointer, IntPtr update) => Interlocked.Exchange(ref pointer.Ref, update);
+        public static IntPtr GetAndSetValue(this Pointer<IntPtr> pointer, IntPtr update) => AtomicIntPtr.GetAndSet(ref pointer.Ref, update);
 
         /// <summary>
         /// Adds two integers and replaces the first integer with the sum, as an atomic operation.
@@ -461,19 +477,19 @@ namespace DotNext.Threading
         public static long AddValue(this Pointer<long> pointer, long value) => AtomicInt64.Add(ref pointer.Ref, value);
 
         /// <summary>
-        /// Adds two integers and replaces the first integer with the sum, as an atomic operation.
+        /// Adds two numbers and replaces the first number with the sum, as an atomic operation.
         /// </summary>
         /// <param name="pointer">A pointer to a value to be modified.</param>
-        /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
+        /// <param name="value">The value to be added to the number located in the memory at the address specified by pointer.</param>
         /// <returns>The new value stored at memory address.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float AddValue(this Pointer<float> pointer, float value) => AtomicSingle.Add(ref pointer.Ref, value);
 
         /// <summary>
-        /// Adds two integers and replaces the first integer with the sum, as an atomic operation.
+        /// Adds two numbers and replaces the first number with the sum, as an atomic operation.
         /// </summary>
         /// <param name="pointer">A pointer to a value to be modified.</param>
-        /// <param name="value">The value to be added to the integer located in the memory at the address specified by pointer.</param>
+        /// <param name="value">The value to be added to the number located in the memory at the address specified by pointer.</param>
         /// <returns>The new value stored at memory address.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double AddValue(this Pointer<double> pointer, double value) => AtomicDouble.Add(ref pointer.Ref, value);
@@ -489,7 +505,17 @@ namespace DotNext.Threading
         public static long CompareExchangeValue(this Pointer<long> pointer, long value, long comparand) => Interlocked.CompareExchange(ref pointer.Ref, value, comparand);
 
         /// <summary>
-        /// Compares two 64-bit signed integers for equality and, if they are equal, replaces the first value.
+        /// Compares two native-sized signed integers for equality and, if they are equal, replaces the first value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="value">The value that replaces the destination value if the comparison results in equality.</param>
+        /// <param name="comparand">The value that is compared to the value at the memory address.</param>
+        /// <returns>The original value that was in the memory before.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr CompareExchangeValue(this Pointer<IntPtr> pointer, IntPtr value, IntPtr comparand) => Interlocked.CompareExchange(ref pointer.Ref, value, comparand);
+
+        /// <summary>
+        /// Compares two 32-bit signed integers for equality and, if they are equal, replaces the first value.
         /// </summary>
         /// <param name="pointer">A pointer to a value to be modified.</param>
         /// <param name="value">The value that replaces the destination value if the comparison results in equality.</param>
@@ -499,7 +525,7 @@ namespace DotNext.Threading
         public static int CompareExchangeValue(this Pointer<int> pointer, int value, int comparand) => Interlocked.CompareExchange(ref pointer.Ref, value, comparand);
 
         /// <summary>
-        /// Compares two 64-bit signed integers for equality and, if they are equal, replaces the first value.
+        /// Compares two 32-bit floating-point numbers for equality and, if they are equal, replaces the first value.
         /// </summary>
         /// <param name="pointer">A pointer to a value to be modified.</param>
         /// <param name="value">The value that replaces the destination value if the comparison results in equality.</param>
@@ -509,7 +535,7 @@ namespace DotNext.Threading
         public static float CompareExchangeValue(this Pointer<float> pointer, float value, float comparand) => Interlocked.CompareExchange(ref pointer.Ref, value, comparand);
 
         /// <summary>
-        /// Compares two 64-bit signed integers for equality and, if they are equal, replaces the first value.
+        /// Compares two 64-bit floating-point numbers for equality and, if they are equal, replaces the first value.
         /// </summary>
         /// <param name="pointer">A pointer to a value to be modified.</param>
         /// <param name="value">The value that replaces the destination value if the comparison results in equality.</param>
@@ -527,6 +553,16 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSetValue(this Pointer<long> pointer, long expected, long update) => AtomicInt64.CompareAndSet(ref pointer.Ref, expected, update);
+
+        /// <summary>
+        /// Atomically sets a value located at the specified address in the memory to the given updated value if the current value == the expected value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="expected">The expected value.</param>
+        /// <param name="update">The new value.</param>
+        /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool CompareAndSetValue(this Pointer<IntPtr> pointer, IntPtr expected, IntPtr update) => AtomicIntPtr.CompareAndSet(ref pointer.Ref, expected, update);
 
         /// <summary>
 		/// Atomically sets a value located at the specified address in the memory to the given updated value if the current value == the expected value.
@@ -749,5 +785,55 @@ namespace DotNext.Threading
 		/// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetAndUpdateValue(this Pointer<double> pointer, Func<double, double> updater) => AtomicDouble.GetAndUpdate(ref pointer.Ref, updater);
+
+        //
+
+        /// <summary>
+		/// Atomically updates the current value referenced by pointer with the results of applying the given function 
+		/// to the current and given values, returning the updated value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the current value as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="pointer">A pointer to a value to be modified.</param>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments</param>
+		/// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr AccumulateAndGetValue(this Pointer<IntPtr> pointer, IntPtr x, Func<IntPtr, IntPtr, IntPtr> accumulator) => AtomicIntPtr.AccumulateAndGet(ref pointer.Ref, x, accumulator);
+
+        /// <summary>
+        /// Atomically updates the current value referenced by pointer with the results of applying the given function 
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr GetAndAccumulateValue(this Pointer<IntPtr> pointer, IntPtr x, Func<IntPtr, IntPtr, IntPtr> accumulator) => AtomicIntPtr.GetAndAccumulate(ref pointer.Ref, x, accumulator);
+
+        /// <summary>
+        /// Atomically updates the value referenced by pointer with the results 
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr UpdateAndGetValue(this Pointer<IntPtr> pointer, Func<IntPtr, IntPtr> updater) => AtomicIntPtr.UpdateAndGet(ref pointer.Ref, updater);
+
+        /// <summary>
+		/// Atomically updates the value referenced by pointer with the results 
+		/// of applying the given function, returning the original value.
+		/// </summary>
+		/// <param name="pointer">A pointer to a value to be modified.</param>
+		/// <param name="updater">A side-effect-free function</param>
+		/// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr GetAndUpdateValue(this Pointer<IntPtr> pointer, Func<IntPtr, IntPtr> updater) => AtomicIntPtr.GetAndUpdate(ref pointer.Ref, updater);
     }
 }
