@@ -186,9 +186,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new NullPointerException();
             else if (other.IsNull)
                 throw new ArgumentNullException(nameof(other));
-            var tmp = *value;
-            *value = *other.value;
-            *other.value = tmp;
+            Memory.Swap(value, other.value);
         }
 
         /// <summary>
