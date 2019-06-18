@@ -5,9 +5,6 @@ namespace DotNext.Runtime.InteropServices
     /// <summary>
     /// Describes a block of unmanaged memory.
     /// </summary>
-    /// <remarks>
-    /// This interface should be implemented by 
-    /// </remarks>
     public interface IUnmanagedMemory : IDisposable, ICloneable
     {
         /// <summary>
