@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Linq.Expressions;
 
 namespace DotNext
 {
@@ -9,6 +10,17 @@ namespace DotNext
     /// </summary>
     public static class DelegateHelpers
     {
+        /// <summary>
+        /// Creates open delegate for the instance method referenced
+        /// in expression tree.
+        /// </summary>
+        /// <typeparam name="D">The type of the delegate.</typeparam>
+        /// <param name="expression">The expression tree containing instance method call.</param>
+        /// <returns>The open delegate.</returns>
+        public static D CreateOpenDelegate<D>(Expression<D> expression)
+            where D : MulticastDelegate
+            => expression.Body is MethodCallExpression methodCall && !methodCall.Method.IsStatic ? CreateDelegate<D>(methodCall.Method) : null;
+
         /// <summary>
         /// Performs contravariant conversion
         /// of actual generic argument specified

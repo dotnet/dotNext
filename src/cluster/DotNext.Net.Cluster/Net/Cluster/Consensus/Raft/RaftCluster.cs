@@ -20,6 +20,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public abstract class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine
         where TMember : class, IRaftClusterMember, IDisposable
     {
+        private static readonly Action<TMember> CancelPendingRequests = DelegateHelpers.CreateOpenDelegate<Action<TMember>>(member => member.CancelPendingRequests());
+
         /// <summary>
         /// Represents predicate used for searching members stored in the memory
         /// and maintained by <see cref="RaftCluster{TMember}"/>.
@@ -274,7 +276,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public virtual async Task StopAsync(CancellationToken token)
         {
             transitionCancellation.Cancel(false);
-            members.ForEach(member => member.CancelPendingRequests());
+            members.ForEach(CancelPendingRequests);
             leader = votedFor = null;
             using (await transitionSync.Acquire(token).ConfigureAwait(false))
                 switch (Interlocked.Exchange(ref state, null))

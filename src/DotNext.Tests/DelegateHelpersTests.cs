@@ -15,5 +15,13 @@ namespace DotNext
             handler -= dummy.Contravariant<object, string>();
             Null(handler);
         }
+
+        [Fact]
+        public static void OpenDelegate()
+        {
+            var d = DelegateHelpers.CreateOpenDelegate<Func<string, char, int, int>>((str, ch, startIndex) => str.IndexOf(ch, startIndex));
+            NotNull(d);
+            Equal(1, d("abc", 'b', 0));
+        }
     }
 }
