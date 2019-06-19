@@ -268,7 +268,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Returns address of this memory in hexadecimal format.
         /// </summary>
-        /// <returns>The addres of this memory.</returns>
+        /// <returns>The address of this memory.</returns>
         public override string ToString() => Address.ToString("X");
 
         /// <summary>

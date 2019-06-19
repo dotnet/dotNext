@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace DotNext.Runtime.InteropServices
 {
+    using Generic;
+    using Threading.Tasks;
+
     /// <summary>
     /// CLS-compliant typed pointer for .NET languages without direct support of pointer data type.
     /// </summary>
@@ -132,7 +135,7 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
         public unsafe void Fill(T value, long count)
         {
-            if (this.value == Memory.NullPtr)
+            if (IsNull)
                 throw new NullPointerException();
             else if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
@@ -162,12 +165,12 @@ namespace DotNext.Runtime.InteropServices
         public unsafe T this[long index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => value == Memory.NullPtr ? throw new NullPointerException() : *(value + index);
+            get => IsNull ? throw new NullPointerException() : *(value + index);
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
-                if (this.value == Memory.NullPtr)
+                if (IsNull)
                     throw new NullPointerException();
                 else
                     *(this.value + index) = value;
@@ -378,6 +381,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="source">The source stream.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        /// <returns>The actual number of copied elements.</returns>
         /// <exception cref="NullPointerException">This pointer is zero.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
@@ -439,7 +443,7 @@ namespace DotNext.Runtime.InteropServices
             else if (!source.CanRead)
                 throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
             else if (count == 0L)
-                return Task.FromResult(0L);
+                return CompletedTask<long, LongConst.Zero>.Task;
             else
                 return ReadFromStreamAsync(source, Address, Size * count);
         }
@@ -554,7 +558,7 @@ namespace DotNext.Runtime.InteropServices
         {
             if (value == other.value)
                 return true;
-            else if (value == Memory.NullPtr || other.value == Memory.NullPtr)
+            else if (IsNull || other.IsNull)
                 return false;
             else
                 return Memory.Equals(value, other, count * Size);
@@ -612,7 +616,7 @@ namespace DotNext.Runtime.InteropServices
                 return 0;
             else if (IsNull)
                 throw new NullPointerException();
-            else if (other.value == Memory.NullPtr)
+            else if (other.IsNull)
                 throw new ArgumentNullException(nameof(other));
             else
                 return Memory.Compare(value, other, count * Size);
@@ -769,7 +773,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer to check.</param>
         /// <returns><see langword="true"/>, if this pointer is not zero; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static bool operator true(Pointer<T> ptr) => ptr.value != Memory.NullPtr;
+        public unsafe static bool operator true(Pointer<T> ptr) => !ptr.IsNull;
 
         /// <summary>
         /// Checks whether this pointer is zero.
@@ -777,7 +781,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer to check.</param>
         /// <returns><see langword="true"/>, if this pointer is zero; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static bool operator false(Pointer<T> ptr) => ptr.value == Memory.NullPtr;
+        public unsafe static bool operator false(Pointer<T> ptr) => ptr.IsNull;
 
         bool IEquatable<Pointer<T>>.Equals(Pointer<T> other) => Equals(other);
 
