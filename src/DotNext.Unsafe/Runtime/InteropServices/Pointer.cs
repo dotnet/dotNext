@@ -465,8 +465,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this memory.</param>
         /// <returns>The stream representing the memory identified by this pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe UnmanagedMemoryStream AsStream(long count)
-            => new UnmanagedMemoryStream(As<byte>().value, count * Size);
+        public unsafe Stream AsStream(long count)
+            => IsNull ? Stream.Null : new UnmanagedMemoryStream(As<byte>().value, count * Size);
 
         /// <summary>
         /// Copies block of memory referenced by this pointer
