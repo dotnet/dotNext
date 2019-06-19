@@ -579,12 +579,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="first">The first value to be replaced with <paramref name="second"/>.</param>
         /// <param name="second">The second value to be replaced with <paramref name="first"/>.</param>
         /// <typeparam name="T">The type of the value.</typeparam>
-        public static void Swap<T>(ref T first, ref T second)
-        {
-            var temp = first;
-            first = second;
-            second = temp;
-        }
+        public static void Swap<T>(ref T first, ref T second) => (first, second) = (second, first);
 
         /// <summary>
         /// Swaps two values.
@@ -593,12 +588,6 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="second">The second value to be replaced with <paramref name="first"/>.</param>
         /// <typeparam name="T">The type of the value.</typeparam>
         [CLSCompliant(false)]
-        public static void Swap<T>(T* first, T* second)
-            where T : unmanaged
-        {
-            var temp = *first;
-            *first = *second;
-            *second = temp;
-        }
+        public static void Swap<T>(T* first, T* second) where T : unmanaged => (*first, *second) = (*second, *first);
     }
 }
