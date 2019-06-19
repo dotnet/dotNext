@@ -188,12 +188,14 @@ namespace DotNext
             }
 
             i += 1;
-            span[endIndex] = span[i];
+            Memory.Swap(ref span[endIndex], ref span[i]);
             return i;
         }
 
         private static void QuickSort<T>(Span<T> span, int startIndex, int endIndex, IComparer<T> comparison)
         {
+            if(startIndex >= endIndex)
+                return;
             var partitionIndex = Partition(span, startIndex, endIndex, comparison);
             QuickSort(span, startIndex, partitionIndex - 1, comparison);
             QuickSort(span, partitionIndex + 1, endIndex, comparison);
@@ -206,10 +208,6 @@ namespace DotNext
         /// <param name="comparison">The comparer used for sorting.</param>
         /// <typeparam name="T">The type of the elements.</typeparam>
         public static void Sort<T>(this Span<T> span, IComparer<T> comparison = null)
-        {
-            if(span.IsEmpty)
-                return;
-            QuickSort(span, 0, span.Length, comparison ?? Comparer<T>.Default);
-        }
+            => QuickSort(span, 0, span.Length - 1, comparison ?? Comparer<T>.Default);
     }
 }
