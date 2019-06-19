@@ -14,7 +14,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>async;lock;objectpool</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>AsyncManualResetEvent now supports automatic reset of its state through overloaded Set method</PackageReleaseNotes>
+    <PackageReleaseNotes>AsyncManualResetEvent now supports automatic reset of its state through overloaded Set method
+AsyncLock overloads TryAcquire method with CancellationToken parameter that never throws even if cancellation is requested</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 

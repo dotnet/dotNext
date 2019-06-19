@@ -37,7 +37,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.10.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.11.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
   <ItemGroup>
