@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace DotNext.Runtime.InteropServices
 {
+    public class UnmanagedMemoryOwner : SafeHandle, ICloneable, IEquatable<UnmanagedMemoryOwner>
+    {
+
+    }
+
     /// <summary>
     /// Represents allocated unmanaged memory.
     /// </summary>
@@ -36,6 +41,15 @@ namespace DotNext.Runtime.InteropServices
             this.length = length;
             if(zeroMem)
                 Memory.ClearBits(handle, size);
+        }
+
+        /// <summary>
+        /// Allocates the block of unmanaged memory which is equal to size of type <typeparamref name="T"/>.
+        /// </summary>
+        public UnmanagedMemoryOwner()
+            : this(1)
+        {
+
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -292,6 +306,12 @@ namespace DotNext.Runtime.InteropServices
         public unsafe Span<T> Span => IsInvalid ? default : new Span<T>(handle.ToPointer(), length);
 
         /// <summary>
+        /// Gets a span of bytes from the current instance.
+        /// </summary>
+        public unsafe Span<byte> Bytes =>
+            IsInvalid ? default : new Span<byte>(handle.ToPointer(), length * Pointer<T>.Size);
+
+        /// <summary>
         /// Gets a pointer to the allocated unmanaged memory.
         /// </summary>
         public Pointer<T> Pointer => IsInvalid ? default : new Pointer<T>(handle);
@@ -360,9 +380,21 @@ namespace DotNext.Runtime.InteropServices
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <summary>
+        /// Determines whether the two objects point to the same location of unmanaged memory.
+        /// </summary>
+        /// <param name="first">The first object to be compared.</param>
+        /// <param name="second">The second object to be compared.</param>
+        /// <returns><see langword="true"/> if <paramref name="first"/> points to the same memory location as <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
         public static bool operator ==(UnmanagedMemoryOwner<T> first, UnmanagedMemoryOwner<T> second)
             => Equals(first, second);
 
+        /// <summary>
+        /// Determines whether the two objects point to different locations of unmanaged memory.
+        /// </summary>
+        /// <param name="first">The first object to be compared.</param>
+        /// <param name="second">The second object to be compared.</param>
+        /// <returns><see langword="false"/> if <paramref name="first"/> points to the same memory location as <paramref name="second"/>; otherwise, <see langword="true"/>.</returns>
         public static bool operator !=(UnmanagedMemoryOwner<T> first, UnmanagedMemoryOwner<T> second)
             => !Equals(first, second);
     }

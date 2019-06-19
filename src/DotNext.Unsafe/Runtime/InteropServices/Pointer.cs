@@ -19,7 +19,7 @@ namespace DotNext.Runtime.InteropServices
     /// Moreover, pointer type doesn't provide automatic memory management.
     /// Null-pointer is the only check performed by methods.
     /// </remarks>
-    public readonly struct Pointer<T> : IEquatable<Pointer<T>>
+    public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox
         where T : unmanaged
     {
         /// <summary>
@@ -91,7 +91,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         public static int Size => ValueType<T>.Size;
 
-        private unsafe readonly T* value;
+        private readonly unsafe T* value;
 
         /// <summary>
         /// Constructs CLS-compliant pointer from non CLS-compliant pointer.
@@ -100,12 +100,7 @@ namespace DotNext.Runtime.InteropServices
         [CLSCompliant(false)]
         public unsafe Pointer(T* ptr) => value = ptr;
 
-        /// <summary>
-        /// Constructs CLS-compliant pointer from non CLS-compliant untyped pointer.
-        /// </summary>
-        /// <param name="ptr">The untyped pointer value.</param>
-        [CLSCompliant(false)]
-        public unsafe Pointer(void* ptr) => value = (T*)ptr;
+        private unsafe Pointer(void* ptr) => value = (T*)ptr;
 
         /// <summary>
         /// Constructs pointer from <see cref="IntPtr"/> value.
@@ -154,6 +149,13 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
+        /// Converts this pointer into <see cref="Span{T}"/>.
+        /// </summary>
+        /// <param name="length">The number of elements located in the unmanaged memory identified by this pointer.</param>
+        /// <returns><see cref="Span{T}"/> representing elements in the unmanaged memory.</returns>
+        public unsafe Span<T> ToSpan(int length) => new Span<T>(value, length);
+
+        /// <summary>
 		/// Gets or sets pointer value at the specified position in the memory.
 		/// </summary>
         /// <remarks>
@@ -190,6 +192,12 @@ namespace DotNext.Runtime.InteropServices
             else if (other.IsNull)
                 throw new ArgumentNullException(nameof(other));
             Memory.Swap(value, other.value);
+        }
+
+        unsafe object IStrongBox.Value
+        {
+            get => *value;
+            set => *this.value = (T) value;
         }
 
         /// <summary>
@@ -632,7 +640,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The offset to add.</param>
         /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Pointer<T> operator +(Pointer<T> pointer, int offset)
+        public static unsafe Pointer<T> operator +(Pointer<T> pointer, int offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
 
         /// <summary>
@@ -645,7 +653,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The offset to subtract.</param>
         /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Pointer<T> operator -(Pointer<T> pointer, int offset)
+        public static unsafe Pointer<T> operator -(Pointer<T> pointer, int offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
 
         /// <summary>
@@ -658,7 +666,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The offset to add.</param>
         /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Pointer<T> operator +(Pointer<T> pointer, long offset)
+        public static unsafe Pointer<T> operator +(Pointer<T> pointer, long offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
 
         /// <summary>
@@ -671,7 +679,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="offset">The offset to subtract.</param>
         /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Pointer<T> operator -(Pointer<T> pointer, long offset)
+        public static unsafe Pointer<T> operator -(Pointer<T> pointer, long offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
 
         /// <summary>
@@ -685,7 +693,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Pointer<T> operator +(Pointer<T> pointer, ulong offset)
+        public static unsafe Pointer<T> operator +(Pointer<T> pointer, ulong offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
 
         /// <summary>
@@ -699,7 +707,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static Pointer<T> operator -(Pointer<T> pointer, ulong offset)
+        public static unsafe Pointer<T> operator -(Pointer<T> pointer, ulong offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
 
         /// <summary>
@@ -742,7 +750,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="value">The pointer value.</param>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static implicit operator Pointer<T>(T* value) => new Pointer<T>(value);
+        public static unsafe implicit operator Pointer<T>(T* value) => new Pointer<T>(value);
 
         /// <summary>
         /// Converts CLS-compliant pointer into its non CLS-compliant representation. 
@@ -773,7 +781,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer to check.</param>
         /// <returns><see langword="true"/>, if this pointer is not zero; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static bool operator true(Pointer<T> ptr) => !ptr.IsNull;
+        public static bool operator true(Pointer<T> ptr) => !ptr.IsNull;
 
         /// <summary>
         /// Checks whether this pointer is zero.
@@ -781,7 +789,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer to check.</param>
         /// <returns><see langword="true"/>, if this pointer is zero; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static bool operator false(Pointer<T> ptr) => ptr.IsNull;
+        public static bool operator false(Pointer<T> ptr) => ptr.IsNull;
 
         bool IEquatable<Pointer<T>>.Equals(Pointer<T> other) => Equals(other);
 
