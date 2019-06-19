@@ -141,10 +141,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than 1.</exception>
         /// <exception cref="OutOfMemoryException">There is insufficient memory to satisfy the request.</exception>
-        public UnmanagedMemory(int length, bool zeroMem = true)
-            : base(GetSize(length), zeroMem)
-        {
-        }
+        public UnmanagedMemory(int length, bool zeroMem = true) : base(GetSize(length), zeroMem) => this.length = length;
 
         /// <summary>
         /// Allocates the block of unmanaged memory which is equal to size of type <typeparamref name="T"/>.
@@ -160,8 +157,14 @@ namespace DotNext.Runtime.InteropServices
         /// Allocates a new unmanaged memory and place the given value into it.
         /// </summary>
         /// <param name="value">The value to be placed into unmanaged memory.</param>
+        /// <returns>The object representing allocated unmanaged memory.</returns>
         /// <exception cref="OutOfMemoryException">There is insufficient memory to satisfy the request.</exception>
-        public UnmanagedMemory(T value) : this() => Pointer.Ref = value;
+        public static UnmanagedMemory<T> Box(T value)
+        {
+            var memory = new UnmanagedMemory<T>(1, false);
+            memory.Pointer.Ref = value;
+            return memory;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static long GetSize(int length) => Math.BigMul(length, Pointer<T>.Size);

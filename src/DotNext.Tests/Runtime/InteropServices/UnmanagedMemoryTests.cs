@@ -13,7 +13,7 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static void BoxUnboxTest()
         {
-            using (var owner = new UnmanagedMemory<Data>(new Data { Field1 = 10, Field2 = 20 }))
+            using (var owner = UnmanagedMemory<Data>.Box(new Data { Field1 = 10, Field2 = 20 }))
             {
                 Data d = owner.Pointer.Value;
                 Equal(10, d.Field1);
