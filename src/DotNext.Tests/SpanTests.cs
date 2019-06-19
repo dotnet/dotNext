@@ -26,5 +26,16 @@ namespace DotNext
             array2[1] = Guid.Empty;
             True(array1.BitwiseCompare(array2) > 0);
         }
+
+        [Fact]
+        public static void Sorting()
+        {
+            Span<ulong> span = new ulong[] { 3, 2, 6, 4 };
+            span.Sort();
+            Equal(2UL, span[0]);
+            Equal(3UL, span[1]);
+            Equal(4UL, span[2]);
+            Equal(6UL, span[3]);
+        }
     }
 }
