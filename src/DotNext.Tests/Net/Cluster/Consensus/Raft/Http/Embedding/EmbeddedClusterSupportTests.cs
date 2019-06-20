@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,26 +9,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
     public sealed class EmbeddedClusterSupportTests : ClusterMemberTest
     {
-        private sealed class LeaderChangedEvent : ManualResetEventSlim, IRaftClusterConfigurator
+        private sealed class LeaderChangedEvent : EventWaitHandle, IRaftClusterConfigurator
         {
             internal volatile IClusterMember Leader;
 
             internal LeaderChangedEvent()
-                : base(false)
+                : base(false, EventResetMode.ManualReset)
             {
-
             }
 
             void IRaftClusterConfigurator.Initialize(IRaftCluster cluster, IDictionary<string, string> metadata)
             {
-                Equal("TestNode", metadata["nodeName"]);
                 cluster.LeaderChanged += OnLeaderChanged;
             }
 
             private void OnLeaderChanged(ICluster sender, IClusterMember leader)
             {
-                Set();
                 Leader = leader;
+                Set();
             }
 
             void IRaftClusterConfigurator.Shutdown(IRaftCluster cluster)
@@ -36,10 +35,130 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             }
         }
 
+        [Theory]
+        [InlineData(0)]
+        [InlineData(50)]
+        [InlineData(100)]
+        [InlineData(200)]
+        [InlineData(300)]
+        [InlineData(400)]
+        [InlineData(500)]
+        public static async Task Leadership(int delay)
+        {
+            void CheckLeadership(IClusterMember member1, IClusterMember member2)
+                => Equal(member1.Endpoint, member2.Endpoint);
+
+            var config1 = new Dictionary<string, string>
+            {
+                {"absoluteMajority", "true"},
+                {"name", "node1"},
+                {"members:0", "http://localhost:3262"},
+                {"members:1", "http://localhost:3263"},
+                {"members:2", "http://localhost:3264"}
+            };
+            var config2 = new Dictionary<string, string>
+            {
+                {"absoluteMajority", "true"},
+                {"name", "node2"},
+                {"members:0", "http://localhost:3262"},
+                {"members:1", "http://localhost:3263"},
+                {"members:2", "http://localhost:3264"}
+            };
+            var config3 = new Dictionary<string, string>
+            {
+                {"absoluteMajority", "true"},
+                {"name", "node3"},
+                {"members:0", "http://localhost:3262"},
+                {"members:1", "http://localhost:3263"},
+                {"members:2", "http://localhost:3264"}
+            };
+            using (var listener1 = new LeaderChangedEvent())
+            using (var listener2 = new LeaderChangedEvent())
+            using (var listener3 = new LeaderChangedEvent())
+            using (var host1 = CreateHost<WebApplicationSetup>(3262, true, config1, listener1))
+            using (var host2 = CreateHost<WebApplicationSetup>(3263, true, config2, listener2))
+            using (var host3 = CreateHost<WebApplicationSetup>(3264, true, config3, listener3))
+            {
+                await host1.StartAsync();
+                await host2.StartAsync();
+                await Task.Delay(delay);
+                await host3.StartAsync();
+
+                WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 });
+
+                var leader1 = host1.Services.GetRequiredService<ICluster>().Leader;
+                NotNull(leader1);
+                var leader2 = host2.Services.GetRequiredService<ICluster>().Leader;
+                NotNull(leader2);
+                var leader3 = host3.Services.GetRequiredService<ICluster>().Leader;
+                NotNull(leader3);
+
+                CheckLeadership(leader1, leader2);
+                CheckLeadership(leader1, leader3);
+
+                listener1.Reset();
+                listener2.Reset();
+                listener3.Reset();
+                listener1.Leader = listener2.Leader = listener3.Leader = null;
+
+                //let's shutdown leader node
+
+                var removedNode = default(int?);
+
+                if (!leader1.IsRemote)
+                {
+                    removedNode = 1;
+                    await host1.StopAsync();
+                }
+
+                if (!leader2.IsRemote)
+                {
+                    removedNode = 2;
+                    await host2.StopAsync();
+                }
+
+                if (!leader3.IsRemote)
+                {
+                    removedNode = 3;
+                    await host3.StopAsync();
+                }
+
+                NotNull(removedNode);
+
+                switch (removedNode)
+                {
+                    case 1:
+                        //wait for new leader
+                        WaitHandle.WaitAll(new WaitHandle[] { listener2, listener3 });
+                        NotNull(listener2.Leader);
+                        CheckLeadership(listener2.Leader, listener3.Leader);
+                        break;
+                    case 2:
+                        //wait for new leader
+                        WaitHandle.WaitAll(new WaitHandle[] { listener1, listener3 });
+                        NotNull(listener1.Leader);
+                        CheckLeadership(listener1.Leader, listener3.Leader);
+                        break;
+                    case 3:
+                        //wait for new leader
+                        WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2 });
+                        NotNull(listener1.Leader);
+                        CheckLeadership(listener1.Leader, listener2.Leader);
+                        break;
+                    default:
+                        throw new Exception();
+                }
+
+                await host3.StopAsync();
+                await host2.StopAsync();
+                await host1.StopAsync();
+            }
+        }
+
         [Fact]
         public static async Task SingleNodeWithoutConsensus()
         {
-            var config = new Dictionary<string, string>()
+            var config = new Dictionary<string, string>
             {
                 { "absoluteMajority", "true" },
                 { "metadata:nodeName", "TestNode" },
@@ -50,7 +169,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             using (var host = CreateHost<WebApplicationSetup>(3262, true, config, leaderResetEvent))
             {
                 await host.StartAsync();
-                leaderResetEvent.Wait(2000);
+                leaderResetEvent.WaitOne(2000);
                 Null(leaderResetEvent.Leader);
                 await host.StopAsync();
             }
@@ -59,7 +178,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         [Fact]
         public static async Task SingleNodeWithConsensus()
         {
-            var config = new Dictionary<string, string>()
+            var config = new Dictionary<string, string>
             {
                 { "absoluteMajority", "false" },
                 { "metadata:nodeName", "TestNode" },
@@ -70,7 +189,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             using (var host = CreateHost<WebApplicationSetup>(3262, true, config, leaderResetEvent))
             {
                 await host.StartAsync();
-                leaderResetEvent.Wait(2000);
+                leaderResetEvent.WaitOne(2000);
                 NotNull(leaderResetEvent.Leader);
                 False(leaderResetEvent.Leader.IsRemote);
                 Equal("TestNode", (await leaderResetEvent.Leader.GetMetadata())["nodeName"]);
@@ -81,7 +200,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         [Fact]
         public static async Task DependencyInjection()
         {
-            var config = new Dictionary<string, string>()
+            var config = new Dictionary<string, string>
             {
                 { "absoluteMajority", "true" },
                 { "metadata:nodeName", "TestNode" },

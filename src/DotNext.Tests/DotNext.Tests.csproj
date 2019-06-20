@@ -42,8 +42,4 @@
     <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Net\Cluster\Consensus\Raft\Http\Hosting\" />
-  </ItemGroup>
-
 </Project>

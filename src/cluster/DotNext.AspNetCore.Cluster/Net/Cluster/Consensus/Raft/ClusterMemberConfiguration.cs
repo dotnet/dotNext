@@ -36,6 +36,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public HashSet<IPNetwork> AllowedNetworks { get; } = new HashSet<IPNetwork>();
 
         /// <summary>
+        /// Gets or sets name of the local cluster member.
+        /// </summary>
+        /// <remarks>
+        /// This property is for debugging purposes only.
+        /// </remarks>
+        public string Name { get; set; }
+
+        /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.
         /// </summary>
         public int LowerElectionTimeout

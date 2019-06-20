@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 using Xunit;
 
 namespace DotNext.Threading
@@ -32,7 +33,7 @@ namespace DotNext.Threading
                 {
                     False(await @lock.TryAcquire(TimeSpan.FromMilliseconds(10)));
                     True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
-                    await @lock.Acquire(TimeSpan.MaxValue);
+                    await @lock.Acquire(InfiniteTimeSpan);
                     @lock.Release();
                     task.SetResult(true);
                 });

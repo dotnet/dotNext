@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
+using StatusCodes = Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -26,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal static Task CreateResponse(HttpResponse response, bool result)
         {
-            response.StatusCode = (int)HttpStatusCode.OK;
+            response.StatusCode = StatusCodes.Status200OK;
             return response.WriteAsync(Convert.ToString(result, InvariantCulture));
         }
     }

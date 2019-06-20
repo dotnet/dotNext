@@ -10,6 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     public abstract class ClusterMemberTest : Assert
     {
+
         private protected static IWebHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IRaftClusterConfigurator configurator = null)
             where TStartup : class
         {
@@ -22,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                         options.ListenAnyIP(port);
                 })
                 .UseShutdownTimeout(TimeSpan.FromHours(1))
-                .ConfigureLogging(builder => builder.AddDebug())
+                .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
                 .ConfigureServices(services =>
                 {

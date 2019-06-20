@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster
         internal static bool Contains(this ICollection<IPEndPoint> endpoints, IClusterMember member)
             => endpoints.Contains(member.Endpoint);
 
-        internal static bool Represents(this IClusterMember member, IPEndPoint endpoint)
+        internal static bool Represents(this IPEndPoint endpoint, IClusterMember member)
             => member.Endpoint.Equals(endpoint);
     }
 }

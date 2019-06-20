@@ -106,10 +106,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly string MessageType;
         internal readonly long ConsensusTerm;
 
-        private protected RaftHttpMessage(string messageType, IPEndPoint sender)
+        private protected RaftHttpMessage(string messageType, IPEndPoint sender, long term)
         {
             Sender = sender;
-            this.MessageType = messageType;
+            MessageType = messageType;
+            ConsensusTerm = term;
         }
 
         private protected RaftHttpMessage(HttpRequest request)

@@ -20,11 +20,6 @@ namespace DotNext.Net.Cluster
         event ClusterLeaderChangedEventHandler LeaderChanged;
 
         /// <summary>
-        /// An event raised when cluster member becomes available or unavailable.
-        /// </summary>
-        event ClusterMemberStatusChanged MemberStatusChanged;
-
-        /// <summary>
         /// Revokes leadership and starts new election process.
         /// </summary>
         /// <returns><see langword="true"/> if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>

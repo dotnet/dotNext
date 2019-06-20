@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal static void CreateResponse(HttpResponse response)
         {
-            response.StatusCode = (int)HttpStatusCode.OK;
+            response.StatusCode = StatusCodes.Status200OK;
         }
     }
 }

@@ -32,8 +32,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         [SuppressMessage("Usage", "CA2213", Justification = "This object is disposed via RaftCluster.members collection")]
         private RaftClusterMember localMember;
         private readonly HostingAddressesProvider hostingAddresses;
-        private protected readonly IHttpMessageHandlerFactory httpHandlerFactory;
-        private protected readonly TimeSpan requestTimeout;
+        private readonly IHttpMessageHandlerFactory httpHandlerFactory;
+        private protected readonly TimeSpan RequestTimeout;
 
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
@@ -42,7 +42,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
-            requestTimeout = TimeSpan.FromMilliseconds(config.LowerElectionTimeout);
+            RequestTimeout = TimeSpan.FromMilliseconds(config.LowerElectionTimeout);
         }
 
         private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MemberCollection members)
@@ -53,7 +53,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             AuditTrail = dependencies.GetService<IPersistentState>();
             hostingAddresses = dependencies.GetRequiredService<IServer>().GetHostingAddresses;
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
-            Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
+            var loggerFactory = dependencies.GetRequiredService<ILoggerFactory>();
+            var memberName = config.CurrentValue.Name;
+            Logger = string.IsNullOrEmpty(memberName)
+                ? loggerFactory.CreateLogger(GetType())
+                : loggerFactory.CreateLogger(memberName);
             //track changes in configuration
             configurationTracker = config.OnChange(ConfigurationChanged);
         }
@@ -118,10 +122,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public event ClusterChangedEventHandler MemberAdded;
         public event ClusterChangedEventHandler MemberRemoved;
-        public override event ClusterMemberStatusChanged MemberStatusChanged;
-
-        void IHostingContext.MemberStatusChanged(IRaftClusterMember member, ClusterMemberStatus previousStatus, ClusterMemberStatus newStatus)
-            => MemberStatusChanged?.Invoke(member, previousStatus, newStatus);
 
         public override Task StartAsync(CancellationToken token)
         {
@@ -140,43 +140,93 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         private async Task ReceiveVote(RequestVoteMessage request, HttpResponse response)
-            => await RequestVoteMessage.CreateResponse(response,
-                await ReceiveVote(request.Sender, request.ConsensusTerm, request.LastEntry, ClusterMember.Represents)
-                    .ConfigureAwait(false)).ConfigureAwait(false);
+        {
+            var sender = FindMember(request.Sender.Represents);
+            if (sender is null)
+                await RequestVoteMessage.CreateResponse(response, false).ConfigureAwait(false);
+            else
+            {
+                await RequestVoteMessage.CreateResponse(response,
+                    await ReceiveVote(sender, request.ConsensusTerm, request.LastEntry)
+                        .ConfigureAwait(false)).ConfigureAwait(false);
+                sender.Touch();
+            }
+        }
 
         private Task ReceiveHeartbeat(HeartbeatMessage request, HttpResponse response)
         {
-            HeartbeatMessage.CreateResponse(response);
-            return ReceiveHeartbeat(request.Sender, request.ConsensusTerm, ClusterMember.Represents);
+            var sender = FindMember(request.Sender.Represents);
+            Task result;
+            if (sender is null)
+            {
+                response.StatusCode = StatusCodes.Status404NotFound;
+                result = Task.CompletedTask;
+            }
+            else
+            {
+                HeartbeatMessage.CreateResponse(response);
+                result = ReceiveHeartbeat(sender, request.ConsensusTerm);
+                sender.Touch();
+            }
+
+            return result;
         }
 
-        private async Task Resign(HttpResponse response) =>
+        private async Task Resign(RaftHttpMessage request, HttpResponse response)
+        {
+            var sender = FindMember(request.Sender.Represents);
             await ResignMessage.CreateResponse(response, await ReceiveResign().ConfigureAwait(false)).ConfigureAwait(false);
+            sender?.Touch();
+        }
 
-        private Task GetMetadata(HttpResponse response) => MetadataMessage.CreateResponse(response, metadata);
+        private Task GetMetadata(RaftHttpMessage request, HttpResponse response)
+        {
+            var sender = FindMember(request.Sender.Represents);
+            var result = MetadataMessage.CreateResponse(response, metadata);
+            sender?.Touch();
+            return result;
+        }
 
         private async Task ReceiveEntries(AppendEntriesMessage request, HttpResponse response)
-            => await AppendEntriesMessage.CreateResponse(response,
-                await ReceiveEntries(request.Sender, request.ConsensusTerm, ClusterMember.Represents, request.LogEntry,
-                    request.PrecedingEntry).ConfigureAwait(false)).ConfigureAwait(false);
+        {
+            var sender = FindMember(request.Sender.Represents);
+            if (sender is null)
+            {
+                response.StatusCode = StatusCodes.Status404NotFound;
+            }
+            else
+            {
+                await AppendEntriesMessage.CreateResponse(response,
+                    await ReceiveEntries(sender, request.ConsensusTerm, request.LogEntry,
+                        request.PrecedingEntry).ConfigureAwait(false)).ConfigureAwait(false);
+                sender.Touch();
+            }
+        }
 
         private async Task ReceiveMessage(CustomMessage message, HttpResponse response)
         {
-            if (messageHandler is null)
+            var sender = FindMember(message.Sender.Represents);
+            if (sender is null)
             {
-                response.StatusCode = (int)HttpStatusCode.NotImplemented;
+                response.StatusCode = StatusCodes.Status404NotFound;
+            }
+            else if (messageHandler is null)
+            {
+                response.StatusCode = StatusCodes.Status501NotImplemented;
             }
             else if (message.IsOneWay)
             {
-                await messageHandler.ReceiveSignal(FindMember(message.Sender, ClusterMember.Represents), message.Message);
-                response.StatusCode = (int)HttpStatusCode.OK;
+                await messageHandler.ReceiveSignal(sender, message.Message);
+                response.StatusCode = StatusCodes.Status200OK;
+                sender.Touch();
             }
             else
             {
                 var reply = await messageHandler
-                    .ReceiveMessage(FindMember(message.Sender, ClusterMember.Represents), message.Message)
+                    .ReceiveMessage(sender, message.Message)
                     .ConfigureAwait(false);
                 await CustomMessage.CreateResponse(response, reply).ConfigureAwait(false);
+                sender.Touch();
             }
         }
 
@@ -184,9 +234,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var networks = allowedNetworks;
             //checks whether the client's address is allowed
-            if (networks.Count > 0 || networks.FirstOrDefault(context.Connection.RemoteIpAddress.IsIn) is null)
+            if (networks.Count > 0 && networks.FirstOrDefault(context.Connection.RemoteIpAddress.IsIn) is null)
             {
-                context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 return Task.CompletedTask;
             }
 
@@ -198,15 +248,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 case HeartbeatMessage.MessageType:
                     return ReceiveHeartbeat(new HeartbeatMessage(context.Request), context.Response);
                 case ResignMessage.MessageType:
-                    return Resign(context.Response);
+                    return Resign(new ResignMessage(context.Request), context.Response);
                 case MetadataMessage.MessageType:
-                    return GetMetadata(context.Response);
+                    return GetMetadata(new MetadataMessage(context.Request), context.Response);
                 case AppendEntriesMessage.MessageType:
                     return ReceiveEntries(new AppendEntriesMessage(context.Request), context.Response);
                 case CustomMessage.MessageType:
                     return ReceiveMessage(new CustomMessage(context.Request), context.Response);
                 default:
-                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     return Task.CompletedTask;
             }
         }

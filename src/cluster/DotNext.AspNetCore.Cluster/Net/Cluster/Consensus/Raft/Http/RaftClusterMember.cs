@@ -28,6 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private int status;
         private readonly IHostingContext context;
         private volatile MemberMetadata metadata;
+        private ClusterMemberStatusChanged memberStatusChanged;
 
         internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath)
             : base(context.CreateHttpHandler(), true)
@@ -41,12 +42,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, GetType().Assembly.GetName().Version.ToString()));
         }
 
+        event ClusterMemberStatusChanged IClusterMember.MemberStatusChanged
+        {
+            add => memberStatusChanged += value;
+            remove => memberStatusChanged -= value;
+        }
+
         private void ChangeStatus(int newState)
         {
             var previousState = status.GetAndSet(newState);
             if (previousState != newState)
-                context.MemberStatusChanged(this, (ClusterMemberStatus)previousState, (ClusterMemberStatus)newState);
+                memberStatusChanged?.Invoke(this, (ClusterMemberStatus) previousState, (ClusterMemberStatus) newState);
         }
+
+        internal void Touch() => ChangeStatus(AvailableStatus);
 
         private async Task<T> SendAsync<T>(RaftHttpMessage message, ResponseParser<T> parser, CancellationToken token)
         {
@@ -88,7 +97,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public async Task HeartbeatAsync(CancellationToken token)
         {
-            if (this.Represents(context.LocalEndpoint))
+            if (Endpoint.Equals(context.LocalEndpoint))
                 return;
             context.Logger.SendingRequestToMember(Endpoint, HeartbeatMessage.MessageType);
             var request = (HttpRequestMessage)new HeartbeatMessage(context.LocalEndpoint);
@@ -129,7 +138,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         //true means that node votes successfully for the new leader
         //false means that node is in candidate state and rejects voting
         public async Task<bool?> VoteAsync(LogEntryId? lastEntry, CancellationToken token)
-            => this.Represents(context.LocalEndpoint)
+            => Endpoint.Equals(context.LocalEndpoint)
                 ? true
                 : await SendAsync(new RequestVoteMessage(context.LocalEndpoint, lastEntry), RequestVoteMessage.GetResponse, token)
                     .ToNullable()
@@ -140,14 +149,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => SendAsync(new ResignMessage(context.LocalEndpoint), ResignMessage.GetResponse, token);
 
         public Task<bool> AppendEntriesAsync(ILogEntry<LogEntryId> newEntry, LogEntryId precedingEntry, CancellationToken token)
-            => this.Represents(context.LocalEndpoint) ?
+            => Endpoint.Equals(context.LocalEndpoint) ?
                 context.LocalCommitAsync(newEntry) :
                 SendAsync(new AppendEntriesMessage(context.LocalEndpoint, newEntry, precedingEntry), AppendEntriesMessage.GetResponse, token);
 
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh,
             CancellationToken token)
         {
-            if (this.Represents(context.LocalEndpoint))
+            if (Endpoint.Equals(context.LocalEndpoint))
                 return context.Metadata;
             if (metadata is null || refresh)
                 metadata = await SendAsync(new MetadataMessage(context.LocalEndpoint), MetadataMessage.GetResponse, token).ConfigureAwait(false);
@@ -157,9 +166,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public IPEndPoint Endpoint { get; }
         bool IClusterMember.IsLeader => context.IsLeader(this);
 
-        bool IClusterMember.IsRemote => !this.Represents(context.LocalEndpoint);
+        bool IClusterMember.IsRemote => !Endpoint.Equals(context.LocalEndpoint);
 
-        ClusterMemberStatus IClusterMember.Status => (ClusterMemberStatus)status.VolatileRead();
+        ClusterMemberStatus IClusterMember.Status 
+            => Endpoint.Equals(context.LocalEndpoint) ? ClusterMemberStatus.Available : (ClusterMemberStatus)status.VolatileRead();
 
         bool IEquatable<IClusterMember>.Equals(IClusterMember other) => Endpoint.Equals(other?.Endpoint);
 

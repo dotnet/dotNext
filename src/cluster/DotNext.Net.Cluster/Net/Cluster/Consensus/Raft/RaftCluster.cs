@@ -23,16 +23,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private static readonly Action<TMember> CancelPendingRequests = DelegateHelpers.CreateOpenDelegate<Action<TMember>>(member => member.CancelPendingRequests());
 
         /// <summary>
-        /// Represents predicate used for searching members stored in the memory
-        /// and maintained by <see cref="RaftCluster{TMember}"/>.
-        /// </summary>
-        /// <typeparam name="MemberId">The identifier of the member.</typeparam>
-        /// <param name="member">The member to check.</param>
-        /// <param name="id">The identifier of the member to match.</param>
-        /// <returns><see langword="true"/> if <paramref name="id"/> matches to <paramref name="member"/>; otherwise, <see langword="false"/>.</returns>
-        protected delegate bool MemberMatcher<in MemberId>(TMember member, MemberId id);
-
-        /// <summary>
         /// Represents cluster member.
         /// </summary>
         protected readonly ref struct MemberHolder
@@ -221,11 +211,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public event ClusterLeaderChangedEventHandler LeaderChanged;
 
-        /// <summary>
-        /// An event raised when cluster member becomes available or unavailable.
-        /// </summary>
-        public abstract event ClusterMemberStatusChanged MemberStatusChanged;
-
         IClusterMember ICluster.Leader => Leader;
 
         /// <summary>
@@ -326,25 +311,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => members.FirstOrDefault(matcher.AsFunc());
 
         /// <summary>
-        /// Finds cluster member using its identifier.
-        /// </summary>
-        /// <param name="id">The identifier of the member.</param>
-        /// <param name="matcher">The function allows to match the member with its identifier.</param>
-        /// <typeparam name="MemberId">The type of the member identifier.</typeparam>
-        /// <returns>The cluster member; or <see langword="null"/> if the member with the specified identifier doesn't exist.</returns>
-        protected TMember FindMember<MemberId>(MemberId id, MemberMatcher<MemberId> matcher)
-            => members.FirstOrDefault(member => matcher(member, id));
-
-        /// <summary>
         /// Handles Heartbeat message received from remote cluster member.
         /// </summary>
-        /// <param name="sender">The identifier of the Heartbeat message sender.</param>
+        /// <param name="sender">The sender of Heartbeat message.</param>
         /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
-        /// <param name="matcher">The function allows to match the member with its identifier.</param>
-        /// <typeparam name="MemberId">The type of the member identifier.</typeparam>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        protected async Task ReceiveHeartbeat<MemberId>(MemberId sender, long senderTerm,
-            MemberMatcher<MemberId> matcher)
+        protected async Task ReceiveHeartbeat(TMember sender, long senderTerm)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
             {
@@ -363,22 +335,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await SaveLastVoteAsync(auditTrail, null, transitionCancellation.Token).ConfigureAwait(false);
                 }
                 await StepDown().ConfigureAwait(false);
-                Leader = FindMember(sender, matcher);
+                Leader = sender;
             }
         }
 
         /// <summary>
         /// Handles AppendEntries message received from remote cluster member.
         /// </summary>
-        /// <param name="sender">The identifier of the Heartbeat message sender.</param>
+        /// <param name="sender">The sender of the replica message.</param>
         /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
-        /// <param name="matcher">The function allows to match the member with its identifier.</param>
         /// <param name="newEntry">A new entry to be committed locally.</param>
         /// <param name="precedingEntry">The identifier of the log entry immediately preceding new one.</param>
-        /// <typeparam name="MemberId">The type of the member identifier.</typeparam>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> <paramref name="precedingEntry"/> is not present in local audit trail.</returns>
-        protected async Task<bool> ReceiveEntries<MemberId>(MemberId sender, long senderTerm,
-            MemberMatcher<MemberId> matcher, ILogEntry<LogEntryId> newEntry, LogEntryId precedingEntry)
+        protected async Task<bool> ReceiveEntries(TMember sender, long senderTerm, ILogEntry<LogEntryId> newEntry, LogEntryId precedingEntry)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
             {
@@ -396,7 +365,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await SaveLastVoteAsync(auditTrail, null, transitionCancellation.Token).ConfigureAwait(false);
                 }
                 await StepDown().ConfigureAwait(false);
-                Leader = FindMember(sender, matcher);
+                Leader = sender;
                 if (auditTrail.Contains(precedingEntry))
                 {
                     await auditTrail.CommitAsync(newEntry);
@@ -452,13 +421,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Votes for the new candidate.
         /// </summary>
-        /// <param name="sender">The identifier of vote sender.</param>
+        /// <param name="sender">The vote sender.</param>
         /// <param name="senderTerm">Term value provided by sender of the request.</param>
         /// <param name="senderLastEntry">The last log entry stored on the sender.</param>
-        /// <param name="matcher">The function allows to match member identifier with instance of <typeparamref name="TMember"/>.</param>
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        protected async Task<bool> ReceiveVote<MemberId>(MemberId sender, long senderTerm, LogEntryId? senderLastEntry,
-            MemberMatcher<MemberId> matcher)
+        protected async Task<bool> ReceiveVote(TMember sender, long senderTerm, LogEntryId? senderLastEntry)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
             {
@@ -475,11 +442,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return false;
                 if (state is FollowerState followerState)
                 {
-                    var member = FindMember(sender, matcher);
-                    if (ReceiveVote(member, senderLastEntry))
+                    if (ReceiveVote(sender, senderLastEntry))
                     {
                         followerState.Refresh();
-                        await SaveLastVoteAsync(auditTrail, member, transitionCancellation.Token).ConfigureAwait(false);
+                        await SaveLastVoteAsync(auditTrail, sender, transitionCancellation.Token).ConfigureAwait(false);
                         return true;
                     }
                 }
@@ -557,13 +523,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     followerState.Dispose();
                     var newState = new CandidateState(this, absoluteMajority);
-                    newState.StartVoting(electionTimeout, auditTrail);
+                    newState.StartVoting(electionTimeout, currentTerm.IncrementAndGet(), auditTrail);
                     state = newState;
                     Logger.TransitionToCandidateStateCompleted();
                 }
         }
 
-        async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember leader)
+        async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {
             Logger.TransitionToLeaderStateStarted();
             using (var lockHolder = await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
@@ -573,7 +539,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     var newState = new LeaderState(this, absoluteMajority);
                     newState.StartLeading();
                     state = newState;
-                    Leader = leader;
+                    Leader = newLeader;
                     Logger.TransitionToLeaderStateCompleted();
                 }
         }

@@ -13,10 +13,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Requests vote from the member.
         /// </summary>
+        /// <param name="term"></param>
         /// <param name="lastEntry">The identifier of the last log entry. May be <see langword="null"/> if audit trail is not established for the member.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>Vote received from member; <see langword="true"/> if node accepts new leader, <see langword="false"/> if node doesn't accept new leader, <see langword="null"/> if node is not available.</returns>
-        Task<bool?> VoteAsync(LogEntryId? lastEntry, CancellationToken token);
+        Task<bool?> VoteAsync(long term, LogEntryId? lastEntry, CancellationToken token);
 
         /// <summary>
         /// Sends heartbeat message to the follower node.

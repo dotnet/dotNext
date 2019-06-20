@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -69,7 +70,7 @@ namespace DotNext.Threading
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token);
+        public Task Acquire(CancellationToken token) => TryAcquire(InfiniteTimeSpan, token);
 
         /// <summary>
         /// Releases previously acquired exclusive lock.

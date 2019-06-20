@@ -18,8 +18,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         IPEndPoint LocalEndpoint { get; }
 
-        void MemberStatusChanged(IRaftClusterMember member, ClusterMemberStatus previousStatus, ClusterMemberStatus newStatus);
-
         IReadOnlyDictionary<string, string> Metadata { get; }
 
         Task<bool> LocalCommitAsync(ILogEntry entry);

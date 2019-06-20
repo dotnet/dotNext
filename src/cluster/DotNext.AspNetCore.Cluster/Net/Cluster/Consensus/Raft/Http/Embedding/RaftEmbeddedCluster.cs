@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         }
 
         private protected override RaftClusterMember CreateMember(Uri address)
-            => new RaftClusterMember(this, address, new Uri(protocolPath.Value, UriKind.Relative)) { Timeout = requestTimeout };
+            => new RaftClusterMember(this, address, new Uri(protocolPath.Value, UriKind.Relative)) { Timeout = RequestTimeout };
 
         internal RequestDelegate CreateConsensusProtocolHandler(RequestDelegate next)
             => new MapMiddleware(next, new MapOptions { PathMatch = protocolPath, Branch = ProcessRequest }).Invoke;

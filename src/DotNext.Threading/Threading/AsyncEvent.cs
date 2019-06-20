@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -26,7 +27,7 @@ namespace DotNext.Threading
         /// <param name="event">An event to synchronize with.</param>
         /// <param name="token">The token that can be used to abort wait process.</param>
         /// <returns>A promise of signaled state.</returns>
-        public static Task Wait(this IAsyncEvent @event, CancellationToken token) => @event.Wait(TimeSpan.MaxValue, token);
+        public static Task Wait(this IAsyncEvent @event, CancellationToken token) => @event.Wait(InfiniteTimeSpan, token);
 
         /// <summary>
         /// Turns caller into idle state until the current event is set. 

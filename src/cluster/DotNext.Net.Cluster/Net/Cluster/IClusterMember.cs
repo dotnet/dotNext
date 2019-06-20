@@ -27,6 +27,11 @@ namespace DotNext.Net.Cluster
         bool IsRemote { get; }
 
         /// <summary>
+        /// An event raised when cluster member becomes available or unavailable.
+        /// </summary>
+        event ClusterMemberStatusChanged MemberStatusChanged;
+
+        /// <summary>
         /// Gets status of this member.
         /// </summary>
         ClusterMemberStatus Status { get; }

@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         }
 
         private protected override RaftClusterMember CreateMember(Uri address)
-            => new RaftClusterMember(this, address, Root) { Timeout = requestTimeout };
+            => new RaftClusterMember(this, address, Root) { Timeout = RequestTimeout };
 
         public override async Task StartAsync(CancellationToken token)
         {

@@ -15,6 +15,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
+        internal MetadataMessage(HttpRequest request)
+            : base(request)
+        {
+        }
+
         internal static async Task<MemberMetadata> GetResponse(HttpResponseMessage response)
         {
             var serializer = new DataContractJsonSerializer(typeof(MemberMetadata));
@@ -24,7 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal static Task CreateResponse(HttpResponse response, MemberMetadata metadata)
         {
-            response.StatusCode = (int)HttpStatusCode.OK;
+            response.StatusCode = StatusCodes.Status200OK;
             var serializer = new DataContractJsonSerializer(typeof(MemberMetadata));
             serializer.WriteObject(response.Body, metadata);
             return Task.CompletedTask;

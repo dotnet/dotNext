@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Runtime.CompilerServices.Unsafe;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -151,7 +152,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task returning the acquired lock holder.</returns>
-        public Task<Holder> Acquire(CancellationToken token) => TryAcquire(TimeSpan.MaxValue, token);
+        public Task<Holder> Acquire(CancellationToken token) => TryAcquire(InfiniteTimeSpan, token);
 
         /// <summary>
         /// Acquires the lock asynchronously.
@@ -233,7 +234,7 @@ namespace DotNext.Threading
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task returning the acquired lock holder; or empty lock holder if operation was canceled.</returns>
         public Task<Holder> TryAcquire(CancellationToken token)
-            => TryAcquire(TimeSpan.MaxValue, token, true);
+            => TryAcquire(InfiniteTimeSpan, token, true);
 
         /// <summary>
         /// Destroy this lock and dispose underlying lock object if it is owned by the given lock.

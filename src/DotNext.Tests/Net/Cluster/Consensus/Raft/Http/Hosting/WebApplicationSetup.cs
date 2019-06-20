@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
+namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
     internal sealed class WebApplicationSetup : StartupBase
     {
@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
         public override void Configure(IApplicationBuilder app)
         {
-            app.UseConsensusProtocolHandler();
+            
         }
 
         public override void ConfigureServices(IServiceCollection services)

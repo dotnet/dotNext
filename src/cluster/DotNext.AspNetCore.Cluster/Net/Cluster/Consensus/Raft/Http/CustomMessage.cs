@@ -45,7 +45,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal static Task CreateResponse(HttpResponse response, IMessage message)
         {
-            response.StatusCode = (int)HttpStatusCode.OK;
+            response.StatusCode = StatusCodes.Status200OK;
             return OutboundMessageContent.WriteTo(message, response);
         }
     }

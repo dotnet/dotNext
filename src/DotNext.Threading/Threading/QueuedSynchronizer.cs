@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -113,12 +114,12 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private protected Task<bool> Wait<STATE, M>(ref STATE state, TimeSpan timeout, CancellationToken token)
-            where M : struct, ILockManager<STATE, WaitNode>
+        private protected Task<bool> Wait<State, M>(ref State state, TimeSpan timeout, CancellationToken token)
+            where M : struct, ILockManager<State, WaitNode>
         {
             ThrowIfDisposed();
             var manager = new M();
-            if (timeout < TimeSpan.Zero)
+            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             else if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
@@ -130,7 +131,7 @@ namespace DotNext.Threading
                 head = tail = manager.CreateNode(null);
             else
                 tail = manager.CreateNode(tail);
-            return timeout == TimeSpan.MaxValue ?
+            return timeout == InfiniteTimeSpan ?
                 token.CanBeCanceled ? Wait(tail, token) : tail.Task :
                 Wait(tail, timeout, token);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -23,7 +24,7 @@ namespace DotNext.Threading
             if (cts is null || backgroundTask is null)
                 return Task.CompletedTask;
             cts.Cancel(false);
-            return Task.WhenAny(backgroundTask, Task.Delay(System.Threading.Timeout.Infinite, token));
+            return Task.WhenAny(backgroundTask, Task.Delay(InfiniteTimeSpan, token));
         }
 
         internal Task Stop()
