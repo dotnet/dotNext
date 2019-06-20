@@ -84,7 +84,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Represents zero pointer.
         /// </summary>
-        public static Pointer<T> Null => new Pointer<T>(IntPtr.Zero);
+        public static Pointer<T> Null => default;
 
         /// <summary>
         /// Size of type <typeparamref name="T"/>, in bytes.
@@ -100,14 +100,12 @@ namespace DotNext.Runtime.InteropServices
         [CLSCompliant(false)]
         public unsafe Pointer(T* ptr) => value = ptr;
 
-        private unsafe Pointer(void* ptr) => value = (T*)ptr;
-
         /// <summary>
         /// Constructs pointer from <see cref="IntPtr"/> value.
         /// </summary>
         /// <param name="ptr">The pointer value.</param>
         public unsafe Pointer(IntPtr ptr)
-            : this(ptr.ToPointer())
+            : this((T*) ptr)
         {
         }
 
@@ -117,7 +115,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer value.</param>
         [CLSCompliant(false)]
         public unsafe Pointer(UIntPtr ptr)
-            : this(ptr.ToPointer())
+            : this((T*) ptr)
         {
         }
 
@@ -512,7 +510,7 @@ namespace DotNext.Runtime.InteropServices
         [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         public unsafe Pointer<U> As<U>()
             where U : unmanaged
-            => Size >= Pointer<U>.Size ? new Pointer<U>(value) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize, nameof(U));
+            => Size >= Pointer<U>.Size ? new Pointer<U>(Address) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize, nameof(U));
 
         /// <summary>
         /// Converts unmanaged pointer into managed pointer.
