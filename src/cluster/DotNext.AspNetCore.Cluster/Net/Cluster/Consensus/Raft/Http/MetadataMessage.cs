@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal sealed class MetadataMessage : RaftHttpMessage
+    internal sealed class MetadataMessage : HttpMessage, IHttpMessage<MemberMetadata>
     {
         internal new const string MessageType = "Metadata";
 
@@ -20,14 +20,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
-        internal static async Task<MemberMetadata> GetResponse(HttpResponseMessage response)
+        async Task<MemberMetadata> IHttpMessage<MemberMetadata>.ParseResponse(HttpResponseMessage response)
         {
             var serializer = new DataContractJsonSerializer(typeof(MemberMetadata));
             using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 return (MemberMetadata)serializer.ReadObject(stream);
         }
 
-        internal static Task CreateResponse(HttpResponse response, MemberMetadata metadata)
+        public Task SaveResponse(HttpResponse response, MemberMetadata metadata)
         {
             response.StatusCode = StatusCodes.Status200OK;
             var serializer = new DataContractJsonSerializer(typeof(MemberMetadata));

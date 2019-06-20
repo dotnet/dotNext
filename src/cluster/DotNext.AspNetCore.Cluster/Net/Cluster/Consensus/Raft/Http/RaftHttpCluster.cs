@@ -143,10 +143,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var sender = FindMember(request.Sender.Represents);
             if (sender is null)
-                await RequestVoteMessage.CreateResponse(response, false).ConfigureAwait(false);
+                await request.SaveResponse(response, false).ConfigureAwait(false);
             else
             {
-                await RequestVoteMessage.CreateResponse(response,
+                await request.SaveResponse(response,
                     await ReceiveVote(sender, request.ConsensusTerm, request.LastEntry)
                         .ConfigureAwait(false)).ConfigureAwait(false);
                 sender.Touch();
@@ -172,17 +172,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return result;
         }
 
-        private async Task Resign(RaftHttpMessage request, HttpResponse response)
+        private async Task Resign(ResignMessage request, HttpResponse response)
         {
             var sender = FindMember(request.Sender.Represents);
-            await ResignMessage.CreateResponse(response, await ReceiveResign().ConfigureAwait(false)).ConfigureAwait(false);
+            await request.SaveResponse(response, await ReceiveResign().ConfigureAwait(false)).ConfigureAwait(false);
             sender?.Touch();
         }
 
-        private Task GetMetadata(RaftHttpMessage request, HttpResponse response)
+        private Task GetMetadata(MetadataMessage request, HttpResponse response)
         {
             var sender = FindMember(request.Sender.Represents);
-            var result = MetadataMessage.CreateResponse(response, metadata);
+            var result = request.SaveResponse(response, metadata);
             sender?.Touch();
             return result;
         }
@@ -196,7 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             else
             {
-                await AppendEntriesMessage.CreateResponse(response,
+                await request.SaveResponse(response,
                     await ReceiveEntries(sender, request.ConsensusTerm, request.LogEntry,
                         request.PrecedingEntry).ConfigureAwait(false)).ConfigureAwait(false);
                 sender.Touch();
@@ -225,7 +225,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 var reply = await messageHandler
                     .ReceiveMessage(sender, message.Message)
                     .ConfigureAwait(false);
-                await CustomMessage.CreateResponse(response, reply).ConfigureAwait(false);
+                await message.SaveResponse(response, reply).ConfigureAwait(false);
                 sender.Touch();
             }
         }

@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal sealed class RequestVoteMessage : RaftHttpBooleanMessage
+    internal sealed class RequestVoteMessage : RaftHttpMessage, IHttpMessage<bool>
     {
         internal const string RecordIndexHeader = "X-Raft-Record-Index";
         internal const string RecordTermHeader = "X-Raft-Record-Term";
@@ -11,8 +13,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal readonly LogEntryId? LastEntry;
 
-        internal RequestVoteMessage(IPEndPoint sender, LogEntryId? lastEntry)
-            : base(MessageType, sender)
+        internal RequestVoteMessage(IPEndPoint sender, long term, LogEntryId? lastEntry)
+            : base(MessageType, sender, term)
         {
             LastEntry = lastEntry;
         }
@@ -22,5 +24,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             LastEntry = ParseLogEntryId(request, RecordIndexHeader, RecordTermHeader);
         }
+
+        Task<bool> IHttpMessage<bool>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
+
+        public new Task SaveResponse(HttpResponse response, bool result) => HttpMessage.SaveResponse(response, result);
     }
 }

@@ -7,8 +7,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         internal new const string MessageType = "Heartbeat";
 
-        internal HeartbeatMessage(IPEndPoint sender)
-            : base(MessageType, sender)
+        internal HeartbeatMessage(IPEndPoint sender, long term)
+            : base(MessageType, sender, term)
         {
         }
 

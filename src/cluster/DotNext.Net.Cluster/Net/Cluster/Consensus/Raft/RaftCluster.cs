@@ -170,6 +170,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         ILogger IRaftStateMachine.Logger => Logger;
 
+        bool IRaftStateMachine.AbsoluteMajority => absoluteMajority;
+
         /// <summary>
         /// Associates audit trail with the current instance.
         /// </summary>
@@ -522,8 +524,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (lockHolder && state is FollowerState followerState)
                 {
                     followerState.Dispose();
-                    var newState = new CandidateState(this, absoluteMajority);
-                    newState.StartVoting(electionTimeout, currentTerm.IncrementAndGet(), auditTrail);
+                    var newState = new CandidateState(this, currentTerm.IncrementAndGet());
+                    newState.StartVoting(electionTimeout, auditTrail);
                     state = newState;
                     Logger.TransitionToCandidateStateCompleted();
                 }
@@ -533,15 +535,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Logger.TransitionToLeaderStateStarted();
             using (var lockHolder = await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-                if (lockHolder && state is CandidateState candidateState)
+            {
+                long term;
+                if (lockHolder && state is CandidateState candidateState && candidateState.Term == (term = currentTerm.VolatileRead()))
                 {
                     candidateState.Dispose();
-                    var newState = new LeaderState(this, absoluteMajority);
+                    var newState = new LeaderState(this, term);
                     newState.StartLeading();
                     state = newState;
                     Leader = newLeader;
                     Logger.TransitionToLeaderStateCompleted();
                 }
+            }
         }
 
         /// <summary>

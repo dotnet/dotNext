@@ -9,7 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
 
-    internal sealed class CustomMessage : RaftHttpMessage
+    internal sealed class CustomMessage : HttpMessage, IHttpMessage<IMessage>
     {
         internal new const string MessageType = "CustomMessage";
         private const string OneWayHeader = "X-OneWay";
@@ -40,10 +40,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Content = new OutboundMessageContent(Message);
         }
 
-        internal static Task<IMessage> GetResponse(HttpResponseMessage response)
+        Task<IMessage> IHttpMessage<IMessage>.ParseResponse(HttpResponseMessage response)
             => Task.FromResult<IMessage>(new InboundMessageContent(response));
 
-        internal static Task CreateResponse(HttpResponse response, IMessage message)
+        public Task SaveResponse(HttpResponse response, IMessage message)
         {
             response.StatusCode = StatusCodes.Status200OK;
             return OutboundMessageContent.WriteTo(message, response);

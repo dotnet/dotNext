@@ -2,13 +2,14 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Replication;
 
-    internal sealed class AppendEntriesMessage : RaftHttpBooleanMessage
+    internal sealed class AppendEntriesMessage : RaftHttpMessage, IHttpMessage<bool>
     {
         internal new const string MessageType = "AppendEntries";
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
@@ -46,8 +47,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal readonly ILogEntry<LogEntryId> LogEntry;
         internal readonly LogEntryId PrecedingEntry;
 
-        internal AppendEntriesMessage(IPEndPoint sender, ILogEntry<LogEntryId> entry, LogEntryId precedingEntry)
-            : base(MessageType, sender)
+        internal AppendEntriesMessage(IPEndPoint sender, long term, ILogEntry<LogEntryId> entry, LogEntryId precedingEntry)
+            : base(MessageType, sender, term)
         {
             LogEntry = entry;
             PrecedingEntry = precedingEntry;
@@ -62,12 +63,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             LogEntry = new ReceivedLogEntry(request);
         }
 
-
-
         private protected override void FillRequest(HttpRequestMessage request)
         {
             base.FillRequest(request);
             request.Content = new MessageContent(LogEntry, PrecedingEntry);
         }
+
+        Task<bool> IHttpMessage<bool>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
+
+        public new Task SaveResponse(HttpResponse response, bool result) => HttpMessage.SaveResponse(response, result);
     }
 }

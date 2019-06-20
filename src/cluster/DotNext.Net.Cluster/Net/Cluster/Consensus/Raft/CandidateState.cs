@@ -47,14 +47,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private readonly CancellationTokenSource votingCancellation;
-        private readonly bool absoluteMajority;
+        internal readonly long Term;
         private volatile Task votingTask;
 
-        internal CandidateState(IRaftStateMachine stateMachine, bool absoluteMajority)
+        internal CandidateState(IRaftStateMachine stateMachine, long term)
             : base(stateMachine)
         {
             votingCancellation = new CancellationTokenSource();
-            this.absoluteMajority = absoluteMajority;
+            Term = term;
         }
 
         private async Task EndVoting(IEnumerable<VotingState> voters)
@@ -78,7 +78,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         break;
                     case VotingResult.NotAvailable:
                         stateMachine.Logger.MemberUnavailable(state.Voter.Endpoint);
-                        if (absoluteMajority)
+                        if (stateMachine.AbsoluteMajority)
                             votes -= 1;
                         break;
                 }
@@ -97,9 +97,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Starts voting asynchronously.
         /// </summary>
-        /// <param name="auditTrail">The local transaction log.</param>
         /// <param name="timeout">Candidate state timeout.</param>
-        internal void StartVoting(int timeout, long term, IAuditTrail<LogEntryId> auditTrail = null)
+        /// <param name="auditTrail">The local transaction log.</param>
+        internal void StartVoting(int timeout, IAuditTrail<LogEntryId> auditTrail = null)
         {
             stateMachine.Logger.VotingStarted(timeout);
             ICollection<VotingState> voters = new LinkedList<VotingState>();
@@ -107,7 +107,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //start voting in parallel
             var lastRecord = auditTrail?.LastRecord;
             foreach (var member in stateMachine.Members)
-                voters.Add(new VotingState(member, term, lastRecord, votingCancellation.Token));
+                voters.Add(new VotingState(member, Term, lastRecord, votingCancellation.Token));
             votingTask = EndVoting(voters);
         }
 
