@@ -6,14 +6,6 @@ namespace DotNext
     public sealed class EnumTests : Assert
     {
         [Fact]
-        public static void DelegTest()
-        {
-            object obj = null;
-            var f = new Func<string>(obj.ToString);
-            Console.WriteLine(f.Method);
-        }
-
-        [Fact]
         public static void ValuesTest()
         {
             Equal(3, Enum<EnvironmentVariableTarget>.Members.Count);
