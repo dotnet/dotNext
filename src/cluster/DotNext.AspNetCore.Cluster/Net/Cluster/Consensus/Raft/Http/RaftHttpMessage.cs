@@ -26,6 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected override void FillRequest(HttpRequestMessage request)
         {
             request.Headers.Add(TermHeader, Convert.ToString(ConsensusTerm, InvariantCulture));
+            base.FillRequest(request);
         }
 
         private protected static LogEntryId? ParseLogEntryId(HttpRequest request, string indexHeader, string termHeader)
