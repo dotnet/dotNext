@@ -94,7 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        public async Task HeartbeatAsync(long term, CancellationToken token)
+        async Task IRaftClusterMember.HeartbeatAsync(long term, CancellationToken token)
         {
             if (Endpoint.Equals(context.LocalEndpoint))
                 return;
@@ -136,7 +136,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         //null means that node is unreachable
         //true means that node votes successfully for the new leader
         //false means that node is in candidate state and rejects voting
-        public async Task<bool?> VoteAsync(long term, LogEntryId? lastEntry, CancellationToken token)
+        async Task<bool?> IRaftClusterMember.VoteAsync(long term, LogEntryId? lastEntry, CancellationToken token)
             => Endpoint.Equals(context.LocalEndpoint)
                 ? true
                 : await SendAsync<bool, RequestVoteMessage>(new RequestVoteMessage(context.LocalEndpoint, term, lastEntry), token)
@@ -147,7 +147,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         Task<bool> IClusterMember.ResignAsync(CancellationToken token)
             => SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalEndpoint), token);
 
-        public Task<bool> AppendEntriesAsync(long term, ILogEntry<LogEntryId> newEntry, LogEntryId precedingEntry, CancellationToken token)
+        Task<bool> IRaftClusterMember.AppendEntriesAsync(long term, ILogEntry<LogEntryId> newEntry, LogEntryId precedingEntry, CancellationToken token)
             => Endpoint.Equals(context.LocalEndpoint) ?
                 context.LocalCommitAsync(newEntry) :
                 SendAsync<bool, AppendEntriesMessage>(new AppendEntriesMessage(context.LocalEndpoint, term, newEntry, precedingEntry), token);

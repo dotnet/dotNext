@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -25,6 +26,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
             private void OnLeaderChanged(ICluster sender, IClusterMember leader)
             {
+                if (leader is null)
+                    return;
                 Leader = leader;
                 Set();
             }
@@ -51,7 +54,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             var config1 = new Dictionary<string, string>
             {
                 {"absoluteMajority", "true"},
-                {"name", "node1"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
@@ -59,7 +61,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             var config2 = new Dictionary<string, string>
             {
                 {"absoluteMajority", "true"},
-                {"name", "node2"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
@@ -67,7 +68,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             var config3 = new Dictionary<string, string>
             {
                 {"absoluteMajority", "true"},
-                {"name", "node3"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
@@ -84,7 +84,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 await Task.Delay(delay);
                 await host3.StartAsync();
 
-                WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 });
+                await Task.Delay(3_000);
+                //WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 });
 
                 var leader1 = host1.Services.GetRequiredService<ICluster>().Leader;
                 NotNull(leader1);
@@ -131,18 +132,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                         //wait for new leader
                         WaitHandle.WaitAll(new WaitHandle[] { listener2, listener3 });
                         NotNull(listener2.Leader);
+                        NotNull(listener3.Leader);
                         CheckLeadership(listener2.Leader, listener3.Leader);
                         break;
                     case 2:
                         //wait for new leader
                         WaitHandle.WaitAll(new WaitHandle[] { listener1, listener3 });
                         NotNull(listener1.Leader);
+                        NotNull(listener3.Leader);
                         CheckLeadership(listener1.Leader, listener3.Leader);
                         break;
                     case 3:
                         //wait for new leader
                         WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2 });
                         NotNull(listener1.Leader);
+                        NotNull(listener2.Leader);
                         CheckLeadership(listener1.Leader, listener2.Leader);
                         break;
                     default:

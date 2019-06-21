@@ -432,27 +432,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
             {
                 var comparison = currentTerm.VolatileRead().CompareTo(senderTerm);
-                if (comparison < 0) //currentTerm < term
+                if (comparison > 0) //currentTerm > term
+                    return false;
+                else if (comparison < 0) //currentTerm < term
                 {
                     currentTerm.VolatileWrite(senderTerm);
                     await SaveTermAsync(auditTrail, senderTerm, transitionCancellation.Token).ConfigureAwait(false);
                     await StepDown().ConfigureAwait(false);
+                    Leader = null;
                     return true;
                 }
-
-                if (comparison < 0) //currentTerm > term
-                    return false;
-                if (state is FollowerState followerState)
+                else if (state is FollowerState followerState && ReceiveVote(sender, senderLastEntry))
                 {
-                    if (ReceiveVote(sender, senderLastEntry))
-                    {
-                        followerState.Refresh();
-                        await SaveLastVoteAsync(auditTrail, sender, transitionCancellation.Token).ConfigureAwait(false);
-                        return true;
-                    }
+                    followerState.Refresh();
+                    await SaveLastVoteAsync(auditTrail, sender, transitionCancellation.Token).ConfigureAwait(false);
+                    Leader = null;
+                    return true;
                 }
-
-                return false;
+                else
+                    return false;
             }
         }
 

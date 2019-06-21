@@ -54,10 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             hostingAddresses = dependencies.GetRequiredService<IServer>().GetHostingAddresses;
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             var loggerFactory = dependencies.GetRequiredService<ILoggerFactory>();
-            var memberName = config.CurrentValue.Name;
-            Logger = string.IsNullOrEmpty(memberName)
-                ? loggerFactory.CreateLogger(GetType())
-                : loggerFactory.CreateLogger(memberName);
+            Logger = loggerFactory.CreateLogger(GetType());
             //track changes in configuration
             configurationTracker = config.OnChange(ConfigurationChanged);
         }
