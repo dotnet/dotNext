@@ -5,6 +5,8 @@ using System;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Messaging;
+
     internal static class RaftHttpConfigurator
     {
         
@@ -20,6 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 .AddSingleton<IHostedService>(clusterNodeCast)
                 .AddSingleton<ICluster>(clusterNodeCast)
                 .AddSingleton<IRaftCluster>(clusterNodeCast)
+                .AddSingleton<IMessagingNetwork>(clusterNodeCast)
                 .AddSingleton<IExpandableCluster>(clusterNodeCast);
         }
     }

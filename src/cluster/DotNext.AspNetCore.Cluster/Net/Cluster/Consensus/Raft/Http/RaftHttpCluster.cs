@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -17,7 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
 
-    internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster
+    internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessagingNetwork
     {
         private const string RaftClientHandlerName = "raftClient";
         private delegate ICollection<IPEndPoint> HostingAddressesProvider();
@@ -70,6 +71,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ILogger IHostingContext.Logger => Logger;
 
+        IReadOnlyCollection<IAddressee> IMessagingNetwork.Members => Members;
+
+        IAddressee IMessagingNetwork.Leader => Leader;
+
         private void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
         {
             metadata = new MemberMetadata(configuration.Metadata);
@@ -100,6 +105,55 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             });
         }
 
+        async Task<IMessage> IMessagingNetwork.SendMessageToLeaderAsync(IMessage message, CancellationToken token)
+        {
+            do
+            {
+                var leader = Leader;
+                if(leader is null)
+                    throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
+                try
+                {
+                    return await leader.SendMessageAsync(message, true, token).ConfigureAwait(false);
+                }
+                catch(MemberUnavailableException)
+                {
+                    continue;
+                }
+                catch(UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.BadRequest) //keep in sync with ReceiveMessage behavior
+                {
+                    continue;
+                }
+            }
+            while(!token.IsCancellationRequested);
+            throw new OperationCanceledException(token);
+        }
+
+        async Task IMessagingNetwork.SendSignalToLeaderAsync(IMessage message, CancellationToken token)
+        {
+            do
+            {
+                var leader = Leader;
+                if(leader is null)
+                    throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
+                try
+                {
+                    await leader.SendSignalAsync(message, true, true, token).ConfigureAwait(false);
+                }
+                catch(MemberUnavailableException)
+                {
+                    continue;
+                }
+                catch(UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.BadRequest) //keep in sync with ReceiveMessage behavior
+                {
+                    continue;
+                }
+                return;
+            }
+            while(!token.IsCancellationRequested);
+            throw new OperationCanceledException(token);
+        }
+
         IReadOnlyDictionary<string, string> IHostingContext.Metadata => metadata;
 
         bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
@@ -115,7 +169,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         IPEndPoint IHostingContext.LocalEndpoint => localMember?.Endpoint;
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
-            => httpHandlerFactory?.CreateHandler(RaftClientHandlerName) ?? new HttpClientHandler();
+            => httpHandlerFactory?.CreateHandler(RaftClientHandlerName) ?? new HttpClientHandler() { AllowAutoRedirect = true };
 
         public event ClusterChangedEventHandler MemberAdded;
         public event ClusterChangedEventHandler MemberRemoved;
@@ -200,31 +254,51 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        private async Task ReceiveMessage(CustomMessage message, HttpResponse response)
+        private Task ReceiveOneWayMessage(RaftClusterMember sender, CustomMessage message, HttpResponse response)
+        {
+            if(message.RespectLeadership ? IsLeaderLocal : true)
+            {
+                response.StatusCode = StatusCodes.Status204NoContent;
+                return messageHandler.ReceiveSignal(sender, message.Message).AsTask();
+            }
+            else
+            {
+                response.StatusCode = StatusCodes.Status400BadRequest;
+                return Task.CompletedTask;
+            }
+        }
+
+        private async Task ReceiveMessage(RaftClusterMember sender, CustomMessage message, HttpResponse response)
+        {
+            if(message.RespectLeadership ? IsLeaderLocal : true)
+            {
+                response.StatusCode = StatusCodes.Status200OK;
+                await message.SaveResponse(response, await messageHandler.ReceiveMessage(sender, message.Message).ConfigureAwait(false)).ConfigureAwait(false);
+            }
+            else
+                response.StatusCode = StatusCodes.Status400BadRequest;
+        }
+
+        private Task ReceiveMessage(CustomMessage message, HttpResponse response)
         {
             var sender = FindMember(message.Sender.Represents);
+            Task task;
             if (sender is null)
             {
                 response.StatusCode = StatusCodes.Status404NotFound;
+                task = Task.CompletedTask;
             }
             else if (messageHandler is null)
             {
                 response.StatusCode = StatusCodes.Status501NotImplemented;
+                task = Task.CompletedTask;
             }
             else if (message.IsOneWay)
-            {
-                await messageHandler.ReceiveSignal(sender, message.Message);
-                response.StatusCode = StatusCodes.Status200OK;
-                sender.Touch();
-            }
+                task = ReceiveOneWayMessage(sender, message, response);
             else
-            {
-                var reply = await messageHandler
-                    .ReceiveMessage(sender, message.Message)
-                    .ConfigureAwait(false);
-                await message.SaveResponse(response, reply).ConfigureAwait(false);
-                sender.Touch();
-            }
+                task = ReceiveMessage(sender, message, response);
+            sender?.Touch();
+            return task;
         }
 
         private protected Task ProcessRequest(HttpContext context)
@@ -236,7 +310,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 return Task.CompletedTask;
             }
-
             //process request
             switch (RaftHttpMessage.GetMessageType(context.Request))
             {

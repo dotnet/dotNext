@@ -23,5 +23,27 @@ namespace DotNext
             NotNull(d);
             Equal(1, d("abc", 'b', 0));
         }
+
+        [Fact]
+        public static void OpenDelegateForProperty()
+        {
+            var d = DelegateHelpers.CreateOpenDelegate<Func<string, int>>(str => str.Length);
+            NotNull(d);
+            Equal(4, d("abcd"));
+        }
+
+        [Fact]
+        public static void ClosedDelegate()
+        {
+            var d = DelegateHelpers.CreateClosedDelegateFactory<Func<char, int, int>>((ch, startIndex) => "".IndexOf(ch, startIndex)).Invoke("abc");
+            Equal(1, d('b', 0));
+        }
+
+        [Fact]
+        public static void ClosedDelegateForProperty()
+        {
+            var d = DelegateHelpers.CreateClosedDelegateFactory<Func<int>>(() => "".Length).Invoke("abcd");
+            Equal(4, d());
+        }
     }
 }

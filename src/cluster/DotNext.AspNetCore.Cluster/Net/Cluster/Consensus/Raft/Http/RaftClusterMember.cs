@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Threading;
     using Threading.Tasks;
 
-    internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, IMessenger
+    internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, IAddressee
     {
         private const string UserAgent = "Raft.NET";
 
@@ -172,8 +172,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IEquatable<IClusterMember>.Equals(IClusterMember other) => Endpoint.Equals(other?.Endpoint);
 
-        Task<IMessage> IMessenger.SendMessageAsync(IMessage message, CancellationToken token)
-            => SendAsync<IMessage, CustomMessage>(new CustomMessage(context.LocalEndpoint, message, false), token);
+        internal Task<IMessage> SendMessageAsync(IMessage message, bool respectLeadership, CancellationToken token)
+            => SendAsync<IMessage, CustomMessage>(new CustomMessage(context.LocalEndpoint, message, false) { RespectLeadership = respectLeadership }, token);
+
+        Task<IMessage> IAddressee.SendMessageAsync(IMessage message, CancellationToken token)
+            => SendMessageAsync(message, false, token);
 
         private async void SendUnreliableSignalAsync(HttpRequestMessage request, CancellationToken token)
         {
@@ -183,49 +186,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Disposable.Dispose(request, response);
         }
 
-        async Task IMessenger.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
+        internal Task SendSignalAsync(IMessage message, bool requiresConfirmation, bool respectLeadership, CancellationToken token)
         {
-            context.Logger.SendingRequestToMember(Endpoint, CustomMessage.MessageType);
-            var request = (HttpRequestMessage)new CustomMessage(context.LocalEndpoint, message, true);
-            request.RequestUri = resourcePath;
+            var request = new CustomMessage(context.LocalEndpoint, message, true) { RespectLeadership = respectLeadership };
             if (requiresConfirmation)
-            {
-                var response = default(HttpResponseMessage);
-                try
-                {
-                    response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
-                        .ConfigureAwait(false);
-                    if (response.StatusCode == HttpStatusCode.NotImplemented)
-                        throw new NotSupportedException(ExceptionMessages.MessagingNotSupported);
-                    else
-                        response.EnsureSuccessStatusCode();
-                    ChangeStatus(AvailableStatus);
-                }
-                catch (HttpRequestException e)
-                {
-                    if (response is null)
-                    {
-                        context.Logger.MemberUnavailable(Endpoint, e);
-                        ChangeStatus(UnavailableStatus);
-                        throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
-                    }
-                    else
-                        throw new UnexpectedStatusCodeException(response, e);
-                }
-                catch(OperationCanceledException e) when (!token.IsCancellationRequested)
-                {
-                    context.Logger.MemberUnavailable(Endpoint, e);
-                    ChangeStatus(UnavailableStatus);
-                    throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
-                }
-                finally
-                {
-                    response?.Dispose();
-                    request.Dispose();
-                }
-            }
+                return SendAsync<IMessage, CustomMessage>(request, token);
             else
-                SendUnreliableSignalAsync(request, token);
+            {
+                SendUnreliableSignalAsync((HttpRequestMessage) request, token);
+                return Task.CompletedTask;
+            }
         }
+
+        Task IAddressee.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
+            => SendSignalAsync(message, requiresConfirmation, false, token);
     }
 }

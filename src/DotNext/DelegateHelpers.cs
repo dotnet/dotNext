@@ -10,16 +10,43 @@ namespace DotNext
     /// </summary>
     public static class DelegateHelpers
     {
+        private static MethodInfo GetMethod<D>(Expression<D> expression)
+            where D : MulticastDelegate
+        {
+            switch(expression.Body)
+            {
+                case MethodCallExpression methodCall:
+                    return methodCall.Method;
+                case MemberExpression member when (member.Member is PropertyInfo property):
+                    return property.GetMethod;
+                default:
+                    return null;
+            }
+        }
+
         /// <summary>
         /// Creates open delegate for the instance method referenced
         /// in expression tree.
         /// </summary>
-        /// <typeparam name="D">The type of the delegate.</typeparam>
+        /// <typeparam name="D">The type of the delegate describing expression tree.</typeparam>
         /// <param name="expression">The expression tree containing instance method call.</param>
         /// <returns>The open delegate.</returns>
         public static D CreateOpenDelegate<D>(Expression<D> expression)
             where D : MulticastDelegate
-            => expression.Body is MethodCallExpression methodCall && !methodCall.Method.IsStatic ? CreateDelegate<D>(methodCall.Method) : null;
+            => GetMethod(expression)?.CreateDelegate<D>();
+
+        /// <summary>
+        /// Creates a factory for closed delegates.
+        /// </summary>
+        /// <param name="expression">The expression tree containing instance method call.</param>
+        /// <typeparam name="D">The type of the delegate describing expression tree.</typeparam>
+        /// <returns>The factory of closed delegate.</returns>
+        public static Func<object, D> CreateClosedDelegateFactory<D>(Expression<D> expression)
+            where D : MulticastDelegate
+        {
+            var method = GetMethod(expression);
+            return method is null ? null : new Func<object, D>(method.CreateDelegate<D>);
+        }
 
         /// <summary>
         /// Performs contravariant conversion

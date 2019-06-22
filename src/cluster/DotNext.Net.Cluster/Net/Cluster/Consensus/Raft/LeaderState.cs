@@ -29,8 +29,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private BackgroundTask heartbeatTask;
         private readonly long term;
+        private readonly bool absoluteMajority;
 
-        internal LeaderState(IRaftStateMachine stateMachine, long term) : base(stateMachine) => this.term = term;
+        internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority, long term) 
+            : base(stateMachine)
+        {
+            this.term = term;
+            this.absoluteMajority = absoluteMajority;
+        }
 
         private async Task DoHeartbeats(CancellationToken token)
         {
@@ -47,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 await Task.WhenAll(tasks).ConfigureAwait(false);
                 var votes = 0;
-                if (stateMachine.AbsoluteMajority)
+                if (absoluteMajority)
                     foreach (var task in tasks)
                         switch (task.Result)
                         {

@@ -7,8 +7,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         ILogger Logger { get; }
 
-        bool AbsoluteMajority { get; }
-
         IEnumerable<IRaftClusterMember> Members { get; }
         void MoveToFollowerState(bool randomizeTimeout);
 

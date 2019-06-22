@@ -49,12 +49,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly CancellationTokenSource votingCancellation;
         internal readonly long Term;
         private volatile Task votingTask;
+        private readonly bool absoluteMajority;
 
-        internal CandidateState(IRaftStateMachine stateMachine, long term)
+        internal CandidateState(IRaftStateMachine stateMachine, bool absoluteMajority, long term)
             : base(stateMachine)
         {
             votingCancellation = new CancellationTokenSource();
             Term = term;
+            this.absoluteMajority = absoluteMajority;
         }
 
         private async Task EndVoting(IEnumerable<VotingState> voters)
@@ -78,7 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         break;
                     case VotingResult.NotAvailable:
                         stateMachine.Logger.MemberUnavailable(state.Voter.Endpoint);
-                        if (stateMachine.AbsoluteMajority)
+                        if (absoluteMajority)
                             votes -= 1;
                         break;
                 }

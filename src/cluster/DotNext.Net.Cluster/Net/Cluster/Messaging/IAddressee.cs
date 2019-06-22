@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// <summary>
     /// Represents cluster member that supports messaging.
     /// </summary>
-    public interface IMessenger : IClusterMember
+    public interface IAddressee : IClusterMember
     {
         /// <summary>
         /// Sends a message to the cluster member.
@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The message representing response; or <see langword="null"/> if request message in one-way.</returns>
         /// <exception cref="InvalidOperationException">Attempts to send message to local or unavailable member.</exception>
-        Task<IMessage> SendMessageAsync(IMessage message, CancellationToken token);
+        Task<IMessage> SendMessageAsync(IMessage message, CancellationToken token = default);
 
         /// <summary>
         /// Sends one-way message to the cluster member.

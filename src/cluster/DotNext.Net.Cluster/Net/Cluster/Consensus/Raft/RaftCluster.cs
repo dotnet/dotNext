@@ -137,8 +137,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private AsyncLock transitionSync;  //used to synchronize state transitions
         private volatile RaftState state;
-        private TMember votedFor;
-        private volatile IRaftClusterMember leader;
+        private volatile TMember votedFor, leader;
         private long currentTerm;
         private readonly bool absoluteMajority;
         private readonly ElectionTimeout electionTimeoutProvider;
@@ -170,7 +169,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         ILogger IRaftStateMachine.Logger => Logger;
 
-        bool IRaftStateMachine.AbsoluteMajority => absoluteMajority;
+        /// <summary>
+        /// Indicates that local member is a leader.
+        /// </summary>
+        public bool IsLeaderLocal => state is LeaderState;
 
         /// <summary>
         /// Associates audit trail with the current instance.
@@ -193,15 +195,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.members = members.AsLinkedList();
         }
 
-        private IReadOnlyCollection<TMember> Members => state is null ? Array.Empty<TMember>() : (IReadOnlyCollection<TMember>)members;
+        /// <summary>
+        /// Gets members of Raft-based cluster.
+        /// </summary>
+        /// <returns>A collection of cluster member.</returns>
+        public IReadOnlyCollection<TMember> Members => state is null ? Array.Empty<TMember>() : (IReadOnlyCollection<TMember>)members;
 
         IEnumerable<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
-        int IReadOnlyCollection<IClusterMember>.Count => Members.Count;
-
-        IEnumerator<IClusterMember> IEnumerable<IClusterMember>.GetEnumerator() => Members.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => Members.GetEnumerator();
+        IReadOnlyCollection<IClusterMember> ICluster.Members => Members;
 
         /// <summary>
         /// Gets Term value maintained by local member.
@@ -218,7 +220,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets leader of the cluster.
         /// </summary>
-        public IRaftClusterMember Leader
+        public TMember Leader
         {
             get => leader;
             private set
@@ -238,18 +240,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (auditTrail is null)
             {
-                Volatile.Write(ref votedFor, null);
+                votedFor = null;
                 currentTerm.VolatileWrite(0L);
             }
             else
             {
                 foreach (var member in members)
-                    if (await auditTrail.IsVotedForAsync(member, token).ConfigureAwait(false))
-                    {
-                        Volatile.Write(ref votedFor, member);
-                    }
+                    if (await auditTrail.IsVotedForAsync(member).ConfigureAwait(false))
+                        votedFor = member;
 
-                currentTerm.VolatileWrite(await auditTrail.RestoreTermAsync(token).ConfigureAwait(false));
+                currentTerm.VolatileWrite(await auditTrail.RestoreTermAsync().ConfigureAwait(false));
             }
             //start node in Follower state
             state = new FollowerState(this, electionTimeout);
@@ -311,6 +311,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The cluster member; </returns>
         protected TMember FindMember(Predicate<TMember> matcher)
             => members.FirstOrDefault(matcher.AsFunc());
+        
+        private async ValueTask<bool> TrySetTerm(long senderTerm, bool eraseOutdatedLeader) //likely to be completed synchronously
+        {
+            var comparison = currentTerm.VolatileRead().CompareTo(senderTerm);
+            if (comparison > 0) //currentTerm > term
+                return false;
+            if (comparison < 0) //currentTerm < term
+            {
+                currentTerm.VolatileWrite(senderTerm);
+                await SaveTermAsync(auditTrail, senderTerm).ConfigureAwait(false);
+                await StepDown().ConfigureAwait(false);
+                if(eraseOutdatedLeader)
+                    Leader = null;
+                if(Interlocked.Exchange(ref votedFor, null) != null)
+                    await SaveLastVoteAsync(auditTrail, null);
+            }
+            return true;
+        }
 
         /// <summary>
         /// Handles Heartbeat message received from remote cluster member.
@@ -321,24 +339,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected async Task ReceiveHeartbeat(TMember sender, long senderTerm)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-            {
-                var comparison = currentTerm.VolatileRead().CompareTo(senderTerm);
-                if (comparison > 0) //currentTerm > term
-                    return;
-                if (comparison < 0)
-                {
-                    currentTerm.VolatileWrite(senderTerm);
-                    await SaveTermAsync(auditTrail, senderTerm, transitionCancellation.Token).ConfigureAwait(false);
-                }
-
-                if (votedFor != null)
-                {
-                    votedFor = null;
-                    await SaveLastVoteAsync(auditTrail, null, transitionCancellation.Token).ConfigureAwait(false);
-                }
-                await StepDown().ConfigureAwait(false);
-                Leader = sender;
-            }
+                if(await TrySetTerm(senderTerm, false).ConfigureAwait(false))
+                    Leader = sender;
         }
 
         /// <summary>
@@ -352,30 +354,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected async Task<bool> ReceiveEntries(TMember sender, long senderTerm, ILogEntry<LogEntryId> newEntry, LogEntryId precedingEntry)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-            {
-                var comparison = currentTerm.VolatileRead().CompareTo(senderTerm);
-                if (comparison > 0 || auditTrail is null || newEntry is null || auditTrail.Initial.Equals(newEntry.Id))
-                    return true; //already replicated
-                if (comparison < 0)
+                if(await TrySetTerm(senderTerm, false).ConfigureAwait(false) && auditTrail.Contains(precedingEntry))
                 {
-                    currentTerm.VolatileWrite(senderTerm);
-                    await SaveTermAsync(auditTrail, senderTerm, transitionCancellation.Token).ConfigureAwait(false);
-                }
-                if (votedFor != null)
-                {
-                    votedFor = null;
-                    await SaveLastVoteAsync(auditTrail, null, transitionCancellation.Token).ConfigureAwait(false);
-                }
-                await StepDown().ConfigureAwait(false);
-                Leader = sender;
-                if (auditTrail.Contains(precedingEntry))
-                {
+                    Leader = sender;
                     await auditTrail.CommitAsync(newEntry);
                     return true;
                 }
                 else
                     return false;
-            }
         }
 
         /// <summary>
@@ -397,28 +383,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new InvalidOperationException(ExceptionMessages.IsNotLeader);
         }
 
-        private static TMember UpdateLastVote(TMember current, TMember candidate)
-            => current ?? candidate;
-
-        private bool ReceiveVote(TMember sender, LogEntryId? senderLastId)
+        private static bool CheckLogEntry(IAuditTrail<LogEntryId> trail, LogEntryId senderLastEntry)
         {
-            if (sender is null)
-                return false;
-            else if (ReferenceEquals(sender, AtomicReference.AccumulateAndGet(ref votedFor, sender, UpdateLastVote)))
-                return true;
-            else if (auditTrail is null)
-                return senderLastId is null;
-            else if (senderLastId is null)
-                return false;
-            else
-                return auditTrail.Contains(senderLastId.Value);
+            var localLastEntry = trail.LastRecord;
+            return senderLastEntry.Index >= localLastEntry.Index && senderLastEntry.Term >= localLastEntry.Term;
         }
 
-        private static Task SaveTermAsync(IPersistentState state, long term, CancellationToken token)
-            => state is null ? Task.CompletedTask : state.SaveTermAsync(term, token);
+        private static bool CheckLogEntry(IAuditTrail<LogEntryId> trail, LogEntryId? senderLastEntry)
+        {
+            if(senderLastEntry is null)
+                return trail is null;
+            else if(trail is null)
+                return false;
+            else
+                return CheckLogEntry(trail, senderLastEntry.Value);
+        }
 
-        private static Task SaveLastVoteAsync(IPersistentState state, TMember member, CancellationToken token)
-            => state is null ? Task.CompletedTask : state.SaveVotedForAsync(member, token);
+        private static ValueTask SaveTermAsync(IPersistentState state, long term)
+            => state is null ? new ValueTask() : state.SaveTermAsync(term);
+
+        private static ValueTask SaveLastVoteAsync(IPersistentState state, TMember member)
+            => state is null ? new ValueTask() : state.SaveVotedForAsync(member);
 
         /// <summary>
         /// Votes for the new candidate.
@@ -430,28 +415,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected async Task<bool> ReceiveVote(TMember sender, long senderTerm, LogEntryId? senderLastEntry)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-            {
-                var comparison = currentTerm.VolatileRead().CompareTo(senderTerm);
-                if (comparison > 0) //currentTerm > term
-                    return false;
-                else if (comparison < 0) //currentTerm < term
+                if(await TrySetTerm(senderTerm, true).ConfigureAwait(false) && (votedFor is null || ReferenceEquals(votedFor, sender)) && CheckLogEntry(auditTrail, senderLastEntry))
                 {
-                    currentTerm.VolatileWrite(senderTerm);
-                    await SaveTermAsync(auditTrail, senderTerm, transitionCancellation.Token).ConfigureAwait(false);
-                    await StepDown().ConfigureAwait(false);
-                    Leader = null;
-                    return true;
-                }
-                else if (state is FollowerState followerState && ReceiveVote(sender, senderLastEntry))
-                {
-                    followerState.Refresh();
-                    await SaveLastVoteAsync(auditTrail, sender, transitionCancellation.Token).ConfigureAwait(false);
-                    Leader = null;
+                    (state as FollowerState)?.Refresh();
+                    if(Interlocked.Exchange(ref votedFor, sender) is null)
+                        await SaveLastVoteAsync(auditTrail, sender);
                     return true;
                 }
                 else
                     return false;
-            }
         }
 
         private async Task<bool> ResignAsync(CancellationToken token)
@@ -522,7 +494,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (lockHolder && state is FollowerState followerState)
                 {
                     followerState.Dispose();
-                    var newState = new CandidateState(this, currentTerm.IncrementAndGet());
+                    var newState = new CandidateState(this, absoluteMajority, currentTerm.IncrementAndGet());
                     newState.StartVoting(electionTimeout, auditTrail);
                     state = newState;
                     Logger.TransitionToCandidateStateCompleted();
@@ -538,10 +510,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (lockHolder && state is CandidateState candidateState && candidateState.Term == (term = currentTerm.VolatileRead()))
                 {
                     candidateState.Dispose();
-                    var newState = new LeaderState(this, term);
+                    var newState = new LeaderState(this, absoluteMajority, term);
                     newState.StartLeading();
                     state = newState;
-                    Leader = newLeader;
+                    Leader = newLeader as TMember;
                     Logger.TransitionToLeaderStateCompleted();
                 }
             }

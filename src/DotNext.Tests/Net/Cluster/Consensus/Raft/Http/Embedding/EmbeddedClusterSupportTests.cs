@@ -84,8 +84,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 await Task.Delay(delay);
                 await host3.StartAsync();
 
-                await Task.Delay(3_000);
-                //WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 });
+                WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 });
 
                 var leader1 = host1.Services.GetRequiredService<ICluster>().Leader;
                 NotNull(leader1);

@@ -17,12 +17,12 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="message">The message to be sent.</param>
         /// <param name="requiresConfirmation"><see langword="true"/> to wait for confirmation of delivery from receiver; otherwise, <see langword="false"/>.</param>
         /// <returns>The task representing asynchronous execution of broadcasting.</returns>
-        public static Task SendBroadcastSignalAsync(this ICluster cluster, IMessage message, bool requiresConfirmation = true)
+        public static Task SendBroadcastSignalAsync(this IMessagingNetwork cluster, IMessage message, bool requiresConfirmation = true)
         {
             ICollection<Task> tasks = new LinkedList<Task>();
-            foreach (var member in cluster)
-                if (member.IsRemote && member is IMessenger messenger)
-                    tasks.Add(messenger.SendSignalAsync(message, requiresConfirmation));
+            foreach (var member in cluster.Members)
+                if (member.IsRemote)
+                    tasks.Add(member.SendSignalAsync(message, requiresConfirmation));
             return Task.WhenAll(tasks);
         }
 
@@ -35,7 +35,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="mediaType">The media type of the message content.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The reply message.</returns>
-        public static Task<IMessage> SendTextMessageAsync(this IMessenger messenger, string messageName, string text, string mediaType = null, CancellationToken token = default)
+        public static Task<IMessage> SendTextMessageAsync(this IAddressee messenger, string messageName, string text, string mediaType = null, CancellationToken token = default)
             => messenger.SendMessageAsync(new TextMessage(messageName, text, mediaType), token);
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="requiresConfirmation"><see langword="true"/> to wait for confirmation of delivery from receiver; otherwise, <see langword="false"/>.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        public static Task SendTextSignalAsync(this IMessenger messenger, string messageName, string text, string mediaType = null, bool requiresConfirmation = true, CancellationToken token = default)
+        public static Task SendTextSignalAsync(this IAddressee messenger, string messageName, string text, string mediaType = null, bool requiresConfirmation = true, CancellationToken token = default)
             => messenger.SendSignalAsync(new TextMessage(messageName, text, mediaType), requiresConfirmation, token);
     }
 }

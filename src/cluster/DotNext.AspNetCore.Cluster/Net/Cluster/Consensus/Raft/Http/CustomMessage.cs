@@ -8,14 +8,18 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
+    using NullMessage = Threading.Tasks.CompletedTask<Messaging.IMessage, Generic.DefaultConst<Messaging.IMessage>>;
 
     internal sealed class CustomMessage : HttpMessage, IHttpMessage<IMessage>
     {
         internal new const string MessageType = "CustomMessage";
-        private const string OneWayHeader = "X-OneWay";
+        private const string OneWayHeader = "X-OneWay-Message";
+
+        private const string RespectLeadershipHeader = "X-Respect-Leadership";
 
         internal readonly bool IsOneWay;
         internal readonly IMessage Message;
+        internal bool RespectLeadership;
 
         internal CustomMessage(IPEndPoint sender, IMessage message, bool oneWay)
             : base(MessageType, sender)
@@ -30,6 +34,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             foreach (var header in request.Headers[OneWayHeader])
                 if (bool.TryParse(header, out IsOneWay))
                     break;
+            foreach (var header in request.Headers[RespectLeadershipHeader])
+                if(bool.TryParse(header, out RespectLeadership))
+                    break;
             Message = new InboundMessageContent(request);
         }
 
@@ -37,11 +44,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             base.FillRequest(request);
             request.Headers.Add(OneWayHeader, Convert.ToString(IsOneWay, InvariantCulture));
+            request.Headers.Add(RespectLeadershipHeader, Convert.ToString(RespectLeadershipHeader, InvariantCulture));
             request.Content = new OutboundMessageContent(Message);
         }
 
         Task<IMessage> IHttpMessage<IMessage>.ParseResponse(HttpResponseMessage response)
-            => Task.FromResult<IMessage>(new InboundMessageContent(response));
+            => response.StatusCode == HttpStatusCode.NoContent ? NullMessage.Task : Task.FromResult<IMessage>(new InboundMessageContent(response));
 
         public Task SaveResponse(HttpResponse response, IMessage message)
         {
