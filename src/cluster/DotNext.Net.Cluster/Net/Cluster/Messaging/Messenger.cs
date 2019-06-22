@@ -48,7 +48,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="requiresConfirmation"><see langword="true"/> to wait for confirmation of delivery from receiver; otherwise, <see langword="false"/>.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        public static Task SendTextSignalAsync(this IAddressee messenger, string messageName, string text, string mediaType = null, bool requiresConfirmation = true, CancellationToken token = default)
+        public static Task SendTextSignalAsync(this IAddressee messenger, string messageName, string text, bool requiresConfirmation = true, string mediaType = null, CancellationToken token = default)
             => messenger.SendSignalAsync(new TextMessage(messageName, text, mediaType), requiresConfirmation, token);
     }
 }

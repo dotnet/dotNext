@@ -2,12 +2,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
+    using Messaging;
+
     public sealed class EmbeddedClusterSupportTests : ClusterMemberTest
     {
         private sealed class LeaderChangedEvent : EventWaitHandle, IRaftClusterConfigurator
@@ -35,6 +39,47 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             void IRaftClusterConfigurator.Shutdown(IRaftCluster cluster)
             {
                 cluster.LeaderChanged -= OnLeaderChanged;
+            }
+        }
+
+        [Fact]
+        public static async Task MessageExchange()
+        {
+            var config1 = new Dictionary<string, string>
+            {
+                {"absoluteMajority", "true"},
+                {"members:0", "http://localhost:3262"},
+                {"members:1", "http://localhost:3263"}
+            };
+            var config2 = new Dictionary<string, string>
+            {
+                {"absoluteMajority", "true"},
+                {"members:0", "http://localhost:3262"},
+                {"members:1", "http://localhost:3263"}
+            };
+            using (var host1 = CreateHost<Startup>(3262, true, config1))
+            using (var host2 = CreateHost<Startup>(3263, true, config2))
+            {
+                await host1.StartAsync();
+                await host2.StartAsync();
+
+                var client = host1.Services.GetService<IMessagingNetwork>().Members.FirstOrDefault(member => member.Endpoint.Port == 3263);
+                var messageBox = host2.Services.GetService<IMessageHandler>() as Mailbox;
+                NotNull(messageBox);
+                //request-reply test
+                var response = await client.SendTextMessageAsync("Request", "Ping");
+                NotNull(response);
+                Equal("Reply", response.Name);
+                Equal("Pong", await Mailbox.ReadAsText(response));
+
+                //one-way message
+                await client.SendTextSignalAsync("OneWayMessage", "Hello, world");
+                True(messageBox.TryDequeue(out response));
+                NotNull(response);
+                Equal("Hello, world", await Mailbox.ReadAsText(response));
+
+                await host1.StopAsync();
+                await host2.StopAsync();
             }
         }
 
@@ -75,9 +120,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             using (var listener1 = new LeaderChangedEvent())
             using (var listener2 = new LeaderChangedEvent())
             using (var listener3 = new LeaderChangedEvent())
-            using (var host1 = CreateHost<WebApplicationSetup>(3262, true, config1, listener1))
-            using (var host2 = CreateHost<WebApplicationSetup>(3263, true, config2, listener2))
-            using (var host3 = CreateHost<WebApplicationSetup>(3264, true, config3, listener3))
+            using (var host1 = CreateHost<Startup>(3262, true, config1, listener1))
+            using (var host2 = CreateHost<Startup>(3263, true, config2, listener2))
+            using (var host3 = CreateHost<Startup>(3264, true, config3, listener3))
             {
                 await host1.StartAsync();
                 await host2.StartAsync();
@@ -169,7 +214,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 { "members:1", "http://localhost:3263" }
             };
             using (var leaderResetEvent = new LeaderChangedEvent())
-            using (var host = CreateHost<WebApplicationSetup>(3262, true, config, leaderResetEvent))
+            using (var host = CreateHost<Startup>(3262, true, config, leaderResetEvent))
             {
                 await host.StartAsync();
                 leaderResetEvent.WaitOne(2000);
@@ -189,7 +234,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 { "members:1", "http://localhost:3263" }
             };
             using(var leaderResetEvent = new LeaderChangedEvent())
-            using (var host = CreateHost<WebApplicationSetup>(3262, true, config, leaderResetEvent))
+            using (var host = CreateHost<Startup>(3262, true, config, leaderResetEvent))
             {
                 await host.StartAsync();
                 leaderResetEvent.WaitOne(2000);
@@ -211,7 +256,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 { "members:1", "http://localhost:3263" },
                 { "allowedNetworks:0", "127.0.0.0" }
             };
-            using (var host = CreateHost<WebApplicationSetup>(3262, true, config))
+            using (var host = CreateHost<Startup>(3262, true, config))
             {
                 await host.StartAsync();
                 object service = host.Services.GetService<ICluster>();
