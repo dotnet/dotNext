@@ -20,12 +20,18 @@ namespace DotNext.Reflection
         {
             switch (exprTree.Body)
             {
-                case MemberExpression body:
-                    return body.Member as M;
-                case MethodCallExpression body:
-                    return body.Method as M;
-                case NewExpression body:
-                    return body.Constructor as M;
+                case MemberExpression expr:
+                    return expr.Member as M;
+                case MethodCallExpression expr:
+                    return expr.Method as M;
+                case NewExpression expr:
+                    return expr.Constructor as M;
+                case BinaryExpression expr:
+                    return expr.Method as M;
+                case UnaryExpression expr:
+                    return expr.Method as M;
+                case IndexExpression expr:
+                    return expr.Indexer as M;
                 default:
                     return null;
             }

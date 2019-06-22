@@ -169,7 +169,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         IPEndPoint IHostingContext.LocalEndpoint => localMember?.Endpoint;
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
-            => httpHandlerFactory?.CreateHandler(RaftClientHandlerName) ?? new HttpClientHandler() { AllowAutoRedirect = true };
+            => httpHandlerFactory?.CreateHandler(RaftClientHandlerName) ?? new HttpClientHandler();
 
         public event ClusterChangedEventHandler MemberAdded;
         public event ClusterChangedEventHandler MemberRemoved;

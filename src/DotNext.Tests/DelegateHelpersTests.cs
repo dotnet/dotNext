@@ -45,5 +45,12 @@ namespace DotNext
             var d = DelegateHelpers.CreateClosedDelegateFactory<Func<int>>(() => "".Length).Invoke("abcd");
             Equal(4, d());
         }
+
+        [Fact]
+        public static void OpenDelegateConversion()
+        {
+            var d = DelegateHelpers.CreateOpenDelegate<Func<decimal, long>>(i => (long) i);
+            Equal(42L, d(42M));
+        }
     }
 }

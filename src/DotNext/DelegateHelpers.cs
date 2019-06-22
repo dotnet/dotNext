@@ -15,17 +15,23 @@ namespace DotNext
         {
             switch(expression.Body)
             {
-                case MethodCallExpression methodCall:
-                    return methodCall.Method;
-                case MemberExpression member when (member.Member is PropertyInfo property):
+                case MethodCallExpression expr:
+                    return expr.Method;
+                case MemberExpression expr when (expr.Member is PropertyInfo property):
                     return property.GetMethod;
+                case BinaryExpression expr:
+                    return expr.Method;
+                case IndexExpression expr:
+                    return expr.Indexer.GetMethod;
+                case UnaryExpression expr:
+                    return expr.Method;
                 default:
                     return null;
             }
         }
 
         /// <summary>
-        /// Creates open delegate for the instance method referenced
+        /// Creates open delegate for the instance method, property, operator referenced
         /// in expression tree.
         /// </summary>
         /// <typeparam name="D">The type of the delegate describing expression tree.</typeparam>
@@ -38,7 +44,7 @@ namespace DotNext
         /// <summary>
         /// Creates a factory for closed delegates.
         /// </summary>
-        /// <param name="expression">The expression tree containing instance method call.</param>
+        /// <param name="expression">The expression tree containing instance method, property, operator call.</param>
         /// <typeparam name="D">The type of the delegate describing expression tree.</typeparam>
         /// <returns>The factory of closed delegate.</returns>
         public static Func<object, D> CreateClosedDelegateFactory<D>(Expression<D> expression)
