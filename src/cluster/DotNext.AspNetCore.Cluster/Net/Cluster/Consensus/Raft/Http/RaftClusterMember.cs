@@ -64,7 +64,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var response = default(HttpResponseMessage);
             try
             {
-                response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
+                response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
                     .ConfigureAwait(false);
                 ChangeStatus(AvailableStatus);
                 response.EnsureSuccessStatusCode();
