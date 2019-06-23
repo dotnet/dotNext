@@ -259,7 +259,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if(message.RespectLeadership ? IsLeaderLocal : true)
             {
                 response.StatusCode = StatusCodes.Status204NoContent;
-                return messageHandler.ReceiveSignal(sender, message.Message).AsTask();
+                return messageHandler.ReceiveSignal(sender, message.Message);
             }
             else
             {

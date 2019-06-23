@@ -20,7 +20,7 @@ namespace DotNext.Net.Cluster.Messaging
             }
         }
 
-        async ValueTask<IMessage> IMessageHandler.ReceiveMessage(IAddressee sender, IMessage message)
+        async Task<IMessage> IMessageHandler.ReceiveMessage(IAddressee sender, IMessage message)
         {
             Equal("Request", message.Name);
             Equal("text/plain", message.Type.MediaType);
@@ -29,7 +29,7 @@ namespace DotNext.Net.Cluster.Messaging
             return new TextMessage("Reply", "Pong");
         }
 
-        async ValueTask IMessageHandler.ReceiveSignal(IAddressee sender, IMessage signal)
+        async Task IMessageHandler.ReceiveSignal(IAddressee sender, IMessage signal)
            => Enqueue(await BinaryMessage.CreateBufferedMessageAsync(signal).ConfigureAwait(false));
     }
 }

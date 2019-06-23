@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         private static async Task<IMessage> ParseResponse(HttpResponseMessage response)
-        {
+        {         
             var content = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
             return new InboundMessageContent(response.Headers, response.Content.Headers, content);
         }

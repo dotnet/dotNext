@@ -42,7 +42,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
         [Fact]
         public static async Task MessageExchange()
-        {
+        { 
             var config1 = new Dictionary<string, string>
             {
                 {"absoluteMajority", "true"},

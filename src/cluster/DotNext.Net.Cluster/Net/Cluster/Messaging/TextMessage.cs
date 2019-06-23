@@ -1,7 +1,8 @@
-using System.Buffers;
+using System;
 using System.IO;
+using System.IO.Pipelines;
 using System.Net.Mime;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
@@ -12,7 +13,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// <summary>
     /// Represents text message.
     /// </summary>
-    public sealed class TextMessage : IMessage<string>
+    public sealed class TextMessage : IMessage
     {
         /// <summary>
         /// Initializes a new text message.
@@ -40,7 +41,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <summary>
         /// Gets content length, in bytes.
         /// </summary>
-        public long Length => Type.GetEncoding().GetByteCount(Content);
+        public int Length => Type.GetEncoding().GetByteCount(Content);
 
         long? IMessage.Length => Length;
 
@@ -53,6 +54,23 @@ namespace DotNext.Net.Cluster.Messaging
         {
             using (var writer = new StreamWriter(output, Type.GetEncoding(), 1024, true) { AutoFlush = true })
                 await writer.WriteAsync(Content).ConfigureAwait(false);
+        }
+
+        async ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)
+        {
+            //TODO: Should be rewritten for .NET Standard 2.1
+            var encoding = Type.GetEncoding();
+            foreach (var chunk in new ChunkSequence<char>(Content.AsMemory(), 512))
+            {
+                var bytes = new ReadOnlyMemory<byte>(encoding.GetBytes(chunk.ToArray()));
+                var result = await output.WriteAsync(bytes, token);
+                if (result.IsCanceled || result.IsCompleted)
+                    break;
+                result = await output.FlushAsync(token);
+                if (result.IsCanceled || result.IsCompleted)
+                    break;
+            }
+            output.Complete(token.IsCancellationRequested ? new OperationCanceledException(token) : null);
         }
 
         /// <summary>

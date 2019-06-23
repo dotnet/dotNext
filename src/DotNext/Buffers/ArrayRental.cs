@@ -27,6 +27,22 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Obtains a new array from <see cref="ArrayPool{T}.Shared"/>.
+        /// </summary>
+        /// <param name="minimumLength">The minimum length of the array.</param>
+        /// <param name="clearArray">Indicates whether the contents of the array should be cleared after calling of <see cref="Dispose()"/>.</param>
+        public ArrayRental(int minimumLength, bool clearArray = false)
+            : this(ArrayPool<T>.Shared, minimumLength, clearArray)
+        {
+            
+        }
+
+        /// <summary>
+        /// Gets memory associated with the rented array.
+        /// </summary>
+        public Memory<T> Memory => array is null ? default : new Memory<T>(array);
+
+        /// <summary>
         /// Obtains rented array.
         /// </summary>
         /// <param name="rental">Array rental.</param>
