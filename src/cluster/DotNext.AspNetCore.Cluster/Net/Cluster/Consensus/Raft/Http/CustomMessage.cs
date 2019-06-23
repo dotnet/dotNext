@@ -48,8 +48,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Content = new OutboundMessageContent(Message);
         }
 
+        private static async Task<IMessage> ParseResponse(HttpResponseMessage response)
+        {
+            var content = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+            return new InboundMessageContent(response.Headers, response.Content.Headers, content);
+        }
+
         Task<IMessage> IHttpMessage<IMessage>.ParseResponse(HttpResponseMessage response)
-            => response.StatusCode == HttpStatusCode.NoContent ? NullMessage.Task : Task.FromResult<IMessage>(new InboundMessageContent(response));
+            => response.StatusCode == HttpStatusCode.NoContent ? NullMessage.Task : ParseResponse(response);
 
         public Task SaveResponse(HttpResponse response, IMessage message)
         {

@@ -311,7 +311,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 return Task.CompletedTask;
             }
             //process request
-            switch (RaftHttpMessage.GetMessageType(context.Request))
+            switch (HttpMessage.GetMessageType(context.Request))
             {
                 case RequestVoteMessage.MessageType:
                     return ReceiveVote(new RequestVoteMessage(context.Request), context.Response);

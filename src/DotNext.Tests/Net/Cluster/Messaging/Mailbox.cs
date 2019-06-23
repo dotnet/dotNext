@@ -1,21 +1,22 @@
 using System.Collections.Concurrent;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using static Xunit.Assert;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    using static Mime.ContentTypeExtensions;
+
     internal sealed class Mailbox : ConcurrentQueue<IMessage>, IMessageHandler
     {
         internal static async Task<string> ReadAsText(IMessage message)
         {
-            using(var ms = new MemoryStream(1024))
-            using(var reader = new StreamReader(ms, Encoding.UTF8))
+            using (var ms = new MemoryStream(1024))
             {
                 await message.CopyToAsync(ms);
-                ms.Position = 0;
-                return reader.ReadToEnd();
+                ms.Seek(0, SeekOrigin.Begin);
+                using (var reader = new StreamReader(ms, message.Type.GetEncoding(), false, 1024, true))
+                    return reader.ReadToEnd();
             }
         }
 
@@ -23,14 +24,12 @@ namespace DotNext.Net.Cluster.Messaging
         {
             Equal("Request", message.Name);
             Equal("text/plain", message.Type.MediaType);
-            Equal("Ping", await ReadAsText(message));
+            var text = await ReadAsText(message);
+            Equal("Ping", text);
             return new TextMessage("Reply", "Pong");
         }
 
-         ValueTask IMessageHandler.ReceiveSignal(IAddressee sender, IMessage signal)
-         {
-            Enqueue(signal);
-            return new ValueTask();
-         }
+        async ValueTask IMessageHandler.ReceiveSignal(IAddressee sender, IMessage signal)
+           => Enqueue(await BinaryMessage.CreateBufferedMessageAsync(signal).ConfigureAwait(false));
     }
 }

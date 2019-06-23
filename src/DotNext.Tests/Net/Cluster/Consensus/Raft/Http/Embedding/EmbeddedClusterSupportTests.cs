@@ -1,9 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -48,12 +46,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             var config1 = new Dictionary<string, string>
             {
                 {"absoluteMajority", "true"},
+                {"lowerElectionTimeout", "500" },
+                {"upperElectionTimeout", "900" },
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"}
             };
             var config2 = new Dictionary<string, string>
             {
                 {"absoluteMajority", "true"},
+                {"lowerElectionTimeout", "500" },
+                {"upperElectionTimeout", "900" },
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"}
             };

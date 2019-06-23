@@ -50,5 +50,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public static Task SendTextSignalAsync(this IAddressee messenger, string messageName, string text, bool requiresConfirmation = true, string mediaType = null, CancellationToken token = default)
             => messenger.SendSignalAsync(new TextMessage(messageName, text, mediaType), requiresConfirmation, token);
+
+
     }
 }

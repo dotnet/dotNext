@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.IO;
 using System.Net.Mime;
 using System.Text;
@@ -5,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    using Buffers;
+    using static Mime.ContentTypeExtensions;
+
     /// <summary>
     /// Represents text message.
     /// </summary>
@@ -33,9 +37,12 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         public string Name { get; }
 
-        private Encoding Encoding => string.IsNullOrEmpty(Type.CharSet) ? Encoding.UTF8 : Encoding.GetEncoding(Type.CharSet);
+        /// <summary>
+        /// Gets content length, in bytes.
+        /// </summary>
+        public long Length => Type.GetEncoding().GetByteCount(Content);
 
-        long? IMessage.Length => Encoding.GetByteCount(Content);
+        long? IMessage.Length => Length;
 
         /// <summary>
         /// The message content.
@@ -44,7 +51,7 @@ namespace DotNext.Net.Cluster.Messaging
 
         async Task IMessage.CopyToAsync(Stream output)
         {
-            using (var writer = new StreamWriter(output, Encoding, 256, true))
+            using (var writer = new StreamWriter(output, Type.GetEncoding(), 1024, true) { AutoFlush = true })
                 await writer.WriteAsync(Content).ConfigureAwait(false);
         }
 

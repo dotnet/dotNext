@@ -51,12 +51,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 => message.Length.TryGet(out length);
         }
 
-        private protected class InboundMessageContent : IMessage
+        private protected class InboundMessageContent : Disposable, IMessage
         {
             private readonly ContentType contentType;
             private readonly long? length;
             private readonly string name;
-            private readonly object content;
+            private readonly Stream content;
 
             internal InboundMessageContent(HttpRequest request)
             {
@@ -67,35 +67,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 content = request.Body;
             }
 
-            internal InboundMessageContent(HttpResponseMessage response)
+            internal InboundMessageContent(HttpHeaders headers,  HttpContentHeaders contentHeaders, byte[] content)
             {
-                length = response.Content.Headers.ContentLength;
-                contentType = new ContentType(response.Content.Headers.ContentType.ToString());
-                name = response.Headers.TryGetValues(MessageNameHeader, out var values)
+                length = contentHeaders.ContentLength;
+                contentType = new ContentType(contentHeaders.ContentType.ToString());
+                name = headers.TryGetValues(MessageNameHeader, out var values)
                     ? values.FirstOrDefault()
                     : null;
                 if (name is null)
                     throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageNameHeader));
-                content = response.Content;
+                this.content = new MemoryStream(content);
             }
 
             string IMessage.Name => name;
             long? IMessage.Length => length;
 
-            Task IMessage.CopyToAsync(Stream output)
-            {
-                switch (content)
-                {
-                    case Stream stream:
-                        return stream.CopyToAsync(output);
-                    case HttpContent content:
-                        return content.CopyToAsync(output);
-                    default:
-                        throw new InvalidOperationException();
-                }
-            }
+            Task IMessage.CopyToAsync(Stream output) => content.CopyToAsync(output);
 
             ContentType IMessage.Type => contentType;
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                    content.Dispose();
+            }
         }
 
         internal readonly IPEndPoint Sender;
