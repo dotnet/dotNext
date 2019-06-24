@@ -15,7 +15,8 @@
     <PackageTags>async;lock;objectpool</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
     <PackageReleaseNotes>AsyncManualResetEvent now supports automatic reset of its state through overloaded Set method
-AsyncLock overloads TryAcquire method with CancellationToken parameter that never throws even if cancellation is requested</PackageReleaseNotes>
+AsyncLock overloads TryAcquire method with CancellationToken parameter that never throws even if cancellation is requested
+CancellationToken can be converted into Task to await cancellation in asynchronous methods</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
