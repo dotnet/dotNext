@@ -21,6 +21,15 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="I">The source task type.</typeparam>
         /// <typeparam name="O">The target task type.</typeparam>
         /// <param name="task">The task to convert.</param>
+        /// <returns>The converted task.</returns>
+        public static Task<O> Convert<I, O>(this Task<I> task) where I : O => task.Convert(Converter.Identity<I, O>());
+
+        /// <summary>
+        /// Converts one type of task into another.
+        /// </summary>
+        /// <typeparam name="I">The source task type.</typeparam>
+        /// <typeparam name="O">The target task type.</typeparam>
+        /// <param name="task">The task to convert.</param>
         /// <param name="converter">Non-blocking conversion function.</param>
         /// <returns>The converted task.</returns>
 		public static async Task<O> Convert<I, O>(this Task<I> task, Converter<I, O> converter)

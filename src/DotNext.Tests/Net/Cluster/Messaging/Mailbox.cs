@@ -26,10 +26,10 @@ namespace DotNext.Net.Cluster.Messaging
             Equal("text/plain", message.Type.MediaType);
             var text = await ReadAsText(message);
             Equal("Ping", text);
-            return new TextMessage("Reply", "Pong");
+            return new TextMessage("Pong", "Reply");
         }
 
         async Task IMessageHandler.ReceiveSignal(IAddressee sender, IMessage signal)
-           => Enqueue(await BinaryMessage.CreateBufferedMessageAsync(signal).ConfigureAwait(false));
+           => Enqueue(await StreamMessage.CreateBufferedMessageAsync(signal).ConfigureAwait(false));
     }
 }

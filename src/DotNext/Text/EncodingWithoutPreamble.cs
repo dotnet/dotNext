@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace DotNext.Text
@@ -8,11 +7,7 @@ namespace DotNext.Text
     {
         private readonly Encoding encoding;
 
-        private EncodingWithoutPreamble(Encoding enc)
-            : base(enc.WindowsCodePage, enc.EncoderFallback, enc.DecoderFallback)
-        {
-
-        }
+        private EncodingWithoutPreamble(Encoding enc) : base(enc.WindowsCodePage, enc.EncoderFallback, enc.DecoderFallback) => encoding = enc;
 
         internal static Encoding Create(Encoding enc) => new EncodingWithoutPreamble(enc);
 

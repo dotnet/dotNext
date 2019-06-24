@@ -43,7 +43,7 @@ namespace DotNext.Buffers
             /// <summary>
             /// Moves to the next memory segment.
             /// </summary>
-            /// <returns><see langword="true"/> if the next segment exists; otherwise, <see cref="langword"/>.</returns>
+            /// <returns><see langword="true"/> if the next segment exists; otherwise, <see langword="langword"/>.</returns>
             public bool MoveNext()
             {
                 if (startIndex == -1)
@@ -120,15 +120,25 @@ namespace DotNext.Buffers
         public static explicit operator ReadOnlySequence<T>(ChunkSequence<T> sequence) => sequence.ToReadOnlySequence();
     }
 
+    /// <summary>
+    /// Represents extension methods for <see cref="ChunkSequence{T}"/>.
+    /// </summary>
     public static class ChunkSequence
     {
+        /// <summary>
+        /// Copies chunks of bytes into the stream.
+        /// </summary>
+        /// <param name="sequence">The sequence of chunks.</param>
+        /// <param name="output">The output stream.</param>
+        /// <param name="token">The token that can be used to cancel execution of this method.</param>
+        /// <returns>The task representing asynchronouos execution of this method.</returns>
         public static async Task CopyToAsync(this ChunkSequence<byte> sequence, Stream output, CancellationToken token = default)
         {
             foreach (var segment in sequence)
                 using (var array = new ArrayRental<byte>(segment.Length))
                 {
                     segment.CopyTo(array.Memory);
-                    await output.WriteAsync(array, 0, segment.Length).ConfigureAwait(false);
+                    await output.WriteAsync(array, 0, segment.Length, token).ConfigureAwait(false);
                 }
         }
     }

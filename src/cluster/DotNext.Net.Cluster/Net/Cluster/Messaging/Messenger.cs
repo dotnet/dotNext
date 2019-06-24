@@ -29,14 +29,16 @@ namespace DotNext.Net.Cluster.Messaging
         /// <summary>
         /// Send synchronous text message.
         /// </summary>
+        /// <typeparam name="TResponse">The type of the parsed response message.</typeparam>
         /// <param name="messenger">The receiver of the message.</param>
+        /// <param name="responseReader">The response reader.</param>
         /// <param name="messageName">The name of the message.</param>
         /// <param name="text">The content of the message.</param>
         /// <param name="mediaType">The media type of the message content.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The reply message.</returns>
-        public static Task<IMessage> SendTextMessageAsync(this IAddressee messenger, string messageName, string text, string mediaType = null, CancellationToken token = default)
-            => messenger.SendMessageAsync(new TextMessage(messageName, text, mediaType), token);
+        public static Task<TResponse> SendTextMessageAsync<TResponse>(this IAddressee messenger, MessageReader<TResponse> responseReader, string messageName, string text, string mediaType = null, CancellationToken token = default)
+            => messenger.SendMessageAsync(new TextMessage(messageName, text, mediaType), responseReader, token);
 
         /// <summary>
         /// Send one-way text message.

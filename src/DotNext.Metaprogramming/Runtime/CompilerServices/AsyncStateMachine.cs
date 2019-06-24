@@ -132,11 +132,6 @@ namespace DotNext.Runtime.CompilerServices
             {
                 transition(ref this);
             }
-            catch(OperationCanceledException e)
-            {
-                exception = ExceptionDispatchInfo.Capture(e);
-                StateId = FINAL_STATE;
-            }
             catch (Exception e)
             {
                 exception = ExceptionDispatchInfo.Capture(e);
@@ -377,11 +372,6 @@ namespace DotNext.Runtime.CompilerServices
             try
             {
                 transition(ref this);
-            }
-            catch(OperationCanceledException e)
-            {
-                exception = ExceptionDispatchInfo.Capture(e);
-                StateId = AsyncStateMachine<STATE>.FINAL_STATE;
             }
             catch (Exception e)
             {

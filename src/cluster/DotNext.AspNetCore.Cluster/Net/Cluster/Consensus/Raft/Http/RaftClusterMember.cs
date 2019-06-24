@@ -56,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal void Touch() => ChangeStatus(AvailableStatus);
 
         private async Task<R> SendAsync<R, M>(M message, CancellationToken token)
-            where M : HttpMessage, IHttpMessage<R>
+            where M : HttpMessage, IHttpMessageReader<R>
         {
             context.Logger.SendingRequestToMember(Endpoint, message.MessageType);
             var request = (HttpRequestMessage)message;
@@ -172,11 +172,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IEquatable<IClusterMember>.Equals(IClusterMember other) => Endpoint.Equals(other?.Endpoint);
 
-        internal Task<IMessage> SendMessageAsync(IMessage message, bool respectLeadership, CancellationToken token)
-            => SendAsync<IMessage, CustomMessage>(new CustomMessage(context.LocalEndpoint, message, false) { RespectLeadership = respectLeadership }, token);
+        internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)
+            => SendAsync<TResponse, CustomMessage<TResponse>>(new CustomMessage<TResponse>(context.LocalEndpoint, message, responseReader) { RespectLeadership = respectLeadership }, token);
 
-        Task<IMessage> IAddressee.SendMessageAsync(IMessage message, CancellationToken token)
-            => SendMessageAsync(message, false, token);
+        Task<TResponse> IAddressee.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
+            => SendMessageAsync(message, responseReader, false, token);
 
         private async void SendUnreliableSignalAsync(HttpRequestMessage request, CancellationToken token)
         {

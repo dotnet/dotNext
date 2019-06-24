@@ -18,9 +18,9 @@ namespace DotNext.Net.Cluster.Messaging
         /// <summary>
         /// Initializes a new text message.
         /// </summary>
-        /// <param name="name">The name of the message.</param>
         /// <param name="value">The message content.</param>
-        public TextMessage(string name, string value)
+        /// <param name="name">The name of the message.</param>
+        public TextMessage(string value, string name)
             : this(name, value, null)
         {
 
@@ -64,13 +64,16 @@ namespace DotNext.Net.Cluster.Messaging
             {
                 var bytes = new ReadOnlyMemory<byte>(encoding.GetBytes(chunk.ToArray()));
                 var result = await output.WriteAsync(bytes, token);
-                if (result.IsCanceled || result.IsCompleted)
+                if (result.IsCompleted)
                     break;
+                if (result.IsCanceled)
+                    throw new OperationCanceledException(token);
                 result = await output.FlushAsync(token);
-                if (result.IsCanceled || result.IsCompleted)
+                if (result.IsCompleted)
                     break;
+                if (result.IsCanceled)
+                    throw new OperationCanceledException(token);
             }
-            output.Complete(token.IsCancellationRequested ? new OperationCanceledException(token) : null);
         }
 
         /// <summary>

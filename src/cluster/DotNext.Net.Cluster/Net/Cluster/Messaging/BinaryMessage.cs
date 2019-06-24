@@ -15,15 +15,13 @@ namespace DotNext.Net.Cluster.Messaging
     /// </summary>
     public sealed class BinaryMessage : IMessage
     {
-        private const int BufferSize = 1024;
-
         /// <summary>
         /// Initializes a new binary message.
         /// </summary>
-        /// <param name="name">The name of the message.</param>
         /// <param name="content">The content of the message.</param>
+        /// <param name="name">The name of the message.</param>
         /// <param name="type">Media type of the message content.</param>
-        public BinaryMessage(string name, ReadOnlySequence<byte> content, ContentType type = null)
+        public BinaryMessage(ReadOnlySequence<byte> content, string name, ContentType type = null)
         {
             Type = type;
             Name = name;
@@ -33,11 +31,11 @@ namespace DotNext.Net.Cluster.Messaging
         /// <summary>
         /// Initializes a new binary message.
         /// </summary>
-        /// <param name="name">The name of the message.</param>
         /// <param name="content">The content of the message.</param>
+        /// <param name="name">The name of the message.</param>
         /// <param name="type">Media type of the message content.</param>
-        public BinaryMessage(string name, ReadOnlyMemory<byte> content, ContentType type = null)
-            : this(name, new ReadOnlySequence<byte>(content), type)
+        public BinaryMessage(ReadOnlyMemory<byte> content, string name, ContentType type = null)
+            : this(new ReadOnlySequence<byte>(content), name, type)
         {
         }
 
@@ -60,7 +58,7 @@ namespace DotNext.Net.Cluster.Messaging
 
         async Task IMessage.CopyToAsync(Stream output)
         {
-            //TODO: Should be rewritte for .NET Standard 2.1
+            //TODO: Should be rewritten for .NET Standard 2.1
             foreach (var segment in Content)
                 using (var array = new ArrayRental<byte>(segment.Length))
                 {
@@ -74,13 +72,16 @@ namespace DotNext.Net.Cluster.Messaging
             foreach (var segment in Content)
             {
                 var result = await output.WriteAsync(segment, token);
-                if (result.IsCanceled || result.IsCompleted)
+                if (result.IsCompleted)
                     break;
+                if (result.IsCanceled)
+                    throw new OperationCanceledException(token);
                 result = await output.FlushAsync(token);
-                if (result.IsCanceled || result.IsCompleted)
+                if (result.IsCompleted)
                     break;
+                if (result.IsCanceled)
+                    throw new OperationCanceledException(token);
             }
-            output.Complete(token.IsCancellationRequested ? new OperationCanceledException(token) : null);
         }
     }
 }

@@ -105,7 +105,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             });
         }
 
-        async Task<IMessage> IMessagingNetwork.SendMessageToLeaderAsync(IMessage message, CancellationToken token)
+        async Task<TResponse> IMessagingNetwork.SendMessageToLeaderAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
         {
             do
             {
@@ -114,7 +114,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
                 try
                 {
-                    return await leader.SendMessageAsync(message, true, token).ConfigureAwait(false);
+                    return await leader.SendMessageAsync(message, responseReader, true, token).ConfigureAwait(false);
                 }
                 catch(MemberUnavailableException)
                 {

@@ -51,45 +51,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 => message.Length.TryGet(out length);
         }
 
-        private protected class InboundMessageContent : Disposable, IMessage
+        private protected class InboundMessageContent : StreamMessage
         {
-            private readonly ContentType contentType;
-            private readonly long? length;
-            private readonly string name;
-            private readonly Stream content;
-
-            internal InboundMessageContent(HttpRequest request)
+            private InboundMessageContent(Stream content, bool leaveOpen, string name, ContentType type)
+                : base(content, leaveOpen, name, type)
             {
-                length = request.ContentLength;
-                contentType = new ContentType(request.ContentType);
-                name = request.Headers[MessageNameHeader].FirstOrDefault() ??
-                       throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageNameHeader));
-                content = request.Body;
             }
 
-            internal InboundMessageContent(HttpHeaders headers,  HttpContentHeaders contentHeaders, byte[] content)
+            internal InboundMessageContent(HttpRequest request)
+                : this(request.Body, true, request.Headers[MessageNameHeader].FirstOrDefault() ?? throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageNameHeader)), new ContentType(request.ContentType))
             {
-                length = contentHeaders.ContentLength;
-                contentType = new ContentType(contentHeaders.ContentType.ToString());
-                name = headers.TryGetValues(MessageNameHeader, out var values)
+            }
+
+            internal static async Task<InboundMessageContent> FromResponseAsync(HttpResponseMessage response)
+            {
+                var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
+                var name = response.Headers.TryGetValues(MessageNameHeader, out var values)
                     ? values.FirstOrDefault()
                     : null;
                 if (name is null)
                     throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageNameHeader));
-                this.content = new MemoryStream(content);
-            }
-
-            string IMessage.Name => name;
-            long? IMessage.Length => length;
-
-            Task IMessage.CopyToAsync(Stream output) => content.CopyToAsync(output);
-
-            ContentType IMessage.Type => contentType;
-
-            protected override void Dispose(bool disposing)
-            {
-                if (disposing)
-                    content.Dispose();
+                var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                return new InboundMessageContent(content, false, name, contentType);
             }
         }
 

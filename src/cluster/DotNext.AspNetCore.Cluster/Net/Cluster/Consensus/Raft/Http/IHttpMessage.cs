@@ -4,10 +4,13 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal interface IHttpMessage<Response>
+    internal interface IHttpMessageReader<TContent>
     {
-        Task<Response> ParseResponse(HttpResponseMessage response);
+        Task<TContent> ParseResponse(HttpResponseMessage response);
+    }
 
-        Task SaveResponse(HttpResponse response, Response result);
+    internal interface IHttpMessageWriter<in TContent>
+    {
+        Task SaveResponse(HttpResponse response, TContent result);
     }
 }

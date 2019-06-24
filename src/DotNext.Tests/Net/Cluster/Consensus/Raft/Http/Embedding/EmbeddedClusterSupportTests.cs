@@ -69,7 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 var messageBox = host2.Services.GetService<IMessageHandler>() as Mailbox;
                 NotNull(messageBox);
                 //request-reply test
-                var response = await client.SendTextMessageAsync("Request", "Ping");
+                IMessage response = await client.SendTextMessageAsync(StreamMessage.CreateBufferedMessageAsync, "Request", "Ping");
                 NotNull(response);
                 Equal("Reply", response.Name);
                 Equal("Pong", await Mailbox.ReadAsText(response));

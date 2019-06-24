@@ -4,7 +4,7 @@ using Xunit;
 
 namespace DotNext.Buffers
 {
-    public sealed class SplitterTests : Assert
+    public sealed class ChunkSequenceTests : Assert
     {
         [Fact]
         public static void EmptySequence()

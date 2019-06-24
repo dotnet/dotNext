@@ -9,7 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Replication;
 
-    internal sealed class AppendEntriesMessage : RaftHttpMessage, IHttpMessage<bool>
+    internal sealed class AppendEntriesMessage : RaftHttpMessage, IHttpMessageReader<bool>, IHttpMessageWriter<bool>
     {
         internal new const string MessageType = "AppendEntries";
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
@@ -69,7 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Content = new MessageContent(LogEntry, PrecedingEntry);
         }
 
-        Task<bool> IHttpMessage<bool>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
+        Task<bool> IHttpMessageReader<bool>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
 
         public new Task SaveResponse(HttpResponse response, bool result) => HttpMessage.SaveResponse(response, result);
     }

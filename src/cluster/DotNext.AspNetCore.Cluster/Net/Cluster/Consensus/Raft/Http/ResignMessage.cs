@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal sealed class ResignMessage : HttpMessage, IHttpMessage<bool>
+    internal sealed class ResignMessage : HttpMessage, IHttpMessageReader<bool>, IHttpMessageWriter<bool>
     {
         internal new const string MessageType = "Resign";
 
@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
-        Task<bool> IHttpMessage<bool>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
+        Task<bool> IHttpMessageReader<bool>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
 
         public new Task SaveResponse(HttpResponse response, bool result) => HttpMessage.SaveResponse(response, result);
     }

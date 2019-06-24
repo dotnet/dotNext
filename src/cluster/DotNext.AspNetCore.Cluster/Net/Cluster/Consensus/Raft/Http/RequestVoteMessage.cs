@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal sealed class RequestVoteMessage : RaftHttpMessage, IHttpMessage<bool>
+    internal sealed class RequestVoteMessage : RaftHttpMessage, IHttpMessageReader<bool>, IHttpMessageWriter<bool>
     {
         internal const string RecordIndexHeader = "X-Raft-Record-Index";
         internal const string RecordTermHeader = "X-Raft-Record-Term";
@@ -25,7 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             LastEntry = ParseLogEntryId(request, RecordIndexHeader, RecordTermHeader);
         }
 
-        Task<bool> IHttpMessage<bool>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
+        Task<bool> IHttpMessageReader<bool>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
 
         public new Task SaveResponse(HttpResponse response, bool result) => HttpMessage.SaveResponse(response, result);
     }

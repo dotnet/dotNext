@@ -9,8 +9,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
     using NullMessage = Threading.Tasks.CompletedTask<Messaging.IMessage, Generic.DefaultConst<Messaging.IMessage>>;
+    using static Threading.Tasks.Conversion;
 
-    internal sealed class CustomMessage : HttpMessage, IHttpMessage<IMessage>
+    internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage>
     {
         internal new const string MessageType = "CustomMessage";
         private const string OneWayHeader = "X-OneWay-Message";
@@ -40,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Message = new InboundMessageContent(request);
         }
 
-        private protected override void FillRequest(HttpRequestMessage request)
+        private protected sealed override void FillRequest(HttpRequestMessage request)
         {
             base.FillRequest(request);
             request.Headers.Add(OneWayHeader, Convert.ToString(IsOneWay, InvariantCulture));
@@ -48,19 +49,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Content = new OutboundMessageContent(Message);
         }
 
-        private static async Task<IMessage> ParseResponse(HttpResponseMessage response)
-        {         
-            var content = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-            return new InboundMessageContent(response.Headers, response.Content.Headers, content);
-        }
-
-        Task<IMessage> IHttpMessage<IMessage>.ParseResponse(HttpResponseMessage response)
-            => response.StatusCode == HttpStatusCode.NoContent ? NullMessage.Task : ParseResponse(response);
-
         public Task SaveResponse(HttpResponse response, IMessage message)
         {
             response.StatusCode = StatusCodes.Status200OK;
             return OutboundMessageContent.WriteTo(message, response);
+        }
+
+        Task<IMessage> IHttpMessageReader<IMessage>.ParseResponse(HttpResponseMessage response)
+            => response.StatusCode == HttpStatusCode.NoContent ? NullMessage.Task : InboundMessageContent.FromResponseAsync(response).Convert<InboundMessageContent, IMessage>();
+    }
+
+    internal sealed class CustomMessage<T> : CustomMessage, IHttpMessageReader<T>
+    {
+        private readonly MessageReader<T> reader;
+
+        internal CustomMessage(IPEndPoint sender, IMessage message, MessageReader<T> reader) : base(sender, message, false) => this.reader = reader;
+
+        async Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response)
+        {
+            using (var message = await InboundMessageContent.FromResponseAsync(response).ConfigureAwait(false))
+                return await reader(message).ConfigureAwait(false);
         }
     }
 }

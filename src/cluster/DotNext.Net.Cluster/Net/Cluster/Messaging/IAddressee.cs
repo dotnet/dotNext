@@ -16,6 +16,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// The message content may be available inside of <paramref name="responseReader"/> only.
         /// Do not try to return <see cref="IMessage">response message</see> itself from the delegate.
         /// </remarks>
+        /// <typeparam name="TResponse">The type of the parsed response message.</typeparam>
         /// <param name="message">The message to be sent.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <param name="responseReader">The response reader.</param>
