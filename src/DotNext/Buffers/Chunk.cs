@@ -13,7 +13,8 @@ namespace DotNext.Buffers
 
         private new Chunk<T> Next(ReadOnlyMemory<T> segment)
         {
-            var chunk = new Chunk<T>(segment) { RunningIndex = RunningIndex + Memory.Length };
+            var index = RunningIndex;
+            var chunk = new Chunk<T>(segment) { RunningIndex = index + Memory.Length };
             base.Next = chunk;
             return chunk;
         }
