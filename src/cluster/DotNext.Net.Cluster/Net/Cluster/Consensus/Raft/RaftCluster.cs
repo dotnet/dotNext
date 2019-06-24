@@ -161,6 +161,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             transitionCancellation = new CancellationTokenSource();
         }
 
+        private static bool IsLocalMember(TMember member) => !member.IsRemote;
+
         /// <summary>
         /// Gets logger used by this object.
         /// </summary>
@@ -495,6 +497,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     followerState.Dispose();
                     var newState = new CandidateState(this, absoluteMajority, currentTerm.IncrementAndGet());
+                    var localMember = FindMember(IsLocalMember);
+                    votedFor = localMember;   //vote for self
+                    await SaveLastVoteAsync(auditTrail, localMember).ConfigureAwait(false);
                     newState.StartVoting(electionTimeout, auditTrail);
                     state = newState;
                     Logger.TransitionToCandidateStateCompleted();
