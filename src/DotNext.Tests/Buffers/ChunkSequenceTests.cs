@@ -20,7 +20,7 @@ namespace DotNext.Buffers
         public static void SequenceEnumeration()
         {
             var index = 0;
-            foreach (var segment in new ChunkSequence<char>("abcde".AsMemory(), 2))
+            foreach (var segment in "abcde".Split(2))
                 switch (index++)
                 {
                     case 0:
@@ -47,7 +47,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void SplitMemory()
         {
-            var sequence = (ReadOnlySequence<char>)new ChunkSequence<char>("abcde".AsMemory(), 2);
+            var sequence = (ReadOnlySequence<char>)"abcde".Split(2);
             False(sequence.IsSingleSegment);
             var index = 0;
             foreach (var segment in sequence)

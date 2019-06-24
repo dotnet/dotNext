@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
-    using Buffers;
     using static Mime.ContentTypeExtensions;
 
     /// <summary>
@@ -60,7 +59,7 @@ namespace DotNext.Net.Cluster.Messaging
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             var encoding = Type.GetEncoding();
-            foreach (var chunk in new ChunkSequence<char>(Content.AsMemory(), 512))
+            foreach (var chunk in Content.Split(512))
             {
                 var bytes = new ReadOnlyMemory<byte>(encoding.GetBytes(chunk.ToArray()));
                 var result = await output.WriteAsync(bytes, token);
