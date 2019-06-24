@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Buffers;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Buffers
@@ -69,6 +72,31 @@ namespace DotNext.Buffers
                         break;
                 }
             Equal(3, index);
+        }
+
+        [Fact]
+        public static async Task CopyByteChunksToStream()
+        {
+            var bytes = new ChunkSequence<byte>(Encoding.UTF8.GetBytes("Hello, world!"), 3);
+            using (var content = new MemoryStream())
+            {
+                await bytes.CopyToAsync(content).ConfigureAwait(false);
+                content.Seek(0, SeekOrigin.Begin);
+                using (var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true))
+                {
+                    Equal("Hello, world!", reader.ReadToEnd());
+                }
+            }
+        }
+
+        [Fact]
+        public static async Task CopyCharChunksToStream()
+        {
+            var bytes = new ChunkSequence<char>("Hello, world!".AsMemory(), 3);
+            var sb = new StringBuilder();
+            using (var writer = new StringWriter(sb))
+                await bytes.CopyToAsync(writer).ConfigureAwait(false);
+            Equal("Hello, world!", sb.ToString());
         }
     }
 }

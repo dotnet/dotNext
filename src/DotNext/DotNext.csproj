@@ -22,7 +22,8 @@
 Result&lt;T&gt; is the new type used for returning and propagating recoverable errors instead of classic try-catch approach
 Sort extension method for Span&lt;T&gt; data type is introduced
 System.Memory dependency is updated
-DelegateHelpers.CreateOpenDelegate provides syntactic sugar for creating open instance delegates</PackageReleaseNotes>
+DelegateHelpers.CreateOpenDelegate provides syntactic sugar for creating open instance delegates
+ChunkSequence allows to represent contiguous memory as sequence of chunks</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
