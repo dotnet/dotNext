@@ -138,6 +138,7 @@ namespace DotNext.Buffers
             foreach (var segment in sequence)
                 using (var array = new ArrayRental<byte>(segment.Length))
                 {
+                    token.ThrowIfCancellationRequested();
                     segment.CopyTo(array.Memory);
                     await output.WriteAsync(array, 0, segment.Length, token).ConfigureAwait(false);
                 }
