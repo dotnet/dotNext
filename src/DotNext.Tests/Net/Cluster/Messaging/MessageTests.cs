@@ -28,6 +28,7 @@ namespace DotNext.Net.Cluster.Messaging
                 var read = await pipe.Reader.ReadAsync().ConfigureAwait(false);
                 foreach (var chunk in read.Buffer)
                     await content.WriteAsync(chunk).ConfigureAwait(false);
+                pipe.Reader.AdvanceTo(read.Buffer.End);
                 if (read.IsCompleted)
                     break;
             }
@@ -56,6 +57,7 @@ namespace DotNext.Net.Cluster.Messaging
                 var read = await pipe.Reader.ReadAsync().ConfigureAwait(false);
                 foreach (var chunk in read.Buffer)
                     await content.WriteAsync(chunk).ConfigureAwait(false);
+                pipe.Reader.AdvanceTo(read.Buffer.End);
                 if (read.IsCompleted)
                     break;
             }
