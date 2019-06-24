@@ -18,5 +18,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal static void MemberUnavailable(this ILogger logger, IPEndPoint member, Exception e)
             => logger.LogWarning(e, Resources.GetString("MemberUnavailable"), member);
+
+        internal static void UnhandledException(this ILogger logger, Exception e)
+            => logger.LogError(e, Resources.GetString("UnhandledException"));
     }
 }
