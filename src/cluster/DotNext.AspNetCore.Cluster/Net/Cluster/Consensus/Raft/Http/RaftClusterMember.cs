@@ -165,7 +165,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public IPEndPoint Endpoint { get; }
         bool IClusterMember.IsLeader => context.IsLeader(this);
 
-        bool IClusterMember.IsRemote => !Endpoint.Equals(context.LocalEndpoint);
+        public bool IsRemote => !Endpoint.Equals(context.LocalEndpoint);
 
         ClusterMemberStatus IClusterMember.Status 
             => Endpoint.Equals(context.LocalEndpoint) ? ClusterMemberStatus.Available : (ClusterMemberStatus)status.VolatileRead();

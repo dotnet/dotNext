@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal new const string MessageType = "CustomMessage";
         private const string OneWayHeader = "X-OneWay-Message";
 
-        private const string RespectLeadershipHeader = "X-Respect-Leadership";
+        internal const string RespectLeadershipHeader = "X-Respect-Leadership";
 
         internal readonly bool IsOneWay;
         internal readonly IMessage Message;
@@ -32,12 +32,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal CustomMessage(HttpRequest request)
             : base(request)
         {
-            foreach (var header in request.Headers[OneWayHeader])
-                if (bool.TryParse(header, out IsOneWay))
-                    break;
-            foreach (var header in request.Headers[RespectLeadershipHeader])
+            if(request.Headers.TryGetValue(OneWayHeader, out var values))
+            {
+                foreach(var header in values)
+                    if (bool.TryParse(header, out IsOneWay))
+                        break;
+            }
+            else
+                throw new RaftProtocolException(ExceptionMessages.MissingHeader(OneWayHeader));
+            if(request.Headers.TryGetValue(RespectLeadershipHeader, out values))
+            {
+                foreach (var header in values)
                 if(bool.TryParse(header, out RespectLeadership))
                     break;
+            }
+            else
+                throw new RaftProtocolException(ExceptionMessages.MissingHeader(RespectLeadershipHeader));
+            
             Message = new InboundMessageContent(request);
         }
 

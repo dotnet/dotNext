@@ -99,10 +99,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             MessageType = GetMessageType(request);
         }
 
-        internal static string GetMessageType(HttpRequest request) =>
-            request.Headers[MessageTypeHeader].FirstOrDefault() ??
-            throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageTypeHeader));
-        
+        internal static string GetMessageType(HttpRequest request)
+            => request.Headers.TryGetValue(MessageTypeHeader, out var values) ? values.First() : throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageTypeHeader));
+            
         private protected virtual void FillRequest(HttpRequestMessage request)
         {
             request.Headers.Add(NodeIpHeader, Sender.Address.ToString());

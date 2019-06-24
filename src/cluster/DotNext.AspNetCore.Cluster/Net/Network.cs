@@ -29,6 +29,13 @@ namespace DotNext.Net
             }
         }
 
+        public static UriBuilder SetHostAndPort(this UriBuilder builder, IPEndPoint endpoint)
+        {
+            builder.Port = endpoint.Port;
+            builder.Host = endpoint.Address.ToString();
+            return builder;
+        }
+
         internal static ICollection<IPEndPoint> GetHostingAddresses(this IServer server)
         {
             var feature = server.Features.Get<IServerAddresses>();

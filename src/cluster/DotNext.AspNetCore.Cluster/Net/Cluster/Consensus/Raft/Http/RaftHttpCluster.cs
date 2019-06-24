@@ -143,7 +143,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {
                     continue;
                 }
-                catch(UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.BadRequest) //keep in sync with ReceiveMessage behavior
+                catch(UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.ServiceUnavailable) //keep in sync with ReceiveMessage behavior
                 {
                     continue;
                 }
@@ -260,7 +260,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             else
             {
-                response.StatusCode = StatusCodes.Status400BadRequest;
+                response.StatusCode = StatusCodes.Status503ServiceUnavailable;
                 return Task.CompletedTask;
             }
         }
@@ -273,7 +273,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 await message.SaveResponse(response, await messageHandler.ReceiveMessage(sender, message.Message).ConfigureAwait(false)).ConfigureAwait(false);
             }
             else
-                response.StatusCode = StatusCodes.Status400BadRequest;
+                response.StatusCode = StatusCodes.Status503ServiceUnavailable;
         }
 
         private Task ReceiveMessage(CustomMessage message, HttpResponse response)
