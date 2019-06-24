@@ -41,6 +41,70 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         }
 
         [Fact]
+        public static async Task CommunicationWithLeader()
+        {
+            var config1 = new Dictionary<string, string>
+            {
+                {"absoluteMajority", "true"},
+                {"members:0", "http://localhost:3262"},
+                {"members:1", "http://localhost:3263"},
+                {"members:2", "http://localhost:3264"}
+            };
+            var config2 = new Dictionary<string, string>
+            {
+                {"absoluteMajority", "true"},
+                {"members:0", "http://localhost:3262"},
+                {"members:1", "http://localhost:3263"},
+                {"members:2", "http://localhost:3264"}
+            };
+            var config3 = new Dictionary<string, string>
+            {
+                {"absoluteMajority", "true"},
+                {"members:0", "http://localhost:3262"},
+                {"members:1", "http://localhost:3263"},
+                {"members:2", "http://localhost:3264"}
+            };
+            using (var listener1 = new LeaderChangedEvent())
+            using (var listener2 = new LeaderChangedEvent())
+            using (var listener3 = new LeaderChangedEvent())
+            using (var host1 = CreateHost<Startup>(3262, true, config1, listener1))
+            using (var host2 = CreateHost<Startup>(3263, true, config2, listener2))
+            using (var host3 = CreateHost<Startup>(3264, true, config3, listener3))
+            {
+                await host1.StartAsync();
+                await host2.StartAsync();
+                await host3.StartAsync();
+
+                //ensure that leader is elected
+                WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 });
+
+                var box1 = host1.Services.GetRequiredService<IMessageHandler>() as Mailbox;
+                var box2 = host2.Services.GetRequiredService<IMessageHandler>() as Mailbox;
+                var box3 = host3.Services.GetRequiredService<IMessageHandler>() as Mailbox;
+
+
+                await host1.Services.GetRequiredService<IMessagingNetwork>().SendSignalToLeaderAsync(new TextMessage("Message to leader", "simple"));
+
+                //ensure that one of the boxes is not empty
+                var success = false;
+
+                foreach(var box in new [] { box1, box2, box3 })
+                    if(box.TryDequeue(out var response))
+                    {
+                        success = true;
+                        Equal("Message to leader", await Mailbox.ReadAsText(response));
+                        break;
+                    }
+                
+                True(success);
+
+                await host3.StopAsync();
+                await host2.StopAsync();
+                await host1.StopAsync();
+            }
+        }
+
+        [Fact]
         public static async Task MessageExchange()
         { 
             var config1 = new Dictionary<string, string>

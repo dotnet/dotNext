@@ -1,12 +1,9 @@
 ﻿namespace DotNext.Net.Cluster
 {
     /// <summary>
-    /// 
+    /// Represents handler of the event occurred when a new leader in the cluster has been elected.
     /// </summary>
-    /// <remarks>
-    /// <paramref name="leader"/> can be <see langword="null"/> if cluster has no consensus.
-    /// </remarks>
-    /// <param name="sender"></param>
-    /// <param name="leader"></param>
-    public delegate void ClusterLeaderChangedEventHandler(ICluster sender, IClusterMember leader);
+    /// <param name="cluster">The cluster of nodes.</param>
+    /// <param name="leader">A new elected cluster leader; or <see langword="null"/> if there are no cluster-wide consensus.</param>
+    public delegate void ClusterLeaderChangedEventHandler(ICluster cluster, IClusterMember leader);
 }
