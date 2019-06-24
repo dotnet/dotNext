@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -244,32 +243,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (sender is null)
             {
                 response.StatusCode = StatusCodes.Status404NotFound;
-                return;
             }
-            bool result;
-            try
+            else
             {
-                result = await ReceiveEntries(sender, request.ConsensusTerm, request.LogEntry,
-                        request.PrecedingEntry).ConfigureAwait(false);
+                await request.SaveResponse(response, await ReceiveEntries(sender, request.ConsensusTerm, request.LogEntry,
+                        request.PrecedingEntry).ConfigureAwait(false)).ConfigureAwait(false);
             }
-            catch (Exception e)
-            {
-                Logger.UnhandledException(e);
-                if (response.HasStarted)
-                    throw;
-                response.Headers[HeaderNames.CacheControl] = "no-cache";
-                response.Headers[HeaderNames.Pragma] = "no-cache";
-                response.Headers[HeaderNames.Expires] = "-1";
-                response.Headers.Remove(HeaderNames.ETag);
-                response.StatusCode = StatusCodes.Status500InternalServerError;
-                await response.WriteAsync(e.ToString()).ConfigureAwait(false);
-                return;
-            }
-            finally
-            {
-                sender.Touch();
-            }
-            await request.SaveResponse(response, result).ConfigureAwait(false);
         }
 
         private Task ReceiveOneWayMessage(RaftClusterMember sender, CustomMessage message, HttpResponse response)
@@ -319,7 +298,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return task;
         }
 
-        private protected Task ProcessRequest(HttpContext context)
+        internal Task ProcessRequest(HttpContext context)
         {
             var networks = allowedNetworks;
             //checks whether the client's address is allowed

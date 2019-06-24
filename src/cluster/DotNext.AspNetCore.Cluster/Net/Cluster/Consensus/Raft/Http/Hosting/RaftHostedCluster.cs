@@ -20,7 +20,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             var appConfigurer = services.GetService<ApplicationBuilder>();
             host = services.GetRequiredService<WebHostBuilder>()
                 .Configure(config)
-                .Configure(app => (appConfigurer?.Invoke(app) ?? app).Run(ProcessRequest))
+                .Configure(app => 
+                {
+                    appConfigurer?.Invoke(app);
+                    app
+                        .UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfigurator.WriteExceptionContent })
+                        .Run(ProcessRequest);
+                })
                 .Build();
             foreach (var memberUri in config.Members)
                 members.Add(CreateMember(memberUri));
