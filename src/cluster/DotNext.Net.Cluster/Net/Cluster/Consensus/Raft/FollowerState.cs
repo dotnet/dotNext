@@ -4,31 +4,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     internal sealed class FollowerState : RaftState
     {
-        private readonly ManualResetEvent refreshEvent;
+        private readonly AutoResetEvent refreshEvent;
         private readonly RegisteredWaitHandle timerHandle;
 
         internal FollowerState(IRaftStateMachine stateMachine, int timeout)
             : base(stateMachine)
         {
-            timerHandle = ThreadPool.RegisterWaitForSingleObject(refreshEvent = new ManualResetEvent(false), TimerEvent,
+            timerHandle = ThreadPool.RegisterWaitForSingleObject(refreshEvent = new AutoResetEvent(false), TimerEvent,
                 null, timeout, false);
         }
 
         private void TimerEvent(object state, bool timedOut)
         {
-            if (timedOut)
-            {
-                timerHandle.Unregister(null);
-                stateMachine.MoveToCandidateState();
-            }
-            else
-                refreshEvent.Reset();
+            if (IsDisposed || !timedOut)
+                return;
+            System.Console.WriteLine($"Timeout reached at " + System.DateTimeOffset.Now.ToUnixTimeMilliseconds());
+            timerHandle.Unregister(null);
+            stateMachine.MoveToCandidateState();
         }
 
         internal void Refresh()
         {
-            refreshEvent.Set();
             stateMachine.Logger.TimeoutReset();
+            refreshEvent.Set();
         }
 
         protected override void Dispose(bool disposing)

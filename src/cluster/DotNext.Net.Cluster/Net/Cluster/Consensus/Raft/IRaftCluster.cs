@@ -17,6 +17,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         long Term { get; }
 
         /// <summary>
+        /// Gets election timeout used by local cluster member.
+        /// </summary>
+        TimeSpan ElectionTimeout { get; }
+
+        /// <summary>
         /// Replicates cluster members.
         /// </summary>
         /// <param name="entries">The message containing log entries to be sent to other cluster members.</param>

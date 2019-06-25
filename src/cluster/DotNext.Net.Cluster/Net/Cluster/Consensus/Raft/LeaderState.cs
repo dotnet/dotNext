@@ -12,9 +12,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         private enum MemberHealthStatus
         {
-            OK,
-            Canceled,
-            Unavailable
+            Unavailable = 0,
+            Ok,
+            Canceled
         }
 
         private static readonly Func<Task, MemberHealthStatus> HealthStatusContinuation = task =>
@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             else if (task.IsFaulted)
                 return MemberHealthStatus.Unavailable;
             else
-                return MemberHealthStatus.OK;
+                return MemberHealthStatus.Ok;
         };
 
         private BackgroundTask heartbeatTask;
@@ -50,7 +50,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     tasks.Add(member.HeartbeatAsync(term, token).ContinueWith(HealthStatusContinuation, default,
                         TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current));
                 }
-
                 await Task.WhenAll(tasks).ConfigureAwait(false);
                 var votes = 0;
                 if (absoluteMajority)
@@ -59,7 +58,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         {
                             case MemberHealthStatus.Canceled:
                                 return;
-                            case MemberHealthStatus.OK:
+                            case MemberHealthStatus.Ok:
                                 votes += 1;
                                 break;
                             case MemberHealthStatus.Unavailable:
@@ -69,11 +68,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                     votes = int.MaxValue;
                 tasks.Clear();
-                if (votes <= 0)
-                {
-                    stateMachine.MoveToFollowerState(false);
-                    return;
-                }
+                if (votes > 0) continue;
+                stateMachine.MoveToFollowerState(false);
+                break;
             }
         }
 

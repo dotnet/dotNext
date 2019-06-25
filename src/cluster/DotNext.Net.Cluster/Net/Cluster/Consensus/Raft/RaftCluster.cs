@@ -170,10 +170,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         ILogger IRaftStateMachine.Logger => Logger;
 
+        TimeSpan IRaftCluster.ElectionTimeout => TimeSpan.FromMilliseconds(electionTimeout);
+
         /// <summary>
         /// Indicates that local member is a leader.
         /// </summary>
-        public bool IsLeaderLocal => state is LeaderState;
+        protected bool IsLeaderLocal => state is LeaderState;
 
         /// <summary>
         /// Associates audit trail with the current instance.
@@ -340,8 +342,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected async Task ReceiveHeartbeat(TMember sender, long senderTerm)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-                if(await TrySetTerm(senderTerm, false).ConfigureAwait(false))
+                if (await TrySetTerm(senderTerm, false).ConfigureAwait(false))
+                {
+                    (state as FollowerState)?.Refresh();
                     Leader = sender;
+                }
         }
 
         /// <summary>
@@ -357,6 +362,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
                 if(await TrySetTerm(senderTerm, false).ConfigureAwait(false) && auditTrail.Contains(precedingEntry))
                 {
+                    (state as FollowerState)?.Refresh();
                     Leader = sender;
                     await auditTrail.CommitAsync(newEntry);
                     return true;
@@ -400,11 +406,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return CheckLogEntry(trail, senderLastEntry.Value);
         }
 
-        private static ValueTask SaveTermAsync(IPersistentState state, long term)
-            => state is null ? new ValueTask() : state.SaveTermAsync(term);
+        private static ValueTask SaveTermAsync(IPersistentState state, long term) => (state?.SaveTermAsync(term)).GetValueOrDefault();
 
-        private static ValueTask SaveLastVoteAsync(IPersistentState state, TMember member)
-            => state is null ? new ValueTask() : state.SaveVotedForAsync(member);
+        private static ValueTask SaveLastVoteAsync(IPersistentState state, TMember member) => (state?.SaveVotedForAsync(member)).GetValueOrDefault();
 
         /// <summary>
         /// Votes for the new candidate.
@@ -468,6 +472,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (var lockHolder = await transitionSync.TryAcquire(transitionCancellation.Token).ConfigureAwait(false))
                 if (lockHolder)
                 {
+
                     if (randomizeTimeout)
                         electionTimeout = electionTimeoutProvider.RandomTimeout();
                     switch (state)
@@ -495,6 +500,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (lockHolder && state is FollowerState followerState)
                 {
                     followerState.Dispose();
+                    Leader = null;
                     var newState = new CandidateState(this, absoluteMajority, currentTerm.IncrementAndGet());
                     var localMember = FindMember(IsLocalMember);
                     votedFor = localMember;   //vote for self
@@ -514,7 +520,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (lockHolder && state is CandidateState candidateState && candidateState.Term == (term = currentTerm.VolatileRead()))
                 {
                     candidateState.Dispose();
-                    var newState = new LeaderState(this, absoluteMajority, term);
+                    var newState = new LeaderState(this, absoluteMajority,  term);
                     newState.StartLeading();
                     state = newState;
                     Leader = newLeader as TMember;

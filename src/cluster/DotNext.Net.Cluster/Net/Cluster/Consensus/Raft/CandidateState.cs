@@ -65,6 +65,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var localMember = default(IRaftClusterMember);
             foreach (var state in voters)
             {
+                if (IsDisposed)
+                    return;
                 switch (await state.Task.ConfigureAwait(false))
                 {
                     case VotingResult.Canceled: //candidate timeout happened
