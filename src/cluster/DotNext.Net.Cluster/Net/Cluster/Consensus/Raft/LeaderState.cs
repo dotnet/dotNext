@@ -31,7 +31,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly long term;
         private readonly bool absoluteMajority;
         private readonly TimeSpan loopDelay;
-        private AtomicBoolean processingState;
 
         internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority, TimeSpan delay, long term) 
             : base(stateMachine)
@@ -39,7 +38,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.term = term;
             this.absoluteMajority = absoluteMajority;
             loopDelay = delay;
-            processingState = new AtomicBoolean(false);
         }
 
         private async Task DoHeartbeats(CancellationToken token)
@@ -140,8 +138,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal void StartLeading()
             => heartbeatTask = new BackgroundTask(DoHeartbeats);
         internal Task StopLeading() => heartbeatTask.Stop();
-
-        internal Task StopLeading(CancellationToken token) => heartbeatTask.Stop(token);
 
         protected override void Dispose(bool disposing)
         {

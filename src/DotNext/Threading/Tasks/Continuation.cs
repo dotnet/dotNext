@@ -54,15 +54,14 @@ namespace DotNext.Threading.Tasks
         /// continuation is cached for future reuse as well as constant value.
         /// </remarks>
         /// <param name="task">The task to check.</param>
-        /// <param name="token">Optional cancellation token to be attached to the continuation.</param>
         /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
         /// <typeparam name="T">The type of task result.</typeparam>
         /// <typeparam name="C">The type describing constant value.</typeparam>
         /// <returns>The task representing continuation.</returns>
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
-        public static Task<T> OnFaulted<T, C>(this Task<T> task, CancellationToken token = default, TaskScheduler scheduler = null)
+        public static Task<T> OnFaulted<T, C>(this Task<T> task, TaskScheduler scheduler = null)
             where C : Constant<T>, new()
-            => ContinueWithConstant<T, C>(task, task.IsFaulted, Continuation<T, C>.WhenFaulted, token, scheduler);
+            => ContinueWithConstant<T, C>(task, task.IsFaulted, Continuation<T, C>.WhenFaulted, default, scheduler);
 
         /// <summary>
         /// Returns constant value if underlying task is failed or canceled.
@@ -72,15 +71,14 @@ namespace DotNext.Threading.Tasks
         /// continuation is cached for future reuse as well as constant value.
         /// </remarks>
         /// <param name="task">The task to check.</param>
-        /// <param name="token">Optional cancellation token to be attached to the continuation.</param>
         /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
         /// <typeparam name="T">The type of task result.</typeparam>
         /// <typeparam name="C">The type describing constant value.</typeparam>
         /// <returns>The task representing continuation.</returns>        
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
-        public static Task<T> OnFaultedOrCanceled<T, C>(this Task<T> task, CancellationToken token = default, TaskScheduler scheduler = null)
+        public static Task<T> OnFaultedOrCanceled<T, C>(this Task<T> task, TaskScheduler scheduler = null)
             where C : Constant<T>, new()
-            => ContinueWithConstant<T, C>(task, task.IsFaulted | task.IsCanceled, Continuation<T, C>.WhenFaultedOrCanceled , token, scheduler);
+            => ContinueWithConstant<T, C>(task, task.IsFaulted | task.IsCanceled, Continuation<T, C>.WhenFaultedOrCanceled , default, scheduler);
 
         /// <summary>
         /// Returns constant value if underlying task is canceled.
@@ -90,14 +88,13 @@ namespace DotNext.Threading.Tasks
         /// continuation is cached for future reuse as well as constant value.
         /// </remarks>
         /// <param name="task">The task to check.</param>
-        /// <param name="token">Optional cancellation token to be attached to the continuation.</param>
         /// <param name="scheduler">Optional scheduler used to schedule continuation.</param>
         /// <typeparam name="T">The type of task result.</typeparam>
         /// <typeparam name="C">The type describing constant value.</typeparam>
         /// <returns>The task representing continuation.</returns>
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
-        public static Task<T> OnCanceled<T, C>(this Task<T> task, CancellationToken token = default, TaskScheduler scheduler = null)
+        public static Task<T> OnCanceled<T, C>(this Task<T> task, TaskScheduler scheduler = null)
             where C : Constant<T>, new()
-            => ContinueWithConstant<T, C>(task, task.IsCanceled, Continuation<T, C>.WhenCanceled, token, scheduler);
+            => ContinueWithConstant<T, C>(task, task.IsCanceled, Continuation<T, C>.WhenCanceled, default, scheduler);
     }
 }

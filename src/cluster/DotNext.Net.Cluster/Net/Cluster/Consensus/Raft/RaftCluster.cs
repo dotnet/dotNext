@@ -279,7 +279,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         candidateState.Dispose();
                         return;
                     case LeaderState leaderState:
-                        await leaderState.StopLeading(token).OnCompleted().ConfigureAwait(false);
+                        await leaderState.StopLeading().OnCompleted().ConfigureAwait(false);
                         leaderState.Dispose();
                         return;
                 }
@@ -292,7 +292,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 case LeaderState leaderState:
                     state = new FollowerState(this, electionTimeout);
-                    await leaderState.StopLeading(transitionCancellation.Token).ConfigureAwait(false);
+                    await leaderState.StopLeading().ConfigureAwait(false);
                     leaderState.Dispose();
                     break;
                 case CandidateState candidateState:
@@ -436,7 +436,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.Acquire(token).ConfigureAwait(false))
                 if (state is LeaderState leaderState)
                 {
-                    await leaderState.StopLeading(token).ConfigureAwait(false);
+                    await leaderState.StopLeading().ConfigureAwait(false);
                     leaderState.Dispose();
                     state = new FollowerState(this, electionTimeout);
                     Leader = null;
@@ -472,14 +472,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (var lockHolder = await transitionSync.TryAcquire(transitionCancellation.Token).ConfigureAwait(false))
                 if (lockHolder)
                 {
-
                     if (randomizeTimeout)
                         electionTimeout = electionTimeoutProvider.RandomTimeout();
                     switch (state)
                     {
                         case LeaderState leaderState:
                             state = new FollowerState(this, electionTimeout);
-                            await leaderState.StopLeading(transitionCancellation.Token).ConfigureAwait(false);
+                            await leaderState.StopLeading().ConfigureAwait(false);
                             leaderState.Dispose();
                             break;
                         case CandidateState candidateState:

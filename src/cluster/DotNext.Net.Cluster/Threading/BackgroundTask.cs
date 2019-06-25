@@ -19,14 +19,6 @@ namespace DotNext.Threading
         internal CancellationTokenSource CreateLinkedTokenSource(CancellationToken token)
             => CancellationTokenSource.CreateLinkedTokenSource(cts.Token, token);
 
-        internal Task Stop(CancellationToken token)
-        {
-            if (cts is null || backgroundTask is null)
-                return Task.CompletedTask;
-            cts.Cancel(false);
-            return Task.WhenAny(backgroundTask, Task.Delay(InfiniteTimeSpan, token));
-        }
-
         internal Task Stop()
         {
             if (cts is null || backgroundTask is null)
