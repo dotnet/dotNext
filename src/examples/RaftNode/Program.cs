@@ -11,11 +11,11 @@ namespace RaftNode
         private static readonly Dictionary<string, string> Configuration = new Dictionary<string, string>
         {
             {"absoluteMajority", "true"},
-            {"lowerElectionTimeout", "3000" },
-            {"upperElectionTimeout", "4000" },
+            {"lowerElectionTimeout", "200" },
+            {"upperElectionTimeout", "400" },
             {"members:0", "http://localhost:3262"},
             {"members:1", "http://localhost:3263"},
-            //{"members:2", "http://localhost:3264"}
+            {"members:2", "http://localhost:3264"}
         };
 
         private static void StartNode(int port)

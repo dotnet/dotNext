@@ -18,11 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Initializes a new default configuration.
         /// </summary>
-        public ClusterMemberConfiguration()
-        {
-            //recommended election timeout is between 150ms and 300ms
-            electionTimeout = ElectionTimeout.Recommended;
-        }
+        public ClusterMemberConfiguration() => electionTimeout = ElectionTimeout.Recommended;
 
         /// <summary>
         /// Represents set of networks from which remote member can make

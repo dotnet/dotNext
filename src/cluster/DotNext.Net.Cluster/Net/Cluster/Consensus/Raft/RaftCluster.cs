@@ -520,7 +520,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (lockHolder && state is CandidateState candidateState && candidateState.Term == (term = currentTerm.VolatileRead()))
                 {
                     candidateState.Dispose();
-                    var newState = new LeaderState(this, absoluteMajority,  term);
+                    var newState = new LeaderState(this, absoluteMajority, TimeSpan.FromMilliseconds(electionTimeout / 2D), term);
                     newState.StartLeading();
                     state = newState;
                     Leader = newLeader as TMember;

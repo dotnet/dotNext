@@ -30,17 +30,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private BackgroundTask heartbeatTask;
         private readonly long term;
         private readonly bool absoluteMajority;
+        private readonly TimeSpan loopDelay;
+        private AtomicBoolean processingState;
 
-        internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority, long term) 
+        internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority, TimeSpan delay, long term) 
             : base(stateMachine)
         {
             this.term = term;
             this.absoluteMajority = absoluteMajority;
+            loopDelay = delay;
+            processingState = new AtomicBoolean(false);
         }
 
         private async Task DoHeartbeats(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
+            while (!token.IsCancellationRequested && !IsDisposed)
             {
                 ICollection<Task<MemberHealthStatus>> tasks = new LinkedList<Task<MemberHealthStatus>>();
                 //send heartbeat in parallel
@@ -68,9 +72,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                     votes = int.MaxValue;
                 tasks.Clear();
-                if (votes > 0) continue;
-                stateMachine.MoveToFollowerState(false);
-                break;
+                if(votes <= 0)
+                {
+                    stateMachine.MoveToFollowerState(false);
+                    break;
+                }
+                else
+                    await Task.Delay(loopDelay);
             }
         }
 

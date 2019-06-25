@@ -17,7 +17,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, IAddressee
     {
-        private const string CorrelationIdHeader = "X-Correlation-Id";
         private const string UserAgent = "Raft.NET";
 
         private const int UnknownStatus = (int)ClusterMemberStatus.Unknown;
@@ -29,7 +28,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly IHostingContext context;
         private volatile MemberMetadata metadata;
         private ClusterMemberStatusChanged memberStatusChanged;
-        private long requestNumber;
 
         internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath)
             : base(context.CreateHttpHandler(), true)
@@ -93,8 +91,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             finally
             {
-                response?.Dispose();
-                request.Dispose();
+                Disposable.Dispose(response, response?.Content, request);
             }
         }
 
@@ -106,10 +103,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var request = (HttpRequestMessage)new HeartbeatMessage(context.LocalEndpoint, term);
             request.RequestUri = resourcePath;
 
-            var requestId = requestNumber.IncrementAndGet();
-            Console.WriteLine($"Sending request {requestId}");
-            request.Headers.Add(CorrelationIdHeader, Convert.ToString(requestId, InvariantCulture));
-
             var response = default(HttpResponseMessage);
             try
             {
@@ -120,7 +113,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             catch (HttpRequestException e)
             {
-                Console.WriteLine($"#2 Failed to receive request {requestId}");
                 if (response is null)
                 {
                     context.Logger.MemberUnavailable(Endpoint, e);
@@ -132,15 +124,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             catch(OperationCanceledException e) when (!token.IsCancellationRequested)
             {
-                Console.WriteLine($"#1 Failed to receive request {requestId}");
                 context.Logger.MemberUnavailable(Endpoint, e);
                 ChangeStatus(UnavailableStatus);
                 throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
             }
             finally
             {
-                response?.Dispose();
-                request.Dispose();
+                Disposable.Dispose(response, response?.Content, request);
             }
         }
 

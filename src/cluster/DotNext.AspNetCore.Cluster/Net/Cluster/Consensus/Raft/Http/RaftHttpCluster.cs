@@ -316,7 +316,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 case RequestVoteMessage.MessageType:
                     return ReceiveVote(new RequestVoteMessage(context.Request), context.Response);
                 case HeartbeatMessage.MessageType:
-                    Console.WriteLine($"Receiving request from member {context.Request.Headers["X-Correlation-Id"][0]}");
                     return ReceiveHeartbeat(new HeartbeatMessage(context.Request), context.Response);
                 case ResignMessage.MessageType:
                     return Resign(new ResignMessage(context.Request), context.Response);

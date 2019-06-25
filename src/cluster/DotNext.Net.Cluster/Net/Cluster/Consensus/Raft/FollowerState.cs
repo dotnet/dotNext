@@ -18,7 +18,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (IsDisposed || !timedOut)
                 return;
-            System.Console.WriteLine($"Timeout reached at " + System.DateTimeOffset.Now.ToUnixTimeMilliseconds());
             timerHandle.Unregister(null);
             stateMachine.MoveToCandidateState();
         }
