@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents leader election timeout.
     /// </summary>
-    public struct ElectionTimeout
+    public readonly struct ElectionTimeout
     {
         private readonly Random random;
 
@@ -36,8 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Generates random election timeout.
         /// </summary>
         /// <returns>The randomized election timeout.</returns>
-        public int RandomTimeout()
-            => random?.Next(LowerValue, UpperValue + 1) ?? 0;
+        public int RandomTimeout() => random?.Next(LowerValue, UpperValue + 1) ?? 0;
 
         /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.

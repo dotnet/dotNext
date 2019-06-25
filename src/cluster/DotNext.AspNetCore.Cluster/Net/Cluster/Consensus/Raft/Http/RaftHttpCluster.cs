@@ -37,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
-        private RaftHttpCluster(RaftClusterMemberConfiguration config, out MemberCollection members)
+        private RaftHttpCluster(RaftClusterMemberConfiguration config, out MutableMemberCollection members)
             : base(config, out members)
         {
             allowedNetworks = config.AllowedNetworks;
@@ -45,7 +45,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             RequestTimeout = TimeSpan.FromMilliseconds(config.LowerElectionTimeout);
         }
 
-        private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MemberCollection members)
+        private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MutableMemberCollection members)
             : this(config.CurrentValue, out members)
         {
             configurator = dependencies.GetService<IRaftClusterConfigurator>();
@@ -59,7 +59,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             configurationTracker = config.OnChange(ConfigurationChanged);
         }
 
-        private protected RaftHttpCluster(IServiceProvider dependencies, out MemberCollection members)
+        private protected RaftHttpCluster(IServiceProvider dependencies, out MutableMemberCollection members)
             : this(dependencies.GetRequiredService<IOptionsMonitor<RaftClusterMemberConfiguration>>(), dependencies, out members)
         {
         }
@@ -78,7 +78,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             metadata = new MemberMetadata(configuration.Metadata);
             allowedNetworks = configuration.AllowedNetworks;
-            ChangeMembers((in MemberCollection members) =>
+            ChangeMembers((in MutableMemberCollection members) =>
             {
                 var existingMembers = new HashSet<Uri>();
                 //remove members

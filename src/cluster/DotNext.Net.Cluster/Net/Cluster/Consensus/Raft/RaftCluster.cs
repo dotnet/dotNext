@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -69,7 +68,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Represents collection of cluster members stored in the memory of the current process.
         /// </summary>
-        protected readonly ref struct MemberCollection
+        protected readonly ref struct MutableMemberCollection
         {
             /// <summary>
             /// Represents enumerator over cluster members.
@@ -106,9 +105,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private readonly LinkedList<TMember> members;
 
-            internal MemberCollection(IEnumerable<TMember> members) => this.members = new LinkedList<TMember>(members);
+            internal MutableMemberCollection(IEnumerable<TMember> members) => this.members = new LinkedList<TMember>(members);
 
-            internal MemberCollection(out ICollection<TMember> members) 
+            internal MutableMemberCollection(out ICollection<TMember> members) 
                 => members = this.members = new LinkedList<TMember>();
 
             /// <summary>
@@ -130,7 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Represents mutator of collection of members.
         /// </summary>
         /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
-        protected delegate void MemberCollectionMutator(in MemberCollection members);
+        protected delegate void MemberCollectionMutator(in MutableMemberCollection members);
 
 
         private volatile ICollection<TMember> members;
@@ -150,12 +149,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="config">The configuration of the local node.</param>
         /// <param name="members">The collection of members that can be modified at construction stage.</param>
-        protected RaftCluster(IClusterMemberConfiguration config, out MemberCollection members)
+        protected RaftCluster(IClusterMemberConfiguration config, out MutableMemberCollection members)
         {
             electionTimeoutProvider = config.ElectionTimeout;
             electionTimeout = electionTimeoutProvider.RandomTimeout();
             absoluteMajority = config.AbsoluteMajority;
-            members = new MemberCollection(out var collection);
+            members = new MutableMemberCollection(out var collection);
             this.members = collection;
             transitionSync = AsyncLock.Exclusive();
             transitionCancellation = new CancellationTokenSource();
@@ -192,7 +191,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [MethodImpl(MethodImplOptions.Synchronized)]
         protected void ChangeMembers(MemberCollectionMutator mutator)
         {
-            var members = new MemberCollection(this.members);
+            var members = new MutableMemberCollection(this.members);
             mutator(in members);
             this.members = members.AsLinkedList();
         }
