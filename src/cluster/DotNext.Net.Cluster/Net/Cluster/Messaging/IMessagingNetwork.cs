@@ -23,6 +23,10 @@ namespace DotNext.Net.Cluster.Messaging
         /// <summary>
         /// Sends a message to the cluster leader.
         /// </summary>
+        /// <remarks>
+        /// <paramref name="message"/> should be reusable because <see cref="IMessage.CopyToAsync(System.IO.Stream)"/> or
+        /// <see cref="IMessage.CopyToAsync(System.IO.Pipelines.PipeWriter, CancellationToken)"/> can be called multiple times.
+        /// </remarks>
         /// <typeparam name="TResponse">The type of the parsed response message.</typeparam>
         /// <param name="message">The message to be sent.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
@@ -34,6 +38,10 @@ namespace DotNext.Net.Cluster.Messaging
         /// <summary>
         /// Sends one-way message to the cluster leader.
         /// </summary>
+        /// <remarks>
+        /// <paramref name="message"/> should be reusable because <see cref="IMessage.CopyToAsync(System.IO.Stream)"/> or
+        /// <see cref="IMessage.CopyToAsync(System.IO.Pipelines.PipeWriter, CancellationToken)"/> can be called multiple times.
+        /// </remarks>
         /// <param name="message">The message to be sent.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing execution of this method.</returns>

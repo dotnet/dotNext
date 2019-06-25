@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal new const string MessageType = "CustomMessage";
         private const string OneWayHeader = "X-OneWay-Message";
 
-        internal const string RespectLeadershipHeader = "X-Respect-Leadership";
+        private const string RespectLeadershipHeader = "X-Respect-Leadership";
 
         internal readonly bool IsOneWay;
         internal readonly IMessage Message;

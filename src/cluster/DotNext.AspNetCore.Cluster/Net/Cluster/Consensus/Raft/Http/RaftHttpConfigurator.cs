@@ -22,7 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return services.Configure<TConfig>(memberConfig)
                 .Configure<RaftClusterMemberConfiguration>(memberConfig)
                 .AddSingleton<TCluster>()
-                .AddSingleton<RaftHttpCluster>(clusterNodeCast)
+                .AddSingleton(clusterNodeCast)
                 .AddSingleton<IHostedService>(clusterNodeCast)
                 .AddSingleton<ICluster>(clusterNodeCast)
                 .AddSingleton<IRaftCluster>(clusterNodeCast)

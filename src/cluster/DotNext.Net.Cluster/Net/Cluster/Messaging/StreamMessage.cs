@@ -54,16 +54,28 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         public ContentType Type { get; }
 
+        /// <summary>
+        /// Indicates that the content of this message can be copied to the output stream or pipe multiple times.
+        /// </summary>
+        public bool Reusable => content.CanSeek;
+
         long? IMessage.Length => content.CanSeek ? content.Length : default(long?);
 
-        Task IMessage.CopyToAsync(Stream output) => content.CopyToAsync(output);
+        private static async Task CopyToAsyncAndSeek(Stream input, Stream output)
+        {
+            await input.CopyToAsync(output).ConfigureAwait(false);
+            input.Seek(0, SeekOrigin.Begin);
+        }
+
+        Task IMessage.CopyToAsync(Stream output) =>
+            content.CanSeek ? CopyToAsyncAndSeek(content, output) : content.CopyToAsync(output);
 
         async ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             var buffer = new byte[BufferSize];
             int count;
-            while ((count = await content.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
+            while ((count = await content.ReadAsync(buffer, 0, buffer.Length, token).ConfigureAwait(false)) > 0)
             {
                 var result = await output.WriteAsync(new ReadOnlyMemory<byte>(buffer, 0, count), token).ConfigureAwait(false);
                 if (result.IsCompleted)
@@ -76,6 +88,9 @@ namespace DotNext.Net.Cluster.Messaging
                 if (result.IsCanceled)
                     throw new OperationCanceledException(token);
             }
+
+            if (content.CanSeek)
+                content.Seek(0, SeekOrigin.Begin);
         }
 
         /// <summary>

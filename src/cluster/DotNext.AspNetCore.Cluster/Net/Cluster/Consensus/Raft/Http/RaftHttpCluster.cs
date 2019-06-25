@@ -253,7 +253,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private Task ReceiveOneWayMessage(RaftClusterMember sender, CustomMessage message, HttpResponse response)
         {
-            if(message.RespectLeadership ? IsLeaderLocal : true)
+            if(!message.RespectLeadership || IsLeaderLocal)
             {
                 response.StatusCode = StatusCodes.Status204NoContent;
                 return messageHandler.ReceiveSignal(sender, message.Message);
@@ -267,7 +267,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private async Task ReceiveMessage(RaftClusterMember sender, CustomMessage message, HttpResponse response)
         {
-            if(message.RespectLeadership ? IsLeaderLocal : true)
+            if(!message.RespectLeadership || IsLeaderLocal)
             {
                 response.StatusCode = StatusCodes.Status200OK;
                 await message.SaveResponse(response, await messageHandler.ReceiveMessage(sender, message.Message).ConfigureAwait(false)).ConfigureAwait(false);

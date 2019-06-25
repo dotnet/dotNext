@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Messaging
 {
     using static Mime.ContentTypeExtensions;
 
-    internal sealed class Mailbox : ConcurrentQueue<IMessage>, IMessageHandler
+    internal sealed class Mailbox : ConcurrentQueue<StreamMessage>, IMessageHandler
     {
         internal static async Task<string> ReadAsText(IMessage message)
         {
