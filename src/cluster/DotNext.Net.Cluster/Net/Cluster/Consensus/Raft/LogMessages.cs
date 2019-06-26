@@ -37,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal static void TransitionToLeaderStateCompleted(this ILogger logger)
             => logger.LogInformation(Resources.GetString("TransitionToLeaderStateCompleted"));
 
-        internal static void VotingStarted(this ILogger logger, in TimeSpan timeout)
+        internal static void VotingStarted(this ILogger logger, int timeout)
             => logger.LogDebug(Resources.GetString("VotingStarted"), timeout);
 
         internal static void VotingCompleted(this ILogger logger, int votes)

@@ -147,11 +147,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Starts cluster synchronization.
         /// </summary>
-        internal void StartLeading(in TimeSpan delay)
+        internal LeaderState StartLeading(int delay)
         {
             processingState.Value = false;
             heartbeatTimer = ThreadPool.RegisterWaitForSingleObject(timerCancellation.Token.WaitHandle, DoHeartbeats,
                 null, delay, false);
+            return this;
         }
 
         private static async Task StopLeading(RegisteredWaitHandle handle)

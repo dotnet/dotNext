@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -56,6 +57,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal void Touch() => ChangeStatus(AvailableStatus);
 
+        [SuppressMessage("Reliability", "CA2000", Justification = "Response is disposed in finally block")]
         private async Task<R> SendAsync<R, M>(M message, CancellationToken token)
             where M : HttpMessage, IHttpMessageReader<R>
         {
@@ -94,6 +96,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
+        [SuppressMessage("Reliability", "CA2000", Justification = "Response is disposed in finally block")]
         async Task IRaftClusterMember.HeartbeatAsync(long term, CancellationToken token)
         {
             if (Endpoint.Equals(context.LocalEndpoint))

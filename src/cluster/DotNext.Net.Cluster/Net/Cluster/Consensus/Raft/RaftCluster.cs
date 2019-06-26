@@ -255,7 +255,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 currentTerm.VolatileWrite(await auditTrail.RestoreTermAsync().ConfigureAwait(false));
             }
             //start node in Follower state
-            state = new FollowerState(this, TimeSpan.FromMilliseconds(electionTimeout));
+            state = new FollowerState(this).StartServing(electionTimeout);
         }
 
         /// <summary>
@@ -291,12 +291,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             switch (state)
             {
                 case LeaderState leaderState:
-                    state = new FollowerState(this, TimeSpan.FromMilliseconds(electionTimeout));
+                    state = new FollowerState(this).StartServing(electionTimeout);
                     await leaderState.StopLeading().ConfigureAwait(false);
                     leaderState.Dispose();
                     break;
                 case CandidateState candidateState:
-                    state = new FollowerState(this, TimeSpan.FromMilliseconds(electionTimeout));
+                    state = new FollowerState(this).StartServing(electionTimeout);
                     await candidateState.StopVoting().ConfigureAwait(false);
                     candidateState.Dispose();
                     break;
@@ -438,7 +438,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     await leaderState.StopLeading().ConfigureAwait(false);
                     leaderState.Dispose();
-                    state = new FollowerState(this, TimeSpan.FromMilliseconds(electionTimeout));
+                    state = new FollowerState(this).StartServing(electionTimeout);
                     Leader = null;
                     return true;
                 }
@@ -477,12 +477,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     switch (state)
                     {
                         case LeaderState leaderState:
-                            state = new FollowerState(this, TimeSpan.FromMilliseconds(electionTimeout));
+                            state = new FollowerState(this).StartServing(electionTimeout);
                             await leaderState.StopLeading().ConfigureAwait(false);
                             leaderState.Dispose();
                             break;
                         case CandidateState candidateState:
-                            state = new FollowerState(this, TimeSpan.FromMilliseconds(electionTimeout));
+                            state = new FollowerState(this).StartServing(electionTimeout);
                             await candidateState.StopVoting().ConfigureAwait(false);
                             candidateState.Dispose();
                             break;
@@ -500,12 +500,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     followerState.Dispose();
                     Leader = null;
-                    var newState = new CandidateState(this, absoluteMajority, currentTerm.IncrementAndGet());
                     var localMember = FindMember(IsLocalMember);
                     votedFor = localMember;   //vote for self
                     await SaveLastVoteAsync(auditTrail, localMember).ConfigureAwait(false);
-                    newState.StartVoting(TimeSpan.FromMilliseconds(electionTimeout), auditTrail);
-                    state = newState;
+                    state = new CandidateState(this, absoluteMajority, currentTerm.IncrementAndGet()).StartVoting(electionTimeout, auditTrail);
                     Logger.TransitionToCandidateStateCompleted();
                 }
         }
@@ -519,9 +517,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (lockHolder && state is CandidateState candidateState && candidateState.Term == (term = currentTerm.VolatileRead()))
                 {
                     candidateState.Dispose();
-                    var newState = new LeaderState(this, absoluteMajority, term);
-                    newState.StartLeading(TimeSpan.FromMilliseconds(electionTimeout / 2D));
-                    state = newState;
+                    state = new LeaderState(this, absoluteMajority, term).StartLeading(electionTimeout / 2);
                     Leader = newLeader as TMember;
                     Logger.TransitionToLeaderStateCompleted();
                 }

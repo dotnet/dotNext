@@ -67,7 +67,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         Task<IMessage> IHttpMessageReader<IMessage>.ParseResponse(HttpResponseMessage response)
-            => response.StatusCode == HttpStatusCode.NoContent ? NullMessage.Task : InboundMessageContent.FromResponseAsync(response).Convert<InboundMessageContent, IMessage>();
+            => response.StatusCode == HttpStatusCode.NoContent ? 
+                NullMessage.Task 
+                : InboundMessageContent.FromResponseAsync(response, StreamMessage.CreateBufferedMessageAsync).Convert<StreamMessage, IMessage>();
     }
 
     internal sealed class CustomMessage<T> : CustomMessage, IHttpMessageReader<T>
@@ -76,10 +78,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal CustomMessage(IPEndPoint sender, IMessage message, MessageReader<T> reader) : base(sender, message, false) => this.reader = reader;
 
-        async Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response)
-        {
-            using (var message = await InboundMessageContent.FromResponseAsync(response).ConfigureAwait(false))
-                return await reader(message).ConfigureAwait(false);
-        }
+        Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response)
+            => InboundMessageContent.FromResponseAsync(response, reader);
     }
 }

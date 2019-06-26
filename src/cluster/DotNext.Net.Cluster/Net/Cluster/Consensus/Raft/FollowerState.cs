@@ -6,13 +6,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     internal sealed class FollowerState : RaftState
     {
         private readonly AutoResetEvent refreshEvent;
-        private readonly RegisteredWaitHandle timerHandle;
+        private volatile RegisteredWaitHandle timerHandle;
 
-        internal FollowerState(IRaftStateMachine stateMachine, in TimeSpan timeout)
+        internal FollowerState(IRaftStateMachine stateMachine)
             : base(stateMachine)
         {
-            timerHandle = ThreadPool.RegisterWaitForSingleObject(refreshEvent = new AutoResetEvent(false), TimerEvent,
-                null, timeout, false);
+            refreshEvent = new AutoResetEvent(false);
         }
 
         private void TimerEvent(object state, bool timedOut)
@@ -21,6 +20,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return;
             timerHandle.Unregister(null);
             stateMachine.MoveToCandidateState();
+        }
+
+        internal FollowerState StartServing(int timeout)
+        {
+            refreshEvent.Reset();
+            timerHandle = ThreadPool.RegisterWaitForSingleObject(refreshEvent, TimerEvent,
+                null, timeout, false);
+            return this;
         }
 
         internal void Refresh()
@@ -33,7 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (disposing)
             {
-                timerHandle.Unregister(null);
+                timerHandle?.Unregister(null);
                 refreshEvent.Dispose();
             }
             base.Dispose(disposing);

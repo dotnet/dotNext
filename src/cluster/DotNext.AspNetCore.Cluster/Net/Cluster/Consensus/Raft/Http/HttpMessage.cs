@@ -63,7 +63,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
             }
 
-            internal static async Task<InboundMessageContent> FromResponseAsync(HttpResponseMessage response)
+            internal static async Task<TResponse> FromResponseAsync<TResponse>(HttpResponseMessage response, MessageReader<TResponse> reader)
             {
                 var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
                 var name = response.Headers.TryGetValues(MessageNameHeader, out var values)
@@ -71,8 +71,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     : null;
                 if (name is null)
                     throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageNameHeader));
-                var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                return new InboundMessageContent(content, false, name, contentType);
+                using(var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                using(var message = new InboundMessageContent(content, true, name, contentType))
+                    return await reader(message).ConfigureAwait(false);
             }
         }
 
