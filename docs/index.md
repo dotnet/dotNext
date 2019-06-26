@@ -62,4 +62,10 @@ The following code describes these alternative implementations of synchronizatio
 
 But this is not all features of this library. Read more [here](./features/threading/index.html).
 
+# DotNext.Net.Cluster
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.net.cluster.svg?style=flat"></a><br/>
+Provides basic framework for building [clustered microservices](https://en.wikipedia.org/wiki/Computer_cluster) based on network consensus and distributed messaging. Additionally, the libarary provides transport-agnostic implementation of [Raft Consensus Algoritm](https://raft.github.io/) that can be adopted for any communication protocol.
 
+# DotNext.AspNetCore.Cluster
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?style=flat"></a><br/>
+Allows to build clustered microservices which rely on network consensus and distributed messaging with [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/) framework. This library contains HTTP-based implementation of Raft Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node and many other things.
