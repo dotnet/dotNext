@@ -1,6 +1,6 @@
-using Assembly = System.Reflection.Assembly;
 using System.Diagnostics.CodeAnalysis;
 using System.Resources;
+using Assembly = System.Reflection.Assembly;
 
 namespace DotNext.Threading
 {
@@ -17,5 +17,7 @@ namespace DotNext.Threading
         internal static string NotInReadLock => Resources.GetString("NotInReadLock");
 
         internal static string NotInUpgradeableReadLock => Resources.GetString("NotInUpgradeableReadLock");
+
+        internal static string TokenNotCancelable => Resources.GetString("TokenNotCancelable");
     }
 }

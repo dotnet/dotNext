@@ -5,7 +5,7 @@ namespace DotNext.Threading.Tasks
 {
     using Generic;
 
-    public sealed class CompletedTaskTests: Assert
+    public sealed class CompletedTaskTests : Assert
     {
         [Fact]
         public static async Task CompletionTest()

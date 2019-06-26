@@ -392,7 +392,7 @@ namespace DotNext.Runtime.InteropServices
         /// without restriction on <see cref="uint"/> data type for the length of the memory block.
         /// </remarks>
         /// <param name="ptr">The pointer to the memory to be cleared.</param>
-        /// <param name="length">The length of the memory to be cleared.</param>
+        /// <param name="length">The length of the memory to be cleared, in bytes.</param>
         public static void ClearBits(IntPtr ptr, long length)
         {
             do
@@ -572,5 +572,33 @@ namespace DotNext.Runtime.InteropServices
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int PointerHashCode(void* pointer) => new IntPtr(pointer).GetHashCode();
+
+        /// <summary>
+        /// Swaps two values.
+        /// </summary>
+        /// <param name="first">The first value to be replaced with <paramref name="second"/>.</param>
+        /// <param name="second">The second value to be replaced with <paramref name="first"/>.</param>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        public static void Swap<T>(ref T first, ref T second)
+        {
+            var tmp = first;
+            first = second;
+            second = tmp;
+        }
+
+        /// <summary>
+        /// Swaps two values.
+        /// </summary>
+        /// <param name="first">The first value to be replaced with <paramref name="second"/>.</param>
+        /// <param name="second">The second value to be replaced with <paramref name="first"/>.</param>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        [CLSCompliant(false)]
+        public static void Swap<T>(T* first, T* second) 
+            where T : unmanaged
+        {
+            var tmp = *first;
+            *first = *second;
+            *second = tmp;
+        }
     }
 }

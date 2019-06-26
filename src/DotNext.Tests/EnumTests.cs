@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext
 {
-    public sealed class EnumTests: Assert
+    public sealed class EnumTests : Assert
     {
         [Fact]
         public static void ValuesTest()

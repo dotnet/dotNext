@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -140,7 +141,7 @@ namespace DotNext.Threading
         /// <param name="token">The token that can be used to cancel the waiting operation.</param>
         /// <returns>The task representing waiting operation.</returns>
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-        public Task SignalAndWait(CancellationToken token) => SignalAndWait(TimeSpan.MaxValue, token);
+        public Task SignalAndWait(CancellationToken token) => SignalAndWait(InfiniteTimeSpan, token);
 
         /// <summary>
         /// Signals that a participant has reached the barrier and waits 
@@ -157,7 +158,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <returns>The task representing waiting operation.</returns>
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-        public Task SignalAndWait() => SignalAndWait(TimeSpan.MaxValue);
+        public Task SignalAndWait() => SignalAndWait(InfiniteTimeSpan);
 
         bool IAsyncEvent.Reset() => countdown.Reset();
 

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
 
@@ -17,10 +17,14 @@ namespace DotNext.Threading
             internal static readonly Operations<T> Instance = new Operations<T>();
             private Operations() { }
 
-            internal override bool CompareAndSet(ref T value, T expected, T update)
-                => ReferenceEquals(Interlocked.CompareExchange(ref value, update, expected), expected);
-            
-            private protected override T VolatileRead(ref T value) => Volatile.Read(ref value);
+            internal override T Exchange(ref T value, T update) => Interlocked.Exchange(ref value, update);
+
+            internal override T CompareExchange(ref T value, T update, T expected)
+                => Interlocked.CompareExchange(ref value, update, expected);
+
+            internal override T VolatileRead(ref T value) => Volatile.Read(ref value);
+
+            private protected override bool Equals(T x, T y) => ReferenceEquals(x, y);
         }
 
         /// <summary>

@@ -17,14 +17,19 @@ namespace DotNext.Threading
     {
         private sealed class Operations : Atomic<double>
         {
-            internal static readonly Operations Instance = new Operations();
-            private Operations() { }
+            internal Operations() { }
 
-            internal override bool CompareAndSet(ref double value, double expected, double update)
-                => Interlocked.CompareExchange(ref value, update, expected).CompareTo(expected) == 0;
-            
-            private protected override double VolatileRead(ref double value) => Volatile.Read(ref value);
+            internal override double Exchange(ref double value, double update) => Interlocked.Exchange(ref value, update);
+
+            internal override double CompareExchange(ref double value, double update, double expected)
+                => Interlocked.CompareExchange(ref value, update, expected);
+
+            internal override double VolatileRead(ref double value) => Volatile.Read(ref value);
+
+            private protected override bool Equals(double x, double y) => x.Equals(y);
         }
+
+        internal static readonly Atomic<double> Atomic = new Operations();
 
         /// <summary>
         /// Reads the value of the specified field. On systems that require it, inserts a
@@ -91,7 +96,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet(ref this double value, double expected, double update)
-            => Operations.Instance.CompareAndSet(ref value, expected, update);
+            => Atomic.CompareAndSet(ref value, expected, update);
 
         /// <summary>
 		/// Modifies referenced value atomically.
@@ -127,9 +132,9 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]      
-		public static double AccumulateAndGet(ref this double value, double x, Func<double, double, double> accumulator)
-            => Operations.Instance.Accumulate(ref value, x, accumulator).NewValue;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double AccumulateAndGet(ref this double value, double x, Func<double, double, double> accumulator)
+            => Atomic.Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -144,7 +149,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetAndAccumulate(ref this double value, double x, Func<double, double, double> accumulator)
-            => Operations.Instance.Accumulate(ref value, x, accumulator).OldValue;
+            => Atomic.Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
 		/// Atomically updates the stored value with the results 
@@ -153,9 +158,9 @@ namespace DotNext.Threading
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]      
-		public static double UpdateAndGet(ref this double value, Func<double, double> updater)
-            => Operations.Instance.Update(ref value, updater).NewValue;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double UpdateAndGet(ref this double value, Func<double, double> updater)
+            => Atomic.Update(ref value, updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -166,7 +171,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetAndUpdate(ref this double value, Func<double, double> updater)
-            => Operations.Instance.Update(ref value, updater).OldValue;
+            => Atomic.Update(ref value, updater).OldValue;
 
         /// <summary>
         /// Performs volatile read of the array element.

@@ -2,7 +2,7 @@
 
 namespace DotNext.Collections.Concurrent
 {
-    public sealed class CopyOnWriteListTests: Assert
+    public sealed class CopyOnWriteListTests : Assert
     {
         [Fact]
         public static void Enumeration()

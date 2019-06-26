@@ -4,44 +4,44 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Reflection
 {
-	/// <summary>
-	/// Basic interface for all reflected members.
-	/// </summary>
-	/// <typeparam name="M">Type of reflected member.</typeparam>
-	public interface IMember<out M>: ICustomAttributeProvider
-		where M : MemberInfo
-	{
-		/// <summary>
-		/// Name of member.
-		/// </summary>
-		string Name { get; }
+    /// <summary>
+    /// Basic interface for all reflected members.
+    /// </summary>
+    /// <typeparam name="M">Type of reflected member.</typeparam>
+    public interface IMember<out M> : ICustomAttributeProvider
+        where M : MemberInfo
+    {
+        /// <summary>
+        /// Name of member.
+        /// </summary>
+        string Name { get; }
 
-		/// <summary>
-		/// Member metadata.
-		/// </summary>
-		M RuntimeMember { get; }
-	}
-	
-	/// <summary>
-	/// Represents callable program element.
-	/// </summary>
-	/// <typeparam name="M">Type of reflected member.</typeparam>
-	/// <typeparam name="D">Type of delegate.</typeparam>
-	public interface IMember<out M, out D>: IMember<M>
-		where M: MemberInfo
-		where D: Delegate
-	{
-		/// <summary>
-		/// Gets delegate that can be used to invoke member.
-		/// </summary>
-		D Invoker { get; }
-	}
+        /// <summary>
+        /// Member metadata.
+        /// </summary>
+        M RuntimeMember { get; }
+    }
+
+    /// <summary>
+    /// Represents callable program element.
+    /// </summary>
+    /// <typeparam name="M">Type of reflected member.</typeparam>
+    /// <typeparam name="D">Type of delegate.</typeparam>
+    public interface IMember<out M, out D> : IMember<M>
+        where M : MemberInfo
+        where D : Delegate
+    {
+        /// <summary>
+        /// Gets delegate that can be used to invoke member.
+        /// </summary>
+        D Invoker { get; }
+    }
 
     /// <summary>
     /// Provides extension methods for interface <see cref="IMember{M, D}"/> or <see cref="IMember{M}"/>.
     /// </summary>
 	public static class Member
-	{
+    {
         /// <summary>
         /// Invokes member.
         /// </summary>
@@ -52,10 +52,10 @@ namespace DotNext.Reflection
         /// <param name="arguments">Invocation arguments placed onto stack.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, A, R>(this IMember<M, Function<A, R>> member, in A arguments)
-			where M: MemberInfo
-			where A : struct
-			=> member.Invoker(in arguments);
+        public static R Invoke<M, A, R>(this IMember<M, Function<A, R>> member, in A arguments)
+            where M : MemberInfo
+            where A : struct
+            => member.Invoker(in arguments);
 
         /// <summary>
         /// Invokes instance member.
@@ -69,10 +69,10 @@ namespace DotNext.Reflection
         /// <param name="arguments">Invocation arguments placed onto stack.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, T, A, R>(this IMember<M, Function<T, A, R>> member, in T @this, in A arguments)
-			where M: MemberInfo
-			where A : struct
-			=> member.Invoker(in @this, in arguments);
+        public static R Invoke<M, T, A, R>(this IMember<M, Function<T, A, R>> member, in T @this, in A arguments)
+            where M : MemberInfo
+            where A : struct
+            => member.Invoker(in @this, in arguments);
 
         /// <summary>
         /// Invokes instance member without arguments.
@@ -84,9 +84,9 @@ namespace DotNext.Reflection
         /// <param name="this"><c>this</c> argument.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, T, R>(this IMember<M, Function<T, ValueTuple, R>> member, in T @this)
-			where M: MemberInfo
-			=> member.Invoke(in @this, default);
+        public static R Invoke<M, T, R>(this IMember<M, Function<T, ValueTuple, R>> member, in T @this)
+            where M : MemberInfo
+            => member.Invoke(in @this, default);
 
         /// <summary>
         /// Invokes member without arguments.
@@ -96,9 +96,9 @@ namespace DotNext.Reflection
         /// <param name="member">Callable member.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, R>(this IMember<M, Function<ValueTuple, R>> member)
-			where M: MemberInfo
-			=> member.Invoke(default);
+        public static R Invoke<M, R>(this IMember<M, Function<ValueTuple, R>> member)
+            where M : MemberInfo
+            => member.Invoke(default);
 
         /// <summary>
         /// Allocates uninitialized structure for placing arguments.
@@ -110,10 +110,10 @@ namespace DotNext.Reflection
         /// <param name="member">Callable member.</param>
         /// <returns>Allocated structure for placing arguments.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static A ArgList<M, T, A, R>(this IMember<M, Function<T, A, R>> member)
-			where M: MemberInfo
-			where A : struct
-			=> member.Invoker.ArgList();
+        public static A ArgList<M, T, A, R>(this IMember<M, Function<T, A, R>> member)
+            where M : MemberInfo
+            where A : struct
+            => member.Invoker.ArgList();
 
         /// <summary>
         /// Allocates uninitialized structure for placing arguments.
@@ -124,10 +124,10 @@ namespace DotNext.Reflection
         /// <typeparam name="R">Type of function result.</typeparam>
         /// <returns>Allocated list of arguments.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static A ArgList<M, A, R>(this IMember<M, Function<A, R>> member)
-			where M: MemberInfo
-			where A : struct
-			=> member.Invoker.ArgList();
+        public static A ArgList<M, A, R>(this IMember<M, Function<A, R>> member)
+            where M : MemberInfo
+            where A : struct
+            => member.Invoker.ArgList();
 
         /// <summary>
         /// Allocates uninitialized structure for placing arguments.
@@ -138,9 +138,9 @@ namespace DotNext.Reflection
         /// <param name="member">Callable member.</param>
         /// <returns>Allocated list of arguments.</returns>
 		public static A ArgList<M, T, A>(this IMember<M, Procedure<T, A>> member)
-			where M: MemberInfo
-			where A : struct
-			=> member.Invoker.ArgList();
+            where M : MemberInfo
+            where A : struct
+            => member.Invoker.ArgList();
 
         /// <summary>
         /// Allocates uninitialized structure for placing arguments.
@@ -150,10 +150,10 @@ namespace DotNext.Reflection
         /// <param name="member">Callable member.</param>
         /// <returns>Allocated list of arguments.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static A ArgList<M, A>(this IMember<M, Procedure<A>> member)
-			where M: MemberInfo
-			where A : struct
-			=> member.Invoker.ArgList();
+        public static A ArgList<M, A>(this IMember<M, Procedure<A>> member)
+            where M : MemberInfo
+            where A : struct
+            => member.Invoker.ArgList();
 
         #region Functions
 
@@ -165,9 +165,9 @@ namespace DotNext.Reflection
         /// <param name="member">Callable member.</param>
         /// <returns>Return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, R>(this IMember<M, Func<R>> member)
-			where M: MemberInfo
-			=> member.Invoker();
+        public static R Invoke<M, R>(this IMember<M, Func<R>> member)
+            where M : MemberInfo
+            => member.Invoker();
 
         /// <summary>
         /// Invokes member as function.
@@ -179,9 +179,9 @@ namespace DotNext.Reflection
         /// <param name="arg">The first function argument.</param>
         /// <returns>Return value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, P, R>(this IMember<M, Func<P, R>> member, P arg)
-			where M: MemberInfo
-			=> member.Invoker(arg);
+        public static R Invoke<M, P, R>(this IMember<M, Func<P, R>> member, P arg)
+            where M : MemberInfo
+            => member.Invoker(arg);
 
         /// <summary>
         /// Invokes member as function.
@@ -195,9 +195,9 @@ namespace DotNext.Reflection
         /// <param name="arg2">The second function argument.</param>
         /// <returns>Return value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, P1, P2, R>(this IMember<M, Func<P1, P2, R>> member, P1 arg1, P2 arg2)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2);
+        public static R Invoke<M, P1, P2, R>(this IMember<M, Func<P1, P2, R>> member, P1 arg1, P2 arg2)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2);
 
         /// <summary>
         /// Invokes member as function.
@@ -213,9 +213,9 @@ namespace DotNext.Reflection
         /// <param name="arg3">The third function argument.</param>
         /// <returns>Return value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, P1, P2, P3, R>(this IMember<M, Func<P1, P2, P3, R>> member, P1 arg1, P2 arg2, P3 arg3)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3);
+        public static R Invoke<M, P1, P2, P3, R>(this IMember<M, Func<P1, P2, P3, R>> member, P1 arg1, P2 arg2, P3 arg3)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3);
 
         /// <summary>
         /// Invokes member as function.
@@ -233,9 +233,9 @@ namespace DotNext.Reflection
         /// <param name="arg4">The fourth function argument.</param>
         /// <returns>Return value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, P1, P2, P3, P4, R>(this IMember<M, Func<P1, P2, P3, P4, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4);
+        public static R Invoke<M, P1, P2, P3, P4, R>(this IMember<M, Func<P1, P2, P3, P4, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4);
 
         /// <summary>
         /// Invokes member as function.
@@ -255,9 +255,9 @@ namespace DotNext.Reflection
         /// <param name="arg5">The fifth function argument.</param>
         /// <returns>Return value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, P1, P2, P3, P4, P5, R>(this IMember<M, Func<P1, P2, P3, P4, P5, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4, arg5);
+        public static R Invoke<M, P1, P2, P3, P4, P5, R>(this IMember<M, Func<P1, P2, P3, P4, P5, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4, arg5);
 
         /// <summary>
         /// Invokes member as function.
@@ -279,9 +279,9 @@ namespace DotNext.Reflection
         /// <param name="arg6">The fifth function argument.</param>
         /// <returns>Return value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, P1, P2, P3, P4, P5, P6, R>(this IMember<M, Func<P1, P2, P3, P4, P5, P6, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6);
+        public static R Invoke<M, P1, P2, P3, P4, P5, P6, R>(this IMember<M, Func<P1, P2, P3, P4, P5, P6, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6);
 
         /// <summary>
         /// Invokes member as function.
@@ -305,9 +305,9 @@ namespace DotNext.Reflection
         /// <param name="arg7">The seventh function argument.</param>
         /// <returns>Return value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, P1, P2, P3, P4, P5, P6, P7, R>(this IMember<M, Func<P1, P2, P3, P4, P5, P6, P7, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+        public static R Invoke<M, P1, P2, P3, P4, P5, P6, P7, R>(this IMember<M, Func<P1, P2, P3, P4, P5, P6, P7, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 
         /// <summary>
         /// Invokes member as function.
@@ -333,9 +333,9 @@ namespace DotNext.Reflection
         /// <param name="arg8">The eighth function argument.</param>
         /// <returns>Return value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, P1, P2, P3, P4, P5, P6, P7, P8, R>(this IMember<M, Func<P1, P2, P3, P4, P5, P6, P7, P8, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+        public static R Invoke<M, P1, P2, P3, P4, P5, P6, P7, P8, R>(this IMember<M, Func<P1, P2, P3, P4, P5, P6, P7, P8, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 
         /// <summary>
         /// Invokes member as function.
@@ -363,9 +363,9 @@ namespace DotNext.Reflection
         /// <param name="arg9">The ninth function argument.</param>
         /// <returns>Return value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>(this IMember<M, Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+        public static R Invoke<M, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>(this IMember<M, Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
 
         /// <summary>
         /// Invokes member as function.
@@ -395,9 +395,9 @@ namespace DotNext.Reflection
         /// <param name="arg10">The tenth function argument.</param>
         /// <returns>Return value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static R Invoke<M, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>(this IMember<M, Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+        public static R Invoke<M, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>(this IMember<M, Func<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
         #endregion
 
         #region Actions
@@ -408,9 +408,9 @@ namespace DotNext.Reflection
         /// <typeparam name="M">The type of the member.</typeparam>
         /// <param name="member">Callable member.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M>(this IMember<M, Action> member)
-			where M: MemberInfo
-			=> member.Invoker();
+        public static void Invoke<M>(this IMember<M, Action> member)
+            where M : MemberInfo
+            => member.Invoker();
 
         /// <summary>
         /// Invokes member as procedure.
@@ -420,9 +420,9 @@ namespace DotNext.Reflection
         /// <param name="member">Callable member.</param>
         /// <param name="arg">The first procedure argument.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M, P>(this IMember<M, Action<P>> member, P arg)
-			where M: MemberInfo
-			=> member.Invoker(arg);
+        public static void Invoke<M, P>(this IMember<M, Action<P>> member, P arg)
+            where M : MemberInfo
+            => member.Invoker(arg);
 
         /// <summary>
         /// Invokes member as procedure.
@@ -434,9 +434,9 @@ namespace DotNext.Reflection
         /// <param name="arg1">The first procedure argument.</param>
         /// <param name="arg2">The second procedure argument.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M, P1, P2>(this IMember<M, Action<P1, P2>> member, P1 arg1, P2 arg2)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2);
+        public static void Invoke<M, P1, P2>(this IMember<M, Action<P1, P2>> member, P1 arg1, P2 arg2)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2);
 
         /// <summary>
         /// Invokes member as procedure.
@@ -450,9 +450,9 @@ namespace DotNext.Reflection
         /// <param name="arg2">The second procedure argument.</param>
         /// <param name="arg3">The third procedure argument.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M, P1, P2, P3>(this IMember<M, Action<P1, P2, P3>> member, P1 arg1, P2 arg2, P3 arg3)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3);
+        public static void Invoke<M, P1, P2, P3>(this IMember<M, Action<P1, P2, P3>> member, P1 arg1, P2 arg2, P3 arg3)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3);
 
         /// <summary>
         /// Invokes member as procedure.
@@ -468,9 +468,9 @@ namespace DotNext.Reflection
         /// <param name="arg3">The third procedure argument.</param>
         /// <param name="arg4">The fourth procedure argument.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M, P1, P2, P3, P4>(this IMember<M, Action<P1, P2, P3, P4>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4);
+        public static void Invoke<M, P1, P2, P3, P4>(this IMember<M, Action<P1, P2, P3, P4>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4);
 
         /// <summary>
         /// Invokes member as procedure.
@@ -488,9 +488,9 @@ namespace DotNext.Reflection
         /// <param name="arg4">The fourth procedure argument.</param>
         /// <param name="arg5">The fifth procedure argument.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M, P1, P2, P3, P4, P5>(this IMember<M, Action<P1, P2, P3, P4, P5>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4, arg5);
+        public static void Invoke<M, P1, P2, P3, P4, P5>(this IMember<M, Action<P1, P2, P3, P4, P5>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4, arg5);
 
         /// <summary>
         /// Invokes member as procedure.
@@ -510,9 +510,9 @@ namespace DotNext.Reflection
         /// <param name="arg5">The fifth procedure argument.</param>
         /// <param name="arg6">The sixth procedure argument.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M, P1, P2, P3, P4, P5, P6>(this IMember<M, Action<P1, P2, P3, P4, P5, P6>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6);
+        public static void Invoke<M, P1, P2, P3, P4, P5, P6>(this IMember<M, Action<P1, P2, P3, P4, P5, P6>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6);
 
         /// <summary>
         /// Invokes member as procedure.
@@ -534,9 +534,9 @@ namespace DotNext.Reflection
         /// <param name="arg6">The sixth procedure argument.</param>
         /// <param name="arg7">The seventh procedure argument.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M, P1, P2, P3, P4, P5, P6, P7>(this IMember<M, Action<P1, P2, P3, P4, P5, P6, P7>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+        public static void Invoke<M, P1, P2, P3, P4, P5, P6, P7>(this IMember<M, Action<P1, P2, P3, P4, P5, P6, P7>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 
         /// <summary>
         /// Invokes member as procedure.
@@ -560,9 +560,9 @@ namespace DotNext.Reflection
         /// <param name="arg7">The seventh procedure argument.</param>
         /// <param name="arg8">The eighth procedure argument.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M, P1, P2, P3, P4, P5, P6, P7, P8>(this IMember<M, Action<P1, P2, P3, P4, P5, P6, P7, P8>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+        public static void Invoke<M, P1, P2, P3, P4, P5, P6, P7, P8>(this IMember<M, Action<P1, P2, P3, P4, P5, P6, P7, P8>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 
         /// <summary>
         /// Invokes member as procedure.
@@ -588,9 +588,9 @@ namespace DotNext.Reflection
         /// <param name="arg8">The eighth procedure argument.</param>
         /// <param name="arg9">The ninth procedure argument.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M, P1, P2, P3, P4, P5, P6, P7, P8, P9>(this IMember<M, Action<P1, P2, P3, P4, P5, P6, P7, P8, P9>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+        public static void Invoke<M, P1, P2, P3, P4, P5, P6, P7, P8, P9>(this IMember<M, Action<P1, P2, P3, P4, P5, P6, P7, P8, P9>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
 
         /// <summary>
         /// Invokes member as procedure.
@@ -618,9 +618,9 @@ namespace DotNext.Reflection
         /// <param name="arg9">The ninth procedure argument.</param>
         /// <param name="arg10">The tenth procedure argument.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(this IMember<M, Action<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10)
-			where M: MemberInfo
-			=> member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+        public static void Invoke<M, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(this IMember<M, Action<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>> member, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10)
+            where M : MemberInfo
+            => member.Invoker(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
         #endregion
 
         #region Members
@@ -633,9 +633,9 @@ namespace DotNext.Reflection
         /// <param name="member">The property or field.</param>
         /// <returns>The member value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static V Invoke<M, V>(this IMember<M, MemberGetter<V>> member)
-			where M: MemberInfo
-			=> member.Invoker();
+        public static V Invoke<M, V>(this IMember<M, MemberGetter<V>> member)
+            where M : MemberInfo
+            => member.Invoker();
 
         /// <summary>
         /// Gets property or field value.
@@ -647,9 +647,9 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property or field value will be returned.</param>
         /// <returns>The member value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static V Invoke<M, T, V>(this IMember<M, MemberGetter<T, V>> member, in T @this)
-			where M: MemberInfo
-			=> member.Invoker(@this);
+        public static V Invoke<M, T, V>(this IMember<M, MemberGetter<T, V>> member, in T @this)
+            where M : MemberInfo
+            => member.Invoker(@this);
 
         /// <summary>
         /// Sets property or field.
@@ -659,9 +659,9 @@ namespace DotNext.Reflection
         /// <param name="member">The property or field.</param>
         /// <param name="value">The new value of the field or property.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M, V>(this IMember<M, MemberSetter<V>> member, V value)
-			where M: MemberInfo
-			=> member.Invoker(value);
+        public static void Invoke<M, V>(this IMember<M, MemberSetter<V>> member, V value)
+            where M : MemberInfo
+            => member.Invoker(value);
 
         /// <summary>
         /// Sets property or field.
@@ -673,10 +673,10 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property or field value will be set.</param>
         /// <param name="value">The new value of the field or property.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void Invoke<M, T, V>(this IMember<M, MemberSetter<T, V>> member, in T @this, V value)
-			where M: MemberInfo
-			=> member.Invoker(@this, value);
+        public static void Invoke<M, T, V>(this IMember<M, MemberSetter<T, V>> member, in T @this, V value)
+            where M : MemberInfo
+            => member.Invoker(@this, value);
 
-		#endregion
-	}
+        #endregion
+    }
 }

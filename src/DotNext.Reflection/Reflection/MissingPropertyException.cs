@@ -2,26 +2,26 @@
 
 namespace DotNext.Reflection
 {
-	/// <summary>
-	/// Indicates that requested property doesn't exist.
-	/// </summary>
-	public sealed class MissingPropertyException : ConstraintViolationException
-	{
-		/// <summary>
-		/// Initializes a new exception indicating that requested property doesn't exist.
-		/// </summary>
-		/// <param name="declaringType">The inspected type.</param>
-		/// <param name="propertyName">The name of the missing property.</param>
-		/// <param name="propertyType">The type of the missing property.</param>
-		public MissingPropertyException(Type declaringType, string propertyName, Type propertyType)
-			: base(declaringType, ExceptionMessages.MissingProperty(propertyName, propertyType, declaringType))
-		{
-			PropertyType = propertyType;
-			PropertyName = propertyName;
-		}
+    /// <summary>
+    /// Indicates that requested property doesn't exist.
+    /// </summary>
+    public sealed class MissingPropertyException : ConstraintViolationException
+    {
+        /// <summary>
+        /// Initializes a new exception indicating that requested property doesn't exist.
+        /// </summary>
+        /// <param name="declaringType">The inspected type.</param>
+        /// <param name="propertyName">The name of the missing property.</param>
+        /// <param name="propertyType">The type of the missing property.</param>
+        public MissingPropertyException(Type declaringType, string propertyName, Type propertyType)
+            : base(declaringType, ExceptionMessages.MissingProperty(propertyName, propertyType, declaringType))
+        {
+            PropertyType = propertyType;
+            PropertyName = propertyName;
+        }
 
-		internal static MissingPropertyException Create<T, P>(string propertyName)
-			=> new MissingPropertyException(typeof(T), propertyName, typeof(P));
+        internal static MissingPropertyException Create<T, P>(string propertyName)
+            => new MissingPropertyException(typeof(T), propertyName, typeof(P));
 
         /// <summary>
         /// Gets type of the missing property.
@@ -32,5 +32,5 @@ namespace DotNext.Reflection
         /// Gets name of the missing property.
         /// </summary>
 		public string PropertyName { get; }
-	}
+    }
 }

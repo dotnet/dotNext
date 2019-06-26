@@ -159,9 +159,9 @@ namespace DotNext.Threading.Tasks
         /// <returns>A task that represents the completion of one of the supplied tasks. The return task's <see cref="ValueTask{TResult}.Result"/> is the task that completed.</returns>
         public static ValueTask<ValueTask> WhenAny(ValueTask task1, ValueTask task2)
         {
-            if(task1.IsCompleted)
+            if (task1.IsCompleted)
                 return new ValueTask<ValueTask>(task1);
-            else if(task2.IsCompleted)
+            else if (task2.IsCompleted)
                 return new ValueTask<ValueTask>(task2);
             var whenAny = new ValueTaskCompletionSource2(task1, task2);
             task1.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteFirst);
@@ -181,9 +181,9 @@ namespace DotNext.Threading.Tasks
         /// <returns>A task that represents the completion of one of the supplied tasks. The return task's <see cref="ValueTask{TResult}.Result"/> is the task that completed.</returns>
         public static ValueTask<ValueTask<R>> WhenAny<R>(ValueTask<R> task1, ValueTask<R> task2)
         {
-            if(task1.IsCompleted)
+            if (task1.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task1);
-            else if(task2.IsCompleted)
+            else if (task2.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task2);
             var whenAny = new ValueTaskCompletionSource2<R>(task1, task2);
             task1.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteFirst);
@@ -203,11 +203,11 @@ namespace DotNext.Threading.Tasks
         /// <returns>A task that represents the completion of one of the supplied tasks. The return task's <see cref="ValueTask{TResult}.Result"/> is the task that completed.</returns>
         public static ValueTask<ValueTask> WhenAny(ValueTask task1, ValueTask task2, ValueTask task3)
         {
-            if(task1.IsCompleted)
+            if (task1.IsCompleted)
                 return new ValueTask<ValueTask>(task1);
-            else if(task2.IsCompleted)
+            else if (task2.IsCompleted)
                 return new ValueTask<ValueTask>(task2);
-            else if(task3.IsCompleted)
+            else if (task3.IsCompleted)
                 return new ValueTask<ValueTask>(task3);
             var whenAny = new ValueTaskCompletionSource3(task1, task2, task3);
             task1.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteFirst);
@@ -229,11 +229,11 @@ namespace DotNext.Threading.Tasks
         /// <returns>A task that represents the completion of one of the supplied tasks. The return task's <see cref="ValueTask{TResult}.Result"/> is the task that completed.</returns>
         public static ValueTask<ValueTask<R>> WhenAny<R>(ValueTask<R> task1, ValueTask<R> task2, ValueTask<R> task3)
         {
-            if(task1.IsCompleted)
+            if (task1.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task1);
-            else if(task2.IsCompleted)
+            else if (task2.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task2);
-            else if(task3.IsCompleted)
+            else if (task3.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task3);
             var whenAny = new ValueTaskCompletionSource3<R>(task1, task2, task3);
             task1.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteFirst);
@@ -255,13 +255,13 @@ namespace DotNext.Threading.Tasks
         /// <returns>A task that represents the completion of one of the supplied tasks. The return task's <see cref="ValueTask{TResult}.Result"/> is the task that completed.</returns>
         public static ValueTask<ValueTask> WhenAny(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4)
         {
-            if(task1.IsCompleted)
+            if (task1.IsCompleted)
                 return new ValueTask<ValueTask>(task1);
-            else if(task2.IsCompleted)
+            else if (task2.IsCompleted)
                 return new ValueTask<ValueTask>(task2);
-            else if(task3.IsCompleted)
+            else if (task3.IsCompleted)
                 return new ValueTask<ValueTask>(task3);
-            else if(task4.IsCompleted)
+            else if (task4.IsCompleted)
                 return new ValueTask<ValueTask>(task4);
             var whenAny = new ValueTaskCompletionSource4(task1, task2, task3, task4);
             task1.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteFirst);
@@ -285,13 +285,13 @@ namespace DotNext.Threading.Tasks
         /// <returns>A task that represents the completion of one of the supplied tasks. The return task's <see cref="ValueTask{TResult}.Result"/> is the task that completed.</returns>
         public static ValueTask<ValueTask<R>> WhenAny<R>(ValueTask<R> task1, ValueTask<R> task2, ValueTask<R> task3, ValueTask<R> task4)
         {
-            if(task1.IsCompleted)
+            if (task1.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task1);
-            else if(task2.IsCompleted)
+            else if (task2.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task2);
-            else if(task3.IsCompleted)
+            else if (task3.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task3);
-            else if(task4.IsCompleted)
+            else if (task4.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task4);
             var whenAny = new ValueTaskCompletionSource4<R>(task1, task2, task3, task4);
             task1.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteFirst);
@@ -315,15 +315,15 @@ namespace DotNext.Threading.Tasks
         /// <returns>A task that represents the completion of one of the supplied tasks. The return task's <see cref="ValueTask{TResult}.Result"/> is the task that completed.</returns>
         public static ValueTask<ValueTask> WhenAny(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4, ValueTask task5)
         {
-            if(task1.IsCompleted)
+            if (task1.IsCompleted)
                 return new ValueTask<ValueTask>(task1);
-            else if(task2.IsCompleted)
+            else if (task2.IsCompleted)
                 return new ValueTask<ValueTask>(task2);
-            else if(task3.IsCompleted)
+            else if (task3.IsCompleted)
                 return new ValueTask<ValueTask>(task3);
-            else if(task4.IsCompleted)
+            else if (task4.IsCompleted)
                 return new ValueTask<ValueTask>(task4);
-            else if(task5.IsCompleted)
+            else if (task5.IsCompleted)
                 return new ValueTask<ValueTask>(task5);
             var whenAny = new ValueTaskCompletionSource5(task1, task2, task3, task4, task5);
             task1.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteFirst);
@@ -349,15 +349,15 @@ namespace DotNext.Threading.Tasks
         /// <returns>A task that represents the completion of one of the supplied tasks. The return task's <see cref="ValueTask{TResult}.Result"/> is the task that completed.</returns>
         public static ValueTask<ValueTask<R>> WhenAny<R>(ValueTask<R> task1, ValueTask<R> task2, ValueTask<R> task3, ValueTask<R> task4, ValueTask<R> task5)
         {
-            if(task1.IsCompleted)
+            if (task1.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task1);
-            else if(task2.IsCompleted)
+            else if (task2.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task2);
-            else if(task3.IsCompleted)
+            else if (task3.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task3);
-            else if(task4.IsCompleted)
+            else if (task4.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task4);
-            else if(task5.IsCompleted)
+            else if (task5.IsCompleted)
                 return new ValueTask<ValueTask<R>>(task5);
             var whenAny = new ValueTaskCompletionSource5<R>(task1, task2, task3, task4, task5);
             task1.ConfigureAwait(false).GetAwaiter().OnCompleted(whenAny.CompleteFirst);

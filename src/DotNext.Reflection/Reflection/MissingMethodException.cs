@@ -1,13 +1,13 @@
 using System;
-using System.Reflection;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace DotNext.Reflection
 {
     /// <summary>
 	/// Indicates that requested method doesn't exist.
 	/// </summary>
-    public sealed class MissingMethodException: ConstraintViolationException
+    public sealed class MissingMethodException : ConstraintViolationException
     {
         /// <summary>
         /// Initializes a new exception indicating that requested method doesn't exist.
@@ -40,7 +40,7 @@ namespace DotNext.Reflection
         public IReadOnlyList<Type> Parameters { get; }
 
         internal static MissingMethodException Create<T, D>(string methodName)
-            where D: Delegate
+            where D : Delegate
         {
             var (parameters, returnType) = DelegateType.GetInvokeMethod<D>().Decompose(method => method.GetParameterTypes(), method => method.ReturnType);
             return new MissingMethodException(typeof(T), methodName, returnType, parameters);

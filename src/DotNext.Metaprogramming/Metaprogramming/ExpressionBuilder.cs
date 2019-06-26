@@ -71,7 +71,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">The expression has been constructed already.</exception>
         public void End()
         {
-            if(currentScope is null)
+            if (currentScope is null)
                 throw new InvalidOperationException();
             currentScope.AddStatement(Build());
             Cleanup();

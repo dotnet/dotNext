@@ -92,7 +92,7 @@ namespace DotNext.Linq.Expressions
         {
             get
             {
-                switch(kind)
+                switch (kind)
                 {
                     case Kind.PlainString:
                         return typeof(string);
@@ -141,7 +141,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
-            switch(kind)
+            switch (kind)
             {
                 case Kind.PlainString:
                     return MakePlainString();

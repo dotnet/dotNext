@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Resources;
 using System.Reflection;
+using System.Resources;
 
 namespace DotNext
 {

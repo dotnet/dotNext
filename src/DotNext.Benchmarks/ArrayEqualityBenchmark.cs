@@ -7,7 +7,7 @@ using System;
 namespace DotNext.Benchmarks
 {
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
-	[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class ArrayEqualityBenchmark
     {
         private static readonly Guid[] ShortGuidArray1 = new Guid[10];
@@ -18,9 +18,9 @@ namespace DotNext.Benchmarks
 
         static ArrayEqualityBenchmark()
         {
-            for(var i = default(long); i < ShortGuidArray1.LongLength; i++)
+            for (var i = default(long); i < ShortGuidArray1.LongLength; i++)
                 ShortGuidArray1[i] = ShortGuidArray2[i] = Guid.NewGuid();
-            for(var i = default(long); i < LongGuidArray1.LongLength; i++)
+            for (var i = default(long); i < LongGuidArray1.LongLength; i++)
                 LongGuidArray1[i] = LongGuidArray2[i] = Guid.NewGuid();
         }
 
@@ -39,8 +39,8 @@ namespace DotNext.Benchmarks
         [Benchmark]
         public static void ShortGuidArrayForEachEqual()
         {
-            for(var i = default(long); i < ShortGuidArray1.LongLength; i++)
-                if(ShortGuidArray1[i] != ShortGuidArray2[i])
+            for (var i = default(long); i < ShortGuidArray1.LongLength; i++)
+                if (ShortGuidArray1[i] != ShortGuidArray2[i])
                     return;
         }
 
@@ -59,8 +59,8 @@ namespace DotNext.Benchmarks
         [Benchmark]
         public static void LongGuidArrayForEachEqual()
         {
-            for(var i = default(long); i < LongGuidArray1.LongLength; i++)
-                if(LongGuidArray1[i] != LongGuidArray2[i])
+            for (var i = default(long); i < LongGuidArray1.LongLength; i++)
+                if (LongGuidArray1[i] != LongGuidArray2[i])
                     return;
         }
     }

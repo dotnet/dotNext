@@ -25,11 +25,11 @@ namespace DotNext.Linq.Expressions
         public AwaitExpression(Expression expression, bool configureAwait = false)
         {
             const BindingFlags PublicInstanceMethod = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
-            if(configureAwait)
+            if (configureAwait)
             {
-                var configureMethod = expression.Type.GetMethod(nameof(Task.ConfigureAwait), PublicInstanceMethod, Type.DefaultBinder, new [] { typeof(bool) }, Array.Empty<ParameterModifier>());
-                if(!(configureMethod is null))
-                    expression = expression.Call(configureMethod, false.Const()); 
+                var configureMethod = expression.Type.GetMethod(nameof(Task.ConfigureAwait), PublicInstanceMethod, Type.DefaultBinder, new[] { typeof(bool) }, Array.Empty<ParameterModifier>());
+                if (!(configureMethod is null))
+                    expression = expression.Call(configureMethod, false.Const());
             }
             //expression type must have type with GetAwaiter() method
             var getAwaiter = expression.Type.GetMethod(nameof(Task.GetAwaiter), PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), Array.Empty<ParameterModifier>());

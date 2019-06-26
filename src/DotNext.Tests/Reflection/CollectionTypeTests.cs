@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext.Reflection
 {
-    public sealed class CollectionTypeTests: Assert
+    public sealed class CollectionTypeTests : Assert
     {
         [Fact]
         public static void GetItemTypeTest()

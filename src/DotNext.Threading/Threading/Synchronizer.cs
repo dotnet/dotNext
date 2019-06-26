@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -40,13 +41,11 @@ namespace DotNext.Threading
         private static async Task<bool> Wait(WaitNode node, TimeSpan timeout, CancellationToken token)
         {
             using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
-            {
                 if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
                 {
                     tokenSource.Cancel();   //ensure that Delay task is cancelled
                     return true;
                 }
-            }
             token.ThrowIfCancellationRequested();
             return false;
         }
@@ -56,11 +55,8 @@ namespace DotNext.Threading
             using (var tracker = new CancelableTaskCompletionSource<bool>(ref token))
                 if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, tracker.Task).ConfigureAwait(false)))
                     return true;
-                else
-                {
-                    token.ThrowIfCancellationRequested();
-                    return false;
-                }
+            token.ThrowIfCancellationRequested();
+            return false;
         }
 
         /// <summary>
@@ -76,7 +72,7 @@ namespace DotNext.Threading
         public Task<bool> Wait(TimeSpan timeout, CancellationToken token)
         {
             ThrowIfDisposed();
-            if (timeout < TimeSpan.Zero)
+            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             else if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
@@ -84,7 +80,7 @@ namespace DotNext.Threading
                 return CompletedTask<bool, BooleanConst.True>.Task;
             else if (timeout == TimeSpan.Zero)   //if timeout is zero fail fast
                 return CompletedTask<bool, BooleanConst.False>.Task;
-            else if (timeout == TimeSpan.MaxValue)
+            else if (timeout == InfiniteTimeSpan)
                 return token.CanBeCanceled ? Wait(node, token) : node.Task;
             else
                 return Wait(node, timeout, token);

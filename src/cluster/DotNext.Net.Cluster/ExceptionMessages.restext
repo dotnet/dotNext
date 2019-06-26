@@ -1,0 +1,4 @@
+IsNotLeader=Replication message cannot be sent by follower or candidate node
+ReplicationRejected=Cluster member rejects replication
+CannotRemoveLocalNode=Local node cannot be removed
+AuditTrailAlreadyDefined=Audit trail is already defined

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Resources;
 using System.Reflection;
+using System.Resources;
 
 namespace DotNext
 {
@@ -43,7 +43,7 @@ namespace DotNext
         internal static string MissingProperty(string propertyName, Type propertyType, Type declaringType) => string.Format(Resources.GetString("MissingProperty"), propertyName, propertyType.FullName, declaringType.FullName);
 
         internal static string ExtensionMethodExpected(MethodBase method) => string.Format(Resources.GetString("ExtensionMethodExpected"), method.Name);
-    
+
         internal static string ConceptTypeInvalidAttribution<A>(Type conceptType) where A : Attribute => string.Format(Resources.GetString("ConceptTypeInvalidAttribution"), conceptType.FullName, typeof(A).FullName);
 
         internal static string StaticCtorDetected => Resources.GetString("StaticCtorDetected");

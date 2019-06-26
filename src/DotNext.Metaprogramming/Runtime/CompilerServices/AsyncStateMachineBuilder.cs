@@ -473,7 +473,7 @@ namespace DotNext.Runtime.CompilerServices
             MemberExpression[] slots;
             using (var builder = new ValueTupleBuilder())
             {
-                foreach(var v in variables)
+                foreach (var v in variables)
                     builder.Add(v.Type);
                 slots = builder.Build(MakeStateHolder, out _);
             }

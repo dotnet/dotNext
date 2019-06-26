@@ -27,11 +27,11 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if the specified type is immutable value type; otherwise, <see langword="false"/>.</returns>
         public static bool IsImmutable(this Type type)
         {
-            if(type.IsPrimitive)
+            if (type.IsPrimitive)
                 return true;
-            else if(type.IsValueType)
-                foreach(var attribute in type.GetCustomAttributesData())
-                    if(attribute.AttributeType.FullName == IsReadOnlyAttributeName)
+            else if (type.IsValueType)
+                foreach (var attribute in type.GetCustomAttributesData())
+                    if (attribute.AttributeType.FullName == IsReadOnlyAttributeName)
                         return true;
             return false;
         }
@@ -45,8 +45,8 @@ namespace DotNext.Reflection
         {
             if (type.IsGenericType || type.IsGenericTypeDefinition || type.IsGenericParameter)
             {
-                foreach(var attribute in type.GetCustomAttributesData())
-                    if(attribute.AttributeType.FullName == IsUnmanagedAttributeName)
+                foreach (var attribute in type.GetCustomAttributesData())
+                    if (attribute.AttributeType.FullName == IsUnmanagedAttributeName)
                         return true;
                 return false;
             }

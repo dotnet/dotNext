@@ -4,14 +4,14 @@ using BenchmarkDotNet.Order;
 using System.Reflection;
 
 namespace DotNext.Reflection
-{   
+{
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
-	[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class TryParseReflectionBenchmark
     {
         private delegate bool TryParseDelegate(string text, out decimal result);
 
-        private static readonly MethodInfo ReflectedMethod = typeof(decimal).GetMethod(nameof(decimal.TryParse), new[]{typeof(string), typeof(decimal).MakeByRefType()});
+        private static readonly MethodInfo ReflectedMethod = typeof(decimal).GetMethod(nameof(decimal.TryParse), new[] { typeof(string), typeof(decimal).MakeByRefType() });
         private static readonly TryParseDelegate StronglyTyped = Type<decimal>.Method.Get<TryParseDelegate>(nameof(decimal.TryParse), MethodLookup.Static);
 
         private static readonly Function<(string text, Ref<decimal> result), bool> StronglyTypedSpecial = Type<decimal>.GetStaticMethod<(string, Ref<decimal>), bool>(nameof(decimal.TryParse));
@@ -31,7 +31,7 @@ namespace DotNext.Reflection
         [Benchmark]
         public void UseReflection()
         {
-            ReflectedMethod.Invoke(null, new object[]{StringValue, decimal.Zero});
+            ReflectedMethod.Invoke(null, new object[] { StringValue, decimal.Zero });
         }
 
         [Benchmark]

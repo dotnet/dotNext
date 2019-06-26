@@ -341,7 +341,7 @@ namespace DotNext.Reflection
                     .FirstOrDefault(candidate =>
                         candidate.Name == methodName && candidate.SignatureEquals(parameters) &&
                         candidate.ReturnType == returnType);
-            return targetMethod is null ? null : new Method<D>(targetMethod, arglist, new[] {input});
+            return targetMethod is null ? null : new Method<D>(targetMethod, arglist, new[] { input });
         }
 
         private static Type NonRefType(Type type) => type.IsByRef ? type.GetElementType() : type;
@@ -549,7 +549,7 @@ namespace DotNext.Reflection
         internal static Method<D> GetOrCreate<T>(string methodName, bool nonPublic, MethodLookup lookup)
         {
             MemberCache<MethodInfo, Method<D>> cache;
-            switch(lookup)
+            switch (lookup)
             {
                 case MethodLookup.Instance:
                     cache = Cache.Of<Cache>(typeof(T));

@@ -104,7 +104,7 @@ namespace DotNext
                 //collect all fields in the hierarchy
                 Expression expr = type.IsClass ? Expression.ReferenceNotEqual(y, Expression.Constant(null, y.Type)) : null;
                 foreach (var field in GetAllFields(type))
-                    if(IsIncluded(field))
+                    if (IsIncluded(field))
                     {
                         var fieldX = Expression.Field(x, field);
                         var fieldY = Expression.Field(y, field);
@@ -119,7 +119,7 @@ namespace DotNext
                             condition = Expression.Call(typeof(object).GetMethod(nameof(Equals), new[] { typeof(object), typeof(object) }), fieldX, fieldY);
                         expr = expr is null ? condition : Expression.AndAlso(expr, condition);
                     }
-                if(type.IsClass)
+                if (type.IsClass)
                     expr = Expression.OrElse(Expression.ReferenceEqual(x, y), expr);
                 return Expression.Lambda<Func<T, T, bool>>(expr, false, x, y).Compile();
             }
@@ -143,7 +143,7 @@ namespace DotNext
                 ICollection<Expression> expressions = new LinkedList<Expression>();
                 //collect all fields in the hierarchy
                 foreach (var field in GetAllFields(type))
-                    if(IsIncluded(field))
+                    if (IsIncluded(field))
                     {
                         expr = Expression.Field(inputParam, field);
                         if (field.FieldType.IsPointer)
@@ -186,7 +186,7 @@ namespace DotNext
         /// Generates implementation of equality comparer.
         /// </summary>
         /// <returns>The generated equality comparer.</returns>
-        public IEqualityComparer<T> Build() 
+        public IEqualityComparer<T> Build()
             => typeof(T).IsPrimitive ? (IEqualityComparer<T>)EqualityComparer<T>.Default : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
     }
 }

@@ -234,7 +234,7 @@ namespace DotNext.Metaprogramming
 
         IEnumerator<ParameterExpression> IEnumerable<ParameterExpression>.GetEnumerator() => GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator(); 
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         void IDisposable.Dispose()
         {

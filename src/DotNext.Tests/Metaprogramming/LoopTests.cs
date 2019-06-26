@@ -8,7 +8,7 @@ namespace DotNext.Metaprogramming
     using static CodeGenerator;
     using U = Linq.Expressions.UniversalExpression;
 
-    public sealed class LoopTests: Assert
+    public sealed class LoopTests : Assert
     {
         public struct CustomEnumerator
         {
@@ -16,7 +16,7 @@ namespace DotNext.Metaprogramming
 
             public bool MoveNext()
             {
-                if(counter < 4)
+                if (counter < 4)
                 {
                     counter += 1;
                     return true;

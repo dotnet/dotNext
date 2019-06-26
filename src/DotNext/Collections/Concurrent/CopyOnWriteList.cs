@@ -165,11 +165,63 @@ namespace DotNext.Collections.Concurrent
         /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         public void CopyTo(T[] array, int arrayIndex) => backingStore.CopyTo(array, arrayIndex);
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private T[] ReplaceStore(T[] newStore)
+        {
+            var oldStore = backingStore;
+            backingStore = newStore;
+            return oldStore;
+        }
+
+        /// <summary>
+        /// Replaces all items in this list with given array.
+        /// </summary>
+        /// <param name="array">The array of new items.</param>
+        public void Set(ReadOnlySpan<T> array) => ReplaceStore(array.ToArray());
+
+        /// <summary>
+        /// Replaces all items in this list with new items.
+        /// </summary>
+        /// <typeparam name="G">The type of source items.</typeparam>
+        /// <param name="items">The source items to be converted and placed into this list.</param>
+        /// <param name="converter">The convert of source items.</param>
+        public void Set<G>(ICollection<G> items, Converter<G, T> converter)
+        {
+            if (items.Count == 0)
+            {
+                ReplaceStore(Array.Empty<T>());
+                return;
+            }
+            var array = new T[items.Count];
+            var index = 0L;
+            foreach (var item in items)
+                array[index++] = converter(item);
+            ReplaceStore(array);
+        }
+
         /// <summary>
         /// Removes all items from this list.
         /// </summary>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Clear() => backingStore = Array.Empty<T>();
+        public void Clear()
+        {
+            var oldStore = ReplaceStore(Array.Empty<T>());
+            Array.Clear(oldStore, 0, oldStore.Length);  //help GC
+        }
+
+        /// <summary>
+        /// Removes all items from this list and performs cleanup operation for each item.
+        /// </summary>
+        /// <param name="cleaner">The action used to clean item from this list.</param>
+        public void Clear(Action<T> cleaner)
+        {
+            var oldStore = ReplaceStore(Array.Empty<T>());
+
+            oldStore.ForEach((long index, ref T item) =>
+            {
+                cleaner(item);
+                item = default;
+            });
+        }
 
         /// <summary>
         /// Removes the element at the specified index of this list.
@@ -226,6 +278,15 @@ namespace DotNext.Collections.Concurrent
             backingStore = backingStore.RemoveAll(match, out var count);
             return count;
         }
+
+        /// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
+        /// <param name="callback">The delegate that is used to accept removed items.</param>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void RemoveAll(Predicate<T> match, Action<T> callback)
+            => backingStore = backingStore.RemoveAll(match, callback);
 
         void IList<T>.Insert(int index, T item) => Insert(index, item);
 

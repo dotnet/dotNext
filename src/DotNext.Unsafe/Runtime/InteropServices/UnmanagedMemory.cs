@@ -1,712 +1,409 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices
 {
-    using Reflection;
-
     /// <summary>
-    /// Represents a block of allocated unmanaged memory of the specified size.
+    /// Represents unstructured unmanaged memory.
     /// </summary>
-    public unsafe struct UnmanagedMemory : IUnmanagedMemory, IDisposable, IEquatable<UnmanagedMemory>, IEnumerable<byte>
+    public sealed class UnmanagedMemory : UnmanagedMemoryHandle
     {
-        /// <summary>
-		/// Represents GC-friendly reference to the unmanaged memory.
-		/// </summary>
-		/// <remarks>
-		/// Unmanaged memory allocated using handle can be reclaimed by GC automatically.
-		/// </remarks>
-        public sealed class Handle : UnmanagedMemoryHandle
-        {
-            private Handle(UnmanagedMemory memory, bool ownsHandle)
-                : base(memory, ownsHandle)
-            {
-                Size = memory.Size;
-            }
-
-            /// <summary>
-            /// Allocates a new unmanaged memory of the given size and associate it with handle.
-            /// </summary>
-            /// <remarks>
-            /// The handle instantiated with this constructor has ownership over unmanaged memory.
-            /// Unmanaged memory will be released when Garbage Collector reclaims instance of this handle
-            /// or <see cref="Dispose()"/> will be called directly.
-            /// </remarks>
-            /// <param name="size">The number of bytes to be allocated in the unmanaged memory.</param>
-            /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
-            public Handle(long size, bool zeroMem = true)
-                : this(new UnmanagedMemory(size, zeroMem), true)
-            {
-
-            }
-
-            /// <summary>
-            /// Initializes a new handle for the given unmanaged memory.
-            /// </summary>
-            /// <remarks>
-            /// The handle instantiated with this constructor doesn't have ownership over unmanaged memory.
-            /// </remarks>
-            /// <param name="memory">Already allocated memory.</param>
-            public Handle(UnmanagedMemory memory)
-                : this(memory, false)
-            {
-            }
-
-            /// <summary>
-            /// Releases referenced unmanaged memory.
-            /// </summary>
-            /// <returns><see langword="true"/>, if this handle is valid; otherwise, <see langword="false"/>.</returns>
-			protected override bool ReleaseHandle() => Release(handle);
-
-            private protected override UnmanagedMemoryHandle Clone() => new Handle(Conversion<Handle, UnmanagedMemory>.Converter(this).Copy(), true);
-
-            /// <summary>
-            /// Gets size of allocated unmanaged memory, in bytes.
-            /// </summary>
-            public override long Size { get; }
-
-            /// <summary>
-			/// Converts handle into unmanaged memory structure.
-			/// </summary>
-			/// <param name="handle">Handle to convert.</param>
-			/// <exception cref="ObjectDisposedException">Handle is closed.</exception>
-            public static implicit operator UnmanagedMemory(Handle handle)
-                => handle is null || handle.IsClosed ? default : new UnmanagedMemory(handle.handle, handle.Size);
-        }
-
-        private readonly long size;
+        private long size;
 
         /// <summary>
-        /// Represents address of the allocated memory.
+        /// Allocates the block of unmanaged memory.
         /// </summary>
-        [SuppressMessage("Design", "CA1051", Justification = "It is by-design due to nature of this type")]
-        public readonly IntPtr Address;
+        /// <param name="size">The size of unmanaged memory to be allocated, in bytes.</param>
+        /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="size"/> is less than 1.</exception>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to satisfy the request.</exception>
+        public UnmanagedMemory(long size, bool zeroMem = true) : base(size, zeroMem) => this.size = size;
 
-        internal UnmanagedMemory(IntPtr address, long size)
+        /// <summary>
+        /// Gets size of allocated unmanaged memory, in bytes.
+        /// </summary>
+        public override long Size => size;
+
+        /// <summary>
+        /// Resizes a block of memory represented by this instance.
+        /// </summary>
+        /// <param name="size">The new number of bytes in the unmanaged array.</param>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public void Reallocate(long size)
         {
-            Address = address;
+            if(IsClosed)
+                throw HandleClosed();
+            if(IsInvalid)
+                return;
+            handle = Marshal.ReAllocHGlobal(handle, new IntPtr(size));
+            var diff = size - this.size;
+            if(diff > 0L)
+                GC.AddMemoryPressure(diff);
+            else if(diff < 0L)
+                GC.RemoveMemoryPressure(diff & long.MaxValue);  //remove sign bit
             this.size = size;
         }
 
         /// <summary>
-        /// Allocates a new unmanaged memory.
-        /// </summary>
-        /// <param name="size">The number of bytes to be allocated.</param>
-        /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
-        public UnmanagedMemory(long size, bool zeroMem = true)
-        {
-            Address = Alloc(this.size = size, zeroMem);
-            GC.AddMemoryPressure(size);
-        }
-
-        /// <summary>
-        /// Indicates that the memory block is empty.
-        /// </summary>
-        public bool IsEmpty
-        {
-            get => Address == IntPtr.Zero || Size == 0L;
-        }
-
-        /// <summary>
-		/// Gets or sets byte in the memory at the specified zero-based offset.
-		/// </summary>
-		/// <param name="offset">Offset of the requested byte.</param>
-		/// <returns>The byte value from the memory.</returns>
-		/// <exception cref="NullPointerException">This memory is not allocated.</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Invalid offset.</exception>
-        public byte this[long offset]
-        {
-            get
-            {
-                if (Address == IntPtr.Zero)
-                    throw new NullPointerException();
-                else if (offset < 0L || offset >= Size)
-                    throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(Size));
-                else
-                    return *(Address.ToPointer<byte>() + offset);
-            }
-            set
-            {
-                if (Address == IntPtr.Zero)
-                    throw new NullPointerException();
-                else if (offset < 0L || offset >= Size)
-                    throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(Size));
-                else
-                    *(Address.ToPointer<byte>() + offset) = value;
-            }
-        }
-
-        internal static IntPtr Alloc(long size, bool zeroMem)
-        {
-            var address = Marshal.AllocHGlobal(new IntPtr(size));
-            if (zeroMem)
-                Memory.ClearBits(address, size);
-            return address;
-        }
-
-        internal static IntPtr Realloc(IntPtr memory, long newSize) => Marshal.ReAllocHGlobal(memory, new IntPtr(newSize));
-
-        internal static bool Release(IntPtr memory)
-        {
-            if (memory == IntPtr.Zero)
-                return false;
-            Marshal.FreeHGlobal(memory);
-            return true;
-        }
-
-        IntPtr IUnmanagedMemory.Address => Address;
-
-        /// <summary>
-        /// Returns pointer to unmanaged memory in the form of managed pointer to type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of managed pointer.</typeparam>
-        /// <returns>Managed typed pointer.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T AsRef<T>() where T : unmanaged => ref Unsafe.AsRef<T>(Address.ToPointer());
-
-        /// <summary>
-        /// Obtains typed unmanaged pointer to the allocated memory.
-        /// </summary>
-        /// <typeparam name="T">The type of unmanaged pointer.</typeparam>
-        /// <returns>The unmanaged pointer.</returns>
-        public Pointer<T> ToPointer<T>() where T : unmanaged => new Pointer<T>(Address);
-
-        /// <summary>
         /// Creates bitwise copy of the unmanaged memory.
         /// </summary>
-        /// <returns>Bitwise copy of the unmanaged memory.</returns>
+        /// <returns>The independent copy of unmanaged memory.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public UnmanagedMemory Copy()
         {
-            var result = new UnmanagedMemory(Size);
-            Memory.Copy(Address, result.Address, Size);
-            return result;
-        }
-
-        object ICloneable.Clone() => Copy();
-
-        /// <summary>
-        /// Gets or sets number of allocated bytes.
-        /// </summary>
-        /// <remarks>
-        /// If size is changed, the contents of this memory block have been copied to the new block, and this memory block has been freed.
-        /// </remarks>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is invalid.</exception>
-        public long Size
-        {
-            get => size;
-            set
-            {
-                if (value <= 0L)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                else if (value == size)
-                    return;
-                else if (IsEmpty)
-                    this = new UnmanagedMemory(value);
-                else
-                    this = new UnmanagedMemory(Realloc(Address, value), value);
-            }
+            if(IsClosed)
+                throw HandleClosed();
+            if(IsInvalid)
+                return this;
+            var copy = new UnmanagedMemory(Size, false);
+            Memory.Copy(handle, copy.handle, Size);
+            return copy;
         }
 
         /// <summary>
-        /// Determines whether this object points to the same memory block as other object.
+        /// Copies bytes from the memory location to the managed array.
         /// </summary>
-        /// <param name="other">The unmanaged memory holder to be compared.</param>
-        /// <returns><see langword="true"/>, if this object points to the same memory block as other object; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Equals(UnmanagedMemory other) => Address == other.Address;
+        /// <param name="destination">The destination array.</param>
+        /// <param name="offset">The position in the destination array from which copying begins.</param>
+        /// <param name="count">The number of bytes to be copied.</param>
+        /// <returns>The actual number of copied bytes.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public long WriteTo(byte[] destination, long offset, long count) => Pointer.WriteTo(destination, offset, count);
 
         /// <summary>
-        /// Determines whether this object points to the same memory block as other object.
+        /// Copies bytes from the specified array into
+        /// the memory block identified by this object.
         /// </summary>
-        /// <param name="other">The unmanaged memory holder to be compared.</param>
-        /// <returns><see langword="true"/>, if this object points to the same memory block as other object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
-        {
-            switch (other)
-            {
-                case UnmanagedMemory memory:
-                    return Equals(memory);
-                case IntPtr pointer:
-                    return Address == pointer;
-                default:
-                    return false;
-            }
-        }
+        /// <param name="source">The source array.</param>
+        /// <param name="offset">The position in the source array from which copying begins.</param>
+        /// <param name="count">The number of bytes to be copied.</param>
+        /// <returns>Actual number of copied bytes.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public long ReadFrom(byte[] source, long offset, long count) =>
+            Pointer.ReadFrom(source, offset, Math.Min(Size, count));
 
         /// <summary>
-        /// Determines whether two objects point to the same block of unmanaged memory.
+        /// Copies bytes from the memory location to the managed array.
         /// </summary>
-        /// <param name="first">The first memory pointer to be compared.</param>
-        /// <param name="second">The second memory pointer to be compared.</param>
-        /// <returns><see langword="true"/>, if two objects point to the same block of unmanaged memory; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(UnmanagedMemory first, UnmanagedMemory second) => first.Address == second.Address;
+        /// <param name="destination">The destination array.</param>
+        /// <returns>The actual number of copied bytes.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public long WriteTo(byte[] destination)
+            => Pointer.WriteTo(destination, 0, destination.LongLength.Min(Size));
 
         /// <summary>
-        /// Determines whether two objects point to the different blocks of unmanaged memory.
+        /// Copies bytes from the memory location to the managed array.
         /// </summary>
-        /// <param name="first">The first memory pointer to be compared.</param>
-        /// <param name="second">The second memory pointer to be compared.</param>
-        /// <returns><see langword="true"/>, if two objects point to the different blocks of unmanaged memory; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(UnmanagedMemory first, UnmanagedMemory second) => first.Address != second.Address;
+        /// <param name="source">The source array.</param>
+        /// <returns>The actual number of copied bytes.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public long ReadFrom(byte[] source)
+            => Pointer.ReadFrom(source, 0L, source.LongLength);
+        
+        /// <summary>
+        /// Gets a span from the specified instance.
+        /// </summary>
+        /// <param name="owner">The owner of allocated unmanaged memory.</param>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public static implicit operator Span<byte>(UnmanagedMemory owner) => owner is null ? default : owner.Bytes;
 
         /// <summary>
-        /// Gets enumerator over all bytes in the allocated memory.
+        /// Gets a pointer to the allocated unmanaged memory.
         /// </summary>
-        /// <returns>The enumerator over all bytes in the allocated memory.</returns>
-        public Pointer<byte>.Enumerator GetEnumerator() => ToPointer<byte>().GetEnumerator(Size);
+        /// <param name="owner">The owner of allocated unmanaged memory.</param>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public static implicit operator Pointer<byte>(UnmanagedMemory owner) => owner is null ? default : owner.Pointer;
 
-        IEnumerator<byte> IEnumerable<byte>.GetEnumerator() => GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        /// <summary>
-        /// Returns address of this memory in hexadecimal format.
-        /// </summary>
-        /// <returns>The addres of this memory.</returns>
-        public override string ToString() => Address.ToString("X");
-
-        /// <summary>
-        /// Obtains hash code of the unmanaged memory address.
-        /// </summary>
-        /// <returns>The hash code of the unmanaged memory address.</returns>
-        public override int GetHashCode() => Address.GetHashCode();
-
-        /// <summary>
-        /// Releases allocated unmanaged memory.
-        /// </summary>
-        public void Dispose()
-        {
-            Release(Address);
-            GC.RemoveMemoryPressure(Size);
-            this = default;
-        }
+        private protected override UnmanagedMemoryHandle Clone() => Copy();
     }
 
     /// <summary>
-    /// Represents unmanaged structured memory located outside of managed heap.
+    /// Represents array-like unmanaged memory.
     /// </summary>
     /// <remarks>
-    /// Allocated memory is not controlled by Garbage Collector.
-	/// Therefore, it's developer responsibility to release unmanaged memory using <see cref="IDisposable.Dispose"/> call.
+    /// All elements are allocated in unmanaged memory not controlled by Garbage Collector.
+    /// However, the unmanaged memory will be released automatically if GC collects
+    /// the instance of this type.
     /// </remarks>
-    /// <typeparam name="T">Type to be allocated in the unmanaged heap.</typeparam>
-    public unsafe struct UnmanagedMemory<T> : IUnmanagedMemory<T>, IStrongBox, IEquatable<UnmanagedMemory<T>>
+    /// <typeparam name="T">The type of elements in the unmanaged memory.</typeparam>
+    public sealed class UnmanagedMemory<T> : UnmanagedMemoryHandle, IEnumerable<T>
         where T : unmanaged
     {
-        /// <summary>
-        /// Represents GC-friendly reference to the unmanaged memory.
-        /// </summary>
-        /// <remarks>
-        /// Unmanaged memory allocated using handle can be reclaimed by GC automatically.
-        /// </remarks>
-        public sealed class Handle : UnmanagedMemoryHandle<T>
-        {
-            private Handle(UnmanagedMemory<T> buffer, bool ownsHandle)
-                : base(buffer, ownsHandle)
-            {
-            }
-
-            /// <summary>
-            /// Allocates a new unmanaged memory and associate it
-            /// with handle.
-            /// </summary>
-            /// <remarks>
-            /// The handle instantiated with this constructor has ownership over unmanaged memory.
-            /// Unmanaged memory will be released when Garbage Collector reclaims instance of this handle
-            /// or <see cref="Dispose()"/> will be called directly.
-            /// </remarks>
-            /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
-            public Handle(bool zeroMem = true)
-                : this(new UnmanagedMemory<T>(zeroMem), true)
-            {
-            }
-
-            /// <summary>
-            /// Allocates a new unmanaged memory and associate it with handle.
-            /// </summary>
-            /// <remarks>
-            /// The handle instantiated with this constructor has ownership over unmanaged memory.
-            /// Unmanaged memory will be released when Garbage Collector reclaims instance of this handle
-            /// or <see cref="Dispose()"/> will be called directly.
-            /// </remarks>
-            /// <param name="value">A value to be placed into unmanaged memory.</param>
-            public Handle(T value)
-                : this(new UnmanagedMemory<T>(value), true)
-            {
-            }
-
-            /// <summary>
-            /// Initializes a new handle for the given unmanaged memory.
-            /// </summary>
-            /// <remarks>
-            /// The handle instantiated with this constructor doesn't have ownership over unmanaged memory.
-            /// </remarks>
-            /// <param name="buffer">Already allocated memory.</param>
-			public Handle(UnmanagedMemory<T> buffer)
-                : this(buffer, false)
-            {
-            }
-
-            /// <summary>
-            /// Obtains span object pointing to the allocated unmanaged memory.
-            /// </summary>
-            public override Span<T> Span => new Span<T>((void*)handle, 1);
-
-            /// <summary>
-            /// Gets size of allocated unmanaged memory, in bytes.
-            /// </summary>
-            public override long Size => Pointer<T>.Size;
-
-            private protected override UnmanagedMemoryHandle Clone() => new Handle(Conversion<Handle, UnmanagedMemory<T>>.Converter(this).Value);
-
-            /// <summary>
-            /// Releases referenced unmanaged memory.
-            /// </summary>
-            /// <returns><see langword="true"/>, if this handle is valid; otherwise, <see langword="false"/>.</returns>
-			protected override bool ReleaseHandle() => UnmanagedMemory.Release(handle);
-
-            /// <summary>
-            /// Converts handle into unmanaged buffer structure.
-            /// </summary>
-            /// <param name="handle">Handle to convert.</param>
-            /// <exception cref="ObjectDisposedException">Handle is closed.</exception>
-            public static implicit operator UnmanagedMemory<T>(Handle handle)
-            {
-                if (handle is null)
-                    return default;
-                else if (handle.IsClosed)
-                    throw handle.HandleClosed();
-                else
-                    return new UnmanagedMemory<T>(handle.handle);
-            }
-        }
-
-        private Pointer<T> pointer;
-
-        private UnmanagedMemory(Pointer<T> pointer)
-            => this.pointer = pointer;
-
-        private UnmanagedMemory(IntPtr pointer)
-            : this(new Pointer<T>(pointer))
-        {
-        }
+        private int length;
 
         /// <summary>
-        /// Allocates a new unmanaged memory of size necessary to place type <typeparamref name="T"/> into it.
+        /// Allocates the block of unmanaged memory.
         /// </summary>
+        /// <param name="length">The number of elements in the unmanaged memory.</param>
         /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
-        public UnmanagedMemory(bool zeroMem) => pointer = new Pointer<T>(UnmanagedMemory.Alloc(Pointer<T>.Size, zeroMem));
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than 1.</exception>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to satisfy the request.</exception>
+        public UnmanagedMemory(int length, bool zeroMem = true) : base(GetSize(length), zeroMem) => this.length = length;
+
+        /// <summary>
+        /// Allocates the block of unmanaged memory which is equal to size of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to satisfy the request.</exception>
+        public UnmanagedMemory()
+            : this(1)
+        {
+
+        }
 
         /// <summary>
         /// Allocates a new unmanaged memory and place the given value into it.
         /// </summary>
         /// <param name="value">The value to be placed into unmanaged memory.</param>
-        public UnmanagedMemory(T value)
-            => pointer = new Pointer<T>(UnmanagedMemory.Alloc(Pointer<T>.Size, false))
-            {
-                Value = value
-            };
-
-        /// <summary>
-        /// Obtains typed pointer to the unmanaged memory.
-        /// </summary>
-        /// <typeparam name="U">The type of the pointer.</typeparam>
-        /// <returns>The typed pointer.</returns>
-        public Pointer<U> ToPointer<U>() where U : unmanaged => pointer.As<U>();
-
-        Pointer<T> IUnmanagedMemory<T>.Pointer => pointer;
-
-        long IUnmanagedMemory.Size => Pointer<T>.Size;
-
-        /// <summary>
-        /// Gets address of the unmanaged memory.
-        /// </summary>
-        public IntPtr Address => pointer.Address;
-
-        /// <summary>
-        /// Converts unmanaged pointer into managed pointer.
-        /// </summary>
-        /// <returns>Managed pointer.</returns>
-        /// <exception cref="NullPointerException">This pointer is null.</exception>
-        public ref T Ref
+        /// <returns>The object representing allocated unmanaged memory.</returns>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to satisfy the request.</exception>
+        public static UnmanagedMemory<T> Box(T value)
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref pointer.Ref;
+            var memory = new UnmanagedMemory<T>(1, false);
+            memory.Pointer.Ref = value;
+            return memory;
         }
 
-        Span<T> IUnmanagedMemory<T>.Span => new Span<T>(pointer, 1);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static long GetSize(int length) => Math.BigMul(length, Pointer<T>.Size);
 
         /// <summary>
-        /// Gets or sets value stored in unmanaged memory.
+        /// Creates bitwise copy of the unmanaged memory.
         /// </summary>
-        public T Value
-        {
-            get => pointer.Value;
-            set => pointer.Value = value;
-        }
-
-        object IStrongBox.Value
-        {
-            get => pointer.IsNull ? null : (object)Value;
-            set
-            {
-                if (value is T typedVal)
-                    Value = typedVal;
-                else
-                    throw new ArgumentException(ExceptionMessages.ExpectedType(typeof(T)), nameof(value));
-            }
-        }
-
-        /// <summary>
-        /// Copies the value located at the memory block identified by the given pointer
-        /// into the memory identified by this instance.
-        /// </summary>
-        /// <remarks>
-        /// If size of type <typeparamref name="U"/> is greater than <typeparamref name="T"/>
-        /// then not all bits will be copied. In this case, the copied bits depend on underlying
-        /// hardware architecture and endianess of bytes in memory.
-        /// </remarks>
-        /// <typeparam name="U">The type of the value located at source memory block.</typeparam>
-        /// <param name="source">The source memory block.</param>
-        public void ReadFrom<U>(Pointer<U> source)
-            where U : unmanaged
-            => new UnmanagedMemory<U>(source).WriteTo(pointer);
-
-        /// <summary>
-        /// Copies the value located at the memory block identified by this instance to
-        /// another location in the memory.
-        /// </summary>
-        /// <remarks>
-        /// If size of type <typeparamref name="T"/> is greater than <typeparamref name="U"/>
-        /// then not all bits will be copied. In this case, the copied bits depend on underlying
-        /// hardware architecture and endianess of bytes in memory.
-        /// </remarks>
-        /// <typeparam name="U">The type indicating size of the destination memory block.</typeparam>
-        /// <param name="destination">The destination memory block.</param>
-        public void WriteTo<U>(Pointer<U> destination)
-            where U : unmanaged
-            => pointer.As<byte>().WriteTo(destination.As<byte>(), Math.Min(Pointer<T>.Size, Pointer<U>.Size));
-
-        /// <summary>
-        /// Copies the value located at the memory block identified by this instance to
-        /// another located in the memory represented by given unmanaged pointer.
-        /// </summary>
-        /// <param name="destination">The managed pointer which points to the destination memory block.</param>
-        public void WriteTo(out T destination)
-            => destination = Value;
-
-        /// <summary>
-        /// Copies the value located at the memory block identified by this instance to another location in the memory.
-        /// </summary>
-        /// <remarks>
-        /// If size of type <typeparamref name="T"/> is greater than <typeparamref name="U"/>
-        /// then not all bits will be copied. In this case, the copied bits depend on underlying
-        /// hardware architecture and endianess of bytes in memory.
-        /// </remarks>
-        /// <typeparam name="U">The type indicating size of the destination memory block.</typeparam>
-        /// <param name="destination">The destination memory block.</param>
-        public void WriteTo<U>(UnmanagedMemory<U> destination)
-            where U : unmanaged
-            => WriteTo(destination.pointer);
-
-        /// <summary>
-        /// Creates a copy of value in the managed heap.
-        /// </summary>
-        /// <returns>A boxed copy in the managed heap.</returns>
-        public StrongBox<T> CopyToManagedHeap() => new StrongBox<T>(Value);
-
-        /// <summary>
-        /// Creates bitwise copy of unmanaged buffer.
-        /// </summary>
-        /// <returns>Bitwise copy of unmanaged buffer.</returns>
+        /// <returns>The independent copy of unmanaged memory.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public UnmanagedMemory<T> Copy()
-            => pointer.IsNull ? this : new UnmanagedMemory<T>(Value);
-
-        object ICloneable.Clone() => Copy();
-
-        /// <summary>
-        /// Reinterprets reference to the unmanaged buffer.
-        /// </summary>
-        /// <remarks>
-        /// Type <typeparamref name="U"/> should be of the same size or less than type <typeparamref name="U"/>.
-        /// </remarks>
-        /// <typeparam name="U">New buffer type.</typeparam>
-        /// <returns>Reinterpreted reference pointing to the same memory as original buffer.</returns>
-        /// <exception cref="GenericArgumentException{U}">Target type should be of the same size or less than original type.</exception>
-        public UnmanagedMemory<U> As<U>()
-            where U : unmanaged
-            => new UnmanagedMemory<U>(pointer.As<U>());
-
-        /// <summary>
-        /// Gets or sets byte in the memory at the specified zero-based offset.
-        /// </summary>
-        /// <param name="offset">Offset of the requested byte.</param>
-        /// <returns>The byte value from the memory.</returns>
-        /// <exception cref="NullPointerException">This memory is not allocated.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Invalid offset.</exception>
-        public byte this[long offset]
         {
-            get
-            {
-                if (Address == IntPtr.Zero)
-                    throw new NullPointerException();
-                else if (offset < 0L || offset >= Pointer<T>.Size)
-                    throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(Pointer<T>.Size));
-                else
-                    return *Address.ToPointer<byte>();
-            }
-            set
-            {
-                if (Address == IntPtr.Zero)
-                    throw new NullPointerException();
-                else if (offset < 0L || offset >= Pointer<T>.Size)
-                    throw new ArgumentOutOfRangeException(nameof(offset), offset, ExceptionMessages.InvalidOffsetValue(Pointer<T>.Size));
-                else
-                    *Address.ToPointer<byte>() = value;
-            }
+            if(IsClosed)
+                throw HandleClosed();
+            if(IsInvalid)
+                return this;
+            var copy = new UnmanagedMemory<T>(length, false);
+            Memory.Copy(handle, copy.handle, Size);
+            return copy;
+        }
+
+        private protected override UnmanagedMemoryHandle Clone() => Copy();
+
+        /// <summary>
+        /// Copies elements from the unmanaged array into managed heap. 
+        /// </summary>
+        /// <returns>The array allocated in managed heap containing copied elements from unmanaged memory.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public T[] ToArray()
+        {
+            if(IsClosed)
+                throw HandleClosed();
+            if (IsInvalid)
+                return Array.Empty<T>();
+            var result = new T[length];
+            WriteTo(result, 0, length);
+            return result;
         }
 
         /// <summary>
-        /// Obtains typed pointer to the memory block identified by this instance.
+        /// Copies elements from the memory location to the managed array.
         /// </summary>
-        /// <param name="memory">The memory block reference.</param>
-        public static implicit operator Pointer<T>(UnmanagedMemory<T> memory)
-            => memory.pointer;
+        /// <param name="destination">The destination array.</param>
+        /// <param name="offset">The position in the destination array from which copying begins.</param>
+        /// <param name="count">The number of array elements to be copied.</param>
+        /// <returns>The actual number of copied elements.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public long WriteTo(T[] destination, long offset, long count) => Pointer.WriteTo(destination, offset, count);
 
         /// <summary>
-        /// Extracts value from the unmanaged memory.
+        /// Copies elements from the specified array into
+        /// the memory block identified by this object.
         /// </summary>
-        /// <param name="memory">The memory block reference.</param>
-        public static implicit operator T(UnmanagedMemory<T> memory) => memory.Value;
+        /// <param name="source">The source array.</param>
+        /// <param name="offset">The position in the source array from which copying begins.</param>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        /// <returns>Actual number of copied elements.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public long ReadFrom(T[] source, long offset, long count) =>
+            Pointer.ReadFrom(source, offset, Math.Min(length, count));
 
         /// <summary>
-        /// Provides unstructured access to the unmanaged memory.
+        /// Copies elements from the memory location to the managed array.
         /// </summary>
-        /// <param name="memory">The memory block reference.</param>
-        public static implicit operator UnmanagedMemory(UnmanagedMemory<T> memory) => new UnmanagedMemory(memory.Address, Pointer<T>.Size);
+        /// <param name="destination">The destination array.</param>
+        /// <returns>The actual number of copied elements.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public long WriteTo(T[] destination)
+            => Pointer.WriteTo(destination, 0, destination.LongLength.Min(length));
 
         /// <summary>
-        /// Releases unmanaged memory associated with the boxed type.
+        /// Copies elements from the memory location to the managed array.
         /// </summary>
-        public void Dispose()
+        /// <param name="source">The source array.</param>
+        /// <returns>The actual number of copied elements.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public long ReadFrom(T[] source)
+            => Pointer.ReadFrom(source, 0L, source.LongLength);
+
+        /// <summary>
+        /// Copies elements from the current memory location to the specified memory location.
+        /// </summary>
+        /// <param name="destination">The target memory location.</param>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public void WriteTo(Pointer<T> destination) => Pointer.WriteTo(destination, length);
+
+        /// <summary>
+        /// Copies bytes from the source memory to the memory identified by this object.
+        /// </summary>
+        /// <param name="source">The pointer to the source unmanaged memory.</param>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public void ReadFrom(Pointer<T> source) => source.WriteTo(Pointer, length);
+
+        /// <summary>
+        /// Copies elements from the current memory location to the specified memory location.
+        /// </summary>
+        /// <param name="destination">The target memory location.</param>
+        /// <returns>The actual number of copied elements.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public long WriteTo(UnmanagedMemory<T> destination)
         {
-            UnmanagedMemory.Release(pointer.Address);
-            this = default;
+            var count = Math.Min(length, destination.length);
+            Pointer.WriteTo(destination.Pointer, count);
+            return count;
         }
-
-        /// <summary>
-        /// Indicates that this pointer represents the same memory location as other pointer.
-        /// </summary>
-        /// <typeparam name="U">The type of the another pointer.</typeparam>
-        /// <param name="other">The pointer to be compared.</param>
-        /// <returns><see langword="true"/>, if this pointer represents the same memory location as other pointer; otherwise, <see langword="false"/>.</returns>
-        public bool Equals<U>(UnmanagedMemory<U> other)
-            where U : unmanaged
-            => pointer.Equals(other.pointer);
-
-        bool IEquatable<UnmanagedMemory<T>>.Equals(UnmanagedMemory<T> other) => Equals(other);
-
-        /// <summary>
-        /// Computes hash code of the pointer itself (i.e. address), not of the memory content.
-        /// </summary>
-        /// <returns>The hash code of this pointer.</returns>
-        public override int GetHashCode() => pointer.GetHashCode();
-
-        /// <summary>
-        /// Indicates that this pointer represents the same memory location as other pointer.
-        /// </summary>
-        /// <param name="other">The object of type <see cref="UnmanagedMemory{T}"/>, <see cref="IntPtr"/> or <see cref="UIntPtr"/> to be compared.</param>
-        /// <returns><see langword="true"/>, if this pointer represents the same memory location as other pointer; otherwise, <see langword="false"/>.</returns>
-		public override bool Equals(object other)
-        {
-            switch (other)
-            {
-                case IntPtr pointer:
-                    return this.pointer.Address == pointer;
-                case UIntPtr pointer:
-                    return new UIntPtr(this.pointer) == pointer;
-                case UnmanagedMemory<T> box:
-                    return Equals(box);
-                default:
-                    return false;
-            }
-        }
-
-        /// <summary>
-        /// Returns address of this memory in hexadecimal format.
-        /// </summary>
-        /// <returns>The address of this memory.</returns>
-		public override string ToString() => pointer.ToString();
 
         /// <summary>
         /// Computes bitwise equality between two blocks of memory.
         /// </summary>
-        /// <param name="other">The pointer identifies block of memory to be compared.</param>
+        /// <param name="other">The block of memory to be compared.</param>
         /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
-        public bool BitwiseEquals(Pointer<T> other) => pointer.BitwiseEquals(other, 1);
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public bool BitwiseEquals(Pointer<T> other) => Pointer.BitwiseEquals(other, length);
 
         /// <summary>
-        /// Bitwise comparison of two memory blocks.
+        /// Computes bitwise equality between this array and the specified managed array.
         /// </summary>
-        /// <param name="other">The pointer identifies block of memory to be compared.</param>
+        /// <param name="other">The array to be compared.</param>
+        /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public unsafe bool BitwiseEquals(T[] other)
+        {
+            if (other is null || other.LongLength != length)
+                return false;
+            fixed (T* ptr = other)
+                return BitwiseEquals(ptr);
+        }
+
+        /// <summary>
+        /// Bitwise comparison of the memory blocks.
+        /// </summary>
+        /// <param name="other">The block of memory to be compared.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
-        public int BitwiseCompare(Pointer<T> other) => pointer.BitwiseCompare(other, 1);
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public int BitwiseCompare(Pointer<T> other) => Pointer.BitwiseCompare(other, length);
 
         /// <summary>
-        /// Determines whether the value stored in the memory identified by this pointer is equal to the given value.
+        /// Bitwise comparison of the memory blocks.
         /// </summary>
-        /// <param name="other">The value to be compared.</param>
-        /// <param name="comparer">The object implementing comparison algorithm.</param>
-        /// <returns><see langword="true"/>, if the value stored in the memory identified by this pointer is equal to the given value; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(T other, IEqualityComparer<T> comparer) => pointer.Equals(other, comparer);
+        /// <param name="other">The array to be compared.</param>
+        /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public unsafe int BitwiseCompare(T[] other)
+        {
+            if (other is null)
+                return 1;
+            else if (length != other.LongLength)
+                return ((long) length).CompareTo(other.LongLength);
+            else
+                fixed (T* ptr = other)
+                    return BitwiseCompare(ptr);
+        }
 
         /// <summary>
-        /// Computes hash code of the value stored in the memory identified by this pointer.
+        /// Gets the number of elements in the unmanaged memory.
         /// </summary>
-        /// <param name="comparer">The object implementing custom hash function.</param>
-        /// <returns>The hash code of the value stored in the memory identified by this pointer.</returns>
-        public int GetHashCode(IEqualityComparer<T> comparer) => pointer.GetHashCode(comparer);
+        public int Length => length;
 
         /// <summary>
-        /// Indicates that the first pointer represents the same memory location as the second pointer.
+        /// Gets the size of allocated unmanaged memory, in bytes.
         /// </summary>
-        /// <param name="first">The first pointer to be compared.</param>
-        /// <param name="second">The second pointer to be compared.</param>
-        /// <returns><see langword="true"/>, if the first pointer represents the same memory location as the second pointer; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(UnmanagedMemory<T> first, UnmanagedMemory<T> second) => first.pointer == second.pointer;
+        public override long Size => GetSize(length);
 
         /// <summary>
-        /// Indicates that the first pointer represents the different memory location as the second pointer.
+        /// Resizes a block of memory represented by this instance.
         /// </summary>
-        /// <param name="first">The first pointer to be compared.</param>
-        /// <param name="second">The second pointer to be compared.</param>
-        /// <returns><see langword="true"/>, if the first pointer represents the different memory location as the second pointer; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(UnmanagedMemory<T> first, UnmanagedMemory<T> second) => first.pointer != second.pointer;
+        /// <param name="length">The new number of elements in the unmanaged array.</param>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public void Reallocate(int length)
+        {
+            if(IsClosed)
+                throw HandleClosed();
+            if(IsInvalid)
+                return;
+            long oldSize = Size, newSize = GetSize(this.length = length);
+            handle = Marshal.ReAllocHGlobal(handle, new IntPtr(newSize));
+            var diff = newSize - oldSize;
+            if(diff > 0L)
+                GC.AddMemoryPressure(diff);
+            else if(diff < 0L)
+                GC.RemoveMemoryPressure(diff & long.MaxValue);
+        }
 
         /// <summary>
-        /// Indicates that the first pointer represents the same memory location as the second pointer.
+        /// Gets a span from the current instance.
         /// </summary>
-        /// <param name="first">The first pointer to be compared.</param>
-        /// <param name="second">The second pointer to be compared.</param>
-        /// <returns><see langword="true"/>, if the first pointer represents the same memory location as the second pointer; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(UnmanagedMemory<T> first, Pointer<T> second) => first.pointer == second;
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public unsafe Span<T> Span
+        {
+            get
+            {
+                if(IsClosed)
+                    throw HandleClosed();
+                else if(IsInvalid)
+                    return default;
+                else
+                    return new Span<T>(handle.ToPointer(), length);
+            }
+        }
 
         /// <summary>
-        /// Indicates that the first pointer represents the different memory location as the second pointer.
+        /// Gets a pointer to the allocated unmanaged memory.
         /// </summary>
-        /// <param name="first">The first pointer to be compared.</param>
-        /// <param name="second">The second pointer to be compared.</param>
-        /// <returns><see langword="true"/>, if the first pointer represents the different memory location as the second pointer; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(UnmanagedMemory<T> first, Pointer<T> second) => first.pointer != second;
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public new Pointer<T> Pointer
+        {
+            get
+            {
+                if(IsClosed)
+                    throw HandleClosed();
+                else if(IsInvalid)
+                    return default;
+                else
+                    return new Pointer<T>(handle);
+            }
+        }
+
+        /// <summary>
+        /// Gets a span from the specified instance.
+        /// </summary>
+        /// <param name="owner">The owner of allocated unmanaged memory.</param>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public static implicit operator Span<T>(UnmanagedMemory<T> owner) => owner is null ? default : owner.Span;
+
+        /// <summary>
+        /// Gets a pointer to the allocated unmanaged memory.
+        /// </summary>
+        /// <param name="owner">The owner of allocated unmanaged memory.</param>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public static implicit operator Pointer<T>(UnmanagedMemory<T> owner) => owner is null ? default : owner.Pointer;
+
+        /// <summary>
+        /// Gets enumerator over all elements located in the unmanaged memory.
+        /// </summary>
+        /// <returns>The enumerator over all elements in the unmanaged memory.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public Pointer<T>.Enumerator GetEnumerator() => Pointer.GetEnumerator(length);
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

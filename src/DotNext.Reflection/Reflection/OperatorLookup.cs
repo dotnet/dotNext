@@ -3,7 +3,7 @@ namespace DotNext.Reflection
     /// <summary>
     /// Represents operator resolution strategy.
     /// </summary>
-    public enum OperatorLookup: byte
+    public enum OperatorLookup : byte
     {
         /// <summary>
 		/// Check for predefined operator only.

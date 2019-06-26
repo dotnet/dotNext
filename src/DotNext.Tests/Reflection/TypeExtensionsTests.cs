@@ -1,26 +1,26 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Xunit;
 
 namespace DotNext.Reflection
 {
-	public sealed class TypeExtensionsTests : Assert
-	{
-        public sealed class MyList: List<string>
+    public sealed class TypeExtensionsTests : Assert
+    {
+        public sealed class MyList : List<string>
         {
 
         }
 
-		[Fact]
-		public static void DelegateSignature()
-		{
-			var signature = DelegateType.GetInvokeMethod<Func<int, string>>();
-			NotNull(signature);
-			Equal(typeof(int), signature.GetParameters()[0].ParameterType);
-			Equal(typeof(string), signature.ReturnParameter.ParameterType);
-		}
+        [Fact]
+        public static void DelegateSignature()
+        {
+            var signature = DelegateType.GetInvokeMethod<Func<int, string>>();
+            NotNull(signature);
+            Equal(typeof(int), signature.GetParameters()[0].ParameterType);
+            Equal(typeof(string), signature.ReturnParameter.ParameterType);
+        }
 
         [Fact]
         public static void IsGenericInstanceOf()

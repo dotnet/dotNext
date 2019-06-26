@@ -5,12 +5,12 @@ using Xunit;
 
 namespace DotNext.Threading
 {
-    public sealed class AsyncResetEventTests: Assert
-    {   
+    public sealed class AsyncResetEventTests : Assert
+    {
         [Fact]
         public static void ManualResetEvent()
         {
-            using(var resetEvent = new AsyncManualResetEvent(false))
+            using (var resetEvent = new AsyncManualResetEvent(false))
             {
                 False(resetEvent.IsSet);
                 var t = new Thread(() =>
@@ -34,8 +34,8 @@ namespace DotNext.Threading
                 };
                 t.Start();
                 True(resetEvent.Set());
-                t.Join(); 
-                True(resetEvent.IsSet);               
+                t.Join();
+                True(resetEvent.IsSet);
             }
         }
 
@@ -52,6 +52,30 @@ namespace DotNext.Threading
                 True(await mre.Wait(TimeSpan.Zero));
                 True(mre.Reset());
                 False(await mre.Wait(TimeSpan.Zero));
+            }
+        }
+
+        [Fact]
+        public static async Task SetAutoresetForManualEvent()
+        {
+            using (var resetEvent = new AsyncManualResetEvent(false))
+            {
+                False(resetEvent.IsSet);
+                var t = new Thread(() =>
+                {
+                    resetEvent.Wait().Wait();
+                })
+                {
+                    IsBackground = true
+                };
+                t.Start();
+                var spinner = new SpinWait();
+                while ((t.ThreadState & ThreadState.WaitSleepJoin) == 0)
+                    spinner.SpinOnce();
+                True(resetEvent.Set(true));
+                t.Join();
+                False(resetEvent.IsSet);
+                False(await resetEvent.Wait(TimeSpan.Zero));
             }
         }
 

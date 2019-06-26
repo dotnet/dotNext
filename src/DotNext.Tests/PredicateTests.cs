@@ -1,9 +1,8 @@
-﻿using System;
-using Xunit;
+﻿using Xunit;
 
 namespace DotNext
 {
-    public sealed class PredicateTests: Assert
+    public sealed class PredicateTests : Assert
     {
         [Fact]
         public static void PredefinedDelegatesTest()

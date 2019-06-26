@@ -9,6 +9,27 @@ namespace DotNext
     /// </summary>
     public static class OneDimensionalArray
     {
+        private interface IRemovalCallback<in T>
+        {
+            void Removed(T item);
+        }
+
+        private struct RemovalCounter<T> : IRemovalCallback<T>
+        {
+            internal long Count;
+
+            void IRemovalCallback<T>.Removed(T item) => Count += 1;
+        }
+
+        private readonly struct RemovalDelegate<T> : IRemovalCallback<T>
+        {
+            private readonly Action<T> callback;
+
+            internal RemovalDelegate(Action<T> callback) => this.callback = callback;
+
+            void IRemovalCallback<T>.Removed(T item) => callback(item);
+        }
+
         /// <summary>
         /// Indicates that array is <see langword="null"/> or empty.
         /// </summary>
@@ -45,7 +66,7 @@ namespace DotNext
         public static T[] Insert<T>(this T[] array, T element, long index)
         {
             if (index < 0 || index > array.LongLength)
-                throw new IndexOutOfRangeException(nameof(index));
+                throw new ArgumentOutOfRangeException(nameof(index));
             else if (array.LongLength == 0L)
                 return new[] { element };
             else
@@ -81,27 +102,19 @@ namespace DotNext
             }
         }
 
-        /// <summary>
-        /// Removes all the elements that match the conditions defined by the specified predicate.
-        /// </summary>
-        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
-        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
-        /// <param name="count">The number of elements removed from this list.</param>
-        /// <returns>A modified array with removed elements.</returns>
-        public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, out long count)
+        private static T[] RemoveAll<T, C>(T[] array, Predicate<T> match, ref C callback)
+            where C : struct, IRemovalCallback<T>
         {
             if (array.LongLength == 0L)
-            {
-                count = 0L;
                 return array;
-            }
             var newLength = 0L;
             var tempArray = new T[array.LongLength];
             foreach (var item in array)
-                if (!match(item))
+                if (match(item))
+                    callback.Removed(item);
+                else
                     tempArray[newLength++] = item;
-            count = array.LongLength - newLength;
-            if (count == 0L)
+            if (array.LongLength - newLength == 0L)
                 return array;
             else if (newLength == 0L)
                 return Array.Empty<T>();
@@ -111,6 +124,34 @@ namespace DotNext
                 Array.Copy(tempArray, 0L, array, 0L, newLength);
                 return array;
             }
+        }
+
+        /// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
+        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
+        /// <param name="count">The number of elements removed from this list.</param>
+        /// <returns>A modified array with removed elements.</returns>
+        public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, out long count)
+        {
+            var counter = new RemovalCounter<T>();
+            var result = RemoveAll(array, match, ref counter);
+            count = counter.Count;
+            return result;
+        }
+
+        /// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
+        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
+        /// <param name="callback">The delegate that is used to accept removed items.</param>
+        /// <returns>A modified array with removed elements.</returns>
+        public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, Action<T> callback)
+        {
+            var cb = new RemovalDelegate<T>(callback);
+            return RemoveAll(array, match, ref cb);
         }
 
         /// <summary>

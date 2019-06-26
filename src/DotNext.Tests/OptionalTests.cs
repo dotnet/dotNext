@@ -3,59 +3,59 @@ using Xunit;
 
 namespace DotNext
 {
-	public sealed class OptionalTest : Assert
-	{
-		[Fact]
-		public static void NullableTest()
-		{
+    public sealed class OptionalTest : Assert
+    {
+        [Fact]
+        public static void NullableTest()
+        {
             False(new Optional<int?>(null).IsPresent);
-			True(new Optional<long?>(10L).IsPresent);
-		}
+            True(new Optional<long?>(10L).IsPresent);
+        }
 
-		[Fact]
-		public static void OptionalTypeTest()
-		{
-			var intOptional = new int?(10).ToOptional();
-			True(intOptional.IsPresent);
-			Equal(10, (int)intOptional);
-			Equal(10, intOptional.Or(20));
-			Equal(10, intOptional.Value);
-			True(Nullable.Equals(10, intOptional.OrNull()));
-			Equal(typeof(int), Optional.GetUnderlyingType(intOptional.GetType()));
+        [Fact]
+        public static void OptionalTypeTest()
+        {
+            var intOptional = new int?(10).ToOptional();
+            True(intOptional.IsPresent);
+            Equal(10, (int)intOptional);
+            Equal(10, intOptional.Or(20));
+            Equal(10, intOptional.Value);
+            True(Nullable.Equals(10, intOptional.OrNull()));
+            Equal(typeof(int), Optional.GetUnderlyingType(intOptional.GetType()));
 
-			intOptional = default(int?).ToOptional();
-			False(intOptional.IsPresent);
-			Equal(20, intOptional.Or(20));
-			True(Nullable.Equals(null, intOptional.OrNull()));
-			Equal(30, intOptional.Coalesce(new int?(30).ToOptional()).Value);
-			Equal(40, (intOptional | new int?(40).ToOptional()).Value);
-			Throws<InvalidOperationException>(() => intOptional.Value);
+            intOptional = default(int?).ToOptional();
+            False(intOptional.IsPresent);
+            Equal(20, intOptional.Or(20));
+            True(Nullable.Equals(null, intOptional.OrNull()));
+            Equal(30, intOptional.Coalesce(new int?(30).ToOptional()).Value);
+            Equal(40, (intOptional | new int?(40).ToOptional()).Value);
+            Throws<InvalidOperationException>(() => intOptional.Value);
 
-			Optional<string> strOptional = null;
-			False(strOptional.IsPresent);
-			Equal("Hello, world", strOptional.Or("Hello, world"));
-			Throws<InvalidOperationException>(() => strOptional.Value);
-			Equal(typeof(string), Optional.GetUnderlyingType(strOptional.GetType()));
-		}
+            Optional<string> strOptional = null;
+            False(strOptional.IsPresent);
+            Equal("Hello, world", strOptional.Or("Hello, world"));
+            Throws<InvalidOperationException>(() => strOptional.Value);
+            Equal(typeof(string), Optional.GetUnderlyingType(strOptional.GetType()));
+        }
 
-		[Fact]
-		public static void StructTest()
-		{
-			False(new Optional<ValueTuple>(default).IsPresent);
-			True(new Optional<long>(default).IsPresent);
+        [Fact]
+        public static void StructTest()
+        {
+            False(new Optional<ValueTuple>(default).IsPresent);
+            True(new Optional<long>(default).IsPresent);
             True(new Optional<Base64FormattingOptions>(Base64FormattingOptions.InsertLineBreaks).IsPresent);
-		}
+        }
 
-		[Fact]
-		public static void ClassTest()
-		{
-			True(new Optional<Optional<string>>((Optional<string>)"").IsPresent);
+        [Fact]
+        public static void ClassTest()
+        {
+            True(new Optional<Optional<string>>((Optional<string>)"").IsPresent);
             False(new Optional<Optional<string>>((Optional<string>)null).IsPresent);
             False(new Optional<string>(default).IsPresent);
-			True(new Optional<string>("").IsPresent);
-			False(new Optional<Delegate>(default).IsPresent);
-			True(new Optional<EventHandler>((sender, args) => { }).IsPresent);
-		}
+            True(new Optional<string>("").IsPresent);
+            False(new Optional<Delegate>(default).IsPresent);
+            True(new Optional<EventHandler>((sender, args) => { }).IsPresent);
+        }
 
         [Fact]
         public static void OrElse()
@@ -68,5 +68,5 @@ namespace DotNext
             True(result.IsPresent);
             Equal(20, result.Value);
         }
-	}
+    }
 }

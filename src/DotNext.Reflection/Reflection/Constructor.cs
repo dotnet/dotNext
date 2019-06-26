@@ -350,7 +350,7 @@ namespace DotNext.Reflection
 
         internal static Constructor<D> GetOrCreate(ConstructorInfo ctor)
             => ctor.GetUserData().GetOrSet(CacheSlot, ctor, Unreflect);
-        
+
         internal static Constructor<D> GetOrCreate<T>(bool nonPublic)
         {
             var type = typeof(T);

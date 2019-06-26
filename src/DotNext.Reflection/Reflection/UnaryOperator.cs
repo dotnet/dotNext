@@ -163,7 +163,7 @@ namespace DotNext.Reflection
         }
 
         private static UnaryOperator<T, R> GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(T)).GetOrCreate(op);
-        
+
         internal static UnaryOperator<T, R> GetOrCreate(UnaryOperator @operator, OperatorLookup lookup)
         {
             switch (lookup)

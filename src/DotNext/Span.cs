@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext
@@ -171,5 +172,42 @@ namespace DotNext
         public static int BitwiseCompare<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second)
             where T : unmanaged
             => AsBytes(first).SequenceCompareTo(AsBytes(second));
+        
+        private static int Partition<T>(Span<T> span, int startIndex, int endIndex, IComparer<T> comparison)
+        {
+            var pivot = span[endIndex];
+            var i = startIndex - 1;
+            for (var j = startIndex; j < endIndex; j++)
+            {
+                ref var jptr = ref span[j];
+                if (comparison.Compare(jptr, pivot) <= 0)
+                {
+                    i += 1;
+                    Memory.Swap(ref span[i], ref jptr);
+                }
+            }
+
+            i += 1;
+            Memory.Swap(ref span[endIndex], ref span[i]);
+            return i;
+        }
+
+        private static void QuickSort<T>(Span<T> span, int startIndex, int endIndex, IComparer<T> comparison)
+        {
+            if(startIndex >= endIndex)
+                return;
+            var partitionIndex = Partition(span, startIndex, endIndex, comparison);
+            QuickSort(span, startIndex, partitionIndex - 1, comparison);
+            QuickSort(span, partitionIndex + 1, endIndex, comparison);
+        }
+
+        /// <summary>
+        /// Sorts the elements.
+        /// </summary>
+        /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
+        /// <param name="comparison">The comparer used for sorting.</param>
+        /// <typeparam name="T">The type of the elements.</typeparam>
+        public static void Sort<T>(this Span<T> span, IComparer<T> comparison = null)
+            => QuickSort(span, 0, span.Length - 1, comparison ?? Comparer<T>.Default);
     }
 }

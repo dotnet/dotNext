@@ -15,7 +15,7 @@ namespace DotNext.Metaprogramming
 
         LoopExpression ILexicalScope<LoopExpression, Action<LoopContext>>.Build(Action<LoopContext> scope)
         {
-            using(var context = new LoopContext(this))
+            using (var context = new LoopContext(this))
                 scope(context);
             return Expression.Loop(Build(), BreakLabel, ContinueLabel);
         }

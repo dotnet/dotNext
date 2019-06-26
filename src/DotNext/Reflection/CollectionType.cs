@@ -40,7 +40,7 @@ namespace DotNext.Reflection
         /// <returns>Type of items in the collection; or <see langword="null"/> if <paramref name="collectionType"/> is not a generic collection.</returns>
         public static Type GetItemType(this Type collectionType)
             => collectionType.GetItemType(out _);
-        
+
         /// <summary>
         /// Returns type of collection implemented by the given type.
         /// </summary>
@@ -53,10 +53,10 @@ namespace DotNext.Reflection
         /// <seealso cref="IReadOnlyCollection{T}"/>
         public static Type GetImplementedCollection(this Type type)
         {
-            foreach(var collectionType in (typeof(IReadOnlyCollection<>), typeof(ICollection<>)).AsEnumerable())
+            foreach (var collectionType in (typeof(IReadOnlyCollection<>), typeof(ICollection<>)).AsEnumerable())
             {
                 var instance = type.FindGenericInstance(collectionType);
-                if(!(instance is null))
+                if (!(instance is null))
                     return instance;
             }
             return null;

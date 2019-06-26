@@ -4,20 +4,20 @@ using Xunit;
 
 namespace DotNext.Threading
 {
-    public sealed class AsyncCountdownEventTests: Assert
-    {   
+    public sealed class AsyncCountdownEventTests : Assert
+    {
         [Fact]
         public static async Task Counting()
         {
-            using(var countdown = new AsyncCountdownEvent(4))
+            using (var countdown = new AsyncCountdownEvent(4))
             {
                 False(countdown.IsSet);
                 False(await countdown.Wait(TimeSpan.FromMilliseconds(100)));
-                
+
                 False(countdown.Signal()); //count == 3
                 False(countdown.IsSet);
                 False(await countdown.Wait(TimeSpan.FromMilliseconds(100)));
-                
+
                 True(countdown.Signal(3));
                 True(countdown.IsSet);
                 True(await countdown.Wait(TimeSpan.FromMilliseconds(40)));
@@ -40,7 +40,7 @@ namespace DotNext.Threading
         [InlineData(1024 * 1024, 1024, true)]
         public static void CheckStateTransitions(long initCount, long increms, bool takeAllAtOnce)
         {
-            using(var ev = new AsyncCountdownEvent(initCount))
+            using (var ev = new AsyncCountdownEvent(initCount))
             {
                 Equal(initCount, ev.InitialCount);
 

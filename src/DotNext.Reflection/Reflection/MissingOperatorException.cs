@@ -6,7 +6,7 @@ namespace DotNext.Reflection
     /// <summary>
 	/// Indicates that requested operator doesn't exist.
 	/// </summary>
-    public sealed class MissingOperatorException: ConstraintViolationException
+    public sealed class MissingOperatorException : ConstraintViolationException
     {
         /// <summary>
         /// Initializes a new exception indicating that requested operator doesn't exist.

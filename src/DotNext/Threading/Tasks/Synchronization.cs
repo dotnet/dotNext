@@ -17,8 +17,20 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="R">Type of task result.</typeparam>
         /// <returns>Task result.</returns>
         /// <exception cref="TimeoutException">Task is not completed.</exception>
-        public static R GetResult<R>(this Task<R> task, TimeSpan timeout)
-            => task.Wait(timeout) ? task.Result : throw new TimeoutException();
+        public static Result<R> GetResult<R>(this Task<R> task, TimeSpan timeout)
+        {
+            if (task.Wait(timeout))
+                try
+                {
+                    return task.Result;
+                }
+                catch (Exception e)
+                {
+                    return new Result<R>(e);
+                }
+            else
+                return new Result<R>(new TimeoutException());
+        }
 
         /// <summary>
         /// Gets task result synchronously.
@@ -27,10 +39,17 @@ namespace DotNext.Threading.Tasks
         /// <param name="token">Cancellation token.</param>
         /// <typeparam name="R">Type of task result.</typeparam>
         /// <returns>Task result.</returns>
-        public static R GetResult<R>(this Task<R> task, CancellationToken token)
+        public static Result<R> GetResult<R>(this Task<R> task, CancellationToken token)
         {
-            task.Wait(token);
-            return task.Result;
+            try
+            {
+                task.Wait(token);
+                return task.Result;
+            }
+            catch (Exception e)
+            {
+                return new Result<R>(e);
+            }
         }
 
         /// <summary>

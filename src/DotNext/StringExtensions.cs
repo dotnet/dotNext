@@ -2,6 +2,8 @@ using System;
 
 namespace DotNext
 {
+    using Buffers;
+
     /// <summary>
     /// Represents various extension methods for type <see cref="string"/>.
     /// </summary>
@@ -57,5 +59,13 @@ namespace DotNext
         /// <returns>Trimmed string value.</returns>
         public static string TrimLength(this string str, int maxLength)
             => str is null || str.Length <= maxLength ? str : str.Substring(0, maxLength);
+
+        /// <summary>
+        /// Split a string into several substrings, each has a length not greater the specified one.
+        /// </summary>
+        /// <param name="str">The string to split.</param>
+        /// <param name="chunkSize">The maximum length of the substring in the sequence.</param>
+        /// <returns>The sequence of substrings.</returns>
+        public static ChunkSequence<char> Split(this string str, int chunkSize) => new ChunkSequence<char>(str.AsMemory(), chunkSize);
     }
 }

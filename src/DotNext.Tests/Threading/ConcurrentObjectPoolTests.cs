@@ -32,7 +32,7 @@ namespace DotNext.Threading
 
             internal string CreateString()
             {
-                switch(sequenceNumber++)
+                switch (sequenceNumber++)
                 {
                     case 0: return "One";
                     case 1: return "Two";

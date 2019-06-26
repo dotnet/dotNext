@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -77,7 +78,7 @@ namespace DotNext.Threading
                 {
                     False(await rwLock.TryEnterWriteLock(TimeSpan.FromMilliseconds(10)));
                     True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
-                    await rwLock.EnterWriteLock(TimeSpan.MaxValue);
+                    await rwLock.EnterWriteLock(InfiniteTimeSpan);
                     rwLock.ExitWriteLock();
                     task.SetResult(true);
                 });
@@ -93,13 +94,13 @@ namespace DotNext.Threading
             using (var are = new AutoResetEvent(false))
             using (var rwLock = new AsyncReaderWriterLock())
             {
-                await rwLock.EnterWriteLock(TimeSpan.MaxValue);
+                await rwLock.EnterWriteLock(InfiniteTimeSpan);
                 var task = new TaskCompletionSource<bool>();
                 ThreadPool.QueueUserWorkItem(async state =>
                 {
                     False(await rwLock.TryEnterReadLock(TimeSpan.FromMilliseconds(10)));
                     True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
-                    await rwLock.EnterReadLock(TimeSpan.MaxValue);
+                    await rwLock.EnterReadLock(InfiniteTimeSpan);
                     rwLock.ExitReadLock();
                     task.SetResult(true);
                 });
@@ -115,13 +116,13 @@ namespace DotNext.Threading
             using (var are = new AutoResetEvent(false))
             using (var rwLock = new AsyncReaderWriterLock())
             {
-                await rwLock.EnterWriteLock(TimeSpan.MaxValue);
+                await rwLock.EnterWriteLock(InfiniteTimeSpan);
                 var task = new TaskCompletionSource<bool>();
                 ThreadPool.QueueUserWorkItem(async state =>
                 {
                     False(await rwLock.TryEnterUpgradeableReadLock(TimeSpan.FromMilliseconds(10)));
                     True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
-                    await rwLock.EnterUpgradeableReadLock(TimeSpan.MaxValue);
+                    await rwLock.EnterUpgradeableReadLock(InfiniteTimeSpan);
                     rwLock.ExitUpgradeableReadLock();
                     task.SetResult(true);
                 });

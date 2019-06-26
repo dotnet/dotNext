@@ -7,7 +7,7 @@ namespace DotNext.Linq.Expressions
     /// Represents <c>for</c> loop as expression.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for">for Statement</seealso>
-    public sealed class ForExpression: Expression, ILoopLabels
+    public sealed class ForExpression : Expression, ILoopLabels
     {
         internal interface IBuilder : ILoopLabels
         {
@@ -96,7 +96,7 @@ namespace DotNext.Linq.Expressions
 
             LabelTarget ILoopLabels.BreakLabel => breakLabel;
             LabelTarget ILoopLabels.ContinueLabel => continueLabel;
-            
+
             Expression IBuilder.MakeCondition(ParameterExpression loopVar) => condition(loopVar);
 
             Expression IBuilder.MakeIteration(ParameterExpression loopVar) => iteration(loopVar);
@@ -117,7 +117,7 @@ namespace DotNext.Linq.Expressions
             Initialization = initialization;
             LoopVar = Variable(initialization.Type, "loop_var");
             Test = condition(LoopVar);
-            if(Test.Type != typeof(bool))
+            if (Test.Type != typeof(bool))
                 throw new ArgumentException(ExceptionMessages.BoolExpressionExpected, nameof(condition));
             ContinueLabel = continueLabel ?? Label(typeof(void), "continue");
             BreakLabel = breakLabel ?? Label(typeof(void), "break");
@@ -128,7 +128,7 @@ namespace DotNext.Linq.Expressions
         {
             body = builder.MakeBody(LoopVar).AddPrologue(false, Continue(ContinueLabel), builder.MakeIteration(LoopVar));
         }
-        
+
         /// <summary>
         /// Creates a builder of <see cref="ForExpression"/>.
         /// </summary>

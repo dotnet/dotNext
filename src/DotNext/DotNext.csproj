@@ -7,7 +7,7 @@
     <Authors>Roman Sakno</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>0.10.0</Version>
+    <Version>0.11.0</Version>
 	<AssemblyName>DotNext</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
@@ -18,7 +18,12 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Optional&lt;T&gt; type doesn't rely on dynamic code generation anymore</PackageReleaseNotes>
+	<PackageReleaseNotes>AtomicEnum and AtomicIntPtr are introduced
+Result&lt;T&gt; is the new type used for returning and propagating recoverable errors instead of classic try-catch approach
+Sort extension method for Span&lt;T&gt; data type is introduced
+System.Memory dependency is updated
+DelegateHelpers.CreateOpenDelegate provides syntactic sugar for creating open instance delegates
+ChunkSequence allows to represent contiguous memory as sequence of chunks</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -39,8 +44,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.2" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
-    <PackageReference Include="System.Memory" Version="4.5.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
+    <PackageReference Include="System.Memory" Version="4.5.3" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
     <PackageReference Include="System.Buffers" Version="4.5.0" />
   </ItemGroup>

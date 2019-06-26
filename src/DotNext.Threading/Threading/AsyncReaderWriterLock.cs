@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -154,7 +155,7 @@ namespace DotNext.Threading
         /// <returns>The task representing acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task EnterReadLock(CancellationToken token) => TryEnterReadLock(TimeSpan.MaxValue, token);
+        public Task EnterReadLock(CancellationToken token) => TryEnterReadLock(InfiniteTimeSpan, token);
 
         /// <summary>
         /// Enters the lock in read mode asynchronously.
@@ -192,7 +193,7 @@ namespace DotNext.Threading
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task EnterWriteLock(CancellationToken token) => TryEnterWriteLock(TimeSpan.MaxValue, token);
+        public Task EnterWriteLock(CancellationToken token) => TryEnterWriteLock(InfiniteTimeSpan, token);
 
         /// <summary>
         /// Enters the lock in write mode asynchronously.
@@ -230,7 +231,7 @@ namespace DotNext.Threading
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task EnterUpgradeableReadLock(CancellationToken token) => TryEnterUpgradeableReadLock(TimeSpan.MaxValue, token);
+        public Task EnterUpgradeableReadLock(CancellationToken token) => TryEnterUpgradeableReadLock(InfiniteTimeSpan, token);
 
         /// <summary>
         /// Enters the lock in upgradeable mode asynchronously.

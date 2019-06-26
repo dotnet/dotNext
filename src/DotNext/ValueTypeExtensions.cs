@@ -121,7 +121,7 @@ namespace DotNext
         public static ValueType<T> Box<T>(this T value)
             where T : struct
             => new ValueType<T>(value);
-        
+
         /// <summary>
         /// Create boxed representation of the nullable value type.
         /// </summary>

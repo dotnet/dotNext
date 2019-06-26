@@ -113,7 +113,7 @@ namespace DotNext
         public static T? TryUnbox<T>(this object boxed)
             where T : struct
         {
-            switch(boxed)
+            switch (boxed)
             {
                 case T vt:
                     return vt;

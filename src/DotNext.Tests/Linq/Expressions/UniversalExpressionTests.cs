@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Xunit;
 using System.Linq.Expressions;
+using Xunit;
 
 namespace DotNext.Linq.Expressions
 {
-    public sealed class UniversalExpressionTests: Assert
+    public sealed class UniversalExpressionTests : Assert
     {
         private sealed class MyClass
         {

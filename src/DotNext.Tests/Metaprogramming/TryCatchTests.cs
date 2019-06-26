@@ -8,7 +8,7 @@ namespace DotNext.Metaprogramming
     using static CodeGenerator;
     using U = Linq.Expressions.UniversalExpression;
 
-    public sealed class TryCatchTests: Assert
+    public sealed class TryCatchTests : Assert
     {
         [Fact]
         public static void Fault()

@@ -3,7 +3,7 @@ using Xunit;
 
 namespace DotNext.Threading
 {
-    public sealed class AsyncDelegateTests: Assert
+    public sealed class AsyncDelegateTests : Assert
     {
         private sealed class Accumulator
         {
