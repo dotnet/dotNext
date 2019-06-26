@@ -27,7 +27,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return MemberHealthStatus.Ok;
         };
 
-        private readonly AsyncTimer heartbeatTimer;
+        private AtomicBoolean processingState;
+        private volatile RegisteredWaitHandle heartbeatTimer;
         private readonly long term;
         private readonly bool absoluteMajority;
         private readonly CancellationTokenSource timerCancellation;
@@ -37,18 +38,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             this.term = term;
             this.absoluteMajority = absoluteMajority;
-            heartbeatTimer = new AsyncTimer(DoHeartbeats);
             timerCancellation = new CancellationTokenSource();
+            processingState = new AtomicBoolean(false);
         }
 
-        private async Task<bool> DoHeartbeats(CancellationToken token)
+        private async Task<bool> DoHeartbeats()
         {
             ICollection<Task<MemberHealthStatus>> tasks = new LinkedList<Task<MemberHealthStatus>>();
             //send heartbeat in parallel
             foreach (var member in stateMachine.Members)
             {
                 stateMachine.Logger.SendingHearbeat(member.Endpoint);
-                tasks.Add(member.HeartbeatAsync(term, token).ContinueWith(HealthStatusContinuation, default,
+                tasks.Add(member.HeartbeatAsync(term, timerCancellation.Token).ContinueWith(HealthStatusContinuation, default,
                     TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current));
             }
 
@@ -129,15 +130,47 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        private async void DoHeartbeats(object state, bool timedOut)
+        {
+            if (IsDisposed || !timedOut || !processingState.FalseToTrue()) return;
+            try
+            {
+                if (!await DoHeartbeats().ConfigureAwait(false))
+                    heartbeatTimer?.Unregister(null);
+            }
+            finally
+            {
+                processingState.Value = false;
+            }
+        }
+
         /// <summary>
         /// Starts cluster synchronization.
         /// </summary>
-        internal void StartLeading(TimeSpan delay) => heartbeatTimer.Start(delay, timerCancellation.Token);
+        internal void StartLeading(in TimeSpan delay)
+        {
+            processingState.Value = false;
+            heartbeatTimer = ThreadPool.RegisterWaitForSingleObject(timerCancellation.Token.WaitHandle, DoHeartbeats,
+                null, delay, false);
+        }
+
+        private static async Task StopLeading(RegisteredWaitHandle handle)
+        {
+            using (var signal = new ManualResetEvent(false))
+            {
+                handle.Unregister(signal);
+                await signal.WaitAsync().ConfigureAwait(false);
+            }
+        }
 
         internal Task StopLeading()
         {
+            var handle = Interlocked.Exchange(ref heartbeatTimer, null);
+            if (handle is null || timerCancellation.IsCancellationRequested)
+                return Task.CompletedTask;
+
             timerCancellation.Cancel(false);
-            return heartbeatTimer.StopAsync();
+            return StopLeading(handle);
         }
 
         protected override void Dispose(bool disposing)
@@ -145,7 +178,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (disposing)
             {
                 timerCancellation.Dispose();
-                heartbeatTimer.Dispose();
+                Interlocked.Exchange(ref heartbeatTimer, null)?.Unregister(null);
             }
             base.Dispose(disposing);
         }

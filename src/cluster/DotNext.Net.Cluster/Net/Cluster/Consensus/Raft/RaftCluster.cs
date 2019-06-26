@@ -255,7 +255,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 currentTerm.VolatileWrite(await auditTrail.RestoreTermAsync().ConfigureAwait(false));
             }
             //start node in Follower state
-            state = new FollowerState(this, electionTimeout);
+            state = new FollowerState(this, TimeSpan.FromMilliseconds(electionTimeout));
         }
 
         /// <summary>
@@ -291,12 +291,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             switch (state)
             {
                 case LeaderState leaderState:
-                    state = new FollowerState(this, electionTimeout);
+                    state = new FollowerState(this, TimeSpan.FromMilliseconds(electionTimeout));
                     await leaderState.StopLeading().ConfigureAwait(false);
                     leaderState.Dispose();
                     break;
                 case CandidateState candidateState:
-                    state = new FollowerState(this, electionTimeout);
+                    state = new FollowerState(this, TimeSpan.FromMilliseconds(electionTimeout));
                     await candidateState.StopVoting().ConfigureAwait(false);
                     candidateState.Dispose();
                     break;
@@ -438,7 +438,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     await leaderState.StopLeading().ConfigureAwait(false);
                     leaderState.Dispose();
-                    state = new FollowerState(this, electionTimeout);
+                    state = new FollowerState(this, TimeSpan.FromMilliseconds(electionTimeout));
                     Leader = null;
                     return true;
                 }
@@ -477,12 +477,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     switch (state)
                     {
                         case LeaderState leaderState:
-                            state = new FollowerState(this, electionTimeout);
+                            state = new FollowerState(this, TimeSpan.FromMilliseconds(electionTimeout));
                             await leaderState.StopLeading().ConfigureAwait(false);
                             leaderState.Dispose();
                             break;
                         case CandidateState candidateState:
-                            state = new FollowerState(this, electionTimeout);
+                            state = new FollowerState(this, TimeSpan.FromMilliseconds(electionTimeout));
                             await candidateState.StopVoting().ConfigureAwait(false);
                             candidateState.Dispose();
                             break;
@@ -504,7 +504,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     var localMember = FindMember(IsLocalMember);
                     votedFor = localMember;   //vote for self
                     await SaveLastVoteAsync(auditTrail, localMember).ConfigureAwait(false);
-                    newState.StartVoting(electionTimeout, auditTrail);
+                    newState.StartVoting(TimeSpan.FromMilliseconds(electionTimeout), auditTrail);
                     state = newState;
                     Logger.TransitionToCandidateStateCompleted();
                 }

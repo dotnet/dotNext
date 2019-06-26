@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Reflection;
@@ -36,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal static void TransitionToLeaderStateCompleted(this ILogger logger)
             => logger.LogInformation(Resources.GetString("TransitionToLeaderStateCompleted"));
 
-        internal static void VotingStarted(this ILogger logger, int timeout)
+        internal static void VotingStarted(this ILogger logger, in TimeSpan timeout)
             => logger.LogDebug(Resources.GetString("VotingStarted"), timeout);
 
         internal static void VotingCompleted(this ILogger logger, int votes)

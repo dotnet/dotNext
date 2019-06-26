@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -7,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly AutoResetEvent refreshEvent;
         private readonly RegisteredWaitHandle timerHandle;
 
-        internal FollowerState(IRaftStateMachine stateMachine, int timeout)
+        internal FollowerState(IRaftStateMachine stateMachine, in TimeSpan timeout)
             : base(stateMachine)
         {
             timerHandle = ThreadPool.RegisterWaitForSingleObject(refreshEvent = new AutoResetEvent(false), TimerEvent,

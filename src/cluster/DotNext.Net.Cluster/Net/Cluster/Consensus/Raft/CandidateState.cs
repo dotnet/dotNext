@@ -103,7 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="timeout">Candidate state timeout.</param>
         /// <param name="auditTrail">The local transaction log.</param>
-        internal void StartVoting(int timeout, IAuditTrail<LogEntryId> auditTrail = null)
+        internal void StartVoting(in TimeSpan timeout, IAuditTrail<LogEntryId> auditTrail = null)
         {
             stateMachine.Logger.VotingStarted(timeout);
             ICollection<VotingState> voters = new LinkedList<VotingState>();
