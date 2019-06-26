@@ -52,4 +52,8 @@
     <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext.Threading" Version="0.11.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Threading\" />
+  </ItemGroup>
 </Project>

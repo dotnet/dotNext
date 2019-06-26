@@ -27,57 +27,53 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return MemberHealthStatus.Ok;
         };
 
-        private BackgroundTask heartbeatTask;
+        private readonly AsyncTimer heartbeatTimer;
         private readonly long term;
         private readonly bool absoluteMajority;
-        private readonly TimeSpan loopDelay;
+        private readonly CancellationTokenSource timerCancellation;
 
-        internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority, TimeSpan delay, long term) 
+        internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority, long term) 
             : base(stateMachine)
         {
             this.term = term;
             this.absoluteMajority = absoluteMajority;
-            loopDelay = delay;
+            heartbeatTimer = new AsyncTimer(DoHeartbeats);
+            timerCancellation = new CancellationTokenSource();
         }
 
-        private async Task DoHeartbeats(CancellationToken token)
+        private async Task<bool> DoHeartbeats(CancellationToken token)
         {
-            while (!token.IsCancellationRequested && !IsDisposed)
+            ICollection<Task<MemberHealthStatus>> tasks = new LinkedList<Task<MemberHealthStatus>>();
+            //send heartbeat in parallel
+            foreach (var member in stateMachine.Members)
             {
-                ICollection<Task<MemberHealthStatus>> tasks = new LinkedList<Task<MemberHealthStatus>>();
-                //send heartbeat in parallel
-                foreach (var member in stateMachine.Members)
-                {
-                    stateMachine.Logger.SendingHearbeat(member.Endpoint);
-                    tasks.Add(member.HeartbeatAsync(term, token).ContinueWith(HealthStatusContinuation, default,
-                        TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current));
-                }
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-                var votes = 0;
-                if (absoluteMajority)
-                    foreach (var task in tasks)
-                        switch (task.Result)
-                        {
-                            case MemberHealthStatus.Canceled:
-                                return;
-                            case MemberHealthStatus.Ok:
-                                votes += 1;
-                                break;
-                            case MemberHealthStatus.Unavailable:
-                                votes -= 1;
-                                break;
-                        }
-                else
-                    votes = int.MaxValue;
-                tasks.Clear();
-                if(votes <= 0)
-                {
-                    stateMachine.MoveToFollowerState(false);
-                    break;
-                }
-                else
-                    await Task.Delay(loopDelay);
+                stateMachine.Logger.SendingHearbeat(member.Endpoint);
+                tasks.Add(member.HeartbeatAsync(term, token).ContinueWith(HealthStatusContinuation, default,
+                    TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current));
             }
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+            var votes = 0;
+            if (absoluteMajority)
+                foreach (var task in tasks)
+                    switch (task.Result)
+                    {
+                        case MemberHealthStatus.Canceled:
+                            return false;
+                        case MemberHealthStatus.Ok:
+                            votes += 1;
+                            break;
+                        case MemberHealthStatus.Unavailable:
+                            votes -= 1;
+                            break;
+                    }
+            else
+                votes = int.MaxValue;
+
+            tasks.Clear();
+            if (votes > 0) return true;
+            stateMachine.MoveToFollowerState(false);
+            return false;
         }
 
         private static async Task AppendEntriesAsync(IRaftClusterMember member, long term, ILogEntry<LogEntryId> newEntry,
@@ -119,13 +115,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal async Task AppendEntriesAsync(ILogEntry<LogEntryId> entry, IAuditTrail<LogEntryId> transactionLog, CancellationToken token)
         {
-            using (var tokenSource = heartbeatTask.CreateLinkedTokenSource(token))
+            using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(timerCancellation.Token, token))
             {
+                token = tokenSource.Token;
                 var lastEntry = transactionLog.LastRecord;
                 ICollection<Task> tasks = new LinkedList<Task>();
                 foreach (var member in stateMachine.Members)
                     if (member.IsRemote)
-                        tasks.Add(AppendEntriesAsync(member, term, entry, lastEntry, transactionLog, stateMachine.Logger, tokenSource.Token));
+                        tasks.Add(AppendEntriesAsync(member, term, entry, lastEntry, transactionLog, stateMachine.Logger, token));
                 await Task.WhenAll(tasks).ConfigureAwait(false);
                 //now the record is accepted by other nodes, commit it locally
                 await transactionLog.CommitAsync(entry).ConfigureAwait(false);
@@ -135,15 +132,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Starts cluster synchronization.
         /// </summary>
-        internal void StartLeading()
-            => heartbeatTask = new BackgroundTask(DoHeartbeats);
-        internal Task StopLeading() => heartbeatTask.Stop();
+        internal void StartLeading(TimeSpan delay) => heartbeatTimer.Start(delay, timerCancellation.Token);
+
+        internal Task StopLeading()
+        {
+            timerCancellation.Cancel(false);
+            return heartbeatTimer.StopAsync();
+        }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                heartbeatTask.Dispose();
+                timerCancellation.Dispose();
+                heartbeatTimer.Dispose();
             }
             base.Dispose(disposing);
         }

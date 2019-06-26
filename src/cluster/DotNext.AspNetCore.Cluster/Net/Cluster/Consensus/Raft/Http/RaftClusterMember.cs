@@ -66,10 +66,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var response = default(HttpResponseMessage);
             try
             {
-                response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
-                    .ConfigureAwait(false);
+                response = (await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
+                    .ConfigureAwait(false)).EnsureSuccessStatusCode();
                 ChangeStatus(AvailableStatus);
-                response.EnsureSuccessStatusCode();
                 return await message.ParseResponse(response).ConfigureAwait(false);
             }
             catch (HttpRequestException e)
@@ -106,9 +105,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var response = default(HttpResponseMessage);
             try
             {
-                response = await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
-                    .ConfigureAwait(false);
-                response.EnsureSuccessStatusCode();
+                response = (await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
+                    .ConfigureAwait(false)).EnsureSuccessStatusCode();
                 ChangeStatus(AvailableStatus);
             }
             catch (HttpRequestException e)

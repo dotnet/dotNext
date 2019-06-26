@@ -20,7 +20,15 @@ namespace DotNext.Threading.Tasks
         internal CancelableTaskCompletionSource(ref CancellationToken token, TaskCreationOptions options = TaskCreationOptions.RunContinuationsAsynchronously)
             : base(options)
         {
-            registration = token.CanBeCanceled ? token.Register(Dispose) : default;
+            registration = token.CanBeCanceled ? token.Register(Cancel, token) : default;
+        }
+
+        private void Cancel(object token)
+        {
+            if (token is CancellationToken unboxedToken)
+                TrySetCanceled(unboxedToken);
+            else
+                TrySetCanceled();
         }
 
         /// <summary>
@@ -30,7 +38,6 @@ namespace DotNext.Threading.Tasks
         {
             registration.Dispose();
             registration = default;
-            TrySetCanceled();
         }
     }
 }
