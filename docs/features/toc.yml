@@ -39,8 +39,8 @@
 - name: Advanced Reflection
   href: reflection/index.md
   items:
-    - name: Type Conversion
-      href: reflection/conversion.md
+    - name: Open and Closed Delegates
+      href: reflection/deleate.md
     - name: Fast Reflection
       href: reflection/fast.md
 - name: Metaprogramming
