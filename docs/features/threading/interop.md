@@ -14,3 +14,11 @@ await token.WaitAsync();
 ```
 
 # Wait Handles
+[WaitHandle](https://docs.microsoft.com/en-us/dotnet/api/system.threading.waithandle) represents OS-specific object that wait for exclusive access to shared resources. It can be converted into `Task` using `WaitAsync` static method.
+
+```csharp
+using DotNext.Threading;
+using System.Threading;
+
+await  
+```
