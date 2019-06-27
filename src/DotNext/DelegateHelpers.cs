@@ -11,7 +11,7 @@ namespace DotNext
     public static class DelegateHelpers
     {
         private static MethodInfo GetMethod<D>(Expression<D> expression)
-            where D : MulticastDelegate
+            where D : Delegate
         {
             switch(expression.Body)
             {
@@ -38,7 +38,7 @@ namespace DotNext
         /// <param name="expression">The expression tree containing instance method call.</param>
         /// <returns>The open delegate.</returns>
         public static D CreateOpenDelegate<D>(Expression<D> expression)
-            where D : MulticastDelegate
+            where D : Delegate
             => GetMethod(expression)?.CreateDelegate<D>();
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace DotNext
         /// <typeparam name="D">The type of the delegate describing expression tree.</typeparam>
         /// <returns>The factory of closed delegate.</returns>
         public static Func<object, D> CreateClosedDelegateFactory<D>(Expression<D> expression)
-            where D : MulticastDelegate
+            where D : Delegate
         {
             var method = GetMethod(expression);
             return method is null ? null : new Func<object, D>(method.CreateDelegate<D>);
