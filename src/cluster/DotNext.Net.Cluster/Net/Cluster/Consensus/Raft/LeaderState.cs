@@ -160,7 +160,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (var signal = new ManualResetEvent(false))
             {
                 handle.Unregister(signal);
-                await signal.WaitAsync().ConfigureAwait(false);
+                await signal.WaitAsync();
             }
         }
 
