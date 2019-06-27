@@ -11,6 +11,6 @@ using(var memory = new UnmanagedMemory(16))   //allocates 16 bytes in unmanaged 
     guid = Guid.NewGuid();
     memory.Pointer.As<Guid>().Ref = guid;   //writes Guid back to the unmanaged memory
     memory.Reallocate(32);  //resize unmanaged memory to 32 bytes. Resizing causes re-allocation.
-    memory.Pointer.Ref = 42; //change the value of the first byte in the memory 
+    memory.Bytes[0] = 42; //change the value of the first byte in the memory 
 }
 ```
