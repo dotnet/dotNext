@@ -13,6 +13,8 @@
       href: core/collections.md
     - name: Optional Type
       href: core/optional.md
+    - name: Result Type
+      href: core/result.md
     - name: Atomic Operations
       href: core/atomic.md
     - name: Generic specialization with constant values
