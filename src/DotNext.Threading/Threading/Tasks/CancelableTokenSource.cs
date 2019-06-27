@@ -25,7 +25,7 @@ namespace DotNext.Threading.Tasks
 
         private void Cancel(object token)
         {
-            if (token is CancellationToken unboxedToken)
+            if (token is CancellationToken unboxedToken && unboxedToken.IsCancellationRequested)
                 TrySetCanceled(unboxedToken);
             else
                 TrySetCanceled();
