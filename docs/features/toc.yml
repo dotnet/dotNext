@@ -69,11 +69,7 @@
 - name: Unsafe Data Structures
   href: unsafe/index.md
   items:
-    - name: Unmanaged Array
-      href: unsafe/array.md
-    - name: Off-Heap Allocation of Value Type
-      href: unsafe/offheap.md
+    - name: Structured Memory Access
+      href: unsafe/struct.md
     - name: Unstructured Memory Access
       href: unsafe/unstruct.md
-    - name: Unmanaged List
-      href: unsafe/list.md
