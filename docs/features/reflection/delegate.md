@@ -39,7 +39,7 @@ decimal d = decimalToInt(42);
 Built-in operators cannot be captured as delegates and method return **null**.
 
 # Closed Delegates
-Closed delegates allows to pass the first argument into static method implicitly (through [Target](https://docs.microsoft.com/en-us/dotnet/api/system.delegate.target#System_Delegate_Target) property). The only way to create closed delegate in C# is to use closure:
+Closed delegates allows to pass the first argument into static method implicitly (through [Target](https://docs.microsoft.com/en-us/dotnet/api/system.delegate.target#System_Delegate_Target) property). The only way to create closed delegate in C# is to use extension method or closure:
 
 ```csharp
 var str = "Hello, world!";
