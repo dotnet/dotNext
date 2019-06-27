@@ -24,12 +24,12 @@ namespace DotNext
             char IRandomCharacterGenerator.NextChar(ReadOnlySpan<char> allowedChars) => allowedChars[random.Next(0, allowedChars.Length)];
         }
 
-        private readonly struct RNGCharacterGenerator : IRandomCharacterGenerator
+        private readonly struct RngCharacterGenerator : IRandomCharacterGenerator
         {
             private readonly byte[] buffer;
             private readonly RandomNumberGenerator random;
 
-            internal RNGCharacterGenerator(RandomNumberGenerator random)
+            internal RngCharacterGenerator(RandomNumberGenerator random)
             {
                 this.random = random;
                 buffer = new byte[sizeof(int)];
@@ -52,7 +52,7 @@ namespace DotNext
                 return "";
             //use stack allocation for small strings
             var result = length < 1024 ? stackalloc char[length] : new Span<char>(new char[length]);
-            foreach (ref char element in result)
+            foreach (ref var element in result)
                 element = generator.NextChar(allowedChars);
             fixed (char* ptr = result)
                 return new string(ptr, 0, length);
@@ -104,7 +104,7 @@ namespace DotNext
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
         {
-            var generator = new RNGCharacterGenerator(random);
+            var generator = new RngCharacterGenerator(random);
             return NextString(ref generator, allowedChars, length);
         }
 
