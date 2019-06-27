@@ -15,6 +15,8 @@ namespace DotNext.Threading
     /// </summary>
     public static class AsyncBridge
     {
+        private static readonly Action<Task> IgnoreCancellationContinuation = task => { };
+
         private sealed class WaitHandleCompletionSource : TaskCompletionSource<bool>, IDisposable
         {
             private readonly RegisteredWaitHandle handle;
@@ -34,25 +36,6 @@ namespace DotNext.Threading
             void IDisposable.Dispose() => handle.Unregister(null);
         }
 
-        [SuppressMessage("Design", "CA1068", Justification = "This is token conversion method so position of token parameter is by design")]
-        private static async Task TokenToTask(CancellationToken token, bool completedAsCanceled)
-        {
-            var source = new CancelableTaskCompletionSource<bool>(ref token, TaskCreationOptions.None);
-            try
-            {
-                await source.Task.ConfigureAwait(false);
-            }
-            catch (OperationCanceledException)
-            {
-                if (completedAsCanceled)
-                    throw;
-            }
-            finally
-            {
-                source.Dispose();
-            }
-        }
-
         /// <summary>
         /// Obtains a task that can be used to await token cancellation.
         /// </summary>
@@ -64,9 +47,8 @@ namespace DotNext.Threading
         {
             if (!token.CanBeCanceled)
                 throw new ArgumentException(ExceptionMessages.TokenNotCancelable, nameof(token));
-            if (token.IsCancellationRequested)
-                return completeAsCanceled ? Task.FromCanceled(token) : Task.CompletedTask;
-            return TokenToTask(token, completeAsCanceled);
+            var task = Task.Delay(Infinite, token);
+            return completeAsCanceled ? task : task.ContinueWith(IgnoreCancellationContinuation, default, TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
         }
 
         private static async Task<bool> HandleToTask(WaitHandle handle, TimeSpan timeout)
@@ -83,8 +65,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if handle is signaled; otherwise, <see langword="false"/> if timeout occurred.</returns>
         public static Task<bool> WaitAsync(this WaitHandle handle, TimeSpan timeout)
         {
-            var completed = handle.WaitOne(0);
-            if (completed)
+            if (handle.WaitOne(0))
                 return CompletedTask<bool, True>.Task;
             else if (timeout == TimeSpan.Zero)
                 return CompletedTask<bool, False>.Task;
