@@ -180,11 +180,9 @@ namespace DotNext
             for (var j = startIndex; j < endIndex; j++)
             {
                 ref var jptr = ref span[j];
-                if (comparison.Compare(jptr, pivot) <= 0)
-                {
-                    i += 1;
-                    Memory.Swap(ref span[i], ref jptr);
-                }
+                if (comparison.Compare(jptr, pivot) > 0) continue;
+                i += 1;
+                Memory.Swap(ref span[i], ref jptr);
             }
 
             i += 1;
@@ -194,11 +192,12 @@ namespace DotNext
 
         private static void QuickSort<T>(Span<T> span, int startIndex, int endIndex, IComparer<T> comparison)
         {
-            if(startIndex >= endIndex)
-                return;
-            var partitionIndex = Partition(span, startIndex, endIndex, comparison);
-            QuickSort(span, startIndex, partitionIndex - 1, comparison);
-            QuickSort(span, partitionIndex + 1, endIndex, comparison);
+            while (startIndex < endIndex)
+            {
+                var partitionIndex = Partition(span, startIndex, endIndex, comparison);
+                QuickSort(span, startIndex, partitionIndex - 1, comparison);
+                startIndex = partitionIndex + 1;
+            }
         }
 
         /// <summary>
