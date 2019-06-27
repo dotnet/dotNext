@@ -3,8 +3,8 @@ Open and Closed Delegates
 Common Language Runtime supports [open and closed delegates](https://docs.microsoft.com/en-us/dotnet/api/system.delegate.createdelegate#System_Delegate_CreateDelegate_System_Type_System_Object_System_String_System_Boolean_) but there is no native support of them at syntax level in C#. Java supports [method references](https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html) to do that. C# syntactically supports closed delegate based created from instance method or open delegate created from static method. 
 
 Additionally, there is no way to create a delegate instance from property getter, index property or overloaded implicit/explicit type cast operator. [DelegateHelpers](../../api/DelegateHelpers.yml) class offers two methods to provide necessary syntactic sugar:
-* `CreateOpenDelegate` to create open delegate based on instance method, property, indexer 
-* `CreateClosedDelegateFactory` to create closed delegate based on static method, indexer, or overloaded type cast operator
+* `CreateOpenDelegate` to create open delegate based on instance method, property, indexer, or overloaded operator
+* `CreateClosedDelegateFactory` to create closed delegate based on static method, indexer, or overloaded operator
 
 # Open Delegates
 Open delegate allows to pass **this** argument explicitly. The only way to do that in C# is to use lambda expression or static method to express this capability:
@@ -26,7 +26,17 @@ var sizeOf = DelegateHelpers.CreateOpenDelegate<Func<ICollection, int>>(collecti
 `sizeOf` delegate instance representing `get_Count` getter method directly instead of wrapping it into static method.
 
 > [!WARNING]
-> `CreateOpenDelegate` method utilizes Expression Treed feature of C# programming language. There is no free lunch and you paying for such convenience by performance when instantiating delegate instead of `CreateDelegate`. That's why it is recommended to create such delegates statically and save them into **static readonly** fields.
+> `CreateOpenDelegate` method utilizes Expression Treed feature of C# programming language. There is no free lunch and you paying for such convenience by performance when instantiating delegate instead of `CreateDelegate`. That's why it is recommended to create such delegates statically and save them into **static readonly** fields. However, `CreateOpenDelegate` doesn't use dynamic code compilation feature.
+
+This method is suitable for capturing overloaded operator.
+
+```csharp
+var decimalToInt = DelegateHelpers.CreateOpenDelegate<Func<int, decimal>>(i => (decimal) i);
+
+decimal d = decimalToInt(42);
+```
+
+Built-in operators cannot be captured as delegates and method return **null**.
 
 # Closed Delegates
 Closed delegates allows to pass the first argument into static method implicitly (through [Target](https://docs.microsoft.com/en-us/dotnet/api/system.delegate.target#System_Delegate_Target) property). The only way to create closed delegate in C# is to use closure:
