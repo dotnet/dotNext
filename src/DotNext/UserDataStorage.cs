@@ -23,7 +23,7 @@ namespace DotNext
             V Supply();
         }
 
-        internal readonly struct FuncSupplier<V> : ISupplier<V>
+        private readonly struct FuncSupplier<V> : ISupplier<V>
         {
             private readonly Func<V> factory;
 
@@ -32,7 +32,7 @@ namespace DotNext
             V ISupplier<V>.Supply() => factory();
         }
 
-        internal readonly struct FuncSupplier<T, V> : ISupplier<V>
+        private readonly struct FuncSupplier<T, V> : ISupplier<V>
         {
             private readonly T arg;
             private readonly Func<T, V> factory;
@@ -46,7 +46,7 @@ namespace DotNext
             V ISupplier<V>.Supply() => factory(arg);
         }
 
-        internal readonly struct FuncSupplier<T1, T2, V> : ISupplier<V>
+        private readonly struct FuncSupplier<T1, T2, V> : ISupplier<V>
         {
             private readonly T1 arg1;
             private readonly T2 arg2;
@@ -62,13 +62,13 @@ namespace DotNext
             V ISupplier<V>.Supply() => factory(arg1, arg2);
         }
 
-        internal readonly struct CtorSupplier<V> : ISupplier<V>
+        private readonly struct CtorSupplier<V> : ISupplier<V>
             where V : new()
         {
             V ISupplier<V>.Supply() => new V();
         }
 
-        internal readonly struct CtorSupplier<B, D> : ISupplier<B>
+        private readonly struct CtorSupplier<B, D> : ISupplier<B>
             where D : class, B, new()
         {
             B ISupplier<B>.Supply() => new D();
@@ -158,7 +158,7 @@ namespace DotNext
             }
         }
 
-        private static readonly ConditionalWeakTable<object, BackingStorage> userData = new ConditionalWeakTable<object, BackingStorage>();
+        private static readonly ConditionalWeakTable<object, BackingStorage> UserData = new ConditionalWeakTable<object, BackingStorage>();
 
         private readonly object owner;
 
@@ -169,8 +169,8 @@ namespace DotNext
         private BackingStorage GetStorage(bool createIfNeeded)
         {
             if (createIfNeeded)
-                return userData.GetOrCreateValue(owner);
-            else if (userData.TryGetValue(owner, out var storage))
+                return UserData.GetOrCreateValue(owner);
+            else if (UserData.TryGetValue(owner, out var storage))
                 return storage;
             else
                 return null;
@@ -298,7 +298,7 @@ namespace DotNext
         public bool Remove<V>(UserDataSlot<V> slot)
         {
             var storage = GetStorage(false);
-            return storage is null ? false : storage.Remove(slot);
+            return (storage?.Remove(slot)).GetValueOrDefault();
         }
 
         /// <summary>

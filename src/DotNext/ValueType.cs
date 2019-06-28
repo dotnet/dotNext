@@ -141,7 +141,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
-        public unsafe static bool IsDefault(T value) => Memory.IsZero(Unsafe.AsPointer(ref value), Size);
+        public static unsafe bool IsDefault(T value) => Memory.IsZero(Unsafe.AsPointer(ref value), Size);
 
         /// <summary>
         /// Convert value type content into array of bytes.

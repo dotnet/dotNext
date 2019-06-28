@@ -22,9 +22,9 @@ namespace DotNext
         /// <summary>
         /// Unique identifier of the data slot.
         /// </summary>
-        private readonly long Id;
+        private readonly long id;
 
-        private UserDataSlot(long id) => Id = id;
+        private UserDataSlot(long id) => this.id = id;
 
         /// <summary>
         /// Allocates a new data slot.
@@ -33,14 +33,14 @@ namespace DotNext
         public static UserDataSlot<V> Allocate() => new UserDataSlot<V>(UserDataSlot.NewId);
 
 
-        internal bool Contains(IDictionary<long, object> storage) => storage.ContainsKey(Id);
+        internal bool Contains(IDictionary<long, object> storage) => storage.ContainsKey(id);
 
         internal V GetUserData(IDictionary<long, object> storage, V defaultValue)
-            => storage.TryGetValue(Id, out var userData) && userData is V result ? result : defaultValue;
+            => storage.TryGetValue(id, out var userData) && userData is V result ? result : defaultValue;
 
         internal bool GetUserData(IDictionary<long, object> storage, out V userData)
         {
-            if (storage.TryGetValue(Id, out var value) && value is V typedValue)
+            if (storage.TryGetValue(id, out var value) && value is V typedValue)
             {
                 userData = typedValue;
                 return true;
@@ -54,21 +54,21 @@ namespace DotNext
 
         internal void SetUserData(IDictionary<long, object> storage, V userData)
         {
-            if (Id == 0)
+            if (id == 0)
                 throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot);
             else
-                storage[Id] = userData;
+                storage[id] = userData;
         }
 
         internal bool RemoveUserData(IDictionary<long, object> storage)
-            => storage.Remove(Id);
+            => storage.Remove(id);
 
         /// <summary>
         /// Checks whether the two data slots are the same.
         /// </summary>
         /// <param name="other">Other data slot to check.</param>
         /// <returns><see langword="true"/> if both data slots identifies the same data key.</returns>
-        public bool Equals(UserDataSlot<V> other) => Id == other.Id;
+        public bool Equals(UserDataSlot<V> other) => id == other.id;
 
         /// <summary>
         /// Checks whether the two data slots are the same.
@@ -81,14 +81,14 @@ namespace DotNext
         /// Computes hash code for this data slot.
         /// </summary>
         /// <returns>Hash code.</returns>
-        public override int GetHashCode() => Id.GetHashCode();
+        public override int GetHashCode() => id.GetHashCode();
 
         /// <summary>
         /// Gets textual representation of this data slot
         /// useful for debugging.
         /// </summary>
         /// <returns>Textual representation of this data slot.</returns>
-        public override string ToString() => Id.ToString(default(IFormatProvider));
+        public override string ToString() => id.ToString(default(IFormatProvider));
 
         /// <summary>
         /// Checks whether the two data slots are the same.
@@ -97,7 +97,7 @@ namespace DotNext
         /// <param name="second">The second data slot to check.</param>
         /// <returns><see langword="true"/> if both data slots identifies the same data key.</returns>
         public static bool operator ==(UserDataSlot<V> first, UserDataSlot<V> second)
-            => first.Id == second.Id;
+            => first.id == second.id;
 
         /// <summary>
         /// Checks whether the two data slots are not the same.
@@ -106,6 +106,6 @@ namespace DotNext
         /// <param name="second">The second data slot to check.</param>
         /// <returns><see langword="false"/> if both data slots identifies the same data key.</returns>
         public static bool operator !=(UserDataSlot<V> first, UserDataSlot<V> second)
-            => first.Id != second.Id;
+            => first.id != second.id;
     }
 }

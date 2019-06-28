@@ -66,7 +66,7 @@ namespace DotNext
         /// <param name="error">The exception representing error. Cannot be <see langword="null"/>.</param>
         public Result(Exception error)
         {
-            this.exception = ExceptionDispatchInfo.Capture(error);
+            exception = ExceptionDispatchInfo.Capture(error);
             value = default;
         }
 
