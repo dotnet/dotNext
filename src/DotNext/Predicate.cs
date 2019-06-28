@@ -131,5 +131,24 @@ namespace DotNext
         /// <param name="right">The second predicate acting as logical XOR operand.</param>
         /// <returns>The predicate which computes logical XOR between results of two other predicates.</returns>
         public static Predicate<T> Xor<T>(this Predicate<T> left, Predicate<T> right) => input => left(input) ^ right(input);
+
+        /// <summary>
+        /// Invokes predicate without throwing the exception.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to compare.</typeparam>
+        /// <param name="predicate">The predicate to invoke.</param>
+        /// <param name="obj">The object to compare against the criteria defined within the method represented by this delegate.</param>
+        /// <returns><see langword="true"/> if <paramref name="obj" /> meets the criteria defined within the method represented by this delegate; otherwise, <see langword="false" />.</returns>
+        public static Result<bool> TryInvoke<T>(this Predicate<T> predicate, T obj)
+        {
+            try
+            {
+                return predicate(obj);
+            }
+            catch (Exception e)
+            {
+                return new Result<bool>(e);
+            }
+        }
     }
 }
