@@ -1,11 +1,9 @@
 using System;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
-    using Tasks;
+    using Runtime.CompilerServices;
 
     /// <summary>
     /// Provides set of methods for asynchronous invocation of various delegates.
@@ -18,31 +16,6 @@ namespace DotNext.Threading
     /// <seealso href="https://github.com/dotnet/corefx/issues/5940">BeginInvoke throws NotSupportedException</seealso>
     public static class AsyncDelegate
     {
-        private static Task StartNew<D>(D @delegate, Action<D> invoker, CancellationToken token)
-            where D : Delegate
-        {
-            var task = new Task(() => invoker(@delegate), token);
-            task.Start();
-            return task;
-        }
-
-        private static Task InvokeAsync<D>(D @delegate, Func<D, Task> invoker)
-            where D : MulticastDelegate
-        {
-            if (@delegate is null)
-                return Task.CompletedTask;
-            var handlers = @delegate.GetInvocationList();
-            switch (handlers.LongLength)
-            {
-                case 0:
-                    return Task.CompletedTask;
-                case 1:
-                    return invoker(@delegate);
-                default:
-                    return Task.WhenAll(handlers.Cast<D>().Select(invoker));
-            }
-        }
-
         /// <summary>
         /// Invokes a delegate of arbitrary type asynchronously.
         /// </summary>
@@ -51,9 +24,9 @@ namespace DotNext.Threading
         /// <param name="token">Cancellation token.</param>
         /// <typeparam name="D">Type of delegate to invoke.</typeparam>
         /// <returns>A task allows to control asynchronous invocation of methods attached to the multicast delegate.</returns>
-        public static Task InvokeAsync<D>(this D @delegate, Action<D> invoker, CancellationToken token = default)
+        public static AsyncDelegateFuture InvokeAsync<D>(this D @delegate, Action<D> invoker, CancellationToken token = default)
             where D : MulticastDelegate
-            => InvokeAsync(@delegate, h => StartNew(h, invoker, token));
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new CustomDelegateFuture<D>(invoker, token).Invoke(@delegate);
 
         /// <summary>
         /// Invokes event handlers asynchronously.
@@ -64,8 +37,8 @@ namespace DotNext.Threading
         /// <param name="args">Event arguments.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>An object representing state of the asynchronous invocation.</returns>
-        public static Task InvokeAsync<E>(this EventHandler<E> handler, object sender, E args, CancellationToken token = default)
-            => InvokeAsync(handler, h => h(sender, args), token);
+        public static AsyncDelegateFuture InvokeAsync<E>(this EventHandler<E> handler, object sender, E args, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new EventHandlerFuture<E>(sender, args, token).Invoke(handler);
 
         /// <summary>
         /// Invokes event handlers asynchronously.
@@ -95,8 +68,8 @@ namespace DotNext.Threading
         /// <param name="arg">The action argument.</param>
         /// <param name="token">Invocation cancellation token.</param>
         /// <returns>The task representing state of asynchronous invocation.</returns>
-        public static Task InvokeAsync<T>(this Action<T> action, T arg, CancellationToken token = default)
-            => InvokeAsync(action, h => h(arg), token);
+        public static AsyncDelegateFuture InvokeAsync<T>(this Action<T> action, T arg, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture<T>(arg, token).Invoke(action);
 
         /// <summary>
         /// Invokes action asynchronously.
@@ -108,8 +81,8 @@ namespace DotNext.Threading
         /// <param name="arg2">The second action argument.</param>
         /// <param name="token">Invocation cancellation token.</param>
         /// <returns>The task representing state of asynchronous invocation.</returns>
-        public static Task InvokeAsync<T1, T2>(this Action<T1, T2> action, T1 arg1, T2 arg2, CancellationToken token = default)
-            => InvokeAsync(action, h => h(arg1, arg2), token);
+        public static AsyncDelegateFuture InvokeAsync<T1, T2>(this Action<T1, T2> action, T1 arg1, T2 arg2, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture<T1, T2>(arg1, arg2, token).Invoke(action);
 
         /// <summary>
         /// Invokes action asynchronously.
@@ -123,8 +96,8 @@ namespace DotNext.Threading
         /// <param name="arg3">The third action argument.</param>
         /// <param name="token">Invocation cancellation token.</param>
         /// <returns>The task representing state of asynchronous invocation.</returns>
-        public static Task InvokeAsync<T1, T2, T3>(this Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3, CancellationToken token = default)
-            => InvokeAsync(action, h => h(arg1, arg2, arg3), token);
+        public static AsyncDelegateFuture InvokeAsync<T1, T2, T3>(this Action<T1, T2, T3> action, T1 arg1, T2 arg2, T3 arg3, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture<T1, T2, T3>(arg1, arg2, arg3, token).Invoke(action);
 
         /// <summary>
         /// Invokes action asynchronously.
@@ -140,8 +113,8 @@ namespace DotNext.Threading
         /// <param name="arg4">The fourth action argument.</param>
         /// <param name="token">Invocation cancellation token.</param>
         /// <returns>The task representing state of asynchronous invocation.</returns>
-        public static Task InvokeAsync<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, CancellationToken token = default)
-            => InvokeAsync(action, h => h(arg1, arg2, arg3, arg4), token);
+        public static AsyncDelegateFuture InvokeAsync<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture<T1, T2, T3, T4>(arg1, arg2, arg3, arg4, token).Invoke(action);
 
         /// <summary>
         /// Invokes action asynchronously.
@@ -159,8 +132,8 @@ namespace DotNext.Threading
         /// <param name="arg5">The fifth action argument.</param>
         /// <param name="token">Invocation cancellation token.</param>
         /// <returns>The task representing state of asynchronous invocation.</returns>
-        public static Task InvokeAsync<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, CancellationToken token = default)
-            => InvokeAsync(action, h => h(arg1, arg2, arg3, arg4, arg5), token);
+        public static AsyncDelegateFuture InvokeAsync<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture<T1, T2, T3, T4, T5>(arg1, arg2, arg3, arg4, arg5, token).Invoke(action);
 
         /// <summary>
         /// Invokes action asynchronously.
@@ -180,8 +153,8 @@ namespace DotNext.Threading
         /// <param name="arg6">The sixth action argument.</param>
         /// <param name="token">Invocation cancellation token.</param>
         /// <returns>The task representing state of asynchronous invocation.</returns>
-        public static Task InvokeAsync<T1, T2, T3, T4, T5, T6>(this Action<T1, T2, T3, T4, T5, T6> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, CancellationToken token = default)
-            => InvokeAsync(action, h => h(arg1, arg2, arg3, arg4, arg5, arg6), token);
+        public static AsyncDelegateFuture InvokeAsync<T1, T2, T3, T4, T5, T6>(this Action<T1, T2, T3, T4, T5, T6> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture<T1, T2, T3, T4, T5, T6>(arg1, arg2, arg3, arg4, arg5, arg6, token).Invoke(action);
 
         /// <summary>
         /// Invokes action asynchronously.
@@ -203,8 +176,8 @@ namespace DotNext.Threading
         /// <param name="arg7">The seventh action argument.</param>
         /// <param name="token">Invocation cancellation token.</param>
         /// <returns>The task representing state of asynchronous invocation.</returns>
-        public static Task InvokeAsync<T1, T2, T3, T4, T5, T6, T7>(this Action<T1, T2, T3, T4, T5, T6, T7> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, CancellationToken token = default)
-            => InvokeAsync(action, h => h(arg1, arg2, arg3, arg4, arg5, arg6, arg7), token);
+        public static AsyncDelegateFuture InvokeAsync<T1, T2, T3, T4, T5, T6, T7>(this Action<T1, T2, T3, T4, T5, T6, T7> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture<T1, T2, T3, T4, T5, T6, T7>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, token).Invoke(action);
 
         /// <summary>
         /// Invokes action asynchronously.
@@ -228,8 +201,8 @@ namespace DotNext.Threading
         /// <param name="arg8">The eighth action argument.</param>
         /// <param name="token">Invocation cancellation token.</param>
         /// <returns>The task representing state of asynchronous invocation.</returns>
-        public static Task InvokeAsync<T1, T2, T3, T4, T5, T6, T7, T8>(this Action<T1, T2, T3, T4, T5, T6, T7, T8> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, CancellationToken token = default)
-            => InvokeAsync(action, h => h(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8), token);
+        public static AsyncDelegateFuture InvokeAsync<T1, T2, T3, T4, T5, T6, T7, T8>(this Action<T1, T2, T3, T4, T5, T6, T7, T8> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture<T1, T2, T3, T4, T5, T6, T7, T8>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, token).Invoke(action);
 
         /// <summary>
         /// Invokes action asynchronously.
@@ -255,8 +228,8 @@ namespace DotNext.Threading
         /// <param name="arg9">THe ninth action argument.</param>
         /// <param name="token">Invocation cancellation token.</param>
         /// <returns>The task representing state of asynchronous invocation.</returns>
-        public static Task InvokeAsync<T1, T2, T3, T4, T5, T6, T7, T8, T9>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, CancellationToken token = default)
-            => InvokeAsync(action, h => h(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9), token);
+        public static AsyncDelegateFuture InvokeAsync<T1, T2, T3, T4, T5, T6, T7, T8, T9>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture<T1, T2, T3, T4, T5, T6, T7, T8, T9>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, token).Invoke(action);
 
         /// <summary>
         /// Invokes action asynchronously.
@@ -284,7 +257,7 @@ namespace DotNext.Threading
         /// <param name="arg10">The tenth action argument.</param>
         /// <param name="token">Invocation cancellation token.</param>
         /// <returns>The task representing state of asynchronous invocation.</returns>
-        public static Task InvokeAsync<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, CancellationToken token = default)
-            => InvokeAsync(action, h => h(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10), token);
+        public static AsyncDelegateFuture InvokeAsync<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(this Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, token).Invoke(action);
     }
 }

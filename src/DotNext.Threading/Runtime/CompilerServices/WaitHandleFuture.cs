@@ -3,12 +3,16 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotNext.Threading
+namespace DotNext.Runtime.CompilerServices
 {
+    using Threading.Tasks;
+    using True = Generic.BooleanConst.True;
+    using False = Generic.BooleanConst.False;
+
     /// <summary>
     /// Represents <see cref="WaitHandle"/> turned into awaitable future.
     /// </summary>
-    public sealed class WaitHandleFuture : Tasks.Future<Task<bool>>
+    public sealed class WaitHandleFuture : Future<Task<bool>>
     {
         internal static readonly WaitHandleFuture Successful = new WaitHandleFuture(true);
         internal static readonly WaitHandleFuture TimedOut = new WaitHandleFuture(false);
@@ -90,10 +94,23 @@ namespace DotNext.Threading
         /// <returns>The object that is used to monitor the completion of an asynchronous operation.</returns>
         public Awaiter GetAwaiter() => new Awaiter(this);
 
+        private async Task<bool> ExecuteAsync() => await this;
+
         /// <summary>
         /// Converts wait handle into <see cref="Task{TResult}"/>.
         /// </summary>
         /// <returns>The task representing wait handle.</returns>
-        public override async Task<bool> AsTask() => await this;
+        public override Task<bool> AsTask()
+        {
+            switch(state)
+            {
+                case SuccessfulState:
+                    return CompletedTask<bool, True>.Task;
+                case TimedOutState:
+                    return CompletedTask<bool, False>.Task;
+                default:
+                    return ExecuteAsync();
+            }
+        }
     }
 }

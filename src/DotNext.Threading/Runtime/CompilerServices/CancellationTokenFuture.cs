@@ -3,12 +3,12 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotNext.Threading
+namespace DotNext.Runtime.CompilerServices
 {
     /// <summary>
     /// Represents cancellation token turned into awaitable future.
     /// </summary>
-    public sealed class CancellationTokenFuture : Tasks.Future<Task>
+    public sealed class CancellationTokenFuture : Threading.Tasks.Future<Task>
     {
         private static readonly object CanceledToken = new CancellationToken(true);
         internal static readonly CancellationTokenFuture Completed = new CancellationTokenFuture(false);
@@ -92,10 +92,18 @@ namespace DotNext.Threading
         /// <returns>The object that is used to monitor the completion of an asynchronous operation.</returns>
         public Awaiter GetAwaiter() => new Awaiter(this);
 
+        private async Task ExecuteAsync() => await this;
+
         /// <summary>
         /// Converts cancellation token into <see cref="Task"/>.
         /// </summary>
         /// <returns>The task representing cancellation token.</returns>
-        public override async Task AsTask() => await this;
+        public override Task AsTask()
+        {
+            if(state is CancellationToken token)
+                return throwIfCanceled ? Task.FromCanceled(token) : Task.CompletedTask;
+            else
+                return ExecuteAsync();
+        }
     }
 }
