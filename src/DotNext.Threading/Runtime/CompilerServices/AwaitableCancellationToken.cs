@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
 {
     /// <summary>
     /// Represents cancellation token turned into awaitable object.
     /// </summary>
-    public sealed class AwaitableCancellationToken : Awaitable
+    public sealed class AwaitableCancellationToken : Awaitable<Task>
     {
         private static readonly object CanceledToken = new CancellationToken(true);
         internal static readonly AwaitableCancellationToken Completed = new AwaitableCancellationToken(false);
@@ -91,5 +92,11 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <returns>The object that is used to monitor the completion of an asynchronous operation.</returns>
         public Awaiter GetAwaiter() => new Awaiter(this);
+
+        /// <summary>
+        /// Converts cancellation token into <see cref="Task"/>.
+        /// </summary>
+        /// <returns>The task representing cancellation token.</returns>
+        public override async Task AsTask() => await this;
     }
 }

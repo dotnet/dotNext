@@ -24,7 +24,7 @@ namespace DotNext.Runtime.CompilerServices
 
         internal static Action Create(Action callback)
         {
-            var context = SynchronizationContext.Current;
+            var context = SynchronizationContext.Current?.CreateCopy();
             return context is null ? ContinuationWithoutContextFactory(callback) : new Continuation(callback, context).Invoke;
         }
     }

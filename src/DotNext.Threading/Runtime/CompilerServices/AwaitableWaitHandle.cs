@@ -1,13 +1,14 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
 {
     /// <summary>
     /// Represents <see cref="WaitHandle"/> converted into awaitable task.
     /// </summary>
-    public sealed class AwaitableWaitHandle : Awaitable
+    public sealed class AwaitableWaitHandle : Awaitable<Task<bool>>
     {
         internal static readonly AwaitableWaitHandle Successful = new AwaitableWaitHandle(true);
         internal static readonly AwaitableWaitHandle TimedOut = new AwaitableWaitHandle(false);
@@ -63,7 +64,7 @@ namespace DotNext.Runtime.CompilerServices
         private readonly RegisteredWaitHandle handle;
         private int state;
 
-        //constructor should be synchronized because OnTimeout can be called earlier than handle field will be set
+        //constructor should be synchronized because OnTimeout can be called before than handle field will be set
         [MethodImpl(MethodImplOptions.Synchronized)]     
         internal AwaitableWaitHandle(WaitHandle wh, TimeSpan timeout)
             => handle = ThreadPool.RegisterWaitForSingleObject(wh, OnTimeout, null, timeout, true);
@@ -89,5 +90,11 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <returns>The object that is used to monitor the completion of an asynchronous operation.</returns>
         public Awaiter GetAwaiter() => new Awaiter(this);
+
+        /// <summary>
+        /// Converts wait handle into <see cref="Task{TResult}"/>.
+        /// </summary>
+        /// <returns>The task representing wait handle.</returns>
+        public override async Task<bool> AsTask() => await this;
     }
 }
