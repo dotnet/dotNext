@@ -37,8 +37,8 @@ namespace DotNext.Threading
         {
             var acc = new Accumulator();
             Action action = acc.IncBy1;
-            action += acc.IncBy3;
             action += acc.Throw;
+            action += acc.IncBy3;
             await ThrowsAsync<AggregateException>(async () => await action.InvokeAsync());
         }
     }

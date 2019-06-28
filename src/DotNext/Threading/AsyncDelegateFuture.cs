@@ -67,6 +67,7 @@ namespace DotNext.Threading
     internal abstract class AsyncDelegateFuture<D> : AsyncDelegateFuture
         where D : MulticastDelegate
     {
+        private long index;
         private long totalCount;
         private volatile bool hasErrors;
         private volatile object exceptions; //has type Exception[] or AggregateException
@@ -80,8 +81,7 @@ namespace DotNext.Threading
 
         private protected sealed override void ThrowIfNeeded()
         {
-            var error = exceptions as AggregateException;
-            if(error != null)
+            if (exceptions is AggregateException error)
                 throw error;
         }
 
@@ -89,14 +89,14 @@ namespace DotNext.Threading
 
         private void InvokeOne(object d)
         {
-            var errors = (Exception[]) this.exceptions;
-            var index = totalCount.DecrementAndGet();
+            var errors = (Exception[]) exceptions;
+            var currentIndex = index.IncrementAndGet();
             if(d is D @delegate)
                 try
                 {
                     if(token.IsCancellationRequested)
                     {
-                        errors.VolatileWrite(index, new OperationCanceledException(token));
+                        errors.VolatileWrite(currentIndex, new OperationCanceledException(token));
                         hasErrors = true;
                     }
                     else
@@ -105,16 +105,21 @@ namespace DotNext.Threading
                 catch(Exception e)
                 {
                     hasErrors = true;
-                    errors.VolatileWrite(index, e);
+                    errors.VolatileWrite(currentIndex, e);
                 }
                 finally
                 {
-                    if(index <= 0)
-                    {
-                        this.exceptions = hasErrors ? new AggregateException(errors.SkipNulls()) : null;
-                        Complete();
-                    }
+                    if (totalCount.DecrementAndGet() == 0)
+                        Complete(hasErrors ? errors : null);
                 }
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private void Complete(Exception[] errors)
+        {
+            if (errors != null)
+                exceptions = new AggregateException(errors.SkipNulls());
+            Complete();
         }
 
         internal AsyncDelegateFuture<D> Invoke(D invocationList)
@@ -127,6 +132,7 @@ namespace DotNext.Threading
             else
             {
                 var list = invocationList.GetInvocationList();
+                index = -1L;
                 totalCount = list.LongLength;
                 exceptions = new Exception[list.LongLength];
                 var invoker = new WaitCallback(InvokeOne);
