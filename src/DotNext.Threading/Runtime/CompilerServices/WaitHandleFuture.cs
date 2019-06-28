@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 namespace DotNext.Runtime.CompilerServices
 {
     /// <summary>
-    /// Represents <see cref="WaitHandle"/> converted into awaitable task.
+    /// Represents <see cref="WaitHandle"/> turned into awaitable future.
     /// </summary>
-    public sealed class AwaitableWaitHandle : Awaitable<Task<bool>>
+    public sealed class WaitHandleFuture : Future<Task<bool>>
     {
-        internal static readonly AwaitableWaitHandle Successful = new AwaitableWaitHandle(true);
-        internal static readonly AwaitableWaitHandle TimedOut = new AwaitableWaitHandle(false);
+        internal static readonly WaitHandleFuture Successful = new WaitHandleFuture(true);
+        internal static readonly WaitHandleFuture TimedOut = new WaitHandleFuture(false);
 
         private const int TimedOutState = 1;
         private const int SuccessfulState = 2;
@@ -21,9 +21,9 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         public readonly struct Awaiter : INotifyCompletion
         {
-            private readonly AwaitableWaitHandle handle;
+            private readonly WaitHandleFuture handle;
 
-            internal Awaiter(AwaitableWaitHandle handle) => this.handle = handle;
+            internal Awaiter(WaitHandleFuture handle) => this.handle = handle;
 
             /// <summary>
             /// Indicates that the underlying wait handle is in signaled state.
@@ -66,10 +66,10 @@ namespace DotNext.Runtime.CompilerServices
 
         //constructor should be synchronized because OnTimeout can be called before than handle field will be set
         [MethodImpl(MethodImplOptions.Synchronized)]     
-        internal AwaitableWaitHandle(WaitHandle wh, TimeSpan timeout)
+        internal WaitHandleFuture(WaitHandle wh, TimeSpan timeout)
             => handle = ThreadPool.RegisterWaitForSingleObject(wh, OnTimeout, null, timeout, true);
 
-        private AwaitableWaitHandle(bool successful) => state = successful ? SuccessfulState : TimedOutState;
+        private WaitHandleFuture(bool successful) => state = successful ? SuccessfulState : TimedOutState;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private void OnTimeout(object state, bool timedOut)

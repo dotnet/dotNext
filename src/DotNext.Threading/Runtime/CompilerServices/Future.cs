@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 namespace DotNext.Runtime.CompilerServices
 {
     /// <summary>
-    /// Represents base class for ad-hoc awaitable objects in this library.
+    /// Represents lightweight version of <see cref="Task"/>.
     /// </summary>
-    public abstract class Awaitable
+    public abstract class Future
     {
         private protected Action continuation;
 
-        private protected Awaitable() { }
+        private protected Future() { }
 
         /// <summary>
         /// Determines whether asynchronous operation referenced by this object is already completed.
@@ -34,10 +34,10 @@ namespace DotNext.Runtime.CompilerServices
     }
 
     /// <summary>
-    /// Represents ad-hoc awaitable object that can be converted into <see cref="Task"/>.
+    /// Represents Future pattern that can be converted into <see cref="Task"/>.
     /// </summary>
     /// <typeparam name="T">The type of task that is supported by awaitable object.</typeparam>
-    public abstract class Awaitable<T> : Awaitable
+    public abstract class Future<T> : Future
         where T : Task
     {
         /// <summary>

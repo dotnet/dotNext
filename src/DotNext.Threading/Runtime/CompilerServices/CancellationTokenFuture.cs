@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 namespace DotNext.Runtime.CompilerServices
 {
     /// <summary>
-    /// Represents cancellation token turned into awaitable object.
+    /// Represents cancellation token turned into awaitable future.
     /// </summary>
-    public sealed class AwaitableCancellationToken : Awaitable<Task>
+    public sealed class CancellationTokenFuture : Future<Task>
     {
         private static readonly object CanceledToken = new CancellationToken(true);
-        internal static readonly AwaitableCancellationToken Completed = new AwaitableCancellationToken(false);
-        internal static readonly AwaitableCancellationToken Canceled = new AwaitableCancellationToken(true);
+        internal static readonly CancellationTokenFuture Completed = new CancellationTokenFuture(false);
+        internal static readonly CancellationTokenFuture Canceled = new CancellationTokenFuture(true);
 
         /// <summary>
         /// Represents object that is used to monitor the completion of an asynchronous operation
         /// </summary>
         public readonly struct Awaiter : INotifyCompletion
         {
-            private readonly AwaitableCancellationToken awaitable;
+            private readonly CancellationTokenFuture awaitable;
 
-            internal Awaiter(AwaitableCancellationToken awaitable) => this.awaitable = awaitable;
+            internal Awaiter(CancellationTokenFuture awaitable) => this.awaitable = awaitable;
 
             /// <summary>
             /// Indicates that underlying token is canceled.
@@ -58,7 +58,7 @@ namespace DotNext.Runtime.CompilerServices
         private readonly CancellationTokenRegistration registration;
         private readonly bool throwIfCanceled;
 
-        internal AwaitableCancellationToken(bool throwIfCanceled, ref CancellationToken token)
+        internal CancellationTokenFuture(bool throwIfCanceled, ref CancellationToken token)
         {
             this.throwIfCanceled = throwIfCanceled;
             if (token.IsCancellationRequested)
@@ -67,7 +67,7 @@ namespace DotNext.Runtime.CompilerServices
                 registration = token.Register(OnCanceled, token);
         }
 
-        private AwaitableCancellationToken(bool throwIfCanceled)
+        private CancellationTokenFuture(bool throwIfCanceled)
         {
             this.throwIfCanceled = throwIfCanceled;
             state = CanceledToken;
