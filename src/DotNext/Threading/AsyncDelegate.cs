@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
+    using Tasks;
+
     /// <summary>
     /// Provides set of methods for asynchronous invocation of various delegates.
     /// </summary>
@@ -73,8 +75,8 @@ namespace DotNext.Threading
         /// <param name="args">Event arguments.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>An object representing state of the asynchronous invocation.</returns>
-        public static Task InvokeAsync(this EventHandler handler, object sender, EventArgs args, CancellationToken token = default)
-            => InvokeAsync(handler, h => h(sender, args), token);
+        public static AsyncDelegateFuture InvokeAsync(this EventHandler handler, object sender, EventArgs args, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new EventHandlerFuture(sender, args, token).Invoke(handler);
 
         /// <summary>
         /// Invokes action asynchronously.
@@ -82,8 +84,8 @@ namespace DotNext.Threading
         /// <param name="action">The action to invoke asynchronously.</param>
         /// <param name="token">Invocation cancellation token.</param>
         /// <returns>The task representing state of asynchronous invocation.</returns>
-        public static Task InvokeAsync(this Action action, CancellationToken token = default)
-            => InvokeAsync(action, h => h(), token);
+        public static AsyncDelegateFuture InvokeAsync(this Action action, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture(token).Invoke(action); 
 
         /// <summary>
         /// Invokes action asynchronously.

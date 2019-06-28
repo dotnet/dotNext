@@ -3,12 +3,12 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotNext.Runtime.CompilerServices
+namespace DotNext.Threading
 {
     /// <summary>
     /// Represents <see cref="WaitHandle"/> turned into awaitable future.
     /// </summary>
-    public sealed class WaitHandleFuture : Future<Task<bool>>
+    public sealed class WaitHandleFuture : Tasks.Future<Task<bool>>
     {
         internal static readonly WaitHandleFuture Successful = new WaitHandleFuture(true);
         internal static readonly WaitHandleFuture TimedOut = new WaitHandleFuture(false);
@@ -67,17 +67,16 @@ namespace DotNext.Runtime.CompilerServices
         //constructor should be synchronized because OnTimeout can be called before than handle field will be set
         [MethodImpl(MethodImplOptions.Synchronized)]     
         internal WaitHandleFuture(WaitHandle wh, TimeSpan timeout)
-            => handle = ThreadPool.RegisterWaitForSingleObject(wh, OnTimeout, null, timeout, true);
+            => handle = ThreadPool.RegisterWaitForSingleObject(wh, Complete, null, timeout, true);
 
         private WaitHandleFuture(bool successful) => state = successful ? SuccessfulState : TimedOutState;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void OnTimeout(object state, bool timedOut)
+        private void Complete(object state, bool timedOut)
         {
             handle.Unregister(null);   
             this.state = timedOut ? TimedOutState : SuccessfulState;
-            continuation?.Invoke();
-            continuation = null;
+            Complete();
         }
 
         /// <summary>

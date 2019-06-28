@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Threading
@@ -16,18 +17,29 @@ namespace DotNext.Threading
             internal void IncBy3() => counter.Add(3);
 
             internal void IncBy5() => counter.Add(5);
+
+            internal void Throw() => throw new Exception();
         }
 
         [Fact]
-        public static void InvokeEventHandlerTest()
+        public static async Task InvokeActionAsync()
         {
             var acc = new Accumulator();
             Action action = acc.IncBy1;
             action += acc.IncBy3;
             action += acc.IncBy5;
-            var task = action.InvokeAsync();
-            task.Wait();
+            await action.InvokeAsync();
             Equal(9, acc.Counter);
+        }
+
+        [Fact]
+        public static async Task InvokeActionAsyncFailure()
+        {
+            var acc = new Accumulator();
+            Action action = acc.IncBy1;
+            action += acc.IncBy3;
+            action += acc.Throw;
+            await ThrowsAsync<AggregateException>(async () => await action.InvokeAsync());
         }
     }
 }

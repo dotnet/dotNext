@@ -3,12 +3,12 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotNext.Runtime.CompilerServices
+namespace DotNext.Threading
 {
     /// <summary>
     /// Represents cancellation token turned into awaitable future.
     /// </summary>
-    public sealed class CancellationTokenFuture : Future<Task>
+    public sealed class CancellationTokenFuture : Tasks.Future<Task>
     {
         private static readonly object CanceledToken = new CancellationToken(true);
         internal static readonly CancellationTokenFuture Completed = new CancellationTokenFuture(false);
@@ -64,7 +64,7 @@ namespace DotNext.Runtime.CompilerServices
             if (token.IsCancellationRequested)
                 state = CanceledToken;
             else
-                registration = token.Register(OnCanceled, token);
+                registration = token.Register(Complete, token);
         }
 
         private CancellationTokenFuture(bool throwIfCanceled)
@@ -74,12 +74,11 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void OnCanceled(object token)
+        private void Complete(object token)
         {
             state = token;
             registration.Dispose();
-            continuation?.Invoke();
-            continuation = null;
+            Complete();
         }
 
         /// <summary>

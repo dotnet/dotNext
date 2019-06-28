@@ -1,22 +1,64 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotNext.Runtime.CompilerServices
+namespace DotNext.Threading.Tasks
 {
     /// <summary>
     /// Represents lightweight version of <see cref="Task"/>.
     /// </summary>
     public abstract class Future
     {
-        private protected Action continuation;
+        private sealed class Continuation
+        {
+            private static readonly Func<object, Action> ContinuationWithoutContextFactory = DelegateHelpers.CreateClosedDelegateFactory<Action>(() => QueueContinuation(null));
 
-        private protected Future() { }
+            private readonly Action callback;
+            private readonly SynchronizationContext context;
+
+            private Continuation(Action callback, SynchronizationContext context)
+            {
+                this.callback = callback;
+                this.context = context;
+            }
+
+            private static void Invoke(object continuation) => (continuation as Action)?.Invoke();
+
+            private static void QueueContinuation(Action callback) => ThreadPool.QueueUserWorkItem(Invoke, callback);
+
+            private void Invoke() => context.Post(Invoke, callback);
+
+            internal static Action Create(Action callback)
+            {
+                var context = SynchronizationContext.Current?.CreateCopy();
+                return context is null ? ContinuationWithoutContextFactory(callback) : new Continuation(callback, context).Invoke;
+            }
+        }
+
+        private Action continuation;
+
+        /// <summary>
+        /// Initializes a new Future.
+        /// </summary>
+        protected Future() { }
 
         /// <summary>
         /// Determines whether asynchronous operation referenced by this object is already completed.
         /// </summary>
         public abstract bool IsCompleted { get; }
+
+        /// <summary>
+        /// Moves this Future into completed state and execute all attached continuations.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected void Complete()
+        {
+            if(continuation is null)
+                return;
+            continuation();
+            continuation = null;
+        }
 
         /// <summary>
         /// Attaches the callback that will be invoked on completion.
