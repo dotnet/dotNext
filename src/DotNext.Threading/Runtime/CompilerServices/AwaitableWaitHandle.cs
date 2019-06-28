@@ -9,7 +9,6 @@ namespace DotNext.Threading.Runtime.CompilerServices
     /// </summary>
     public sealed class AwaitableWaitHandle
     {
-        private static readonly WaitCallback ContinuationExecutor = RunContinuation;
         internal static readonly AwaitableWaitHandle Successful = new AwaitableWaitHandle(true);
         internal static readonly AwaitableWaitHandle TimedOut = new AwaitableWaitHandle(false);
 
@@ -54,7 +53,7 @@ namespace DotNext.Threading.Runtime.CompilerServices
             /// <param name="continuation">The action to invoke asynchronously.</param>
             public void OnCompleted(Action continuation)
             {
-                if(handle is null || handle.IsCompleted)
+                if(IsCompleted)
                     continuation();
                 else
                     handle.AddContinuation(continuation);
@@ -62,27 +61,22 @@ namespace DotNext.Threading.Runtime.CompilerServices
         }
 
         private readonly RegisteredWaitHandle handle;
-        private volatile int state;
-        private volatile Action continuation;
+        private int state;
+        private Action continuation;
 
         internal AwaitableWaitHandle(WaitHandle handle, TimeSpan timeout)
             => this.handle = ThreadPool.RegisterWaitForSingleObject(handle, OnTimeout, null, timeout, true);
 
         private AwaitableWaitHandle(bool successful) => state = successful ? SuccessfulState : TimedOutState;
 
-        private static void RunContinuation(object continuation)
-        {
-            if(continuation is Action action)
-                action();
-        }
-
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void AddContinuation(Action continuation)
+        private void AddContinuation(Action callback)
         {
+            callback = Continuation.Create(callback);
             if(IsCompleted)
-                ThreadPool.QueueUserWorkItem(ContinuationExecutor);   //leave synchronized method immediately
+                callback.Invoke();   //leave synchronized method immediately
             else
-                this.continuation += continuation;
+                continuation += callback;
         }
         
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -90,7 +84,7 @@ namespace DotNext.Threading.Runtime.CompilerServices
         {
             handle.Unregister(null);
             this.state = timedOut ? TimedOutState : SuccessfulState;
-            ThreadPool.QueueUserWorkItem(ContinuationExecutor, continuation);   //leave synchronized method immediately
+            continuation?.Invoke();
             continuation = null;
         }
 
