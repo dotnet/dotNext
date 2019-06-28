@@ -57,7 +57,7 @@ namespace DotNext.Runtime.CompilerServices
                 if(IsCompleted)
                     continuation();
                 else
-                    handle.AddContinuation(continuation);
+                    handle.OnCompleted(continuation);
             }
         }
 

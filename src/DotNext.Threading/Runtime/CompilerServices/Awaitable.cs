@@ -18,8 +18,12 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         public abstract bool IsCompleted { get; }
 
+        /// <summary>
+        /// Attaches the callback that will be invoked on completion.
+        /// </summary>
+        /// <param name="callback">The callback to be attached to the asynchronous operation which result is represented by this awaitable object.</param>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private protected void AddContinuation(Action callback)
+        public void OnCompleted(Action callback)
         {
             callback = Continuation.Create(callback);
             if (IsCompleted)

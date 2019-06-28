@@ -50,7 +50,7 @@ namespace DotNext.Runtime.CompilerServices
                 if (IsCompleted)
                     continuation();
                 else
-                    awaitable.AddContinuation(continuation);
+                    awaitable.OnCompleted(continuation);
             }
         }
 
