@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 
-namespace DotNext.Threading.Runtime.CompilerServices
+namespace DotNext.Runtime.CompilerServices
 {
     internal sealed class Continuation
     {

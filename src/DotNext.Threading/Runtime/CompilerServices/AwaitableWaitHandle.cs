@@ -2,12 +2,12 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace DotNext.Threading.Runtime.CompilerServices
+namespace DotNext.Runtime.CompilerServices
 {
     /// <summary>
     /// Represents <see cref="WaitHandle"/> converted into awaitable task.
     /// </summary>
-    public sealed class AwaitableWaitHandle
+    public sealed class AwaitableWaitHandle : Awaitable
     {
         internal static readonly AwaitableWaitHandle Successful = new AwaitableWaitHandle(true);
         internal static readonly AwaitableWaitHandle TimedOut = new AwaitableWaitHandle(false);
@@ -30,9 +30,9 @@ namespace DotNext.Threading.Runtime.CompilerServices
             public bool IsCompleted => handle is null || handle.IsCompleted;
 
             /// <summary>
-            /// 
+            /// Gets result of waiting operation.
             /// </summary>
-            /// <returns></returns>
+            /// <returns><see langword="true"/> if wait handle signaled before awaiter timed out; <see langword="false"/> if awaiter is timed out.</returns>
             public bool GetResult()
             {
                 switch(handle?.state)
@@ -62,27 +62,18 @@ namespace DotNext.Threading.Runtime.CompilerServices
 
         private readonly RegisteredWaitHandle handle;
         private int state;
-        private Action continuation;
 
-        internal AwaitableWaitHandle(WaitHandle handle, TimeSpan timeout)
-            => this.handle = ThreadPool.RegisterWaitForSingleObject(handle, OnTimeout, null, timeout, true);
+        //constructor should be synchronized because OnTimeout can be called earlier than handle field will be set
+        [MethodImpl(MethodImplOptions.Synchronized)]     
+        internal AwaitableWaitHandle(WaitHandle wh, TimeSpan timeout)
+            => handle = ThreadPool.RegisterWaitForSingleObject(wh, OnTimeout, null, timeout, true);
 
         private AwaitableWaitHandle(bool successful) => state = successful ? SuccessfulState : TimedOutState;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void AddContinuation(Action callback)
-        {
-            callback = Continuation.Create(callback);
-            if(IsCompleted)
-                callback.Invoke();   //leave synchronized method immediately
-            else
-                continuation += callback;
-        }
-        
-        [MethodImpl(MethodImplOptions.Synchronized)]
         private void OnTimeout(object state, bool timedOut)
         {
-            handle.Unregister(null);
+            handle.Unregister(null);   
             this.state = timedOut ? TimedOutState : SuccessfulState;
             continuation?.Invoke();
             continuation = null;
@@ -91,7 +82,7 @@ namespace DotNext.Threading.Runtime.CompilerServices
         /// <summary>
         /// Indicates that the underlying wait handle is in signaled state.
         /// </summary>
-        public bool IsCompleted => state > 0;
+        public override bool IsCompleted => state > 0;
 
         /// <summary>
         /// Retrieves awaiter for underlying wait handle.

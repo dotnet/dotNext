@@ -5,15 +5,13 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
-    using AwaitableWaitHandle = Runtime.CompilerServices.AwaitableWaitHandle;
+    using Runtime.CompilerServices;
 
     /// <summary>
     /// Allows to turn <see cref="WaitHandle"/> and <see cref="CancellationToken"/> into task.
     /// </summary>
     public static class AsyncBridge
     {
-        private static readonly Action<Task> IgnoreCancellationContinuation = task => { };
-
         /// <summary>
         /// Obtains a task that can be used to await token cancellation.
         /// </summary>
@@ -21,12 +19,14 @@ namespace DotNext.Threading
         /// <param name="completeAsCanceled"><see langword="true"/> to complete task in <see cref="TaskStatus.Canceled"/> state; <see langword="false"/> to complete task in <see cref="TaskStatus.RanToCompletion"/> state.</param>
         /// <returns>A task representing token state.</returns>
         /// <exception cref="ArgumentException"><paramref name="token"/> doesn't support cancellation.</exception>
-        public static Task WaitAsync(this CancellationToken token, bool completeAsCanceled = false)
+        public static AwaitableCancellationToken WaitAsync(this CancellationToken token,
+            bool completeAsCanceled = false)
         {
-            if (!token.CanBeCanceled)
-                throw new ArgumentException(ExceptionMessages.TokenNotCancelable, nameof(token));
-            var task = Task.Delay(Infinite, token);
-            return completeAsCanceled ? task : task.ContinueWith(IgnoreCancellationContinuation, default, TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+            if (token.IsCancellationRequested)
+                return completeAsCanceled ? AwaitableCancellationToken.Canceled : AwaitableCancellationToken.Completed;
+            if (token.CanBeCanceled)
+                return new AwaitableCancellationToken(completeAsCanceled, ref token);
+            throw new ArgumentException(ExceptionMessages.TokenNotCancelable, nameof(token));
         }
 
         /// <summary>

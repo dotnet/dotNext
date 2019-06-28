@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,7 +12,7 @@ namespace DotNext.Threading
         {
             using(var source = new CancellationTokenSource(400))
             {
-                await source.Token.WaitAsync().ConfigureAwait(false);
+                await source.Token.WaitAsync();
                 True(source.IsCancellationRequested);
             }
         }
@@ -21,7 +22,7 @@ namespace DotNext.Threading
         {
             using (var source = new CancellationTokenSource(400))
             {
-                await ThrowsAsync<TaskCanceledException>(() => source.Token.WaitAsync(true)).ConfigureAwait(false);
+                await ThrowsAsync<OperationCanceledException>(async () => await source.Token.WaitAsync(true));
                 True(source.IsCancellationRequested);
             }
         }
