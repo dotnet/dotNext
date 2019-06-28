@@ -52,9 +52,9 @@ namespace DotNext.Threading
 
         private static async Task<bool> Wait(WaitNode node, CancellationToken token)
         {
-            using (var tracker = new CancelableTaskCompletionSource<bool>(ref token))
-                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, tracker.Task).ConfigureAwait(false)))
-                    return true;
+            if (ReferenceEquals(node.Task,
+                await Task.WhenAny(node.Task, Task.Delay(InfiniteTimeSpan, token)).ConfigureAwait(false)))
+                return true;
             token.ThrowIfCancellationRequested();
             return false;
         }
