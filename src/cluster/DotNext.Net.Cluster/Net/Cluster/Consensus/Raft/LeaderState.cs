@@ -26,7 +26,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Unavailable);
             return new Result<MemberHealthStatus>(task.Result, MemberHealthStatus.Responded);
         };
-        private static readonly Converter<Result<bool>, long> ResultToTermConversion = result => result.Term;
 
         private AtomicBoolean processingState;
         private volatile RegisteredWaitHandle heartbeatTimer;
@@ -43,79 +42,87 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             processingState = new AtomicBoolean(false);
         }
 
-        private static async Task<long> AppendEntriesAsync(IRaftClusterMember member, long currentIndex, long term, IAuditTrail<LogEntryId> transactionLog, CancellationToken token)
+        private static async Task<long> AppendEntriesAsync(IRaftClusterMember member, long commitIndex, long term,
+            IAuditTrail<ILogEntry> transactionLog, CancellationToken token)
         {
+            var currentIndex = transactionLog.GetLastIndex(false);
             retry:
-            var commitIndex = transactionLog.GetLastId(true).Index;
-            var precedingEntry = await transactionLog.ResolveAsync(member.NextIndex - 1).ConfigureAwait(false) ?? transactionLog.Initial;
-            var entries = currentIndex >= member.NextIndex ?
-                await transactionLog.GetEntriesStartingFromAsync(member.NextIndex).ConfigureAwait(false) :
-                Array.Empty<ILogEntry<LogEntryId>>();
+            var precedingIndex = member.NextIndex - 1;
+            var precedingTerm = (await transactionLog.GetEntryAsync(precedingIndex).ConfigureAwait(false) ??
+                                 transactionLog.First).Term;
+            var entries = currentIndex >= member.NextIndex
+                ? await transactionLog.GetEntriesAsync(member.NextIndex).ConfigureAwait(false)
+                : Array.Empty<ILogEntry>();
             //trying to replicate
-            var result = await member.AppendEntriesAsync(term, entries, precedingEntry, commitIndex, token).ConfigureAwait(false);
-            if(result.Term > term)
+            var result = await member
+                .AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token)
+                .ConfigureAwait(false);
+            if (result.Term > term)
                 return result.Term;
-            else if(result.Value)
+            if (result.Value)
             {
-                member.NextIndex = currentIndex + 1;
+                member.NextIndex.VolatileWrite(currentIndex + 1);
                 return result.Term;
             }
-            else
-            {
-                member.NextIndex.DecrementAndGet();
-                goto retry;
-            }
+
+            member.NextIndex.DecrementAndGet();
+            goto retry;
         }
 
-        private async Task<bool> DoHeartbeats(IAuditTrail<LogEntryId> transactionLog)
+        private async Task<bool> DoHeartbeats(IAuditTrail<ILogEntry> transactionLog)
         {
             ICollection<Task<Result<MemberHealthStatus>>> tasks = new LinkedList<Task<Result<MemberHealthStatus>>>();
             //send heartbeat in parallel
-            var currentIndex = transactionLog?.GetLastId(false).Index;
+            var commitIndex = transactionLog.GetLastIndex(true);
             foreach (var member in stateMachine.Members)
-                tasks.Add((currentIndex.HasValue ? 
-                    AppendEntriesAsync(member, currentIndex.Value, term, transactionLog, timerCancellation.Token) :
-                    member.AppendEntriesAsync(term, Array.Empty<ILogEntry<LogEntryId>>(), default, long.MinValue, timerCancellation.Token).Convert(ResultToTermConversion)).ContinueWith(HealthStatusContinuation, default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current));
-            var votes = 0;
+                if (member.IsRemote)
+                    tasks.Add(AppendEntriesAsync(member, commitIndex, term, transactionLog, timerCancellation.Token)
+                        .ContinueWith(HealthStatusContinuation, default, TaskContinuationOptions.ExecuteSynchronously,
+                            TaskScheduler.Current));
+            var votes = 1;  //because we know the entry is replicated in this node
             foreach (var task in tasks)
             {
                 var result = await task.ConfigureAwait(false);
+                if (result.Term > term)
+                {
+                    stateMachine.MoveToFollowerState(false, result.Term);
+                    return false;
+                }
+
                 switch (result.Value)
                 {
-                    case MemberHealthStatus.Canceled:   //leading was canceled
+                    case MemberHealthStatus.Canceled: //leading was canceled
                         return false;
                     case MemberHealthStatus.Responded:
-                        if(result.Term > term)
-                        {
-                            stateMachine.MoveToFollowerState(false, result.Term);
-                            return false;
-                        }
                         votes += 1;
                         break;
                     case MemberHealthStatus.Unavailable:
-                        if(absoluteMajority)
+                        if (absoluteMajority)
                             votes -= 1;
                         break;
                 }
+
                 task.Dispose();
             }
+
             tasks.Clear();
-            if(votes <= 0)
+            if (votes <= 0)
             {
                 stateMachine.MoveToFollowerState(false);
                 return false;
             }
-            if(currentIndex.HasValue)
-                await transactionLog.CommitAsync(currentIndex.Value);   //commit all entries started from current index until the end
+
+            await transactionLog.CommitAsync(commitIndex +
+                                             1); //commit all entries started from first uncommitted index to the end
             return true;
         }
 
-        private async void DoHeartbeats(object state, bool timedOut)
+        private async void DoHeartbeats(object transactionLog, bool timedOut)
         {
             if (IsDisposed || !timedOut || !processingState.FalseToTrue()) return;
             try
             {
-                if (!await DoHeartbeats(state as IAuditTrail<LogEntryId>).ConfigureAwait(false))
+                if (!await DoHeartbeats((IAuditTrail<ILogEntry>)transactionLog).ConfigureAwait(false))
                     heartbeatTimer?.Unregister(null);
             }
             finally
@@ -127,14 +134,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Starts cluster synchronization.
         /// </summary>
-        internal LeaderState StartLeading(int delay, IAuditTrail<LogEntryId> transactionLog = null)
+        /// <param name="period">Time period of Heartbeats</param>
+        /// <param name="transactionLog">Transaction log.</param>
+        internal LeaderState StartLeading(int period, IAuditTrail<ILogEntry> transactionLog)
         {
             processingState.Value = false;
             if(transactionLog != null)
                 foreach(var member in stateMachine.Members)
-                    member.NextIndex = transactionLog.GetLastId(false).Index + 1;
+                    member.NextIndex = transactionLog.GetLastIndex(false) + 1;
             heartbeatTimer = ThreadPool.RegisterWaitForSingleObject(timerCancellation.Token.WaitHandle, DoHeartbeats,
-                null, delay, false);
+                null, period, false);
             return this;
         }
 

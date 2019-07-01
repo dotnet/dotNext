@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents cluster of nodes coordinated using Raft consensus protocol.
     /// </summary>
-    public interface IRaftCluster : ICluster
+    public interface IRaftCluster : Replication.IReplicationCluster<ILogEntry>
     {
         /// <summary>
         /// Gets term number used by Raft algorithm to check the consistency of the cluster.
@@ -18,9 +18,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         TimeSpan ElectionTimeout { get; }
 
         /// <summary>
-        /// Setup audit trail for the cluster.
+        /// Defines persistent state for the Raft-based cluster.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Audit trail is already defined for this instance.</exception>
-        IPersistentState AuditTrail { set; }
+        new IPersistentState AuditTrail { set; }
     }
 }

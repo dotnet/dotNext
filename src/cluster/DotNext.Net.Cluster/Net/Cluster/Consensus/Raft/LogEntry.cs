@@ -1,23 +1,15 @@
-using System;
-
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Messaging;
+    using IMessage = Messaging.IMessage;
 
     /// <summary>
     /// Represents log entry in Raft audit trail.
     /// </summary>
-    public readonly struct LogEntry
+    public interface ILogEntry : IMessage
     {
-        public readonly long Index;
-        public readonly long Term;
-        public readonly IMessage Command;
-
-        public LogEntry(long index, long term, IMessage command)
-        {
-            Index = index;
-            Term = term;
-            Command = command;
-        }
+        /// <summary>
+        /// Gets Term value associated with this log entry.
+        /// </summary>
+        long Term { get; }
     }
 }

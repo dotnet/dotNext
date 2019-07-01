@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotNext.Net.Cluster.Replication;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -175,13 +176,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         protected bool IsLeaderLocal => state is LeaderState;
 
+        
+        IAuditTrail<ILogEntry> IReplicationCluster<ILogEntry>.AuditTrail => auditTrail;
+
         /// <summary>
         /// Associates audit trail with the current instance.
         /// </summary>
         public IPersistentState AuditTrail
         {
-            set => auditTrail = auditTrail is null ? value : throw new InvalidOperationException(ExceptionMessages.AuditTrailAlreadyDefined);
             protected get => auditTrail;
+            set => auditTrail = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         private void ChangeMembers(MemberCollectionMutator mutator)
@@ -324,45 +328,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="sender">The sender of the replica message.</param>
         /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
         /// <param name="entries">The entries to be committed locally.</param>
-        /// <param name="precedingEntry">The identifier of the log entry immediately preceding new one.</param>
-        /// <param name="senderCommitIndex">The last entry known to be committed on the sender side.</param>
-        /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> <paramref name="precedingEntry"/> is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, IReadOnlyCollection<ILogEntry<LogEntryId>> entries, LogEntryId precedingEntry, long senderCommitIndex)
+        /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
+        /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
+        /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
+        /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
+        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, IReadOnlyCollection<ILogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-                else if(auditTrail.Term > senderTerm || !await ContainsAsync(auditTrail, precedingEntry).ConfigureAwait(false))
-                    return new Result<bool>(auditTrail.Term, false);
-                else
+                if (auditTrail.Term <= senderTerm &&
+                    await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm).ConfigureAwait(false))
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
 
-                    var firstEntry = entries.FirstOrDefault();
-                    if(firstEntry != null)
+                    if (entries.Count > 0)
                     {
-                        
+                        await auditTrail.DeleteAsync(prevLogIndex + 1).ConfigureAwait(false);
+                        await auditTrail.PrepareAsync(entries).ConfigureAwait(false);
                     }
 
-                    var currentIndex = auditTrail.GetLastId(true).Index;
-                    var result = senderCommitIndex <= currentIndex || await auditTrail.CommitAsync(currentIndex + 1, senderCommitIndex).ConfigureAwait(false) > 0;
+                    var currentIndex = auditTrail.GetLastIndex(true);
+                    var result = commitIndex <= currentIndex ||
+                                 await auditTrail.CommitAsync(currentIndex + 1, commitIndex).ConfigureAwait(false) > 0;
                     return new Result<bool>(auditTrail.Term, result);
                 }
-        }
-
-        private static bool CheckLogEntry(IAuditTrail<LogEntryId> trail, LogEntryId senderLastEntry)
-        {
-            var localLastEntry = trail.GetLastId(false);
-            return senderLastEntry.Index >= localLastEntry.Index && senderLastEntry.Term >= localLastEntry.Term;
-        }
-
-        private static bool CheckLogEntry(IAuditTrail<LogEntryId> trail, LogEntryId? senderLastEntry)
-        {
-            if(senderLastEntry is null)
-                return trail is null;
-            else if(trail is null)
-                return false;
-            else
-                return CheckLogEntry(trail, senderLastEntry.Value);
+                else
+                    return new Result<bool>(auditTrail.Term, false);
         }
 
         /// <summary>
@@ -370,9 +361,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="sender">The vote sender.</param>
         /// <param name="senderTerm">Term value provided by sender of the request.</param>
-        /// <param name="senderLastEntry">The last log entry stored on the sender.</param>
+        /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
+        /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        protected async Task<Result<bool>> ReceiveVote(TMember sender, long senderTerm, LogEntryId? senderLastEntry)
+        protected async Task<Result<bool>> ReceiveVote(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
             {
@@ -386,7 +378,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                     (state as FollowerState)?.Refresh();
-                if(auditTrail.IsVotedFor(sender) && CheckLogEntry(auditTrail, senderLastEntry))
+                if(auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm).ConfigureAwait(false))
                 {
                     await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
                     return new Result<bool>(auditTrail.Term, true);
@@ -468,7 +460,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     candidateState.Dispose();
                     Leader = newLeader as TMember;
-                    state = new LeaderState(this, absoluteMajority, auditTrail.Term).StartLeading(electionTimeout / 2);
+                    state = new LeaderState(this, absoluteMajority, auditTrail.Term).StartLeading(electionTimeout / 2,
+                        auditTrail);
                     Logger.TransitionToLeaderStateCompleted();
                 }
             }

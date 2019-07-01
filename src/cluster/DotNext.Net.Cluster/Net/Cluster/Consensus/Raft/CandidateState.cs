@@ -1,6 +1,7 @@
 ﻿using DotNext.Net.Cluster.Replication;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,24 +19,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private readonly struct VotingState
         {
-            private static readonly Converter<bool, VotingResult> VotingResultConverter = result => result ? VotingResult.Granted : VotingResult.Rejected;
-
-            private static readonly Func<Task<Result<bool>>, Result<VotingResult>> HandleTaskContinuation = task =>
-            {
-                if (task.IsCanceled)
-                    return new Result<VotingResult>(long.MinValue, VotingResult.Canceled);
-                if (task.IsFaulted)
-                    return new Result<VotingResult>(long.MinValue, VotingResult.NotAvailable);
-                return task.Result.Convert(VotingResultConverter);
-            };
-
             internal readonly IRaftClusterMember Voter;
             internal readonly Task<Result<VotingResult>> Task;
 
-            internal VotingState(IRaftClusterMember voter, long term, LogEntryId? lastRecord, CancellationToken token)
+            private static async Task<Result<VotingResult>> VoteAsync(IRaftClusterMember voter, long term, IAuditTrail<ILogEntry> auditTrail, CancellationToken token)
+            {
+                var lastIndex = auditTrail.GetLastIndex(false);
+                var lastTerm = (await auditTrail.GetEntryAsync(lastIndex).ConfigureAwait(false) ?? auditTrail.First)
+                    .Term;
+                VotingResult result;
+                try
+                {
+                    var response = await voter.VoteAsync(term, lastIndex, lastTerm, token).ConfigureAwait(false);
+                    term = response.Term;
+                    result = response.Value ? VotingResult.Granted : VotingResult.Rejected;
+                }
+                catch (OperationCanceledException)
+                {
+                    result = VotingResult.Canceled;
+                }
+                catch (Exception)
+                {
+                    result = VotingResult.NotAvailable;
+                }
+                return new Result<VotingResult>(term, result);
+            }
+
+            internal VotingState(IRaftClusterMember voter, long term, IAuditTrail<ILogEntry> auditTrail, CancellationToken token)
             {
                 Voter = voter;
-                Task = voter.VoteAsync(term, lastRecord, token).ContinueWith(HandleTaskContinuation, default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+                Task = VoteAsync(voter, term, auditTrail, token);
             }
         }
 
@@ -61,6 +74,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (IsDisposed)
                     return;
                 var result = await state.Task.ConfigureAwait(false);
+                if (result.Term > Term)  //current node is outdated
+                {
+                    stateMachine.MoveToFollowerState(false, result.Term);
+                    return;
+                }
                 switch (result.Value)
                 {
                     case VotingResult.Canceled: //candidate timeout happened
@@ -72,11 +90,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         break; 
                     case VotingResult.Rejected:
                         stateMachine.Logger.VoteRejected(state.Voter.Endpoint);
-                        if(result.Term > Term)  //current node is outdated
-                        {
-                            stateMachine.MoveToFollowerState(false, result.Term);
-                            return;
-                        }
                         votes -= 1;
                         break;
                     case VotingResult.NotAvailable:
@@ -102,15 +115,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="timeout">Candidate state timeout.</param>
         /// <param name="auditTrail">The local transaction log.</param>
-        internal CandidateState StartVoting(int timeout, IAuditTrail<LogEntryId> auditTrail = null)
+        internal CandidateState StartVoting(int timeout, IAuditTrail<ILogEntry> auditTrail)
         {
             stateMachine.Logger.VotingStarted(timeout);
             ICollection<VotingState> voters = new LinkedList<VotingState>();
             votingCancellation.CancelAfter(timeout);
             //start voting in parallel
-            var lastRecord = auditTrail?.GetLastId(false);
             foreach (var member in stateMachine.Members)
-                voters.Add(new VotingState(member, Term, lastRecord, votingCancellation.Token));
+                voters.Add(new VotingState(member, Term, auditTrail, votingCancellation.Token));
             votingTask = EndVoting(voters);
             return this;
         }
