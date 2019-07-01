@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
 
-    internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessagingNetwork
+    internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
         private const string RaftClientHandlerName = "raftClient";
         private delegate ICollection<IPEndPoint> HostingAddressesProvider();
@@ -71,9 +71,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ILogger IHostingContext.Logger => Logger;
 
-        IReadOnlyCollection<IAddressee> IMessagingNetwork.Members => Members;
+        IReadOnlyCollection<IAddressee> IMessageBus.Members => Members;
 
-        IAddressee IMessagingNetwork.Leader => Leader;
+        IAddressee IMessageBus.Leader => Leader;
 
         private void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
         {
@@ -105,7 +105,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             });
         }
 
-        async Task<TResponse> IMessagingNetwork.SendMessageToLeaderAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
+        async Task<TResponse> IMessageBus.SendMessageToLeaderAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
         {
             do
             {
@@ -129,7 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             throw new OperationCanceledException(token);
         }
 
-        async Task IMessagingNetwork.SendSignalToLeaderAsync(IMessage message, CancellationToken token)
+        async Task IMessageBus.SendSignalToLeaderAsync(IMessage message, CancellationToken token)
         {
             do
             {
@@ -162,7 +162,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             if (AuditTrail is null)
                 throw new NotSupportedException();
-            await AuditTrail.CommitAsync(entry);
+            await AuditTrail.PrepareAsync(entry);
             return true;
         }
 

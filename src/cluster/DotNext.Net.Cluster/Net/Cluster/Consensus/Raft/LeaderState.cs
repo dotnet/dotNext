@@ -1,31 +1,32 @@
-﻿using DotNext.Net.Cluster.Replication;
-using DotNext.Threading;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using static Threading.Tasks.Conversion;
+    using Replication;
+    using Threading;
+
     internal sealed class LeaderState : RaftState
     {
         private enum MemberHealthStatus
         {
             Unavailable = 0,
-            Ok,
+            Responded,
             Canceled
         }
 
-        private static readonly Func<Task, MemberHealthStatus> HealthStatusContinuation = task =>
+        private static readonly Func<Task<long>, Result<MemberHealthStatus>> HealthStatusContinuation = task =>
         {
             if (task.IsCanceled)
-                return MemberHealthStatus.Canceled;
-            else if (task.IsFaulted)
-                return MemberHealthStatus.Unavailable;
-            else
-                return MemberHealthStatus.Ok;
+                return new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Canceled);
+            if (task.IsFaulted)
+                return new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Unavailable);
+            return new Result<MemberHealthStatus>(task.Result, MemberHealthStatus.Responded);
         };
+        private static readonly Converter<Result<bool>, long> ResultToTermConversion = result => result.Term;
 
         private AtomicBoolean processingState;
         private volatile RegisteredWaitHandle heartbeatTimer;
@@ -42,92 +43,71 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             processingState = new AtomicBoolean(false);
         }
 
-        private async Task<bool> DoHeartbeats()
+        private static async Task<long> AppendEntriesAsync(IRaftClusterMember member, long currentIndex, long term, IAuditTrail<LogEntryId> transactionLog, CancellationToken token)
         {
-            ICollection<Task<MemberHealthStatus>> tasks = new LinkedList<Task<MemberHealthStatus>>();
+            retry:
+            var commitIndex = transactionLog.GetLastId(true).Index;
+            var precedingEntry = await transactionLog.ResolveAsync(member.NextIndex - 1).ConfigureAwait(false) ?? transactionLog.Initial;
+            var entries = currentIndex >= member.NextIndex ?
+                await transactionLog.GetEntriesStartingFromAsync(member.NextIndex).ConfigureAwait(false) :
+                Array.Empty<ILogEntry<LogEntryId>>();
+            //trying to replicate
+            var result = await member.AppendEntriesAsync(term, entries, precedingEntry, commitIndex, token).ConfigureAwait(false);
+            if(result.Term > term)
+                return result.Term;
+            else if(result.Value)
+            {
+                member.NextIndex = currentIndex + 1;
+                return result.Term;
+            }
+            else
+            {
+                member.NextIndex.DecrementAndGet();
+                goto retry;
+            }
+        }
+
+        private async Task<bool> DoHeartbeats(IAuditTrail<LogEntryId> transactionLog)
+        {
+            ICollection<Task<Result<MemberHealthStatus>>> tasks = new LinkedList<Task<Result<MemberHealthStatus>>>();
             //send heartbeat in parallel
+            var currentIndex = transactionLog?.GetLastId(false).Index;
             foreach (var member in stateMachine.Members)
-            {
-                stateMachine.Logger.SendingHearbeat(member.Endpoint);
-                tasks.Add(member.HeartbeatAsync(term, timerCancellation.Token).ContinueWith(HealthStatusContinuation, default,
-                    TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current));
-            }
-
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+                tasks.Add((currentIndex.HasValue ? 
+                    AppendEntriesAsync(member, currentIndex.Value, term, transactionLog, timerCancellation.Token) :
+                    member.AppendEntriesAsync(term, Array.Empty<ILogEntry<LogEntryId>>(), default, long.MinValue, timerCancellation.Token).Convert(ResultToTermConversion)).ContinueWith(HealthStatusContinuation, default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current));
             var votes = 0;
-            if (absoluteMajority)
-                foreach (var task in tasks)
-                    switch (task.Result)
-                    {
-                        case MemberHealthStatus.Canceled:
+            foreach (var task in tasks)
+            {
+                var result = await task.ConfigureAwait(false);
+                switch (result.Value)
+                {
+                    case MemberHealthStatus.Canceled:   //leading was canceled
+                        return false;
+                    case MemberHealthStatus.Responded:
+                        if(result.Term > term)
+                        {
+                            stateMachine.MoveToFollowerState(false, result.Term);
                             return false;
-                        case MemberHealthStatus.Ok:
-                            votes += 1;
-                            break;
-                        case MemberHealthStatus.Unavailable:
+                        }
+                        votes += 1;
+                        break;
+                    case MemberHealthStatus.Unavailable:
+                        if(absoluteMajority)
                             votes -= 1;
-                            break;
-                    }
-            else
-                votes = int.MaxValue;
-
+                        break;
+                }
+                task.Dispose();
+            }
             tasks.Clear();
-            if (votes > 0) return true;
-            stateMachine.MoveToFollowerState(false);
-            return false;
-        }
-
-        private static async Task AppendEntriesAsync(IRaftClusterMember member, long term, ILogEntry<LogEntryId> newEntry,
-            LogEntryId lastEntry, IAuditTrail<LogEntryId> transactionLog, ILogger logger, CancellationToken token)
-        {
-            logger.ReplicationStarted(member.Endpoint, newEntry.Id);
-            if (await member.AppendEntriesAsync(term, newEntry, lastEntry, token).ConfigureAwait(false))
+            if(votes <= 0)
             {
-                logger.ReplicationCompleted(member.Endpoint, newEntry.Id);
-                return;
+                stateMachine.MoveToFollowerState(false);
+                return false;
             }
-
-            //unable to commit fresh entry, tries to commit older entries
-            var lookup = lastEntry == transactionLog.Initial
-                ? throw new ReplicationException(member)
-                : transactionLog[lastEntry];
-            while (!await member.AppendEntriesAsync(term, lookup, transactionLog.GetPrevious(lookup.Id), token)
-                .ConfigureAwait(false))
-            {
-                lookup = transactionLog.GetPrevious(lookup);
-                if (lookup is null || lookup.Id == transactionLog.Initial)
-                    throw new ReplicationException(member);
-            }
-
-            //now lookup is committed, try to commit all new entries
-            lookup = transactionLog.GetNext(lookup);
-            while (lookup != null)
-                if (await member.AppendEntriesAsync(term, lookup, transactionLog.GetPrevious(lookup.Id), token)
-                    .ConfigureAwait(false))
-                    lookup = transactionLog.GetNext(lookup);
-                else
-                    throw new ReplicationException(member);
-            //now transaction log is restored on remote side, commit the fresh entry
-            if (await member.AppendEntriesAsync(term, newEntry, lastEntry, token).ConfigureAwait(false))
-                logger.ReplicationCompleted(member.Endpoint, newEntry.Id);
-            else
-                throw new ReplicationException(member);
-        }
-
-        internal async Task AppendEntriesAsync(ILogEntry<LogEntryId> entry, IAuditTrail<LogEntryId> transactionLog, CancellationToken token)
-        {
-            using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(timerCancellation.Token, token))
-            {
-                token = tokenSource.Token;
-                var lastEntry = transactionLog.LastRecord;
-                ICollection<Task> tasks = new LinkedList<Task>();
-                foreach (var member in stateMachine.Members)
-                    if (member.IsRemote)
-                        tasks.Add(AppendEntriesAsync(member, term, entry, lastEntry, transactionLog, stateMachine.Logger, token));
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-                //now the record is accepted by other nodes, commit it locally
-                await transactionLog.CommitAsync(entry).ConfigureAwait(false);
-            }
+            if(currentIndex.HasValue)
+                await transactionLog.CommitAsync(currentIndex.Value);   //commit all entries started from current index until the end
+            return true;
         }
 
         private async void DoHeartbeats(object state, bool timedOut)
@@ -135,7 +115,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (IsDisposed || !timedOut || !processingState.FalseToTrue()) return;
             try
             {
-                if (!await DoHeartbeats().ConfigureAwait(false))
+                if (!await DoHeartbeats(state as IAuditTrail<LogEntryId>).ConfigureAwait(false))
                     heartbeatTimer?.Unregister(null);
             }
             finally
@@ -147,9 +127,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Starts cluster synchronization.
         /// </summary>
-        internal LeaderState StartLeading(int delay)
+        internal LeaderState StartLeading(int delay, IAuditTrail<LogEntryId> transactionLog = null)
         {
             processingState.Value = false;
+            if(transactionLog != null)
+                foreach(var member in stateMachine.Members)
+                    member.NextIndex = transactionLog.GetLastId(false).Index + 1;
             heartbeatTimer = ThreadPool.RegisterWaitForSingleObject(timerCancellation.Token.WaitHandle, DoHeartbeats,
                 null, delay, false);
             return this;
@@ -169,7 +152,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var handle = Interlocked.Exchange(ref heartbeatTimer, null);
             if (handle is null || timerCancellation.IsCancellationRequested)
                 return Task.CompletedTask;
-
             timerCancellation.Cancel(false);
             return StopLeading(handle);
         }

@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="message">The message to be sent.</param>
         /// <param name="requiresConfirmation"><see langword="true"/> to wait for confirmation of delivery from receiver; otherwise, <see langword="false"/>.</param>
         /// <returns>The task representing asynchronous execution of broadcasting.</returns>
-        public static Task SendBroadcastSignalAsync(this IMessagingNetwork cluster, IMessage message, bool requiresConfirmation = true)
+        public static Task SendBroadcastSignalAsync(this IMessageBus cluster, IMessage message, bool requiresConfirmation = true)
         {
             ICollection<Task> tasks = new LinkedList<Task>();
             foreach (var member in cluster.Members)

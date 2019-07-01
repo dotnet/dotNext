@@ -23,8 +23,8 @@ namespace DotNext.Threading.Tasks
         /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
         public static async ValueTask WhenAll(ValueTask task1, ValueTask task2)
         {
-            await task1;
-            await task2;
+            await task1.ConfigureAwait(false);
+            await task2.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="task1">The first task to await.</param>
         /// <param name="task2">The second task to await.</param>
         /// <returns>A task containing results of both tasks.</returns>
-        public static async ValueTask<(T1, T2)> WhenAll<T1, T2>(ValueTask<T1> task1, ValueTask<T2> task2) => (await task1, await task2);
+        public static async ValueTask<(T1, T2)> WhenAll<T1, T2>(ValueTask<T1> task1, ValueTask<T2> task2) => (await task1.ConfigureAwait(false), await task2.ConfigureAwait(false));
 
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
@@ -52,9 +52,9 @@ namespace DotNext.Threading.Tasks
         /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
         public static async ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3)
         {
-            await task1;
-            await task2;
-            await task3;
+            await task1.ConfigureAwait(false);
+            await task2.ConfigureAwait(false);
+            await task3.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="task2">The second task to await.</param>
         /// <param name="task3">The third task to await.</param>
         /// <returns>A task containing results of all tasks.</returns>
-        public static async ValueTask<(T1, T2, T3)> WhenAll<T1, T2, T3>(ValueTask<T1> task1, ValueTask<T2> task2, ValueTask<T3> task3) => (await task1, await task2, await task3);
+        public static async ValueTask<(T1, T2, T3)> WhenAll<T1, T2, T3>(ValueTask<T1> task1, ValueTask<T2> task2, ValueTask<T3> task3) => (await task1.ConfigureAwait(false), await task2.ConfigureAwait(false), await task3.ConfigureAwait(false));
 
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
@@ -85,10 +85,10 @@ namespace DotNext.Threading.Tasks
         /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
         public static async ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4)
         {
-            await task1;
-            await task2;
-            await task3;
-            await task4;
+            await task1.ConfigureAwait(false);
+            await task2.ConfigureAwait(false);
+            await task3.ConfigureAwait(false);
+            await task4.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="task3">The third task to await.</param>
         /// <param name="task4">The fourth task to await.</param>
         /// <returns>A task containing results of all tasks.</returns>
-        public static async ValueTask<(T1, T2, T3, T4)> WhenAll<T1, T2, T3, T4>(ValueTask<T1> task1, ValueTask<T2> task2, ValueTask<T3> task3, ValueTask<T4> task4) => (await task1, await task2, await task3, await task4);
+        public static async ValueTask<(T1, T2, T3, T4)> WhenAll<T1, T2, T3, T4>(ValueTask<T1> task1, ValueTask<T2> task2, ValueTask<T3> task3, ValueTask<T4> task4) => (await task1.ConfigureAwait(false), await task2.ConfigureAwait(false), await task3.ConfigureAwait(false), await task4.ConfigureAwait(false));
 
         /// <summary>
         /// Creates a task that will complete when all of the passed tasks have completed.
@@ -122,11 +122,11 @@ namespace DotNext.Threading.Tasks
         /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
         public static async ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4, ValueTask task5)
         {
-            await task1;
-            await task2;
-            await task3;
-            await task4;
-            await task5;
+            await task1.ConfigureAwait(false);
+            await task2.ConfigureAwait(false);
+            await task3.ConfigureAwait(false);
+            await task4.ConfigureAwait(false);
+            await task5.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace DotNext.Threading.Tasks
         /// <param name="task4">The fourth task to await.</param>
         /// <param name="task5">The fifth task to await.</param>
         /// <returns>A task containing results of all tasks.</returns>
-        public static async ValueTask<(T1, T2, T3, T4, T5)> WhenAll<T1, T2, T3, T4, T5>(ValueTask<T1> task1, ValueTask<T2> task2, ValueTask<T3> task3, ValueTask<T4> task4, ValueTask<T5> task5) => (await task1, await task2, await task3, await task4, await task5);
+        public static async ValueTask<(T1, T2, T3, T4, T5)> WhenAll<T1, T2, T3, T4, T5>(ValueTask<T1> task1, ValueTask<T2> task2, ValueTask<T3> task3, ValueTask<T4> task4, ValueTask<T5> task5) => (await task1.ConfigureAwait(false), await task2.ConfigureAwait(false), await task3.ConfigureAwait(false), await task4.ConfigureAwait(false), await task5.ConfigureAwait(false));
 
         /// <summary>
         /// Creates a task that will complete when any of the supplied tasks have completed.

@@ -10,7 +10,7 @@ namespace DotNext
     {
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-        internal static string IsNotLeader => Resources.GetString("IsNotLeader");
+        internal static string NoConsensus => Resources.GetString("NoConsensus");
 
         internal static string CannotRemoveLocalNode => Resources.GetString("CannotRemoveLocalNode");
 

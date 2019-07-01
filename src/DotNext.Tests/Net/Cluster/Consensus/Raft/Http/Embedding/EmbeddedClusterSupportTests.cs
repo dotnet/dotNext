@@ -83,7 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 var box3 = host3.Services.GetRequiredService<IMessageHandler>() as Mailbox;
 
 
-                await host1.Services.GetRequiredService<IMessagingNetwork>().SendSignalToLeaderAsync(new TextMessage("Message to leader", "simple"));
+                await host1.Services.GetRequiredService<IMessageBus>().SendSignalToLeaderAsync(new TextMessage("Message to leader", "simple"));
 
                 //ensure that one of the boxes is not empty
                 var success = false;
@@ -129,7 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 await host1.StartAsync();
                 await host2.StartAsync();
 
-                var client = host1.Services.GetService<IMessagingNetwork>().Members.FirstOrDefault(member => member.Endpoint.Port == 3263);
+                var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(member => member.Endpoint.Port == 3263);
                 var messageBox = host2.Services.GetService<IMessageHandler>() as Mailbox;
                 NotNull(messageBox);
                 //request-reply test
