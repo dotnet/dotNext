@@ -57,11 +57,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static void SendingHearbeat(this ILogger logger, IPEndPoint member)
             => logger.LogDebug(Resources.GetString("SendingHearbeat"), member);
-
-        internal static void ReplicationStarted(this ILogger logger, IPEndPoint member, in LogEntryId record)
-            => logger.LogInformation(Resources.GetString("ReplicationStarted"), member, record.Term, record.Index);
-
-        internal static void ReplicationCompleted(this ILogger logger, IPEndPoint member, in LogEntryId record)
-            => logger.LogInformation(Resources.GetString("ReplicationCompleted"), member, record.Term, record.Index);
     }
 }

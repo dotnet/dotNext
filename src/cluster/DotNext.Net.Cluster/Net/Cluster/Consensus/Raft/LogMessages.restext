@@ -14,5 +14,3 @@ VoteRejected=Vote is rejected by member {Member}
 MemberUnavailable=Member {Member} is unavailable
 TimeoutReset=Election timeout is refreshed
 SendingHearbeat=Sending heartbeat to member {Member}
-ReplicationStarted=Replication of member {Member} is started. Term={RecordTerm}, Index={RecordIndex}
-ReplicationCompleted=Replication of member {Member} is completed. Term={RecordTerm}, Index={RecordIndex}

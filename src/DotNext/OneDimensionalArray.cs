@@ -229,7 +229,7 @@ namespace DotNext
             else
             {
                 var result = new T[input.LongLength - count];
-                Array.Copy(input, 0, result, 0, result.LongLength);
+                Array.Copy(input, result, result.LongLength);
                 return result;
             }
         }

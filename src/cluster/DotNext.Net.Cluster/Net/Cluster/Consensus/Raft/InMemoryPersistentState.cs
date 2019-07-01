@@ -26,17 +26,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             long ILogEntry.Term => 0L;
         }
 
+        private sealed class CommitEventExecutor
+        {
+            private readonly long startIndex, count;
+
+            internal CommitEventExecutor(long startIndex, long count)
+            {
+                this.startIndex = startIndex;
+                this.count = count;
+            }
+
+            private void Invoke(InMemoryPersistentState auditTrail) => auditTrail?.Committed?.Invoke(auditTrail, startIndex, count);
+
+            private void Invoke(object auditTrail) => Invoke(auditTrail as InMemoryPersistentState);
+
+            public static implicit operator WaitCallback(CommitEventExecutor executor) => executor is null ? default(WaitCallback) : executor.Invoke;
+        }
+
+        private static readonly ILogEntry First = new InitialLogEntry();
+        private static readonly ILogEntry[] EmptyLog = { First };
+
         private long commitIndex;
         private volatile ILogEntry[] log;
-        private readonly ILogEntry first;
+         
         private long term;
         private volatile IRaftClusterMember votedFor;
 
-        internal InMemoryPersistentState(CancellationToken token)
-        {
-            first = new InitialLogEntry();
-            log = Array.Empty<ILogEntry>();
-        }
+        internal InMemoryPersistentState() => log = EmptyLog;
 
         long IPersistentState.Term => term.VolatileRead();
 
@@ -63,32 +79,64 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public long GetLastIndex(bool committed)
             => committed ? commitIndex : Math.Max(0, log.LongLength - 1L);
 
-        private IReadOnlyList<ILogEntry> GetEntriesAsync(long startIndex, long endIndex)
-        {
-
-        }
+        private IReadOnlyList<ILogEntry> GetEntries(long startIndex, long endIndex)
+            => log.Slice(startIndex, endIndex - startIndex + 1);
 
         async ValueTask<IReadOnlyList<ILogEntry>> IAuditTrail<ILogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
         {
             using (await this.AcquireReadLock(CancellationToken.None).ConfigureAwait(false))
-                return GetEntriesAsync(startIndex, endIndex ?? GetLastIndex(false));
+                return GetEntries(startIndex, endIndex ?? GetLastIndex(false));
         }
 
-        public ValueTask<long> DeleteAsync(long startIndex, long? endIndex = null)
+        private long Append(ReadOnlyMemory<ILogEntry> entries, long? startIndex)
         {
-            throw new System.NotImplementedException();
+            long result;
+            if(startIndex.HasValue)
+            {
+                result = startIndex.Value;
+                log = log.RemoveLast(log.LongLength - result);
+            }
+            else
+                result = log.LongLength;
+            var newLog = new ILogEntry[entries.Length + log.LongLength];
+            Array.Copy(log, newLog, log.LongLength);
+            entries.CopyTo(new Memory<ILogEntry>(newLog, log.Length, entries.Length));
+            return result;
         }
 
-        public ValueTask<(long FirstIndex, long LastIndex)> PrepareAsync(IEnumerable<ILogEntry> entries)
+        async ValueTask<long> IAuditTrail<ILogEntry>.AppendAsync(ReadOnlyMemory<ILogEntry> entries, long? startIndex)
         {
-            throw new System.NotImplementedException();
+            if(entries.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
+            using (await this.AcquireWriteLock(CancellationToken.None).ConfigureAwait(false))
+                return Append(entries, startIndex);
         }
 
-        public ValueTask<long> CommitAsync(long startIndex, long? endIndex = null)
+        public event CommitEventHandler<ILogEntry> Committed;
+
+        private long Commit(long startIndex, long count)
         {
-            throw new System.NotImplementedException();
+            count = Math.Min(log.LongLength - startIndex, count);
+            if(count > 0L)
+            {
+                commitIndex = startIndex + count;
+                ThreadPool.QueueUserWorkItem(new CommitEventExecutor(startIndex, count), this);
+            }
+            return count;
         }
 
-        ref readonly ILogEntry IAuditTrail<ILogEntry>.First => first;
+        async ValueTask<long> IAuditTrail<ILogEntry>.CommitAsync(long startIndex, long? endIndex)
+        {
+            using (await this.AcquireWriteLock(CancellationToken.None).ConfigureAwait(false))
+            {
+                startIndex = Math.Max(commitIndex, startIndex);
+                var count = (endIndex ?? GetLastIndex(false)) - startIndex + 1L;
+                if(count <= 0L)
+                    return 0L;
+                return Commit(startIndex, count);
+            }
+        }
+
+        ref readonly ILogEntry IAuditTrail<ILogEntry>.First => ref First;
     }
 }

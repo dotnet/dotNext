@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -30,22 +31,21 @@ namespace DotNext.Net.Cluster.Replication
         ValueTask<IReadOnlyList<LogEntry>> GetEntriesAsync(long startIndex, long? endIndex = null);
 
         /// <summary>
-        /// Removes uncommitted log entries from this log.
-        /// </summary>
-        /// <param name="startIndex">The index of the first entry to be removed.</param>
-        /// <param name="endIndex">The index of the last entry to be removed; <see langword="null"/> to delete all uncommitted entries started from <paramref name="startIndex"/>.</param>
-        /// <returns></returns>
-        ValueTask<long> DeleteAsync(long startIndex, long? endIndex = null);
-
-        /// <summary>
         /// Adds uncommitted log entries into this log.
         /// </summary>
         /// <remarks>
         /// This method should updates cached value provided by method <see cref="GetLastIndex"/> called with argument of value <see langword="false"/>.
         /// </remarks>
         /// <param name="entries">The entries to be added into this log.</param>
-        /// <returns>Index of the first and last added entry.</returns>
-        ValueTask<(long FirstIndex, long LastIndex)> PrepareAsync(IEnumerable<LogEntry> entries);
+        /// <param name="startIndex"><see langword="null"/> to append entries into the end of the log; or index from which all previous log entries should be dropped and replaced with new entries.</param>
+        /// <returns>Index of the first added entry.</returns>
+        /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
+        ValueTask<long> AppendAsync(ReadOnlyMemory<LogEntry> entries, long? startIndex = null);
+
+        /// <summary>
+        /// The event that is raised when actual commit happen.
+        /// </summary>
+        event CommitEventHandler<LogEntry> Committed;
 
         /// <summary>
         /// Commits log entries into the underlying storage and marks these entries as committed.

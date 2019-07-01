@@ -248,12 +248,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="token">The token that can be used to cancel initialization process.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        public virtual async Task StartAsync(CancellationToken token)
+        public virtual Task StartAsync(CancellationToken token)
         {
             if(auditTrail is null)
                 auditTrail = new InMemoryPersistentState();
             //start node in Follower state
             state = new FollowerState(this).StartServing(electionTimeout);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -332,7 +333,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
         /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, IReadOnlyCollection<ILogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
+        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, ReadOnlyMemory<ILogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
                 if (auditTrail.Term <= senderTerm &&
@@ -341,15 +342,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
 
-                    if (entries.Count > 0)
-                    {
-                        await auditTrail.DeleteAsync(prevLogIndex + 1).ConfigureAwait(false);
-                        await auditTrail.PrepareAsync(entries).ConfigureAwait(false);
-                    }
+                    if (entries.Length > 0L)
+                        await auditTrail.AppendAsync(entries, prevLogIndex + 1L).ConfigureAwait(false);
 
                     var currentIndex = auditTrail.GetLastIndex(true);
                     var result = commitIndex <= currentIndex ||
-                                 await auditTrail.CommitAsync(currentIndex + 1, commitIndex).ConfigureAwait(false) > 0;
+                                 await auditTrail.CommitAsync(currentIndex + 1L, commitIndex).ConfigureAwait(false) > 0;
                     return new Result<bool>(auditTrail.Term, result);
                 }
                 else
