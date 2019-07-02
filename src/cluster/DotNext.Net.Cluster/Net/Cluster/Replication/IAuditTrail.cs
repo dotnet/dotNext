@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
         /// <param name="endIndex">The index of the last requested log entry, inclusively; <see langword="null"/> to return all log entries started from <paramref name="startIndex"/> to the last existing log entry.</param>
         /// <returns>The collection of log entries.</returns>
-        ValueTask<ReadOnlyMemory<LogEntry>> GetEntriesAsync(long startIndex, long? endIndex = null);
+        ValueTask<IReadOnlyList<LogEntry>> GetEntriesAsync(long startIndex, long? endIndex = null);
 
         /// <summary>
         /// Adds uncommitted log entries into this log.
@@ -40,7 +40,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="startIndex"><see langword="null"/> to append entries into the end of the log; or index from which all previous log entries should be dropped and replaced with new entries.</param>
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
-        ValueTask<long> AppendAsync(ReadOnlyMemory<LogEntry> entries, long? startIndex = null);
+        ValueTask<long> AppendAsync(IReadOnlyList<LogEntry> entries, long? startIndex = null);
 
         /// <summary>
         /// The event that is raised when actual commit happen.

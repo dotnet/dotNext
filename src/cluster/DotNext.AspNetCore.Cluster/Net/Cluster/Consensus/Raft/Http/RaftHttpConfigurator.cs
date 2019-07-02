@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading.Tasks;
+using DotNext.Net.Cluster.Replication;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -27,6 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 .AddSingleton<ICluster>(clusterNodeCast)
                 .AddSingleton<IRaftCluster>(clusterNodeCast)
                 .AddSingleton<IMessageBus>(clusterNodeCast)
+                .AddSingleton<IReplicationCluster<ILogEntry>>(clusterNodeCast)
                 .AddSingleton<IExpandableCluster>(clusterNodeCast);
         }
 

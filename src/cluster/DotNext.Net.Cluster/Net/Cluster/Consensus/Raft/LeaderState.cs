@@ -52,10 +52,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                                  transactionLog.First).Term;
             var entries = currentIndex >= member.NextIndex
                 ? await transactionLog.GetEntriesAsync(member.NextIndex).ConfigureAwait(false)
-                : default;
+                : Array.Empty<ILogEntry>();
             //trying to replicate
             var result = await member
-                .AppendEntriesAsync(term, new InMemoryList<ILogEntry>(entries), precedingIndex, precedingTerm, commitIndex, token)
+                .AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token)
                 .ConfigureAwait(false);
             if (result.Term > term)
                 return result.Term;

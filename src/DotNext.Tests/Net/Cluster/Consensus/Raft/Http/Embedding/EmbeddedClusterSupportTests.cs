@@ -134,7 +134,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 NotNull(messageBox);
                 //request-reply test
                 var response = await client.SendTextMessageAsync(StreamMessage.CreateBufferedMessageAsync, "Request", "Ping");
-                True(response.Reusable);
+                True(response.IsReusable);
                 NotNull(response);
                 Equal("Reply", response.Name);
                 Equal("Pong", await Mailbox.ReadAsText(response));

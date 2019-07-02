@@ -188,6 +188,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             set => auditTrail = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        /// <summary>
+        /// Gets token that can be used for all internal asynchronous operations.
+        /// </summary>
+        protected CancellationToken Token => transitionCancellation.Token;
+
         private void ChangeMembers(MemberCollectionMutator mutator)
         {
             var members = new MutableMemberCollection(this.members);
@@ -251,7 +256,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public virtual Task StartAsync(CancellationToken token)
         {
             if(auditTrail is null)
-                auditTrail = new InMemoryPersistentState();
+                auditTrail = new InMemoryAuditTrail();
             //start node in Follower state
             state = new FollowerState(this).StartServing(electionTimeout);
             return Task.CompletedTask;
@@ -333,7 +338,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
         /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, ReadOnlyMemory<ILogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
+        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, IReadOnlyList<ILogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
                 if (auditTrail.Term <= senderTerm &&
@@ -342,7 +347,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
 
-                    if (entries.Length > 0L)
+                    if (entries.Count > 0L)
                         await auditTrail.AppendAsync(entries, prevLogIndex + 1L).ConfigureAwait(false);
 
                     var currentIndex = auditTrail.GetLastIndex(true);

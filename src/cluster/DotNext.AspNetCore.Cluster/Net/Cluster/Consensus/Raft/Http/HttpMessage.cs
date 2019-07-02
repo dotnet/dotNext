@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -7,6 +8,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
@@ -15,10 +18,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal abstract class HttpMessage
     {
+        private static readonly ValueParser<string> StringParser = delegate(string str, out string value)
+        {
+            value = str;
+            return true;
+        };
+
+        private protected static readonly ValueParser<long> Int64Parser = long.TryParse;
+        private static readonly ValueParser<int> Int32Parser = int.TryParse;
+        private static readonly ValueParser<IPAddress> IpAddressParser = IPAddress.TryParse;
+        private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
+
         //request - represents IP of sender node
         private const string NodeIpHeader = "X-Raft-Node-IP";
+
         //request - represents hosting port of sender node
         private const string NodePortHeader = "X-Raft-Node-Port";
+
         //request - represents request message type
         private const string MessageTypeHeader = "X-Raft-Message-Type";
 
@@ -59,20 +75,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
 
             internal InboundMessageContent(HttpRequest request)
-                : this(request.Body, true, request.Headers[MessageNameHeader].FirstOrDefault() ?? throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageNameHeader)), new ContentType(request.ContentType))
+                : this(request.Body, true, ParseHeader<StringValues>(MessageNameHeader, request.Headers.TryGetValue),
+                    new ContentType(request.ContentType))
             {
             }
 
-            internal static async Task<TResponse> FromResponseAsync<TResponse>(HttpResponseMessage response, MessageReader<TResponse> reader)
+            private protected InboundMessageContent(MultipartSection section)
+                : this(section.Body, true, ParseHeader<StringValues>(MessageNameHeader, section.Headers.TryGetValue),
+                    new ContentType(section.ContentType))
+            {
+
+            }
+
+            internal static async Task<TResponse> FromResponseAsync<TResponse>(HttpResponseMessage response,
+                MessageReader<TResponse> reader)
             {
                 var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
-                var name = response.Headers.TryGetValues(MessageNameHeader, out var values)
-                    ? values.FirstOrDefault()
-                    : null;
-                if (name is null)
-                    throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageNameHeader));
-                using(var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                using(var message = new InboundMessageContent(content, true, name, contentType))
+                var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
+                using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                using (var message = new InboundMessageContent(content, true, name, contentType))
                     return await reader(message).ConfigureAwait(false);
             }
         }
@@ -86,22 +107,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             MessageType = messageType;
         }
 
-        private protected HttpMessage(HttpRequest request)
+        private protected HttpMessage(HeadersReader<StringValues> headers)
         {
-            var address = default(IPAddress);
-            var port = 0;
-            foreach (var header in request.Headers[NodeIpHeader])
-                if (IPAddress.TryParse(header, out address))
-                    break;
-            foreach (var header in request.Headers[NodePortHeader])
-                if (int.TryParse(header, out port))
-                    break;
-            Sender = new IPEndPoint(address ?? throw new RaftProtocolException(ExceptionMessages.MissingHeader(NodeIpHeader)), port);
-            MessageType = GetMessageType(request);
+            var address = ParseHeader(NodeIpHeader, headers, IpAddressParser);
+            var port = ParseHeader(NodePortHeader, headers, Int32Parser);
+            Sender = new IPEndPoint(address, port);
+            MessageType = GetMessageType(headers);
         }
 
-        internal static string GetMessageType(HttpRequest request)
-            => request.Headers.TryGetValue(MessageTypeHeader, out var values) ? values.First() : throw new RaftProtocolException(ExceptionMessages.MissingHeader(MessageTypeHeader));
+        private static string GetMessageType(HeadersReader<StringValues> headers) =>
+            ParseHeader(MessageTypeHeader, headers);
+
+        internal static string GetMessageType(HttpRequest request) => GetMessageType(request.Headers.TryGetValue);
             
         private protected virtual void FillRequest(HttpRequestMessage request)
         {
@@ -130,5 +147,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             response.StatusCode = StatusCodes.Status200OK;
             return response.WriteAsync(Convert.ToString(result, InvariantCulture));
         }
+
+        private protected static T ParseHeader<THeaders, T>(string headerName, HeadersReader<THeaders> reader,
+            ValueParser<T> parser)
+            where THeaders : IEnumerable<string>
+        {
+            if (reader(headerName, out var headers))
+                foreach (var header in headers)
+                    if (parser(header, out var result))
+                        return result;
+
+            throw new RaftProtocolException(ExceptionMessages.MissingHeader(headerName));
+        }
+
+        private protected static string ParseHeader<THeaders>(string headerName, HeadersReader<THeaders> reader)
+            where THeaders : IEnumerable<string>
+            => ParseHeader(headerName, reader, StringParser);
     }
 }

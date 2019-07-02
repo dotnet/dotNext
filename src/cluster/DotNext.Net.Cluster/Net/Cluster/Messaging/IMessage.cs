@@ -25,6 +25,11 @@ namespace DotNext.Net.Cluster.Messaging
         string Name { get; }
 
         /// <summary>
+        /// Indicates that the content of this message can be copied to the output stream or pipe multiple times.
+        /// </summary>
+        bool IsReusable { get; }
+
+        /// <summary>
         /// Gets length of the message payload, in bytes.
         /// </summary>
         /// <remarks>

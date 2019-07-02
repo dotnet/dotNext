@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -14,8 +15,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
+        private ResignMessage(HeadersReader<StringValues> headers)
+            : base(headers)
+        {
+        }
+
         internal ResignMessage(HttpRequest request)
-            : base(request)
+            : this(request.Headers.TryGetValue)
         {
         }
 

@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Replication
 
         {
             var entries = await auditTrail.GetEntriesAsync(index, index).ConfigureAwait(false);
-            return entries.Length > 0 ? entries.Span[0] : null;
+            return entries.Count > 0 ? entries[0] : null;
         }
     }
 }

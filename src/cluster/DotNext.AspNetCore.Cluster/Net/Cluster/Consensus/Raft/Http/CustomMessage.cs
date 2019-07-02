@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
@@ -29,26 +30,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             IsOneWay = oneWay;
         }
 
-        internal CustomMessage(HttpRequest request)
-            : base(request)
+        private CustomMessage(HeadersReader<StringValues> headers)
+            : base(headers)
         {
-            if(request.Headers.TryGetValue(OneWayHeader, out var values))
-            {
-                foreach(var header in values)
-                    if (bool.TryParse(header, out IsOneWay))
-                        break;
-            }
-            else
-                throw new RaftProtocolException(ExceptionMessages.MissingHeader(OneWayHeader));
-            if(request.Headers.TryGetValue(RespectLeadershipHeader, out values))
-            {
-                foreach (var header in values)
-                if(bool.TryParse(header, out RespectLeadership))
-                    break;
-            }
-            else
-                throw new RaftProtocolException(ExceptionMessages.MissingHeader(RespectLeadershipHeader));
-            
+            IsOneWay = ParseHeader(OneWayHeader, headers, BooleanParser);
+            RespectLeadership = ParseHeader(RespectLeadershipHeader, headers, BooleanParser);
+        }
+
+        internal CustomMessage(HttpRequest request)
+            : this(request.Headers.TryGetValue)
+        {
             Message = new InboundMessageContent(request);
         }
 

@@ -74,11 +74,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (IsDisposed)
                     return;
                 var result = await state.Task.ConfigureAwait(false);
-                if (result.Term > Term)  //current node is outdated
+                if (result.Term > Term) //current node is outdated
                 {
                     stateMachine.MoveToFollowerState(false, result.Term);
                     return;
                 }
+
                 switch (result.Value)
                 {
                     case VotingResult.Canceled: //candidate timeout happened
@@ -87,7 +88,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     case VotingResult.Granted:
                         stateMachine.Logger.VoteGranted(state.Voter.Endpoint);
                         votes += 1;
-                        break; 
+                        break;
                     case VotingResult.Rejected:
                         stateMachine.Logger.VoteRejected(state.Voter.Endpoint);
                         votes -= 1;
@@ -103,11 +104,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (!state.Voter.IsRemote)
                     localMember = state.Voter;
             }
+
             stateMachine.Logger.VotingCompleted(votes);
-            if (!votingCancellation.IsCancellationRequested && votes > 0 && localMember != null)
-                stateMachine.MoveToLeaderState(localMember); //becomes a leader
-            else
+            if (votingCancellation.IsCancellationRequested || votes <= 0 || localMember is null)
                 stateMachine.MoveToFollowerState(true); //no clear consensus
+            else
+                stateMachine.MoveToLeaderState(localMember); //becomes a leader
         }
 
         /// <summary>

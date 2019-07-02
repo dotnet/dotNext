@@ -207,7 +207,7 @@ namespace DotNext
                 return Array.Empty<T>();
             else if (startIndex == 0 && length == input.Length)
                 return input;
-            length = Math.Min(length - startIndex, input.LongLength);
+            length = Math.Min(input.LongLength - startIndex, length);
             var result = new T[length];
             Array.Copy(input, startIndex, result, 0, length);
             return result;

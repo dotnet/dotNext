@@ -2,31 +2,40 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal sealed class RequestVoteMessage : RaftHttpMessage, IHttpMessageReader<bool>, IHttpMessageWriter<bool>
+    internal sealed class RequestVoteMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
     {
-        internal const string RecordIndexHeader = "X-Raft-Record-Index";
+        private const string RecordIndexHeader = "X-Raft-Record-Index";
         internal const string RecordTermHeader = "X-Raft-Record-Term";
         internal new const string MessageType = "RequestVote";
 
-        internal readonly LogEntryId? LastEntry;
+        internal readonly long LastLogIndex;
+        internal readonly long LastLogTerm;
 
-        internal RequestVoteMessage(IPEndPoint sender, long term, LogEntryId? lastEntry)
+        internal RequestVoteMessage(IPEndPoint sender, long term, long lastLogIndex, long lastLogTerm)
             : base(MessageType, sender, term)
         {
-            LastEntry = lastEntry;
+            LastLogIndex = lastLogIndex;
+            LastLogTerm = lastLogTerm;
+        }
+
+        private RequestVoteMessage(HeadersReader<StringValues> headers)
+            : base(headers)
+        {
+            LastLogIndex = ParseHeader(RecordIndexHeader, headers, Int64Parser);
+            LastLogTerm = ParseHeader(RecordTermHeader, headers, Int64Parser);
         }
 
         internal RequestVoteMessage(HttpRequest request)
-            : base(request)
+            : this(request.Headers.TryGetValue)
         {
-            LastEntry = ParseLogEntryId(request, RecordIndexHeader, RecordTermHeader);
         }
 
-        Task<bool> IHttpMessageReader<bool>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
+        Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
 
-        public new Task SaveResponse(HttpResponse response, bool result) => HttpMessage.SaveResponse(response, result);
+        public new Task SaveResponse(HttpResponse response, Result<bool> result) => RaftHttpMessage.SaveResponse(response, result);
     }
 }

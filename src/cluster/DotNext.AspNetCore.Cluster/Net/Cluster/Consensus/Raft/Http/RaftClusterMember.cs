@@ -6,13 +6,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Generic;
     using Messaging;
-    using Replication;
     using Threading;
     using Threading.Tasks;
 
@@ -29,6 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly IHostingContext context;
         private volatile MemberMetadata metadata;
         private ClusterMemberStatusChanged memberStatusChanged;
+        private long nextIndex;
 
         internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath)
             : base(context.CreateHttpHandler(), true)
@@ -96,63 +95,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        [SuppressMessage("Reliability", "CA2000", Justification = "Response is disposed in finally block")]
-        async Task IRaftClusterMember.HeartbeatAsync(long term, CancellationToken token)
-        {
-            if (Endpoint.Equals(context.LocalEndpoint))
-                return;
-            context.Logger.SendingRequestToMember(Endpoint, HeartbeatMessage.MessageType);
-            var request = (HttpRequestMessage)new HeartbeatMessage(context.LocalEndpoint, term);
-            request.RequestUri = resourcePath;
-
-            var response = default(HttpResponseMessage);
-            try
-            {
-                response = (await SendAsync(request, HttpCompletionOption.ResponseContentRead, token)
-                    .ConfigureAwait(false)).EnsureSuccessStatusCode();
-                ChangeStatus(AvailableStatus);
-            }
-            catch (HttpRequestException e)
-            {
-                if (response is null)
-                {
-                    context.Logger.MemberUnavailable(Endpoint, e);
-                    ChangeStatus(UnavailableStatus);
-                    throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
-                }
-                else
-                    throw new UnexpectedStatusCodeException(response, e);
-            }
-            catch(OperationCanceledException e) when (!token.IsCancellationRequested)
-            {
-                context.Logger.MemberUnavailable(Endpoint, e);
-                ChangeStatus(UnavailableStatus);
-                throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
-            }
-            finally
-            {
-                Disposable.Dispose(response, response?.Content, request);
-            }
-        }
-
         //null means that node is unreachable
-        //true means that node votes successfully for the new leader
-        //false means that node is in candidate state and rejects voting
-        async Task<bool?> IRaftClusterMember.VoteAsync(long term, LogEntryId? lastEntry, CancellationToken token)
+
+        Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             => Endpoint.Equals(context.LocalEndpoint)
-                ? true
-                : await SendAsync<bool, RequestVoteMessage>(new RequestVoteMessage(context.LocalEndpoint, term, lastEntry), token)
-                    .ToNullable()
-                    .OnFaulted<bool?, DefaultConst<bool?>>()
-                    .ConfigureAwait(false);
+                ? Task.FromResult(new Result<bool>(term, true))
+                : SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalEndpoint, term, lastLogIndex, lastLogTerm), token);
 
         Task<bool> IClusterMember.ResignAsync(CancellationToken token)
             => SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalEndpoint), token);
 
-        Task<bool> IRaftClusterMember.AppendEntriesAsync(long term, ILogEntry<LogEntryId> newEntry, LogEntryId precedingEntry, CancellationToken token)
-            => Endpoint.Equals(context.LocalEndpoint) ?
-                context.LocalCommitAsync(newEntry) :
-                SendAsync<bool, AppendEntriesMessage>(new AppendEntriesMessage(context.LocalEndpoint, term, newEntry, precedingEntry), token);
+        Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync(long term, IReadOnlyList<ILogEntry> entries,
+            long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+            => Endpoint.Equals(context.LocalEndpoint)
+                ? Task.FromResult(new Result<bool>(term, true))
+                : SendAsync<Result<bool>, AppendEntriesMessage>(new AppendEntriesMessage(context.LocalEndpoint, term, prevLogIndex, prevLogTerm, commitIndex), token);
 
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh,
             CancellationToken token)
@@ -202,5 +159,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         Task IAddressee.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
             => SendSignalAsync(message, requiresConfirmation, false, token);
+
+        ref long IRaftClusterMember.NextIndex => ref nextIndex;
     }
 }

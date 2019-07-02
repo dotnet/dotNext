@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// <summary>
     /// Represents text message.
     /// </summary>
-    public sealed class TextMessage : IMessage
+    public class TextMessage : IMessage
     {
         /// <summary>
         /// Initializes a new text message.
@@ -41,6 +41,8 @@ namespace DotNext.Net.Cluster.Messaging
         /// Gets content length, in bytes.
         /// </summary>
         public int Length => Type.GetEncoding().GetByteCount(Content);
+
+        bool IMessage.IsReusable => true;
 
         long? IMessage.Length => Length;
 
