@@ -43,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             response.StatusCode = StatusCodes.Status200OK;
             response.Headers.Add(TermHeader, Convert.ToString(result.Term, InvariantCulture));
-            return response.WriteAsync(Convert.ToString(result, InvariantCulture));
+            return response.WriteAsync(Convert.ToString(result.Value, InvariantCulture));
         }
     }
 }

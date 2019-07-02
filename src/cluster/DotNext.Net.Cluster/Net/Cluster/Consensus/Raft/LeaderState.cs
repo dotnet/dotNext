@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNext.Runtime.InteropServices;
@@ -119,10 +120,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async void DoHeartbeats(object transactionLog, bool timedOut)
         {
+            Debug.Assert(transactionLog is IAuditTrail<ILogEntry>);
             if (IsDisposed || !timedOut || !processingState.FalseToTrue()) return;
             try
             {
-                if (!await DoHeartbeats((IAuditTrail<ILogEntry>)transactionLog).ConfigureAwait(false))
+                if (!await DoHeartbeats((IAuditTrail<ILogEntry>) transactionLog).ConfigureAwait(false))
                     heartbeatTimer?.Unregister(null);
             }
             finally
@@ -143,7 +145,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 foreach(var member in stateMachine.Members)
                     member.NextIndex = transactionLog.GetLastIndex(false) + 1;
             heartbeatTimer = ThreadPool.RegisterWaitForSingleObject(timerCancellation.Token.WaitHandle, DoHeartbeats,
-                null, period, false);
+                transactionLog, period, false);
+            DoHeartbeats(transactionLog, true); //execute heartbeats immediately without delay provided by RegisterWaitForSingleObject
             return this;
         }
 

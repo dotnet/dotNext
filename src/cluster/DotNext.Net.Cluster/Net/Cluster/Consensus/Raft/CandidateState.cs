@@ -38,7 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     result = VotingResult.Canceled;
                 }
-                catch (Exception)
+                catch (MemberUnavailableException)
                 {
                     result = VotingResult.NotAvailable;
                 }
@@ -121,7 +121,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             stateMachine.Logger.VotingStarted(timeout);
             ICollection<VotingState> voters = new LinkedList<VotingState>();
-            votingCancellation.CancelAfter(timeout);
+            //votingCancellation.CancelAfter(timeout);
             //start voting in parallel
             foreach (var member in stateMachine.Members)
                 voters.Add(new VotingState(member, Term, auditTrail, votingCancellation.Token));

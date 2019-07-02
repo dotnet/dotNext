@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -11,12 +12,9 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Messaging;
-
     internal sealed class AppendEntriesMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
     {
         private const string MimeSubType = "mixed";
-        private const string Boundary = "#######";
         internal new const string MessageType = "AppendEntries";
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
         private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
@@ -77,26 +75,38 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal async Task ParseEntriesAsync(HttpRequest request, CancellationToken token)
         {
-            var reader = new MultipartReader(Boundary, request.Body);
-            var entries = new List<ILogEntry>(10);
-            while (true)
+            var boundary = request.GetMultipartBoundary();
+            if (string.IsNullOrEmpty(boundary))
+                this.entries = Array.Empty<ILogEntry>();
+            else
             {
-                var section = await reader.ReadNextSectionAsync(token).ConfigureAwait(false);
-                if (section is null)
-                    break;
-                entries.Add(new ReceivedLogEntry(section));
-            }
+                var reader = new MultipartReader(boundary, request.Body);
+                var entries = new List<ILogEntry>(10);
+                while (true)
+                {
+                    var section = await reader.ReadNextSectionAsync(token).ConfigureAwait(false);
+                    if (section is null)
+                        break;
+                    entries.Add(new ReceivedLogEntry(section));
+                }
 
-            this.entries = entries;
+                this.entries = entries;
+            }
         }
 
         private protected override void FillRequest(HttpRequestMessage request)
         {
             base.FillRequest(request);
-            var content = new MultipartContent(MimeSubType, Boundary);
-            foreach (var entry in Entries)
-                content.Add(new LogEntryContent(entry));
-            request.Content = content;
+            request.Headers.Add(PrecedingRecordIndexHeader, Convert.ToString(PrevLogIndex, InvariantCulture));
+            request.Headers.Add(PrecedingRecordTermHeader, Convert.ToString(PrevLogTerm, InvariantCulture));
+            request.Headers.Add(CommitIndexHeader, Convert.ToString(CommitIndex, InvariantCulture));
+            if (Entries.Count > 0)
+            {
+                var content = new MultipartContent(MimeSubType);
+                foreach (var entry in Entries)
+                    content.Add(new LogEntryContent(entry));
+                request.Content = content;
+            }
         }
 
         Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);

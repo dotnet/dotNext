@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
+using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -32,6 +34,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal RequestVoteMessage(HttpRequest request)
             : this(request.Headers.TryGetValue)
         {
+        }
+
+        private protected override void FillRequest(HttpRequestMessage request)
+        {
+            base.FillRequest(request);
+            request.Headers.Add(RecordIndexHeader, Convert.ToString(LastLogIndex, InvariantCulture));
+            request.Headers.Add(RecordTermHeader, Convert.ToString(LastLogTerm, InvariantCulture));
         }
 
         Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);

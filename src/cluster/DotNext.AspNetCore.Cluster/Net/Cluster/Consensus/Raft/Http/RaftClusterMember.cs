@@ -109,7 +109,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             => Endpoint.Equals(context.LocalEndpoint)
                 ? Task.FromResult(new Result<bool>(term, true))
-                : SendAsync<Result<bool>, AppendEntriesMessage>(new AppendEntriesMessage(context.LocalEndpoint, term, prevLogIndex, prevLogTerm, commitIndex), token);
+                : SendAsync<Result<bool>, AppendEntriesMessage>(
+                    new AppendEntriesMessage(context.LocalEndpoint, term, prevLogIndex, prevLogTerm, commitIndex)
+                        {Entries = entries}, token);
 
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh,
             CancellationToken token)
@@ -161,5 +163,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => SendSignalAsync(message, requiresConfirmation, false, token);
 
         ref long IRaftClusterMember.NextIndex => ref nextIndex;
+
+        public override string ToString() => BaseAddress.ToString();
     }
 }

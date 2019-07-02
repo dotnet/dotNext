@@ -157,6 +157,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.members = collection;
             transitionSync = AsyncLock.Exclusive();
             transitionCancellation = new CancellationTokenSource();
+            auditTrail = new InMemoryAuditTrail();
         }
 
         private static bool IsLocalMember(TMember member) => !member.IsRemote;
@@ -184,8 +185,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public IPersistentState AuditTrail
         {
-            protected get => auditTrail;
-            set => auditTrail = value ?? throw new ArgumentNullException(nameof(value));
+            set
+            {
+                if(auditTrail is InMemoryAuditTrail && value is null)
+                    return;
+                auditTrail = value;
+            }
         }
 
         /// <summary>
@@ -255,8 +260,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public virtual Task StartAsync(CancellationToken token)
         {
-            if(auditTrail is null)
-                auditTrail = new InMemoryAuditTrail();
             //start node in Follower state
             state = new FollowerState(this).StartServing(electionTimeout);
             return Task.CompletedTask;
@@ -375,9 +378,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return new Result<bool>(auditTrail.Term, false);
                 if(auditTrail.Term < senderTerm)
                 {
-                    await auditTrail.UpdateTermAsync(senderTerm).ConfigureAwait(false);
                     Leader = null;
-                    await StepDown().ConfigureAwait(false);
+                    await StepDown(senderTerm).ConfigureAwait(false);
                 }
                 else
                     (state as FollowerState)?.Refresh();
