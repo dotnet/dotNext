@@ -30,6 +30,12 @@ namespace DotNext
             internal static readonly Predicate<T> Value = ObjectExtensions.IsNotNull;
         }
 
+        private static class HasValuePredicate<T>
+            where T : struct
+        {
+            internal static readonly Predicate<T?> Value = value => value.HasValue;
+        }
+
         /// <summary>
         /// Returns predicate implementing nullability check.
         /// </summary>
@@ -46,7 +52,7 @@ namespace DotNext
         /// Returns predicate checking that input argument 
         /// is not <see langword="null"/>.
         /// </summary>
-        /// <typeparam name="T">Type of the predicate argument.</typeparam>
+        /// <typeparam name="T">The type of the predicate argument.</typeparam>
         /// <returns>The predicate instance.</returns>
         /// <remarks>
         /// This method returns the same instance of predicate on every call.
@@ -54,6 +60,19 @@ namespace DotNext
         public static Predicate<T> IsNotNull<T>()
             where T : class
             => IsNotNullPredicate<T>.Value;
+
+        /// <summary>
+        /// Returns predicate checking that input argument of value type
+        /// is not <see langword="null"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the predicate argument.</typeparam>
+        /// <returns>The predicate instance.</returns>
+        /// <remarks>
+        /// This method returns the same instance of predicate on every call.
+        /// </remarks>        
+        public static Predicate<T?> HasValue<T>()
+            where T : struct
+            => HasValuePredicate<T>.Value;
 
         /// <summary>
         /// Returns a predicate which always returns <see langword="true"/>.
