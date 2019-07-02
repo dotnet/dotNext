@@ -55,7 +55,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal static void TimeoutReset(this ILogger logger)
             => logger.LogDebug(Resources.GetString("TimeoutReset"));
 
-        internal static void SendingHearbeat(this ILogger logger, IPEndPoint member)
-            => logger.LogDebug(Resources.GetString("SendingHearbeat"), member);
+        internal static void ReplicationStarted(this ILogger logger, IPEndPoint member, long index)
+            => logger.LogDebug(Resources.GetString("ReplicationStarted"), member, index);
+        
+        internal static void ReplicaSize(this ILogger logger, IPEndPoint member, int count, long index, long term)
+            => logger.LogDebug(Resources.GetString("ReplicaSize"), member, count, index, term);
+
+        internal static void ReplicationSuccessful(this ILogger logger, IPEndPoint member, long index)
+            => logger.LogDebug(Resources.GetString("ReplicationSuccessful"), member, index);
+        
+        internal static void ReplicationFailed(this ILogger logger, IPEndPoint member, long index)
+            => logger.LogDebug(Resources.GetString("ReplicationFailed"), member, index);
+        
+        internal static void CommitFailed(this ILogger logger, int quorum, long commitIndex)
+            => logger.LogDebug(Resources.GetString("CommitFailed"), quorum, commitIndex);
+        
+        internal static void CommitSuccessful(this ILogger logger, long index, long count)
+            => logger.LogDebug(Resources.GetString("CommitSuccessful"), index, count);
     }
 }

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNext.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -44,9 +44,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private static async Task<long> AppendEntriesAsync(IRaftClusterMember member, long commitIndex, long term,
-            IAuditTrail<ILogEntry> transactionLog, CancellationToken token)
+            IAuditTrail<ILogEntry> transactionLog, ILogger logger, CancellationToken token)
         {
             var currentIndex = transactionLog.GetLastIndex(false);
+            logger.ReplicationStarted(member.Endpoint, currentIndex);
             retry:
             var precedingIndex = member.NextIndex - 1;
             var precedingTerm = (await transactionLog.GetEntryAsync(precedingIndex).ConfigureAwait(false) ??
@@ -54,6 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entries = currentIndex >= member.NextIndex
                 ? await transactionLog.GetEntriesAsync(member.NextIndex).ConfigureAwait(false)
                 : Array.Empty<ILogEntry>();
+            logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
             //trying to replicate
             var result = await member
                 .AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token)
@@ -62,11 +64,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return result.Term;
             if (result.Value)
             {
+                logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
                 member.NextIndex.VolatileWrite(currentIndex + 1);
                 return result.Term;
             }
 
-            member.NextIndex.DecrementAndGet();
+            logger.ReplicationFailed(member.Endpoint, member.NextIndex.DecrementAndGet());
             goto retry;
         }
 
@@ -77,7 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var commitIndex = transactionLog.GetLastIndex(true);
             foreach (var member in stateMachine.Members)
                 if (member.IsRemote)
-                    tasks.Add(AppendEntriesAsync(member, commitIndex, term, transactionLog, timerCancellation.Token)
+                    tasks.Add(AppendEntriesAsync(member, commitIndex, term, transactionLog, stateMachine.Logger, timerCancellation.Token)
                         .ContinueWith(HealthStatusContinuation, default, TaskContinuationOptions.ExecuteSynchronously,
                             TaskScheduler.Current));
             var votes = 1;  //because we know the entry is replicated in this node
@@ -109,12 +112,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             tasks.Clear();
             if (votes <= 0)
             {
+                stateMachine.Logger.CommitFailed(votes, commitIndex);
                 stateMachine.MoveToFollowerState(false);
                 return false;
             }
 
-            await transactionLog.CommitAsync(commitIndex +
-                                             1); //commit all entries started from first uncommitted index to the end
+            commitIndex += 1;
+            var count = await transactionLog.CommitAsync(commitIndex); //commit all entries started from first uncommitted index to the end
+            stateMachine.Logger.CommitSuccessful(commitIndex, count);
             return true;
         }
 

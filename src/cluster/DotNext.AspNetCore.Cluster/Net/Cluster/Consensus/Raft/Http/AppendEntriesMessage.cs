@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -94,6 +95,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
+        [SuppressMessage("Reliability", "CA2000", Justification = "Content of the log entry will be disposed automatically by ASP.NET infrastructure")]
         private protected override void FillRequest(HttpRequestMessage request)
         {
             base.FillRequest(request);
