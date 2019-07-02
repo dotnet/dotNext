@@ -154,22 +154,6 @@ namespace DotNext
             return RemoveAll(array, match, ref cb);
         }
 
-        /// <summary>
-        /// Converts each array element from one type into another.
-        /// </summary>
-        /// <typeparam name="I">Type of source array elements.</typeparam>
-        /// <typeparam name="O">Type of target array elements.</typeparam>
-        /// <param name="input">Input array to be converted. Cannot be <see langword="null"/>.</param>
-        /// <param name="mapper">Index-aware mapping function. Cannot be <see langword="null"/>.</param>
-        /// <returns>Converted array.</returns>
-        public static O[] ConvertAll<I, O>(this I[] input, Func<long, I, O> mapper)
-        {
-            var output = New<O>(input.LongLength);
-            for (var i = 0L; i < input.LongLength; i++)
-                output[i] = mapper(i, input[i]);
-            return output;
-        }
-
         internal static T[] New<T>(long length) => length == 0L ? Array.Empty<T>() : new T[length];
 
         /// <summary>
