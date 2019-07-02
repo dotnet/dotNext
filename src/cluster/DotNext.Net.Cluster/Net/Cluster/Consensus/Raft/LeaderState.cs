@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DotNext.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using static Threading.Tasks.Conversion;
     using Replication;
     using Threading;
 
@@ -52,10 +52,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                                  transactionLog.First).Term;
             var entries = currentIndex >= member.NextIndex
                 ? await transactionLog.GetEntriesAsync(member.NextIndex).ConfigureAwait(false)
-                : Array.Empty<ILogEntry>();
+                : default;
             //trying to replicate
             var result = await member
-                .AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token)
+                .AppendEntriesAsync(term, new InMemoryList<ILogEntry>(entries), precedingIndex, precedingTerm, commitIndex, token)
                 .ConfigureAwait(false);
             if (result.Term > term)
                 return result.Term;

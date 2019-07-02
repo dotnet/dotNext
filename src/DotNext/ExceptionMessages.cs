@@ -17,5 +17,7 @@ namespace DotNext
         internal static string IndexShouldBeZero => Resources.GetString("IndexShouldBeZero");
 
         internal static string CastNullToValueType => Resources.GetString("CastNullToValueType");
+
+        internal static string UnsupportedLockAcquisition => Resources.GetString("UnsupportedLockAcquisition");
     }
 }

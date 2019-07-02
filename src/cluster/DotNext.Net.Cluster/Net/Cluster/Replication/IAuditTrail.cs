@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
         /// <param name="endIndex">The index of the last requested log entry, inclusively; <see langword="null"/> to return all log entries started from <paramref name="startIndex"/> to the last existing log entry.</param>
         /// <returns>The collection of log entries.</returns>
-        ValueTask<IReadOnlyList<LogEntry>> GetEntriesAsync(long startIndex, long? endIndex = null);
+        ValueTask<ReadOnlyMemory<LogEntry>> GetEntriesAsync(long startIndex, long? endIndex = null);
 
         /// <summary>
         /// Adds uncommitted log entries into this log.

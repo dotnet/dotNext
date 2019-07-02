@@ -79,12 +79,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public long GetLastIndex(bool committed)
             => committed ? commitIndex : Math.Max(0, log.LongLength - 1L);
 
-        private IReadOnlyList<ILogEntry> GetEntries(long startIndex, long endIndex)
+        private ReadOnlyMemory<ILogEntry> GetEntries(long startIndex, long endIndex)
             => log.Slice(startIndex, endIndex - startIndex + 1);
 
-        async ValueTask<IReadOnlyList<ILogEntry>> IAuditTrail<ILogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
+        async ValueTask<ReadOnlyMemory<ILogEntry>> IAuditTrail<ILogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
         {
-            using (await this.AcquireReadLock(CancellationToken.None).ConfigureAwait(false))
+            using (await this.AcquireReadLockAsync(CancellationToken.None).ConfigureAwait(false))
                 return GetEntries(startIndex, endIndex ?? GetLastIndex(false));
         }
 
@@ -108,7 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if(entries.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
-            using (await this.AcquireWriteLock(CancellationToken.None).ConfigureAwait(false))
+            using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
                 return Append(entries, startIndex);
         }
 
@@ -127,7 +127,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async ValueTask<long> IAuditTrail<ILogEntry>.CommitAsync(long startIndex, long? endIndex)
         {
-            using (await this.AcquireWriteLock(CancellationToken.None).ConfigureAwait(false))
+            using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
             {
                 startIndex = Math.Max(commitIndex, startIndex);
                 var count = (endIndex ?? GetLastIndex(false)) - startIndex + 1L;

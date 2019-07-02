@@ -10,8 +10,8 @@ namespace DotNext.Net.Cluster.Replication
             where LogEntry : class, IMessage
 
         {
-            var collection = await auditTrail.GetEntriesAsync(index, index).ConfigureAwait(false);
-            return collection.Count > 0 ? collection[0] : null;
+            var entries = await auditTrail.GetEntriesAsync(index, index).ConfigureAwait(false);
+            return entries.Length > 0 ? entries.Span[0] : null;
         }
     }
 }
