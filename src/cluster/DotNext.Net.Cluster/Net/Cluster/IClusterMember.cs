@@ -45,6 +45,7 @@ namespace DotNext.Net.Cluster
         /// This method is completed synchronously is most cases if <paramref name="refresh"/> is <see langword="false"/>.
         /// </remarks>
         /// <returns>The task representing metadata read operation.</returns>
+        /// <exception cref="MemberUnavailableException">This member is not reachable through the network.</exception>
         ValueTask<IReadOnlyDictionary<string, string>> GetMetadata(bool refresh = false, CancellationToken token = default);
 
         /// <summary>
@@ -52,6 +53,7 @@ namespace DotNext.Net.Cluster
         /// </summary>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="MemberUnavailableException">This member is not reachable through the network.</exception>
         Task<bool> ResignAsync(CancellationToken token);
     }
 }
