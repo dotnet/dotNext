@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,41 +16,44 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private enum MemberHealthStatus
         {
             Unavailable = 0,
-            Responded,
+            Replicated, //means that node accepts the entries but not for the current term
+            ReplicatedWithCurrentTerm,  //means that node accepts the entries with the current term
             Canceled
         }
 
-        private static readonly Func<Task<long>, Result<MemberHealthStatus>> HealthStatusContinuation = task =>
+        private static readonly Func<Task<Result<bool>>, Result<MemberHealthStatus>> HealthStatusContinuation = task =>
         {
             if (task.IsCanceled)
                 return new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Canceled);
             if (task.IsFaulted)
                 return new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Unavailable);
-            return new Result<MemberHealthStatus>(task.Result, MemberHealthStatus.Responded);
+            return new Result<MemberHealthStatus>(task.Result.Term,
+                task.Result.Value ? MemberHealthStatus.ReplicatedWithCurrentTerm : MemberHealthStatus.Replicated);
         };
 
         private AtomicBoolean processingState;
         private volatile RegisteredWaitHandle heartbeatTimer;
-        private readonly long term;
+        private readonly long currentTerm;
         private readonly bool absoluteMajority;
         private readonly CancellationTokenSource timerCancellation;
 
         internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority, long term) 
             : base(stateMachine)
         {
-            this.term = term;
+            this.currentTerm = term;
             this.absoluteMajority = absoluteMajority;
             timerCancellation = new CancellationTokenSource();
             processingState = new AtomicBoolean(false);
         }
 
-        private static async Task<long> AppendEntriesAsync(IRaftClusterMember member, long commitIndex, long term,
+        //true if at least one entry from current term is stored on this node; otherwise, false
+        private static async Task<Result<bool>> AppendEntriesAsync(IRaftClusterMember member, long commitIndex,
+            long term,
             IAuditTrail<ILogEntry> transactionLog, ILogger logger, CancellationToken token)
         {
             var currentIndex = transactionLog.GetLastIndex(false);
             logger.ReplicationStarted(member.Endpoint, currentIndex);
-            retry:
-            var precedingIndex = member.NextIndex - 1;
+            var precedingIndex = Math.Max(0, member.NextIndex - 1);
             var precedingTerm = (await transactionLog.GetEntryAsync(precedingIndex).ConfigureAwait(false) ??
                                  transactionLog.First).Term;
             var entries = currentIndex >= member.NextIndex
@@ -60,17 +64,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var result = await member
                 .AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token)
                 .ConfigureAwait(false);
-            if (result.Term > term)
-                return result.Term;
             if (result.Value)
             {
                 logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
                 member.NextIndex.VolatileWrite(currentIndex + 1);
-                return result.Term;
+                //checks whether the at least one entry from current term is stored on this node
+                result = result.SetValue(entries.Any(entry => entry.Term == term));
             }
+            else
+                logger.ReplicationFailed(member.Endpoint, member.NextIndex.DecrementAndGet());
 
-            logger.ReplicationFailed(member.Endpoint, member.NextIndex.DecrementAndGet());
-            goto retry;
+            return result;
+        }
+
+        private bool CheckTerm(long term)
+        {
+            if (term <= currentTerm)
+                return true;
+            stateMachine.MoveToFollowerState(false, term);
+            return false;
         }
 
         private async Task<bool> DoHeartbeats(IAuditTrail<ILogEntry> transactionLog)
@@ -80,29 +92,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var commitIndex = transactionLog.GetLastIndex(true);
             foreach (var member in stateMachine.Members)
                 if (member.IsRemote)
-                    tasks.Add(AppendEntriesAsync(member, commitIndex, term, transactionLog, stateMachine.Logger, timerCancellation.Token)
+                    tasks.Add(AppendEntriesAsync(member, commitIndex, currentTerm, transactionLog, stateMachine.Logger, timerCancellation.Token)
                         .ContinueWith(HealthStatusContinuation, default, TaskContinuationOptions.ExecuteSynchronously,
                             TaskScheduler.Current));
-            var votes = 1;  //because we know the entry is replicated in this node
+            var quorum = 1;  //because we know the entry is replicated in this node
+            var commitQuorum = 1;
+            var term = currentTerm;
             foreach (var task in tasks)
             {
                 var result = await task.ConfigureAwait(false);
-                if (result.Term > term)
-                {
-                    stateMachine.MoveToFollowerState(false, result.Term);
-                    return false;
-                }
-
+                term = Math.Max(term, result.Term);
                 switch (result.Value)
                 {
                     case MemberHealthStatus.Canceled: //leading was canceled
                         return false;
-                    case MemberHealthStatus.Responded:
-                        votes += 1;
+                    case MemberHealthStatus.Replicated:
+                        quorum += 1;
+                        commitQuorum -= 1;
+                        break;
+                    case MemberHealthStatus.ReplicatedWithCurrentTerm:
+                        quorum += 1;
+                        commitQuorum += 1;
                         break;
                     case MemberHealthStatus.Unavailable:
-                        if (absoluteMajority)
-                            votes -= 1;
+                        quorum -= 1;
+                        commitQuorum -= 1;
                         break;
                 }
 
@@ -110,17 +124,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             tasks.Clear();
-            if (votes <= 0)
+            //majority of nodes accept entries with a least one entry from current term
+            if (commitQuorum > 0)  
             {
-                stateMachine.Logger.CommitFailed(votes, commitIndex);
-                stateMachine.MoveToFollowerState(false);
-                return false;
+                commitIndex += 1;
+                var count = await transactionLog.CommitAsync(commitIndex); //commit all entries started from first uncommitted index to the end
+                stateMachine.Logger.CommitSuccessful(commitIndex, count);
+                return CheckTerm(term);
             }
+            stateMachine.Logger.CommitFailed(quorum, commitIndex);
+            //majority of nodes replicated, continue leading if current term is not changed
+            if (quorum > 0 || !absoluteMajority) 
+                return CheckTerm(term);
+            //it is partitioned network with absolute majority, not possible to have more than one leader
+            stateMachine.MoveToFollowerState(false, term);
+            return false;
 
-            commitIndex += 1;
-            var count = await transactionLog.CommitAsync(commitIndex); //commit all entries started from first uncommitted index to the end
-            stateMachine.Logger.CommitSuccessful(commitIndex, count);
-            return true;
         }
 
         private async void DoHeartbeats(object transactionLog, bool timedOut)

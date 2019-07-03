@@ -29,5 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Term = term;
             Value = value;
         }
+
+        internal Result<T> SetValue(T value) => new Result<T>(Term, value);
     }
 }
