@@ -20,6 +20,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Defines persistent state for the Raft-based cluster.
         /// </summary>
-        new IPersistentState AuditTrail { set; }
+        new IPersistentState AuditTrail { get; set; }
     }
 }

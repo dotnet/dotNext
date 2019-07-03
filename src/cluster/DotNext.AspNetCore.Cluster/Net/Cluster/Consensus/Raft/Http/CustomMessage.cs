@@ -40,6 +40,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal CustomMessage(HttpRequest request)
             : this(request.Headers.TryGetValue)
         {
+            if (IsOneWay)
+                request.EnableBuffering();
             Message = new InboundMessageContent(request);
         }
 
@@ -47,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             base.FillRequest(request);
             request.Headers.Add(OneWayHeader, Convert.ToString(IsOneWay, InvariantCulture));
-            request.Headers.Add(RespectLeadershipHeader, Convert.ToString(RespectLeadershipHeader, InvariantCulture));
+            request.Headers.Add(RespectLeadershipHeader, Convert.ToString(RespectLeadership, InvariantCulture));
             request.Content = new OutboundMessageContent(Message);
         }
 

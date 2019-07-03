@@ -191,6 +191,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return;
                 auditTrail = value;
             }
+            get => auditTrail;
         }
 
         /// <summary>

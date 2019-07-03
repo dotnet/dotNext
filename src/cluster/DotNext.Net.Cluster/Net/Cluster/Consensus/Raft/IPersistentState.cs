@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using DotNext.Net.Cluster.Messaging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {

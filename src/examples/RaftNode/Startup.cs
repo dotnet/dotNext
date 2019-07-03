@@ -1,5 +1,6 @@
 ﻿using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
+using DotNext.Net.Cluster.Messaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -15,13 +16,15 @@ namespace RaftNode
 
         public override void Configure(IApplicationBuilder app)
         {
-            app.UseConsensusProtocolHandler();
+            app.UseConsensusProtocolHandler().ApplicationServices.GetService<FileListener>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IRaftClusterConfigurator, ClusterConfigurator>();
-            services.AddOptions().BecomeClusterMember(configuration);
+            services.AddSingleton<IRaftClusterConfigurator, ClusterConfigurator>()
+                .AddSingleton<IMessageHandler, MessageHandler>()
+                .AddSingleton<FileListener>()
+                .AddOptions().BecomeClusterMember(configuration);
         }
     }
 }

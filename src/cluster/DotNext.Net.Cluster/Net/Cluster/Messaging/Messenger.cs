@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using DotNext.Net.Mime;
 
 namespace DotNext.Net.Cluster.Messaging
 {
@@ -53,6 +55,22 @@ namespace DotNext.Net.Cluster.Messaging
         public static Task SendTextSignalAsync(this IAddressee messenger, string messageName, string text, bool requiresConfirmation = true, string mediaType = null, CancellationToken token = default)
             => messenger.SendSignalAsync(new TextMessage(messageName, text, mediaType), requiresConfirmation, token);
 
-
+        /// <summary>
+        /// Converts message content into string.
+        /// </summary>
+        /// <param name="message">The message to read.</param>
+        /// <returns>The content of the message.</returns>
+        public static async Task<string> ReadAsTextAsync(this IMessage message)
+        {
+            if (message is TextMessage text)
+                return text.Content;
+            using (var ms = new MemoryStream(1024))
+            {
+                await message.CopyToAsync(ms).ConfigureAwait(false);
+                ms.Seek(0, SeekOrigin.Begin);
+                return message.Type.GetEncoding().GetString(ms.ToArray());
+                ;
+            }
+        }
     }
 }

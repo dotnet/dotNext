@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -107,6 +108,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         async Task<TResponse> IMessageBus.SendMessageToLeaderAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
         {
+            if (!token.CanBeCanceled)
+                token = Token;
             do
             {
                 var leader = Leader;
@@ -129,6 +132,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         async Task IMessageBus.SendSignalToLeaderAsync(IMessage message, CancellationToken token)
         {
+            if (!token.CanBeCanceled)
+                token = Token;
+            var counter = 0;
             do
             {
                 var leader = Leader;
@@ -136,6 +142,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
                 try
                 {
+                    counter += 1;
+                    Console.WriteLine("Sending message to leader " + counter);
                     await leader.SendSignalAsync(message, true, true, token).ConfigureAwait(false);
                 }
                 catch(MemberUnavailableException)
@@ -224,29 +232,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        private Task ReceiveOneWayMessage(IAddressee sender, CustomMessage message, HttpResponse response)
+        private static async Task ReceiveOneWayMessage(IAddressee sender, IMessage message, IMessageHandler handler,
+            HttpResponse response)
         {
-            if(!message.RespectLeadership || IsLeaderLocal)
-            {
-                response.StatusCode = StatusCodes.Status204NoContent;
-                return messageHandler.ReceiveSignal(sender, message.Message);
-            }
-            else
-            {
-                response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                return Task.CompletedTask;
-            }
+            response.StatusCode = StatusCodes.Status204NoContent;
+            var buffered = await StreamMessage.CreateBufferedMessageAsync(message).ConfigureAwait(false);
+            /*
+                HTTP is unreliable protocol for message delivery and duplication may occurs. To avoid that we ensure that sender
+                receive full HTTP response successfully and after that execute the handler.
+                With HTTP we can choose at-least-once delivery (duplication possible) or unreliable exactly-once which
+                means that sender is notified about delivery but doesn't have any guarantees about processing
+             */
+            response.OnCompleted(() => handler.ReceiveSignal(sender, buffered));
         }
 
-        private async Task ReceiveMessage(IAddressee sender, CustomMessage message, HttpResponse response)
+        private static async Task ReceiveMessage(IAddressee sender, CustomMessage message, IMessageHandler handler, HttpResponse response)
         {
-            if(!message.RespectLeadership || IsLeaderLocal)
-            {
-                response.StatusCode = StatusCodes.Status200OK;
-                await message.SaveResponse(response, await messageHandler.ReceiveMessage(sender, message.Message).ConfigureAwait(false)).ConfigureAwait(false);
-            }
-            else
-                response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+            response.StatusCode = StatusCodes.Status200OK;
+            await message.SaveResponse(response, await handler.ReceiveMessage(sender, message.Message).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         private Task ReceiveMessage(CustomMessage message, HttpResponse response)
@@ -263,10 +266,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 response.StatusCode = StatusCodes.Status501NotImplemented;
                 task = Task.CompletedTask;
             }
-            else if (message.IsOneWay)
-                task = ReceiveOneWayMessage(sender, message, response);
+            else if(!message.RespectLeadership || IsLeaderLocal)
+                task = message.IsOneWay ? ReceiveOneWayMessage(sender, message.Message, messageHandler, response) : ReceiveMessage(sender, message, messageHandler, response);
             else
-                task = ReceiveMessage(sender, message, response);
+            {
+                response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                task = Task.CompletedTask;
+            }
+
             sender?.Touch();
             return task;
         }
@@ -280,6 +287,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 return Task.CompletedTask;
             }
+
             //process request
             switch (HttpMessage.GetMessageType(context.Request))
             {
