@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -6,7 +7,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -35,6 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly HostingAddressesProvider hostingAddresses;
         private readonly IHttpMessageHandlerFactory httpHandlerFactory;
         private protected readonly TimeSpan RequestTimeout;
+        private readonly DuplicateRequestDetector duplicationDetector;
 
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
@@ -44,6 +45,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
             RequestTimeout = TimeSpan.FromMilliseconds(config.LowerElectionTimeout);
+            duplicationDetector = new DuplicateRequestDetector(TimeSpan.FromMilliseconds(config.UpperElectionTimeout), config.RequestJournalPollingTime, config.RequestJournalMemoryLimit);
         }
 
         private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MutableMemberCollection members)
@@ -185,6 +187,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public override Task StopAsync(CancellationToken token)
         {
             configurator?.Shutdown(this);
+            duplicationDetector.Trim(100);
             return base.StopAsync(token);
         }
 
@@ -232,24 +235,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        private static async Task ReceiveOneWayMessage(IAddressee sender, IMessage message, IMessageHandler handler,
-            HttpResponse response)
+        private static async Task ReceiveOneWayMessageFastAck(IAddressee sender, IMessage message, IMessageHandler handler, HttpResponse response)
         {
-            response.StatusCode = StatusCodes.Status204NoContent;
-            var buffered = await StreamMessage.CreateBufferedMessageAsync(message).ConfigureAwait(false);
-            /*
-                HTTP is unreliable protocol for message delivery and duplication may occurs. To avoid that we ensure that sender
-                receive full HTTP response successfully and after that execute the handler.
-                With HTTP we can choose at-least-once delivery (duplication possible) or unreliable exactly-once which
-                means that sender is notified about delivery but doesn't have any guarantees about processing
-             */
-            response.OnCompleted(() => handler.ReceiveSignal(sender, buffered));
+            const long maxSize = 30720;   //30 KB
+            var length = message.Length;
+            IDisposableMessage buffered;
+            if(length.HasValue && length.Value < maxSize)
+                buffered = await StreamMessage.CreateBufferedMessageAsync(message).ConfigureAwait(false);
+            else
+                buffered = await FileMessage.CreateAsync(message).ConfigureAwait(false);
+            response.OnCompleted(async delegate()
+            {
+                using(buffered)
+                    await handler.ReceiveSignal(sender, buffered, null).ConfigureAwait(false);
+            });
         }
 
-        private static async Task ReceiveMessage(IAddressee sender, CustomMessage message, IMessageHandler handler, HttpResponse response)
+        private static Task ReceiveOneWayMessage(IAddressee sender, CustomMessage request, IMessageHandler handler, bool reliable, HttpResponse response)
+        {
+            response.StatusCode = StatusCodes.Status204NoContent;
+            //drop duplicated request
+            if(response.HttpContext.Features.Get<DuplicateRequestDetector>().IsDuplicate(request))
+                return Task.CompletedTask;
+            return reliable ? handler.ReceiveSignal(sender, request.Message, response.HttpContext) : ReceiveOneWayMessageFastAck(sender, request.Message, handler, response);
+        }
+
+        private static async Task ReceiveMessage(IAddressee sender, CustomMessage request, IMessageHandler handler, HttpResponse response)
         {
             response.StatusCode = StatusCodes.Status200OK;
-            await message.SaveResponse(response, await handler.ReceiveMessage(sender, message.Message).ConfigureAwait(false)).ConfigureAwait(false);
+            await request.SaveResponse(response, await handler.ReceiveMessage(sender, request.Message, response.HttpContext).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         private Task ReceiveMessage(CustomMessage message, HttpResponse response)
@@ -267,7 +281,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 task = Task.CompletedTask;
             }
             else if(!message.RespectLeadership || IsLeaderLocal)
-                task = message.IsOneWay ? ReceiveOneWayMessage(sender, message.Message, messageHandler, response) : ReceiveMessage(sender, message, messageHandler, response);
+                switch(message.Mode)
+                {
+                    case CustomMessage.DeliveryMode.RequestReply:
+                        task = ReceiveMessage(sender, message, messageHandler, response);
+                        break;
+                    case CustomMessage.DeliveryMode.OneWay:
+                        task = ReceiveOneWayMessage(sender, message, messageHandler, true, response);
+                        break;
+                    case CustomMessage.DeliveryMode.OneWayNoAck:
+                        task = ReceiveOneWayMessage(sender, message, messageHandler, false, response);
+                        break;
+                    default:
+                        response.StatusCode = StatusCodes.Status400BadRequest;
+                        task = Task.CompletedTask;
+                        break;
+                }
             else
             {
                 response.StatusCode = StatusCodes.Status503ServiceUnavailable;
@@ -287,7 +316,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 return Task.CompletedTask;
             }
-
+            context.Features.Set(duplicationDetector);
             //process request
             switch (HttpMessage.GetMessageType(context.Request))
             {
@@ -313,6 +342,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 localMember = null;
                 configurationTracker.Dispose();
+                duplicationDetector.Dispose();
             }
 
             base.Dispose(disposing);

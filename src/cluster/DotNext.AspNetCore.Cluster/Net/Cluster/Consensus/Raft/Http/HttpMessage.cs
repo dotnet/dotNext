@@ -40,6 +40,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         //request - represents custom message name
         private const string MessageNameHeader = "X-Raft-Message-Name";
 
+        private const string RequestIdHeader = "X-Request-ID";
+
         private protected class OutboundMessageContent : HttpContent
         {
             private readonly IMessage message;
@@ -97,6 +99,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
+        internal readonly string Id;
         internal readonly IPEndPoint Sender;
         internal readonly string MessageType;
 
@@ -104,6 +107,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             Sender = sender;
             MessageType = messageType;
+            Id = Guid.NewGuid().ToString();
         }
 
         private protected HttpMessage(HeadersReader<StringValues> headers)
@@ -112,7 +116,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var port = ParseHeader(NodePortHeader, headers, Int32Parser);
             Sender = new IPEndPoint(address, port);
             MessageType = GetMessageType(headers);
+            Id = ParseHeader(RequestIdHeader, headers);
         }
+
+        //used to track duplicate messages
+        internal object UniqueReference => Sender;
 
         private static string GetMessageType(HeadersReader<StringValues> headers) =>
             ParseHeader(MessageTypeHeader, headers);
@@ -124,6 +132,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Headers.Add(NodeIpHeader, Sender.Address.ToString());
             request.Headers.Add(NodePortHeader, Convert.ToString(Sender.Port, InvariantCulture));
             request.Headers.Add(MessageTypeHeader, MessageType);
+            request.Headers.Add(RequestIdHeader, Id);
             request.Method = HttpMethod.Post;
         }
 

@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// <summary>
     /// Represents message which content is represented by <see cref="Stream"/>.
     /// </summary>
-    public class StreamMessage : Disposable, IMessage
+    public class StreamMessage : Disposable, IDisposableMessage
     {
         private const int BufferSize = 1024;
         private readonly bool disposeStream;

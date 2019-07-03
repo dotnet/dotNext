@@ -139,24 +139,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         Task<TResponse> IAddressee.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
             => SendMessageAsync(message, responseReader, false, token);
 
-        private async void SendUnreliableSignalAsync(HttpRequestMessage request, CancellationToken token)
-        {
-            var response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
-                .OnFaultedOrCanceled<HttpResponseMessage, DefaultConst<HttpResponseMessage>>()
-                .ConfigureAwait(false);
-            Disposable.Dispose(request, response);
-        }
-
         internal Task SendSignalAsync(IMessage message, bool requiresConfirmation, bool respectLeadership, CancellationToken token)
         {
-            var request = new CustomMessage(context.LocalEndpoint, message, true) { RespectLeadership = respectLeadership };
-            if (requiresConfirmation)
-                return SendAsync<IMessage, CustomMessage>(request, token);
-            else
-            {
-                SendUnreliableSignalAsync((HttpRequestMessage) request, token);
-                return Task.CompletedTask;
-            }
+            var request = new CustomMessage(context.LocalEndpoint, message, requiresConfirmation) { RespectLeadership = respectLeadership };
+            return SendAsync<IMessage, CustomMessage>(request, token);
         }
 
         Task IAddressee.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)

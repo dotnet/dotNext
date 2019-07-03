@@ -12,9 +12,9 @@ namespace RaftNode
 
         public MessageHandler(IServiceProvider provider) => services = provider;
 
-        public Task<IMessage> ReceiveMessage(IAddressee sender, IMessage message) => Task.FromResult(message);
+        public Task<IMessage> ReceiveMessage(IAddressee sender, IMessage message, object context) => Task.FromResult(message);
 
-        public async Task ReceiveSignal(IAddressee sender, IMessage signal)
+        public async Task ReceiveSignal(IAddressee sender, IMessage signal, object context)
         {
             var log = services.GetRequiredService<IRaftCluster>().AuditTrail;
             //commit to log entry

@@ -92,7 +92,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                     if(box.TryDequeue(out var response))
                     {
                         success = true;
-                        Equal("Message to leader", await Mailbox.ReadAsText(response));
+                        Equal("Message to leader", await response.ReadAsTextAsync());
                         break;
                     }
                 
@@ -137,13 +137,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 True(response.IsReusable);
                 NotNull(response);
                 Equal("Reply", response.Name);
-                Equal("Pong", await Mailbox.ReadAsText(response));
+                Equal("Pong", await response.ReadAsTextAsync());
 
                 //one-way message
                 await client.SendTextSignalAsync("OneWayMessage", "Hello, world");
                 True(messageBox.TryDequeue(out response));
                 NotNull(response);
-                Equal("Hello, world", await Mailbox.ReadAsText(response));
+                Equal("Hello, world", await response.ReadAsTextAsync());
 
                 await host1.StopAsync();
                 await host2.StopAsync();
