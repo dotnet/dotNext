@@ -39,10 +39,10 @@ namespace DotNext.Net.Cluster.Messaging
         async ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
-            using(var stream = file.Open(FileMode.Open))
+            using (var stream = file.Open(FileMode.Open))
+            using (var message = new StreamMessage(stream, true, Name, Type))
             {
-                IMessage temp = new StreamMessage(stream, true, Name, Type);
-                await temp.CopyToAsync(output, token).ConfigureAwait(false);
+                await ((IMessage) message).CopyToAsync(output, token).ConfigureAwait(false);
             }
         }
 

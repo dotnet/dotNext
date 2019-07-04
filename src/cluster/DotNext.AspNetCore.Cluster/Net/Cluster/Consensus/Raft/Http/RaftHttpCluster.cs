@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -45,7 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
             RequestTimeout = TimeSpan.FromMilliseconds(config.LowerElectionTimeout);
-            duplicationDetector = new DuplicateRequestDetector(TimeSpan.FromMilliseconds(config.UpperElectionTimeout), config.RequestJournalPollingTime, config.RequestJournalMemoryLimit);
+            duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
         }
 
         private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MutableMemberCollection members)
@@ -136,7 +135,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             if (!token.CanBeCanceled)
                 token = Token;
-            var counter = 0;
+            //keep the same message between retries for correct identification of duplicate messages
+            var signal = new CustomMessage(localMember.Endpoint, message, true) {RespectLeadership = true};
             do
             {
                 var leader = Leader;
@@ -144,9 +144,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
                 try
                 {
-                    counter += 1;
-                    Console.WriteLine("Sending message to leader " + counter);
-                    await leader.SendSignalAsync(message, true, true, token).ConfigureAwait(false);
+                    await leader.SendSignalAsync(signal, token).ConfigureAwait(false);
                 }
                 catch(MemberUnavailableException)
                 {
@@ -226,15 +224,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await message.ParseEntriesAsync(request, Token).ConfigureAwait(false);
             var sender = FindMember(message.Sender.Represents);
             if (sender is null)
-            {
                 response.StatusCode = StatusCodes.Status404NotFound;
-            }
             else
-            {
                 await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm, message.Entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false)).ConfigureAwait(false);
-            }
         }
 
+        [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
         private static async Task ReceiveOneWayMessageFastAck(IAddressee sender, IMessage message, IMessageHandler handler, HttpResponse response)
         {
             const long maxSize = 30720;   //30 KB

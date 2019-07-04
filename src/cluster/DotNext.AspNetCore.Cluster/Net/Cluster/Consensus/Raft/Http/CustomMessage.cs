@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage>
     {
-        private static readonly ValueParser<DeliveryMode> DeliveryModeParser = Enum.TryParse<DeliveryMode>;
+        private static readonly ValueParser<DeliveryMode> DeliveryModeParser = Enum.TryParse;
 
         internal enum DeliveryMode
         {

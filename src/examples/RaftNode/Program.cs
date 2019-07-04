@@ -16,7 +16,9 @@ namespace RaftNode
                 {"upperElectionTimeout", "400" },
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"}
+                {"members:2", "http://localhost:3264"},
+                {"requestJournal:memoryLimit", "5" },
+                {"requestJournal:expiration", "00:01:00" }
             };
             if (!string.IsNullOrEmpty(messageFile))
                 configuration[FileListener.MessageFile] = messageFile;

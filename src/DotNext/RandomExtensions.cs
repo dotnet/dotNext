@@ -46,9 +46,10 @@ namespace DotNext
         private static unsafe string NextString<R>(ref R generator, ReadOnlySpan<char> allowedChars, int length)
             where R : struct, IRandomCharacterGenerator
         {
+            //TODO: should be reviewed for .NET Standard 2.1
             if (length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
-            else if (length == 0)
+            if (length == 0)
                 return "";
             //use stack allocation for small strings
             var result = length < 1024 ? stackalloc char[length] : new Span<char>(new char[length]);

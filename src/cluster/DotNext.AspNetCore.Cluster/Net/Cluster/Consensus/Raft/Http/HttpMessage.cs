@@ -27,6 +27,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private static readonly ValueParser<int> Int32Parser = int.TryParse;
         private static readonly ValueParser<IPAddress> IpAddressParser = IPAddress.TryParse;
         private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
+        private static readonly Random RequestIdGenerator = new Random();
+        private const string RequestIdAllowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*-+=~";
+        private const int RequestIdLength = 32;
 
         //request - represents IP of sender node
         private const string NodeIpHeader = "X-Raft-Node-IP";
@@ -107,7 +110,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             Sender = sender;
             MessageType = messageType;
-            Id = Guid.NewGuid().ToString();
+            Id = RequestIdGenerator.NextString(RequestIdAllowedChars, RequestIdLength);
         }
 
         private protected HttpMessage(HeadersReader<StringValues> headers)
@@ -118,9 +121,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             MessageType = GetMessageType(headers);
             Id = ParseHeader(RequestIdHeader, headers);
         }
-
-        //used to track duplicate messages
-        internal object UniqueReference => Sender;
 
         private static string GetMessageType(HeadersReader<StringValues> headers) =>
             ParseHeader(MessageTypeHeader, headers);

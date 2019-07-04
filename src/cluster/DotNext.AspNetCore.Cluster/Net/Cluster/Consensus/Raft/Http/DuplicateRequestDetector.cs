@@ -14,29 +14,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private new const string Name = "DotNextRaftDuplicationDetector";
 
-        private readonly TimeSpan evictionTime;
+        private readonly TimeSpan expiration;
 
-        internal DuplicateRequestDetector(TimeSpan evictionTime, TimeSpan pollingTime, long memoryLimitMB)
-            : base(Name, CreateConfiguration(pollingTime, memoryLimitMB), true)
-            => this.evictionTime = evictionTime;
+        internal DuplicateRequestDetector(RequestJournalConfiguration config)
+            : base(Name, CreateConfiguration(config.PollingTime, config.MemoryLimit), true)
+            => expiration = config.Expiration;
 
         private static NameValueCollection CreateConfiguration(TimeSpan pollingTime, long memoryLimitMB)
         {
-            const string CacheMemoryLimitMegabytes = nameof(CacheMemoryLimitMegabytes);
-            const string PollingInterval = nameof(PollingInterval);
+            const string cacheMemoryLimitMegabytes = "CacheMemoryLimitMegabytes";
+            const string pollingInterval = "PollingInterval";
 
             return new NameValueCollection
             {
-                { CacheMemoryLimitMegabytes, Convert.ToString(memoryLimitMB, InvariantCulture) },
-                { PollingInterval, pollingTime.ToString() }
+                { cacheMemoryLimitMegabytes, Convert.ToString(memoryLimitMB, InvariantCulture) },
+                { pollingInterval, pollingTime.ToString() }
             };
         }
+
+        private readonly object valuePlaceholder = new object();
 
         /*
             Logic of this method:
             If cache returns the same value for this message then it was not added previously; otherwise, it is different message but with the same id
          */
         internal bool IsDuplicate(HttpMessage message)
-            => !ReferenceEquals(message.UniqueReference, AddOrGetExisting(message.Id, message.UniqueReference, DateTimeOffset.Now + evictionTime));
+            => AddOrGetExisting(message.Id, valuePlaceholder, DateTimeOffset.Now + expiration) != null;
     }
 }

@@ -139,14 +139,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         Task<TResponse> IAddressee.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
             => SendMessageAsync(message, responseReader, false, token);
 
-        internal Task SendSignalAsync(IMessage message, bool requiresConfirmation, bool respectLeadership, CancellationToken token)
-        {
-            var request = new CustomMessage(context.LocalEndpoint, message, requiresConfirmation) { RespectLeadership = respectLeadership };
-            return SendAsync<IMessage, CustomMessage>(request, token);
-        }
+        internal Task SendSignalAsync(CustomMessage message, CancellationToken token) =>
+            SendAsync<IMessage, CustomMessage>(message, token);
+
 
         Task IAddressee.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
-            => SendSignalAsync(message, requiresConfirmation, false, token);
+        {
+            var request = new CustomMessage(context.LocalEndpoint, message, requiresConfirmation);
+            return SendSignalAsync(request, token);
+        }
 
         ref long IRaftClusterMember.NextIndex => ref nextIndex;
 

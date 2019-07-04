@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -457,6 +458,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
         }
 
+        [SuppressMessage("Reliability", "CA2000", Justification = "The instance returned by StartLeading is the same as 'this'")]
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {
             Logger.TransitionToLeaderStateStarted();
