@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace RaftNode
 {
@@ -11,7 +12,7 @@ namespace RaftNode
         {
             var configuration = new Dictionary<string, string>
             {
-                {"absoluteMajority", "false"},
+                {"absoluteMajority", "true"},
                 {"lowerElectionTimeout", "150" },
                 {"upperElectionTimeout", "400" },
                 {"members:0", "http://localhost:3262"},
@@ -25,7 +26,7 @@ namespace RaftNode
             new WebHostBuilder()
                 .UseKestrel(options => options.ListenLocalhost(port))
                 .UseShutdownTimeout(TimeSpan.FromHours(1))
-                //.ConfigureLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Warning))
+                .ConfigureLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Error))
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
                 .UseStartup<Startup>()
                 .Build()

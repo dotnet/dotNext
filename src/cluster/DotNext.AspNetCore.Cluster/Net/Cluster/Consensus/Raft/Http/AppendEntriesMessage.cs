@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -15,6 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class AppendEntriesMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
     {
+        private const int EntryBufferSize = 1024;
         private const string MimeSubType = "mixed";
         internal new const string MessageType = "AppendEntries";
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
@@ -32,7 +34,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private sealed class ReceivedLogEntry : InboundMessageContent, ILogEntry
         {
-
             internal ReceivedLogEntry(MultipartSection section)
                 : base(section)
             {
@@ -88,6 +89,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     var section = await reader.ReadNextSectionAsync(token).ConfigureAwait(false);
                     if (section is null)
                         break;
+                    //assume that entry can be allocated in memory and doesn't require persistent buffer such as disk
+                    var buffer = new MemoryStream(EntryBufferSize);
+                    await section.Body.CopyToAsync(buffer).ConfigureAwait(false);
+                    buffer.Seek(0, SeekOrigin.Begin);
+                    section.Body = buffer;
                     entries.Add(new ReceivedLogEntry(section));
                 }
 

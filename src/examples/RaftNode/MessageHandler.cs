@@ -19,9 +19,10 @@ namespace RaftNode
             var log = services.GetRequiredService<IRaftCluster>().AuditTrail;
             //commit to log entry
             var content = await signal.ReadAsTextAsync().ConfigureAwait(false);
-            Console.WriteLine($"Message {content} is received from {sender.Endpoint} and saved into local log");
-            ILogEntry[] entries = {new TextMessageFromFile(content) {Term = log.Term}};
-            await log.AppendAsync(entries).ConfigureAwait(false);
+            var entry = new TextMessageFromFile(content) {Term = log.Term};
+            Console.WriteLine(
+                $"Message {content} is received from {sender.Endpoint} and saved into local log, current term is {entry.Term}");
+            await log.AppendAsync(new[] {entry}).ConfigureAwait(false);
         }
     }
 }

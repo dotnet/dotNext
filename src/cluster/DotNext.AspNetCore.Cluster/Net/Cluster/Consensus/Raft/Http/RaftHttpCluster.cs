@@ -221,12 +221,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async Task ReceiveEntries(HttpRequest request, HttpResponse response)
         {
             var message = new AppendEntriesMessage(request);
-            await message.ParseEntriesAsync(request, Token).ConfigureAwait(false);
             var sender = FindMember(message.Sender.Represents);
             if (sender is null)
                 response.StatusCode = StatusCodes.Status404NotFound;
             else
-                await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm, message.Entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false)).ConfigureAwait(false);
+            {
+                await message.ParseEntriesAsync(request, Token).ConfigureAwait(false);
+                await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm,
+                    message.Entries, message.PrevLogIndex,
+                    message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false)).ConfigureAwait(false);
+            }
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]

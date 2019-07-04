@@ -59,7 +59,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <see langword="true"/> value allows to build CA distributed cluster
         /// while <see langword="false"/> value allows to build CP/AP distributed cluster. 
         /// </remarks>
-        public bool AbsoluteMajority { get; set; }
+        public bool AbsoluteMajority { get; set; } = true;
 
         /// <summary>
         /// Gets metadata associated with local cluster member.
