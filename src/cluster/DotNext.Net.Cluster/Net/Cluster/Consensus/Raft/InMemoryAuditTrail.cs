@@ -174,6 +174,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if(count > 0L)
             {
                 commitIndex = startIndex + count - 1;
+                //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
                 ThreadPool.QueueUserWorkItem(new CommitEventExecutor(startIndex, count), this);
             }
             return count;

@@ -40,6 +40,7 @@ namespace DotNext.Threading
             action += acc.Throw;
             action += acc.IncBy3;
             await ThrowsAsync<AggregateException>(async () => await action.InvokeAsync());
+            await ThrowsAsync<AggregateException>(action.InvokeAsync().AsTask);
         }
     }
 }

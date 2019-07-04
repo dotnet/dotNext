@@ -57,7 +57,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <summary>
         /// Indicates that the content of this message can be copied to the output stream or pipe multiple times.
         /// </summary>
-        public bool IsReusable => content.CanSeek && leaveOpen;
+        public bool IsReusable => content.CanSeek;
 
         long? IMessage.Length => content.CanSeek ? content.Length : default(long?);
 

@@ -25,6 +25,7 @@ namespace DotNext.Threading.Tasks
 
             private static void Invoke(object continuation) => (continuation as Action)?.Invoke();
 
+            //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
             private static void QueueContinuation(Action callback) => ThreadPool.QueueUserWorkItem(Invoke, callback);
 
             private void Invoke() => context.Post(Invoke, callback);

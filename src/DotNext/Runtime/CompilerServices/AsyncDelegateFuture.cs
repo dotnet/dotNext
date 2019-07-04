@@ -92,8 +92,8 @@ namespace DotNext.Runtime.CompilerServices
     internal abstract class AsyncDelegateFuture<D> : AsyncDelegateFuture
         where D : MulticastDelegate
     {
-        private long index;
-        private long totalCount;
+        private const long CompletedState = -1L;
+        private long index, totalCount;
         private volatile bool hasErrors;
         private volatile object exceptions; //has type Exception[] or AggregateException
 
@@ -102,7 +102,7 @@ namespace DotNext.Runtime.CompilerServices
         {
         }
 
-        public sealed override bool IsCompleted => totalCount.VolatileRead() == 0L || token.IsCancellationRequested;
+        public sealed override bool IsCompleted => totalCount.VolatileRead() == CompletedState;
 
         private protected sealed override void ThrowIfNeeded()
         {
@@ -121,7 +121,7 @@ namespace DotNext.Runtime.CompilerServices
                 {
                     if(token.IsCancellationRequested)
                     {
-                        errors.VolatileWrite(currentIndex, new OperationCanceledException(token));
+                        errors[currentIndex] = new OperationCanceledException(token);
                         hasErrors = true;
                     }
                     else
@@ -130,7 +130,7 @@ namespace DotNext.Runtime.CompilerServices
                 catch(Exception e)
                 {
                     hasErrors = true;
-                    errors.VolatileWrite(currentIndex, e);
+                    errors[currentIndex] = e;
                 }
                 finally
                 {
@@ -144,22 +144,21 @@ namespace DotNext.Runtime.CompilerServices
         {
             if (errors != null)
                 exceptions = new AggregateException(errors.SkipNulls());
+            totalCount.VolatileWrite(CompletedState);
             Complete();
         }
 
         internal AsyncDelegateFuture<D> Invoke(D invocationList)
         {
             if(token.IsCancellationRequested)
-            {
-                exceptions = new Exception[] { new OperationCanceledException(token) };
-                Complete();
-            }
+                Complete(new[] {new OperationCanceledException(token)});
             else
             {
                 var list = invocationList.GetInvocationList();
                 index = -1L;
                 totalCount = list.LongLength;
                 exceptions = new Exception[list.LongLength];
+                //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
                 var invoker = new WaitCallback(InvokeOne);
                 foreach(D instance in list)
                     ThreadPool.QueueUserWorkItem(invoker, instance);
