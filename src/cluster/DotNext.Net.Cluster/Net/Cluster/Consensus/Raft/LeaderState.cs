@@ -40,7 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority, long term) 
             : base(stateMachine)
         {
-            this.currentTerm = term;
+            currentTerm = term;
             this.absoluteMajority = absoluteMajority;
             timerCancellation = new CancellationTokenSource();
             processingState = new AtomicBoolean(false);
