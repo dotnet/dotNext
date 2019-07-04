@@ -51,7 +51,7 @@ namespace DotNext
             if (length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
             if (length == 0)
-                return "";
+                return string.Empty;
             const short smallStringLength = 1024;
             //use stack allocation for small strings, which is 99% of all use cases
             var result = length <= smallStringLength ? stackalloc char[length] : new Span<char>(new char[length]);
