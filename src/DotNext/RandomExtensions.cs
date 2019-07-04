@@ -37,6 +37,7 @@ namespace DotNext
 
             char IRandomCharacterGenerator.NextChar(ReadOnlySpan<char> allowedChars)
             {
+                //TODO: buffer should be replaced with stack allocated Span in .NET Standard 2.1
                 random.GetBytes(buffer, 0, sizeof(int));
                 var randomNumber = (BitConverter.ToInt32(buffer, 0) & int.MaxValue) % allowedChars.Length;
                 return allowedChars[randomNumber];
@@ -51,8 +52,9 @@ namespace DotNext
                 throw new ArgumentOutOfRangeException(nameof(length));
             if (length == 0)
                 return "";
-            //use stack allocation for small strings
-            var result = length < 1024 ? stackalloc char[length] : new Span<char>(new char[length]);
+            const short smallStringLength = 1024;
+            //use stack allocation for small strings, which is 99% of all use cases
+            var result = length <= smallStringLength ? stackalloc char[length] : new Span<char>(new char[length]);
             foreach (ref var element in result)
                 element = generator.NextChar(allowedChars);
             fixed (char* ptr = result)
