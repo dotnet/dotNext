@@ -43,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
-            RequestTimeout = TimeSpan.FromMilliseconds(config.LowerElectionTimeout);
+            RequestTimeout = TimeSpan.FromMilliseconds(config.UpperElectionTimeout);
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
         }
 
