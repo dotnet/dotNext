@@ -23,12 +23,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private static readonly Func<Task<Result<bool>>, Result<MemberHealthStatus>> HealthStatusContinuation = task =>
         {
+            Result<MemberHealthStatus> result;
             if (task.IsCanceled)
-                return new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Canceled);
-            if (task.IsFaulted)
-                return new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Unavailable);
-            return new Result<MemberHealthStatus>(task.Result.Term,
-                task.Result.Value ? MemberHealthStatus.ReplicatedWithCurrentTerm : MemberHealthStatus.Replicated);
+                result = new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Canceled);
+            else if (task.IsFaulted)
+                result = new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Unavailable);
+            else
+                result = new Result<MemberHealthStatus>(task.Result.Term, task.Result.Value ? MemberHealthStatus.ReplicatedWithCurrentTerm : MemberHealthStatus.Replicated);
+            return result;
         };
 
         private AtomicBoolean processingState;
