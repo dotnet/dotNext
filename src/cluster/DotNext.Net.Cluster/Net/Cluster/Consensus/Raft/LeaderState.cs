@@ -34,14 +34,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private AtomicBoolean processingState;
         private volatile RegisteredWaitHandle heartbeatTimer;
         private readonly long currentTerm;
-        private readonly bool absoluteMajority;
+        private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
 
-        internal LeaderState(IRaftStateMachine stateMachine, bool absoluteMajority, long term) 
+        internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term) 
             : base(stateMachine)
         {
             currentTerm = term;
-            this.absoluteMajority = absoluteMajority;
+            this.allowPartitioning = allowPartitioning;
             timerCancellation = new CancellationTokenSource();
             processingState = new AtomicBoolean(false);
         }
@@ -134,7 +134,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             stateMachine.Logger.CommitFailed(quorum, commitIndex);
             //majority of nodes replicated, continue leading if current term is not changed
-            if (quorum > 0 || !absoluteMajority) 
+            if (quorum > 0 || allowPartitioning) 
                 return CheckTerm(term);
             //it is partitioned network with absolute majority, not possible to have more than one leader
             stateMachine.MoveToFollowerState(false, term);

@@ -45,21 +45,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         {
             var config1 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
             };
             var config2 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
             };
             var config3 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
@@ -109,7 +109,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         { 
             var config1 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"lowerElectionTimeout", "600" },
                 {"upperElectionTimeout", "900" },
                 {"members:0", "http://localhost:3262"},
@@ -117,7 +117,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             };
             var config2 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"lowerElectionTimeout", "600" },
                 {"upperElectionTimeout", "900" },
                 {"members:0", "http://localhost:3262"},
@@ -165,21 +165,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
             var config1 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
             };
             var config2 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
             };
             var config3 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
@@ -275,7 +275,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         {
             var config = new Dictionary<string, string>
             {
-                { "absoluteMajority", "true" },
+                { "partitioning", "true" },
                 { "metadata:nodeName", "TestNode" },
                 { "members:0", "http://localhost:3262" },
                 { "members:1", "http://localhost:3263" }
@@ -295,10 +295,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         {
             var config = new Dictionary<string, string>
             {
-                { "absoluteMajority", "false" },
+                { "partitioning", "true" },
                 { "metadata:nodeName", "TestNode" },
-                { "members:0", "http://localhost:3262" },
-                { "members:1", "http://localhost:3263" }
+                { "members:0", "http://localhost:3262" }
             };
             using(var leaderResetEvent = new LeaderChangedEvent())
             using (var host = CreateHost<Startup>(3262, true, config, leaderResetEvent))
@@ -317,7 +316,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         {
             var config = new Dictionary<string, string>
             {
-                { "absoluteMajority", "true" },
+                { "partitioning", "false" },
                 { "metadata:nodeName", "TestNode" },
                 { "members:0", "http://localhost:3262" },
                 { "members:1", "http://localhost:3263" },

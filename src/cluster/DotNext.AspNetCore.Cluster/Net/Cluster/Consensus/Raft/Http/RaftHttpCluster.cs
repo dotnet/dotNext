@@ -35,12 +35,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly IHttpMessageHandlerFactory httpHandlerFactory;
         private protected readonly TimeSpan RequestTimeout;
         private readonly DuplicateRequestDetector duplicationDetector;
+        private protected readonly bool OpenConnectionForEachRequest;
 
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
         private RaftHttpCluster(RaftClusterMemberConfiguration config, out MutableMemberCollection members)
             : base(config, out members)
         {
+            OpenConnectionForEachRequest = config.OpenConnectionForEachRequest;
             allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
             RequestTimeout = TimeSpan.FromMilliseconds(config.UpperElectionTimeout);

@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         {
             var config = new Dictionary<string, string>()
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"metadata:nodeName", "TestNode"},
                 {"port", "3262"},
                 {"members:0", "http://localhost:3262"},

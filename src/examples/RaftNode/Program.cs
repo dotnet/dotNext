@@ -12,7 +12,7 @@ namespace RaftNode
         {
             var configuration = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"lowerElectionTimeout", "150" },
                 {"upperElectionTimeout", "400" },
                 {"members:0", "http://localhost:3262"},

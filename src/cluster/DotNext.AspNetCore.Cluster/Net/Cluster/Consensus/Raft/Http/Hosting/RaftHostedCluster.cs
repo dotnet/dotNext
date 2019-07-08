@@ -33,7 +33,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         }
 
         private protected override RaftClusterMember CreateMember(Uri address)
-            => new RaftClusterMember(this, address, Root) { Timeout = RequestTimeout };
+        {
+            var member = new RaftClusterMember(this, address, Root) { Timeout = RequestTimeout };
+            member.DefaultRequestHeaders.ConnectionClose = OpenConnectionForEachRequest;
+            return member;
+        }
 
         public override async Task StartAsync(CancellationToken token)
         {

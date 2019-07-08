@@ -37,7 +37,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             status = UnknownStatus;
             BaseAddress = remoteMember;
             Endpoint = remoteMember.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
-            DefaultRequestHeaders.ConnectionClose = true;   //to avoid network storm
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, GetType().Assembly.GetName().Version.ToString()));
         }
 

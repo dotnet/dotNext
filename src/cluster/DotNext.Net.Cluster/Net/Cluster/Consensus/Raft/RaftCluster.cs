@@ -138,7 +138,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private AsyncLock transitionSync;  //used to synchronize state transitions
         private volatile RaftState state;
         private volatile TMember leader;
-        private readonly bool absoluteMajority;
+        private readonly bool allowPartitioning;
         private readonly ElectionTimeout electionTimeoutProvider;
         private volatile int electionTimeout;
         private readonly CancellationTokenSource transitionCancellation;
@@ -153,7 +153,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             electionTimeoutProvider = config.ElectionTimeout;
             electionTimeout = electionTimeoutProvider.RandomTimeout();
-            absoluteMajority = config.AbsoluteMajority;
+            allowPartitioning = config.Partitioning;
             members = new MutableMemberCollection(out var collection);
             this.members = collection;
             transitionSync = AsyncLock.Exclusive();
@@ -453,7 +453,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Leader = null;
                     var localMember = FindMember(IsLocalMember);
                     await auditTrail.UpdateVotedForAsync(localMember).ConfigureAwait(false);     //vote for self
-                    state = new CandidateState(this, absoluteMajority, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
+                    state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
                     Logger.TransitionToCandidateStateCompleted();
                 }
         }
@@ -468,7 +468,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     candidateState.Dispose();
                     Leader = newLeader as TMember;
-                    state = new LeaderState(this, absoluteMajority, auditTrail.Term).StartLeading(electionTimeout / 2,
+                    state = new LeaderState(this, allowPartitioning, auditTrail.Term).StartLeading(electionTimeout / 2,
                         auditTrail);
                     Logger.TransitionToLeaderStateCompleted();
                 }
