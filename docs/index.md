@@ -48,7 +48,7 @@ This library provides a special types to work with unmanaged memory in type-safe
 
 # DotNext.Threading
 <a href="https://www.nuget.org/packages/dotnext.threading/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.threading.svg?style=flat"></a><br/>
-The library allows you to apply the experience of blocking synchronization using [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim), [AsyncCountdownEvent](api/DotNext.Threading.AsyncCountdownEvent.yml) and friends in asynchronous code using asynchronous alternatives of synchronization primitives such as asynchronous locks.
+The library allows you to reuse experience of blocking synchronization with help of [ReaderWriteLockSlim](https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim), [AsyncCountdownEvent](api/DotNext.Threading.AsyncCountdownEvent.yml) and friends in asynchronous code using their alternatives such as asynchronous locks.
 
 The following code describes these alternative implementations of synchronization primitives for asynchronous code:
 
