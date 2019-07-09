@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 namespace DotNext.Runtime.CompilerServices
 {
     using Threading.Tasks;
-    using True = Generic.BooleanConst.True;
     using False = Generic.BooleanConst.False;
+    using True = Generic.BooleanConst.True;
 
     /// <summary>
     /// Represents <see cref="WaitHandle"/> turned into awaitable future.
@@ -40,7 +40,7 @@ namespace DotNext.Runtime.CompilerServices
             /// <returns><see langword="true"/> if wait handle signaled before awaiter timed out; <see langword="false"/> if awaiter is timed out.</returns>
             public bool GetResult()
             {
-                switch(handle?.state)
+                switch (handle?.state)
                 {
                     case null:
                     case SuccessfulState:
@@ -58,7 +58,7 @@ namespace DotNext.Runtime.CompilerServices
             /// <param name="continuation">The action to invoke asynchronously.</param>
             public void OnCompleted(Action continuation)
             {
-                if(IsCompleted)
+                if (IsCompleted)
                     continuation();
                 else
                     handle.OnCompleted(continuation);
@@ -69,7 +69,7 @@ namespace DotNext.Runtime.CompilerServices
         private int state;
 
         //constructor should be synchronized because OnTimeout can be called before than handle field will be set
-        [MethodImpl(MethodImplOptions.Synchronized)]     
+        [MethodImpl(MethodImplOptions.Synchronized)]
         internal WaitHandleFuture(WaitHandle wh, TimeSpan timeout)
             => handle = ThreadPool.RegisterWaitForSingleObject(wh, Complete, null, timeout, true);
 
@@ -78,7 +78,7 @@ namespace DotNext.Runtime.CompilerServices
         [MethodImpl(MethodImplOptions.Synchronized)]
         private void Complete(object state, bool timedOut)
         {
-            handle.Unregister(null);   
+            handle.Unregister(null);
             this.state = timedOut ? TimedOutState : SuccessfulState;
             Complete();
         }
@@ -102,7 +102,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <returns>The task representing wait handle.</returns>
         public override Task<bool> AsTask()
         {
-            switch(state)
+            switch (state)
             {
                 case SuccessfulState:
                     return CompletedTask<bool, True>.Task;

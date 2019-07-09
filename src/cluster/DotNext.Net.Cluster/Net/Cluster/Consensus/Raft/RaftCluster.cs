@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using DotNext.Net.Cluster.Replication;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -6,13 +7,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNext.Net.Cluster.Replication;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Threading;
-    using static Threading.Tasks.ValueTaskSynchronization;
     using static Threading.Tasks.Continuation;
+    using static Threading.Tasks.ValueTaskSynchronization;
 
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.
@@ -108,7 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal MutableMemberCollection(IEnumerable<TMember> members) => this.members = new LinkedList<TMember>(members);
 
-            internal MutableMemberCollection(out ICollection<TMember> members) 
+            internal MutableMemberCollection(out ICollection<TMember> members)
                 => members = this.members = new LinkedList<TMember>();
 
             /// <summary>
@@ -178,7 +178,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         protected bool IsLeaderLocal => state is LeaderState;
 
-        
+
         IAuditTrail<ILogEntry> IReplicationCluster<ILogEntry>.AuditTrail => auditTrail;
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             set
             {
-                if(auditTrail is InMemoryAuditTrail && value is null)
+                if (auditTrail is InMemoryAuditTrail && value is null)
                     return;
                 auditTrail = value;
             }
@@ -214,8 +214,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of this method.</returns>
         protected async Task ChangeMembersAsync(MemberCollectionMutator mutator)
         {
-            using(var holder = await transitionSync.TryAcquire(transitionCancellation.Token).ConfigureAwait(false))
-                if(holder)
+            using (var holder = await transitionSync.TryAcquire(transitionCancellation.Token).ConfigureAwait(false))
+                if (holder)
                     ChangeMembers(mutator);
         }
 
@@ -296,7 +296,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task StepDown(long newTerm) //true - need to update leader, false - leave leader value as is
         {
-            if(newTerm > auditTrail.Term)
+            if (newTerm > auditTrail.Term)
                 await WhenAll(auditTrail.UpdateTermAsync(newTerm), auditTrail.UpdateVotedForAsync(null)).ConfigureAwait(false);
             await StepDown().ConfigureAwait(false);
         }
@@ -378,14 +378,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (auditTrail.Term > senderTerm) //currentTerm > term
                     return new Result<bool>(auditTrail.Term, false);
-                if(auditTrail.Term < senderTerm)
+                if (auditTrail.Term < senderTerm)
                 {
                     Leader = null;
                     await StepDown(senderTerm).ConfigureAwait(false);
                 }
                 else
                     (state as FollowerState)?.Refresh();
-                if(auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm).ConfigureAwait(false))
+                if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm).ConfigureAwait(false))
                 {
                     await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
                     return new Result<bool>(auditTrail.Term, true);

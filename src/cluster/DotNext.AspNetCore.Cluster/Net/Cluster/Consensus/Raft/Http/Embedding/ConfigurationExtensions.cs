@@ -35,7 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         public static IApplicationBuilder UseConsensusProtocolHandler(this IApplicationBuilder builder)
         {
             var cluster = builder.ApplicationServices.GetRequiredService<RaftEmbeddedCluster>();
-            return builder.Map(cluster.ProtocolPath, pathBuilder => 
+            return builder.Map(cluster.ProtocolPath, pathBuilder =>
             {
                 pathBuilder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfigurator.WriteExceptionContent });
                 pathBuilder.Run(cluster.ProcessRequest);

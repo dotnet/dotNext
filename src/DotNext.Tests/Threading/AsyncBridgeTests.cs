@@ -10,7 +10,7 @@ namespace DotNext.Threading
         [Fact]
         public static async Task WaitForCancellationNoThrow()
         {
-            using(var source = new CancellationTokenSource(400))
+            using (var source = new CancellationTokenSource(400))
             {
                 await source.Token.WaitAsync();
                 True(source.IsCancellationRequested);

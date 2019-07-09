@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         //request - represents Term value according with Raft protocol
         //response - represents Term value of the reply node
         private const string TermHeader = "X-Raft-Term";
-        
+
         internal readonly long ConsensusTerm;
 
         private protected RaftHttpMessage(string messageType, IPEndPoint sender, long term) : base(messageType, sender) => ConsensusTerm = term;

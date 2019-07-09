@@ -33,9 +33,9 @@ namespace DotNext.Runtime.CompilerServices
             /// <exception cref="AggregateException">One or more delegates raise exception during execution.</exception>
             public void GetResult()
             {
-                if(future is null)
+                if (future is null)
                     return;
-                else if(future.IsCompleted)
+                else if (future.IsCompleted)
                     future.ThrowIfNeeded();
                 else
                     throw new InvalidOperationException();
@@ -47,7 +47,7 @@ namespace DotNext.Runtime.CompilerServices
             /// <param name="continuation">The action to invoke asynchronously.</param>
             public void OnCompleted(Action continuation)
             {
-                if(IsCompleted)
+                if (IsCompleted)
                     continuation();
                 else
                     future.OnCompleted(continuation);
@@ -114,12 +114,12 @@ namespace DotNext.Runtime.CompilerServices
 
         private void InvokeOne(object d)
         {
-            var errors = (Exception[]) exceptions;
+            var errors = (Exception[])exceptions;
             var currentIndex = index.IncrementAndGet();
-            if(d is D @delegate)
+            if (d is D @delegate)
                 try
                 {
-                    if(token.IsCancellationRequested)
+                    if (token.IsCancellationRequested)
                     {
                         errors[currentIndex] = new OperationCanceledException(token);
                         hasErrors = true;
@@ -127,7 +127,7 @@ namespace DotNext.Runtime.CompilerServices
                     else
                         InvokeOne(@delegate);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     hasErrors = true;
                     errors[currentIndex] = e;
@@ -150,8 +150,8 @@ namespace DotNext.Runtime.CompilerServices
 
         internal AsyncDelegateFuture<D> Invoke(D invocationList)
         {
-            if(token.IsCancellationRequested)
-                Complete(new[] {new OperationCanceledException(token)});
+            if (token.IsCancellationRequested)
+                Complete(new[] { new OperationCanceledException(token) });
             else
             {
                 var list = invocationList.GetInvocationList();
@@ -160,7 +160,7 @@ namespace DotNext.Runtime.CompilerServices
                 exceptions = new Exception[list.LongLength];
                 //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
                 var invoker = new WaitCallback(InvokeOne);
-                foreach(D instance in list)
+                foreach (D instance in list)
                     ThreadPool.QueueUserWorkItem(invoker, instance);
             }
             return this;
@@ -231,7 +231,7 @@ namespace DotNext.Runtime.CompilerServices
         private readonly T1 arg1;
         private readonly T2 arg2;
 
-        internal ActionFuture(T1 arg1, T2 arg2, CancellationToken token) 
+        internal ActionFuture(T1 arg1, T2 arg2, CancellationToken token)
             : base(token)
         {
             this.arg1 = arg1;
@@ -247,7 +247,7 @@ namespace DotNext.Runtime.CompilerServices
         private readonly T2 arg2;
         private readonly T3 arg3;
 
-        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, CancellationToken token) 
+        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, CancellationToken token)
             : base(token)
         {
             this.arg1 = arg1;
@@ -265,7 +265,7 @@ namespace DotNext.Runtime.CompilerServices
         private readonly T3 arg3;
         private readonly T4 arg4;
 
-        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, CancellationToken token) 
+        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, CancellationToken token)
             : base(token)
         {
             this.arg1 = arg1;
@@ -285,7 +285,7 @@ namespace DotNext.Runtime.CompilerServices
         private readonly T4 arg4;
         private readonly T5 arg5;
 
-        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, CancellationToken token) 
+        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, CancellationToken token)
             : base(token)
         {
             this.arg1 = arg1;
@@ -307,7 +307,7 @@ namespace DotNext.Runtime.CompilerServices
         private readonly T5 arg5;
         private readonly T6 arg6;
 
-        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, CancellationToken token) 
+        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, CancellationToken token)
             : base(token)
         {
             this.arg1 = arg1;
@@ -331,7 +331,7 @@ namespace DotNext.Runtime.CompilerServices
         private readonly T6 arg6;
         private readonly T7 arg7;
 
-        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, CancellationToken token) 
+        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, CancellationToken token)
             : base(token)
         {
             this.arg1 = arg1;
@@ -357,7 +357,7 @@ namespace DotNext.Runtime.CompilerServices
         private readonly T7 arg7;
         private readonly T8 arg8;
 
-        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, CancellationToken token) 
+        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, CancellationToken token)
             : base(token)
         {
             this.arg1 = arg1;
@@ -385,7 +385,7 @@ namespace DotNext.Runtime.CompilerServices
         private readonly T8 arg8;
         private readonly T9 arg9;
 
-        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, CancellationToken token) 
+        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, CancellationToken token)
             : base(token)
         {
             this.arg1 = arg1;
@@ -415,7 +415,7 @@ namespace DotNext.Runtime.CompilerServices
         private readonly T9 arg9;
         private readonly T10 arg10;
 
-        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, CancellationToken token) 
+        internal ActionFuture(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, CancellationToken token)
             : base(token)
         {
             this.arg1 = arg1;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Threading.Timeout;
 using Xunit;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {

@@ -79,7 +79,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private long commitIndex;
         private volatile ILogEntry[] log;
-         
+
         private long term;
         private volatile IRaftClusterMember votedFor;
 
@@ -131,7 +131,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private long Append(ILogEntry[] entries, long? startIndex)
         {
             long result;
-            if(startIndex.HasValue)
+            if (startIndex.HasValue)
             {
                 result = startIndex.Value;
                 log = log.RemoveLast(log.LongLength - result);
@@ -147,7 +147,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async ValueTask<long> IAuditTrail<ILogEntry>.AppendAsync(IReadOnlyList<ILogEntry> entries, long? startIndex)
         {
-            if(entries.Count == 0)
+            if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
             using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
             {
@@ -171,7 +171,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private long Commit(long startIndex, long count)
         {
             count = Math.Min(log.LongLength - startIndex, count);
-            if(count > 0L)
+            if (count > 0L)
             {
                 commitIndex = startIndex + count - 1;
                 //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1

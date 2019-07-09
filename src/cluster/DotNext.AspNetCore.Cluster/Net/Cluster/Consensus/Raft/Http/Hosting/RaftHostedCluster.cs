@@ -20,7 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             var appConfigurer = services.GetService<ApplicationBuilder>();
             host = services.GetRequiredService<WebHostBuilder>()
                 .Configure(config)
-                .Configure(app => 
+                .Configure(app =>
                 {
                     appConfigurer?.Invoke(app);
                     app

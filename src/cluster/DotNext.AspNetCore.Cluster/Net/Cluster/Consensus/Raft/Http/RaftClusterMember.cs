@@ -9,10 +9,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Generic;
     using Messaging;
     using Threading;
-    using Threading.Tasks;
 
     internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, IAddressee
     {
@@ -50,7 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var previousState = status.GetAndSet(newState);
             if (previousState != newState)
-                memberStatusChanged?.Invoke(this, (ClusterMemberStatus) previousState, (ClusterMemberStatus) newState);
+                memberStatusChanged?.Invoke(this, (ClusterMemberStatus)previousState, (ClusterMemberStatus)newState);
         }
 
         internal void Touch() => ChangeStatus(AvailableStatus);
@@ -62,7 +60,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             context.Logger.SendingRequestToMember(Endpoint, message.MessageType);
             var request = (HttpRequestMessage)message;
             request.RequestUri = resourcePath;
-            
+
             var response = default(HttpResponseMessage);
             try
             {
@@ -82,7 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else
                     throw new UnexpectedStatusCodeException(response, e);
             }
-            catch(OperationCanceledException e) when (!token.IsCancellationRequested)
+            catch (OperationCanceledException e) when (!token.IsCancellationRequested)
             {
                 context.Logger.MemberUnavailable(Endpoint, e);
                 ChangeStatus(UnavailableStatus);
@@ -110,7 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 ? Task.FromResult(new Result<bool>(term, true))
                 : SendAsync<Result<bool>, AppendEntriesMessage>(
                     new AppendEntriesMessage(context.LocalEndpoint, term, prevLogIndex, prevLogTerm, commitIndex)
-                        {Entries = entries}, token);
+                    { Entries = entries }, token);
 
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh,
             CancellationToken token)
@@ -127,7 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         public bool IsRemote => !Endpoint.Equals(context.LocalEndpoint);
 
-        ClusterMemberStatus IClusterMember.Status 
+        ClusterMemberStatus IClusterMember.Status
             => Endpoint.Equals(context.LocalEndpoint) ? ClusterMemberStatus.Available : (ClusterMemberStatus)status.VolatileRead();
 
         bool IEquatable<IClusterMember>.Equals(IClusterMember other) => Endpoint.Equals(other?.Endpoint);

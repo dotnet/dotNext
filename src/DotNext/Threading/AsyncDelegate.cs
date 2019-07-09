@@ -58,7 +58,7 @@ namespace DotNext.Threading
         /// <param name="token">Invocation cancellation token.</param>
         /// <returns>The task representing state of asynchronous invocation.</returns>
         public static AsyncDelegateFuture InvokeAsync(this Action action, CancellationToken token = default)
-            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture(token).Invoke(action); 
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new ActionFuture(token).Invoke(action);
 
         /// <summary>
         /// Invokes action asynchronously.

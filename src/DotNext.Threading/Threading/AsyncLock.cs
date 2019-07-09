@@ -223,7 +223,7 @@ namespace DotNext.Threading
                     task = CompletedTask<bool, BooleanConst.False>.Task;
                     break;
             }
-            if(suppressCancellation && token.CanBeCanceled)
+            if (suppressCancellation && token.CanBeCanceled)
                 task = task.OnCanceled<bool, BooleanConst.False>();
             return await task.ConfigureAwait(false) ? new Holder(lockedObject, type) : default;
         }

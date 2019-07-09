@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using DotNext.Net.Cluster.Consensus.Raft;
+﻿using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 
 namespace RaftNode
 {
@@ -19,10 +19,10 @@ namespace RaftNode
             var log = services.GetRequiredService<IRaftCluster>().AuditTrail;
             //commit to log entry
             var content = await signal.ReadAsTextAsync().ConfigureAwait(false);
-            var entry = new TextMessageFromFile(content) {Term = log.Term};
+            var entry = new TextMessageFromFile(content) { Term = log.Term };
             Console.WriteLine(
                 $"Message {content} is received from {sender.Endpoint} and saved into local log, current term is {entry.Term}");
-            await log.AppendAsync(new[] {entry}).ConfigureAwait(false);
+            await log.AppendAsync(new[] { entry }).ConfigureAwait(false);
         }
     }
 }

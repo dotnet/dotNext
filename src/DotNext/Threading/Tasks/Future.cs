@@ -55,7 +55,7 @@ namespace DotNext.Threading.Tasks
         [MethodImpl(MethodImplOptions.Synchronized)]
         protected virtual void Complete()
         {
-            if(continuation is null)
+            if (continuation is null)
                 return;
             continuation();
             continuation = null;

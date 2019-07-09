@@ -39,7 +39,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
 
-        internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term) 
+        internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
             : base(stateMachine)
         {
             currentTerm = term;
@@ -127,7 +127,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             tasks.Clear();
             //majority of nodes accept entries with a least one entry from current term
-            if (commitQuorum > 0)  
+            if (commitQuorum > 0)
             {
                 commitIndex += 1;
                 var count = await transactionLog.CommitAsync(commitIndex); //commit all entries started from first uncommitted index to the end
@@ -136,7 +136,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             stateMachine.Logger.CommitFailed(quorum, commitIndex);
             //majority of nodes replicated, continue leading if current term is not changed
-            if (quorum > 0 || allowPartitioning) 
+            if (quorum > 0 || allowPartitioning)
                 return CheckTerm(term);
             //it is partitioned network with absolute majority, not possible to have more than one leader
             stateMachine.MoveToFollowerState(false, term);
@@ -150,7 +150,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (IsDisposed || !timedOut || !processingState.FalseToTrue()) return;
             try
             {
-                if (!await DoHeartbeats((IAuditTrail<ILogEntry>) transactionLog).ConfigureAwait(false))
+                if (!await DoHeartbeats((IAuditTrail<ILogEntry>)transactionLog).ConfigureAwait(false))
                     heartbeatTimer?.Unregister(null);
             }
             finally
@@ -167,8 +167,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal LeaderState StartLeading(int period, IAuditTrail<ILogEntry> transactionLog)
         {
             processingState.Value = false;
-            if(transactionLog != null)
-                foreach(var member in stateMachine.Members)
+            if (transactionLog != null)
+                foreach (var member in stateMachine.Members)
                     member.NextIndex = transactionLog.GetLastIndex(false) + 1;
             heartbeatTimer = ThreadPool.RegisterWaitForSingleObject(timerCancellation.Token.WaitHandle, DoHeartbeats,
                 transactionLog, period, false);

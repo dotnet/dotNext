@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -88,14 +88,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 //ensure that one of the boxes is not empty
                 var success = false;
 
-                foreach(var box in new [] { box1, box2, box3 })
-                    if(box.TryDequeue(out var response))
+                foreach (var box in new[] { box1, box2, box3 })
+                    if (box.TryDequeue(out var response))
                     {
                         success = true;
                         Equal("Message to leader", await response.ReadAsTextAsync());
                         break;
                     }
-                
+
                 True(success);
 
                 await host3.StopAsync();
@@ -106,7 +106,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
         [Fact]
         public static async Task MessageExchange()
-        { 
+        {
             var config1 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
@@ -299,7 +299,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 { "metadata:nodeName", "TestNode" },
                 { "members:0", "http://localhost:3262" }
             };
-            using(var leaderResetEvent = new LeaderChangedEvent())
+            using (var leaderResetEvent = new LeaderChangedEvent())
             using (var host = CreateHost<Startup>(3262, true, config, leaderResetEvent))
             {
                 await host.StartAsync();

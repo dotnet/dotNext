@@ -8,7 +8,7 @@ namespace DotNext.Threading.Tasks
     using Generic;
 
     internal static class Continuation<T, C>
-        where C : Constant<T>,  new()
+        where C : Constant<T>, new()
     {
         internal static readonly Func<Task<T>, T> WhenFaulted = CompletedTask<T, C>.WhenFaulted;
         internal static readonly Func<Task<T>, T> WhenCanceled = CompletedTask<T, C>.WhenCanceled;
@@ -78,7 +78,7 @@ namespace DotNext.Threading.Tasks
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<T> OnFaultedOrCanceled<T, C>(this Task<T> task, TaskScheduler scheduler = null)
             where C : Constant<T>, new()
-            => ContinueWithConstant<T, C>(task, task.IsFaulted | task.IsCanceled, Continuation<T, C>.WhenFaultedOrCanceled , default, scheduler);
+            => ContinueWithConstant<T, C>(task, task.IsFaulted | task.IsCanceled, Continuation<T, C>.WhenFaultedOrCanceled, default, scheduler);
 
         /// <summary>
         /// Returns constant value if underlying task is canceled.

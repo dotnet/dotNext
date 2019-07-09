@@ -1,10 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using DotNext.Net.Cluster;
+﻿using DotNext.Net.Cluster;
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Messaging;
 using DotNext.Net.Cluster.Replication;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace RaftNode
 {
@@ -13,8 +13,8 @@ namespace RaftNode
         private static void LeaderChanged(ICluster cluster, IClusterMember leader)
         {
             Debug.Assert(cluster is IRaftCluster);
-            var term = ((IRaftCluster) cluster).Term;
-            var timeout = ((IRaftCluster) cluster).ElectionTimeout;
+            var term = ((IRaftCluster)cluster).Term;
+            var timeout = ((IRaftCluster)cluster).ElectionTimeout;
             Console.WriteLine(leader is null
                 ? "Consensus cannot be reached"
                 : $"New cluster leader is elected. Leader address is {leader.Endpoint}");

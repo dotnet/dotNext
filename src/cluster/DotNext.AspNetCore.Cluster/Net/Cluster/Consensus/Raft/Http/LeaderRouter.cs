@@ -27,11 +27,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             internal Task Redirect(HttpContext context)
             {
                 var leader = cluster.Leader;
-                if(leader is null)
+                if (leader is null)
                 {
                     context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
                 }
-                else if(leader.IsRemote)
+                else if (leader.IsRemote)
                 {
                     var newAddress = new UriBuilder(context.Request.GetEncodedUrl()).SetHostAndPort(leader.Endpoint).Uri.AbsoluteUri;
                     context.Response.Redirect(newAddress, false);

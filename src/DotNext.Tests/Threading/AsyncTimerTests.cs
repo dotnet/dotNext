@@ -28,7 +28,8 @@ namespace DotNext.Threading
             {
                 True(timer.Start(TimeSpan.FromMilliseconds(10)));
                 await Task.Delay(100);
-                True(timer.Stop());
+                using (var ev = new ManualResetEvent(false))
+                    True(timer.Stop(ev));
                 var currentValue = counter.Value;
                 True(currentValue > 0);
                 //ensure that timer is no more executing

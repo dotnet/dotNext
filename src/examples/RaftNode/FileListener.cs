@@ -1,7 +1,6 @@
-﻿using System;
-using System.IO;
-using DotNext.Net.Cluster.Messaging;
+﻿using DotNext.Net.Cluster.Messaging;
 using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace RaftNode
 {

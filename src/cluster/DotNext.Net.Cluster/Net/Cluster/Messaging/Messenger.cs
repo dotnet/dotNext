@@ -1,10 +1,10 @@
+using DotNext.Net.Mime;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DotNext.Net.Mime;
 
 namespace DotNext.Net.Cluster.Messaging
 {
@@ -59,7 +59,7 @@ namespace DotNext.Net.Cluster.Messaging
 
         private unsafe static string ToString(Encoding encoding, Span<byte> bytes)
         {
-            fixed(byte* ptr = bytes)
+            fixed (byte* ptr = bytes)
                 return encoding.GetString(ptr, bytes.Length);
         }
 
@@ -77,9 +77,9 @@ namespace DotNext.Net.Cluster.Messaging
             {
                 await message.CopyToAsync(ms).ConfigureAwait(false);
                 ms.Seek(0, SeekOrigin.Begin);
-                if(ms.Length == 0L)
+                if (ms.Length == 0L)
                     return string.Empty;
-                if(ms.TryGetBuffer(out var buffer))
+                if (ms.TryGetBuffer(out var buffer))
                 {
                     Memory<byte> memory = buffer;
                     return ToString(message.Type.GetEncoding(), memory.Span);

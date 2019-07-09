@@ -1,5 +1,5 @@
-﻿using System.Text;
-using System.Net.Mime;
+﻿using System.Net.Mime;
+using System.Text;
 
 namespace DotNext.Net.Mime
 {

@@ -100,7 +100,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <returns>The task representing cancellation token.</returns>
         public override Task AsTask()
         {
-            if(state is CancellationToken token)
+            if (state is CancellationToken token)
                 return throwIfCanceled ? Task.FromCanceled(token) : Task.CompletedTask;
             else
                 return ExecuteAsync();

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,8 +9,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal abstract class HttpMessage
     {
-        private static readonly ValueParser<string> StringParser = delegate(string str, out string value)
+        private static readonly ValueParser<string> StringParser = delegate (string str, out string value)
         {
             value = str;
             return true;
@@ -126,7 +126,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             ParseHeader(MessageTypeHeader, headers);
 
         internal static string GetMessageType(HttpRequest request) => GetMessageType(request.Headers.TryGetValue);
-            
+
         private protected virtual void FillRequest(HttpRequestMessage request)
         {
             request.Headers.Add(NodeIpHeader, Sender.Address.ToString());

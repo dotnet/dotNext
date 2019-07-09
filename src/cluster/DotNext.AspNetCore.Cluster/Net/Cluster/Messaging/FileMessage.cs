@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Messaging
         internal static async Task<FileMessage> CreateAsync(IMessage source)
         {
             var result = new FileMessage(source.Name, source.Type);
-            using(var stream = result.file.Create())
+            using (var stream = result.file.Create())
             {
                 await source.CopyToAsync(stream).ConfigureAwait(false);
             }
@@ -30,7 +30,7 @@ namespace DotNext.Net.Cluster.Messaging
 
         async Task IMessage.CopyToAsync(Stream output)
         {
-            using(var stream = file.Open(FileMode.Open))
+            using (var stream = file.Open(FileMode.Open))
             {
                 await stream.CopyToAsync(output).ConfigureAwait(false);
             }
@@ -42,7 +42,7 @@ namespace DotNext.Net.Cluster.Messaging
             using (var stream = file.Open(FileMode.Open))
             using (var message = new StreamMessage(stream, true, Name, Type))
             {
-                await ((IMessage) message).CopyToAsync(output, token).ConfigureAwait(false);
+                await ((IMessage)message).CopyToAsync(output, token).ConfigureAwait(false);
             }
         }
 

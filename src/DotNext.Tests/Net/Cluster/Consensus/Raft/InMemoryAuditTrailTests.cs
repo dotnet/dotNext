@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using DotNext.Net.Cluster.Messaging;
+﻿using DotNext.Net.Cluster.Messaging;
 using DotNext.Net.Cluster.Replication;
 using DotNext.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
@@ -52,20 +52,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IPersistentState auditTrail = new InMemoryAuditTrail();
             Equal(0, auditTrail.GetLastIndex(false));
             Equal(0, auditTrail.GetLastIndex(true));
-            var entry1 = new LogEntry("SET X=0") {Term = 1};
-            var entry2 = new LogEntry("SET Y=0") {Term = 2};
-            Equal(1, await auditTrail.AppendAsync(new[] {entry1, entry2}));
+            var entry1 = new LogEntry("SET X=0") { Term = 1 };
+            var entry2 = new LogEntry("SET Y=0") { Term = 2 };
+            Equal(1, await auditTrail.AppendAsync(new[] { entry1, entry2 }));
             Equal(0, auditTrail.GetLastIndex(true));
             Equal(2, auditTrail.GetLastIndex(false));
             var entries = await auditTrail.GetEntriesAsync(1, 2);
             Equal(2, entries.Count);
-            entry1 = (LogEntry) entries[0];
-            entry2 = (LogEntry) entries[1];
+            entry1 = (LogEntry)entries[0];
+            entry2 = (LogEntry)entries[1];
             Equal("SET X=0", entry1.Content);
             Equal("SET Y=0", entry2.Content);
             //now replace entry at index 2 with new entry
-            entry2 = new LogEntry("ADD") {Term = 3};
-            Equal(2, await auditTrail.AppendAsync(new[] {entry2}, 2));
+            entry2 = new LogEntry("ADD") { Term = 3 };
+            Equal(2, await auditTrail.AppendAsync(new[] { entry2 }, 2));
             entries = await auditTrail.GetEntriesAsync(1, 2);
             Equal(2, entries.Count);
             entry1 = (LogEntry)entries[0];
@@ -85,6 +85,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        
+
     }
 }

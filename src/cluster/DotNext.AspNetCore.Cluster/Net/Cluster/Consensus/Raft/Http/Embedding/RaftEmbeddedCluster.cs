@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
     internal sealed class RaftEmbeddedCluster : RaftHttpCluster
     {
         internal readonly PathString ProtocolPath;
-        
+
         public RaftEmbeddedCluster(IServiceProvider services)
             : base(services, out var members)
         {

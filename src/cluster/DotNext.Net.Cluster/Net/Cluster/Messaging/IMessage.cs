@@ -50,7 +50,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         ValueTask CopyToAsync(PipeWriter output, CancellationToken token = default);
-        
+
         /// <summary>
         /// MIME type of the message.
         /// </summary>

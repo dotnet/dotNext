@@ -1,12 +1,9 @@
 using System.Collections.Concurrent;
-using System.IO;
 using System.Threading.Tasks;
 using static Xunit.Assert;
 
 namespace DotNext.Net.Cluster.Messaging
 {
-    using static Mime.ContentTypeExtensions;
-
     internal sealed class Mailbox : ConcurrentQueue<StreamMessage>, IMessageHandler
     {
         async Task<IMessage> IMessageHandler.ReceiveMessage(IAddressee sender, IMessage message, object context)

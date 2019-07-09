@@ -5,15 +5,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading.Tasks;
-using DotNext.Net.Cluster.Replication;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
+    using Replication;
 
     internal static class RaftHttpConfigurator
     {
-        
         internal static IServiceCollection AddClusterAsSingleton<TCluster, TConfig>(this IServiceCollection services, IConfiguration memberConfig)
             where TCluster : RaftHttpCluster
             where TConfig : RaftClusterMemberConfiguration, new()

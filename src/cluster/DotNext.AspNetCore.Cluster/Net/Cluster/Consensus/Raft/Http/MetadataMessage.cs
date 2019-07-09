@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {

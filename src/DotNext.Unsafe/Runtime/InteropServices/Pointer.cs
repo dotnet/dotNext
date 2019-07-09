@@ -105,7 +105,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="ptr">The pointer value.</param>
         public unsafe Pointer(IntPtr ptr)
-            : this((T*) ptr)
+            : this((T*)ptr)
         {
         }
 
@@ -115,7 +115,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="ptr">The pointer value.</param>
         [CLSCompliant(false)]
         public unsafe Pointer(UIntPtr ptr)
-            : this((T*) ptr)
+            : this((T*)ptr)
         {
         }
 
@@ -195,7 +195,7 @@ namespace DotNext.Runtime.InteropServices
         unsafe object IStrongBox.Value
         {
             get => *value;
-            set => *this.value = (T) value;
+            set => *this.value = (T)value;
         }
 
         /// <summary>

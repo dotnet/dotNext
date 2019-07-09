@@ -19,7 +19,7 @@ namespace DotNext.Runtime.InteropServices
         {
             handle = Marshal.AllocHGlobal(new IntPtr(size));
             GC.AddMemoryPressure(size);
-            if(zeroMem)
+            if (zeroMem)
                 Memory.ClearBits(handle, size);
         }
 
@@ -45,7 +45,7 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public void Clear()
         {
-            if(IsClosed)
+            if (IsClosed)
                 throw HandleClosed();
             Memory.ClearBits(handle, Size);
         }
@@ -56,7 +56,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns><see langword="true"/> if unmanaged memory is released successfully; otherwise, <see langword="false"/>.</returns>
         protected sealed override bool ReleaseHandle()
         {
-            if(IsInvalid)
+            if (IsInvalid)
                 return false;
             Marshal.FreeHGlobal(handle);
             GC.RemoveMemoryPressure(Size);
@@ -72,9 +72,9 @@ namespace DotNext.Runtime.InteropServices
         {
             get
             {
-                if(IsClosed)
+                if (IsClosed)
                     throw HandleClosed();
-                else if(IsInvalid)
+                else if (IsInvalid)
                     return default;
                 else
                     return new Pointer<byte>(handle);
@@ -89,9 +89,9 @@ namespace DotNext.Runtime.InteropServices
         {
             get
             {
-                if(IsClosed)
+                if (IsClosed)
                     throw HandleClosed();
-                else if(IsInvalid)
+                else if (IsInvalid)
                     return default;
                 else
                     return new Span<byte>(handle.ToPointer(), checked((int)Size));

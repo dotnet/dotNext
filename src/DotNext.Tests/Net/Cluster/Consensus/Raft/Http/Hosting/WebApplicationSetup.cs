@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 
         public override void Configure(IApplicationBuilder app)
         {
-            
+
         }
 
         public override void ConfigureServices(IServiceCollection services)
