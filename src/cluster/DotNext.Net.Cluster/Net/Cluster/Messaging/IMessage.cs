@@ -25,6 +25,11 @@ namespace DotNext.Net.Cluster.Messaging
         string Name { get; }
 
         /// <summary>
+        /// Indicates that the content of this message can be copied to the output stream or pipe multiple times.
+        /// </summary>
+        bool IsReusable { get; }
+
+        /// <summary>
         /// Gets length of the message payload, in bytes.
         /// </summary>
         /// <remarks>
@@ -45,7 +50,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         ValueTask CopyToAsync(PipeWriter output, CancellationToken token = default);
-        
+
         /// <summary>
         /// MIME type of the message.
         /// </summary>

@@ -8,7 +8,7 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static void SliceTest()
         {
-            using(var owner = new UnmanagedMemory<long>(5))
+            using (var owner = new UnmanagedMemory<long>(5))
             {
                 Span<long> array = owner;
                 array[0] = 10;
@@ -31,7 +31,7 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static void ResizeTest()
         {
-            using(var owner = new UnmanagedMemory<long>(5))
+            using (var owner = new UnmanagedMemory<long>(5))
             {
                 Span<long> array = owner;
                 array[0] = 10;
@@ -51,8 +51,8 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static void BitwiseOperationsTest()
         {
-            using(var owner1 = new UnmanagedMemory<ushort>(3))
-            using(var owner2 = new UnmanagedMemory<ushort>(3))
+            using (var owner1 = new UnmanagedMemory<ushort>(3))
+            using (var owner2 = new UnmanagedMemory<ushort>(3))
             {
                 Span<ushort> array1 = owner1;
                 Span<ushort> array2 = owner2;
@@ -78,7 +78,7 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static unsafe void ArrayInteropTest()
         {
-            using(var owner = new UnmanagedMemory<ushort>(3))
+            using (var owner = new UnmanagedMemory<ushort>(3))
             {
                 Span<ushort> array = owner;
                 array[0] = 10;
@@ -99,7 +99,7 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static void ReadWriteTest()
         {
-            using(var owner = new UnmanagedMemory<ushort>(3))
+            using (var owner = new UnmanagedMemory<ushort>(3))
             {
                 var array = owner.Span;
                 array[0] = 10;
@@ -123,7 +123,7 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static void EnumeratorTest()
         {
-            using(var owner = new UnmanagedMemory<int>(3))
+            using (var owner = new UnmanagedMemory<int>(3))
             {
                 var array = owner.Span;
                 array[0] = 10;

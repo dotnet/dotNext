@@ -90,7 +90,7 @@ namespace DotNext.Threading
         public async Task<bool> StopAsync(TimeSpan timeout)
         {
             using (var notifier = new ManualResetEvent(false))
-                return Stop(notifier) && await notifier.WaitAsync(timeout).ConfigureAwait(false);
+                return Stop(notifier) && await notifier.WaitAsync(timeout);
         }
 
         /// <summary>

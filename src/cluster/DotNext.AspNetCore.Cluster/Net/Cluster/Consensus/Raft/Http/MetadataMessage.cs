@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
@@ -15,8 +16,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
+        private MetadataMessage(HeadersReader<StringValues> headers)
+            : base(headers)
+        {
+        }
+
         internal MetadataMessage(HttpRequest request)
-            : base(request)
+            : this(request.Headers.TryGetValue)
         {
         }
 

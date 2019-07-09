@@ -18,45 +18,48 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private readonly struct VotingState
         {
-            private static readonly Func<Task<bool?>, VotingResult> HandleTaskContinuation = task =>
-            {
-                if (task.IsCanceled)
-                    return VotingResult.Canceled;
-                else if (task.IsFaulted)
-                    return VotingResult.NotAvailable;
-                else
-                    switch (task.Result)
-                    {
-                        case true:
-                            return VotingResult.Granted;
-                        case false:
-                            return VotingResult.Rejected;
-                        default:
-                            return VotingResult.NotAvailable;
-                    }
-            };
-
             internal readonly IRaftClusterMember Voter;
-            internal readonly Task<VotingResult> Task;
+            internal readonly Task<Result<VotingResult>> Task;
 
-            internal VotingState(IRaftClusterMember voter, long term, LogEntryId? lastRecord, CancellationToken token)
+            private static async Task<Result<VotingResult>> VoteAsync(IRaftClusterMember voter, long term, IAuditTrail<ILogEntry> auditTrail, CancellationToken token)
+            {
+                var lastIndex = auditTrail.GetLastIndex(false);
+                var lastTerm = (await auditTrail.GetEntryAsync(lastIndex).ConfigureAwait(false) ?? auditTrail.First)
+                    .Term;
+                VotingResult result;
+                try
+                {
+                    var response = await voter.VoteAsync(term, lastIndex, lastTerm, token).ConfigureAwait(false);
+                    term = response.Term;
+                    result = response.Value ? VotingResult.Granted : VotingResult.Rejected;
+                }
+                catch (OperationCanceledException)
+                {
+                    result = VotingResult.Canceled;
+                }
+                catch (MemberUnavailableException)
+                {
+                    result = VotingResult.NotAvailable;
+                }
+                return new Result<VotingResult>(term, result);
+            }
+
+            internal VotingState(IRaftClusterMember voter, long term, IAuditTrail<ILogEntry> auditTrail, CancellationToken token)
             {
                 Voter = voter;
-                Task = voter.VoteAsync(term, lastRecord, token).ContinueWith(HandleTaskContinuation, default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+                Task = VoteAsync(voter, term, auditTrail, token);
             }
         }
 
         private readonly CancellationTokenSource votingCancellation;
         internal readonly long Term;
         private volatile Task votingTask;
-        private readonly bool absoluteMajority;
 
-        internal CandidateState(IRaftStateMachine stateMachine, bool absoluteMajority, long term)
+        internal CandidateState(IRaftStateMachine stateMachine, long term)
             : base(stateMachine)
         {
             votingCancellation = new CancellationTokenSource();
             Term = term;
-            this.absoluteMajority = absoluteMajority;
         }
 
         private async Task EndVoting(IEnumerable<VotingState> voters)
@@ -67,7 +70,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (IsDisposed)
                     return;
-                switch (await state.Task.ConfigureAwait(false))
+                var result = await state.Task.ConfigureAwait(false);
+                if (result.Term > Term) //current node is outdated
+                {
+                    stateMachine.MoveToFollowerState(false, result.Term);
+                    return;
+                }
+
+                switch (result.Value)
                 {
                     case VotingResult.Canceled: //candidate timeout happened
                         stateMachine.MoveToFollowerState(false);
@@ -75,15 +85,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     case VotingResult.Granted:
                         stateMachine.Logger.VoteGranted(state.Voter.Endpoint);
                         votes += 1;
-                        break; 
+                        break;
                     case VotingResult.Rejected:
-                        stateMachine.Logger.VoteGranted(state.Voter.Endpoint);
+                        stateMachine.Logger.VoteRejected(state.Voter.Endpoint);
                         votes -= 1;
                         break;
                     case VotingResult.NotAvailable:
                         stateMachine.Logger.MemberUnavailable(state.Voter.Endpoint);
-                        if (absoluteMajority)
-                            votes -= 1;
+                        votes -= 1;
                         break;
                 }
 
@@ -91,11 +100,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (!state.Voter.IsRemote)
                     localMember = state.Voter;
             }
+
             stateMachine.Logger.VotingCompleted(votes);
-            if (!votingCancellation.IsCancellationRequested && votes > 0 && localMember != null)
-                stateMachine.MoveToLeaderState(localMember); //becomes a leader
-            else
+            if (votingCancellation.IsCancellationRequested || votes <= 0 || localMember is null)
                 stateMachine.MoveToFollowerState(true); //no clear consensus
+            else
+                stateMachine.MoveToLeaderState(localMember); //becomes a leader
         }
 
         /// <summary>
@@ -103,15 +113,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="timeout">Candidate state timeout.</param>
         /// <param name="auditTrail">The local transaction log.</param>
-        internal CandidateState StartVoting(int timeout, IAuditTrail<LogEntryId> auditTrail = null)
+        internal CandidateState StartVoting(int timeout, IAuditTrail<ILogEntry> auditTrail)
         {
             stateMachine.Logger.VotingStarted(timeout);
             ICollection<VotingState> voters = new LinkedList<VotingState>();
             votingCancellation.CancelAfter(timeout);
             //start voting in parallel
-            var lastRecord = auditTrail?.LastRecord;
             foreach (var member in stateMachine.Members)
-                voters.Add(new VotingState(member, Term, lastRecord, votingCancellation.Token));
+                voters.Add(new VotingState(member, Term, auditTrail, votingCancellation.Token));
             votingTask = EndVoting(voters);
             return this;
         }

@@ -34,7 +34,7 @@ namespace DotNext.Buffers
         public ArrayRental(int minimumLength, bool clearArray = false)
             : this(ArrayPool<T>.Shared, minimumLength, clearArray)
         {
-            
+
         }
 
         /// <summary>

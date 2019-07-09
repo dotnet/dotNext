@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Linq.Expressions;
 
 namespace DotNext
 {
@@ -13,7 +13,7 @@ namespace DotNext
         private static MethodInfo GetMethod<D>(Expression<D> expression)
             where D : Delegate
         {
-            switch(expression.Body)
+            switch (expression.Body)
             {
                 case MethodCallExpression expr:
                     return expr.Method;

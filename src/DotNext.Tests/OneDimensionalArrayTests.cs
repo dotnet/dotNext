@@ -62,10 +62,22 @@ namespace DotNext
         public static void Slice()
         {
             var array = new[] { 1, 2, 3, 4 };
+            array = array.Slice(1, 2);
+            Equal(2, array.LongLength);
+            Equal(2, array[0]);
+            Equal(3, array[1]);
+
+            array = new[] { 1, 2, 3, 4 };
             array = array.Slice(0, 2);
             Equal(2, array.LongLength);
             Equal(1, array[0]);
             Equal(2, array[1]);
+
+            array = new[] { 1, 2, 3, 4 };
+            array = array.Slice(2, 3);
+            Equal(2, array.LongLength);
+            Equal(3, array[0]);
+            Equal(4, array[1]);
         }
     }
 }

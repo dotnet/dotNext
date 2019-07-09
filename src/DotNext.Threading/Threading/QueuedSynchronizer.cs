@@ -10,10 +10,10 @@ namespace DotNext.Threading
     using Tasks;
 
     /// <summary>
-    /// Provides a framework for implementing asynchronous locks and related synchronizers that rely on first-in-first-out (FIFO) wait queues.
+    /// Provides a framework for implementing asynchronous locks and related synchronization primitives that rely on first-in-first-out (FIFO) wait queues.
     /// </summary>
     /// <remarks>
-    /// Derived synchronizers less efficient in terms of memory pressure in comparison with <see cref="Synchronizer">non-queued synchronizers</see>.
+    /// Derived synchronization primitives less efficient in terms of memory pressure in comparison with <see cref="Synchronizer">non-queued synchronization primitives</see>.
     /// It provides the individual instance of <see cref="Task{TResult}"/> under contention for each waiter in the queue.
     /// </remarks>
     public abstract class QueuedSynchronizer : Disposable, ISynchronizer
@@ -102,14 +102,15 @@ namespace DotNext.Threading
 
         private async Task<bool> Wait(WaitNode node, CancellationToken token)
         {
-            using (var tracker = new CancelableTaskCompletionSource<bool>(ref token))
-                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, tracker.Task).ConfigureAwait(false)))
-                    return true;
+            if (ReferenceEquals(node.Task,
+                await Task.WhenAny(node.Task, Task.Delay(InfiniteTimeSpan, token)).ConfigureAwait(false)))
+                return true;
             if (RemoveNode(node))
             {
                 token.ThrowIfCancellationRequested();
                 return false;
             }
+
             return await node.Task.ConfigureAwait(false);
         }
 

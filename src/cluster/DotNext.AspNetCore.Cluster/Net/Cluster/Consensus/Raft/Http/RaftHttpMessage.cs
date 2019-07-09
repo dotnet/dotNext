@@ -1,26 +1,29 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal abstract class RaftHttpMessage : HttpMessage
     {
+
         //request - represents Term value according with Raft protocol
+        //response - represents Term value of the reply node
         private const string TermHeader = "X-Raft-Term";
-        
+
         internal readonly long ConsensusTerm;
 
         private protected RaftHttpMessage(string messageType, IPEndPoint sender, long term) : base(messageType, sender) => ConsensusTerm = term;
 
-        private protected RaftHttpMessage(HttpRequest request)
-            : base(request)
+        private protected RaftHttpMessage(HeadersReader<StringValues> headers)
+            : base(headers)
         {
-            foreach (var header in request.Headers[TermHeader])
-                if (long.TryParse(header, out ConsensusTerm))
-                    break;
+            ConsensusTerm = ParseHeader(TermHeader, headers, Int64Parser);
         }
 
         private protected override void FillRequest(HttpRequestMessage request)
@@ -29,24 +32,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             base.FillRequest(request);
         }
 
-        private protected static LogEntryId? ParseLogEntryId(HttpRequest request, string indexHeader, string termHeader)
+        private protected new static async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response)
         {
-            long? term = null, index = null;
-            foreach (var header in request.Headers[indexHeader])
-                if (long.TryParse(header, out var value))
-                {
-                    index = value;
-                    break;
-                }
+            var result = await HttpMessage.ParseBoolResponse(response).ConfigureAwait(false);
+            var term = ParseHeader<IEnumerable<string>, long>(TermHeader, response.Headers.TryGetValues, Int64Parser);
+            return new Result<bool>(term, result);
+        }
 
-            foreach (var header in request.Headers[termHeader])
-                if (long.TryParse(header, out var value))
-                {
-                    term = value;
-                    break;
-                }
-
-            return term is null || index is null ? default(LogEntryId?) : new LogEntryId(term.Value, index.Value);
+        private protected static Task SaveResponse(HttpResponse response, Result<bool> result)
+        {
+            response.StatusCode = StatusCodes.Status200OK;
+            response.Headers.Add(TermHeader, Convert.ToString(result.Term, InvariantCulture));
+            return response.WriteAsync(Convert.ToString(result.Value, InvariantCulture));
         }
     }
 }

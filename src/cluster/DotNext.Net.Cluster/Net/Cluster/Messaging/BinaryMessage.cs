@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// <summary>
     /// Represents binary message.
     /// </summary>
-    public sealed class BinaryMessage : IMessage
+    public class BinaryMessage : IMessage
     {
         /// <summary>
         /// Initializes a new binary message.
@@ -48,6 +48,8 @@ namespace DotNext.Net.Cluster.Messaging
         /// Gets name of the message.
         /// </summary>
         public string Name { get; }
+
+        bool IMessage.IsReusable => true;
 
         long? IMessage.Length => Content.Length;
 

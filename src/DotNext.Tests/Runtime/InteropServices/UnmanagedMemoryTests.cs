@@ -24,7 +24,7 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static void UntypedMemoryTest()
         {
-            using(var memory = new UnmanagedMemory(10))
+            using (var memory = new UnmanagedMemory(10))
             {
                 Span<byte> bytes = memory.Bytes;
                 Equal(10, memory.Size);

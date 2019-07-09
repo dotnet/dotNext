@@ -19,5 +19,7 @@ namespace DotNext.Threading
         internal static string NotInUpgradeableReadLock => Resources.GetString("NotInUpgradeableReadLock");
 
         internal static string TokenNotCancelable => Resources.GetString("TokenNotCancelable");
+
+        internal static string UnsupportedLockAcquisition => Resources.GetString("UnsupportedLockAcquisition");
     }
 }

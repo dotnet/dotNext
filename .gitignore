@@ -7,3 +7,5 @@ logo.svg
 favicon.ico
 manifest.json
 BenchmarkDotNet.Artifacts/
+launchSettings.json
+*.csproj.user

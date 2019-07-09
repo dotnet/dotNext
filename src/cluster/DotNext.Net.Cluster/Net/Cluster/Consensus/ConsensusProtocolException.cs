@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Runtime.Serialization;
 
-namespace DotNext.Net.Cluster
+namespace DotNext.Net.Cluster.Consensus
 {
     /// <summary>
     /// Represents violation of network consensus protocol.

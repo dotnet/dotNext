@@ -23,7 +23,7 @@ namespace DotNext.Net.Cluster.Messaging
                 pipe.Writer.Complete();
             });
             var content = new MemoryStream();
-            while(true)
+            while (true)
             {
                 var read = await pipe.Reader.ReadAsync().ConfigureAwait(false);
                 foreach (var chunk in read.Buffer)

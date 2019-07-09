@@ -1,18 +1,17 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Replication
 {
+    using IMessage = Messaging.IMessage;
+
     internal static class AuditTrail
     {
-        internal static ILogEntry<EntryId> GetPrevious<EntryId>(this IAuditTrail<EntryId> log, ILogEntry<EntryId> entry)
-            where EntryId : struct, IEquatable<EntryId>
-            => log[log.GetPrevious(entry.Id)];
+        internal static async ValueTask<LogEntry> GetEntryAsync<LogEntry>(this IAuditTrail<LogEntry> auditTrail, long index)
+            where LogEntry : class, IMessage
 
-        internal static ILogEntry<EntryId> GetNext<EntryId>(this IAuditTrail<EntryId> log, ILogEntry<EntryId> entry)
-            where EntryId : struct, IEquatable<EntryId>
         {
-            var next = log.GetNext(entry.Id);
-            return next.TryGet(out var id) ? log[id] : null;
+            var entries = await auditTrail.GetEntriesAsync(index, index).ConfigureAwait(false);
+            return entries.Count > 0 ? entries[0] : null;
         }
     }
 }

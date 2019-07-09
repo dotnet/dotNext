@@ -34,15 +34,15 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public void Reallocate(long size)
         {
-            if(IsClosed)
+            if (IsClosed)
                 throw HandleClosed();
-            if(IsInvalid)
+            if (IsInvalid)
                 return;
             handle = Marshal.ReAllocHGlobal(handle, new IntPtr(size));
             var diff = size - this.size;
-            if(diff > 0L)
+            if (diff > 0L)
                 GC.AddMemoryPressure(diff);
-            else if(diff < 0L)
+            else if (diff < 0L)
                 GC.RemoveMemoryPressure(diff & long.MaxValue);  //remove sign bit
             this.size = size;
         }
@@ -54,9 +54,9 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public UnmanagedMemory Copy()
         {
-            if(IsClosed)
+            if (IsClosed)
                 throw HandleClosed();
-            if(IsInvalid)
+            if (IsInvalid)
                 return this;
             var copy = new UnmanagedMemory(Size, false);
             Memory.Copy(handle, copy.handle, Size);
@@ -102,7 +102,7 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public long ReadFrom(byte[] source)
             => Pointer.ReadFrom(source, 0L, source.LongLength);
-        
+
         /// <summary>
         /// Gets a span from the specified instance.
         /// </summary>
@@ -176,9 +176,9 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public UnmanagedMemory<T> Copy()
         {
-            if(IsClosed)
+            if (IsClosed)
                 throw HandleClosed();
-            if(IsInvalid)
+            if (IsInvalid)
                 return this;
             var copy = new UnmanagedMemory<T>(length, false);
             Memory.Copy(handle, copy.handle, Size);
@@ -194,7 +194,7 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public T[] ToArray()
         {
-            if(IsClosed)
+            if (IsClosed)
                 throw HandleClosed();
             if (IsInvalid)
                 return Array.Empty<T>();
@@ -311,7 +311,7 @@ namespace DotNext.Runtime.InteropServices
             if (other is null)
                 return 1;
             else if (length != other.LongLength)
-                return ((long) length).CompareTo(other.LongLength);
+                return ((long)length).CompareTo(other.LongLength);
             else
                 fixed (T* ptr = other)
                     return BitwiseCompare(ptr);
@@ -334,16 +334,16 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public void Reallocate(int length)
         {
-            if(IsClosed)
+            if (IsClosed)
                 throw HandleClosed();
-            if(IsInvalid)
+            if (IsInvalid)
                 return;
             long oldSize = Size, newSize = GetSize(this.length = length);
             handle = Marshal.ReAllocHGlobal(handle, new IntPtr(newSize));
             var diff = newSize - oldSize;
-            if(diff > 0L)
+            if (diff > 0L)
                 GC.AddMemoryPressure(diff);
-            else if(diff < 0L)
+            else if (diff < 0L)
                 GC.RemoveMemoryPressure(diff & long.MaxValue);
         }
 
@@ -355,9 +355,9 @@ namespace DotNext.Runtime.InteropServices
         {
             get
             {
-                if(IsClosed)
+                if (IsClosed)
                     throw HandleClosed();
-                else if(IsInvalid)
+                else if (IsInvalid)
                     return default;
                 else
                     return new Span<T>(handle.ToPointer(), length);
@@ -372,9 +372,9 @@ namespace DotNext.Runtime.InteropServices
         {
             get
             {
-                if(IsClosed)
+                if (IsClosed)
                     throw HandleClosed();
-                else if(IsInvalid)
+                else if (IsInvalid)
                     return default;
                 else
                     return new Pointer<T>(handle);

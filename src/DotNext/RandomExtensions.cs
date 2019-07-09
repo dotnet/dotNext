@@ -37,7 +37,8 @@ namespace DotNext
 
             char IRandomCharacterGenerator.NextChar(ReadOnlySpan<char> allowedChars)
             {
-                random.GetBytes(buffer, 0, sizeof(int));
+                //TODO: buffer should be replaced with stack allocated Span in .NET Standard 2.1
+                random.GetBytes(buffer, 0, buffer.Length);
                 var randomNumber = (BitConverter.ToInt32(buffer, 0) & int.MaxValue) % allowedChars.Length;
                 return allowedChars[randomNumber];
             }
@@ -46,12 +47,14 @@ namespace DotNext
         private static unsafe string NextString<R>(ref R generator, ReadOnlySpan<char> allowedChars, int length)
             where R : struct, IRandomCharacterGenerator
         {
+            //TODO: should be reviewed for .NET Standard 2.1
             if (length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
-            else if (length == 0)
-                return "";
-            //use stack allocation for small strings
-            var result = length < 1024 ? stackalloc char[length] : new Span<char>(new char[length]);
+            if (length == 0)
+                return string.Empty;
+            const short smallStringLength = 1024;
+            //use stack allocation for small strings, which is 99% of all use cases
+            var result = length <= smallStringLength ? stackalloc char[length] : new Span<char>(new char[length]);
             foreach (ref var element in result)
                 element = generator.NextChar(allowedChars);
             fixed (char* ptr = result)
@@ -150,7 +153,7 @@ namespace DotNext
         public static int Next(this RandomNumberGenerator random)
         {
             var buffer = new byte[sizeof(int)];
-            random.GetBytes(buffer, 0, sizeof(int));
+            random.GetBytes(buffer, 0, buffer.Length);
             return BitConverter.ToInt32(buffer, 0) & int.MaxValue;  //remove sign bit. Abs function may cause OverflowException
         }
 

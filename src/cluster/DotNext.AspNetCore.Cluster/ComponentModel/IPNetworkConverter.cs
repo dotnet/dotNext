@@ -15,7 +15,7 @@ namespace DotNext.ComponentModel
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            switch(value)
+            switch (value)
             {
                 case string network:
                     return IPNetwork.Parse(network);
@@ -29,7 +29,7 @@ namespace DotNext.ComponentModel
 
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
-            switch(value)
+            switch (value)
             {
                 case IPNetwork network:
                     return network.ToString();

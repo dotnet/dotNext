@@ -6,14 +6,13 @@
     public interface IClusterMemberConfiguration
     {
         /// <summary>
-        /// Indicates that votes of unavailable cluster members are
-        /// taken into account during voting process.
+        /// Indicates that each part of cluster in partitioned network allow to elect its own leader.
         /// </summary>
         /// <remarks>
-        /// <see langword="true"/> value allows to build CA distributed cluster
-        /// while <see langword="false"/> value allows to build CP/AP distributed cluster. 
+        /// <see langword="false"/> value allows to build CA distributed cluster
+        /// while <see langword="true"/> value allows to build CP/AP distributed cluster. 
         /// </remarks>
-        bool AbsoluteMajority { get; }
+        bool Partitioning { get; }
 
         /// <summary>
         /// Gets leader election timeout settings.

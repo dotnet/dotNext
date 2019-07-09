@@ -10,10 +10,10 @@ namespace DotNext.Net.Cluster.Messaging
     /// <summary>
     /// Represents message which content is represented by <see cref="Stream"/>.
     /// </summary>
-    public class StreamMessage : Disposable, IMessage
+    public class StreamMessage : Disposable, IDisposableMessage
     {
         private const int BufferSize = 1024;
-        private readonly bool disposeStream;
+        private readonly bool leaveOpen;
         private readonly Stream content;
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="type">Media type of the message.</param>
         public StreamMessage(Stream content, bool leaveOpen, string name, ContentType type = null)
         {
-            disposeStream = !leaveOpen;
+            this.leaveOpen = leaveOpen;
             Name = name;
             Type = type ?? new ContentType(MediaTypeNames.Application.Octet);
             this.content = content;
@@ -57,7 +57,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <summary>
         /// Indicates that the content of this message can be copied to the output stream or pipe multiple times.
         /// </summary>
-        public bool Reusable => content.CanSeek;
+        public bool IsReusable => content.CanSeek;
 
         long? IMessage.Length => content.CanSeek ? content.Length : default(long?);
 
@@ -99,7 +99,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && disposeStream)
+            if (disposing && !leaveOpen)
                 content.Dispose();
             base.Dispose(disposing);
         }

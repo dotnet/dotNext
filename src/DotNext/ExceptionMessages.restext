@@ -3,3 +3,4 @@ ReleasedLock=The lock is already released
 InvalidUserDataSlot=Slot was not created using Allocate method
 IndexShouldBeZero=List index should be equal to 0
 CastNullToValueType=Unable to cast null value to value type
+UnsupportedLockAcquisition=Lock cannot be acquired for this type of object

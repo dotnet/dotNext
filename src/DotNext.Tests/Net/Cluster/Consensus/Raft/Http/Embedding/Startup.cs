@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Net.Http;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions()
+                .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
                 .AddSingleton<IMessageHandler, Mailbox>()
                 .BecomeClusterMember(configuration);
         }

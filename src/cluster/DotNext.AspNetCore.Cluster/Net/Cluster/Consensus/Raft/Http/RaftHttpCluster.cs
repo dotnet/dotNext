@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -18,9 +17,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
 
-    internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessagingNetwork
+    internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
-        private const string RaftClientHandlerName = "raftClient";
         private delegate ICollection<IPEndPoint> HostingAddressesProvider();
 
         private readonly IRaftClusterConfigurator configurator;
@@ -35,15 +33,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly HostingAddressesProvider hostingAddresses;
         private readonly IHttpMessageHandlerFactory httpHandlerFactory;
         private protected readonly TimeSpan RequestTimeout;
+        private readonly DuplicateRequestDetector duplicationDetector;
+        private protected readonly bool OpenConnectionForEachRequest;
+        private readonly string clientHandlerName;
 
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
         private RaftHttpCluster(RaftClusterMemberConfiguration config, out MutableMemberCollection members)
             : base(config, out members)
         {
+            OpenConnectionForEachRequest = config.OpenConnectionForEachRequest;
             allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
-            RequestTimeout = TimeSpan.FromMilliseconds(config.LowerElectionTimeout);
+            RequestTimeout = TimeSpan.FromMilliseconds(config.UpperElectionTimeout);
+            duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
+            clientHandlerName = config.ClientHandlerName;
         }
 
         private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MutableMemberCollection members)
@@ -71,15 +75,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ILogger IHostingContext.Logger => Logger;
 
-        IReadOnlyCollection<IAddressee> IMessagingNetwork.Members => Members;
+        IReadOnlyCollection<IAddressee> IMessageBus.Members => Members;
 
-        IAddressee IMessagingNetwork.Leader => Leader;
+        IAddressee IMessageBus.Leader => Leader;
 
-        private void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
+        private async void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
         {
             metadata = new MemberMetadata(configuration.Metadata);
             allowedNetworks = configuration.AllowedNetworks;
-            ChangeMembers((in MutableMemberCollection members) =>
+            await ChangeMembersAsync((in MutableMemberCollection members) =>
             {
                 var existingMembers = new HashSet<Uri>();
                 //remove members
@@ -101,56 +105,61 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                         members.Add(member);
                         MemberAdded?.Invoke(this, member);
                     }
+
                 existingMembers.Clear();
-            });
+            }).ConfigureAwait(false);
         }
 
-        async Task<TResponse> IMessagingNetwork.SendMessageToLeaderAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
+        async Task<TResponse> IMessageBus.SendMessageToLeaderAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
         {
+            if (!token.CanBeCanceled)
+                token = Token;
             do
             {
                 var leader = Leader;
-                if(leader is null)
+                if (leader is null)
                     throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
                 try
                 {
                     return await leader.SendMessageAsync(message, responseReader, true, token).ConfigureAwait(false);
                 }
-                catch(MemberUnavailableException)
+                catch (MemberUnavailableException)
                 {
-                    continue;
                 }
-                catch(UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.BadRequest) //keep in sync with ReceiveMessage behavior
+                catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.BadRequest) //keep in sync with ReceiveMessage behavior
                 {
-                    continue;
                 }
             }
-            while(!token.IsCancellationRequested);
+            while (!token.IsCancellationRequested);
             throw new OperationCanceledException(token);
         }
 
-        async Task IMessagingNetwork.SendSignalToLeaderAsync(IMessage message, CancellationToken token)
+        async Task IMessageBus.SendSignalToLeaderAsync(IMessage message, CancellationToken token)
         {
+            if (!token.CanBeCanceled)
+                token = Token;
+            //keep the same message between retries for correct identification of duplicate messages
+            var signal = new CustomMessage(localMember.Endpoint, message, true) { RespectLeadership = true };
             do
             {
                 var leader = Leader;
-                if(leader is null)
+                if (leader is null)
                     throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
                 try
                 {
-                    await leader.SendSignalAsync(message, true, true, token).ConfigureAwait(false);
+                    await leader.SendSignalAsync(signal, token).ConfigureAwait(false);
                 }
-                catch(MemberUnavailableException)
+                catch (MemberUnavailableException)
                 {
                     continue;
                 }
-                catch(UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.ServiceUnavailable) //keep in sync with ReceiveMessage behavior
+                catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.ServiceUnavailable) //keep in sync with ReceiveMessage behavior
                 {
                     continue;
                 }
                 return;
             }
-            while(!token.IsCancellationRequested);
+            while (!token.IsCancellationRequested);
             throw new OperationCanceledException(token);
         }
 
@@ -158,18 +167,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-        async Task<bool> IHostingContext.LocalCommitAsync(Replication.ILogEntry<LogEntryId> entry)
-        {
-            if (AuditTrail is null)
-                throw new NotSupportedException();
-            await AuditTrail.CommitAsync(entry);
-            return true;
-        }
-
         IPEndPoint IHostingContext.LocalEndpoint => localMember?.Endpoint;
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
-            => httpHandlerFactory?.CreateHandler(RaftClientHandlerName) ?? new HttpClientHandler();
+            => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new HttpClientHandler();
 
         public event ClusterChangedEventHandler MemberAdded;
         public event ClusterChangedEventHandler MemberRemoved;
@@ -187,6 +188,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public override Task StopAsync(CancellationToken token)
         {
             configurator?.Shutdown(this);
+            duplicationDetector.Trim(100);
             return base.StopAsync(token);
         }
 
@@ -194,35 +196,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var sender = FindMember(request.Sender.Represents);
             if (sender is null)
-                await request.SaveResponse(response, false).ConfigureAwait(false);
+                await request.SaveResponse(response, new Result<bool>(Term, false)).ConfigureAwait(false);
             else
             {
                 await request.SaveResponse(response,
-                    await ReceiveVote(sender, request.ConsensusTerm, request.LastEntry)
+                    await ReceiveVote(sender, request.ConsensusTerm, request.LastLogIndex, request.LastLogTerm)
                         .ConfigureAwait(false)).ConfigureAwait(false);
                 sender.Touch();
             }
-        }
-
-        private Task ReceiveHeartbeat(RaftHttpMessage request, HttpResponse response)
-        {
-            var sender = FindMember(request.Sender.Represents);
-            Task result;
-            if (sender is null)
-            {
-                response.StatusCode = StatusCodes.Status404NotFound;
-                result = Task.CompletedTask;
-            }
-            else
-            {
-                HeartbeatMessage.CreateResponse(response);
-                result = ReceiveHeartbeat(sender, request.ConsensusTerm);
-                sender.Touch();
-                response.StatusCode = StatusCodes.Status204NoContent;
-            }
-
-            response.Body = Stream.Null;
-            return result;
         }
 
         private async Task Resign(ResignMessage request, HttpResponse response)
@@ -240,43 +221,51 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return result;
         }
 
-        private async Task ReceiveEntries(AppendEntriesMessage request, HttpResponse response)
+        private async Task ReceiveEntries(HttpRequest request, HttpResponse response)
         {
-            var sender = FindMember(request.Sender.Represents);
+            var message = new AppendEntriesMessage(request);
+            var sender = FindMember(message.Sender.Represents);
             if (sender is null)
-            {
                 response.StatusCode = StatusCodes.Status404NotFound;
-            }
             else
             {
-                await request.SaveResponse(response, await ReceiveEntries(sender, request.ConsensusTerm, request.LogEntry,
-                        request.PrecedingEntry).ConfigureAwait(false)).ConfigureAwait(false);
+                await message.ParseEntriesAsync(request, Token).ConfigureAwait(false);
+                await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm,
+                    message.Entries, message.PrevLogIndex,
+                    message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false)).ConfigureAwait(false);
             }
         }
 
-        private Task ReceiveOneWayMessage(RaftClusterMember sender, CustomMessage message, HttpResponse response)
+        [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
+        private static async Task ReceiveOneWayMessageFastAck(IAddressee sender, IMessage message, IMessageHandler handler, HttpResponse response)
         {
-            if(!message.RespectLeadership || IsLeaderLocal)
-            {
-                response.StatusCode = StatusCodes.Status204NoContent;
-                return messageHandler.ReceiveSignal(sender, message.Message);
-            }
+            const long maxSize = 30720;   //30 KB
+            var length = message.Length;
+            IDisposableMessage buffered;
+            if (length.HasValue && length.Value < maxSize)
+                buffered = await StreamMessage.CreateBufferedMessageAsync(message).ConfigureAwait(false);
             else
+                buffered = await FileMessage.CreateAsync(message).ConfigureAwait(false);
+            response.OnCompleted(async delegate ()
             {
-                response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                using (buffered)
+                    await handler.ReceiveSignal(sender, buffered, null).ConfigureAwait(false);
+            });
+        }
+
+        private static Task ReceiveOneWayMessage(IAddressee sender, CustomMessage request, IMessageHandler handler, bool reliable, HttpResponse response)
+        {
+            response.StatusCode = StatusCodes.Status204NoContent;
+            //drop duplicated request
+            if (response.HttpContext.Features.Get<DuplicateRequestDetector>().IsDuplicate(request))
                 return Task.CompletedTask;
-            }
+            return reliable ? handler.ReceiveSignal(sender, request.Message, response.HttpContext) : ReceiveOneWayMessageFastAck(sender, request.Message, handler, response);
         }
 
-        private async Task ReceiveMessage(RaftClusterMember sender, CustomMessage message, HttpResponse response)
+        private static async Task ReceiveMessage(IAddressee sender, CustomMessage request, IMessageHandler handler, HttpResponse response)
         {
-            if(!message.RespectLeadership || IsLeaderLocal)
-            {
-                response.StatusCode = StatusCodes.Status200OK;
-                await message.SaveResponse(response, await messageHandler.ReceiveMessage(sender, message.Message).ConfigureAwait(false)).ConfigureAwait(false);
-            }
-            else
-                response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+            response.StatusCode = StatusCodes.Status200OK;
+            await request.SaveResponse(response, await handler.ReceiveMessage(sender, request.Message, response.HttpContext).ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         private Task ReceiveMessage(CustomMessage message, HttpResponse response)
@@ -293,10 +282,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 response.StatusCode = StatusCodes.Status501NotImplemented;
                 task = Task.CompletedTask;
             }
-            else if (message.IsOneWay)
-                task = ReceiveOneWayMessage(sender, message, response);
+            else if (!message.RespectLeadership || IsLeaderLocal)
+                switch (message.Mode)
+                {
+                    case CustomMessage.DeliveryMode.RequestReply:
+                        task = ReceiveMessage(sender, message, messageHandler, response);
+                        break;
+                    case CustomMessage.DeliveryMode.OneWay:
+                        task = ReceiveOneWayMessage(sender, message, messageHandler, true, response);
+                        break;
+                    case CustomMessage.DeliveryMode.OneWayNoAck:
+                        task = ReceiveOneWayMessage(sender, message, messageHandler, false, response);
+                        break;
+                    default:
+                        response.StatusCode = StatusCodes.Status400BadRequest;
+                        task = Task.CompletedTask;
+                        break;
+                }
             else
-                task = ReceiveMessage(sender, message, response);
+            {
+                response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                task = Task.CompletedTask;
+            }
+
             sender?.Touch();
             return task;
         }
@@ -310,19 +318,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 return Task.CompletedTask;
             }
+            context.Features.Set(duplicationDetector);
             //process request
             switch (HttpMessage.GetMessageType(context.Request))
             {
                 case RequestVoteMessage.MessageType:
                     return ReceiveVote(new RequestVoteMessage(context.Request), context.Response);
-                case HeartbeatMessage.MessageType:
-                    return ReceiveHeartbeat(new HeartbeatMessage(context.Request), context.Response);
                 case ResignMessage.MessageType:
                     return Resign(new ResignMessage(context.Request), context.Response);
                 case MetadataMessage.MessageType:
                     return GetMetadata(new MetadataMessage(context.Request), context.Response);
                 case AppendEntriesMessage.MessageType:
-                    return ReceiveEntries(new AppendEntriesMessage(context.Request), context.Response);
+                    return ReceiveEntries(context.Request, context.Response);
                 case CustomMessage.MessageType:
                     return ReceiveMessage(new CustomMessage(context.Request), context.Response);
                 default:
@@ -337,6 +344,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 localMember = null;
                 configurationTracker.Dispose();
+                duplicationDetector.Dispose();
             }
 
             base.Dispose(disposing);

@@ -172,7 +172,7 @@ namespace DotNext
         public static int BitwiseCompare<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second)
             where T : unmanaged
             => AsBytes(first).SequenceCompareTo(AsBytes(second));
-        
+
         private static int Partition<T>(Span<T> span, int startIndex, int endIndex, IComparer<T> comparison)
         {
             var pivot = span[endIndex];

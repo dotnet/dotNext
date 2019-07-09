@@ -50,6 +50,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
+    <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
     <ProjectReference Include="..\..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext" Version="0.11.0" Condition="'$(Configuration)'=='Release'" />
     <ProjectReference Include="..\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" Condition="'$(Configuration)'=='Debug'" />

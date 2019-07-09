@@ -1,63 +1,70 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Replication
 {
+    using IMessage = Messaging.IMessage;
+
     /// <summary>
-    /// Represents replication log.
+    /// Represents audit trail responsible for maintaining log entries.
     /// </summary>
-    /// <typeparam name="EntryId">The type representing unique identifier of log entry.</typeparam>
-    public interface IAuditTrail<EntryId>
-        where EntryId : struct, IEquatable<EntryId>
+    public interface IAuditTrail<LogEntry>
+        where LogEntry : class, IMessage
     {
         /// <summary>
-        /// Gets last record in this audit trail.
-        /// </summary>
-        EntryId LastRecord { get; }
-
-        /// <summary>
-        /// Gets record by its index.
-        /// </summary>
-        /// <param name="recordId">The index of the record.</param>
-        /// <returns></returns>
-        ILogEntry<EntryId> this[in EntryId recordId] { get; }
-
-        /// <summary>
-        /// Determines whether the record with the specified
-        /// identifier already in transaction log.
-        /// </summary>
-        /// <param name="recordId">The identifier of the record to check.</param>
-        /// <returns><see langword="true"/> if the record identified by <paramref name="recordId"/> is in transaction log; otherwise, <see langword="false"/>.</returns>
-        bool Contains(in EntryId recordId);
-
-        /// <summary>
-        /// Gets the record preceding to the specified record.
-        /// </summary>
-        /// <param name="recordId">The record identifier.</param>
-        /// <returns>The identifier of the record preceding to <paramref name="recordId"/>.</returns>
-        EntryId GetPrevious(in EntryId recordId);
-
-        /// <summary>
-        /// Gets the record following the specified record.
-        /// </summary>
-        /// <param name="recordId">The record identifier.</param>
-        /// <returns>The identifier of the record following <paramref name="recordId"/>.</returns>
-        EntryId? GetNext(in EntryId recordId);
-
-        /// <summary>
-        /// Commits log entry.
-        /// </summary>
-        /// <param name="entry">The record to be committed.</param>
-        /// <returns><see langword="true"/> if entry is committed successfully; <see langword="false"/> if record is rejected.</returns>
-        ValueTask CommitAsync(ILogEntry<EntryId> entry);
-
-        /// <summary>
-        /// Gets identifier of ephemeral Initial log record.
+        /// Gets index of the committed or last log entry.
         /// </summary>
         /// <remarks>
-        /// There is no other records in this log
-        /// located before the initial record.
+        /// This method is synchronous because returning value should be cached and updated in memory by implementing class.
         /// </remarks>
-        ref readonly EntryId Initial { get; }
+        /// <param name="committed"><see langword="true"/> to get the index of highest log entry known to be committed; <see langword="false"/> to get the index of the last log entry.</param>
+        /// <returns>The index of the log entry.</returns>
+        long GetLastIndex(bool committed);
+
+        /// <summary>
+        /// Gets log entries in the specified range.
+        /// </summary>
+        /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
+        /// <param name="endIndex">The index of the last requested log entry, inclusively; <see langword="null"/> to return all log entries started from <paramref name="startIndex"/> to the last existing log entry.</param>
+        /// <returns>The collection of log entries.</returns>
+        ValueTask<IReadOnlyList<LogEntry>> GetEntriesAsync(long startIndex, long? endIndex = null);
+
+        /// <summary>
+        /// Adds uncommitted log entries into this log.
+        /// </summary>
+        /// <remarks>
+        /// This method should updates cached value provided by method <see cref="GetLastIndex"/> called with argument of value <see langword="false"/>.
+        /// </remarks>
+        /// <param name="entries">The entries to be added into this log.</param>
+        /// <param name="startIndex"><see langword="null"/> to append entries into the end of the log; or index from which all previous log entries should be dropped and replaced with new entries.</param>
+        /// <returns>Index of the first added entry.</returns>
+        /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
+        ValueTask<long> AppendAsync(IReadOnlyList<LogEntry> entries, long? startIndex = null);
+
+        /// <summary>
+        /// The event that is raised when actual commit happen.
+        /// </summary>
+        event CommitEventHandler<LogEntry> Committed;
+
+        /// <summary>
+        /// Commits log entries into the underlying storage and marks these entries as committed.
+        /// </summary>
+        /// <remarks>
+        /// This method should updates cached value provided by method <see cref="GetLastIndex"/> called with argument of value <see langword="true"/>.
+        /// </remarks>
+        /// <param name="startIndex">The index of the first entry to commit, inclusively.</param>
+        /// <param name="endIndex">The index of the last entry to commit, inclusively; if <see langword="null"/> then commits all log entries started from <paramref name="startIndex"/> to the last existing log entry.</param>
+        /// <returns>The actual number of committed entries.</returns>
+        ValueTask<long> CommitAsync(long startIndex, long? endIndex = null);
+
+        /// <summary>
+        /// Gets the first ephemeral log entry that is present in the empty log.
+        /// </summary>
+        /// <remarks>
+        /// The first log entry always represents NOP database command and is already committed.
+        /// Index of such entry is always 0.
+        /// </remarks>
+        ref readonly LogEntry First { get; }
     }
 }

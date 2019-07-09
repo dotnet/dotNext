@@ -154,22 +154,6 @@ namespace DotNext
             return RemoveAll(array, match, ref cb);
         }
 
-        /// <summary>
-        /// Converts each array element from one type into another.
-        /// </summary>
-        /// <typeparam name="I">Type of source array elements.</typeparam>
-        /// <typeparam name="O">Type of target array elements.</typeparam>
-        /// <param name="input">Input array to be converted. Cannot be <see langword="null"/>.</param>
-        /// <param name="mapper">Index-aware mapping function. Cannot be <see langword="null"/>.</param>
-        /// <returns>Converted array.</returns>
-        public static O[] ConvertAll<I, O>(this I[] input, Func<long, I, O> mapper)
-        {
-            var output = New<O>(input.LongLength);
-            for (var i = 0L; i < input.LongLength; i++)
-                output[i] = mapper(i, input[i]);
-            return output;
-        }
-
         internal static T[] New<T>(long length) => length == 0L ? Array.Empty<T>() : new T[length];
 
         /// <summary>
@@ -207,7 +191,7 @@ namespace DotNext
                 return Array.Empty<T>();
             else if (startIndex == 0 && length == input.Length)
                 return input;
-            length = Math.Min(length - startIndex, input.LongLength);
+            length = Math.Min(input.LongLength - startIndex, length);
             var result = new T[length];
             Array.Copy(input, startIndex, result, 0, length);
             return result;
@@ -229,7 +213,7 @@ namespace DotNext
             else
             {
                 var result = new T[input.LongLength - count];
-                Array.Copy(input, 0, result, 0, result.LongLength);
+                Array.Copy(input, result, result.LongLength);
                 return result;
             }
         }

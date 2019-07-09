@@ -17,9 +17,7 @@ namespace DotNext
         /// <returns>The hash code computed from each element in the sequence.</returns>
         public static int SequenceHashCode(this IEnumerable<object> sequence, bool salted = true)
         {
-            var hashCode = -910176598;
-            foreach (var item in sequence)
-                hashCode = hashCode * -1521134295 + (item?.GetHashCode() ?? 0);
+            var hashCode = sequence.Aggregate(-910176598, (current, item) => current * -1521134295 + (item?.GetHashCode()).GetValueOrDefault());
             return salted ? hashCode * -1521134295 + RandomExtensions.BitwiseHashSalt : hashCode;
         }
 

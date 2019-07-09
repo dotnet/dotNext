@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -45,21 +45,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         {
             var config1 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
             };
             var config2 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
             };
             var config3 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
@@ -83,19 +83,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 var box3 = host3.Services.GetRequiredService<IMessageHandler>() as Mailbox;
 
 
-                await host1.Services.GetRequiredService<IMessagingNetwork>().SendSignalToLeaderAsync(new TextMessage("Message to leader", "simple"));
+                await host1.Services.GetRequiredService<IMessageBus>().SendSignalToLeaderAsync(new TextMessage("Message to leader", "simple"));
 
                 //ensure that one of the boxes is not empty
                 var success = false;
 
-                foreach(var box in new [] { box1, box2, box3 })
-                    if(box.TryDequeue(out var response))
+                foreach (var box in new[] { box1, box2, box3 })
+                    if (box.TryDequeue(out var response))
                     {
                         success = true;
-                        Equal("Message to leader", await Mailbox.ReadAsText(response));
+                        Equal("Message to leader", await response.ReadAsTextAsync());
                         break;
                     }
-                
+
                 True(success);
 
                 await host3.StopAsync();
@@ -106,10 +106,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
         [Fact]
         public static async Task MessageExchange()
-        { 
+        {
             var config1 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"lowerElectionTimeout", "600" },
                 {"upperElectionTimeout", "900" },
                 {"members:0", "http://localhost:3262"},
@@ -117,7 +117,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             };
             var config2 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"lowerElectionTimeout", "600" },
                 {"upperElectionTimeout", "900" },
                 {"members:0", "http://localhost:3262"},
@@ -129,21 +129,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 await host1.StartAsync();
                 await host2.StartAsync();
 
-                var client = host1.Services.GetService<IMessagingNetwork>().Members.FirstOrDefault(member => member.Endpoint.Port == 3263);
+                var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(member => member.Endpoint.Port == 3263);
                 var messageBox = host2.Services.GetService<IMessageHandler>() as Mailbox;
                 NotNull(messageBox);
                 //request-reply test
                 var response = await client.SendTextMessageAsync(StreamMessage.CreateBufferedMessageAsync, "Request", "Ping");
-                True(response.Reusable);
+                True(response.IsReusable);
                 NotNull(response);
                 Equal("Reply", response.Name);
-                Equal("Pong", await Mailbox.ReadAsText(response));
+                Equal("Pong", await response.ReadAsTextAsync());
 
                 //one-way message
                 await client.SendTextSignalAsync("OneWayMessage", "Hello, world");
                 True(messageBox.TryDequeue(out response));
                 NotNull(response);
-                Equal("Hello, world", await Mailbox.ReadAsText(response));
+                Equal("Hello, world", await response.ReadAsTextAsync());
 
                 await host1.StopAsync();
                 await host2.StopAsync();
@@ -165,21 +165,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
             var config1 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
             };
             var config2 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
             };
             var config3 = new Dictionary<string, string>
             {
-                {"absoluteMajority", "true"},
+                {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
                 {"members:2", "http://localhost:3264"}
@@ -275,7 +275,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         {
             var config = new Dictionary<string, string>
             {
-                { "absoluteMajority", "true" },
+                { "partitioning", "true" },
                 { "metadata:nodeName", "TestNode" },
                 { "members:0", "http://localhost:3262" },
                 { "members:1", "http://localhost:3263" }
@@ -295,12 +295,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         {
             var config = new Dictionary<string, string>
             {
-                { "absoluteMajority", "false" },
+                { "partitioning", "true" },
                 { "metadata:nodeName", "TestNode" },
-                { "members:0", "http://localhost:3262" },
-                { "members:1", "http://localhost:3263" }
+                { "members:0", "http://localhost:3262" }
             };
-            using(var leaderResetEvent = new LeaderChangedEvent())
+            using (var leaderResetEvent = new LeaderChangedEvent())
             using (var host = CreateHost<Startup>(3262, true, config, leaderResetEvent))
             {
                 await host.StartAsync();
@@ -317,7 +316,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         {
             var config = new Dictionary<string, string>
             {
-                { "absoluteMajority", "true" },
+                { "partitioning", "false" },
                 { "metadata:nodeName", "TestNode" },
                 { "members:0", "http://localhost:3262" },
                 { "members:1", "http://localhost:3263" },

@@ -51,7 +51,7 @@ namespace DotNext.Buffers
             False(sequence.IsSingleSegment);
             var index = 0;
             foreach (var segment in sequence)
-                switch(index++)
+                switch (index++)
                 {
                     case 0:
                         var array = segment.Span;

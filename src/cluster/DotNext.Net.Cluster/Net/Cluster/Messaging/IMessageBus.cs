@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// <summary>
     /// Specifies a cloud of nodes that can communicate with each other through the network.
     /// </summary>
-    public interface IMessagingNetwork : ICluster
+    public interface IMessageBus : ICluster
     {
         /// <summary>
         /// Gets the leader node.
