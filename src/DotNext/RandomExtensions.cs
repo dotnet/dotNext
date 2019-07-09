@@ -38,7 +38,7 @@ namespace DotNext
             char IRandomCharacterGenerator.NextChar(ReadOnlySpan<char> allowedChars)
             {
                 //TODO: buffer should be replaced with stack allocated Span in .NET Standard 2.1
-                random.GetBytes(buffer, 0, sizeof(int));
+                random.GetBytes(buffer, 0, buffer.Length);
                 var randomNumber = (BitConverter.ToInt32(buffer, 0) & int.MaxValue) % allowedChars.Length;
                 return allowedChars[randomNumber];
             }
@@ -153,7 +153,7 @@ namespace DotNext
         public static int Next(this RandomNumberGenerator random)
         {
             var buffer = new byte[sizeof(int)];
-            random.GetBytes(buffer, 0, sizeof(int));
+            random.GetBytes(buffer, 0, buffer.Length);
             return BitConverter.ToInt32(buffer, 0) & int.MaxValue;  //remove sign bit. Abs function may cause OverflowException
         }
 
