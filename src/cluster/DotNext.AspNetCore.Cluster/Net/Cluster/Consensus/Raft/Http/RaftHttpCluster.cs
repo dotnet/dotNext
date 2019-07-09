@@ -19,7 +19,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
-        private const string RaftClientHandlerName = "raftClient";
         private delegate ICollection<IPEndPoint> HostingAddressesProvider();
 
         private readonly IRaftClusterConfigurator configurator;
@@ -36,6 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected readonly TimeSpan RequestTimeout;
         private readonly DuplicateRequestDetector duplicationDetector;
         private protected readonly bool OpenConnectionForEachRequest;
+        private readonly string clientHandlerName;
 
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
@@ -47,6 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             metadata = new MemberMetadata(config.Metadata);
             RequestTimeout = TimeSpan.FromMilliseconds(config.UpperElectionTimeout);
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
+            clientHandlerName = config.ClientHandlerName;
         }
 
         private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MutableMemberCollection members)
@@ -169,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         IPEndPoint IHostingContext.LocalEndpoint => localMember?.Endpoint;
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
-            => httpHandlerFactory?.CreateHandler(RaftClientHandlerName) ?? new HttpClientHandler();
+            => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new HttpClientHandler();
 
         public event ClusterChangedEventHandler MemberAdded;
         public event ClusterChangedEventHandler MemberRemoved;

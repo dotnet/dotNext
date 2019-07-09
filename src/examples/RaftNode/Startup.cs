@@ -1,4 +1,5 @@
-﻿using DotNext.Net.Cluster.Consensus.Raft;
+﻿using System.Net.Http;
+using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
 using DotNext.Net.Cluster.Messaging;
 using Microsoft.AspNetCore.Builder;
@@ -24,6 +25,7 @@ namespace RaftNode
             services.AddSingleton<IRaftClusterConfigurator, ClusterConfigurator>()
                 .AddSingleton<IMessageHandler, MessageHandler>()
                 .AddSingleton<FileListener>()
+                .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
                 .AddOptions().BecomeClusterMember(configuration);
         }
     }
