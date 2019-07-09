@@ -46,13 +46,13 @@ Exclusive lock may not be applicable due to performance reasons for some data ty
 .NEXT Threading library provides several extension methods for more granular control over synchronization of any reference type:
 * `AcquireReadLockAsync` acquires reader lock asynchronously
 * `AcquireWriteLockAsync` acquires exclusive lock asynchronously
-* `AcquireUpgradeableReadLock` acquires read lock asynchronously which can be upgraded to write lock
+* `AcquireUpgradeableReadLockAsync` acquires read lock asynchronously which can be upgraded to write lock
 
 These methods allow to turn any thread-unsafe object into thread-safe object with precise control in context of multithreading access.
 
 ```csharp
-using System.Text;
 using DotNext.Threading;
+using System.Text;
 
 var builder = new StringBuilder();
 
