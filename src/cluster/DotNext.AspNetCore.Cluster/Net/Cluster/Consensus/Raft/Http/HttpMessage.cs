@@ -43,6 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         //request - represents custom message name
         private const string MessageNameHeader = "X-Raft-Message-Name";
 
+        //request - represents unique request identifier
         private const string RequestIdHeader = "X-Request-ID";
 
         private protected class OutboundMessageContent : HttpContent
