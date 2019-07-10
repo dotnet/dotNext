@@ -4,7 +4,7 @@ Cluster Computing is a form of distributed computing where each node set to perf
 
 .NEXT cluster programming model provides the following features in addition to the core model:
 1. Messaging
-1. [Replication](https://en.wikipedia.org/wiki/Replication_(computing)
+1. [Replication](https://en.wikipedia.org/wiki/Replication_(computing))
 1. [Consensus](https://en.wikipedia.org/wiki/Consensus_(computer_science))
 
 The programming model at higher level of abstraction is represented by interfaces:
@@ -34,9 +34,9 @@ Usually, you don't to implement `IMessage` interface directly due to existence o
 
 # Distributed Consensus
 Consensus Algorithm allows to achieve overall reliability in the presence of faulty nodes. The most commonly used consensus algorithms are:
-* [Chandra–Toueg consensus algorithm](https://en.wikipedia.org/wiki/Chandra%E2%80%93Toueg_consensus_algorithm)
-* [Paxos](https://en.wikipedia.org/wiki/Paxos_(computer_science)
-* [Raft](https://en.wikipedia.org/wiki/Raft_(computer_science)
+* [Chandra-Toueg consensus algorithm](https://en.wikipedia.org/wiki/Chandra%E2%80%93Toueg_consensus_algorithm))
+* [Paxos](https://en.wikipedia.org/wiki/Paxos_(computer_science))
+* [Raft](https://en.wikipedia.org/wiki/Raft_(computer_science))
 
 The consensus algorithm allows to choose exactly one leader node in the cluster.
 
