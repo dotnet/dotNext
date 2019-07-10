@@ -143,7 +143,6 @@ sealed class Startup : StartupBase
 <th>Required</th>
 <th>Default Value</th>
 <th>Description</th>
-<th></th>
 </tr>
 </thead>
 <tbody>
@@ -152,18 +151,15 @@ sealed class Startup : StartupBase
 <td>No</td>
 <td>false</td>
 <td><code>true</code> if partitioning supported. In this case, each cluster partition may have its own leader, i.e. it is possible to have more that one leader for external observer. However, single partition cannot have more than 1 leader. <code>false</code> if partitioning is not supported and only one partition with majority of nodes can have leader. Note that cluster may be totally unavailable even if there are operating members presented</td>
-<td></td>
 </tr>
 <tr>
 <td>lowerElectionTimeout, upperElectionTimeout</td>
 <td>No</td>
 <td>150, 300</td>
 <td>Defines range for election timeout which is picked randomly inside of it for each cluster member. If cluster node doesn't receive heartbeat from leader node during this timeout then it becomes a candidate and start a election. The recommended value for  <em>upperElectionTimeout</em> is <code>2 X lowerElectionTimeout</code></td>
-<td></td>
 </tr>
 <tr>
 <td>members</td>
-<td>Required</td>
 <td>Yes</td>
 <td>N/A</td>
 <td>An array of all cluster nodes. This list must include local node. DNS name cannot be used as host name in URL except <code>localhost</code>. Only IP address is allowed</td>
@@ -173,63 +169,54 @@ sealed class Startup : StartupBase
 <td>No</td>
 <td>Empty list which means that all networks are allowed</td>
 <td>List of networks with other nodes which a part of single cluster. This property can be used to restrict unathorized requests to the internal endpoint responsible for handling Raft messages</td>
-<td></td>
 </tr>
 <tr>
 <td>metadata</td>
 <td>No</td>
 <td>empty dictionary</td>
 <td>A set of key/value pairs to be associated with cluster node. The metadata is queriable through <code>IClusterMember</code> interface</td>
-<td></td>
 </tr>
 <tr>
 <td>openConnectionForEachRequest</td>
 <td>No</td>
 <td>false</td>
 <td><code>true</code> to create TCP connection every time for each outbound request. <code>false</code> to use HTTP KeepAlive</td>
-<td></td>
 </tr>
 <tr>
 <td>clientHandlerName</td>
 <td>No</td>
 <td>raftClient</td>
 <td>The name to be passed into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.http.ihttpmessagehandlerfactory">IHttpMessageHandlerFactory</a> to create <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessageinvoker">HttpMessageInvoker</a> used by Raft client code</td>
-<td></td>
 </tr>
 <tr>
 <td>resourcePath</td>
 <td>No</td>
 <td>/cluster-consensus/raft</td>
 <td>This configuration parameter is relevant for Embedded Mode only. It defines relative path to the endpoint responsible for handling internal Raft messages</td>
-<td></td>
 </tr>
 <tr>
 <td>port</td>
 <td>No</td>
 <td>32999</td>
 <td>This configuration is relevant for Hosted Mode only. It defines the port number that the internal endpoint handler is listening to.</td>
-<td></td>
 </tr>
 <tr>
 <td>requestJournal:memoryLimit</td>
 <td>No</td>
 <td>10</td>
 <td>The maximum amount of memory (in MB) utilized by internal buffer used to track duplicate messages</td>
-<td></td>
 </tr>
 <tr>
 <td>requestJournal:expiration</td>
 <td>No</td>
 <td>00:00:10</td>
 <td>The eviction time of the record containing unique request identifier</td>
-<td></td>
 </tr>
 <tr>
 <td>requestJournal:pollingInterval</td>
 <td>No</td>
 <td>00:01:00</td>
 <td>Gets the maximum time after which the buffer updates its memory statistics</td>
-<td></td>
 </tr>
 </tbody>
 </table>
