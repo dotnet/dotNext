@@ -79,7 +79,7 @@
       href: unsafe/struct.md
     - name: Unstructured Memory Access
       href: unsafe/unstruct.md
-- name: Cluster and Network Consensus
+- name: Cluster and Distributed Consensus
   href: cluster/index.md
   items:
     - name: Clustered ASP.NET Core microservices
