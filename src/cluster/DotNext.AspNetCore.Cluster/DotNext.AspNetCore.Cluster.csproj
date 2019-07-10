@@ -7,7 +7,7 @@
     <Version>0.1.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
-    <Description>Implementation of network conensus algorithm for fault-tolerant distributed microservices based on ASP.NET Core</Description>
+    <Description>Framework for fault-tolerant clustered microservices based on ASP.NET Core</Description>
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
@@ -15,7 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>consensus;raft;aspnetcore</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Initial implementation of Raft consensus algorithm</PackageReleaseNotes>
+    <PackageReleaseNotes>Raft implementation on top of HTTP protocol and ASP.NET Core stack</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -7,7 +7,7 @@
     <Version>0.1.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
-    <Description>Basic framework for building clusters of microservices</Description>
+    <Description>Basic framework for building clusters</Description>
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
@@ -15,7 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Consensus;Raft;ASP.NET Core</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Initial set of interfaces</PackageReleaseNotes>
+    <PackageReleaseNotes>Protocol-agnostic implementation of Raft algorithm</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
