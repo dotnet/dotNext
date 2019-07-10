@@ -69,23 +69,26 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="unsafe-data-structures">Unsafe Data Structures</h1>
 
-<p>Historically, .NET Runtime was oriented to work with managed memory where Garbage Collector provides automatic memory management. Unused object placed into managed heap is reclaimed automatically when no longer needed. But numerous instantiation of thousand objects leads to GC pressure and may affect application performance. Manual memory management in some situations may fix this issue.</p>
+<p>Historically, .NET Runtime was oriented to work with managed memory where Garbage Collector provides automatic memory management. The object placed into managed heap is reclaimed automatically when no longer needed. But numerous instantiation of thousand objects leads to GC pressure and may affect application performance. Manual memory management in some situations may fix this issue.</p>
 <p>.NET provides a lot of interop services to call external native C libraries or COM objects. Moreover, the standard library provides a way to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.marshal.allochglobal">allocate unmanaged memory</a> outside of managed heap. But there is no routines for unmanaged memory manipulation. <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe">Unsafe</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1">MemoryPool</a> are not equal to C memory functions and oriented to managed memory manipulation. <em>Span</em> value type has special syntactic support in C# when stack allocated memory can be wrapped into this type:</p>
 <pre><code class="lang-csharp">Span&lt;int&gt; s = stackalloc int[4];
 </code></pre>
-<p>.NEXT library provides rich data structures allocated in unmanaged heap (off-heap memory) and set of routines comparable to C memory functions. Moreover, these features are platform and hardware independent and limited by .NET Runtime support.</p>
+<p>.NEXT library provides rich data structures allocated in unmanaged heap (off-heap memory) and set of routines comparable to C memory functions. Moreover, these features are platform and hardware independent.</p>
 <div class="NOTE">
 <h5>Note</h5>
 <p>The library is written in managed code without PInvoke calls.</p>
 </div>
 <p>The first feature is CLS compliant pointer data type with low-level memory manipulation methods. The second feature is a set of value types representing structured access to the off-heap memory:</p>
 <ol>
-<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a> is a one-dimensional array allocated in unmanaged heap.</li>
 <li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html">UnmanagedMemory&lt;T&gt;</a> provides structured access to the unmanaged memory.</li>
 <li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory.html">UnmanagedMemory</a> provides unstructured access to the unmanaged memory.</li>
-<li><a href="../../api/DotNext.Collections.Generic.UnmanagedList-1.html">UnmanagedList</a> is a growable list of value types allocated in unmanaged heap. This type is equivalent of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1">List</a> from .NET Base Class Library. All elements of unmanaged list are allocated in off-heap memory.</li>
 </ol>
-<p>All unmanaged data types are not thread-safe. However, unmanaged array and pointer have atomic operations. Additionally, these types are implicitly convertible into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type.</p>
+<p>All unmanaged data types are not thread-safe. However, there are various extension methods in <a href="../../api/DotNext.Threading.AtomicPointer.html">AtomicPointer</a> class supporting thread-safe manipulations with unmanaged memory. Additionally, these types are implicitly convertible into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type.</p>
+<p>Both types are inherited from <a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html">UnmanagedMemoryHandle</a>. Direct manipulations with the memory are possible using the following approaches:</p>
+<ul>
+<li><code>Pointer</code> property provides flexible manipulations using typed pointer to the memory. It is unsafe way because the pointer doesn't provide bound checks</li>
+<li><code>Bytes</code> property provides memory access using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type. It is less flexible in comparison with pointer but safe because it implements bound checks</li>
+</ul>
 <h1 id="pointer">Pointer</h1>
 <p>C# programming language supports typed and untyped pointer data types such as <em>int*</em> or <em>void*</em>. These types are not CLS-compliant and may not be available in other .NET programming languages. For instance, F# or VB.NET do not support pointer type and interoperation with native libraries or COM objects are limited.</p>
 <p>.NEXT offers <a href="../../api/DotNext.Runtime.InteropServices.Pointer-1.html">Pointer&lt;T&gt;</a> value type which is CLS-compliant typed pointer. This type supports pointer arithmetic as well as rich methods for memory manupulations such as copying, swapping, filling with zeroes, comparison and equality check. These methods are equivalent to C memory functions: <code>memset</code>, <code>memcmp</code> etc. Additionally, there are routines to copying bytes to/from the unmanaged memory from/to the arbitrary <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">streams</a> asynchronously. Check out API documentation for detailed information about available methods.</p>
@@ -110,7 +113,7 @@ private static void UnsafeMethod()
     ptr.WriteTo(array); //now array = new int[] { 10, 3, 50, 9 }
 }
 </code></pre>
-<p>Pointer can be re-interpreted with different type:</p>
+<p>Pointer can be re-interpreted:</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
 
 private static void UnsafeMethod()
@@ -120,6 +123,10 @@ private static void UnsafeMethod()
     Pointer&lt;uint&gt; uptr = ptr.As&lt;uint&gt;();
 }
 </code></pre>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p>Typed pointer doesn't provide range checks.</p>
+</div>
 <p>Volatile operations are fully supported by pointer of one of the following types: <code>long</code>, <code>int</code>, <code>byte</code>, <code>bool</code>, <code>float</code>, <code>double</code>, <code>ulong</code>, <code>uint</code>, <code>sbyte</code>:</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
 using DotNext.Threading;

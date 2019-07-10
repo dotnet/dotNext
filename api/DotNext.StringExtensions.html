@@ -118,7 +118,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StringExtensions_IfNullOrEmpty_System_String_System_String_.md&amp;value=---%0Auid%3A%20DotNext.StringExtensions.IfNullOrEmpty(System.String%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L23">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L25">View Source</a>
   </span>
   <a id="DotNext_StringExtensions_IfNullOrEmpty_" data-uid="DotNext.StringExtensions.IfNullOrEmpty*"></a>
   <h4 id="DotNext_StringExtensions_IfNullOrEmpty_System_String_System_String_" data-uid="DotNext.StringExtensions.IfNullOrEmpty(System.String,System.String)">IfNullOrEmpty(String, String)</h4>
@@ -179,7 +179,7 @@ is <span class="xref">null</span> or empty.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StringExtensions_IsEqualIgnoreCase_System_String_System_String_.md&amp;value=---%0Auid%3A%20DotNext.StringExtensions.IsEqualIgnoreCase(System.String%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L48">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L50">View Source</a>
   </span>
   <a id="DotNext_StringExtensions_IsEqualIgnoreCase_" data-uid="DotNext.StringExtensions.IsEqualIgnoreCase*"></a>
   <h4 id="DotNext_StringExtensions_IsEqualIgnoreCase_System_String_System_String_" data-uid="DotNext.StringExtensions.IsEqualIgnoreCase(System.String,System.String)">IsEqualIgnoreCase(String, String)</h4>
@@ -235,7 +235,7 @@ is <span class="xref">null</span> or empty.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StringExtensions_Reverse_System_String_.md&amp;value=---%0Auid%3A%20DotNext.StringExtensions.Reverse(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L31">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L33">View Source</a>
   </span>
   <a id="DotNext_StringExtensions_Reverse_" data-uid="DotNext.StringExtensions.Reverse*"></a>
   <h4 id="DotNext_StringExtensions_Reverse_System_String_" data-uid="DotNext.StringExtensions.Reverse(System.String)">Reverse(String)</h4>
@@ -282,10 +282,66 @@ is <span class="xref">null</span> or empty.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StringExtensions_Split_System_String_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.StringExtensions.Split(System.String%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L69">View Source</a>
+  </span>
+  <a id="DotNext_StringExtensions_Split_" data-uid="DotNext.StringExtensions.Split*"></a>
+  <h4 id="DotNext_StringExtensions_Split_System_String_System_Int32_" data-uid="DotNext.StringExtensions.Split(System.String,System.Int32)">Split(String, Int32)</h4>
+  <div class="markdown level1 summary"><p>Split a string into several substrings, each has a length not greater the specified one.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ChunkSequence&lt;char&gt; Split(this string str, int chunkSize)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">str</span></td>
+        <td><p>The string to split.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">chunkSize</span></td>
+        <td><p>The maximum length of the substring in the sequence.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.ChunkSequence-1.html">ChunkSequence</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><p>The sequence of substrings.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StringExtensions_TrimLength_System_String_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.StringExtensions.TrimLength(System.String%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L58">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L60">View Source</a>
   </span>
   <a id="DotNext_StringExtensions_TrimLength_" data-uid="DotNext.StringExtensions.TrimLength*"></a>
   <h4 id="DotNext_StringExtensions_TrimLength_System_String_System_Int32_" data-uid="DotNext.StringExtensions.TrimLength(System.String,System.Int32)">TrimLength(String, Int32)</h4>
@@ -348,7 +404,7 @@ If source string is less that <code data-dev-comment-type="paramref" class="para
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StringExtensions.md&amp;value=---%0Auid%3A%20DotNext.StringExtensions%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L8" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/StringExtensions.cs/#L10" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

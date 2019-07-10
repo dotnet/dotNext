@@ -115,266 +115,10 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireLock_DotNext_Threading_AsyncExclusiveLock_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireLock(DotNext.Threading.AsyncExclusiveLock%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L49">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncLockAcquisition_AcquireLock_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireLock*"></a>
-  <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireLock_DotNext_Threading_AsyncExclusiveLock_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireLock(DotNext.Threading.AsyncExclusiveLock,System.Threading.CancellationToken)">AcquireLock(AsyncExclusiveLock, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Acquires exclusive lock asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;AsyncLock.Holder&gt; AcquireLock(this AsyncExclusiveLock lock, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a></td>
-        <td><span class="parametername">lock</span></td>
-        <td><p>The exclusive lock to acquire.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to abort acquisition operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
-        <td><p>The acquired lock holder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireLock_DotNext_Threading_AsyncExclusiveLock_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireLock(DotNext.Threading.AsyncExclusiveLock%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L58">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncLockAcquisition_AcquireLock_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireLock*"></a>
-  <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireLock_DotNext_Threading_AsyncExclusiveLock_System_TimeSpan_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireLock(DotNext.Threading.AsyncExclusiveLock,System.TimeSpan)">AcquireLock(AsyncExclusiveLock, TimeSpan)</h4>
-  <div class="markdown level1 summary"><p>Acquires exclusive lock asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;AsyncLock.Holder&gt; AcquireLock(this AsyncExclusiveLock lock, TimeSpan timeout)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a></td>
-        <td><span class="parametername">lock</span></td>
-        <td><p>The exclusive lock to acquire.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The interval to wait for the lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
-        <td><p>The acquired lock holder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
-        <td><p>The lock cannot be acquired during the specified amount of time.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_System_Threading_SemaphoreSlim_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Threading.SemaphoreSlim%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L32">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_System_Threading_SemaphoreSlim_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Threading.SemaphoreSlim,System.Threading.CancellationToken)">AcquireLockAsync(SemaphoreSlim, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Acquires semaphore lock asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;AsyncLock.Holder&gt; AcquireLockAsync(this SemaphoreSlim semaphore, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.semaphoreslim">SemaphoreSlim</a></td>
-        <td><span class="parametername">semaphore</span></td>
-        <td><p>The semaphore.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel lock acquisition.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
-        <td><p>The acquired semaphore lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_System_Threading_SemaphoreSlim_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Threading.SemaphoreSlim%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L41">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_System_Threading_SemaphoreSlim_System_TimeSpan_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Threading.SemaphoreSlim,System.TimeSpan)">AcquireLockAsync(SemaphoreSlim, TimeSpan)</h4>
-  <div class="markdown level1 summary"><p>Acquires semaphore lock asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;AsyncLock.Holder&gt; AcquireLockAsync(this SemaphoreSlim semaphore, TimeSpan timeout)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.semaphoreslim">SemaphoreSlim</a></td>
-        <td><span class="parametername">semaphore</span></td>
-        <td><p>The semaphore.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The amount of time to wait for the lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
-        <td><p>The acquired semaphore lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
-        <td><p>The lock cannot be acquired during the specified amount of time.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L77">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L85">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.Threading.CancellationToken)">AcquireLockAsync&lt;T&gt;(T, CancellationToken)</h4>
@@ -448,7 +192,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync%60%601(%60%600%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L68">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L76">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.TimeSpan)">AcquireLockAsync&lt;T&gt;(T, TimeSpan)</h4>
@@ -535,138 +279,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireReadLock_DotNext_Threading_AsyncReaderWriterLock_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireReadLock(DotNext.Threading.AsyncReaderWriterLock%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L94">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncLockAcquisition_AcquireReadLock_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireReadLock*"></a>
-  <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireReadLock_DotNext_Threading_AsyncReaderWriterLock_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireReadLock(DotNext.Threading.AsyncReaderWriterLock,System.Threading.CancellationToken)">AcquireReadLock(AsyncReaderWriterLock, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Acquires reader lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;AsyncLock.Holder&gt; AcquireReadLock(this AsyncReaderWriterLock rwLock, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></td>
-        <td><span class="parametername">rwLock</span></td>
-        <td><p>Read/write lock provider.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to abort acquisition operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
-        <td><p>The acquired lock holder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireReadLock_DotNext_Threading_AsyncReaderWriterLock_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireReadLock(DotNext.Threading.AsyncReaderWriterLock%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L86">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncLockAcquisition_AcquireReadLock_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireReadLock*"></a>
-  <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireReadLock_DotNext_Threading_AsyncReaderWriterLock_System_TimeSpan_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireReadLock(DotNext.Threading.AsyncReaderWriterLock,System.TimeSpan)">AcquireReadLock(AsyncReaderWriterLock, TimeSpan)</h4>
-  <div class="markdown level1 summary"><p>Acquires reader lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;AsyncLock.Holder&gt; AcquireReadLock(this AsyncReaderWriterLock rwLock, TimeSpan timeout)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></td>
-        <td><span class="parametername">rwLock</span></td>
-        <td><p>Read/write lock provider.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The amount of time to wait for the lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
-        <td><p>The acquired lock holder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
-        <td><p>The lock cannot be acquired during the specified amount of time.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L113">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.Threading.CancellationToken)">AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</h4>
@@ -740,7 +356,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync%60%601(%60%600%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L104">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L95">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.TimeSpan)">AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</h4>
@@ -827,138 +443,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLock_DotNext_Threading_AsyncReaderWriterLock_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock(DotNext.Threading.AsyncReaderWriterLock%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L166">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLock_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock*"></a>
-  <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLock_DotNext_Threading_AsyncReaderWriterLock_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock(DotNext.Threading.AsyncReaderWriterLock,System.Threading.CancellationToken)">AcquireUpgradeableReadLock(AsyncReaderWriterLock, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Acquires upgradeable lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;AsyncLock.Holder&gt; AcquireUpgradeableReadLock(this AsyncReaderWriterLock rwLock, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></td>
-        <td><span class="parametername">rwLock</span></td>
-        <td><p>Read/write lock provider.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to abort acquisition operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
-        <td><p>The acquired lock holder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLock_DotNext_Threading_AsyncReaderWriterLock_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock(DotNext.Threading.AsyncReaderWriterLock%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L158">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLock_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock*"></a>
-  <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLock_DotNext_Threading_AsyncReaderWriterLock_System_TimeSpan_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLock(DotNext.Threading.AsyncReaderWriterLock,System.TimeSpan)">AcquireUpgradeableReadLock(AsyncReaderWriterLock, TimeSpan)</h4>
-  <div class="markdown level1 summary"><p>Acquires upgradeable lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;AsyncLock.Holder&gt; AcquireUpgradeableReadLock(this AsyncReaderWriterLock rwLock, TimeSpan timeout)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></td>
-        <td><span class="parametername">rwLock</span></td>
-        <td><p>Read/write lock provider.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The amount of time to wait for the lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
-        <td><p>The acquired lock holder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
-        <td><p>The lock cannot be acquired during the specified amount of time.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L185">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L147">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync``1(``0,System.Threading.CancellationToken)">AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</h4>
@@ -1032,7 +520,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync%60%601(%60%600%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L176">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L137">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireUpgradeableReadLockAsync``1(``0,System.TimeSpan)">AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</h4>
@@ -1119,138 +607,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireWriteLock_DotNext_Threading_AsyncReaderWriterLock_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock(DotNext.Threading.AsyncReaderWriterLock%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L130">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncLockAcquisition_AcquireWriteLock_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock*"></a>
-  <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireWriteLock_DotNext_Threading_AsyncReaderWriterLock_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock(DotNext.Threading.AsyncReaderWriterLock,System.Threading.CancellationToken)">AcquireWriteLock(AsyncReaderWriterLock, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Acquires writer lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;AsyncLock.Holder&gt; AcquireWriteLock(this AsyncReaderWriterLock rwLock, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></td>
-        <td><span class="parametername">rwLock</span></td>
-        <td><p>Read/write lock provider.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to abort acquisition operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
-        <td><p>The acquired lock holder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireWriteLock_DotNext_Threading_AsyncReaderWriterLock_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock(DotNext.Threading.AsyncReaderWriterLock%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L122">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncLockAcquisition_AcquireWriteLock_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock*"></a>
-  <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireWriteLock_DotNext_Threading_AsyncReaderWriterLock_System_TimeSpan_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireWriteLock(DotNext.Threading.AsyncReaderWriterLock,System.TimeSpan)">AcquireWriteLock(AsyncReaderWriterLock, TimeSpan)</h4>
-  <div class="markdown level1 summary"><p>Acquires writer lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;AsyncLock.Holder&gt; AcquireWriteLock(this AsyncReaderWriterLock rwLock, TimeSpan timeout)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></td>
-        <td><span class="parametername">rwLock</span></td>
-        <td><p>Read/write lock provider.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The amount of time to wait for the lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
-        <td><p>The acquired lock holder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
-        <td><p>The lock cannot be acquired during the specified amount of time.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L149">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L126">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Threading.CancellationToken)">AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</h4>
@@ -1324,7 +684,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync%60%601(%60%600%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L140">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L116">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync*"></a>
   <h4 id="DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_" data-uid="DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.TimeSpan)">AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</h4>

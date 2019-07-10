@@ -43,7 +43,7 @@ Web application component can request the following service from ASP.NET Core DI
 * [IRaftCluster](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.yml) represents Raft-specific version of `ICluster` interface
 * [IMessageBus](../../api/DotNext.Net.Cluster.Messaging.IMessageBus.yml) for point-to-point messaging between nodes
 * [IExpandableCluster](../../api/DotNext.Net.Cluster.ICluster.yml) for tracking changes in cluster membership
-* [IReplicationCluster&lt;ILogEntry&gt;](../../api/DotNext.Net.Cluster.Replication.IReplicationCluster.yml) to work with audit trail used for replication. [ILogEntry](../../api/DotNext.Net.Cluster.Consensus.Raft.ILogEntry.yml) is Raft-specific representation of the record in the audit trail.
+* [IReplicationCluster&lt;ILogEntry&gt;](../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.yml) to work with audit trail used for replication. [ILogEntry](../../api/DotNext.Net.Cluster.Consensus.Raft.ILogEntry.yml) is Raft-specific representation of the record in the audit trail.
 
 # Configuration
 The application should be configured properly to work as a cluster node. The following JSON represents example of configuration:

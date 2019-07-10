@@ -46,7 +46,7 @@
   href: reflection/index.md
   items:
     - name: Open and Closed Delegates
-      href: reflection/deleate.md
+      href: reflection/delegate.md
     - name: Fast Reflection
       href: reflection/fast.md
 - name: Metaprogramming

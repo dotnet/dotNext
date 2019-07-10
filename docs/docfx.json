@@ -21,6 +21,14 @@
         {
           "files": [ "**.csproj" ],
           "src": "../src/DotNext.Threading/"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/cluster/DotNext.Net.Cluster"
+        },
+        {
+          "files": [ "**.csproj" ],
+          "src": "../src/cluster/DotNext.AspNetCore.Cluster/"
         }
       ],
       "dest": "api"

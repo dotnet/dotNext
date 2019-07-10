@@ -73,7 +73,7 @@
   
   <h1 id="DotNext_Threading_Synchronizer" data-uid="DotNext.Threading.Synchronizer" class="text-break">Class Synchronizer
   </h1>
-  <div class="markdown level0 summary"><p>Provides a framework for implementing asynchronous locks and related synchronizers that doesn't rely on first-in-first-out (FIFO) wait queues.</p>
+  <div class="markdown level0 summary"><p>Provides a framework for implementing asynchronous locks and related synchronization primitives that doesn't rely on first-in-first-out (FIFO) wait queues.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -94,7 +94,7 @@
     <pre><code class="lang-csharp hljs">public abstract class Synchronizer : Disposable, ISynchronizer</code></pre>
   </div>
   <h5 id="DotNext_Threading_Synchronizer_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>Derived synchronizers more efficient in terms of memory pressure in comparison with <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronizer</a>.
+  <div class="markdown level0 remarks"><p>Derived synchronization primitives more efficient in terms of memory pressure in comparison with <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronizer</a>.
 It shares the same instance of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task&lt;TResult&gt;</a> under contention for all waiters.</p>
 </div>
   <h3 id="properties">Properties
@@ -104,7 +104,7 @@ It shares the same instance of <a class="xref" href="https://docs.microsoft.com/
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Synchronizer_IsSet.md&amp;value=---%0Auid%3A%20DotNext.Threading.Synchronizer.IsSet%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Synchronizer.cs/#L38">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Synchronizer.cs/#L39">View Source</a>
   </span>
   <a id="DotNext_Threading_Synchronizer_IsSet_" data-uid="DotNext.Threading.Synchronizer.IsSet*"></a>
   <h4 id="DotNext_Threading_Synchronizer_IsSet" data-uid="DotNext.Threading.Synchronizer.IsSet">IsSet</h4>
@@ -137,7 +137,7 @@ It shares the same instance of <a class="xref" href="https://docs.microsoft.com/
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Synchronizer_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Synchronizer.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Synchronizer.cs/#L102">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Synchronizer.cs/#L98">View Source</a>
   </span>
   <a id="DotNext_Threading_Synchronizer_Dispose_" data-uid="DotNext.Threading.Synchronizer.Dispose*"></a>
   <h4 id="DotNext_Threading_Synchronizer_Dispose_System_Boolean_" data-uid="DotNext.Threading.Synchronizer.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -174,7 +174,7 @@ It shares the same instance of <a class="xref" href="https://docs.microsoft.com/
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Synchronizer_Wait_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Synchronizer.Wait(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Synchronizer.cs/#L75">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Synchronizer.cs/#L71">View Source</a>
   </span>
   <a id="DotNext_Threading_Synchronizer_Wait_" data-uid="DotNext.Threading.Synchronizer.Wait*"></a>
   <h4 id="DotNext_Threading_Synchronizer_Wait_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Synchronizer.Wait(System.TimeSpan,System.Threading.CancellationToken)">Wait(TimeSpan, CancellationToken)</h4>
@@ -258,7 +258,7 @@ It shares the same instance of <a class="xref" href="https://docs.microsoft.com/
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Synchronizer_DotNext_Threading_ISynchronizer_HasWaiters.md&amp;value=---%0Auid%3A%20DotNext.Threading.Synchronizer.DotNext%23Threading%23ISynchronizer%23HasWaiters%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Synchronizer.cs/#L33">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Synchronizer.cs/#L34">View Source</a>
   </span>
   <a id="DotNext_Threading_Synchronizer_DotNext_Threading_ISynchronizer_HasWaiters_" data-uid="DotNext.Threading.Synchronizer.DotNext#Threading#ISynchronizer#HasWaiters*"></a>
   <h4 id="DotNext_Threading_Synchronizer_DotNext_Threading_ISynchronizer_HasWaiters" data-uid="DotNext.Threading.Synchronizer.DotNext#Threading#ISynchronizer#HasWaiters">ISynchronizer.HasWaiters</h4>
@@ -362,7 +362,7 @@ It shares the same instance of <a class="xref" href="https://docs.microsoft.com/
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Synchronizer.md&amp;value=---%0Auid%3A%20DotNext.Threading.Synchronizer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Synchronizer.cs/#L18" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Synchronizer.cs/#L19" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

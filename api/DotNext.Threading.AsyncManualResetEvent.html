@@ -153,7 +153,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncManualResetEvent_Reset.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncManualResetEvent.Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L48">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L57">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncManualResetEvent_Reset_" data-uid="DotNext.Threading.AsyncManualResetEvent.Reset*"></a>
   <h4 id="DotNext_Threading_AsyncManualResetEvent_Reset" data-uid="DotNext.Threading.AsyncManualResetEvent.Reset">Reset()</h4>
@@ -244,6 +244,73 @@
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncManualResetEvent_Set_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncManualResetEvent.Set(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L37">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncManualResetEvent_Set_" data-uid="DotNext.Threading.AsyncManualResetEvent.Set*"></a>
+  <h4 id="DotNext_Threading_AsyncManualResetEvent_Set_System_Boolean_" data-uid="DotNext.Threading.AsyncManualResetEvent.Set(System.Boolean)">Set(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Sets the state of the event to signaled, allowing one or more awaiters to proceed;
+and, optionally, reverts the state of the event to initial state.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Set(bool autoReset)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">autoReset</span></td>
+        <td><p><span class="xref">true</span> to reset this object to non-signaled state automatically; <span class="xref">false</span> to leave this object in signaled state.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the operation succeeds; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The current instance has already been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="eii">Explicit Interface Implementations
   </h3>
   <span class="small pull-right mobile-hide">
@@ -251,7 +318,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncManualResetEvent_DotNext_Threading_IAsyncEvent_Signal.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncManualResetEvent.DotNext%23Threading%23IAsyncEvent%23Signal%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L61">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncManualResetEvent_DotNext_Threading_IAsyncEvent_Signal_" data-uid="DotNext.Threading.AsyncManualResetEvent.DotNext#Threading#IAsyncEvent#Signal*"></a>
   <h4 id="DotNext_Threading_AsyncManualResetEvent_DotNext_Threading_IAsyncEvent_Signal" data-uid="DotNext.Threading.AsyncManualResetEvent.DotNext#Threading#IAsyncEvent#Signal">IAsyncEvent.Signal()</h4>

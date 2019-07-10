@@ -1,0 +1,521 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Interface IAuditTrail&lt;LogEntry&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Interface IAuditTrail&lt;LogEntry&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.42.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1">
+  
+  
+  <h1 id="DotNext_Net_Cluster_Replication_IAuditTrail_1" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1" class="text-break">Interface IAuditTrail&lt;LogEntry&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Represents audit trail responsible for maintaining log entries.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Replication.html">DotNext.Net.Cluster.Replication</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
+  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public interface IAuditTrail&lt;LogEntry&gt;
+
+    where LogEntry : class, IMessage</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">LogEntry</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_First.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.First%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L68">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_First_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.First*"></a>
+  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_First" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.First">First</h4>
+  <div class="markdown level1 summary"><p>Gets the first ephemeral log entry that is present in the empty log.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">LogEntry First { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">LogEntry</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_First_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The first log entry always represents NOP database command and is already committed.
+Index of such entry is always 0.</p>
+</div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Collections_Generic_IReadOnlyList__0__System_Nullable_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.AppendAsync(System.Collections.Generic.IReadOnlyList%7B%600%7D%2CSystem.Nullable%7BSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L43">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Collections_Generic_IReadOnlyList__0__System_Nullable_System_Int64__" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync(System.Collections.Generic.IReadOnlyList{`0},System.Nullable{System.Int64})">AppendAsync(IReadOnlyList&lt;LogEntry&gt;, Nullable&lt;Int64&gt;)</h4>
+  <div class="markdown level1 summary"><p>Adds uncommitted log entries into this log.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; AppendAsync(IReadOnlyList&lt;LogEntry&gt; entries, long? startIndex = default(long? ))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;LogEntry&gt;</td>
+        <td><span class="parametername">entries</span></td>
+        <td><p>The entries to be added into this log.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><span class="parametername">startIndex</span></td>
+        <td><p><span class="xref">null</span> to append entries into the end of the log; or index from which all previous log entries should be dropped and replaced with new entries.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><p>Index of the first added entry.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Collections_Generic_IReadOnlyList__0__System_Nullable_System_Int64___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method should updates cached value provided by method <a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_GetLastIndex_System_Boolean_">GetLastIndex(Boolean)</a> called with argument of value <span class="xref">false</span>.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">entries</code> is empty.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_CommitAsync_System_Int64_System_Nullable_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.CommitAsync(System.Int64%2CSystem.Nullable%7BSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L59">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_CommitAsync_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.CommitAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_CommitAsync_System_Int64_System_Nullable_System_Int64__" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.CommitAsync(System.Int64,System.Nullable{System.Int64})">CommitAsync(Int64, Nullable&lt;Int64&gt;)</h4>
+  <div class="markdown level1 summary"><p>Commits log entries into the underlying storage and marks these entries as committed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; CommitAsync(long startIndex, long? endIndex = default(long? ))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">startIndex</span></td>
+        <td><p>The index of the first entry to commit, inclusively.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><span class="parametername">endIndex</span></td>
+        <td><p>The index of the last entry to commit, inclusively; if <span class="xref">null</span> then commits all log entries started from <code data-dev-comment-type="paramref" class="paramref">startIndex</code> to the last existing log entry.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><p>The actual number of committed entries.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_CommitAsync_System_Int64_System_Nullable_System_Int64___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method should updates cached value provided by method <a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_GetLastIndex_System_Boolean_">GetLastIndex(Boolean)</a> called with argument of value <span class="xref">true</span>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_GetEntriesAsync_System_Int64_System_Nullable_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.GetEntriesAsync(System.Int64%2CSystem.Nullable%7BSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L31">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_GetEntriesAsync_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.GetEntriesAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_GetEntriesAsync_System_Int64_System_Nullable_System_Int64__" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.GetEntriesAsync(System.Int64,System.Nullable{System.Int64})">GetEntriesAsync(Int64, Nullable&lt;Int64&gt;)</h4>
+  <div class="markdown level1 summary"><p>Gets log entries in the specified range.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;IReadOnlyList&lt;LogEntry&gt;&gt; GetEntriesAsync(long startIndex, long? endIndex = default(long? ))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">startIndex</span></td>
+        <td><p>The index of the first requested log entry, inclusively.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><span class="parametername">endIndex</span></td>
+        <td><p>The index of the last requested log entry, inclusively; <span class="xref">null</span> to return all log entries started from <code data-dev-comment-type="paramref" class="paramref">startIndex</code> to the last existing log entry.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;LogEntry&gt;&gt;</td>
+        <td><p>The collection of log entries.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_GetLastIndex_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.GetLastIndex(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L23">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_GetLastIndex_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.GetLastIndex*"></a>
+  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_GetLastIndex_System_Boolean_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.GetLastIndex(System.Boolean)">GetLastIndex(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Gets index of the committed or last log entry.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">long GetLastIndex(bool committed)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">committed</span></td>
+        <td><p><span class="xref">true</span> to get the index of highest log entry known to be committed; <span class="xref">false</span> to get the index of the last log entry.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The index of the log entry.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_GetLastIndex_System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method is synchronous because returning value should be cached and updated in memory by implementing class.</p>
+</div>
+  <h3 id="events">Events
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_Committed.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.Committed%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L48">View Source</a>
+  </span>
+  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_Committed" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.Committed">Committed</h4>
+  <div class="markdown level1 summary"><p>The event that is raised when actual commit happen.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">event CommitEventHandler&lt;LogEntry&gt; Committed</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Replication.CommitEventHandler-1.html">CommitEventHandler</a>&lt;LogEntry&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_TryUnbox__1_System_Object_">ObjectExtensions.TryUnbox&lt;T&gt;(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L12" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

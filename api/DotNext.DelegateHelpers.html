@@ -118,7 +118,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_ChangeType__1_System_Delegate_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.ChangeType%60%601(System.Delegate)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L54">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L99">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_ChangeType_" data-uid="DotNext.DelegateHelpers.ChangeType*"></a>
   <h4 id="DotNext_DelegateHelpers_ChangeType__1_System_Delegate_" data-uid="DotNext.DelegateHelpers.ChangeType``1(System.Delegate)">ChangeType&lt;D&gt;(Delegate)</h4>
@@ -203,7 +203,7 @@ points to the same method as original delegate.</p>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Contravariant__2_System_EventHandler___0__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Contravariant%60%602(System.EventHandler%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L27">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L72">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Contravariant_" data-uid="DotNext.DelegateHelpers.Contravariant*"></a>
   <h4 id="DotNext_DelegateHelpers_Contravariant__2_System_EventHandler___0__" data-uid="DotNext.DelegateHelpers.Contravariant``2(System.EventHandler{``0})">Contravariant&lt;I, O&gt;(EventHandler&lt;I&gt;)</h4>
@@ -281,10 +281,78 @@ provides contravariant conversion for this delegate type.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_CreateClosedDelegateFactory__1_System_Linq_Expressions_Expression___0__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.CreateClosedDelegateFactory%60%601(System.Linq.Expressions.Expression%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L50">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_CreateClosedDelegateFactory_" data-uid="DotNext.DelegateHelpers.CreateClosedDelegateFactory*"></a>
+  <h4 id="DotNext_DelegateHelpers_CreateClosedDelegateFactory__1_System_Linq_Expressions_Expression___0__" data-uid="DotNext.DelegateHelpers.CreateClosedDelegateFactory``1(System.Linq.Expressions.Expression{``0})">CreateClosedDelegateFactory&lt;D&gt;(Expression&lt;D&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a factory for closed delegates.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Func&lt;object, D&gt; CreateClosedDelegateFactory&lt;D&gt;(Expression&lt;D&gt; expression)
+
+    where D : Delegate</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression-1">Expression</a>&lt;D&gt;</td>
+        <td><span class="parametername">expression</span></td>
+        <td><p>The expression tree containing instance method, property, operator call.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>, D&gt;</td>
+        <td><p>The factory of closed delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">D</span></td>
+        <td><p>The type of the delegate describing expression tree.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_CreateDelegate__1_System_Reflection_MethodInfo_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.CreateDelegate%60%601(System.Reflection.MethodInfo%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L41">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L86">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_CreateDelegate_" data-uid="DotNext.DelegateHelpers.CreateDelegate*"></a>
   <h4 id="DotNext_DelegateHelpers_CreateDelegate__1_System_Reflection_MethodInfo_System_Object_" data-uid="DotNext.DelegateHelpers.CreateDelegate``1(System.Reflection.MethodInfo,System.Object)">CreateDelegate&lt;D&gt;(MethodInfo, Object)</h4>
@@ -357,6 +425,75 @@ provides contravariant conversion for this delegate type.</p>
   <div class="seealso">
       <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo.createdelegate#System_Reflection_MethodInfo_CreateDelegate_System_Type_System_Object_">CreateDelegate</a>(<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>)</div>
   </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_CreateOpenDelegate__1_System_Linq_Expressions_Expression___0__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.CreateOpenDelegate%60%601(System.Linq.Expressions.Expression%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L40">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_CreateOpenDelegate_" data-uid="DotNext.DelegateHelpers.CreateOpenDelegate*"></a>
+  <h4 id="DotNext_DelegateHelpers_CreateOpenDelegate__1_System_Linq_Expressions_Expression___0__" data-uid="DotNext.DelegateHelpers.CreateOpenDelegate``1(System.Linq.Expressions.Expression{``0})">CreateOpenDelegate&lt;D&gt;(Expression&lt;D&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates open delegate for the instance method, property, operator referenced
+in expression tree.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static D CreateOpenDelegate&lt;D&gt;(Expression&lt;D&gt; expression)
+
+    where D : Delegate</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression-1">Expression</a>&lt;D&gt;</td>
+        <td><span class="parametername">expression</span></td>
+        <td><p>The expression tree containing instance method call.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">D</span></td>
+        <td><p>The open delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">D</span></td>
+        <td><p>The type of the delegate describing expression tree.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 </article>
           </div>
           
@@ -368,7 +505,7 @@ provides contravariant conversion for this delegate type.</p>
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

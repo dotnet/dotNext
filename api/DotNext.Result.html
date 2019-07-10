@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class Conversion&lt;I, O&gt;
+    <title>Class Result
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class Conversion&lt;I, O&gt;
+    <meta name="title" content="Class Result
    | .NEXT ">
     <meta name="generator" content="docfx 2.42.0.0">
     
@@ -68,19 +68,18 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Reflection.Conversion`2">
+            <article class="content wrap" id="_content" data-uid="DotNext.Result">
   
   
-  <h1 id="DotNext_Reflection_Conversion_2" data-uid="DotNext.Reflection.Conversion`2" class="text-break">Class Conversion&lt;I, O&gt;
+  <h1 id="DotNext_Result" data-uid="DotNext.Result" class="text-break">Class Result
   </h1>
-  <div class="markdown level0 summary"><p>Provides access to implicit or explicit type conversion
-operator between two types.</p>
+  <div class="markdown level0 summary"><p>Represents extension methods for type <a class="xref" href="DotNext.Result-1.html">Result&lt;T&gt;</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">Conversion&lt;I, O&gt;</span></div>
+    <div class="level1"><span class="xref">Result</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -106,12 +105,70 @@ operator between two types.</p>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Reflection.html">DotNext.Reflection</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
-  <h5 id="DotNext_Reflection_Conversion_2_syntax">Syntax</h5>
+  <h5 id="DotNext_Result_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Conversion&lt;I, O&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static class Result</code></pre>
   </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_Coalesce__1_DotNext_Result___0___DotNext_Result___0___.md&amp;value=---%0Auid%3A%20DotNext.Result.Coalesce%60%601(DotNext.Result%7B%60%600%7D%40%2CDotNext.Result%7B%60%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L30">View Source</a>
+  </span>
+  <a id="DotNext_Result_Coalesce_" data-uid="DotNext.Result.Coalesce*"></a>
+  <h4 id="DotNext_Result_Coalesce__1_DotNext_Result___0___DotNext_Result___0___" data-uid="DotNext.Result.Coalesce``1(DotNext.Result{``0}@,DotNext.Result{``0}@)">Coalesce&lt;T&gt;(Result&lt;T&gt;, Result&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Returns the second result if the first is unsuccessful.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Result&lt;T&gt; Coalesce&lt;T&gt;(this in Result&lt;T&gt; first, in Result&lt;T&gt; second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;T&gt;</td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first result.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;T&gt;</td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;T&gt;</td>
+        <td><p>The second result if the first is unsuccessful; otherwise, the first result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
@@ -122,36 +179,49 @@ operator between two types.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">I</span></td>
-        <td><p>Source type to convert.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">O</span></td>
-        <td><p>Type of conversion result.</p>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of value.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h3 id="fields">Fields
-  </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Conversion_2_Converter.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Conversion%602.Converter%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_OrNull__1_DotNext_Result___0___.md&amp;value=---%0Auid%3A%20DotNext.Result.OrNull%60%601(DotNext.Result%7B%60%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/Conversion.cs/#L21">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L19">View Source</a>
   </span>
-  <h4 id="DotNext_Reflection_Conversion_2_Converter" data-uid="DotNext.Reflection.Conversion`2.Converter">Converter</h4>
-  <div class="markdown level1 summary"><p>Represents implicit or explicit cast operator
-wrapped into delegate.</p>
+  <a id="DotNext_Result_OrNull_" data-uid="DotNext.Result.OrNull*"></a>
+  <h4 id="DotNext_Result_OrNull__1_DotNext_Result___0___" data-uid="DotNext.Result.OrNull``1(DotNext.Result{``0}@)">OrNull&lt;T&gt;(Result&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>If a result is successful, returns it, otherwise <span class="xref">null</span>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static readonly Converter&lt;I, O&gt; Converter</code></pre>
+    <pre><code class="lang-csharp hljs">public static T? OrNull&lt;T&gt;(this in Result&lt;T&gt; result)
+
+    where T : struct</code></pre>
   </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;T&gt;</td>
+        <td><span class="parametername">result</span></td>
+        <td><p>The result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -161,39 +231,25 @@ wrapped into delegate.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;I, O&gt;</td>
-        <td></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;T&gt;</td>
+        <td><p>Nullable value.</p>
+</td>
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Conversion_2_IsSupported.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Conversion%602.IsSupported%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/Conversion.cs/#L27">View Source</a>
-  </span>
-  <h4 id="DotNext_Reflection_Conversion_2_IsSupported" data-uid="DotNext.Reflection.Conversion`2.IsSupported">IsSupported</h4>
-  <div class="markdown level1 summary"><p>Indicates that overloaded type-cast operator between types <code data-dev-comment-type="typeparamref" class="typeparamref">I</code> and <code data-dev-comment-type="typeparamref" class="typeparamref">O</code>
-is present.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static readonly bool IsSupported</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
+  <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
-        <th>Type</th>
+        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><span class="parametername">T</span></td>
+        <td><p>Value type.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -205,10 +261,10 @@ is present.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Conversion_2.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Conversion%602%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result.md&amp;value=---%0Auid%3A%20DotNext.Result%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/Conversion.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

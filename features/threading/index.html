@@ -111,11 +111,11 @@ using(await asyncLock.Acquire(CancellationToken.None))
 <ul>
 <li><code>AcquireReadLockAsync</code> acquires reader lock asynchronously</li>
 <li><code>AcquireWriteLockAsync</code> acquires exclusive lock asynchronously</li>
-<li><code>AcquireUpgradeableReadLock</code> acquires read lock asynchronously which can be upgraded to write lock</li>
+<li><code>AcquireUpgradeableReadLockAsync</code> acquires read lock asynchronously which can be upgraded to write lock</li>
 </ul>
 <p>These methods allow to turn any thread-unsafe object into thread-safe object with precise control in context of multithreading access.</p>
-<pre><code class="lang-csharp">using System.Text;
-using DotNext.Threading;
+<pre><code class="lang-csharp">using DotNext.Threading;
+using System.Text;
 
 var builder = new StringBuilder();
 

@@ -108,7 +108,7 @@ This library provides a special types to work with unmanaged memory in type-safe
 </ul>
 <h1 id="dotnextthreading">DotNext.Threading</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.threading/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.threading.svg?style=flat"></a><br>
-The library allows you to apply the experience of blocking synchronization using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a>, <a href="api/DotNext.Threading.AsyncCountdownEvent.html">AsyncCountdownEvent</a> and friends in asynchronous code using asynchronous alternatives of synchronization primitives such as asynchronous locks.</p>
+The library allows you to reuse experience of blocking synchronization with help of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlockslim">ReaderWriteLockSlim</a>, <a href="api/DotNext.Threading.AsyncCountdownEvent.html">AsyncCountdownEvent</a> and friends in asynchronous code using their alternatives such as asynchronous locks.</p>
 <p>The following code describes these alternative implementations of synchronization primitives for asynchronous code:</p>
 <table>
 <thead>
@@ -141,6 +141,12 @@ The library allows you to apply the experience of blocking synchronization using
 </tbody>
 </table>
 <p>But this is not all features of this library. Read more <a href="features/threading/index.html">here</a>.</p>
+<h1 id="dotnextnetcluster">DotNext.Net.Cluster</h1>
+<p><a href="https://www.nuget.org/packages/dotnext.net.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.net.cluster.svg?style=flat"></a><br>
+Provides basic framework for building <a href="https://en.wikipedia.org/wiki/Computer_cluster">clustered microservices</a> based on network consensus and distributed messaging. Additionally, the libarary provides transport-agnostic implementation of <a href="https://raft.github.io/">Raft Consensus Algoritm</a> that can be adopted for any communication protocol.</p>
+<h1 id="dotnextaspnetcorecluster">DotNext.AspNetCore.Cluster</h1>
+<p><a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?style=flat"></a><br>
+Allows to build clustered microservices which rely on network consensus and distributed messaging with <a href="https://docs.microsoft.com/en-us/aspnet/core/">ASP.NET Core</a> framework. This library contains HTTP-based implementation of Raft Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node and many other things.</p>
 </article>
           </div>
           
