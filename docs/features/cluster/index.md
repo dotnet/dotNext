@@ -40,7 +40,10 @@ Consensus Algorithm allows to achieve overall reliability in the presence of fau
 
 The consensus algorithm allows to choose exactly one leader node in the cluster.
 
-.NEXT library provides protocol-agnostic implementation of Raft algorithm that can be adopted for any real network protocol. You can reuse this implementation which is located in [DotNext.Net.Cluster.Consensus.Raft](../../api/DotNext.Net.Cluster.Consensus.Raft.yml) namespace.
+.NEXT library provides protocol-agnostic implementation of Raft algorithm that can be adopted for any real network protocol. You can reuse this implementation which is located in [DotNext.Net.Cluster.Consensus.Raft](../../api/DotNext.Net.Cluster.Consensus.Raft.yml) namespace. If you want to know more about Raft then use the following links:
+* [The Raft Consensus Algorithm](https://raft.github.io/)
+* [The Secret Lives of Data](http://thesecretlivesofdata.com/)
+* [In Search of an Understandable Consensus Algorithm](https://raft.github.io/raft.pdf)
 
 # Replication
 Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of [IAuditTrail](../../api/DotNext.Net.Cluster.Replication.IAuditTrail-1.yml) interface.

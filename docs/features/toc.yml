@@ -82,5 +82,5 @@
 - name: Cluster and Distributed Consensus
   href: cluster/index.md
   items:
-    - name: Clustered ASP.NET Core microservices
+    - name: Clustered ASP.NET Core Microservices
       href: cluster/aspnetcore.md
