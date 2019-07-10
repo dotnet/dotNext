@@ -60,7 +60,7 @@ The following code describes these alternative implementations of synchronizatio
 | [AutoResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent) | [AsyncAutoResetEvent](api/DotNext.Threading.AsyncAutoResetEvent.yml)
 | [Barrier](https://docs.microsoft.com/en-us/dotnet/api/system.threading.barrier) | [AsyncBarrier](api/DotNext.Threading.AsyncBarrier.yml)
 
-But this is not all features of this library. Read more [here](./features/threading/index.html).
+But this is not all features of this library. Read more [here](./features/threading/index.md).
 
 # DotNext.Net.Cluster
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.net.cluster.svg?style=flat"></a><br/>
