@@ -96,6 +96,7 @@ decimal v = args.result;    //v == 42M
 
 # Performance
 Invocation of members through special delegates is not a free lunch: you pay for passing arguments through the stack. But it still much faster than classic .NET Reflection. The following list describes performance impact using different approaches to reflection (from fast to slow).
+
 | Reflective call | Performance |
 | ---- | ---- |
 | Custom delegate type or predefined delegate type which exactly describes the signature of expected method | the same or comparable to direct call (with nanoseconds overhead) |
