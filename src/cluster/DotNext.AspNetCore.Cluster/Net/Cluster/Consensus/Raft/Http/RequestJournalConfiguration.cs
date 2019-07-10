@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// <summary>
         /// Gets or sets the time interval after which the request journal compares the current memory load against the absolute memory limits.
         /// </summary>
-        public TimeSpan PollingTime { get; set; } = TimeSpan.FromMinutes(1);
+        public TimeSpan PollingInterval { get; set; } = TimeSpan.FromMinutes(1);
 
         /// <summary>
         /// Gets or sets expiration time of the single request.

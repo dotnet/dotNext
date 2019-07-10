@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly TimeSpan expiration;
 
         internal DuplicateRequestDetector(RequestJournalConfiguration config)
-            : base(Name, CreateConfiguration(config.PollingTime, config.MemoryLimit), true)
+            : base(Name, CreateConfiguration(config.PollingInterval, config.MemoryLimit), true)
             => expiration = config.Expiration;
 
         private static NameValueCollection CreateConfiguration(TimeSpan pollingTime, long memoryLimitMB)
