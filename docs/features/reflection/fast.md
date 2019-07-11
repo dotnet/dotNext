@@ -46,7 +46,7 @@ using System.IO;
 
 internal delegate MemoryStream MemoryStreamConstructor(byte[] buffer, bool writable);
 
-Func<MemoryStreamConstructor> ctor = typeof(MemoryStream).GetConstructor(new[] { typeof(byte[]), typeof(bool) }).Unreflect<MemoryStreamConstructor>();
+MemoryStreamConstructor ctor = typeof(MemoryStream).GetConstructor(new[] { typeof(byte[]), typeof(bool) }).Unreflect<MemoryStreamConstructor>();
 using(var stream = ctor(new byte[] { 1, 10, 5 }, false))
 {
 
@@ -64,7 +64,7 @@ using DotNext.Reflection;
 
 internal delegate byte[] ToByteArray(ref BigInteger @this);
 
-var toByteArray = typeof(BigInteger).GetMethod(nameof(BigInteger)).Unreflect<ToByteArrat>();
+var toByteArray = typeof(BigInteger).GetMethod(nameof(BigInteger)).Unreflect<ToByteArray>();
 BigInteger i = 10;
 var array = toByteArray(ref i);
 ```
