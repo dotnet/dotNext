@@ -54,7 +54,7 @@ namespace DotNext
                 return string.Empty;
             const short smallStringLength = 1024;
             //use stack allocation for small strings, which is 99% of all use cases
-            var result = length <= smallStringLength ? stackalloc char[length] : new Span<char>(new char[length]);
+            Span<char> result = length <= smallStringLength ? stackalloc char[length] : new char[length];
             foreach (ref var element in result)
                 element = generator.NextChar(allowedChars);
             fixed (char* ptr = result)
