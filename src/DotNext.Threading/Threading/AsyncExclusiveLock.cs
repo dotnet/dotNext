@@ -11,28 +11,30 @@ namespace DotNext.Threading
     /// </summary>
     public class AsyncExclusiveLock : QueuedSynchronizer
     {
-        private readonly struct LockManager : ILockManager<bool, WaitNode>
+        private struct LockManager : ILockManager<WaitNode>
         {
-            bool ILockManager<bool, WaitNode>.CheckState(ref bool locked)
+            internal volatile bool IsAcquired;
+
+            bool ILockManager<WaitNode>.TryAcquire()
             {
-                if (locked)
+                if (IsAcquired)
                     return false;
                 else
                 {
-                    locked = true;
+                    IsAcquired = true;
                     return true;
                 }
             }
 
-            WaitNode ILockManager<bool, WaitNode>.CreateNode(WaitNode tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode tail) => tail is null ? new WaitNode() : new WaitNode(tail);
         }
 
-        private bool locked;
+        private LockManager manager;
 
         /// <summary>
         /// Indicates that exclusive lock taken.
         /// </summary>
-        public bool IsLockHeld => locked;
+        public bool IsLockHeld => manager.IsAcquired;
 
         /// <summary>
         /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
@@ -42,7 +44,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered exclusive mode; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryAcquire(TimeSpan timeout, CancellationToken token) => Wait<bool, LockManager>(ref locked, timeout, token);
+        public Task<bool> TryAcquire(TimeSpan timeout, CancellationToken token) => Wait(ref manager, timeout, token);
 
         /// <summary>
         /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
@@ -81,10 +83,10 @@ namespace DotNext.Threading
         public void Release()
         {
             ThrowIfDisposed();
-            if (!locked)
+            if (!manager.IsAcquired)
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
             else if (head is null)
-                locked = false;
+                manager.IsAcquired = false;
             else
             {
                 head.Complete();

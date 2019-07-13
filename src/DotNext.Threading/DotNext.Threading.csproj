@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.11.0</Version>
+    <Version>0.11.1</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Asynchronous locks and .NET threading extensions</Description>
@@ -14,10 +14,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>async;lock;objectpool</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>AsyncManualResetEvent now supports automatic reset of its state through overloaded Set method
-AsyncLock overloads TryAcquire method with CancellationToken parameter that never throws even if cancellation is requested
-CancellationToken and WaitHandle can be converted into Task to await cancellation in asynchronous methods
-AsyncTimer is introduced as asynchronous version of System.Threading.Timer</PackageReleaseNotes>
+    <PackageReleaseNotes>Optimized performance for AsyncExclusiveLock, AsyncReaderWriterLock, AsyncAutoResetEvent, AsyncManualResetEvent</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -38,7 +35,7 @@ AsyncTimer is introduced as asynchronous version of System.Threading.Timer</Pack
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.11.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.11.1" Condition="'$(Configuration)'=='Release'" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" />
   </ItemGroup>
 

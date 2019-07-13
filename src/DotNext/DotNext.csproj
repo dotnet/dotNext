@@ -18,7 +18,8 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Improved performance of random string generation with RandomNumberGenerator</PackageReleaseNotes>
+	<PackageReleaseNotes>Improved performance of random string generation with RandomNumberGenerator
+System.Threading.Tasks.Task can be awaited asynchronously using timeout and/or cancellation token</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
