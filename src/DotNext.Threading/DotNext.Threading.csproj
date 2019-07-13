@@ -14,7 +14,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>async;lock;objectpool</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Optimized performance for AsyncExclusiveLock, AsyncReaderWriterLock, AsyncAutoResetEvent, AsyncManualResetEvent</PackageReleaseNotes>
+    <PackageReleaseNotes>Optimized performance for AsyncExclusiveLock, AsyncReaderWriterLock, AsyncAutoResetEvent, AsyncManualResetEvent
+Updated System.Threading.Tasks.Extensions dependency</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -36,7 +37,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext" Version="0.11.1" Condition="'$(Configuration)'=='Release'" />
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
   </ItemGroup>
 
   <ItemGroup>
