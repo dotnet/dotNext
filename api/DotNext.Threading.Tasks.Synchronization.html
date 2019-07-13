@@ -118,7 +118,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Synchronization_GetResult__1_System_Threading_Tasks_Task___0__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.GetResult%60%601(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L42">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L47">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_GetResult_" data-uid="DotNext.Threading.Tasks.Synchronization.GetResult*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_GetResult__1_System_Threading_Tasks_Task___0__System_Threading_CancellationToken_" data-uid="DotNext.Threading.Tasks.Synchronization.GetResult``1(System.Threading.Tasks.Task{``0},System.Threading.CancellationToken)">GetResult&lt;R&gt;(Task&lt;R&gt;, CancellationToken)</h4>
@@ -190,7 +190,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Synchronization_GetResult__1_System_Threading_Tasks_Task___0__System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.GetResult%60%601(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L20">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L25">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_GetResult_" data-uid="DotNext.Threading.Tasks.Synchronization.GetResult*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_GetResult__1_System_Threading_Tasks_Task___0__System_TimeSpan_" data-uid="DotNext.Threading.Tasks.Synchronization.GetResult``1(System.Threading.Tasks.Task{``0},System.TimeSpan)">GetResult&lt;R&gt;(Task&lt;R&gt;, TimeSpan)</h4>
@@ -275,10 +275,93 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Synchronization_WaitAsync_System_Threading_Tasks_Task_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WaitAsync(System.Threading.Tasks.Task%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L133">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_Synchronization_WaitAsync_" data-uid="DotNext.Threading.Tasks.Synchronization.WaitAsync*"></a>
+  <h4 id="DotNext_Threading_Tasks_Synchronization_WaitAsync_System_Threading_Tasks_Task_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Tasks.Synchronization.WaitAsync(System.Threading.Tasks.Task,System.TimeSpan,System.Threading.CancellationToken)">WaitAsync(Task, TimeSpan, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Waits for task completion asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Task&lt;bool&gt; WaitAsync(this Task task, TimeSpan timeout, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><span class="parametername">task</span></td>
+        <td><p>The task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The time to wait for task completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel awaiting.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><p><span class="xref">true</span> if task is completed; <span class="xref">false</span> if task is not completed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">timeout</code> is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Threading.Tasks.Task%7B%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L63">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L68">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll``2(System.Threading.Tasks.Task{``0},System.Threading.Tasks.Task{``1})">WhenAll&lt;T1, T2&gt;(Task&lt;T1&gt;, Task&lt;T2&gt;)</h4>
@@ -355,7 +438,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll__3_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__System_Threading_Tasks_Task___2__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll%60%603(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Threading.Tasks.Task%7B%60%601%7D%2CSystem.Threading.Tasks.Task%7B%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L75">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L80">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll__3_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__System_Threading_Tasks_Task___2__" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll``3(System.Threading.Tasks.Task{``0},System.Threading.Tasks.Task{``1},System.Threading.Tasks.Task{``2})">WhenAll&lt;T1, T2, T3&gt;(Task&lt;T1&gt;, Task&lt;T2&gt;, Task&lt;T3&gt;)</h4>
@@ -443,7 +526,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll__4_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__System_Threading_Tasks_Task___2__System_Threading_Tasks_Task___3__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll%60%604(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Threading.Tasks.Task%7B%60%601%7D%2CSystem.Threading.Tasks.Task%7B%60%602%7D%2CSystem.Threading.Tasks.Task%7B%60%603%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L89">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L94">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll__4_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__System_Threading_Tasks_Task___2__System_Threading_Tasks_Task___3__" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll``4(System.Threading.Tasks.Task{``0},System.Threading.Tasks.Task{``1},System.Threading.Tasks.Task{``2},System.Threading.Tasks.Task{``3})">WhenAll&lt;T1, T2, T3, T4&gt;(Task&lt;T1&gt;, Task&lt;T2&gt;, Task&lt;T3&gt;, Task&lt;T4&gt;)</h4>
@@ -542,7 +625,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll__5_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__System_Threading_Tasks_Task___2__System_Threading_Tasks_Task___3__System_Threading_Tasks_Task___4__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll%60%605(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Threading.Tasks.Task%7B%60%601%7D%2CSystem.Threading.Tasks.Task%7B%60%602%7D%2CSystem.Threading.Tasks.Task%7B%60%603%7D%2CSystem.Threading.Tasks.Task%7B%60%604%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L105">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L110">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll__5_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__System_Threading_Tasks_Task___2__System_Threading_Tasks_Task___3__System_Threading_Tasks_Task___4__" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll``5(System.Threading.Tasks.Task{``0},System.Threading.Tasks.Task{``1},System.Threading.Tasks.Task{``2},System.Threading.Tasks.Task{``3},System.Threading.Tasks.Task{``4})">WhenAll&lt;T1, T2, T3, T4, T5&gt;(Task&lt;T1&gt;, Task&lt;T2&gt;, Task&lt;T3&gt;, Task&lt;T4&gt;, Task&lt;T5&gt;)</h4>
@@ -658,7 +741,7 @@
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Synchronization.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L13" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

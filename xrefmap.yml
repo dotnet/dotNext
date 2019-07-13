@@ -33180,6 +33180,19 @@ references:
   fullName.vb: DotNext.Threading.Tasks.Synchronization.GetResult(Of R)(System.Threading.Tasks.Task(Of R), System.TimeSpan)
   nameWithType: Synchronization.GetResult<R>(Task<R>, TimeSpan)
   nameWithType.vb: Synchronization.GetResult(Of R)(Task(Of R), TimeSpan)
+- uid: DotNext.Threading.Tasks.Synchronization.WaitAsync(System.Threading.Tasks.Task,System.TimeSpan,System.Threading.CancellationToken)
+  name: WaitAsync(Task, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.Tasks.Synchronization.html#DotNext_Threading_Tasks_Synchronization_WaitAsync_System_Threading_Tasks_Task_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Tasks.Synchronization.WaitAsync(System.Threading.Tasks.Task,System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Tasks.Synchronization.WaitAsync(System.Threading.Tasks.Task, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: Synchronization.WaitAsync(Task, TimeSpan, CancellationToken)
+- uid: DotNext.Threading.Tasks.Synchronization.WaitAsync*
+  name: WaitAsync
+  href: api/DotNext.Threading.Tasks.Synchronization.html#DotNext_Threading_Tasks_Synchronization_WaitAsync_
+  commentId: Overload:DotNext.Threading.Tasks.Synchronization.WaitAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.Synchronization.WaitAsync
+  nameWithType: Synchronization.WaitAsync
 - uid: DotNext.Threading.Tasks.Synchronization.WhenAll*
   name: WhenAll
   href: api/DotNext.Threading.Tasks.Synchronization.html#DotNext_Threading_Tasks_Synchronization_WhenAll_
