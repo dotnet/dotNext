@@ -200,6 +200,28 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Attempts to unbox value type.
+        /// </summary>
+        /// <param name="boxed">The boxed struct.</param>
+        /// <returns>Unboxed representation of <typeparamref name="T"/>.</returns>
+        public static T? TryUnbox(object boxed)
+        {
+            switch (boxed)
+            {
+                case T vt:
+                    return vt;
+                case Optional<T> optional:
+                    return optional.OrNull();
+                case Result<T> result:
+                    return result.OrNull();
+                case ValueType<T> vt:
+                    return vt.Value;
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary>
         /// Initializes a new boxed value type.
         /// </summary>
         /// <param name="value">A struct to be placed onto heap.</param>
