@@ -55,10 +55,10 @@ namespace DotNext.Threading
             internal bool IsRoot => previous is null && next is null;
         }
 
-        private protected interface ILockManager<State, out N>
+        private protected interface ILockManager<out N>
             where N : WaitNode
         {
-            bool CheckState(ref State state); //if true then Wait method can be completed synchronously; otherwise, false.
+            bool TryAcquire();  //if true then Wait method can be completed synchronously; otherwise, false.
 
             N CreateNode(WaitNode tail);
         }
@@ -85,13 +85,13 @@ namespace DotNext.Threading
 
         private async Task<bool> Wait(WaitNode node, TimeSpan timeout, CancellationToken token)
         {
+            //cannot use Task.WaitAsync here because this method contains side effect in the form of RemoveNode method
             using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
                 if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
                 {
                     tokenSource.Cancel();   //ensure that Delay task is cancelled
                     return true;
                 }
-
             if (RemoveNode(node))
             {
                 token.ThrowIfCancellationRequested();
@@ -102,8 +102,7 @@ namespace DotNext.Threading
 
         private async Task<bool> Wait(WaitNode node, CancellationToken token)
         {
-            if (ReferenceEquals(node.Task,
-                await Task.WhenAny(node.Task, Task.Delay(InfiniteTimeSpan, token)).ConfigureAwait(false)))
+            if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(InfiniteTimeSpan, token)).ConfigureAwait(false)))
                 return true;
             if (RemoveNode(node))
             {
@@ -115,26 +114,25 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private protected Task<bool> Wait<State, M>(ref State state, TimeSpan timeout, CancellationToken token)
-            where M : struct, ILockManager<State, WaitNode>
+        private protected Task<bool> Wait<M>(ref M manager, TimeSpan timeout, CancellationToken token)
+            where M : struct, ILockManager<WaitNode>
         {
             ThrowIfDisposed();
-            var manager = new M();
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
-            else if (token.IsCancellationRequested)
+            if(token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
-            else if (manager.CheckState(ref state))
+            if (manager.TryAcquire())
                 return CompletedTask<bool, BooleanConst.True>.Task;
-            else if (timeout == TimeSpan.Zero)   //if timeout is zero fail fast
-                return CompletedTask<bool, BooleanConst.False>.Task;
-            else if (head is null)
+            if(timeout == TimeSpan.Zero)
+                return CompletedTask<bool, BooleanConst.False>.Task;    //if timeout is zero fail fast
+            if (head is null)
                 head = tail = manager.CreateNode(null);
             else
                 tail = manager.CreateNode(tail);
             return timeout == InfiniteTimeSpan ?
-                token.CanBeCanceled ? Wait(tail, token) : tail.Task :
-                Wait(tail, timeout, token);
+                token.CanBeCanceled ? Wait(tail, token) : tail.Task
+                : Wait(tail, timeout, token);
         }
 
         /// <summary>

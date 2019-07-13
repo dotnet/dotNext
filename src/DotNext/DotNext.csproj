@@ -7,7 +7,7 @@
     <Authors>Roman Sakno</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>0.11.0</Version>
+    <Version>0.11.1</Version>
 	<AssemblyName>DotNext</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
@@ -18,12 +18,9 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>AtomicEnum and AtomicIntPtr are introduced
-Result&lt;T&gt; is the new type used for returning and propagating recoverable errors instead of classic try-catch approach
-Sort extension method for Span&lt;T&gt; data type is introduced
-System.Memory dependency is updated
-DelegateHelpers.CreateOpenDelegate provides syntactic sugar for creating open instance delegates
-ChunkSequence allows to represent contiguous memory as sequence of chunks</PackageReleaseNotes>
+	<PackageReleaseNotes>Improved performance of random string generation with RandomNumberGenerator
+System.
+Threading.Tasks.Task can be awaited asynchronously using timeout and/or cancellation token</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

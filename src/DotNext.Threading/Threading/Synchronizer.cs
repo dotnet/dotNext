@@ -2,7 +2,6 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -38,27 +37,6 @@ namespace DotNext.Threading
         /// </summary>
         public bool IsSet => node is null;
 
-        private static async Task<bool> Wait(WaitNode node, TimeSpan timeout, CancellationToken token)
-        {
-            using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
-                if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(timeout, tokenSource.Token)).ConfigureAwait(false)))
-                {
-                    tokenSource.Cancel();   //ensure that Delay task is cancelled
-                    return true;
-                }
-            token.ThrowIfCancellationRequested();
-            return false;
-        }
-
-        private static async Task<bool> Wait(WaitNode node, CancellationToken token)
-        {
-            if (ReferenceEquals(node.Task,
-                await Task.WhenAny(node.Task, Task.Delay(InfiniteTimeSpan, token)).ConfigureAwait(false)))
-                return true;
-            token.ThrowIfCancellationRequested();
-            return false;
-        }
-
         /// <summary>
         /// Suspends the caller until this event is set.
         /// </summary>
@@ -72,21 +50,8 @@ namespace DotNext.Threading
         public Task<bool> Wait(TimeSpan timeout, CancellationToken token)
         {
             ThrowIfDisposed();
-            if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-                throw new ArgumentOutOfRangeException(nameof(timeout));
-            else if (token.IsCancellationRequested)
-                return Task.FromCanceled<bool>(token);
-            else if (node is null)
-                return CompletedTask<bool, BooleanConst.True>.Task;
-            else if (timeout == TimeSpan.Zero)   //if timeout is zero fail fast
-                return CompletedTask<bool, BooleanConst.False>.Task;
-            else if (timeout == InfiniteTimeSpan)
-                return token.CanBeCanceled ? Wait(node, token) : node.Task;
-            else
-                return Wait(node, timeout, token);
+            return node is null ? CompletedTask<bool, BooleanConst.True>.Task : node.Task.WaitAsync(timeout, token);
         }
-
-
 
         /// <summary>
         /// Releases all resources associated with exclusive lock.

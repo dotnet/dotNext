@@ -10,42 +10,34 @@ namespace DotNext
     {
         internal static readonly int BitwiseHashSalt = new Random().Next();
 
-        private interface IRandomCharacterGenerator
+        private delegate void RandomCharacteGenerator<in TSource>(TSource source, Span<char> buffer, ReadOnlySpan<char> allowedChars)
+            where TSource : class;
+
+        private static readonly RandomCharacteGenerator<Random> RandomGenerator = NextString;
+        private static readonly RandomCharacteGenerator<RandomNumberGenerator> RngBasedGenerator = NextString;
+
+        private static void NextString(Random rnd, Span<char> buffer, ReadOnlySpan<char> allowedChars)
         {
-            char NextChar(ReadOnlySpan<char> allowedChars);
+            foreach (ref var element in buffer)
+                element = allowedChars[rnd.Next(0, allowedChars.Length)];
         }
 
-        private readonly struct RandomCharacterGenerator : IRandomCharacterGenerator
+        private static void NextString(RandomNumberGenerator rng, Span<char> buffer, ReadOnlySpan<char> allowedChars)
         {
-            private readonly Random random;
-
-            internal RandomCharacterGenerator(Random random) => this.random = random;
-
-            char IRandomCharacterGenerator.NextChar(ReadOnlySpan<char> allowedChars) => allowedChars[random.Next(0, allowedChars.Length)];
-        }
-
-        private readonly struct RngCharacterGenerator : IRandomCharacterGenerator
-        {
-            private readonly byte[] buffer;
-            private readonly RandomNumberGenerator random;
-
-            internal RngCharacterGenerator(RandomNumberGenerator random)
+            //TODO: byte array should be replaced with stack allocated Span in .NET Standard 2.1
+            var bytes = new byte[buffer.Length * sizeof(int)];
+            rng.GetBytes(bytes, 0, bytes.Length);
+            var offset = 0;
+            foreach(ref var element in buffer)
             {
-                this.random = random;
-                buffer = new byte[sizeof(int)];
-            }
-
-            char IRandomCharacterGenerator.NextChar(ReadOnlySpan<char> allowedChars)
-            {
-                //TODO: buffer should be replaced with stack allocated Span in .NET Standard 2.1
-                random.GetBytes(buffer, 0, buffer.Length);
-                var randomNumber = (BitConverter.ToInt32(buffer, 0) & int.MaxValue) % allowedChars.Length;
-                return allowedChars[randomNumber];
+                var randomNumber = (BitConverter.ToInt32(bytes, offset) & int.MaxValue) % allowedChars.Length;
+                element = allowedChars[randomNumber];
+                offset += sizeof(int);
             }
         }
 
-        private static unsafe string NextString<R>(ref R generator, ReadOnlySpan<char> allowedChars, int length)
-            where R : struct, IRandomCharacterGenerator
+        private static unsafe string NextString<TSource>(TSource source, RandomCharacteGenerator<TSource> generator, ReadOnlySpan<char> allowedChars, int length)
+            where TSource : class
         {
             //TODO: should be reviewed for .NET Standard 2.1
             if (length < 0)
@@ -54,9 +46,8 @@ namespace DotNext
                 return string.Empty;
             const short smallStringLength = 1024;
             //use stack allocation for small strings, which is 99% of all use cases
-            var result = length <= smallStringLength ? stackalloc char[length] : new Span<char>(new char[length]);
-            foreach (ref var element in result)
-                element = generator.NextChar(allowedChars);
+            Span<char> result = length <= smallStringLength ? stackalloc char[length] : new char[length];
+            generator(source, result, allowedChars);
             fixed (char* ptr = result)
                 return new string(ptr, 0, length);
         }
@@ -70,10 +61,7 @@ namespace DotNext
         /// <returns>Randomly generated string.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this Random random, ReadOnlySpan<char> allowedChars, int length)
-        {
-            var generator = new RandomCharacterGenerator(random);
-            return NextString(ref generator, allowedChars, length);
-        }
+            => NextString(random, RandomGenerator, allowedChars, length);
 
         /// <summary>
         /// Generates random string of the given length.
@@ -106,10 +94,7 @@ namespace DotNext
         /// <returns>Randomly generated string.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
-        {
-            var generator = new RngCharacterGenerator(random);
-            return NextString(ref generator, allowedChars, length);
-        }
+            => NextString(random, RngBasedGenerator, allowedChars, length);
 
         /// <summary>
         /// Generates random string of the given length.
