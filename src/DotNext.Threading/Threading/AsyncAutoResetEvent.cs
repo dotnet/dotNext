@@ -10,36 +10,35 @@ namespace DotNext.Threading
     /// </summary>
     public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
-        private readonly struct LockManager : ILockManager<bool, WaitNode>
+        private struct LockManager : ILockManager<WaitNode>
         {
-            bool ILockManager<bool, WaitNode>.CheckState(ref bool signaled)
+            internal volatile bool IsSignaled;
+
+            public bool TryAcquire()
             {
-                if (signaled)
+                if (IsSignaled)
                 {
-                    signaled = false;
+                    IsSignaled = false;
                     return true;
                 }
                 else
                     return false;
             }
 
-            WaitNode ILockManager<bool, WaitNode>.CreateNode(WaitNode tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode tail) => tail is null ? new WaitNode() : new WaitNode(tail);
         }
-        private bool signaled;
+        private LockManager manager;
 
         /// <summary>
         /// Initializes a new asynchronous reset event in the specified state.
         /// </summary>
         /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
-        public AsyncAutoResetEvent(bool initialState)
-        {
-            signaled = initialState;
-        }
+        public AsyncAutoResetEvent(bool initialState) => manager = new LockManager { IsSignaled = initialState };
 
         /// <summary>
         /// Gets whether this event is set.
         /// </summary>
-        public bool IsSet => signaled;
+        public bool IsSet => manager.IsSignaled;
 
         /// <summary>
         /// Sets the state of this event to non signaled, causing consumers to wait asynchronously.
@@ -50,13 +49,7 @@ namespace DotNext.Threading
         public bool Reset()
         {
             ThrowIfDisposed();
-            if (signaled)
-            {
-                signaled = false;
-                return true;
-            }
-            else
-                return false;
+            return manager.TryAcquire();
         }
 
         /// <summary>
@@ -68,15 +61,15 @@ namespace DotNext.Threading
         public bool Set()
         {
             ThrowIfDisposed();
-            if (signaled)
+            if (manager.IsSignaled)
                 return false;
             else if (head is null)
-                return signaled = true;
+                return manager.IsSignaled = true;
             else
             {
                 head.Complete();
                 RemoveNode(head);
-                signaled = false;
+                manager.IsSignaled = false;
                 return true;
             }
         }
@@ -94,6 +87,6 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<bool> Wait(TimeSpan timeout, CancellationToken token) => Wait<bool, LockManager>(ref signaled, timeout, token);
+        public Task<bool> Wait(TimeSpan timeout, CancellationToken token) => Wait(ref manager, timeout, token);
     }
 }
