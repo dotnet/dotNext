@@ -53,7 +53,7 @@ namespace DotNext.Threading.Tasks
         /// Moves this Future into completed state and execute all attached continuations.
         /// </summary>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        protected virtual void Complete()
+        protected void Complete()
         {
             if (continuation is null)
                 return;
