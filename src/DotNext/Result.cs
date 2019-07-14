@@ -5,6 +5,8 @@ using System.Runtime.Serialization;
 
 namespace DotNext
 {
+    using static Reflection.TypeExtensions;
+
     /// <summary>
     /// Represents extension methods for type <see cref="Result{T}"/>.
     /// </summary>
@@ -28,6 +30,19 @@ namespace DotNext
         /// <typeparam name="T">The type of value.</typeparam>
         /// <returns>The second result if the first is unsuccessful; otherwise, the first result.</returns>
         public static ref readonly Result<T> Coalesce<T>(this in Result<T> first, in Result<T> second) => ref first.IsSuccessful ? ref first : ref second;
+
+        /// <summary>
+        /// Indicates that specified type is result type.
+        /// </summary>
+        /// <returns><see langword="true"/>, if specified type is result type; otherwise, <see langword="false"/>.</returns>
+        public static bool IsResult(this Type resultType) => resultType.IsGenericInstanceOf(typeof(Result<>));
+
+        /// <summary>
+        /// Returns the underlying type argument of the specified result type.
+        /// </summary>
+        /// <param name="resultType">Result type.</param>
+        /// <returns>Underlying type argument of result type; otherwise, <see langword="null"/>.</returns>
+        public static Type GetUnderlyingType(Type resultType) => IsResult(resultType) ? resultType.GetGenericArguments()[0] : null;
     }
 
     /// <summary>

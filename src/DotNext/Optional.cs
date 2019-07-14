@@ -15,7 +15,7 @@ namespace DotNext
     public static class Optional
     {
         /// <summary>
-        /// If a value is present, returns the value, otherwise null.
+        /// If a value is present, returns the value, otherwise <see langword="null"/>.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="task">The task returning optional value.</param>
@@ -108,7 +108,7 @@ namespace DotNext
         /// Returns the underlying type argument of the specified optional type.
         /// </summary>
         /// <param name="optionalType">Optional type.</param>
-        /// <returns>Underlying type argument of optional type; otherwise, null.</returns>
+        /// <returns>Underlying type argument of optional type; otherwise, <see langword="null"/>.</returns>
         public static Type GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
 
         /// <summary>
