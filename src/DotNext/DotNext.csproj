@@ -7,7 +7,7 @@
     <Authors>Roman Sakno</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>0.11.1</Version>
+    <Version>0.12.0</Version>
 	<AssemblyName>DotNext</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
@@ -18,9 +18,7 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Improved performance of random string generation with RandomNumberGenerator
-System.
-Threading.Tasks.Task can be awaited asynchronously using timeout and/or cancellation token</PackageReleaseNotes>
+	<PackageReleaseNotes>GetUnderlyingType() method is added to determine underlying type of Result&lt;T&gt;</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
