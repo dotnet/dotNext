@@ -101,9 +101,9 @@ namespace DotNext.Linq.Expressions
             if(alwaysNotNull)
                 return Body;
             var body = Body.Type.IsValueType ? Convert(Body, Type) : Body;
-            var conditional = Condition(Target.IsNotNull(), body, Default(body.Type));
+            Expression conditional = Condition(Target.IsNotNull(), body, Default(body.Type));
             return assignment is null ? 
-                (Expression) conditional :
+                conditional :
                 Expression.Block(body.Type, Sequence.Singleton(Target), assignment, conditional);
         }
     }
