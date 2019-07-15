@@ -18,6 +18,8 @@ namespace DotNext
 
         internal static string CastNullToValueType => Resources.GetString("CastNullToValueType");
 
+        internal static string InvalidRefType => Resources.GetString("InvalidRefType");
+
         internal static string UnsupportedLockAcquisition => Resources.GetString("UnsupportedLockAcquisition");
     }
 }

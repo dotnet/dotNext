@@ -37,8 +37,6 @@ TypedReference can be converted into managed pointer (type T&amp;, or ref T) usi
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
-    <PackageReference Include="Fody" Version="5.1.1" PrivateAssets="all" />
-    <PackageReference Include="InlineIL.Fody" Version="1.1.2" PrivateAssets="all" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext" Version="0.12.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>

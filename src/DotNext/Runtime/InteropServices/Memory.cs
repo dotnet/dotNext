@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -599,6 +602,37 @@ namespace DotNext.Runtime.InteropServices
             var tmp = *first;
             *first = *second;
             *second = tmp;
+        }
+
+        /// <summary>
+        /// Converts typed reference into managed pointer.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="reference">The typed reference.</param>
+        /// <returns>A managed pointer to the value represented by reference.</returns>
+        [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
+        [CLSCompliant(false)]
+        public static ref T AsRef<T>(this TypedReference reference)
+        {
+            if (TypedReference.GetTargetType(reference) != typeof(T))
+                throw new GenericArgumentException<T>(ExceptionMessages.InvalidRefType, nameof(T));
+            Ldarg_0();
+            Refanyval(typeof(T));
+            return ref ReturnRef<T>();
+        }
+
+        /// <summary>
+        /// Converts managed pointer into typed reference.
+        /// </summary>
+        /// <param name="managedPtr">The managed pointer to be converted into typed reference.</param>
+        /// <param name="reference">Stack-allocated typed reference</param>
+        /// <typeparam name="T">The type to be associated with the typed reference.</typeparam>
+        [CLSCompliant(false)]
+        public static void AsTypedReference<T>(ref T managedPtr, TypedReference* reference)
+        {
+            if(reference == NullPtr)
+                throw new ArgumentNullException(nameof(reference));
+            *reference = __makeref(managedPtr);
         }
     }
 }
