@@ -260,6 +260,7 @@ namespace DotNext.Reflection
             if (field.DeclaringType is null)
                 throw new ArgumentException(ExceptionMessages.ModuleMemberDetected(field), nameof(field));
             var instanceParam = Parameter(typeof(T).MakeByRefType());
+            //TODO: Should be optimized when LINQ Expression will have a support for ref return
             provider = Lambda<Provider>(Call(typeof(Unsafe), nameof(Unsafe.AsRef), new[] { field.FieldType }, Field(instanceParam, field)), instanceParam).Compile();
             const BindingFlags staticPrivate = BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
             getter = GetType().GetMethod(nameof(GetValue), staticPrivate).CreateDelegate<MemberGetter<T, V>>(provider);
@@ -400,6 +401,7 @@ namespace DotNext.Reflection
         private Field(FieldInfo field)
             : base(field)
         {
+            //TODO: Should be optimized when LINQ Expression will have a support for ref return
             provider = Lambda<Provider>(Call(typeof(Unsafe), nameof(Unsafe.AsRef), new [] { field.FieldType }, Field(null, field))).Compile();
             const BindingFlags staticPrivate = BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
             getter = GetType().GetMethod(nameof(GetValue), staticPrivate).CreateDelegate<MemberGetter<V>>(provider);
