@@ -16,8 +16,7 @@
 	<RepositoryType>git</RepositoryType>
 	<PackageTags>Concept;Reflection;Typeclass</PackageTags>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Ability to obtain managed pointer (type T&amp;, or ref T) to static or instance field from FieldInfo using Reflector class
-TypedReference can be converted into managed pointer (type T&amp;, or ref T) using Reflector class</PackageReleaseNotes>
+	<PackageReleaseNotes>Ability to obtain managed pointer (type T&amp;, or ref T) to static or instance field from FieldInfo using Reflector clas</PackageReleaseNotes>
   </PropertyGroup>
 
 

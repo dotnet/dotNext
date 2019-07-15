@@ -18,7 +18,8 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>GetUnderlyingType() method is added to determine underlying type of Result&lt;T&gt;</PackageReleaseNotes>
+	<PackageReleaseNotes>GetUnderlyingType() method is added to determine underlying type of Result&lt;T&gt;
+TypedReference can be converted into managed pointer (type T&amp;, or ref T) and vice versa using Memory class</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

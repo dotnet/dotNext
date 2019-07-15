@@ -6,6 +6,8 @@ using static InlineIL.IL.Emit;
 
 namespace DotNext.Runtime.InteropServices
 {
+    using typedref = TypedReference;    //IL compliant alias to TypedReference
+
     /// <summary>
     /// Low-level methods for direct memory access.
     /// </summary>
@@ -612,9 +614,10 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>A managed pointer to the value represented by reference.</returns>
         [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         [CLSCompliant(false)]
-        public static ref T AsRef<T>(this TypedReference reference)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref T AsRef<T>(this typedref reference)
         {
-            if (TypedReference.GetTargetType(reference) != typeof(T))
+            if (typedref.GetTargetType(reference) != typeof(T))
                 throw new GenericArgumentException<T>(ExceptionMessages.InvalidRefType, nameof(T));
             Ldarg_0();
             Refanyval(typeof(T));
@@ -624,15 +627,31 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Converts managed pointer into typed reference.
         /// </summary>
+        /// <remarks>
+        /// Pointer has type void* because of bug in Roslyn compiler.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// var reference = default(TypedReference);
+        /// var i = 20;
+        /// AsTypedReference(ref i, &amp;reference);
+        /// </code>
+        /// </example>
         /// <param name="managedPtr">The managed pointer to be converted into typed reference.</param>
-        /// <param name="reference">Stack-allocated typed reference</param>
+        /// <param name="reference">A pointer to <see cref="TypedReference"/>.</param>
         /// <typeparam name="T">The type to be associated with the typed reference.</typeparam>
         [CLSCompliant(false)]
-        public static void AsTypedReference<T>(ref T managedPtr, TypedReference* reference)
+        [SuppressMessage("Usage", "CA1801", Justification = "This method is implemented in pure IL")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void AsTypedReference<T>(ref T managedPtr, void* reference)
         {
             if(reference == NullPtr)
                 throw new ArgumentNullException(nameof(reference));
-            *reference = __makeref(managedPtr);
+            Ldarg_1();
+            Ldarg_0();
+            Mkrefany(typeof(T));
+            Stobj(typeof(typedref));
+            Ret();
         }
     }
 }
