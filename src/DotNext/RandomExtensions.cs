@@ -137,6 +137,7 @@ namespace DotNext
         /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>].</returns>
         public static int Next(this RandomNumberGenerator random)
         {
+            //TODO: GetBytes should work with ReadOnlySpan in .NET Standard 2.1
             var buffer = new byte[sizeof(int)];
             random.GetBytes(buffer, 0, buffer.Length);
             return BitConverter.ToInt32(buffer, 0) & int.MaxValue;  //remove sign bit. Abs function may cause OverflowException

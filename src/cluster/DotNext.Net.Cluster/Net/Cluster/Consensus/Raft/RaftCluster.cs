@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Messaging;
     using Threading;
     using static Threading.Tasks.Continuation;
     using static Threading.Tasks.ValueTaskSynchronization;
@@ -493,6 +494,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Interlocked.Exchange(ref state, null)?.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        public Task WriteAsync(IMessage content, WriteConcern concern)
+        {
+            throw new NotImplementedException();
         }
     }
 }

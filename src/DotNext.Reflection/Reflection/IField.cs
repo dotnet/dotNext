@@ -20,9 +20,10 @@ namespace DotNext.Reflection
     public interface IField<F> : IField
     {
         /// <summary>
-        /// Gets or sets field value.
+        /// Obtains managed pointer to the static field.
         /// </summary>
-        F Value { get; set; }
+        /// <value>The managed pointer to the static field.</value>
+        ref F Value { get; }
     }
 
     /// <summary>
@@ -33,9 +34,10 @@ namespace DotNext.Reflection
     public interface IField<T, F> : IField
     {
         /// <summary>
-        /// Gets or sets instance field value.
+        /// Obtains managed pointer to the field.
         /// </summary>
-        /// <param name="this"><c>this</c> parameter.</param>
-		F this[in T @this] { get; set; }
+        /// <param name="this">A reference to <c>this</c> parameter.</param>
+        /// <returns>The managed pointer to the instance field.</returns>
+        ref F this[in T @this] { get; }
     }
 }

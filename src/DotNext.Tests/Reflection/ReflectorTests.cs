@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace DotNext.Reflection
@@ -89,6 +90,27 @@ namespace DotNext.Reflection
             Function<ValueTuple<object>, object> ctor3 = ctor.Unreflect<Function<ValueTuple<object>, object>>();
             value = (IntPtr)ctor3(new ValueTuple<object>(50));
             Equal(new IntPtr(50), value);
+        }
+
+        private static int staticField;
+        private int instanceField;
+
+        [Fact]
+        public void UnreflectStaticField()
+        {
+            ref var field = ref GetType().GetField(nameof(staticField), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly).Unreflect<int>();
+            field = 42;
+            Equal(staticField, field);
+            True(Unsafe.AreSame(ref field, ref staticField));
+        }
+
+        [Fact]
+        public void UnreflectInstanceField()
+        {
+            ref var field = ref GetType().GetField(nameof(instanceField), System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.NonPublic).Unreflect<ReflectorTests, int>(this);
+            field = 56;
+            Equal(instanceField, field);
+            True(Unsafe.AreSame(ref field, ref instanceField));
         }
     }
 }

@@ -94,7 +94,7 @@ namespace DotNext.Linq.Expressions
         public static void NullSafetyGetHashCode()
         {
             var intHash = MakeGetHashCodeNotNull<int>();
-            NotNull(intHash(42));
+            NotNull(intHash);
 
             var nullableHash = MakeGetHashCode<int?>();
             NotNull(nullableHash(42));

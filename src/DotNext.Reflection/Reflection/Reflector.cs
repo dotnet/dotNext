@@ -1,6 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
 
 namespace DotNext.Reflection
 {
@@ -52,5 +55,40 @@ namespace DotNext.Reflection
         /// <param name="method">A method to unreflect.</param>
         /// <returns>Unreflected method.</returns>
         public static Method<D> Unreflect<D>(this MethodInfo method) where D : MulticastDelegate => Method<D>.GetOrCreate(method);
+
+        /// <summary>
+        /// Obtains managed pointer to the static field.
+        /// </summary>
+        /// <typeparam name="V">The field type.</typeparam>
+        /// <param name="field">The field to unreflect.</param>
+        /// <returns>The managed pointer to the field.</returns>
+        public static ref V Unreflect<V>(this FieldInfo field) => ref Field<V>.GetOrCreate(field).Value;
+
+        /// <summary>
+        /// Obtains managed pointer to the instance field.
+        /// </summary>
+        /// <typeparam name="T">The type of the object that declares instance field.</typeparam>
+        /// <typeparam name="V">The field type.</typeparam>
+        /// <param name="field">The field to unreflect.</param>
+        /// <param name="instance">The object that contains instance field.</param>
+        /// <returns>The managed pointer to the field.</returns>
+        public static ref V Unreflect<T, V>(this FieldInfo field, in T instance) => ref Field<T, V>.GetOrCreate(field)[instance];
+
+        /// <summary>
+        /// Converts typed reference into managed pointer.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="reference">The typed reference.</param>
+        /// <returns>A managed pointer to the value represented by reference.</returns>
+        [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
+        [CLSCompliant(false)]
+        public static ref T AsRef<T>(this TypedReference reference)
+        {
+            if (TypedReference.GetTargetType(reference) != typeof(T))
+                throw new GenericArgumentException<T>(ExceptionMessages.InvalidRefType, nameof(T));
+            Ldarg_0();
+            Refanyval(typeof(T));
+            return ref ReturnRef<T>();
+        }
     }
 }

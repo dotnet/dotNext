@@ -238,27 +238,37 @@ namespace DotNext.Reflection
     /// <typeparam name="V">Type of field value.</typeparam>
     public sealed class Field<T, V> : FieldBase<V>, IField<T, V>
     {
+        private delegate ref V Provider(in T instance);
+
         private sealed class Cache : MemberCache<FieldInfo, Field<T, V>>
         {
             private protected override Field<T, V> Create(string fieldName, bool nonPublic) => Reflect(fieldName, nonPublic);
         }
+
+        private static readonly UserDataSlot<Field<T, V>> CacheSlot = UserDataSlot<Field<T, V>>.Allocate();
         private const BindingFlags PubicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
 
         private readonly MemberGetter<T, V> getter;
         private readonly MemberSetter<T, V> setter;
+        private readonly Provider provider;
 
         private Field(FieldInfo field)
             : base(field)
         {
             if (field.DeclaringType is null)
                 throw new ArgumentException(ExceptionMessages.ModuleMemberDetected(field), nameof(field));
-            var instanceParam = Parameter(field.DeclaringType.MakeByRefType());
-            var valueParam = Parameter(field.FieldType);
-            getter = Lambda<MemberGetter<T, V>>(Field(instanceParam, field), instanceParam).Compile();
-            setter = field.IsInitOnly ? null : Lambda<MemberSetter<T, V>>(Assign(Field(instanceParam, field), valueParam), instanceParam, valueParam).Compile();
+            var instanceParam = Parameter(typeof(T).MakeByRefType());
+            provider = Lambda<Provider>(Call(typeof(Unsafe), nameof(Unsafe.AsRef), new[] { field.FieldType }, Field(instanceParam, field)), instanceParam).Compile();
+            const BindingFlags staticPrivate = BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
+            getter = GetType().GetMethod(nameof(GetValue), staticPrivate).CreateDelegate<MemberGetter<T, V>>(provider);
+            setter = GetType().GetMethod(nameof(SetValue), staticPrivate).CreateDelegate<MemberSetter<T, V>>(provider);
         }
+
+        private static V GetValue(Provider provider, in T instance) => provider(instance);
+
+        private static void SetValue(Provider provider, in T instance, V value) => provider(instance) = value;
 
         /// <summary>
         /// Obtains field getter in the form of the delegate instance.
@@ -345,18 +355,10 @@ namespace DotNext.Reflection
         /// Gets or sets instance field value.
         /// </summary>
         /// <param name="this"><c>this</c> argument.</param>
-        public V this[in T @this]
+        public ref V this[in T @this]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => getter(in @this);
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
-            {
-                if (setter is null)
-                    throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
-                else
-                    setter(@this, value);
-            }
+            get => ref provider(@this);
         }
 
         private static Field<T, V> Reflect(string fieldName, bool nonPublic)
@@ -367,6 +369,11 @@ namespace DotNext.Reflection
 
         internal static Field<T, V> GetOrCreate(string fieldName, bool nonPublic)
             => Cache.Of<Cache>(typeof(T)).GetOrCreate(fieldName, nonPublic);
+
+        private static Field<T, V> Unreflect(FieldInfo field)
+            => field.IsStatic ? throw new ArgumentException(ExceptionMessages.InstanceFieldExpected, nameof(field)) : new Field<T, V>(field);
+
+        internal static Field<T, V> GetOrCreate(FieldInfo field) => field.GetUserData().GetOrSet(CacheSlot, field, Unreflect);
     }
 
     /// <summary>
@@ -375,23 +382,33 @@ namespace DotNext.Reflection
     /// <typeparam name="V">Type of field value.</typeparam>
     public sealed class Field<V> : FieldBase<V>, IField<V>
     {
+        private delegate ref V Provider();
+
         private sealed class Cache<T> : MemberCache<FieldInfo, Field<V>>
         {
             private protected override Field<V> Create(string fieldName, bool nonPublic) => Reflect(typeof(T), fieldName, nonPublic);
         }
+
+        private static readonly UserDataSlot<Field<V>> CacheSlot = UserDataSlot<Field<V>>.Allocate();
         private const BindingFlags PubicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
         private readonly MemberGetter<V> getter;
         private readonly MemberSetter<V> setter;
+        private readonly Provider provider;
 
         private Field(FieldInfo field)
             : base(field)
         {
-            var valueParam = Parameter(field.FieldType);
-            getter = Lambda<MemberGetter<V>>(Field(null, field)).Compile();
-            setter = field.IsInitOnly ? null : Lambda<MemberSetter<V>>(Assign(Field(null, field), valueParam), valueParam).Compile();
+            provider = Lambda<Provider>(Call(typeof(Unsafe), nameof(Unsafe.AsRef), new [] { field.FieldType }, Field(null, field))).Compile();
+            const BindingFlags staticPrivate = BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
+            getter = GetType().GetMethod(nameof(GetValue), staticPrivate).CreateDelegate<MemberGetter<V>>(provider);
+            setter = field.IsInitOnly ? null : GetType().GetMethod(nameof(SetValue), staticPrivate).CreateDelegate<MemberSetter<V>>(provider);
         }
+
+        private static V GetValue(Provider provider) => provider();
+
+        private static void SetValue(Provider provider, V value) => provider() = value;
 
         /// <summary>
         /// Obtains field getter in the form of the delegate instance.
@@ -472,20 +489,13 @@ namespace DotNext.Reflection
         }
 
         /// <summary>
-        /// Gets or sets static field value.
-        /// </summary>s
-        public V Value
+        /// Obtains managed pointer to the static field.
+        /// </summary>
+        /// <value>The managed pointer to the static field.</value>
+        public ref V Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => getter();
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
-            {
-                if (setter is null)
-                    throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
-                else
-                    setter(value);
-            }
+            get => ref provider();
         }
 
         private static Field<V> Reflect(Type declaringType, string fieldName, bool nonPublic)
@@ -493,6 +503,11 @@ namespace DotNext.Reflection
             var field = declaringType.GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
             return field is null ? null : new Field<V>(field);
         }
+
+        private static Field<V> Unreflect(FieldInfo field)
+            => field.IsStatic ? new Field<V>(field) : throw new ArgumentException(ExceptionMessages.StaticFieldExpected, nameof(field));
+
+        internal static Field<V> GetOrCreate(FieldInfo field) => field.GetUserData().GetOrSet(CacheSlot, field, Unreflect);
 
         internal static Field<V> GetOrCreate<T>(string fieldName, bool nonPublic)
             => Cache<T>.Of<Cache<T>>(typeof(T)).GetOrCreate(fieldName, nonPublic);

@@ -7,5 +7,6 @@ logo.svg
 favicon.ico
 manifest.json
 BenchmarkDotNet.Artifacts/
+FodyWeavers.xsd
 launchSettings.json
 *.csproj.user
