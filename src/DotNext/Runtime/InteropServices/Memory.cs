@@ -106,7 +106,8 @@ namespace DotNext.Runtime.InteropServices
         public static T* ToPointer<T>(this IntPtr source) 
             where T : unmanaged
         {
-            Push(source);
+            Ldarg(nameof(source));
+            Conv_U();
             return ReturnPointer<T>();
         }
 
