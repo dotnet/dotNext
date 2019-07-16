@@ -16,6 +16,13 @@ namespace DotNext
         }
 
         [Fact]
+        public static void TypedEquality()
+        {
+            True(EnvironmentVariableTarget.Machine.Equals<EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine));
+            False(EnvironmentVariableTarget.Machine.Equals<EnvironmentVariableTarget>(EnvironmentVariableTarget.Process));
+        }
+
+        [Fact]
         public static void ConversionToPrimitive()
         {
             var member = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.User);

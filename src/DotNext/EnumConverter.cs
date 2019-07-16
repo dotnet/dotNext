@@ -201,5 +201,22 @@ namespace DotNext
             Conv_I1();
             return Return<sbyte>();
         }
+
+        /// <summary>
+        /// Determines whether two enum values are equal without boxing.
+        /// </summary>
+        /// <param name="first">The first value to compare.</param>
+        /// <param name="other">The second value to compare.</param>
+        /// <typeparam name="T">The enum type.</typeparam>
+        /// <returns><see langword="true"/> if both values are equal; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool Equals<T>(this T first, T other)
+            where T : struct, Enum
+        {
+            Ldarg(nameof(first));
+            Ldarg(nameof(other));
+            Ceq();
+            return Return<bool>();
+        }
     }
 }

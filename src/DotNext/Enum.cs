@@ -36,7 +36,7 @@ namespace DotNext
             public static implicit operator Tuple(E value) => new Tuple(value);
 
             public bool Equals(Tuple other)
-                => Name is null ? other.Name is null && ValueTypeExtensions.ToUInt64(Value) == ValueTypeExtensions.ToUInt64(other.Value) : Name == other.Name;
+                => Name is null ? other.Name is null && other.Value.Equals<E>(Value) : Name == other.Name;
 
             public override bool Equals(object other) => other is Tuple t && Equals(t);
             public override int GetHashCode() => Name is null ? Value.GetHashCode() : Name.GetHashCode();

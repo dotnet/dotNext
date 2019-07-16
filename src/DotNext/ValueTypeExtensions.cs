@@ -10,23 +10,6 @@ namespace DotNext
     public static class ValueTypeExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static byte ToByte<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToByte(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static sbyte ToSByte<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToSByte(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static short ToInt16<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToInt16(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ushort ToUInt16<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToUInt16(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int ToInt32<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToInt32(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static uint ToUInt32<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToUInt32(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static long ToInt64<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToInt64(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ulong ToUInt64<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToUInt64(provider);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string ToString<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToString(provider);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
