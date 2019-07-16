@@ -106,7 +106,7 @@ namespace DotNext.Runtime.InteropServices
         public static T* ToPointer<T>(this IntPtr source) 
             where T : unmanaged
         {
-            Ldarg(nameof(source));
+            Push(source);
             Conv_U();
             return ReturnPointer<T>();
         }
@@ -662,8 +662,8 @@ namespace DotNext.Runtime.InteropServices
         {
             if(reference == NullPtr)
                 throw new ArgumentNullException(nameof(reference));
-            Ldarg(nameof(reference));
-            Ldarg(nameof(managedPtr));
+            Push(reference);
+            Push(ref managedPtr);
             Mkrefany(typeof(T));
             Stobj(typeof(typedref));
             Ret();
@@ -679,7 +679,7 @@ namespace DotNext.Runtime.InteropServices
         public static ref T GetBoxedValue<T>(object box)
             where T : struct
         {
-            Ldarg(nameof(box));
+            Push(box);
             Unbox(typeof(T));
             return ref ReturnRef<T>();
         }

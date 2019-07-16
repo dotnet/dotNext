@@ -7,7 +7,6 @@ namespace DotNext
 {
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-    [MemoryDiagnoser]
     public class GenericEnumBenchmark
     {
         private static int ToInt32<T>(T value)

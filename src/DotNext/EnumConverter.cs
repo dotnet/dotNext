@@ -17,43 +17,43 @@ namespace DotNext
             switch(Type.GetTypeCode(typeof(O)))
             {
                 case TypeCode.Byte:
-                    Ldarg(nameof(value));
+                    Push(value);
                     Conv_U1();
                     break;
                 case TypeCode.Int16:
-                    Ldarg(nameof(value));
+                    Push(value);
                     Conv_I2();
                     break;
                 case TypeCode.Int32:
-                    Ldarg(nameof(value));
+                    Push(value);
                     Conv_I4();
                     break;
                 case TypeCode.Int64:
-                    Ldarg(nameof(value));
+                    Push(value);
                     Conv_I8();
                     break;
                 case TypeCode.Single:
-                    Ldarg(nameof(value));
+                    Push(value);
                     Conv_R4();
                     break;
                 case TypeCode.Double:
-                    Ldarg(nameof(value));
+                    Push(value);
                     Conv_R8();
                     break;
                 case TypeCode.SByte:
-                    Ldarg(nameof(value));
+                    Push(value);
                     Conv_U1();
                     break;
                 case TypeCode.UInt16:
-                    Ldarg(nameof(value));
+                    Push(value);
                     Conv_U2();
                     break;
                 case TypeCode.UInt32:
-                    Ldarg(nameof(value));
+                    Push(value);
                     Conv_U4();
                     break;
                 case TypeCode.UInt64:
-                    Ldarg(nameof(value));
+                    Push(value);
                     Conv_U8();
                     break;
                 default:
@@ -140,7 +140,7 @@ namespace DotNext
         public static long ToInt64<T>(this T value) 
             where T : struct, Enum
         {
-            Ldarg(nameof(value));
+            Push(value);
             Conv_I8();
             return Return<long>();
         }
@@ -155,7 +155,7 @@ namespace DotNext
         public static int ToInt32<T>(this T value) 
             where T : struct, Enum
         {
-            Ldarg(nameof(value));
+            Push(value);
             Conv_I4();
             return Return<int>();
         }
@@ -170,7 +170,7 @@ namespace DotNext
         public static short ToInt16<T>(this T value) 
             where T : struct, Enum
         {
-            Ldarg(nameof(value));
+            Push(value);
             Conv_I2();
             return Return<short>();
         }
@@ -185,7 +185,7 @@ namespace DotNext
         public static byte ToByte<T>(this T value) 
             where T : struct, Enum
         {
-            Ldarg(nameof(value));
+            Push(value);
             Conv_U1();
             return Return<byte>();
         }
@@ -201,7 +201,7 @@ namespace DotNext
         public static ulong ToUInt64<T>(this T value) 
             where T : struct, Enum
         {
-            Ldarg(nameof(value));
+            Push(value);
             Conv_U8();
             return Return<ulong>();
         }
@@ -217,7 +217,7 @@ namespace DotNext
         public static uint ToUInt32<T>(this T value) 
             where T : struct, Enum
         {
-            Ldarg(nameof(value));
+            Push(value);
             Conv_U4();
             return Return<uint>();
         }
@@ -233,7 +233,7 @@ namespace DotNext
         public static ushort ToUInt16<T>(this T value) 
             where T : struct, Enum
         {
-            Ldarg(nameof(value));
+            Push(value);
             Conv_U2();
             return Return<ushort>();
         }
@@ -249,7 +249,7 @@ namespace DotNext
         public static sbyte ToSByte<T>(this T value) 
             where T : struct, Enum
         {
-            Ldarg(nameof(value));
+            Push(value);
             Conv_I1();
             return Return<sbyte>();
         }
@@ -265,8 +265,8 @@ namespace DotNext
         public static bool Equals<T>(this T first, T other)
             where T : struct, Enum
         {
-            Ldarg(nameof(first));
-            Ldarg(nameof(other));
+            Push(first);
+            Push(other);
             Ceq();
             return Return<bool>();
         }
