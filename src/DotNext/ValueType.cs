@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
+using M = InlineIL.MethodRef;
 
 namespace DotNext
 {
@@ -87,10 +88,41 @@ namespace DotNext
         /// <param name="first">The first value to check.</param>
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe bool BitwiseEquals<U>(T first, U second)
+        public static bool BitwiseEquals<U>(T first, U second)
             where U : struct
-            => Size == ValueType<U>.Size && Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
+        {
+            const string methodExit = "exit";
+            const string fastPath = "fastPath";
+            long size;
+            Sizeof(typeof(T));
+            Conv_I8();
+            Pop(out size);
+            Push(size);
+            Sizeof(typeof(U));
+            Conv_I8();
+            Ceq();
+            Dup();
+            Brfalse(methodExit);//sizeof(T) != sizeof(U), return with false
+
+            Pop();  //to remove value produced by Dup()
+            Push(size);
+            Ldc_I8(sizeof(ulong));
+            Ble(fastPath);
+            //size > sizeof(ulong)
+            Ldarga(0);
+            Ldarga(1);
+            Push(size);
+            Call(new M(typeof(Memory), nameof(Memory.Equals), typeof(IntPtr), typeof(IntPtr), typeof(long)));
+            Br(methodExit);
+            //size <= sizeof(ulong), just compare two values
+            MarkLabel(fastPath);
+            Push(first);
+            Push(second);
+            Ceq();
+
+            MarkLabel(methodExit);
+            return Return<bool>();
+        }
 
         /// <summary>
         /// Checks bitwise equality between two values of the same value type.
@@ -103,8 +135,7 @@ namespace DotNext
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe bool BitwiseEquals(T first, T second)
-            => Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
+        public static unsafe bool BitwiseEquals(T first, T second) => BitwiseEquals<T>(first, second);
 
         /// <summary>
         /// Computes bitwise hash code for the specified value.
@@ -138,49 +169,52 @@ namespace DotNext
 		/// <returns>Content hash code.</returns>
         public static int BitwiseHashCode(T value) => BitwiseHashCode(value, true);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsZero(IntPtr address, long length)
+        {
+            while (length >= IntPtr.Size)
+                if (Memory.Read<IntPtr>(ref address) == IntPtr.Zero)
+                    length -= IntPtr.Size;
+                else
+                    return false;
+            while (length > sizeof(byte))
+                if (Memory.Read<byte>(ref address) == 0)
+                    length -= sizeof(byte);
+                else
+                    return false;
+            return true;
+        }
+
         /// <summary>
         /// Indicates that specified value type is the default value.
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
-        public static unsafe bool IsDefault(T value)
+        public static bool IsDefault(T value)
         {
+            const string methodExit = "exit";
+            const string fastPath = "fastPath";
             long size;
             Sizeof(typeof(T));
             Conv_I8();
             Pop(out size);
-            switch(size)
-            {
-                case sizeof(byte):
-                case sizeof(ushort):
-                case sizeof(uint):
-                    Push(value);
-                    Conv_I4();
-                    Ldc_I4_0();
-                    Ceq();
-                    return Return<bool>();
-                case sizeof(ulong):
-                    Push(value);
-                    Conv_I8();
-                    Ldc_I8(0L);
-                    Ceq();
-                    return Return<bool>();
-                default:
-                    IntPtr ptr;
-                    Ldarga(0);
-                    Pop(out ptr);
-                    while (size >= IntPtr.Size)
-                        if (Memory.Read<IntPtr>(ref ptr) == IntPtr.Zero)
-                            size -= IntPtr.Size;
-                        else
-                            return false;
-                    while (size > sizeof(byte))
-                        if (Memory.Read<byte>(ref ptr) == 0)
-                            size -= sizeof(byte);
-                        else
-                            return false;
-                    return true;
-            }
+            Push(size);
+            Ldc_I8(sizeof(ulong));
+
+            Ble(fastPath);  //size <= sizeof(ulong), move to fast path
+            //size < sizeof(ulong)
+            Ldarga(0);
+            Push(size);
+            Call(new M(typeof(ValueType<T>), nameof(IsZero)));
+            Br(methodExit);
+            //size <= sizeof(ulong)
+            MarkLabel(fastPath);
+            Push(value);
+            Conv_I8();
+            Ldc_I8(0L);
+            Ceq();
+            MarkLabel(methodExit);
+            return Return<bool>();
         }
 
         /// <summary>

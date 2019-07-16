@@ -450,36 +450,36 @@ namespace DotNext.Runtime.InteropServices
                     return true;
                 case sizeof(byte):
                     Push(first);
-                    Ldobj(typeof(byte));
+                    Ldind_I1();
                     Push(second);
-                    Ldobj(typeof(byte));
+                    Ldind_I1();
                     Ceq();
                     return Return<bool>();
                 case sizeof(ushort):
                     Push(first);
                     Unaligned(1);
-                    Ldobj(typeof(ushort));
+                    Ldind_I2();
                     Push(second);
                     Unaligned(1);
-                    Ldobj(typeof(ushort));
+                    Ldind_I2();
                     Ceq();
                     return Return<bool>();
                 case sizeof(uint):
                     Push(first);
                     Unaligned(1);
-                    Ldobj(typeof(uint));
+                    Ldind_I4();
                     Push(second);
                     Unaligned(1);
-                    Ldobj(typeof(uint));
+                    Ldind_I4();
                     Ceq();
                     return Return<bool>();
                 case sizeof(ulong):
                     Push(first);
                     Unaligned(1);
-                    Ldobj(typeof(ulong));
+                    Ldind_I8();
                     Push(second);
                     Unaligned(1);
-                    Ldobj(typeof(ulong));
+                    Ldind_I8();
                     Ceq();
                     return Return<bool>();
                 default:
