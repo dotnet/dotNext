@@ -67,5 +67,15 @@ namespace DotNext.Runtime.InteropServices
             var i = 20;
             True(AddressOf(i) != IntPtr.Zero);
         }
+
+        [Fact]
+        public static void UnboxRef()
+        {
+            object obj = new Guid();
+            Equal(Guid.Empty, obj);
+            ref var boxed = ref GetBoxedValue<Guid>(obj);
+            boxed = Guid.NewGuid();
+            NotEqual(Guid.Empty, obj);
+        }
     }
 }

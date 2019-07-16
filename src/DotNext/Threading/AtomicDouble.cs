@@ -23,10 +23,6 @@ namespace DotNext.Threading
 
             internal override double CompareExchange(ref double value, double update, double expected)
                 => Interlocked.CompareExchange(ref value, update, expected);
-
-            internal override double VolatileRead(ref double value) => Volatile.Read(ref value);
-
-            private protected override bool Equals(double x, double y) => x.Equals(y);
         }
 
         internal static readonly Atomic<double> Atomic = new Operations();

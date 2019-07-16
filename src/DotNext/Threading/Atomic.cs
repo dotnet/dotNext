@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
 
 namespace DotNext.Threading
 {
@@ -7,15 +9,28 @@ namespace DotNext.Threading
     {
         internal abstract T Exchange(ref T value, T update);
 
-        internal abstract T VolatileRead(ref T value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static T VolatileRead(ref T value)
+        {
+            Push(ref value);
+            Volatile();
+            Ldobj(typeof(T));
+            return Return<T>();
+        }
 
-        private protected abstract bool Equals(T x, T y);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool Equals(T x, T y)
+        {
+            Push(x);
+            Push(y);
+            Ceq();
+            return Return<bool>();
+        }
 
         internal abstract T CompareExchange(ref T value, T update, T expected);
 
         internal bool CompareAndSet(ref T value, T expected, T update)
             => Equals(CompareExchange(ref value, update, expected), expected);
-
 
         internal (T OldValue, T NewValue) Update(ref T value, Func<T, T> updater)
         {
@@ -56,7 +71,7 @@ namespace DotNext.Threading
             V oldValue, newValue;
             do
             {
-                newValue = updater(oldValue = wrapper.Convert(wrapper.Atomic.VolatileRead(ref value)));
+                newValue = updater(oldValue = wrapper.Convert(Atomic<T>.VolatileRead(ref value)));
             }
             while (!CompareAndSet(ref wrapper, ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -67,7 +82,7 @@ namespace DotNext.Threading
             V oldValue, newValue;
             do
             {
-                newValue = accumulator(oldValue = wrapper.Convert(wrapper.Atomic.VolatileRead(ref value)), x);
+                newValue = accumulator(oldValue = wrapper.Convert(Atomic<T>.VolatileRead(ref value)), x);
             }
             while (!CompareAndSet(ref wrapper, ref value, oldValue, newValue));
             return (oldValue, newValue);

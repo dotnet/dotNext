@@ -21,10 +21,6 @@ namespace DotNext.Threading
 
             internal override T CompareExchange(ref T value, T update, T expected)
                 => Interlocked.CompareExchange(ref value, update, expected);
-
-            internal override T VolatileRead(ref T value) => Volatile.Read(ref value);
-
-            private protected override bool Equals(T x, T y) => ReferenceEquals(x, y);
         }
 
         /// <summary>
