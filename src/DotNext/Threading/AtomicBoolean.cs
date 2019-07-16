@@ -2,9 +2,13 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
 
 namespace DotNext.Threading
 {
+    using F = InlineIL.FieldRef;
+
     /// <summary>
     /// Represents atomic boolean.
     /// </summary>
@@ -42,9 +46,32 @@ namespace DotNext.Threading
         public bool Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => value.VolatileRead() == True;
+            get
+            {
+                Ldarg_0();
+                Volatile();
+                Ldfld(new F(typeof(AtomicBoolean), nameof(value)));
+                return Return<bool>();
+            }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => this.value.VolatileWrite(value ? True : False);
+            set
+            {
+                Ldarg_0();
+                Push(value);
+                Volatile();
+                Stfld(new F(typeof(AtomicBoolean), nameof(this.value)));
+                Ret();
+            }
+        }
+
+        ref int IAtomicWrapper<int, bool>.Reference
+        {
+            get
+            {
+                Ldarg_0();
+                Ldflda(new F(typeof(AtomicBoolean), nameof(value)));
+                return ref ReturnRef<int>();
+            }
         }
 
         /// <summary>
@@ -55,7 +82,7 @@ namespace DotNext.Threading
 		/// <returns>The original value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CompareExchange(bool update, bool expected)
-            => Atomic<int, bool, AtomicBoolean>.CompareExchange(ref this, ref value, update, expected);
+            => Atomic<int, bool, AtomicBoolean>.CompareExchange(ref this, update, expected);
 
         /// <summary>
 		/// Atomically sets referenced value to the given updated value if the current value == the expected value.
@@ -65,7 +92,7 @@ namespace DotNext.Threading
 		/// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CompareAndSet(bool expected, bool update)
-            => Atomic<int, bool, AtomicBoolean>.CompareAndSet(ref this, ref value, expected, update);
+            => Atomic<int, bool, AtomicBoolean>.CompareAndSet(ref this, expected, update);
 
         /// <summary>
         /// Atomically sets <see langword="true"/> value if the
@@ -129,7 +156,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
 		public bool AccumulateAndGet(bool x, Func<bool, bool, bool> accumulator)
-            => Atomic<int, bool, AtomicBoolean>.Accumulate(ref this, ref value, x, accumulator).NewValue;
+            => Atomic<int, bool, AtomicBoolean>.Accumulate(ref this, x, accumulator).NewValue;
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -142,7 +169,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
 		public bool GetAndAccumulate(bool x, Func<bool, bool, bool> accumulator)
-            => Atomic<int, bool, AtomicBoolean>.Accumulate(ref this, ref value, x, accumulator).OldValue;
+            => Atomic<int, bool, AtomicBoolean>.Accumulate(ref this, x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -151,7 +178,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
         public bool UpdateAndGet(Func<bool, bool> updater)
-            => Atomic<int, bool, AtomicBoolean>.Update(ref this, ref value, updater).NewValue;
+            => Atomic<int, bool, AtomicBoolean>.Update(ref this, updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -160,7 +187,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         public bool GetAndUpdate(Func<bool, bool> updater)
-            => Atomic<int, bool, AtomicBoolean>.Update(ref this, ref value, updater).OldValue;
+            => Atomic<int, bool, AtomicBoolean>.Update(ref this, updater).OldValue;
 
         /// <summary>
         /// Determines whether stored value is equal to value passed as argument.

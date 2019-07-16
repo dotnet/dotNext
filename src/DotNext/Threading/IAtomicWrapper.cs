@@ -5,6 +5,8 @@ namespace DotNext.Threading
         O Convert(I value);
         I Convert(O value);
 
+        ref I Reference { get; }
+
         Atomic<I> Atomic { get; }
     }
 }

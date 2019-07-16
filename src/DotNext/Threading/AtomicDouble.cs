@@ -40,7 +40,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double VolatileRead(ref this double value) => Volatile.Read(ref value);
+        public static double VolatileRead(ref this double value) => Operations.Read(ref value);
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -54,8 +54,7 @@ namespace DotNext.Threading
         /// all processors in the computer.
         /// </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileWrite(ref this double value, double newValue)
-            => Volatile.Write(ref value, newValue);
+        public static void VolatileWrite(ref this double value, double newValue) => Operations.Write(ref value, newValue);
 
         /// <summary>
 		/// Atomically increments by one referenced value.

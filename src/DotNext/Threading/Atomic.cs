@@ -10,12 +10,22 @@ namespace DotNext.Threading
         internal abstract T Exchange(ref T value, T update);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static T VolatileRead(ref T value)
+        internal static T Read(ref T value)
         {
             Push(ref value);
             Volatile();
             Ldobj(typeof(T));
             return Return<T>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void Write(ref T storage, T value)
+        {
+            Push(ref storage);
+            Push(value);
+            Volatile();
+            Stobj(typeof(T));
+            Ret();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -37,7 +47,7 @@ namespace DotNext.Threading
             T oldValue, newValue;
             do
             {
-                newValue = updater(oldValue = VolatileRead(ref value));
+                newValue = updater(oldValue = Read(ref value));
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -48,7 +58,7 @@ namespace DotNext.Threading
             T oldValue, newValue;
             do
             {
-                newValue = accumulator(oldValue = VolatileRead(ref value), x);
+                newValue = accumulator(oldValue = Read(ref value), x);
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -59,32 +69,32 @@ namespace DotNext.Threading
         where W : struct, IAtomicWrapper<T, V>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static V CompareExchange(ref W wrapper, ref T value, V update, V expected)
-            => wrapper.Convert(wrapper.Atomic.CompareExchange(ref value, wrapper.Convert(update), wrapper.Convert(expected)));
+        internal static V CompareExchange(ref W wrapper, V update, V expected)
+            => wrapper.Convert(wrapper.Atomic.CompareExchange(ref wrapper.Reference, wrapper.Convert(update), wrapper.Convert(expected)));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool CompareAndSet(ref W wrapper, ref T value, V expected, V update)
-            => wrapper.Atomic.CompareAndSet(ref value, wrapper.Convert(expected), wrapper.Convert(update));
+        internal static bool CompareAndSet(ref W wrapper, V expected, V update)
+            => wrapper.Atomic.CompareAndSet(ref wrapper.Reference, wrapper.Convert(expected), wrapper.Convert(update));
 
-        internal static (V OldValue, V NewValue) Update(ref W wrapper, ref T value, Func<V, V> updater)
+        internal static (V OldValue, V NewValue) Update(ref W wrapper, Func<V, V> updater)
         {
             V oldValue, newValue;
             do
             {
-                newValue = updater(oldValue = wrapper.Convert(Atomic<T>.VolatileRead(ref value)));
+                newValue = updater(oldValue = wrapper.Convert(Atomic<T>.Read(ref wrapper.Reference)));
             }
-            while (!CompareAndSet(ref wrapper, ref value, oldValue, newValue));
+            while (!CompareAndSet(ref wrapper, oldValue, newValue));
             return (oldValue, newValue);
         }
 
-        internal static (V OldValue, V NewValue) Accumulate(ref W wrapper, ref T value, V x, Func<V, V, V> accumulator)
+        internal static (V OldValue, V NewValue) Accumulate(ref W wrapper, V x, Func<V, V, V> accumulator)
         {
             V oldValue, newValue;
             do
             {
-                newValue = accumulator(oldValue = wrapper.Convert(Atomic<T>.VolatileRead(ref value)), x);
+                newValue = accumulator(oldValue = wrapper.Convert(Atomic<T>.Read(ref wrapper.Reference)), x);
             }
-            while (!CompareAndSet(ref wrapper, ref value, oldValue, newValue));
+            while (!CompareAndSet(ref wrapper, oldValue, newValue));
             return (oldValue, newValue);
         }
 

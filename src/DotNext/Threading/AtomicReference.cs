@@ -106,7 +106,7 @@ namespace DotNext.Threading
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T VolatileRead<T>(this T[] array, long index)
             where T : class
-            => Volatile.Read(ref array[index]);
+            => Operations<T>.Read(ref array[index]);
 
         /// <summary>
         /// Performs volatile write to the array element.
@@ -117,7 +117,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileWrite<T>(this T[] array, long index, T element)
             where T : class
-            => Volatile.Write(ref array[index], element);
+            => Operations<T>.Write(ref array[index], element);
 
         /// <summary>
 		/// Atomically sets array element to the given updated value if the array element == the expected value.
