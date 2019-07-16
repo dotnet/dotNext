@@ -39,6 +39,16 @@ namespace DotNext
         }
 
         [Fact]
+        public static void BitwiseEqualityCheckBigStruct()
+        {
+            var value1 = (new Point { X = 10, Y = 20 }, new Point { X = 15, Y = 20 });
+            var value2 = (new Point { X = 10, Y = 20 }, new Point { X = 15, Y = 30 });
+            False(ValueType<(Point, Point)>.BitwiseEquals(value1, value2));
+            value2.Item2.Y = 20;
+            True(ValueType<(Point, Point)>.BitwiseEquals(value1, value2));
+        }
+
+        [Fact]
         public static void BitwiseComparison()
         {
             var value1 = 40M;
