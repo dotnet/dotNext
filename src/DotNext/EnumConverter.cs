@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
 
 namespace DotNext
 {
@@ -81,7 +84,14 @@ namespace DotNext
         /// <typeparam name="T">Type of the enum value to be converted.</typeparam>
         /// <param name="value">Enum value to be converted.</param>
         /// <returns>Enum value represented as <see cref="long"/>.</returns>
-        public static long ToInt64<T>(this T value) where T : struct, Enum => ValueTypeExtensions.ToInt64(value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long ToInt64<T>(this T value) 
+            where T : struct, Enum
+        {
+            Ldarg(nameof(value));
+            Conv_I8();
+            return Return<long>();
+        }
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="int"/>.
@@ -89,7 +99,14 @@ namespace DotNext
         /// <typeparam name="T">Type of the enum value to be converted.</typeparam>
         /// <param name="value">Enum value to be converted.</param>
         /// <returns>Enum value represented as <see cref="int"/>.</returns>
-        public static int ToInt32<T>(this T value) where T : struct, Enum => ValueTypeExtensions.ToInt32(value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int ToInt32<T>(this T value) 
+            where T : struct, Enum
+        {
+            Ldarg(nameof(value));
+            Conv_I4();
+            return Return<int>();
+        }
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="short"/>.
@@ -97,7 +114,14 @@ namespace DotNext
         /// <typeparam name="T">Type of the enum value to be converted.</typeparam>
         /// <param name="value">Enum value to be converted.</param>
         /// <returns>Enum value represented as <see cref="short"/>.</returns>
-        public static short ToInt16<T>(this T value) where T : struct, Enum => ValueTypeExtensions.ToInt16(value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static short ToInt16<T>(this T value) 
+            where T : struct, Enum
+        {
+            Ldarg(nameof(value));
+            Conv_I2();
+            return Return<short>();
+        }
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="byte"/>.
@@ -105,7 +129,14 @@ namespace DotNext
         /// <typeparam name="T">Type of the enum value to be converted.</typeparam>
         /// <param name="value">Enum value to be converted.</param>
         /// <returns>Enum value represented as <see cref="byte"/>.</returns>
-        public static byte ToByte<T>(this T value) where T : struct, Enum => ValueTypeExtensions.ToByte(value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static byte ToByte<T>(this T value) 
+            where T : struct, Enum
+        {
+            Ldarg(nameof(value));
+            Conv_U1();
+            return Return<byte>();
+        }
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="ulong"/>.
@@ -114,7 +145,14 @@ namespace DotNext
         /// <param name="value">Enum value to be converted.</param>
         /// <returns>Enum value represented as <see cref="ulong"/>.</returns>
         [CLSCompliant(false)]
-        public static ulong ToUInt64<T>(this T value) where T : struct, Enum => ValueTypeExtensions.ToUInt64(value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong ToUInt64<T>(this T value) 
+            where T : struct, Enum
+        {
+            Ldarg(nameof(value));
+            Conv_U8();
+            return Return<ulong>();
+        }
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="uint"/>.
@@ -123,7 +161,14 @@ namespace DotNext
         /// <param name="value">Enum value to be converted.</param>
         /// <returns>Enum value represented as <see cref="uint"/>.</returns>
         [CLSCompliant(false)]
-        public static uint ToUInt32<T>(this T value) where T : struct, Enum => ValueTypeExtensions.ToUInt32(value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint ToUInt32<T>(this T value) 
+            where T : struct, Enum
+        {
+            Ldarg(nameof(value));
+            Conv_U4();
+            return Return<uint>();
+        }
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="ushort"/>.
@@ -132,7 +177,14 @@ namespace DotNext
         /// <param name="value">Enum value to be converted.</param>
         /// <returns>Enum value represented as <see cref="ushort"/>.</returns>
         [CLSCompliant(false)]
-        public static ushort ToUInt16<T>(this T value) where T : struct, Enum => ValueTypeExtensions.ToUInt16(value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ushort ToUInt16<T>(this T value) 
+            where T : struct, Enum
+        {
+            Ldarg(nameof(value));
+            Conv_U2();
+            return Return<ushort>();
+        }
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="sbyte"/>.
@@ -141,6 +193,13 @@ namespace DotNext
         /// <param name="value">Enum value to be converted.</param>
         /// <returns>Enum value represented as <see cref="sbyte"/>.</returns>
         [CLSCompliant(false)]
-        public static sbyte ToSByte<T>(this T value) where T : struct, Enum => ValueTypeExtensions.ToSByte(value);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static sbyte ToSByte<T>(this T value) 
+            where T : struct, Enum
+        {
+            Ldarg(nameof(value));
+            Conv_I1();
+            return Return<sbyte>();
+        }
     }
 }
