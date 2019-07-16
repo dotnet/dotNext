@@ -60,5 +60,12 @@ namespace DotNext.Runtime.InteropServices
             Equal(20, x);
             Equal(10, y);
         }
+
+        [Fact]
+        public static void AddressOfLocal()
+        {
+            var i = 20;
+            True(AddressOf(i) != IntPtr.Zero);
+        }
     }
 }

@@ -103,7 +103,12 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The typed pointer.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T* ToPointer<T>(this IntPtr source) where T : unmanaged => (T*)source;
+        public static T* ToPointer<T>(this IntPtr source) 
+            where T : unmanaged
+        {
+            Push(source);
+            return ReturnPointer<T>();
+        }
 
         /// <summary>
         /// Reads a value of type <typeparamref name="T"/> from the given location
@@ -557,9 +562,14 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="first">The first managed pointer.</param>
         /// <param name="second">The second managed pointer.</param>
         /// <returns><see langword="true"/>, if both managed pointers are equal; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool AreSame<T>(in T first, in T second)
-            => Unsafe.AreSame(ref Unsafe.AsRef(in first), ref Unsafe.AsRef(in second));
+        {
+            Ldarg(nameof(first));
+            Ldarg(nameof(second));
+            Ceq();
+            return Return<bool>();
+        }
 
         /// <summary>
         /// Returns address of the managed pointer to type <typeparamref name="T"/>.
@@ -571,9 +581,13 @@ namespace DotNext.Runtime.InteropServices
         /// This method converts managed pointer into address,
         /// not the address of the object itself.
         /// </remarks>
-        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr AddressOf<T>(in T value)
-            => new IntPtr(Unsafe.AsPointer(ref Unsafe.AsRef(in value)));
+        {
+            Ldarg(nameof(value));
+            Conv_I();
+            return Return<IntPtr>();
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int PointerHashCode(void* pointer) => new IntPtr(pointer).GetHashCode();
@@ -619,7 +633,7 @@ namespace DotNext.Runtime.InteropServices
         {
             if (typedref.GetTargetType(reference) != typeof(T))
                 throw new GenericArgumentException<T>(ExceptionMessages.InvalidRefType, nameof(T));
-            Ldarg_0();
+            Ldarg(nameof(reference));
             Refanyval(typeof(T));
             return ref ReturnRef<T>();
         }
@@ -628,6 +642,7 @@ namespace DotNext.Runtime.InteropServices
         /// Converts managed pointer into typed reference.
         /// </summary>
         /// <remarks>
+        /// This method is alternative to undocumented keyword <c>__makeref</c> in C#.
         /// Pointer has type void* because of bug in Roslyn compiler.
         /// </remarks>
         /// <example>
@@ -641,17 +656,31 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="reference">A pointer to <see cref="TypedReference"/>.</param>
         /// <typeparam name="T">The type to be associated with the typed reference.</typeparam>
         [CLSCompliant(false)]
-        [SuppressMessage("Usage", "CA1801", Justification = "This method is implemented in pure IL")]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void AsTypedReference<T>(ref T managedPtr, void* reference)
         {
             if(reference == NullPtr)
                 throw new ArgumentNullException(nameof(reference));
-            Ldarg_1();
-            Ldarg_0();
+            Ldarg(nameof(reference));
+            Ldarg(nameof(managedPtr));
             Mkrefany(typeof(T));
             Stobj(typeof(typedref));
             Ret();
+        }
+
+        /// <summary>
+        /// Gets managed pointer to the boxed value.
+        /// </summary>
+        /// <param name="box">The boxed value.</param>
+        /// <typeparam name="T">The value type.</typeparam>
+        /// <returns>The managed pointer to the boxed value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref T GetBoxedValue<T>(object box)
+            where T : struct
+        {
+            Ldarg(nameof(box));
+            Unbox(typeof(T));
+            return ref ReturnRef<T>();
         }
     }
 }
