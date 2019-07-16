@@ -449,13 +449,39 @@ namespace DotNext.Runtime.InteropServices
                 case 0L:
                     return true;
                 case sizeof(byte):
-                    return Unsafe.Read<byte>(first.ToPointer()) == Unsafe.ReadUnaligned<byte>(second.ToPointer());
+                    Push(first);
+                    Ldobj(typeof(byte));
+                    Push(second);
+                    Ldobj(typeof(byte));
+                    Ceq();
+                    return Return<bool>();
                 case sizeof(ushort):
-                    return Unsafe.ReadUnaligned<ushort>(first.ToPointer()) == Unsafe.ReadUnaligned<ushort>(second.ToPointer());
+                    Push(first);
+                    Unaligned(1);
+                    Ldobj(typeof(ushort));
+                    Push(second);
+                    Unaligned(1);
+                    Ldobj(typeof(ushort));
+                    Ceq();
+                    return Return<bool>();
                 case sizeof(uint):
-                    return Unsafe.ReadUnaligned<uint>(first.ToPointer()) == Unsafe.ReadUnaligned<uint>(second.ToPointer());
+                    Push(first);
+                    Unaligned(1);
+                    Ldobj(typeof(uint));
+                    Push(second);
+                    Unaligned(1);
+                    Ldobj(typeof(uint));
+                    Ceq();
+                    return Return<bool>();
                 case sizeof(ulong):
-                    return Unsafe.ReadUnaligned<ulong>(first.ToPointer()) == Unsafe.ReadUnaligned<ulong>(second.ToPointer());
+                    Push(first);
+                    Unaligned(1);
+                    Ldobj(typeof(ulong));
+                    Push(second);
+                    Unaligned(1);
+                    Ldobj(typeof(ulong));
+                    Ceq();
+                    return Return<bool>();
                 default:
                     do
                     {
@@ -469,37 +495,6 @@ namespace DotNext.Runtime.InteropServices
                         else
                             return false;
                     } while (length > 0);
-                    return true;
-            }
-        }
-
-        internal static bool IsZero(void* source, long length) => IsZero(new IntPtr(source), length);
-
-        internal static bool IsZero(IntPtr source, long length)
-        {
-            switch (length)
-            {
-                case 0L:
-                    return true;
-                case sizeof(byte):
-                    return Unsafe.Read<byte>(source.ToPointer()) == 0;
-                case sizeof(ushort):
-                    return Unsafe.ReadUnaligned<ushort>(source.ToPointer()) == 0;
-                case sizeof(uint):
-                    return Unsafe.ReadUnaligned<uint>(source.ToPointer()) == 0;
-                case sizeof(ulong):
-                    return Unsafe.ReadUnaligned<ulong>(source.ToPointer()) == 0;
-                default:
-                    while (length >= IntPtr.Size)
-                        if (ReadUnaligned<IntPtr>(ref source) == IntPtr.Zero)
-                            length -= IntPtr.Size;
-                        else
-                            return false;
-                    while (length > sizeof(byte))
-                        if (Read<byte>(ref source) == 0)
-                            length -= sizeof(byte);
-                        else
-                            return false;
                     return true;
             }
         }
@@ -660,7 +655,7 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void AsTypedReference<T>(ref T managedPtr, void* reference)
         {
-            if(reference == NullPtr)
+            if (reference == NullPtr)
                 throw new ArgumentNullException(nameof(reference));
             Push(reference);
             Push(ref managedPtr);

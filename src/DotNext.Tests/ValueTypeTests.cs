@@ -39,6 +39,26 @@ namespace DotNext
         }
 
         [Fact]
+        public static void BitwiseEqualityForPrimitive()
+        {
+            var value1 = 10L;
+            var value2 = 20L;
+            False(ValueType<long>.BitwiseEquals(value1, value2));
+            value2 = 10L;
+            True(ValueType<long>.BitwiseEquals(value1, value2));
+        }
+
+        [Fact]
+        public static void BitwiseEqualityForDifferentTypesOfTheSameSize()
+        {
+            var value1 = 1U;
+            var value2 = 0;
+            False(ValueType<uint>.BitwiseEquals(value1, value2));
+            value2 = 1;
+            True(ValueType<uint>.BitwiseEquals(value1, value2));
+        }
+
+        [Fact]
         public static void BitwiseEqualityCheckBigStruct()
         {
             var value1 = (new Point { X = 10, Y = 20 }, new Point { X = 15, Y = 20 });

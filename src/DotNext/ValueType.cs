@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
 
 namespace DotNext
 {
@@ -141,7 +143,45 @@ namespace DotNext
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
-        public static unsafe bool IsDefault(T value) => Memory.IsZero(Unsafe.AsPointer(ref value), Size);
+        public static unsafe bool IsDefault(T value)
+        {
+            long size;
+            Sizeof(typeof(T));
+            Conv_I8();
+            Pop(out size);
+            switch(size)
+            {
+                case sizeof(byte):
+                case sizeof(ushort):
+                case sizeof(uint):
+                    Push(value);
+                    Conv_I4();
+                    Ldc_I4_0();
+                    Ceq();
+                    return Return<bool>();
+                case sizeof(ulong):
+                    Push(value);
+                    Conv_I8();
+                    Ldc_I8(0L);
+                    Ceq();
+                    return Return<bool>();
+                default:
+                    IntPtr ptr;
+                    Ldarga(0);
+                    Pop(out ptr);
+                    while (size >= IntPtr.Size)
+                        if (Memory.Read<IntPtr>(ref ptr) == IntPtr.Zero)
+                            size -= IntPtr.Size;
+                        else
+                            return false;
+                    while (size > sizeof(byte))
+                        if (Memory.Read<byte>(ref ptr) == 0)
+                            size -= sizeof(byte);
+                        else
+                            return false;
+                    return true;
+            }
+        }
 
         /// <summary>
         /// Convert value type content into array of bytes.

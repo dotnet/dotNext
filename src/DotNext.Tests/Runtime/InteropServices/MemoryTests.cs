@@ -3,8 +3,6 @@ using Xunit;
 
 namespace DotNext.Runtime.InteropServices
 {
-    using static Memory;
-
     public sealed class MemoryTests : Assert
     {
         private Guid field;
@@ -18,7 +16,7 @@ namespace DotNext.Runtime.InteropServices
             Equal(Guid.Empty, g);
             g = Guid.NewGuid();
             Equal(field, g);
-            True(AreSame(in field, in g));
+            True(Memory.AreSame(in field, in g));
         }
 
         [Fact]
@@ -29,7 +27,7 @@ namespace DotNext.Runtime.InteropServices
             Null(f);
             f = "Hello, world!";
             Equal(str, f);
-            True(AreSame(in str, in f));
+            True(Memory.AreSame(in str, in f));
         }
 
         [Fact]
@@ -37,7 +35,7 @@ namespace DotNext.Runtime.InteropServices
         {
             var reference = default(TypedReference);
             var i = 20;
-            AsTypedReference(ref i, &reference);
+            Memory.AsTypedReference(ref i, &reference);
             Equal(20, TypedReference.ToObject(reference));
         }
 
@@ -46,7 +44,7 @@ namespace DotNext.Runtime.InteropServices
         {
             var x = 10;
             var y = 20;
-            Swap(ref x, ref y);
+            Memory.Swap(ref x, ref y);
             Equal(20, x);
             Equal(10, y);
         }
@@ -56,7 +54,7 @@ namespace DotNext.Runtime.InteropServices
         {
             var x = 10;
             var y = 20;
-            Swap(&x, &y);
+            Memory.Swap(&x, &y);
             Equal(20, x);
             Equal(10, y);
         }
@@ -65,7 +63,7 @@ namespace DotNext.Runtime.InteropServices
         public static void AddressOfLocal()
         {
             var i = 20;
-            True(AddressOf(i) != IntPtr.Zero);
+            True(Memory.AddressOf(i) != IntPtr.Zero);
         }
 
         [Fact]
@@ -73,9 +71,29 @@ namespace DotNext.Runtime.InteropServices
         {
             object obj = new Guid();
             Equal(Guid.Empty, obj);
-            ref var boxed = ref GetBoxedValue<Guid>(obj);
+            ref var boxed = ref Memory.GetBoxedValue<Guid>(obj);
             boxed = Guid.NewGuid();
             NotEqual(Guid.Empty, obj);
+        }
+
+        [Fact]
+        public unsafe static void BitwiseEqualityForByte()
+        {
+            byte value1 = 10;
+            byte value2 = 20;
+            False(Memory.Equals(&value1, &value2, sizeof(byte)));
+            value2 = 10;
+            True(Memory.Equals(&value1, &value2, sizeof(byte)));
+        }
+
+        [Fact]
+        public unsafe static void BitwiseEqualityForLong()
+        {
+            var value1 = 10L;
+            var value2 = 20L;
+            False(Memory.Equals(&value1, &value2, sizeof(long)));
+            value2 = 10;
+            True(Memory.Equals(&value1, &value2, sizeof(long)));
         }
     }
 }
