@@ -175,51 +175,6 @@ namespace DotNext.Reflection
             => FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? Array.Empty<Type>();
 
         /// <summary>
-        /// Gets type code for the specified type.
-        /// </summary>
-        /// <param name="t">The type to convert into type code.</param>
-        /// <returns>Type code.</returns>
-		public static TypeCode GetTypeCode(this Type t)
-        {
-            if (t is null)
-                return TypeCode.Empty;
-            else if (t == typeof(bool))
-                return TypeCode.Boolean;
-            else if (t == typeof(byte))
-                return TypeCode.Byte;
-            else if (t == typeof(sbyte))
-                return TypeCode.SByte;
-            else if (t == typeof(short))
-                return TypeCode.Int16;
-            else if (t == typeof(ushort))
-                return TypeCode.UInt16;
-            else if (t == typeof(int))
-                return TypeCode.Int32;
-            else if (t == typeof(uint))
-                return TypeCode.UInt32;
-            else if (t == typeof(long))
-                return TypeCode.Int64;
-            else if (t == typeof(ulong))
-                return TypeCode.UInt64;
-            else if (t == typeof(float))
-                return TypeCode.Single;
-            else if (t == typeof(double))
-                return TypeCode.Double;
-            else if (t == typeof(string))
-                return TypeCode.String;
-            else if (t == typeof(DateTime))
-                return TypeCode.DateTime;
-            else if (t == typeof(decimal))
-                return TypeCode.Decimal;
-            else if (t == typeof(char))
-                return TypeCode.Char;
-            else if (t == typeof(DBNull))
-                return TypeCode.DBNull;
-            else
-                return TypeCode.Object;
-        }
-
-        /// <summary>
         /// Indicates that object of one type can be implicitly converted into another without boxing.
         /// </summary>
         /// <param name="to">Type of conversion result.</param>

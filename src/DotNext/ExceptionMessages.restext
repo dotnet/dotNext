@@ -5,3 +5,4 @@ IndexShouldBeZero=List index should be equal to 0
 CastNullToValueType=Unable to cast null value to value type
 UnsupportedLockAcquisition=Lock cannot be acquired for this type of object
 InvalidRefType=The type specified by typed reference is not compatible with actual generic type
+UnsupportedEnumType=Underlying Enum type is not supported

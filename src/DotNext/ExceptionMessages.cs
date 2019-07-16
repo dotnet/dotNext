@@ -21,5 +21,7 @@ namespace DotNext
         internal static string InvalidRefType => Resources.GetString("InvalidRefType");
 
         internal static string UnsupportedLockAcquisition => Resources.GetString("UnsupportedLockAcquisition");
+
+        internal static string UnsupportedEnumType => Resources.GetString("UnsupportedEnumType");
     }
 }

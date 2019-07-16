@@ -10,13 +10,65 @@ namespace DotNext
     /// </summary>
     public static class EnumConverter
     {
+        private static O ToEnum<I, O>(I value)
+            where I : struct, IConvertible, IComparable<I>, IEquatable<I>
+            where O : struct, Enum
+        {
+            switch(Type.GetTypeCode(typeof(O)))
+            {
+                case TypeCode.Byte:
+                    Ldarg(nameof(value));
+                    Conv_U1();
+                    break;
+                case TypeCode.Int16:
+                    Ldarg(nameof(value));
+                    Conv_I2();
+                    break;
+                case TypeCode.Int32:
+                    Ldarg(nameof(value));
+                    Conv_I4();
+                    break;
+                case TypeCode.Int64:
+                    Ldarg(nameof(value));
+                    Conv_I8();
+                    break;
+                case TypeCode.Single:
+                    Ldarg(nameof(value));
+                    Conv_R4();
+                    break;
+                case TypeCode.Double:
+                    Ldarg(nameof(value));
+                    Conv_R8();
+                    break;
+                case TypeCode.SByte:
+                    Ldarg(nameof(value));
+                    Conv_U1();
+                    break;
+                case TypeCode.UInt16:
+                    Ldarg(nameof(value));
+                    Conv_U2();
+                    break;
+                case TypeCode.UInt32:
+                    Ldarg(nameof(value));
+                    Conv_U4();
+                    break;
+                case TypeCode.UInt64:
+                    Ldarg(nameof(value));
+                    Conv_U8();
+                    break;
+                default:
+                    throw new GenericArgumentException(typeof(O), ExceptionMessages.UnsupportedEnumType);
+            }
+            return Return<O>();
+        }
+
         /// <summary>
         /// Converts <see cref="long"/> into enum of type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The target enum type.</typeparam>
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="long"/> value.</returns>
-        public static T ToEnum<T>(this long value) where T : unmanaged, Enum => value.Bitcast<long, T>();
+        public static T ToEnum<T>(this long value) where T : struct, Enum => ToEnum<long, T>(value);
 
         /// <summary>
         /// Converts <see cref="int"/> into enum of type <typeparamref name="T"/>.
@@ -24,7 +76,7 @@ namespace DotNext
         /// <typeparam name="T">The target enum type.</typeparam>
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="int"/> value.</returns>
-        public static T ToEnum<T>(this int value) where T : unmanaged, Enum => value.Bitcast<int, T>();
+        public static T ToEnum<T>(this int value) where T : struct, Enum => ToEnum<int, T>(value);
 
         /// <summary>
         /// Converts <see cref="short"/> into enum of type <typeparamref name="T"/>.
@@ -32,7 +84,7 @@ namespace DotNext
         /// <typeparam name="T">The target enum type.</typeparam>
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="short"/> value.</returns>
-        public static T ToEnum<T>(this short value) where T : unmanaged, Enum => value.Bitcast<short, T>();
+        public static T ToEnum<T>(this short value) where T : struct, Enum => ToEnum<short, T>(value);
 
         /// <summary>
         /// Converts <see cref="byte"/> into enum of type <typeparamref name="T"/>.
@@ -40,7 +92,7 @@ namespace DotNext
         /// <typeparam name="T">The target enum type.</typeparam>
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="byte"/> value.</returns>
-        public static T ToEnum<T>(this byte value) where T : unmanaged, Enum => value.Bitcast<byte, T>();
+        public static T ToEnum<T>(this byte value) where T : struct, Enum => ToEnum<byte, T>(value);
 
         /// <summary>
         /// Converts <see cref="byte"/> into enum of type <typeparamref name="T"/>.
@@ -49,7 +101,7 @@ namespace DotNext
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="byte"/> value.</returns>
         [CLSCompliant(false)]
-        public static T ToEnum<T>(this sbyte value) where T : unmanaged, Enum => value.Bitcast<sbyte, T>();
+        public static T ToEnum<T>(this sbyte value) where T : struct, Enum => ToEnum<sbyte, T>(value);
 
         /// <summary>
         /// Converts <see cref="ushort"/> into enum of type <typeparamref name="T"/>.
@@ -58,7 +110,7 @@ namespace DotNext
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="ushort"/> value.</returns>
         [CLSCompliant(false)]
-        public static T ToEnum<T>(this ushort value) where T : unmanaged, Enum => value.Bitcast<ushort, T>();
+        public static T ToEnum<T>(this ushort value) where T : struct, Enum => ToEnum<ushort, T>(value);
 
         /// <summary>
         /// Converts <see cref="uint"/> into enum of type <typeparamref name="T"/>.
@@ -67,7 +119,7 @@ namespace DotNext
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="uint"/> value.</returns>
         [CLSCompliant(false)]
-        public static T ToEnum<T>(this uint value) where T : unmanaged, Enum => value.Bitcast<uint, T>();
+        public static T ToEnum<T>(this uint value) where T : struct, Enum => ToEnum<uint, T>(value);
 
         /// <summary>
         /// Converts <see cref="ulong"/> into enum of type <typeparamref name="T"/>.
@@ -76,7 +128,7 @@ namespace DotNext
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="ulong"/> value.</returns>
         [CLSCompliant(false)]
-        public static T ToEnum<T>(this ulong value) where T : unmanaged, Enum => value.Bitcast<ulong, T>();
+        public static T ToEnum<T>(this ulong value) where T : struct, Enum => ToEnum<ulong, T>(value);
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="long"/>.
