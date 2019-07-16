@@ -11,7 +11,7 @@ namespace DotNext
     public static class EnumConverter
     {
         private static O ToEnum<I, O>(I value)
-            where I : struct, IConvertible, IComparable<I>, IEquatable<I>
+            where I : struct, IConvertible, IComparable<I>, IEquatable<I>, IFormattable
             where O : struct, Enum
         {
             switch(Type.GetTypeCode(typeof(O)))
