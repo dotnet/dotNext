@@ -221,10 +221,10 @@ namespace DotNext.Runtime.InteropServices
                     hashFunction.AddData(Unsafe.ReadUnaligned<int>(source.ToPointer()));
                     break;
                 default:
-                    while (length >= IntPtr.Size)
+                    while (length >= sizeof(IntPtr))
                     {
                         hashFunction.AddData(ReadUnaligned<IntPtr>(ref source).ToInt64());
-                        length -= IntPtr.Size;
+                        length -= sizeof(IntPtr);
                     }
                     while (length > 0)
                     {
@@ -412,15 +412,15 @@ namespace DotNext.Runtime.InteropServices
         /// This method has the same behavior as <see cref="Unsafe.InitBlockUnaligned(ref byte,byte,uint)"/> but
         /// without restriction on <see cref="uint"/> data type for the length of the memory block.
         /// </remarks>
-        /// <param name="ptr">The pointer to the memory to be cleared.</param>
+        /// <param name="address">The pointer to the memory to be cleared.</param>
         /// <param name="length">The length of the memory to be cleared, in bytes.</param>
-        public static void ClearBits(IntPtr ptr, long length)
+        public static void ClearBits(IntPtr address, long length)
         {
             do
             {
                 var count = (int)length.Min(int.MaxValue);
-                Unsafe.InitBlockUnaligned(ptr.ToPointer(), 0, (uint)count);
-                ptr += count;
+                Unsafe.InitBlockUnaligned(address.ToPointer(), 0, (uint)count);
+                address += count;
                 length -= count;
             } while (length > 0);
         }
@@ -428,10 +428,10 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Sets all bits of allocated memory to zero.
         /// </summary>
-        /// <param name="ptr">The pointer to the memory to be cleared.</param>
+        /// <param name="address">The pointer to the memory to be cleared.</param>
         /// <param name="length">The length of the memory to be cleared.</param>
         [CLSCompliant(false)]
-        public static void ClearBits(void* ptr, long length) => ClearBits(new IntPtr(ptr), length);
+        public static void ClearBits(void* address, long length) => ClearBits(new IntPtr(address), length);
 
         /// <summary>
 		/// Computes equality between two blocks of memory.
@@ -563,44 +563,50 @@ namespace DotNext.Runtime.InteropServices
 
         internal static bool IsZeroAligned(IntPtr address, int length)
         {
+            var result = false;
             if (Vector.IsHardwareAccelerated)
                 while (length >= Vector<byte>.Count)
                     if (ReadVector(ref address) == Vector<byte>.Zero)
                         length -= Vector<byte>.Count;
                     else
-                        return false;
-            while (length >= IntPtr.Size)
-                if (Read<IntPtr>(ref address) == IntPtr.Zero)
-                    length -= IntPtr.Size;
+                        goto exit;
+            while (length >= sizeof(UIntPtr))
+                if (Read<UIntPtr>(ref address) == default)
+                    length -= sizeof(UIntPtr);
                 else
-                    return false;
+                    goto exit;
             while (length > sizeof(byte))
                 if (Read<byte>(ref address) == 0)
                     length -= sizeof(byte);
                 else
-                    return false;
-            return true;
+                    goto exit;
+            result = true;
+        exit:
+            return result;
         }
 
-        internal unsafe static bool BitwiseEqualsAligned(IntPtr first, IntPtr second, int length)
+        internal static bool BitwiseEqualsAligned(IntPtr first, IntPtr second, long length)
         {
+            var result = false;
             if (Vector.IsHardwareAccelerated)
                 while (length >= Vector<byte>.Count)
                     if (ReadVector(ref first) == ReadVector(ref second))
                         length -= Vector<byte>.Count;
                     else
-                        return false;
-            while (length >= IntPtr.Size)
-                if (Read<IntPtr>(ref first) == Read<IntPtr>(ref second))
-                    length -= IntPtr.Size;
+                        goto exit;
+            while (length >= sizeof(UIntPtr))
+                if (Read<UIntPtr>(ref first) == Read<UIntPtr>(ref second))
+                    length -= sizeof(UIntPtr);
                 else
-                    return false;
+                    goto exit;
             while (length > sizeof(byte))
                 if (Read<byte>(ref first) == Read<byte>(ref second))
                     length -= sizeof(byte);
                 else
-                    return false;
-            return true;
+                    goto exit;
+            result = true;
+        exit:
+            return result;
         }
 
         /// <summary>

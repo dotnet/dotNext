@@ -5,16 +5,15 @@ using static InlineIL.IL.Emit;
 
 namespace DotNext
 {
-    /// <summary>
-    /// Provides conversion between enum value and primitive types.
-    /// </summary>
-    public static class EnumConverter
+    internal static class EnumConverter<I, O>
+        where I : struct, IConvertible, IComparable<I>, IEquatable<I>, IFormattable
+        where O : struct, Enum
     {
-        private static O ToEnum<I, O>(I value)
-            where I : struct, IConvertible, IComparable<I>, IEquatable<I>, IFormattable
-            where O : struct, Enum
+        private static readonly TypeCode Code = Type.GetTypeCode(typeof(O));
+
+        internal static O Convert(I value)
         {
-            switch(Type.GetTypeCode(typeof(O)))
+            switch (Code)
             {
                 case TypeCode.Byte:
                     Push(value);
@@ -61,14 +60,20 @@ namespace DotNext
             }
             return Return<O>();
         }
+    }
 
+    /// <summary>
+    /// Provides conversion between enum value and primitive types.
+    /// </summary>
+    public static class EnumConverter
+    {
         /// <summary>
         /// Converts <see cref="long"/> into enum of type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The target enum type.</typeparam>
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="long"/> value.</returns>
-        public static T ToEnum<T>(this long value) where T : struct, Enum => ToEnum<long, T>(value);
+        public static T ToEnum<T>(this long value) where T : struct, Enum => EnumConverter<long, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="int"/> into enum of type <typeparamref name="T"/>.
@@ -76,7 +81,7 @@ namespace DotNext
         /// <typeparam name="T">The target enum type.</typeparam>
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="int"/> value.</returns>
-        public static T ToEnum<T>(this int value) where T : struct, Enum => ToEnum<int, T>(value);
+        public static T ToEnum<T>(this int value) where T : struct, Enum => EnumConverter<int, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="short"/> into enum of type <typeparamref name="T"/>.
@@ -84,7 +89,7 @@ namespace DotNext
         /// <typeparam name="T">The target enum type.</typeparam>
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="short"/> value.</returns>
-        public static T ToEnum<T>(this short value) where T : struct, Enum => ToEnum<short, T>(value);
+        public static T ToEnum<T>(this short value) where T : struct, Enum => EnumConverter<short, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="byte"/> into enum of type <typeparamref name="T"/>.
@@ -92,7 +97,7 @@ namespace DotNext
         /// <typeparam name="T">The target enum type.</typeparam>
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="byte"/> value.</returns>
-        public static T ToEnum<T>(this byte value) where T : struct, Enum => ToEnum<byte, T>(value);
+        public static T ToEnum<T>(this byte value) where T : struct, Enum => EnumConverter<byte, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="byte"/> into enum of type <typeparamref name="T"/>.
@@ -101,7 +106,7 @@ namespace DotNext
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="byte"/> value.</returns>
         [CLSCompliant(false)]
-        public static T ToEnum<T>(this sbyte value) where T : struct, Enum => ToEnum<sbyte, T>(value);
+        public static T ToEnum<T>(this sbyte value) where T : struct, Enum => EnumConverter<sbyte, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="ushort"/> into enum of type <typeparamref name="T"/>.
@@ -110,7 +115,7 @@ namespace DotNext
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="ushort"/> value.</returns>
         [CLSCompliant(false)]
-        public static T ToEnum<T>(this ushort value) where T : struct, Enum => ToEnum<ushort, T>(value);
+        public static T ToEnum<T>(this ushort value) where T : struct, Enum => EnumConverter<ushort, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="uint"/> into enum of type <typeparamref name="T"/>.
@@ -119,7 +124,7 @@ namespace DotNext
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="uint"/> value.</returns>
         [CLSCompliant(false)]
-        public static T ToEnum<T>(this uint value) where T : struct, Enum => ToEnum<uint, T>(value);
+        public static T ToEnum<T>(this uint value) where T : struct, Enum => EnumConverter<uint, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="ulong"/> into enum of type <typeparamref name="T"/>.
@@ -128,7 +133,7 @@ namespace DotNext
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="ulong"/> value.</returns>
         [CLSCompliant(false)]
-        public static T ToEnum<T>(this ulong value) where T : struct, Enum => ToEnum<ulong, T>(value);
+        public static T ToEnum<T>(this ulong value) where T : struct, Enum => EnumConverter<ulong, T>.Convert(value);
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="long"/>.
@@ -252,23 +257,6 @@ namespace DotNext
             Push(value);
             Conv_I1();
             return Return<sbyte>();
-        }
-
-        /// <summary>
-        /// Determines whether two enum values are equal without boxing.
-        /// </summary>
-        /// <param name="first">The first value to compare.</param>
-        /// <param name="other">The second value to compare.</param>
-        /// <typeparam name="T">The enum type.</typeparam>
-        /// <returns><see langword="true"/> if both values are equal; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool Equals<T>(this T first, T other)
-            where T : struct, Enum
-        {
-            Push(first);
-            Push(other);
-            Ceq();
-            return Return<bool>();
         }
     }
 }

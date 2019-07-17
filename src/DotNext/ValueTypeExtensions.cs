@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
 
 namespace DotNext
 {
@@ -126,6 +128,153 @@ namespace DotNext
         {
             value = nullable.GetValueOrDefault();
             return nullable.HasValue;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool LessThan(this IntPtr value, IntPtr other)
+        {
+            Push(value);
+            Push(other);
+            Clt();
+            return Return<bool>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool GreaterThan(this IntPtr value, IntPtr other)
+        {
+            Push(value);
+            Push(other);
+            Cgt();
+            return Return<bool>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool GreaterThanOrEqual(this IntPtr value, IntPtr other)
+        {
+            Push(value);
+            Push(other);
+            Clt();
+            Ldc_I4_0();
+            Ceq();
+            return Return<bool>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool LessThanOrEqual(this IntPtr value, IntPtr other)
+        {
+            Push(value);
+            Push(other);
+            Cgt();
+            Ldc_I4_0();
+            Ceq();
+            return Return<bool>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static bool LessThan(this UIntPtr value, UIntPtr other)
+        {
+            Push(value);
+            Push(other);
+            Clt_Un();
+            return Return<bool>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static bool GreaterThan(this UIntPtr value, UIntPtr other)
+        {
+            Push(value);
+            Push(other);
+            Cgt_Un();
+            return Return<bool>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static bool GreaterThanOrEqual(this UIntPtr value, UIntPtr other)
+        {
+            Push(value);
+            Push(other);
+            Clt_Un();
+            Ldc_I4_0();
+            Ceq();
+            return Return<bool>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static bool LessThanOrEqual(this UIntPtr value, UIntPtr other)
+        {
+            Push(value);
+            Push(other);
+            Cgt_Un();
+            Ldc_I4_0();
+            Ceq();
+            return Return<bool>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Add(this IntPtr first, IntPtr second)
+        {
+            Push(first);
+            Push(second);
+            Emit.Add();
+            return Return<IntPtr>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr AddChecked(this IntPtr first, IntPtr second)
+        {
+            Push(first);
+            Push(second);
+            Add_Ovf();
+            return Return<IntPtr>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Subtract(this IntPtr first, IntPtr second)
+        {
+            Push(first);
+            Push(second);
+            Sub();
+            return Return<IntPtr>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr SubtractChecked(this IntPtr first, IntPtr second)
+        {
+            Push(first);
+            Push(second);
+            Sub_Ovf();
+            return Return<IntPtr>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Multiply(this IntPtr first, IntPtr second)
+        {
+            Push(first);
+            Push(second);
+            Mul();
+            return Return<IntPtr>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr MultiplyChecked(this IntPtr first, IntPtr second)
+        {
+            Push(first);
+            Push(second);
+            Mul_Ovf();
+            return Return<IntPtr>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Divide(this IntPtr first, IntPtr second)
+        {
+            Push(first);
+            Push(second);
+            Div();
+            return Return<IntPtr>();
         }
     }
 }

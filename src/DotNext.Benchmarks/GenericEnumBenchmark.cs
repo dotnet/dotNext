@@ -22,7 +22,7 @@ namespace DotNext
             => value.Bitcast<int, T>();
 
         [Benchmark]
-        public void ToInt32UsingContrainedCall()
+        public void ToInt32UsingConstrainedCall()
         {
             ToInt32(EnvironmentVariableTarget.Machine);
         }

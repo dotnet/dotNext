@@ -29,7 +29,7 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool Equals(T x, T y)
+        internal static bool Equals(T x, T y)
         {
             Push(x);
             Push(y);

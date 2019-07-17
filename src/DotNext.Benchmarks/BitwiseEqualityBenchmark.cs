@@ -43,25 +43,49 @@ namespace DotNext
         [Benchmark]
         public void GuidEqualsMethod()
         {
-            NonEmptyGuid.Equals(default);
+            var value = NonEmptyGuid;
+            value.Equals(default);
         }
 
         [Benchmark]
         public void GuidBitwiseEqualsMethod()
         {
-            ValueType<Guid>.BitwiseEquals(NonEmptyGuid, default);
+            var value = NonEmptyGuid;
+            ValueType<Guid>.BitwiseEquals(value, default);
+        }
+
+        [Benchmark]
+        public unsafe void GuidBitwiseEqualsUsingSpan()
+        {
+            var value = NonEmptyGuid;
+            var span1 = new ReadOnlySpan<byte>(&value, sizeof(Guid));
+            var empty = default(Guid);
+            var span2 = new ReadOnlySpan<byte>(&empty, sizeof(Guid));
+            span1.SequenceEqual(span2);
         }
 
         [Benchmark]
         public void BigStructEqualsMethod()
         {
-            NonEmptyBigStruct.Equals(default);
+            var value = NonEmptyBigStruct;
+            value.Equals(default);
         }
 
         [Benchmark]
         public void BigStructBitwiseEqualsMethod()
         {
-            ValueType<BigStructure>.BitwiseEquals(NonEmptyBigStruct, default);
+            var value = NonEmptyBigStruct;
+            ValueType<BigStructure>.BitwiseEquals(value, default);
+        }
+
+        [Benchmark]
+        public unsafe void BigStructEqualsUsingSpan()
+        {
+            var value = NonEmptyBigStruct;
+            var span1 = new ReadOnlySpan<byte>(&value, sizeof(BigStructure));
+            var empty = default(BigStructure);
+            var span2 = new ReadOnlySpan<byte>(&empty, sizeof(BigStructure));
+            span1.SequenceEqual(span2);
         }
     }
 }

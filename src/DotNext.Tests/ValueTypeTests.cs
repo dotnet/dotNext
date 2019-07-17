@@ -95,5 +95,25 @@ namespace DotNext
             value = 42L;
             False(ValueType<long>.IsDefault(value));
         }
+
+        [Fact]
+        public static void IntPtrComparison()
+        {
+            var first = IntPtr.Zero;
+            var second = new IntPtr(10L);
+            True(first.LessThan(second));
+            False(second.LessThan(first));
+            True(second.GreaterThan(first));
+            True(second.GreaterThanOrEqual(first));
+        }
+
+        [Fact]
+        public static void IntPtrArithmetic()
+        {
+            var value = new IntPtr(40);
+            Equal(new IntPtr(800), value.Multiply(new IntPtr(20)));
+            Equal(new IntPtr(800), value.MultiplyChecked(new IntPtr(20)));
+            Equal(int.MaxValue * 2L, new IntPtr(int.MaxValue).Multiply(new IntPtr(2)).ToInt64());
+        }
     }
 }

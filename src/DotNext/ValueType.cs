@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -95,18 +94,18 @@ namespace DotNext
             const string methodExit = "exit";
             const string fastPath = "fastPath";
             Sizeof(typeof(T));
-            Conv_I4();
-            Pop(out int size);
+            Conv_I8();
+            Pop(out long size);
             Push(size);
             Sizeof(typeof(U));
-            Conv_I4();
+            Conv_I8();
             Ceq();
             Dup();
             Brfalse(methodExit);//sizeof(T) != sizeof(U), return with false
 
             Pop();  //to remove value produced by Dup()
             Push(size);
-            Ldc_I4_8(); //sizeof(ulong) is 8 bytes
+            Ldc_I8(sizeof(long));
             Ble(fastPath);
             //size > sizeof(ulong)
             Ldarga(0);
@@ -135,7 +134,7 @@ namespace DotNext
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe bool BitwiseEquals(T first, T second) => BitwiseEquals<T>(first, second);
+        public static bool BitwiseEquals(T first, T second) => BitwiseEquals<T>(first, second);
 
         /// <summary>
         /// Computes bitwise hash code for the specified value.
