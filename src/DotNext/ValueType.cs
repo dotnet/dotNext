@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -94,24 +95,24 @@ namespace DotNext
             const string methodExit = "exit";
             const string fastPath = "fastPath";
             Sizeof(typeof(T));
-            Conv_I8();
-            Pop(out long size);
+            Conv_I4();
+            Pop(out int size);
             Push(size);
             Sizeof(typeof(U));
-            Conv_I8();
+            Conv_I4();
             Ceq();
             Dup();
             Brfalse(methodExit);//sizeof(T) != sizeof(U), return with false
 
             Pop();  //to remove value produced by Dup()
             Push(size);
-            Ldc_I8(sizeof(ulong));
+            Ldc_I4_8(); //sizeof(ulong) is 8 bytes
             Ble(fastPath);
             //size > sizeof(ulong)
             Ldarga(0);
             Ldarga(1);
             Push(size);
-            Call(new M(typeof(Memory), nameof(Memory.Equals), typeof(IntPtr), typeof(IntPtr), typeof(long)));
+            Call(new M(typeof(Memory), nameof(Memory.BitwiseEqualsAligned)));
             Br(methodExit);
             //size <= sizeof(ulong), just compare two values
             MarkLabel(fastPath);
@@ -168,22 +169,6 @@ namespace DotNext
 		/// <returns>Content hash code.</returns>
         public static int BitwiseHashCode(T value) => BitwiseHashCode(value, true);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsZero(IntPtr address, long length)
-        {
-            while (length >= IntPtr.Size)
-                if (Memory.Read<IntPtr>(ref address) == IntPtr.Zero)
-                    length -= IntPtr.Size;
-                else
-                    return false;
-            while (length > sizeof(byte))
-                if (Memory.Read<byte>(ref address) == 0)
-                    length -= sizeof(byte);
-                else
-                    return false;
-            return true;
-        }
-
         /// <summary>
         /// Indicates that specified value type is the default value.
         /// </summary>
@@ -194,16 +179,16 @@ namespace DotNext
             const string methodExit = "exit";
             const string fastPath = "fastPath";
             Sizeof(typeof(T));
-            Conv_I8();
-            Pop(out long size);
+            Conv_I4();
+            Pop(out int size);
             Push(size);
-            Ldc_I8(sizeof(ulong));
+            Ldc_I4_8(); //sizeof(ulong) is 8 bytes
 
             Ble(fastPath);  //size <= sizeof(ulong), move to fast path
             //size < sizeof(ulong)
             Ldarga(0);
             Push(size);
-            Call(new M(typeof(ValueType<T>), nameof(IsZero)));
+            Call(new M(typeof(Memory), nameof(Memory.IsZeroAligned)));
             Br(methodExit);
             //size <= sizeof(ulong)
             MarkLabel(fastPath);

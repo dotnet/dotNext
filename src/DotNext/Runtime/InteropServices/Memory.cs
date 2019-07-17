@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
+using M = InlineIL.MethodRef;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -124,6 +126,14 @@ namespace DotNext.Runtime.InteropServices
         {
             var result = Unsafe.Read<T>(source.ToPointer());
             source += Unsafe.SizeOf<T>();
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Vector<byte> ReadVector(ref IntPtr source)
+        {
+            var result = Unsafe.Read<Vector<byte>>(source.ToPointer());
+            source += Vector<byte>.Count;
             return result;
         }
 
@@ -550,6 +560,48 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
         [CLSCompliant(false)]
         public static int Compare(void* first, void* second, long length) => Compare(new IntPtr(first), new IntPtr(second), length);
+
+        internal static bool IsZeroAligned(IntPtr address, int length)
+        {
+            if (Vector.IsHardwareAccelerated)
+                while (length >= Vector<byte>.Count)
+                    if (ReadVector(ref address) == Vector<byte>.Zero)
+                        length -= Vector<byte>.Count;
+                    else
+                        return false;
+            while (length >= IntPtr.Size)
+                if (Read<IntPtr>(ref address) == IntPtr.Zero)
+                    length -= IntPtr.Size;
+                else
+                    return false;
+            while (length > sizeof(byte))
+                if (Read<byte>(ref address) == 0)
+                    length -= sizeof(byte);
+                else
+                    return false;
+            return true;
+        }
+
+        internal unsafe static bool BitwiseEqualsAligned(IntPtr first, IntPtr second, int length)
+        {
+            if (Vector.IsHardwareAccelerated)
+                while (length >= Vector<byte>.Count)
+                    if (ReadVector(ref first) == ReadVector(ref second))
+                        length -= Vector<byte>.Count;
+                    else
+                        return false;
+            while (length >= IntPtr.Size)
+                if (Read<IntPtr>(ref first) == Read<IntPtr>(ref second))
+                    length -= IntPtr.Size;
+                else
+                    return false;
+            while (length > sizeof(byte))
+                if (Read<byte>(ref first) == Read<byte>(ref second))
+                    length -= sizeof(byte);
+                else
+                    return false;
+            return true;
+        }
 
         /// <summary>
         /// Indicates that two managed pointers are equal.
