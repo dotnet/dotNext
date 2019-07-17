@@ -43,15 +43,13 @@ namespace DotNext
         [Benchmark]
         public void GuidEqualsMethod()
         {
-            var value = NonEmptyGuid;
-            value.Equals(default);
+            NonEmptyGuid.Equals(default);
         }
 
         [Benchmark]
         public void GuidBitwiseEqualsMethod()
         {
-            var value = NonEmptyGuid;
-            ValueType<Guid>.BitwiseEquals(value, default);
+            ValueType<Guid>.BitwiseEquals(NonEmptyGuid, default);
         }
 
         [Benchmark]
@@ -67,15 +65,13 @@ namespace DotNext
         [Benchmark]
         public void BigStructEqualsMethod()
         {
-            var value = NonEmptyBigStruct;
-            value.Equals(default);
+            NonEmptyBigStruct.Equals(default);
         }
 
         [Benchmark]
         public void BigStructBitwiseEqualsMethod()
         {
-            var value = NonEmptyBigStruct;
-            ValueType<BigStructure>.BitwiseEquals(value, default);
+            ValueType<BigStructure>.BitwiseEquals(NonEmptyBigStruct, default);
         }
 
         [Benchmark]
