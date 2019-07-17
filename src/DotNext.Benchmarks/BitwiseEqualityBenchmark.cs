@@ -9,12 +9,12 @@ namespace DotNext
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class BitwiseEqualityBenchmark
     {
-        public struct BigStructure
+        public struct LargeStruct
         {
             public decimal X, Y, Z, C, A, B;
             public short F;
 
-            public bool Equals(BigStructure other)
+            public bool Equals(LargeStruct other)
                 => X == other.X &&
                     Y == other.Y &&
                     Z == other.Z &&
@@ -38,7 +38,7 @@ namespace DotNext
         }
 
         private static readonly Guid NonEmptyGuid = Guid.NewGuid();
-        private static readonly BigStructure NonEmptyBigStruct = new BigStructure { C = 30 };
+        private static readonly LargeStruct NonEmptyBigStruct = new LargeStruct { C = 30 };
 
         [Benchmark]
         public void GuidEqualsMethod()
@@ -63,24 +63,24 @@ namespace DotNext
         }
 
         [Benchmark]
-        public void BigStructEqualsMethod()
+        public void LargeStructEqualsMethod()
         {
             NonEmptyBigStruct.Equals(default);
         }
 
         [Benchmark]
-        public void BigStructBitwiseEqualsMethod()
+        public void LargeStructBitwiseEqualsMethod()
         {
-            ValueType<BigStructure>.BitwiseEquals(NonEmptyBigStruct, default);
+            ValueType<LargeStruct>.BitwiseEquals(NonEmptyBigStruct, default);
         }
 
         [Benchmark]
-        public unsafe void BigStructEqualsUsingSpan()
+        public unsafe void LargeStructEqualsUsingSpan()
         {
             var value = NonEmptyBigStruct;
-            var span1 = new ReadOnlySpan<byte>(&value, sizeof(BigStructure));
-            var empty = default(BigStructure);
-            var span2 = new ReadOnlySpan<byte>(&empty, sizeof(BigStructure));
+            var span1 = new ReadOnlySpan<byte>(&value, sizeof(LargeStruct));
+            var empty = default(LargeStruct);
+            var span2 = new ReadOnlySpan<byte>(&empty, sizeof(LargeStruct));
             span1.SequenceEqual(span2);
         }
     }

@@ -133,8 +133,33 @@ namespace DotNext
         /// <param name="first">The first value to check.</param>
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool BitwiseEquals(T first, T second) => BitwiseEquals<T>(first, second);
+        public static bool BitwiseEquals(T first, T second)
+        {
+            //cannot just call BitwiseEquals<U> because of performance issues measured during BitwiseEqualityBenchmark
+            //probably this problem caused by double passing of large structs through stack
+            const string methodExit = "exit";
+            const string fastPath = "fastPath";
+            Sizeof(typeof(T));
+            Conv_I8();
+            Pop(out long size);
+            Push(size);
+            Ldc_I8(sizeof(long));
+            Ble(fastPath);
+            //size > sizeof(ulong)
+            Ldarga(0);
+            Ldarga(1);
+            Push(size);
+            Call(new M(typeof(Memory), nameof(Memory.BitwiseEqualsAligned)));
+            Br(methodExit);
+            //size <= sizeof(ulong), just compare two values
+            MarkLabel(fastPath);
+            Push(first);
+            Push(second);
+            Ceq();
+
+            MarkLabel(methodExit);
+            return Return<bool>();
+        }
 
         /// <summary>
         /// Computes bitwise hash code for the specified value.
@@ -166,7 +191,8 @@ namespace DotNext
 		/// </summary>
 		/// <param name="value">Value to be hashed.</param>
 		/// <returns>Content hash code.</returns>
-        public static int BitwiseHashCode(T value) => BitwiseHashCode(value, true);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]      
+        public static unsafe int BitwiseHashCode(T value) => Memory.GetHashCode32(Unsafe.AsPointer(ref value), Size, true);
 
         /// <summary>
         /// Indicates that specified value type is the default value.
