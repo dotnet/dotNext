@@ -6,11 +6,11 @@ The configuration of all benchmarks:
 
 | Parameter | Configuration |
 | ---- | ---- |
-| Host | .NET Core 2.2.3 (CoreCLR 4.6.27414.05, CoreFX 4.6.27414.05), 64bit RyuJIT |
-| Job | .NET Core 2.2.3 (CoreCLR 4.6.27414.05, CoreFX 4.6.27414.05), 64bit RyuJIT |
+| Host | .NET Core 2.2.6 (CoreCLR 4.6.27817.03, CoreFX 4.6.27818.02), 64bit RyuJIT |
+| Job | .NET Core 2.2.6 (CoreCLR 4.6.27817.03, CoreFX 4.6.27818.02), 64bit RyuJIT |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
-| OS | Ubuntu 18.04 |
+| OS | Ubuntu 18.04.2 |
 | CPU | Intel Core i7-6700HQ CPU 2.60GHz (Skylake) |
 | Number of CPUs | 1 |
 | Physical Cores | 4 |
@@ -22,12 +22,14 @@ The configuration of all benchmarks:
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
-| `ValueType<Guid>.BitwiseEquals` | 9.627 ns | 0.2266 ns | 0.3461 ns |
+| `ValueType<Guid>.BitwiseEquals` | 5.104 ns | 0.1364 ns | 0.2459 ns |
 | `Guid.Equals` | 12.320 ns | 0.2798 ns | 0.4101 ns |
-| `ValueType<BigStruct>.BitwiseEquals` | 27.097 ns | 0.5794 ns | 1.2221 ns |
-| `BigStruct.Equals` | 53.299 ns | 0.8754 ns | 0.7760 ns |
+| `ReadOnlySpan.SequenceEqual` for `Guid` | 12.981 ns | 0.2523 ns | 0.2360 ns |
+| `ValueType<LargeStruct>.BitwiseEquals` | 22.542 ns | 0.4742 ns | 0.5461 ns |
+| `LargeStruct.Equals` | 53.299 ns | 0.8754 ns | 0.7760 ns |
+| `ReadOnlySpan.SequenceEqual` for `LargeStruct` | 24.184 ns | 0.6122 ns | 0.8973 ns |
 
-Bitwise equality method has the better performance than field-by-field equality check because `BitwiseEquals` utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD.
+Bitwise equality method has the better performance than field-by-field equality check because `BitwiseEquals` utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD. Additionally, it uses [aligned memory access](https://en.wikipedia.org/wiki/Data_structure_alignment) in constrast to [SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal) method.
 
 # Array Equality
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs) compares performance of [OneDimensionalArray.SequenceEqual](./api/DotNext.OneDimensionalArray.yml), [OneDimensionalArray.BitwiseEquals](./api/DotNext.OneDimensionalArray.yml) and manual equality check between two arrays using `for` loop. The benchmark is applied to the array of [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) elements.
