@@ -93,10 +93,9 @@ namespace DotNext
         {
             const string methodExit = "exit";
             const string fastPath = "fastPath";
-            long size;
             Sizeof(typeof(T));
             Conv_I8();
-            Pop(out size);
+            Pop(out long size);
             Push(size);
             Sizeof(typeof(U));
             Conv_I8();
@@ -194,10 +193,9 @@ namespace DotNext
         {
             const string methodExit = "exit";
             const string fastPath = "fastPath";
-            long size;
             Sizeof(typeof(T));
             Conv_I8();
-            Pop(out size);
+            Pop(out long size);
             Push(size);
             Ldc_I8(sizeof(ulong));
 
