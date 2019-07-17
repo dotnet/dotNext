@@ -20,6 +20,7 @@
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
 	<PackageReleaseNotes>Improved performance of methods declared in EnumConverter
 Improved performance of atomic operations such as UpdateAndGet and AccumulateAndGet
+Improved performance of bitwise equality method for value types
 GetUnderlyingType() method is added to obtain underlying type of Result&lt;T&gt;
 TypedReference can be converted into managed pointer (type T&amp;, or ref T) and vice versa using Memory class</PackageReleaseNotes>
   </PropertyGroup>
