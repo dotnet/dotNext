@@ -622,13 +622,12 @@ namespace DotNext.Runtime.InteropServices
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="reference">The typed reference.</param>
         /// <returns>A managed pointer to the value represented by reference.</returns>
+        /// <exception cref="InvalidCastException"><typeparamref name="T"/> is not identical to the type stored in the typed reference.</exception>
         [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T AsRef<T>(this typedref reference)
         {
-            if (typedref.GetTargetType(reference) != typeof(T))
-                throw new GenericArgumentException<T>(ExceptionMessages.InvalidRefType, nameof(T));
             Ldarg(nameof(reference));
             Refanyval(typeof(T));
             return ref ReturnRef<T>();
