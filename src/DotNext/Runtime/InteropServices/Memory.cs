@@ -571,7 +571,7 @@ namespace DotNext.Runtime.InteropServices
                     else
                         goto exit;
             while (length >= sizeof(UIntPtr))
-                if (Read<UIntPtr>(ref address) == default)
+                if (Read<UIntPtr>(ref address) == UIntPtr.Zero)
                     length -= sizeof(UIntPtr);
                 else
                     goto exit;

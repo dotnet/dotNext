@@ -5,3 +5,5 @@ IndexShouldBeZero=List index should be equal to 0
 CastNullToValueType=Unable to cast null value to value type
 UnsupportedLockAcquisition=Lock cannot be acquired for this type of object
 UnsupportedEnumType=Underlying Enum type is not supported
+NullMethodPointer=Method pointer is null
+CannotMakeMethodPointer=Method has an invalid signature for the creating pointer type. 
