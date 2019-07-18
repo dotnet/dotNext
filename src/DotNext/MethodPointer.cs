@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -52,9 +54,11 @@ namespace DotNext
         There is no free lunch and this cache consumes memory. However, it doesn't create GC pressure or
         even managed heap because all data inside of it are value types without references to the managed objects.
      */
+    [StructLayout(LayoutKind.Sequential)]
     internal struct MethodPointerCache<D>
         where D : Delegate
     {
+        [StructLayout(LayoutKind.Sequential, Pack = sizeof(int))]
         private struct Entry
         {
             private const int Unchecked = 0;
@@ -102,7 +106,26 @@ namespace DotNext
         }
 
         private const byte CacheSize = 10;   //should be aligned with number of fields entry0..entry09
-        private Entry entry0, entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry8, entry9;
+        
+        private Entry entry0;
+        [SuppressMessage("Performance", "CA1823", Justification = "Field is referenced indirectly through pointer arithmetic in Check method")]
+        private Entry entry1;
+        [SuppressMessage("Performance", "CA1823", Justification = "Field is referenced indirectly through pointer arithmetic in Check method")]
+        private Entry entry2;
+        [SuppressMessage("Performance", "CA1823", Justification = "Field is referenced indirectly through pointer arithmetic in Check method")]
+        private Entry entry3;
+        [SuppressMessage("Performance", "CA1823", Justification = "Field is referenced indirectly through pointer arithmetic in Check method")]
+        private Entry entry4;
+        [SuppressMessage("Performance", "CA1823", Justification = "Field is referenced indirectly through pointer arithmetic in Check method")]
+        private Entry entry5;
+        [SuppressMessage("Performance", "CA1823", Justification = "Field is referenced indirectly through pointer arithmetic in Check method")]
+        private Entry entry6;
+        [SuppressMessage("Performance", "CA1823", Justification = "Field is referenced indirectly through pointer arithmetic in Check method")]
+        private Entry entry7;
+        [SuppressMessage("Performance", "CA1823", Justification = "Field is referenced indirectly through pointer arithmetic in Check method")]
+        private Entry entry8;
+        [SuppressMessage("Performance", "CA1823", Justification = "Field is referenced indirectly through pointer arithmetic in Check method")]
+        private Entry entry9;
 
         internal bool Check(MethodInfo candidate)
         {
