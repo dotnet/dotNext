@@ -5,7 +5,7 @@ using static InlineIL.IL.Emit;
 
 namespace DotNext.Threading
 {
-    internal abstract class Atomic<T>//T should not be greater than 8 bytes
+    internal abstract class Atomic<T>//T should not be greater than maximum size of primitive type. For .NET Standard it is sizeof(long)
     {
         internal abstract T Exchange(ref T value, T update);
 
@@ -66,6 +66,8 @@ namespace DotNext.Threading
     }
 
     internal static class Atomic<T, V, W>
+        where T : struct
+        where V : struct
         where W : struct, IAtomicWrapper<T, V>
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

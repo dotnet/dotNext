@@ -253,7 +253,7 @@ namespace DotNext
                 return true;
             else
                 fixed (T* firstPtr = first, secondPtr = second)
-                    return Memory.BitwiseEqualsAligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * ValueType<T>.Size);
+                    return Memory.EqualsAligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * ValueType<T>.Size);
         }
 
         /// <summary>

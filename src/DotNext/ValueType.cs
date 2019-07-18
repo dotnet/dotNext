@@ -101,7 +101,7 @@ namespace DotNext
             Conv_I8();
             Ceq();
             Dup();
-            Brfalse(methodExit);//sizeof(T) != sizeof(U), return with false
+            Brfalse(methodExit);//sizeof(T) != sizeof(U), return false
 
             Pop();  //to remove value produced by Dup()
             Push(size);
@@ -111,7 +111,7 @@ namespace DotNext
             Ldarga(0);
             Ldarga(1);
             Push(size);
-            Call(new M(typeof(Memory), nameof(Memory.BitwiseEqualsAligned)));
+            Call(new M(typeof(Memory), nameof(Memory.EqualsAligned)));
             Br(methodExit);
             //size <= sizeof(ulong), just compare two values
             MarkLabel(fastPath);
@@ -149,7 +149,7 @@ namespace DotNext
             Ldarga(0);
             Ldarga(1);
             Push(size);
-            Call(new M(typeof(Memory), nameof(Memory.BitwiseEqualsAligned)));
+            Call(new M(typeof(Memory), nameof(Memory.EqualsAligned)));
             Br(methodExit);
             //size <= sizeof(ulong), just compare two values
             MarkLabel(fastPath);

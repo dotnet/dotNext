@@ -585,7 +585,7 @@ namespace DotNext.Runtime.InteropServices
             return result;
         }
 
-        internal static bool BitwiseEqualsAligned(IntPtr first, IntPtr second, long length)
+        internal static bool EqualsAligned(IntPtr first, IntPtr second, long length)
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)

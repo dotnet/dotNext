@@ -114,6 +114,16 @@ namespace DotNext
             Equal(new IntPtr(800), value.Multiply(new IntPtr(20)));
             Equal(new IntPtr(800), value.MultiplyChecked(new IntPtr(20)));
             Equal(int.MaxValue * 2L, new IntPtr(int.MaxValue).Multiply(new IntPtr(2)).ToInt64());
+            Equal(new IntPtr(20), value.Divide(new IntPtr(2)));
+            Equal(new IntPtr(40 ^ 234), value.Xor(new IntPtr(234)));
+            Equal(new IntPtr(-40), value.Negate());
+        }
+
+        [Fact]
+        public static void BoolToIntConversion()
+        {
+            Equal(1, true.ToInt32());
+            Equal(0, false.ToInt32());
         }
     }
 }

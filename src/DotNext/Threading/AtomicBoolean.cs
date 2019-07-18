@@ -18,15 +18,13 @@ namespace DotNext.Threading
     public struct AtomicBoolean : IEquatable<bool>, ISerializable, IAtomicWrapper<int, bool>
     {
         private const string ValueSerData = "value";
-        private const int True = 1;
-        private const int False = 0;
         private int value;
 
         /// <summary>
         /// Initializes a new atomic boolean container with initial value.
         /// </summary>
         /// <param name="value">Initial value of the atomic boolean.</param>
-        public AtomicBoolean(bool value) => this.value = value ? True : False;
+        public AtomicBoolean(bool value) => this.value = value.ToInt32();
 
         [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private AtomicBoolean(SerializationInfo info, StreamingContext context)
@@ -34,9 +32,9 @@ namespace DotNext.Threading
             value = (int)info.GetValue(ValueSerData, typeof(int));
         }
 
-        bool IAtomicWrapper<int, bool>.Convert(int value) => value == True;
+        bool IAtomicWrapper<int, bool>.Convert(int value) => value.ToBoolean();
 
-        int IAtomicWrapper<int, bool>.Convert(bool value) => value ? True : False;
+        int IAtomicWrapper<int, bool>.Convert(bool value) => value.ToInt32();
 
         Atomic<int> IAtomicWrapper<int, bool>.Atomic => AtomicInt32.Atomic;
 
@@ -194,7 +192,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(bool other) => value.VolatileRead() == (other ? True : False);
+        public bool Equals(bool other) => value.VolatileRead() == other.ToInt32();
 
         /// <summary>
         /// Computes hash code for the stored value.
@@ -225,7 +223,7 @@ namespace DotNext.Threading
         /// Returns stored boolean value in the form of <see cref="string"/>.
         /// </summary>
         /// <returns>Textual representation of stored boolean value.</returns>
-        public override string ToString() => value == True ? bool.TrueString : bool.FalseString;
+        public override string ToString() => value.ToBoolean() ? bool.TrueString : bool.FalseString;
 
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
             => info.AddValue(ValueSerData, value);

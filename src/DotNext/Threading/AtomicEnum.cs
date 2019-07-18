@@ -16,7 +16,7 @@ namespace DotNext.Threading
     [SuppressMessage("Design", "CA1066")]
     [SuppressMessage("Usage", "CA2231")]
     public struct AtomicEnum<E> : IEquatable<E>, ISerializable, IAtomicWrapper<long, E>
-        where E : unmanaged, Enum
+        where E : struct, Enum
     {
         private const string ValueSerData = "value";
 
