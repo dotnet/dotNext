@@ -6,7 +6,7 @@ namespace DotNext.Reflection
     /// <summary>
     /// Various extension methods for method reflection.
     /// </summary>
-    public static class Method
+    public static class MethodExtensions
     {
         /// <summary>
         /// Returns method parameter types respecting order of parameters.
@@ -24,11 +24,11 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if the method parameters have the same set of types as types passed as array; otherwise, <see langword="false"/>.</returns>
 		public static bool SignatureEquals(this MethodBase method, Type[] parameters)
         {
-            var firstParams = method.GetParameters();
+            var firstParams = method.GetParameterTypes();
             if (firstParams.LongLength != parameters.LongLength)
                 return false;
             for (long i = 0; i < firstParams.LongLength; i++)
-                if (firstParams[i].ParameterType != parameters[i])
+                if (firstParams[i] != parameters[i])
                     return false;
             return true;
         }
@@ -40,7 +40,7 @@ namespace DotNext.Reflection
         /// <param name="other">The second method to compare.</param>
         /// <returns><see langword="true"/>, if both methods have the same number of formal parameters and parameters are equal by type; otherwise, <see langword="false"/>.</returns>
 		public static bool SignatureEquals(this MethodBase method, MethodBase other)
-            => method.SignatureEquals(other.GetParameterTypes());
+            => method.IsStatic == other.IsStatic && method.SignatureEquals(other.GetParameterTypes());
 
         /// <summary>
         /// Determines whether formal parameters of both methods are equal by type

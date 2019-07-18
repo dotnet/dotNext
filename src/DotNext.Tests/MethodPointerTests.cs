@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Xunit;
 
 namespace DotNext
@@ -8,10 +9,11 @@ namespace DotNext
         private static object CreateObject() => new object();
 
         [Fact]
-        public static void ParameterlessPointer()
+        public void ParameterlessPointer()
         {
-            var ptr = new FunctionPointer<object>(CreateObject);
+            var ptr = new FunctionPointer<object>(GetType().GetMethod(nameof(CreateObject), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic));
             NotNull(ptr.Invoke());
+            ptr = new FunctionPointer<object>(GetType().GetMethod(nameof(CreateObject), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic));
             var d = ptr.ToDelegate();
             NotNull(d.Invoke());
         }
@@ -23,6 +25,14 @@ namespace DotNext
             Equal(123, ptr.Invoke("123"));
             ptr = default;
             Null(ptr.ToDelegate());
+        }
+
+        [Fact]
+        public static void AllocTest()
+        {
+            var parameters1 = new Func<string, int>(int.Parse).Method.GetParameters();
+            var parameters2 = new Func<string, int>(int.Parse).Method.GetParameters();
+            Same(parameters1, parameters2);
         }
     }
 }
