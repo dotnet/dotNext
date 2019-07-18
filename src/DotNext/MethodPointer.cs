@@ -135,7 +135,7 @@ namespace DotNext
         public FunctionPointer(MethodInfo method)
         {
             var paramCount = method.GetParameters().LongLength;
-            if (method.IsStatic && paramCount != 2 || paramCount != 1)
+            if (method.IsStatic ? paramCount != 1 : paramCount != 0)
                 throw new ArgumentException(ExceptionMessages.CannotMakeMethodPointer, nameof(method));
             methodPtr = method.MethodHandle.GetFunctionPointer();
         }

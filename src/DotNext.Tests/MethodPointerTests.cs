@@ -21,6 +21,8 @@ namespace DotNext
         {
             var ptr = new FunctionPointer<string, int>(int.Parse);
             Equal(123, ptr.Invoke("123"));
+            ptr = default;
+            Null(ptr.ToDelegate());
         }
     }
 }
