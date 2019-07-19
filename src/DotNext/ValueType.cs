@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
+using TypeRef = InlineIL.TypeRef;
 
 namespace DotNext
 {
@@ -38,7 +39,7 @@ namespace DotNext
             /// <param name="second">The second value to be compared.</param>
             /// <returns><see langword="true"/>, if two values are equal; otherwise, <see langword="false"/>.</returns>
             /// <seealso cref="BitwiseEquals(T, T)"/>
-            public bool Equals(T first, T second) => BitwiseEquals(first, second);
+            public bool Equals(T first, T second) => BitwiseEquals(ref first, ref second);
 
             /// <summary>
             /// Computes bitwise hash code for the given value.
@@ -46,7 +47,7 @@ namespace DotNext
             /// <param name="obj">The value for which a hash code is to be returned.</param>
             /// <returns>A hash code for the specified object.</returns>
             /// <seealso cref="BitwiseHashCode(T)"/>
-            public int GetHashCode(T obj) => BitwiseHashCode(obj);
+            public int GetHashCode(T obj) => BitwiseHashCode(ref obj, true);
 
             /// <summary>
             /// Performs bitwise comparison between two values.
@@ -55,7 +56,7 @@ namespace DotNext
             /// <param name="second">The second value to compare.</param>
             /// <returns>A value that indicates the relative order of the objects being compared.</returns>
             /// <seealso cref="BitwiseCompare(T, T)"/>
-            public int Compare(T first, T second) => BitwiseCompare(first, second);
+            public int Compare(T first, T second) => BitwiseCompare(ref first, ref second);
         }
 
         /// <summary>
@@ -77,6 +78,57 @@ namespace DotNext
         /// </summary>
         public static readonly bool IsPrimitive = typeof(T).IsPrimitive;
 
+        private static bool BitwiseEquals(ref T first, ref T second)
+        {
+            Sizeof(typeof(T));
+            Conv_I8();
+            Pop(out long size);
+            switch(size)
+            {
+                case 1:
+                    Push(ref first);
+                    Ldind_I1();
+                    Push(ref second);
+                    Ldind_I1();
+                    Ceq();
+                    break;
+                case 2:
+                    Push(ref first);
+                    Ldind_I2();
+                    Push(ref second);
+                    Ldind_I2();
+                    Ceq();
+                    break;
+                case 3:
+                    goto default;
+                case 4:
+                    Push(ref first);
+                    Ldind_I4();
+                    Push(ref second);
+                    Ldind_I4();
+                    Ceq();
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
+                case 8:
+                    Push(ref first);
+                    Ldind_I8();
+                    Push(ref second);
+                    Ldind_I8();
+                    Ceq();
+                    break;
+                default:
+                    Push(ref first);
+                    Push(ref second);
+                    Push(size);
+                    Call(new M(typeof(Memory), nameof(Memory.EqualsAligned)));
+                    break;
+            }
+            return Return<bool>();
+        }
+
         /// <summary>
         /// Checks bitwise equality between two values of different value types.
         /// </summary>
@@ -92,7 +144,6 @@ namespace DotNext
             where U : struct
         {
             const string methodExit = "exit";
-            const string fastPath = "fastPath";
             Sizeof(typeof(T));
             Conv_I8();
             Pop(out long size);
@@ -102,23 +153,10 @@ namespace DotNext
             Ceq();
             Dup();
             Brfalse(methodExit);//sizeof(T) != sizeof(U), return false
-
             Pop();  //to remove value produced by Dup()
-            Push(size);
-            Ldc_I8(sizeof(long));
-            Ble(fastPath);
-            //size > sizeof(ulong)
-            Ldarga(0);
-            Ldarga(1);
-            Push(size);
-            Call(new M(typeof(Memory), nameof(Memory.EqualsAligned)));
-            Ret();
-            //size <= sizeof(ulong), just compare two values
-            MarkLabel(fastPath);
-            Push(first);
-            Push(second);
-            Ceq();
-
+            Push(ref first);
+            Push(ref second);
+            Call(new M(typeof(ValueType<T>), nameof(BitwiseEquals), new TypeRef(typeof(T)).MakeByRefType(), new TypeRef(typeof(T)).MakeByRefType()));
             MarkLabel(methodExit);
             return Return<bool>();
         }
@@ -133,31 +171,7 @@ namespace DotNext
         /// <param name="first">The first value to check.</param>
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
-        public static bool BitwiseEquals(T first, T second)
-        {
-            //cannot just call BitwiseEquals<U> because of performance issues measured during BitwiseEqualityBenchmark
-            //probably this problem caused by double passing of large structs through stack
-            const string fastPath = "fastPath";
-            Sizeof(typeof(T));
-            Conv_I8();
-            Pop(out long size);
-            Push(size);
-            Ldc_I8(sizeof(long));
-            Ble(fastPath);
-            //size > sizeof(ulong)
-            Push(ref first);
-            Push(ref second);
-            Push(size);
-            Call(new M(typeof(Memory), nameof(Memory.EqualsAligned)));
-            Ret();
-            //size <= sizeof(ulong), just compare two values
-            MarkLabel(fastPath);
-            Push(first);
-            Push(second);
-            Ceq();
-
-            return Return<bool>();
-        }
+        public static bool BitwiseEquals(T first, T second) => BitwiseEquals(ref first, ref second);
 
         /// <summary>
         /// Computes bitwise hash code for the specified value.
@@ -174,41 +188,43 @@ namespace DotNext
         public static unsafe int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
             => Memory.GetHashCode32(Unsafe.AsPointer(ref value), Size, hash, hashFunction, salted);
 
-        /// <summary>
-        /// Computes hash code for the structure content.
-        /// </summary>
-        /// <param name="value">Value to be hashed.</param>
-        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>Content hash code.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int BitwiseHashCode(T value, bool salted)
+        private static int BitwiseHashCode(ref T value, bool salted)
         {
-            const string fastPath = "fastPath";
             const string methodExit = "exit";
             Sizeof(typeof(T));
             Conv_I8();
             Pop(out long size);
-            Push(size);
-            Ldc_I8(sizeof(long));
-
-            Ble(fastPath);
-            Push(ref value);
-            Push(size);
-            Ldc_I4_1();
-            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32), typeof(IntPtr), typeof(long), typeof(bool)));
-            Ret();
-            MarkLabel(fastPath);
-            //((int)value) ^ (int)(value >> 32) + SALT
-            Push(value);
-            Conv_U8();
-            Pop(out ulong primitive);
-            Push(primitive);
-            Conv_I4();
-            Push(primitive);
-            Ldc_I4(32);
-            Shr_Un();
-            Conv_I4();
-            Xor();
+            switch(size)
+            {
+                case 1:
+                    Push(ref value);
+                    Ldind_I1();
+                    break;
+                case 2:
+                    Push(ref value);
+                    Ldind_I2();
+                    break;
+                case 3:
+                    goto default;
+                case 4:
+                    Push(ref value);
+                    Ldind_I4();
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
+                case 8:
+                    Push(ref value);
+                    Call(new M(typeof(ulong), nameof(GetHashCode)));
+                    break;
+                default:
+                    Push(ref value);
+                    Push(size);
+                    Push(salted);
+                    Call(new M(typeof(Memory), nameof(Memory.GetHashCode32), typeof(IntPtr), typeof(long), typeof(bool)));
+                    return Return<int>();
+            }
             Push(salted);
             Brfalse(methodExit);
             Push(RandomExtensions.BitwiseHashSalt);
@@ -218,42 +234,21 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Computes hash code for the structure content.
+        /// </summary>
+        /// <param name="value">Value to be hashed.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Content hash code.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe int BitwiseHashCode(T value, bool salted) => BitwiseHashCode(ref value, salted);
+
+        /// <summary>
 		/// Computes salted hash code for the structure content.
 		/// </summary>
 		/// <param name="value">Value to be hashed.</param>
 		/// <returns>Content hash code.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]      
-        public static unsafe int BitwiseHashCode(T value)
-        {
-            const string fastPath = "fastPath";
-            Sizeof(typeof(T));
-            Conv_I8();
-            Pop(out long size);
-            Push(size);
-            Ldc_I8(sizeof(long));
-
-            Ble(fastPath);
-            Push(ref value);
-            Push(size);
-            Ldc_I4_1();
-            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32), typeof(IntPtr), typeof(long), typeof(bool)));
-            Ret();
-            MarkLabel(fastPath);
-            //((int)value) ^ (int)(value >> 32)
-            Push(value);
-            Conv_U8();
-            Pop(out ulong primitive);
-            Push(primitive);
-            Conv_I4();
-            Push(primitive);
-            Ldc_I4(32);
-            Shr_Un();
-            Conv_I4();
-            Xor();
-            Push(RandomExtensions.BitwiseHashSalt);
-            Add();
-            return Return<int>();
-        }
+        public static unsafe int BitwiseHashCode(T value) => BitwiseHashCode(ref value, true);
 
         /// <summary>
         /// Indicates that specified value type is the default value.
@@ -262,25 +257,47 @@ namespace DotNext
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefault(T value)
         {
-            const string fastPath = "fastPath";
             Sizeof(typeof(T));
             Conv_I8();
             Pop(out long size);
-            Push(size);
-            Ldc_I8(sizeof(long));
-
-            Ble(fastPath);  //size <= sizeof(ulong), move to fast path
-            //size < sizeof(ulong)
-            Push(ref value);
-            Push(size);
-            Call(new M(typeof(Memory), nameof(Memory.IsZeroAligned)));
-            Ret();
-            //size <= sizeof(ulong)
-            MarkLabel(fastPath);
-            Push(value);
-            Conv_I8();
-            Ldc_I8(0L);
-            Ceq();
+            switch(size)
+            {
+                case 1:
+                    Push(ref value);
+                    Ldind_I1();
+                    Ldc_I4_0();
+                    Ceq();
+                    break;
+                case 2:
+                    Push(ref value);
+                    Ldind_I2();
+                    Ldc_I4_0();
+                    Ceq();
+                    break;
+                case 3:
+                    goto default;
+                case 4:
+                    Push(ref value);
+                    Ldind_I4();
+                    Ldc_I4_0();
+                    Ceq();
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
+                case 8:
+                    Push(ref value);
+                    Ldind_I8();
+                    Ldc_I8(0L);
+                    Ceq();
+                    break;
+                default:
+                    Push(ref value);
+                    Push(size);
+                    Call(new M(typeof(Memory), nameof(Memory.IsZeroAligned)));
+                    break;
+            }
             return Return<bool>();
         }
 
@@ -292,14 +309,60 @@ namespace DotNext
         public static unsafe byte[] AsBinary(T value)
             => new ReadOnlySpan<byte>(Unsafe.AsPointer(ref value), Size).ToArray();
 
+        private static int BitwiseCompare(ref T first, ref T second)
+        {
+            Sizeof(typeof(T));
+            Conv_I8();
+            Pop(out long size);
+            switch(size)
+            {
+                case 1:
+                    Push(ref first);
+                    Push(ref second);
+                    Ldind_U1();
+                    Call(new M(typeof(byte), nameof(byte.CompareTo), typeof(byte)));
+                    break;
+                case 2:
+                    Push(ref first);
+                    Push(ref second);
+                    Ldind_U2();
+                    Call(new M(typeof(ushort), nameof(ushort.CompareTo), typeof(ushort)));
+                    break;
+                case 3:
+                    goto default;
+                case 4:
+                    Push(ref first);
+                    Push(ref second);
+                    Ldind_U4();
+                    Call(new M(typeof(uint), nameof(uint.CompareTo), typeof(uint)));
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
+                case 8:
+                    Push(ref first);
+                    Push(ref second);
+                    Ldobj(typeof(ulong));
+                    Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
+                    break;
+                default:
+                    Push(ref first);
+                    Push(ref second);
+                    Push(size);
+                    Call(new M(typeof(Memory), nameof(Memory.Compare), typeof(IntPtr), typeof(IntPtr), typeof(long)));
+                    break;
+            }
+            return Return<int>();
+        }
+
         /// <summary>
         /// Compares bits of two values of the same type.
         /// </summary>
         /// <param name="first">The first value to compare.</param>
         /// <param name="second">The second value to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-        public static unsafe int BitwiseCompare(T first, T second)
-            => Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
+        public static unsafe int BitwiseCompare(T first, T second) => BitwiseCompare(ref first, ref second);
 
         /// <summary>
         /// Compares bits of two values of the different type.
@@ -310,9 +373,22 @@ namespace DotNext
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         public static unsafe int BitwiseCompare<U>(T first, U second)
             where U : struct
-            => Size == ValueType<U>.Size ?
-                    Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size) :
-                    Size.CompareTo(ValueType<U>.Size);
+        {
+            const string fastPath = "fast";
+            Sizeof(typeof(T));
+            Pop(out uint size);
+            Push(ref size);
+            Sizeof(typeof(U));
+            Call(new M(typeof(uint), nameof(uint.CompareTo), typeof(uint)));
+            Dup();
+            Brfalse(fastPath);
+            Pop();
+            Push(ref first);
+            Push(ref second);
+            Call(new M(typeof(ValueType<T>), nameof(BitwiseEquals), new TypeRef(typeof(T)).MakeByRefType(), new TypeRef(typeof(T)).MakeByRefType()));
+            MarkLabel(fastPath);
+            return Return<int>();
+        }
 
         /// <summary>
         /// Obtain a value of type <typeparamref name="To"/> by 
