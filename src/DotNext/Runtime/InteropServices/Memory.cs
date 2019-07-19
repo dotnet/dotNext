@@ -692,36 +692,6 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
-        /// Converts managed pointer into typed reference.
-        /// </summary>
-        /// <remarks>
-        /// This method is alternative to undocumented keyword <c>__makeref</c> in C#.
-        /// Pointer has type void* because of bug in Roslyn compiler.
-        /// </remarks>
-        /// <example>
-        /// <code>
-        /// var reference = default(TypedReference);
-        /// var i = 20;
-        /// AsTypedReference(ref i, &amp;reference);
-        /// </code>
-        /// </example>
-        /// <param name="managedPtr">The managed pointer to be converted into typed reference.</param>
-        /// <param name="reference">A pointer to <see cref="TypedReference"/>.</param>
-        /// <typeparam name="T">The type to be associated with the typed reference.</typeparam>
-        [CLSCompliant(false)]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void AsTypedReference<T>(ref T managedPtr, void* reference)
-        {
-            if (reference == NullPtr)
-                throw new ArgumentNullException(nameof(reference));
-            Push(reference);
-            Push(ref managedPtr);
-            Mkrefany(typeof(T));
-            Stobj(typeof(typedref));
-            Ret();
-        }
-
-        /// <summary>
         /// Gets managed pointer to the boxed value.
         /// </summary>
         /// <param name="box">The boxed value.</param>

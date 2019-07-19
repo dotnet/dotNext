@@ -31,15 +31,6 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public unsafe static void RefToTypedReference()
-        {
-            var reference = default(TypedReference);
-            var i = 20;
-            Memory.AsTypedReference(ref i, &reference);
-            Equal(20, TypedReference.ToObject(reference));
-        }
-
-        [Fact]
         public static void SwapValues()
         {
             var x = 10;
