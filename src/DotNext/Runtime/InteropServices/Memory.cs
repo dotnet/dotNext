@@ -464,7 +464,7 @@ namespace DotNext.Runtime.InteropServices
                     Push(second);
                     Ldind_I1();
                     Ceq();
-                    return Return<bool>();
+                    break;
                 case sizeof(ushort):
                     Push(first);
                     Unaligned(1);
@@ -473,7 +473,7 @@ namespace DotNext.Runtime.InteropServices
                     Unaligned(1);
                     Ldind_I2();
                     Ceq();
-                    return Return<bool>();
+                    break;
                 case sizeof(uint):
                     Push(first);
                     Unaligned(1);
@@ -482,7 +482,7 @@ namespace DotNext.Runtime.InteropServices
                     Unaligned(1);
                     Ldind_I4();
                     Ceq();
-                    return Return<bool>();
+                    break;
                 case sizeof(ulong):
                     Push(first);
                     Unaligned(1);
@@ -491,7 +491,7 @@ namespace DotNext.Runtime.InteropServices
                     Unaligned(1);
                     Ldind_I8();
                     Ceq();
-                    return Return<bool>();
+                    break;
                 default:
                     do
                     {
@@ -505,8 +505,10 @@ namespace DotNext.Runtime.InteropServices
                         else
                             return false;
                     } while (length > 0);
-                    return true;
+                    Ldc_I4_1(); //true
+                    break;
             }
+            return Return<bool>();
         }
 
         /// <summary>
