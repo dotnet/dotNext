@@ -125,5 +125,32 @@ namespace DotNext
             Equal(1, true.ToInt32());
             Equal(0, false.ToInt32());
         }
+
+        [Fact]
+        public static void BitwiseHashCodeForInt()
+        {
+            var i = 20;
+            var hashCode = ValueType<int>.BitwiseHashCode(i, false);
+            Equal(i, hashCode);
+            hashCode = ValueType<int>.BitwiseHashCode(i, true);
+            NotEqual(i, hashCode);
+        }
+
+        [Fact]
+        public static void BitwiseHashCodeForLong()
+        {
+            var i = 20L;
+            var hashCode = ValueType<long>.BitwiseHashCode(i, false);
+            Equal(i, hashCode);
+            hashCode = ValueType<long>.BitwiseHashCode(i, true);
+            NotEqual(i, hashCode);
+        }
+
+        [Fact]
+        public static void BitwiseHashCodeForGuid()
+        {
+            var value = Guid.NewGuid();
+            ValueType<Guid>.BitwiseHashCode(value, false);
+        }
     }
 }

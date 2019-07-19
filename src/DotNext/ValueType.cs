@@ -112,7 +112,7 @@ namespace DotNext
             Ldarga(1);
             Push(size);
             Call(new M(typeof(Memory), nameof(Memory.EqualsAligned)));
-            Br(methodExit);
+            Ret();
             //size <= sizeof(ulong), just compare two values
             MarkLabel(fastPath);
             Push(first);
@@ -137,7 +137,6 @@ namespace DotNext
         {
             //cannot just call BitwiseEquals<U> because of performance issues measured during BitwiseEqualityBenchmark
             //probably this problem caused by double passing of large structs through stack
-            const string methodExit = "exit";
             const string fastPath = "fastPath";
             Sizeof(typeof(T));
             Conv_I8();
@@ -146,18 +145,17 @@ namespace DotNext
             Ldc_I8(sizeof(long));
             Ble(fastPath);
             //size > sizeof(ulong)
-            Ldarga(0);
-            Ldarga(1);
+            Push(ref first);
+            Push(ref second);
             Push(size);
             Call(new M(typeof(Memory), nameof(Memory.EqualsAligned)));
-            Br(methodExit);
+            Ret();
             //size <= sizeof(ulong), just compare two values
             MarkLabel(fastPath);
             Push(first);
             Push(second);
             Ceq();
 
-            MarkLabel(methodExit);
             return Return<bool>();
         }
 
@@ -184,7 +182,40 @@ namespace DotNext
         /// <returns>Content hash code.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int BitwiseHashCode(T value, bool salted)
-            => Memory.GetHashCode32(Unsafe.AsPointer(ref value), Size, salted);
+        {
+            const string fastPath = "fastPath";
+            const string methodExit = "exit";
+            Sizeof(typeof(T));
+            Conv_I8();
+            Pop(out long size);
+            Push(size);
+            Ldc_I8(sizeof(long));
+
+            Ble(fastPath);
+            Push(ref value);
+            Push(size);
+            Ldc_I4_1();
+            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32), typeof(IntPtr), typeof(long), typeof(bool)));
+            Ret();
+            MarkLabel(fastPath);
+            //((int)value) ^ (int)(value >> 32) + SALT
+            Push(value);
+            Conv_U8();
+            Pop(out ulong primitive);
+            Push(primitive);
+            Conv_I4();
+            Push(primitive);
+            Ldc_I4(32);
+            Shr_Un();
+            Conv_I4();
+            Xor();
+            Push(salted);
+            Brfalse(methodExit);
+            Push(RandomExtensions.BitwiseHashSalt);
+            Add();
+            MarkLabel(methodExit);
+            return Return<int>();
+        }
 
         /// <summary>
 		/// Computes salted hash code for the structure content.
@@ -192,7 +223,37 @@ namespace DotNext
 		/// <param name="value">Value to be hashed.</param>
 		/// <returns>Content hash code.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]      
-        public static unsafe int BitwiseHashCode(T value) => Memory.GetHashCode32(Unsafe.AsPointer(ref value), Size, true);
+        public static unsafe int BitwiseHashCode(T value)
+        {
+            const string fastPath = "fastPath";
+            Sizeof(typeof(T));
+            Conv_I8();
+            Pop(out long size);
+            Push(size);
+            Ldc_I8(sizeof(long));
+
+            Ble(fastPath);
+            Push(ref value);
+            Push(size);
+            Ldc_I4_1();
+            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32), typeof(IntPtr), typeof(long), typeof(bool)));
+            Ret();
+            MarkLabel(fastPath);
+            //((int)value) ^ (int)(value >> 32)
+            Push(value);
+            Conv_U8();
+            Pop(out ulong primitive);
+            Push(primitive);
+            Conv_I4();
+            Push(primitive);
+            Ldc_I4(32);
+            Shr_Un();
+            Conv_I4();
+            Xor();
+            Push(RandomExtensions.BitwiseHashSalt);
+            Add();
+            return Return<int>();
+        }
 
         /// <summary>
         /// Indicates that specified value type is the default value.
@@ -201,27 +262,25 @@ namespace DotNext
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefault(T value)
         {
-            const string methodExit = "exit";
             const string fastPath = "fastPath";
             Sizeof(typeof(T));
-            Conv_I4();
-            Pop(out int size);
+            Conv_I8();
+            Pop(out long size);
             Push(size);
-            Ldc_I4_8(); //sizeof(ulong) is 8 bytes
+            Ldc_I8(sizeof(long));
 
             Ble(fastPath);  //size <= sizeof(ulong), move to fast path
             //size < sizeof(ulong)
-            Ldarga(0);
+            Push(ref value);
             Push(size);
             Call(new M(typeof(Memory), nameof(Memory.IsZeroAligned)));
-            Br(methodExit);
+            Ret();
             //size <= sizeof(ulong)
             MarkLabel(fastPath);
             Push(value);
             Conv_I8();
             Ldc_I8(0L);
             Ceq();
-            MarkLabel(methodExit);
             return Return<bool>();
         }
 

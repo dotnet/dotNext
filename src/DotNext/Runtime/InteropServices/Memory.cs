@@ -561,7 +561,7 @@ namespace DotNext.Runtime.InteropServices
         [CLSCompliant(false)]
         public static int Compare(void* first, void* second, long length) => Compare(new IntPtr(first), new IntPtr(second), length);
 
-        internal static bool IsZeroAligned(IntPtr address, int length)
+        internal static bool IsZeroAligned(IntPtr address, long length)
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)
