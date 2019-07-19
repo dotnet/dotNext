@@ -24,5 +24,14 @@ namespace DotNext.Reflection
         public static MethodInfo GetInvokeMethod<D>()
             where D : Delegate
             => typeof(D).GetInvokeMethod();
+
+        internal static bool CheckMethodPointerSignature<D>(this MethodInfo method)
+            where D : Delegate
+        {
+            if (method is null)
+                throw new ArgumentNullException(nameof(method));
+            var invokeMethod = GetInvokeMethod<D>();
+            return method.ReturnType == invokeMethod.ReturnType && method.SignatureEquals(invokeMethod.GetParameterTypes());
+        }
     }
 }

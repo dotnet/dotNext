@@ -19,6 +19,13 @@ namespace DotNext
         }
 
         [Fact]
+        public static void UsingMethodPointerSource()
+        {
+            var factory = new MethodPointerSource<Func<object>, FunctionPointer<object>>(CreateObject);
+            NotNull(factory.Pointer.Invoke());
+        }
+
+        [Fact]
         public static void ParseViaPointer()
         {
             var ptr = new FunctionPointer<string, int>(int.Parse);
@@ -33,6 +40,27 @@ namespace DotNext
             var parameters1 = new Func<string, int>(int.Parse).Method.GetParameters();
             var parameters2 = new Func<string, int>(int.Parse).Method.GetParameters();
             Same(parameters1, parameters2);
+        }
+
+        [Fact]
+        public static void FunctionWithTwoParameters()
+        {
+            var ptr = new FunctionPointer<string, string, string>(string.Concat);
+            Equal("Hello, world!", ptr.Invoke("Hello, ", "world!"));
+        }
+
+        [Fact]
+        public static void FunctionWithThreeParameters()
+        {
+            var ptr = new FunctionPointer<string, string, string, string>(string.Concat);
+            Equal("Hello, world!", ptr.Invoke("Hello", ", ", "world!"));
+        }
+
+        [Fact]
+        public static void FunctionWithFourParameters()
+        {
+            var ptr = new FunctionPointer<string, string, string, string, string>(string.Concat);
+            Equal("Hello, world!", ptr.Invoke("Hello", ", ", "world", "!"));
         }
     }
 }

@@ -32,6 +32,45 @@ namespace DotNext
             V ISupplier<V>.Supply() => factory();
         }
 
+        private readonly struct FuncPtrSupplier<V> : ISupplier<V>
+        {
+            private readonly FunctionPointer<V> factory;
+
+            internal FuncPtrSupplier(FunctionPointer<V> factory) => this.factory = factory;
+
+            V ISupplier<V>.Supply() => factory.Invoke();
+        }
+
+        private readonly struct FuncPtrSupplier<T, V> : ISupplier<V>
+        {
+            private readonly T arg;
+            private readonly FunctionPointer<T, V> factory;
+
+            internal FuncPtrSupplier(T arg, FunctionPointer<T, V> factory)
+            {
+                this.arg = arg;
+                this.factory = factory;
+            }
+
+            V ISupplier<V>.Supply() => factory.Invoke(arg);
+        }
+
+        private readonly struct FuncPtrSupplier<T1, T2, V> : ISupplier<V>
+        {
+            private readonly T1 arg1;
+            private readonly T2 arg2;
+            private readonly FunctionPointer<T1, T2, V> factory;
+
+            internal FuncPtrSupplier(T1 arg1, T2 arg2, FunctionPointer<T1, T2, V> factory)
+            {
+                this.arg1 = arg1;
+                this.arg2 = arg2;
+                this.factory = factory;
+            }
+
+            V ISupplier<V>.Supply() => factory.Invoke(arg1, arg2);
+        }
+
         private readonly struct FuncSupplier<T, V> : ISupplier<V>
         {
             private readonly T arg;
@@ -258,6 +297,51 @@ namespace DotNext
         public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, Func<T1, T2, V> valueFactory)
         {
             var supplier = new FuncSupplier<T1, T2, V>(arg1, arg2, valueFactory);
+            return GetStorage(true).GetOrSet(slot, ref supplier);
+        }
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public V  GetOrSet<V>(UserDataSlot<V> slot, FunctionPointer<V> valueFactory)
+        {
+            var supplier = new FuncPtrSupplier<V>(valueFactory);
+            return GetStorage(true).GetOrSet(slot, ref supplier);
+        }
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="T">The type of the argument to be passed into factory.</typeparam>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="arg">The argument to be passed into factory.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, FunctionPointer<T, V> valueFactory)
+        {
+            var supplier = new FuncPtrSupplier<T, V>(arg, valueFactory);
+            return GetStorage(true).GetOrSet(slot, ref supplier);
+        }
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first argument to be passed into factory.</typeparam>
+        /// <typeparam name="T2">The type of the first argument to be passed into factory.</typeparam>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="arg1">The first argument to be passed into factory.</param>
+        /// <param name="arg2">The second argument to be passed into factory.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, FunctionPointer<T1, T2, V> valueFactory)
+        {
+            var supplier = new FuncPtrSupplier<T1, T2, V>(arg1, arg2, valueFactory);
             return GetStorage(true).GetOrSet(slot, ref supplier);
         }
 
