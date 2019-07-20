@@ -206,7 +206,7 @@ namespace DotNext.Runtime.InteropServices
 		public static void Copy(IntPtr source, IntPtr destination, long length)
             => Copy(source.ToPointer(), destination.ToPointer(), length);
 
-        private static void ComputeHashCode64<H>(IntPtr source, long length, ref H hashFunction, bool salted)
+        private static void GetHashCode64<H>(IntPtr source, long length, ref H hashFunction, bool salted)
             where H : struct, IHashFunction<long>
         {
             switch (length)
@@ -253,7 +253,7 @@ namespace DotNext.Runtime.InteropServices
         public static long GetHashCode64(IntPtr source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
         {
             var hashInfo = new Int64HashFunction(hash, hashFunction);
-            ComputeHashCode64(source, length, ref hashInfo, salted);
+            GetHashCode64(source, length, ref hashInfo, salted);
             return hashInfo.Result;
         }
 
@@ -288,7 +288,7 @@ namespace DotNext.Runtime.InteropServices
         public static long GetHashCode64(IntPtr source, long length, bool salted = true)
         {
             var hashInfo = new FNV1a64(FNV1a64.Offset);
-            ComputeHashCode64(source, length, ref hashInfo, salted);
+            GetHashCode64(source, length, ref hashInfo, salted);
             return hashInfo.Result;
         }
 
@@ -307,7 +307,7 @@ namespace DotNext.Runtime.InteropServices
         public static long GetHashCode64(void* source, long length, bool salted = true)
             => GetHashCode64(new IntPtr(source), length, salted);
 
-        private static void ComputeHashCode32<H>(IntPtr source, long length, ref H hashFunction, bool salted)
+        private static void GetHashCode32<H>(IntPtr source, long length, ref H hashFunction, bool salted)
             where H : struct, IHashFunction<int>
         {
             switch (length)
@@ -351,7 +351,7 @@ namespace DotNext.Runtime.InteropServices
         public static int GetHashCode32(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
         {
             var hashInfo = new Int32HashFunction(hash, hashFunction);
-            ComputeHashCode32(source, length, ref hashInfo, salted);
+            GetHashCode32(source, length, ref hashInfo, salted);
             return hashInfo.Result;
         }
 
@@ -386,7 +386,7 @@ namespace DotNext.Runtime.InteropServices
         public static int GetHashCode32(IntPtr source, long length, bool salted = true)
         {
             var hashInfo = new FNV1a32(FNV1a32.Offset);
-            ComputeHashCode32(source, length, ref hashInfo, salted);
+            GetHashCode32(source, length, ref hashInfo, salted);
             return hashInfo.Result;
         }
 
@@ -443,6 +443,23 @@ namespace DotNext.Runtime.InteropServices
 		[CLSCompliant(false)]
         public static bool Equals(void* first, void* second, long length) => Equals(new IntPtr(first), new IntPtr(second), length);
 
+        private static bool EqualsUnaligned(IntPtr first, IntPtr second, long length)
+        {
+            do
+            {
+                var count = (int)length.Min(int.MaxValue);
+                if (new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceEqual(new ReadOnlySpan<byte>(second.ToPointer(), count)))
+                {
+                    first += count;
+                    second += count;
+                    length -= count;
+                }
+                else
+                    return false;
+            } while (length > 0);
+            return true;
+        }
+
         /// <summary>
         /// Computes equality between two blocks of memory.
         /// </summary>
@@ -493,22 +510,32 @@ namespace DotNext.Runtime.InteropServices
                     Ceq();
                     break;
                 default:
-                    do
-                    {
-                        var count = (int)length.Min(int.MaxValue);
-                        if (new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceEqual(new ReadOnlySpan<byte>(second.ToPointer(), count)))
-                        {
-                            first += count;
-                            second += count;
-                            length -= count;
-                        }
-                        else
-                            return false;
-                    } while (length > 0);
-                    Ldc_I4_1(); //true
+                    Push(first);
+                    Push(second);
+                    Push(length);
+                    Call(new M(typeof(Memory), nameof(EqualsUnaligned)));
                     break;
             }
             return Return<bool>();
+        }
+
+        internal static int CompareUnaligned(IntPtr first, IntPtr second, long length)
+        {
+            int comparison;
+            do
+            {
+                var count = (int)length.Min(int.MaxValue);
+                comparison = new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceCompareTo(new ReadOnlySpan<byte>(second.ToPointer(), count));
+                if (comparison == 0)
+                {
+                    first += count;
+                    second += count;
+                    length -= count;
+                }
+                else
+                    break;
+            } while (length > 0);
+            return comparison;
         }
 
         /// <summary>
@@ -522,35 +549,69 @@ namespace DotNext.Runtime.InteropServices
         {
             if (first == second)
                 return 0;
+            long temp;
             switch (length)
             {
                 case 0L:
                     return 0;
-                case sizeof(byte):
-                    return Unsafe.Read<byte>(first.ToPointer()).CompareTo(Unsafe.Read<byte>(second.ToPointer()));
-                case sizeof(ushort):
-                    return Unsafe.ReadUnaligned<ushort>(first.ToPointer()).CompareTo(Unsafe.ReadUnaligned<ushort>(second.ToPointer()));
-                case sizeof(uint):
-                    return Unsafe.ReadUnaligned<uint>(first.ToPointer()).CompareTo(Unsafe.ReadUnaligned<uint>(second.ToPointer()));
-                case sizeof(ulong):
-                    return Unsafe.ReadUnaligned<ulong>(first.ToPointer()).CompareTo(Unsafe.ReadUnaligned<ulong>(second.ToPointer()));
+                case 1:
+                    Push(first);
+                    Push(second);
+                    Unaligned(1);
+                    Ldind_U1();
+                    Call(new M(typeof(byte), nameof(ulong.CompareTo), typeof(byte)));
+                    break;
+                case 2:
+                    Push(first);
+                    Unaligned(1);
+                    Ldind_U2();
+                    Conv_U8();
+                    Pop(out temp);
+                    Push(ref temp);
+                    Push(second);
+                    Unaligned(1);
+                    Ldind_U2();
+                    Conv_U8();
+                    Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
+                    break;
+                case 3:
+                    goto default;
+                case 4:
+                    Push(first);
+                    Unaligned(1);
+                    Ldind_U4();
+                    Conv_U8();
+                    Pop(out temp);
+                    Push(ref temp);
+                    Push(second);
+                    Unaligned(1);
+                    Ldind_U4();
+                    Conv_U8();
+                    Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
+                case 8:
+                    Push(first);
+                    Unaligned(1);
+                    Ldobj(typeof(ulong));
+                    Pop(out temp);
+                    Push(ref temp);
+                    Push(second);
+                    Unaligned(1);
+                    Ldobj(typeof(ulong));
+                    Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
+                    break;
                 default:
-                    int comparison;
-                    do
-                    {
-                        var count = (int)length.Min(int.MaxValue);
-                        comparison = new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceCompareTo(new ReadOnlySpan<byte>(second.ToPointer(), count));
-                        if (comparison == 0)
-                        {
-                            first += count;
-                            second += count;
-                            length -= count;
-                        }
-                        else
-                            break;
-                    } while (length > 0);
-                    return comparison;
+                    Push(first);
+                    Push(second);
+                    Push(length);
+                    Call(new M(typeof(Memory), nameof(CompareUnaligned)));
+                    break;
             }
+            return Return<int>();
         }
 
         /// <summary>

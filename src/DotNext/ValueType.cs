@@ -350,7 +350,7 @@ namespace DotNext
                     Push(ref first);
                     Push(ref second);
                     Push(size);
-                    Call(new M(typeof(Memory), nameof(Memory.Compare), typeof(IntPtr), typeof(IntPtr), typeof(long)));
+                    Call(new M(typeof(Memory), nameof(Memory.CompareUnaligned)));
                     break;
             }
             return Return<int>();

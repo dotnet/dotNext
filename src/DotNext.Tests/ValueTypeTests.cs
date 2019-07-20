@@ -152,5 +152,11 @@ namespace DotNext
             var value = Guid.NewGuid();
             ValueType<Guid>.BitwiseHashCode(value, false);
         }
+
+        [Fact]
+        public static void BitwiseCompare()
+        {
+            True(ValueType<int>.BitwiseCompare(0, int.MinValue) < 0);
+        }
     }
 }
