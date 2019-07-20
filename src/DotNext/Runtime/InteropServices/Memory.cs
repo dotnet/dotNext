@@ -768,5 +768,29 @@ namespace DotNext.Runtime.InteropServices
             Unbox(typeof(T));
             return ref ReturnRef<T>();
         }
+
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="Span{T}"/>.
+        /// </summary>
+        /// <param name="pointer">The typed pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The span of contiguous memory.</returns>
+        [CLSCompliant(false)]
+        public static unsafe Span<byte> AsSpan<T>(T* pointer)
+            where T : unmanaged
+            => new Span<byte>(pointer, Unsafe.SizeOf<T>());
+
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="ReadOnlySpan{T}"/>.
+        /// </summary>
+        /// <param name="pointer">The typed pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The span of contiguous memory.</returns>
+        [CLSCompliant(false)]
+        public static unsafe ReadOnlySpan<byte> AsReadOnlySpan<T>(T* pointer)
+            where T : unmanaged
+            => new ReadOnlySpan<byte>(pointer, Unsafe.SizeOf<T>());
     }
 }

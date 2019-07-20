@@ -154,6 +154,11 @@ namespace DotNext.Runtime.InteropServices
         public unsafe Span<T> ToSpan(int length) => new Span<T>(value, length);
 
         /// <summary>
+        /// Converts this pointer into span of bytes.
+        /// </summary>
+        public unsafe Span<byte> Bytes => Memory.AsSpan(value);
+
+        /// <summary>
 		/// Gets or sets pointer value at the specified position in the memory.
 		/// </summary>
         /// <remarks>
