@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -8,31 +9,14 @@ using CallSiteDescr = InlineIL.StandAloneMethodSig;
 
 namespace DotNext
 {
+    using funcptr = IntPtr;
+
     /// <summary>
     /// Provides random data generation.
     /// </summary>
     public static class RandomExtensions
     {
         internal static readonly int BitwiseHashSalt = new Random().Next();
-
-        private readonly struct RandomCharacteGenerator<TSource>
-            where TSource : class
-        {
-            private readonly IntPtr methodPtr;
-
-            internal RandomCharacteGenerator(IntPtr methodPtr) => this.methodPtr = methodPtr;
-
-            internal void Invoke(TSource source, Span<char> buffer, ReadOnlySpan<char> allowedChars)
-            {
-                Push(source);
-                Ldarg(nameof(buffer));
-                Ldarg(nameof(allowedChars));
-                Push(methodPtr);
-                Tail();
-                Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(TSource), typeof(Span<char>), typeof(ReadOnlySpan<char>)));
-                Ret();
-            }
-        }
 
         private static void NextString(Random rnd, Span<char> buffer, ReadOnlySpan<char> allowedChars)
         {
@@ -54,7 +38,19 @@ namespace DotNext
             }
         }
 
-        private static unsafe string GenerateString<TSource>(TSource source, RandomCharacteGenerator<TSource> generator, ReadOnlySpan<char> allowedChars, int length)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe void NextString<TSource>(funcptr generator, TSource source, Span<char> buffer, ReadOnlySpan<char> allowedChars)
+            where TSource : class
+        {
+            Push(source);
+            Ldarg(nameof(buffer));
+            Ldarg(nameof(allowedChars));
+            Push(generator);
+            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(TSource), typeof(Span<char>), typeof(ReadOnlySpan<char>)));
+            Ret();
+        }
+
+        private static unsafe string GenerateString<TSource>(funcptr generator, TSource source, ReadOnlySpan<char> allowedChars, int length)
             where TSource : class
         {
             //TODO: should be reviewed for .NET Standard 2.1
@@ -65,7 +61,7 @@ namespace DotNext
             const short smallStringLength = 1024;
             //use stack allocation for small strings, which is 99% of all use cases
             Span<char> result = length <= smallStringLength ? stackalloc char[length] : new char[length];
-            generator.Invoke(source, result, allowedChars);
+            NextString(generator, source, result, allowedChars);
             fixed (char* ptr = result)
                 return new string(ptr, 0, length);
         }
@@ -80,9 +76,8 @@ namespace DotNext
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this Random random, ReadOnlySpan<char> allowedChars, int length)
         {
-            Push(random);
             Ldftn(new M(typeof(RandomExtensions), nameof(NextString), typeof(Random), typeof(Span<char>), typeof(ReadOnlySpan<char>)));
-            Newobj(M.Constructor(typeof(RandomCharacteGenerator<Random>), typeof(IntPtr)));
+            Push(random);
             Ldarg(nameof(allowedChars));
             Push(length);
             Call(new M(typeof(RandomExtensions), nameof(GenerateString)).MakeGenericMethod(typeof(Random)));
@@ -121,9 +116,8 @@ namespace DotNext
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
         {
-            Push(random);
             Ldftn(new M(typeof(RandomExtensions), nameof(NextString), typeof(RandomNumberGenerator), typeof(Span<char>), typeof(ReadOnlySpan<char>)));
-            Newobj(M.Constructor(typeof(RandomCharacteGenerator<RandomNumberGenerator>), typeof(IntPtr)));
+            Push(random);           
             Ldarg(nameof(allowedChars));
             Push(length);
             Call(new M(typeof(RandomExtensions), nameof(GenerateString)).MakeGenericMethod(typeof(RandomNumberGenerator)));
