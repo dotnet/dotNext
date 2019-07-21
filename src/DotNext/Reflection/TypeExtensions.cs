@@ -12,7 +12,6 @@ namespace DotNext.Reflection
         private const string IsUnmanagedAttributeName = "System.Runtime.CompilerServices.IsUnmanagedAttribute";
         //TODO: should be removed in .NET Standard 2.1
         private const string IsReadOnlyAttributeName = "System.Runtime.CompilerServices.IsReadOnlyAttribute";
-        internal const string ConstructorName = ".ctor";
 
         private static bool IsGenericParameter(Type type)
         {

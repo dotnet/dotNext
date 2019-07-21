@@ -9,35 +9,60 @@ namespace DotNext
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class FunctionPointerBenchmark
     {
+        private sealed class TestObject
+        {
+            internal readonly int Value;
+
+            internal TestObject(int value) => Value = value;
+
+            internal int Add(int operand) => Value + operand;
+        }
+
         private static readonly Func<string, int> ParseToIntMethod = int.Parse;
         private static readonly FunctionPointer<string, int> ParseToIntMethodPtr = new FunctionPointer<string, int>(ParseToIntMethod);
 
-        private static readonly Func<string, Guid> ParseToGuidMethod = Guid.Parse;
+        private static readonly Func<decimal, decimal> NegateDecimal = DelegateHelpers.CreateOpenDelegate<Func<decimal, decimal>>(arg => -arg);
 
-        private static readonly FunctionPointer<string, Guid> ParseToGuidMethodPtr = new FunctionPointer<string, Guid>(ParseToGuidMethod);
+        private static readonly FunctionPointer<decimal, decimal> NegateDecimalPtr = new FunctionPointer<decimal, decimal>(NegateDecimal);
+
+        private static readonly Func<int, int> ClosedDelegate = new Func<int, int>(new TestObject(10).Add);
+
+        private static readonly FunctionPointer<int, int> ClosedPtr = new FunctionPointer<int, int>(ClosedDelegate);
 
         [Benchmark]
-        public void InvokeDelegate()
+        public void InvokeStaticUsingDelegate()
         {
             ParseToIntMethod("123");
         }
 
         [Benchmark]
-        public void InvokeFunctionPtr()
+        public void InvokeStaticUsingPointer()
         {
             ParseToIntMethodPtr.Invoke("123");
         }
 
         [Benchmark]
-        public void InvokeDelegateLargeReturn()
+        public void InvokeStaticUsingDelegateLargeArgs()
         {
-            ParseToGuidMethod("{28a507b5-79b4-44d2-9fe9-969313d76361}");
+            NegateDecimal(20M);
         }
 
         [Benchmark]
-        public void InvokeFunctionPtrLargeReturn()
+        public void InvokeStaticUsingPointerLargeArgs()
         {
-            ParseToGuidMethodPtr.Invoke("{28a507b5-79b4-44d2-9fe9-969313d76361}");
+            NegateDecimalPtr.Invoke(20M);
+        }
+
+        [Benchmark]
+        public void InvokeInstanceUsingDelegate()
+        {
+            ClosedDelegate(42);
+        }
+
+        [Benchmark]
+        public void InvokeInstanceUsingPointer()
+        {
+            ClosedPtr.Invoke(42);
         }
     }
 }

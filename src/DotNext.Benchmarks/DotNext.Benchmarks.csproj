@@ -37,14 +37,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Reflection" Version="0.12.0" Condition="'$(Configuration)'=='Release'" />
+    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" />
     
-    <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.12.0" Condition="'$(Configuration)'=='Release'" />
+    <ProjectReference Include="..\DotNext\DotNext.csproj"/>
 
-    <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Metaprogramming" Version="0.12.0" Condition="'$(Configuration)'=='Release'" />
+    <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" />
   </ItemGroup>
 
 </Project>

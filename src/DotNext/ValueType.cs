@@ -185,8 +185,41 @@ namespace DotNext
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
-        public static unsafe int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => Memory.GetHashCode32(Unsafe.AsPointer(ref value), Size, hash, hashFunction, salted);
+        public static int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
+        {
+            Push(ref value);
+            Sizeof(typeof(T));
+            Conv_I8();
+            Push(hash);
+            Push(hashFunction);
+            Push(salted);
+            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(Func<int, int, int>), typeof(bool)));
+            return Return<int>();
+        }
+        
+        /// <summary>
+        /// Computes bitwise hash code for the specified value.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't use <see cref="object.GetHashCode"/>
+        /// even if it is overridden by value type.
+        /// </remarks>
+        /// <param name="value">A value to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Bitwise hash code.</returns>
+        public static unsafe int BitwiseHashCode(T value, int hash, FunctionPointer<int, int, int> hashFunction, bool salted = true)
+        {
+            Push(ref value);
+            Sizeof(typeof(T));
+            Conv_I8();
+            Push(hash);
+            Push(hashFunction);
+            Push(salted);
+            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(FunctionPointer<int, int, int>), typeof(bool)));
+            return Return<int>();
+        }
 
         private static int BitwiseHashCode(ref T value, bool salted)
         {
@@ -222,7 +255,7 @@ namespace DotNext
                     Push(ref value);
                     Push(size);
                     Push(salted);
-                    Call(new M(typeof(Memory), nameof(Memory.GetHashCode32), typeof(IntPtr), typeof(long), typeof(bool)));
+                    Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(bool)));
                     return Return<int>();
             }
             Push(salted);

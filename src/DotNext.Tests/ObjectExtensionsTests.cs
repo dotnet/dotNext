@@ -6,13 +6,13 @@ namespace DotNext
     public sealed class ObjectExtensionsTests : Assert
     {
         [Fact]
-        public static void OneOfTest()
+        public static void OneOfCheck()
         {
             True("str".IsOneOf("a", "b", "str"));
         }
 
         [Fact]
-        public static void DecomposeTest()
+        public static void Decompose()
         {
             var str = "Hello, world";
             (int index, char ch) = str.Decompose(s => s.IndexOf(','), s => s[1]);
@@ -24,7 +24,7 @@ namespace DotNext
         }
 
         [Fact]
-        public static void UserDataStorageTest()
+        public static void UserDataStorage()
         {
             var slot = UserDataSlot<long>.Allocate();
             var str = new string('a', 3);
@@ -38,7 +38,17 @@ namespace DotNext
         }
 
         [Fact]
-        public static void InvalidDataSlotTest()
+        public static void UserDataStorageGetOrSet()
+        {
+            string ToStr(int value) => value.ToString();
+
+            var obj = new object();
+            var slot = UserDataSlot<string>.Allocate();
+            Equal("42", obj.GetUserData().GetOrSet(slot, 42, ToStr));
+        }
+
+        [Fact]
+        public static void InvalidDataSlot()
         {
             var str = new string('b', 3);
             Throws<ArgumentException>(() => str.GetUserData().Set(new UserDataSlot<int>(), 10));
