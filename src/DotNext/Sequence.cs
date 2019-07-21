@@ -27,10 +27,18 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
-        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action) => ForEach(collection, new ActionPointer<T>(action));
+
+        /// <summary>
+        /// Apply specified action to each collection element.
+        /// </summary>
+        /// <typeparam name="T">Type of elements in the collection.</typeparam>
+        /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
+        /// <param name="action">An action to applied for each element.</param>
+        public static void ForEach<T>(this IEnumerable<T> collection, ActionPointer<T> action)
         {
             foreach (var item in collection)
-                action(item);
+                action.Invoke(item);
         }
 
         /// <summary>
