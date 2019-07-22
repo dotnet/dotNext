@@ -9,10 +9,6 @@ namespace DotNext
     /// </summary>
     public static class ObjectExtensions
     {
-        internal static bool IsNull(object obj) => obj is null;
-
-        internal static bool IsNotNull(object obj) => !(obj is null);
-
         /// <summary>
         /// Provides ad-hoc approach to associate some data with the object
         /// without modification of it.

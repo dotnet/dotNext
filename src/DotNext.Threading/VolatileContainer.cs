@@ -2,6 +2,9 @@ using System.Threading;
 
 namespace DotNext.Threading
 {
+    /// <summary>
+    /// Provides volatile access to non-primitive data type.
+    /// </summary>
     public struct VolatileContainer<T>
         where T : struct
     {
@@ -9,6 +12,9 @@ namespace DotNext.Threading
         private T value;
         private readonly SpinWait spinner;
 
+        /// <summary>
+        /// Gets or sets value in volatile manner.
+        /// </summary>
         public T Value
         {
             get

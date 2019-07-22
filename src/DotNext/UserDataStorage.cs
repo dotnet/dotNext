@@ -174,7 +174,7 @@ namespace DotNext
         public V GetOrSet<V>(UserDataSlot<V> slot) 
             where V : new()
         {
-            var activator = FunctionPointer<V>.CreateActivator();
+            var activator = FunctionPointer<V>.Activator;
             return GetStorage(true).GetOrSet(slot, ref activator);
         }
 
@@ -188,7 +188,7 @@ namespace DotNext
         public B GetOrSet<B, D>(UserDataSlot<B> slot)
             where D : class, B, new()
         {
-            var activator = FunctionPointer<D>.CreateActivator();
+            var activator = FunctionPointer<D>.Activator;
             return GetStorage(true).GetOrSet(slot, ref activator);
         }
 

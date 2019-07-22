@@ -145,6 +145,24 @@ namespace DotNext.Reflection
         public static FunctionPointer<R> CreatePointer<T, R>(this MethodCookie<T, Func<R>> cookie, T obj) where T : class => new FunctionPointer<R>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
 
         /// <summary>
+        /// Creates pointer to the static predicate.
+        /// </summary>
+        /// <typeparam name="T">The type of the first argument to be passed into method pointer.</typeparam>
+        /// <param name="cookie">The object representing validated method.</param>
+        /// <returns>The pointer to the static predicate.</returns>
+        public static PredicatePointer<T> CreatePointer<T>(this in MethodCookie<Predicate<T>> cookie) => new PredicatePointer<T>(cookie.MethodHandle, null);
+
+        /// <summary>
+        /// Creates pointer to the instance predicate.
+        /// </summary>
+        /// <typeparam name="S">The type of the object to be targeted by method pointer.</typeparam>
+        /// <typeparam name="T">The type of the first argument to be passed into method pointer.</typeparam>       
+        /// <param name="cookie">The object representing validated method.</param>
+        /// <param name="obj">The object to be used as <c>this</c> argument.</param>
+        /// <returns>The pointer to the instance predicate.</returns>
+        public static PredicatePointer<T> CreatePointer<S, T>(this in MethodCookie<Predicate<T>> cookie, S obj) where S : class => new PredicatePointer<T>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
+
+        /// <summary>
         /// Creates pointer to the static method.
         /// </summary>
         /// <typeparam name="T">The type of the first argument to be passed into method pointer.</typeparam>

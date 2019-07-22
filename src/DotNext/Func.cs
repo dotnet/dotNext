@@ -18,13 +18,13 @@ namespace DotNext
         private static class IsNullFunc<T>
             where T : class
         {
-            internal static readonly Func<T, bool> Value = ObjectExtensions.IsNull;
+            internal static readonly Func<T, bool> Value = PredicatePointer<T>.IsNull.ToFunc().ToDelegate();
         }
 
         private static class IsNotNullFunc<T>
             where T : class
         {
-            internal static readonly Func<T, bool> Value = ObjectExtensions.IsNotNull;
+            internal static readonly Func<T, bool> Value = PredicatePointer<T>.IsNotNull.ToFunc().ToDelegate();
         }
 
         /// <summary>

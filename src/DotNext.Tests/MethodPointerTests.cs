@@ -22,10 +22,26 @@ namespace DotNext
         [Fact]
         public static void CtorTest()
         {
-            var activator1 = FunctionPointer<Guid>.CreateActivator();
+            var activator1 = FunctionPointer<Guid>.Activator;
             Equal(default, activator1.Invoke());
-            var activator2 = FunctionPointer<object>.CreateActivator();
+            var activator2 = FunctionPointer<object>.Activator;
             NotNull(activator2.Invoke());
+        }
+
+        [Fact]
+        public static void DefaultTest()
+        {
+            var activator1 = FunctionPointer<Guid>.DefaultValueProvider;
+            Equal(default, activator1.Invoke());
+            var activator2 = FunctionPointer<object>.DefaultValueProvider;
+            Null(activator2.Invoke());
+        }
+
+        [Fact]
+        public static void PredicateTest()
+        {
+            True(PredicatePointer<int>.True.Invoke(10));
+            False(PredicatePointer<int>.False.Invoke(10));
         }
 
         [Fact]

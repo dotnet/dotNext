@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
@@ -21,7 +22,9 @@ namespace DotNext
     /// Represents a pointer to parameterless method with <see cref="void"/> return type.
     /// </summary>
     /// <remarks>
-    /// This method pointer is intended to call managed static methods only.
+    /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <seealso cref="Reflection.MethodCookie{D}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D}"/>
@@ -114,7 +117,7 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Action"/>.
         /// </summary>
-        /// <param name="pointer">The point to convert.</param>
+        /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Action(ActionPointer pointer) => pointer.ToDelegate();
 
@@ -165,7 +168,9 @@ namespace DotNext
     /// Represents a pointer to parameterless method with return type.
     /// </summary>
     /// <remarks>
-    /// This method pointer is intended to call managed static methods only.
+    /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     public readonly struct FunctionPointer<R> : IMethodPointer<Func<R>>, IEquatable<FunctionPointer<R>>, ISupplier<R>
@@ -213,30 +218,46 @@ namespace DotNext
         private static R CreateDefault() => default(R);
 
         /// <summary>
-        /// Returns activator for type <typeparamref name="R"/> as typed method pointer.
+        /// Returns activator for type <typeparamref name="R"/> in the form of typed method pointer.
         /// </summary>
         /// <remarks>
         /// Actual type <typeparamref name="R"/> should be a value type or have public parameterless constructor. 
         /// </remarks>
-        /// <returns></returns>
-        public static FunctionPointer<R> CreateActivator()
+        public static FunctionPointer<R> Activator
         {
-            const string HandleRefType = "refType";
-            Ldtoken(typeof(R));
-            Call(new M(typeof(Type), nameof(Type.GetTypeFromHandle)));
-            Call(M.PropertyGet(typeof(Type), nameof(Type.IsValueType)));
-            Brfalse(HandleRefType);
+            get
+            {
+                const string HandleRefType = "refType";
+                Ldtoken(typeof(R));
+                Call(new M(typeof(Type), nameof(Type.GetTypeFromHandle)));
+                Call(M.PropertyGet(typeof(Type), nameof(Type.IsValueType)));
+                Brfalse(HandleRefType);
 
-            Ldftn(new M(typeof(FunctionPointer<R>), nameof(CreateDefault)));
-            Ldnull();
-            Newobj(M.Constructor(typeof(FunctionPointer<R>), typeof(IntPtr), typeof(object)));
-            Ret();
+                Call(M.PropertyGet(typeof(FunctionPointer<R>), nameof(DefaultValueProvider)));
+                Ret();
 
-            MarkLabel(HandleRefType);
-            Ldftn(new M(typeof(Activator), nameof(Activator.CreateInstance), Array.Empty<TR>()).MakeGenericMethod(typeof(R)));
-            Ldnull();
-            Newobj(M.Constructor(typeof(FunctionPointer<R>), typeof(IntPtr), typeof(object)));
-            return Return<FunctionPointer<R>>();
+                MarkLabel(HandleRefType);
+                Ldftn(new M(typeof(Activator), nameof(System.Activator.CreateInstance), Array.Empty<TR>()).MakeGenericMethod(typeof(R)));
+                Ldnull();
+                Newobj(M.Constructor(typeof(FunctionPointer<R>), typeof(IntPtr), typeof(object)));
+                return Return<FunctionPointer<R>>();
+            }
+        }
+
+        /// <summary>
+        /// Obtains pointer to the method that returns <see langword="null"/> if <typeparamref name="R"/>
+        /// is reference type or initialized value type if <typeparamref name="R"/> is value type.
+        /// </summary>
+        /// <value></value>
+        public static FunctionPointer<R> DefaultValueProvider
+        {
+            get
+            {
+                Ldftn(new M(typeof(FunctionPointer<R>), nameof(CreateDefault)));
+                Ldnull();
+                Newobj(M.Constructor(typeof(FunctionPointer<R>), typeof(IntPtr), typeof(object)));
+                return Return<FunctionPointer<R>>();
+            }
         }
 
         IntPtr IMethodPointer<Func<R>>.Address => methodPtr;
@@ -294,7 +315,7 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Func{TResult}"/>.
         /// </summary>
-        /// <param name="pointer">The point to convert.</param>
+        /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Func<R>(FunctionPointer<R> pointer) => pointer.ToDelegate();
 
@@ -340,12 +361,254 @@ namespace DotNext
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(FunctionPointer<R> first, FunctionPointer<R> second) => !first.Equals(second);
     }
+    
+    /// <summary>
+    /// Represents a pointer to the predicate.
+    /// </summary>
+    /// <remarks>
+    /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument)
+    /// </remarks>
+    /// <typeparam name="T">The type of the predicate parameter.</typeparam>
+    public readonly struct PredicatePointer<T> : IMethodPointer<Predicate<T>>, IEquatable<PredicatePointer<T>>
+    {
+        private readonly IntPtr methodPtr;
+        private readonly object target;
+
+        /// <summary>
+        /// Initializes a new pointer to the method.
+        /// </summary>
+        /// <remarks>
+        /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// </remarks>
+        /// <param name="method">The method to convert into pointer.</param>
+        /// <param name="target">The object targeted by the method pointer.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">Signature of <paramref name="method"/> doesn't match to this pointer type.</exception>
+        public PredicatePointer(MethodInfo method, object target = null)
+            : this(method.CreateDelegate<Predicate<T>>(target))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new pointer based on extracted pointer from the predicate.
+        /// </summary>
+        /// <param name="delegate">The predicate representing method.</param>
+        public PredicatePointer(Predicate<T> @delegate)
+        {
+            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
+            target = @delegate.Target;
+        }
+
+        internal PredicatePointer(RuntimeMethodHandle method, object target)
+            : this(method.GetFunctionPointer(), target)
+        {
+
+        }
+
+        private PredicatePointer(IntPtr methodPtr, object target)
+        {
+            this.methodPtr = methodPtr;
+            this.target = target;
+        }
+
+        /// <summary>
+        /// Converts this typed pointer into <see cref="FunctionPointer{T,R}"/>.
+        /// </summary>
+        /// <returns>The converted pointer.</returns>
+        public FunctionPointer<T, bool> ToFunc()
+        {
+            Ldarg_0();
+            Ldobj(typeof(FunctionPointer<T, bool>));
+            return Return<FunctionPointer<T, bool>>();
+        }
+
+        [SuppressMessage("Usage", "CA1801")]
+        private static bool AlwaysTrue(T value) => true;
+
+        [SuppressMessage("Usage", "CA1801")]
+        private static bool AlwaysFalse(T value) => false;
+
+        private static bool CheckNull(T value) => value == null;
+
+        private static bool CheckNotNull(T value) => value != null;
+
+        /// <summary>
+        /// Gets pointer to the method determining whether the passed argument is <see langword="null"/>.
+        /// </summary>
+        public static PredicatePointer<T> IsNull
+        {
+            get
+            {
+                Ldftn(new M(typeof(PredicatePointer<T>), nameof(CheckNull)));
+                Ldnull();
+                Newobj(M.Constructor(typeof(PredicatePointer<T>), typeof(IntPtr), typeof(object)));
+                return Return<PredicatePointer<T>>();
+            }
+        }
+
+        /// <summary>
+        /// Gets pointer to the method determining whether the passed argument is not <see langword="null"/>.
+        /// </summary>
+        public static PredicatePointer<T> IsNotNull
+        {
+            get
+            {
+                Ldftn(new M(typeof(PredicatePointer<T>), nameof(CheckNotNull)));
+                Ldnull();
+                Newobj(M.Constructor(typeof(PredicatePointer<T>), typeof(IntPtr), typeof(object)));
+                return Return<PredicatePointer<T>>();
+            }
+        }
+
+        /// <summary>
+        /// Returns a predicate which always returns <see langword="true"/>.
+        /// </summary>
+        public static PredicatePointer<T> True
+        {
+            get
+            {
+                Ldftn(new M(typeof(PredicatePointer<T>), nameof(AlwaysTrue)));
+                Ldnull();
+                Newobj(M.Constructor(typeof(PredicatePointer<T>), typeof(IntPtr), typeof(object)));
+                return Return<PredicatePointer<T>>();
+            }
+        }
+
+        /// <summary>
+        /// Returns a predicate which always returns <see langword="false"/>.
+        /// </summary>
+        public static PredicatePointer<T> False
+        {
+            get
+            {
+                Ldftn(new M(typeof(PredicatePointer<T>), nameof(AlwaysFalse)));
+                Ldnull();
+                Newobj(M.Constructor(typeof(PredicatePointer<T>), typeof(IntPtr), typeof(object)));
+                return Return<PredicatePointer<T>>();
+            }
+        }
+
+        IntPtr IMethodPointer<Predicate<T>>.Address => methodPtr;
+        object IMethodPointer<Predicate<T>>.Target => target;
+
+        /// <summary>
+        /// Converts this pointer into <see cref="Predicate{T}"/>.
+        /// </summary>
+        /// <returns>The predicate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
+        public Predicate<T> ToDelegate()
+        {
+            const string makeDelegate = "makeDelegate";
+            Push(methodPtr);
+            Brtrue(makeDelegate);
+            Ldnull();
+            Ret();
+            MarkLabel(makeDelegate);
+            Push(target);
+            Push(methodPtr);
+            Newobj(M.Constructor(typeof(Predicate<T>), typeof(object), typeof(IntPtr)));
+            return Return<Predicate<T>>();
+        }
+
+        /// <summary>
+        /// Invokes predicate by pointer.
+        /// </summary>
+        /// <param name="arg">The first argument to be passed into the target method.</param>
+        /// <returns>The result of method invocation.</returns>
+        public bool Invoke(T arg)
+        {
+            const string callIndirect = "indirect";
+            const string callImplicitThis = "implicitThis";
+            Push(methodPtr);
+            Brtrue(callIndirect);
+            Newobj(M.Constructor(typeof(MethodPointerException)));
+            Throw();
+            MarkLabel(callIndirect);
+            
+            Push(target);
+            Dup();
+            Brtrue(callImplicitThis);
+            
+            Pop();
+            Push(arg);
+            Push(methodPtr);
+            Tail();
+            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(bool), typeof(T)));
+            Ret();
+            
+            MarkLabel(callImplicitThis);
+            Push(arg);
+            Push(methodPtr);
+            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(bool), typeof(T)));
+            return Return<bool>();
+        }
+
+        /// <summary>
+        /// Converts this pointer into <see cref="Predicate{T}"/>.
+        /// </summary>
+        /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The predicate created from this method pointer.</returns>
+        public static explicit operator Predicate<T>(PredicatePointer<T> pointer) => pointer.ToDelegate();
+
+        /// <summary>
+        /// Computes hash code of this pointer.
+        /// </summary>
+        /// <returns>The hash code of this pointer.</returns>
+        public override int GetHashCode() => methodPtr.GetHashCode() ^ RuntimeHelpers.GetHashCode(target);
+
+        /// <summary>
+        /// Determines whether this object points to the same method as other object.
+        /// </summary>
+        /// <param name="other">The pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public bool Equals(PredicatePointer<T> other) => methodPtr == other.methodPtr && ReferenceEquals(target, other.target);
+
+        /// <summary>
+        /// Determines whether this object points to the same method as other object.
+        /// </summary>
+        /// <param name="other">The object implementing <see cref="IMethodPointer{D}"/> to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object other) => other is IMethodPointer<Delegate> ptr && methodPtr == ptr.Address && ReferenceEquals(target, ptr.Target);
+
+        /// <summary>
+        /// Obtains pointer value in HEX format.
+        /// </summary>
+        /// <returns>The address represented by pointer.</returns>
+        public override string ToString() => methodPtr.ToString("X");
+
+        /// <summary>
+        /// Determines whether the pointers represent the same method.
+        /// </summary>
+        /// <param name="first">The first pointer to compare.</param>
+        /// <param name="second">The second pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(PredicatePointer<T> first, PredicatePointer<T> second) => first.Equals(second);
+
+        /// <summary>
+        /// Determines whether the pointers represent different methods.
+        /// </summary>
+        /// <param name="first">The first pointer to compare.</param>
+        /// <param name="second">The second pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(PredicatePointer<T> first, PredicatePointer<T> second) => first.Equals(second);
+
+        /// <summary>
+        /// Converts this typed pointer into <see cref="FunctionPointer{T,R}"/>.
+        /// </summary>
+        /// <param name="predicate">The predicate to convert.</param>
+        /// <returns>The converted pointer.</returns>
+        public static implicit operator FunctionPointer<T, bool>(PredicatePointer<T> predicate) => predicate.ToFunc();
+    }
 
     /// <summary>
     /// Represents a pointer to the method with single parameter and return type.
     /// </summary>
     /// <remarks>
-    /// This method pointer is intended to call managed static methods only.
+    /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
@@ -443,7 +706,7 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Func{T, TResult}"/>.
         /// </summary>
-        /// <param name="pointer">The point to convert.</param>
+        /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Func<T, R>(FunctionPointer<T, R> pointer) => pointer.ToDelegate();
 
@@ -495,6 +758,8 @@ namespace DotNext
     /// </summary>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
     public readonly struct ActionPointer<T> : IMethodPointer<Action<T>>, IEquatable<ActionPointer<T>>
@@ -538,7 +803,7 @@ namespace DotNext
         object IMethodPointer<Action<T>>.Target => target;
 
         /// <summary>
-        /// Converts this pointer into <see cref="Action"/>.
+        /// Converts this pointer into <see cref="Action{T}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
         public Action<T> ToDelegate()
@@ -590,7 +855,7 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Action{T}"/>.
         /// </summary>
-        /// <param name="pointer">The point to convert.</param>
+        /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Action<T>(ActionPointer<T> pointer) => pointer.ToDelegate();
 
@@ -641,7 +906,9 @@ namespace DotNext
     /// Represents a pointer to the method with two parameters and return type.
     /// </summary>
     /// <remarks>
-    /// This method pointer is intended to call managed static methods only.
+    /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
@@ -748,7 +1015,7 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, TResult}"/>.
         /// </summary>
-        /// <param name="pointer">The point to convert.</param>
+        /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Func<T1, T2, R>(FunctionPointer<T1, T2, R> pointer) => pointer.ToDelegate();
 
@@ -800,6 +1067,8 @@ namespace DotNext
     /// </summary>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
@@ -844,7 +1113,7 @@ namespace DotNext
         object IMethodPointer<Action<T1, T2>>.Target => target;
 
         /// <summary>
-        /// Converts this pointer into <see cref="Action"/>.
+        /// Converts this pointer into <see cref="Action{T1,T2}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
         public Action<T1, T2> ToDelegate()
@@ -899,7 +1168,7 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1, T2}"/>.
         /// </summary>
-        /// <param name="pointer">The point to convert.</param>
+        /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Action<T1, T2>(ActionPointer<T1, T2> pointer) => pointer.ToDelegate();
 
@@ -950,7 +1219,9 @@ namespace DotNext
     /// Represents a pointer to the method with three parameters and return type.
     /// </summary>
     /// <remarks>
-    /// This method pointer is intended to call managed static methods only.
+    /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
@@ -1056,7 +1327,7 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, TResult}"/>.
         /// </summary>
-        /// <param name="pointer">The point to convert.</param>
+        /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Func<T1, T2, T3, R>(FunctionPointer<T1, T2, T3, R> pointer) => pointer.ToDelegate();
 
@@ -1108,6 +1379,8 @@ namespace DotNext
     /// </summary>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
@@ -1153,7 +1426,7 @@ namespace DotNext
         object IMethodPointer<Action<T1, T2, T3>>.Target => target;
 
         /// <summary>
-        /// Converts this pointer into <see cref="Action"/>.
+        /// Converts this pointer into <see cref="Action{T1,T2,T3}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
         public Action<T1, T2, T3> ToDelegate()
@@ -1211,7 +1484,7 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1, T2, T3}"/>.
         /// </summary>
-        /// <param name="pointer">The point to convert.</param>
+        /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Action<T1, T2, T3>(ActionPointer<T1, T2, T3> pointer) => pointer.ToDelegate();
 
@@ -1262,7 +1535,9 @@ namespace DotNext
     /// Represents a pointer to the method with four parameters and return type.
     /// </summary>
     /// <remarks>
-    /// This method pointer is intended to call managed static methods only.
+    /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
@@ -1372,7 +1647,7 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, T4, TResult}"/>.
         /// </summary>
-        /// <param name="pointer">The point to convert.</param>
+        /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Func<T1, T2, T3, T4, R>(FunctionPointer<T1, T2, T3, T4, R> pointer) => pointer.ToDelegate();
 
@@ -1424,6 +1699,8 @@ namespace DotNext
     /// </summary>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
@@ -1470,7 +1747,7 @@ namespace DotNext
         object IMethodPointer<Action<T1, T2, T3, T4>>.Target => target;
 
         /// <summary>
-        /// Converts this pointer into <see cref="Action"/>.
+        /// Converts this pointer into <see cref="Action{T1,T2,T3,T4}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
         public Action<T1, T2, T3, T4> ToDelegate()
@@ -1531,7 +1808,7 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1, T2, T3, T4}"/>.
         /// </summary>
-        /// <param name="pointer">The point to convert.</param>
+        /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Action<T1, T2, T3, T4>(ActionPointer<T1, T2, T3, T4> pointer) => pointer.ToDelegate();
 
@@ -1582,7 +1859,9 @@ namespace DotNext
     /// Represents a pointer to the method with five parameters and return type.
     /// </summary>
     /// <remarks>
-    /// This method pointer is intended to call managed static methods only.
+    /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
@@ -1696,7 +1975,7 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, T4, T5, TResult}"/>.
         /// </summary>
-        /// <param name="pointer">The point to convert.</param>
+        /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Func<T1, T2, T3, T4, T5, R>(FunctionPointer<T1, T2, T3, T4, T5, R> pointer) => pointer.ToDelegate();
 
@@ -1748,6 +2027,8 @@ namespace DotNext
     /// </summary>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
+    /// The method pointer supports the same semantics as regular .NET delegates.
+    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
@@ -1795,7 +2076,7 @@ namespace DotNext
         object IMethodPointer<Action<T1, T2, T3, T4, T5>>.Target => target;
 
         /// <summary>
-        /// Converts this pointer into <see cref="Action"/>.
+        /// Converts this pointer into <see cref="Action{T1, T2, T3, T4, T5}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
         public Action<T1, T2, T3, T4, T5> ToDelegate()
@@ -1859,7 +2140,7 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1, T2, T3, T4, T5}"/>.
         /// </summary>
-        /// <param name="pointer">The point to convert.</param>
+        /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Action<T1, T2, T3, T4, T5>(ActionPointer<T1, T2, T3, T4, T5> pointer) => pointer.ToDelegate();
 
