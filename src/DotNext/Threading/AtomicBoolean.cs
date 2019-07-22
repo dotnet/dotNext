@@ -154,6 +154,19 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
 		public bool AccumulateAndGet(bool x, Func<bool, bool, bool> accumulator)
+            => AccumulateAndGet(x, new FunctionPointer<bool, bool, bool>(accumulator));
+
+        /// <summary>
+		/// Atomically updates the current value with the results of applying the given function 
+		/// to the current and given values, returning the updated value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the current value as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments</param>
+		/// <returns>The updated value.</returns>
+		public bool AccumulateAndGet(bool x, FunctionPointer<bool, bool, bool> accumulator)
             => Atomic<int, bool, AtomicBoolean>.Accumulate(ref this, x, accumulator).NewValue;
 
         /// <summary>
@@ -167,6 +180,19 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
 		public bool GetAndAccumulate(bool x, Func<bool, bool, bool> accumulator)
+            => GetAndAccumulate(x, new FunctionPointer<bool, bool, bool>(accumulator));
+
+        /// <summary>
+		/// Atomically updates the current value with the results of applying the given function 
+		/// to the current and given values, returning the original value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the current value as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments</param>
+		/// <returns>The original value.</returns>
+		public bool GetAndAccumulate(bool x, FunctionPointer<bool, bool, bool> accumulator)
             => Atomic<int, bool, AtomicBoolean>.Accumulate(ref this, x, accumulator).OldValue;
 
         /// <summary>
@@ -176,6 +202,15 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
         public bool UpdateAndGet(Func<bool, bool> updater)
+            => UpdateAndGet(new FunctionPointer<bool, bool>(updater));
+
+        /// <summary>
+        /// Atomically updates the stored value with the results 
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The updated value.</returns>
+        public bool UpdateAndGet(FunctionPointer<bool, bool> updater)
             => Atomic<int, bool, AtomicBoolean>.Update(ref this, updater).NewValue;
 
         /// <summary>
@@ -185,6 +220,15 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         public bool GetAndUpdate(Func<bool, bool> updater)
+            => GetAndUpdate(new FunctionPointer<bool, bool>(updater));
+
+        /// <summary>
+        /// Atomically updates the stored value with the results 
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The original value.</returns>
+        public bool GetAndUpdate(FunctionPointer<bool, bool> updater)
             => Atomic<int, bool, AtomicBoolean>.Update(ref this, updater).OldValue;
 
         /// <summary>

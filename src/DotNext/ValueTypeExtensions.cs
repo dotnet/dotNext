@@ -347,12 +347,12 @@ namespace DotNext
         /// <returns>The result of adding <paramref name="x"/> and <paramref name="y"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static IntPtr Add(this UIntPtr x, UIntPtr y)
+        public static UIntPtr Add(this UIntPtr x, UIntPtr y)
         {
             Push(x);
             Push(y);
             Emit.Add();
-            return Return<IntPtr>();
+            return Return<UIntPtr>();
         }
 
         /// <summary>
@@ -666,5 +666,39 @@ namespace DotNext
             Emit.Not();
             return Return<UIntPtr>();
         }
+
+        /// <summary>
+        /// Increments native integer by 1.
+        /// </summary>
+        /// <param name="value">The value to increment.</param>
+        /// <returns>The incremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Increment(this IntPtr value) => Add(value, new IntPtr(1));
+
+        /// <summary>
+        /// Decrements native integer by 1.
+        /// </summary>
+        /// <param name="value">The value to increment.</param>
+        /// <returns>The decremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Decrement(this IntPtr value) => Subtract(value, new IntPtr(1));
+
+        /// <summary>
+        /// Increments native integer by 1.
+        /// </summary>
+        /// <param name="value">The value to increment.</param>
+        /// <returns>The incremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr Increment(this UIntPtr value) => Add(value, new UIntPtr(1));
+
+        /// <summary>
+        /// Decrements native integer by 1.
+        /// </summary>
+        /// <param name="value">The value to increment.</param>
+        /// <returns>The decremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr Decrement(this UIntPtr value) => Subtract(value, new UIntPtr(1));
     }
 }

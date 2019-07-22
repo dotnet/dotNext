@@ -23,7 +23,7 @@ namespace DotNext
         public static void CtorTest()
         {
             var activator1 = FunctionPointer<Guid>.CreateActivator();
-            Equal(default(Guid), activator1.Invoke());
+            Equal(default, activator1.Invoke());
             var activator2 = FunctionPointer<object>.CreateActivator();
             NotNull(activator2.Invoke());
         }

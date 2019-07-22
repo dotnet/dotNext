@@ -132,6 +132,21 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long AccumulateAndGet(ref this long value, long x, Func<long, long, long> accumulator)
+            => AccumulateAndGet(ref value, x, new FunctionPointer<long, long, long>(accumulator));
+
+        /// <summary>
+        /// Atomically updates the current value with the results of applying the given function 
+        /// to the current and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long AccumulateAndGet(ref this long value, long x, FunctionPointer<long, long, long> accumulator)
             => Atomic.Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
@@ -147,6 +162,21 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndAccumulate(ref this long value, long x, Func<long, long, long> accumulator)
+            => GetAndAccumulate(ref value, x, new FunctionPointer<long, long, long>(accumulator));
+
+        /// <summary>
+        /// Atomically updates the current value with the results of applying the given function 
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long GetAndAccumulate(ref this long value, long x, FunctionPointer<long, long, long> accumulator)
             => Atomic.Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
@@ -158,6 +188,17 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long UpdateAndGet(ref this long value, Func<long, long> updater)
+            => UpdateAndGet(ref value, new FunctionPointer<long, long>(updater));
+
+        /// <summary>
+        /// Atomically updates the stored value with the results 
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long UpdateAndGet(ref this long value, FunctionPointer<long, long> updater)
             => Atomic.Update(ref value, updater).NewValue;
 
         /// <summary>
@@ -169,6 +210,17 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndUpdate(ref this long value, Func<long, long> updater)
+            => GetAndUpdate(ref value, new FunctionPointer<long, long>(updater));
+
+        /// <summary>
+        /// Atomically updates the stored value with the results 
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long GetAndUpdate(ref this long value, FunctionPointer<long, long> updater)
             => Atomic.Update(ref value, updater).OldValue;
 
         /// <summary>
@@ -285,6 +337,21 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The updated value.</returns>
 		public static long AccumulateAndGet(this long[] array, long index, long x, Func<long, long, long> accumulator)
+            => AccumulateAndGet(array, index, x, new FunctionPointer<long, long, long>(accumulator));
+
+        /// <summary>
+		/// Atomically updates the array element with the results of applying the given function 
+		/// to the array element and given values, returning the updated value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the array element as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
+		/// <returns>The updated value.</returns>
+		public static long AccumulateAndGet(this long[] array, long index, long x, FunctionPointer<long, long, long> accumulator)
             => AccumulateAndGet(ref array[index], x, accumulator);
 
         /// <summary>
@@ -300,6 +367,21 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The original value of the array element.</returns>
 		public static long GetAndAccumulate(this long[] array, long index, long x, Func<long, long, long> accumulator)
+            => GetAndAccumulate(array, index, x, new FunctionPointer<long, long, long>(accumulator));
+
+        /// <summary>
+		/// Atomically updates the array element with the results of applying the given function 
+		/// to the array element and given values, returning the original value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the array element as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
+		/// <returns>The original value of the array element.</returns>
+		public static long GetAndAccumulate(this long[] array, long index, long x, FunctionPointer<long, long, long> accumulator)
             => GetAndAccumulate(ref array[index], x, accumulator);
 
         /// <summary>
@@ -311,6 +393,17 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
 		public static long UpdateAndGet(this long[] array, long index, Func<long, long> updater)
+            => UpdateAndGet(array, index, new FunctionPointer<long, long>(updater));
+
+        /// <summary>
+		/// Atomically updates the array element with the results 
+		/// of applying the given function, returning the updated value.
+		/// </summary>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="updater">A side-effect-free function</param>
+		/// <returns>The updated value.</returns>
+		public static long UpdateAndGet(this long[] array, long index, FunctionPointer<long, long> updater)
             => UpdateAndGet(ref array[index], updater);
 
         /// <summary>
@@ -322,6 +415,17 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value of the array element.</returns>
 		public static long GetAndUpdate(this long[] array, long index, Func<long, long> updater)
+            => GetAndUpdate(array, index, new FunctionPointer<long, long>(updater));
+
+        /// <summary>
+		/// Atomically updates the array element with the results 
+		/// of applying the given function, returning the original value.
+		/// </summary>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="updater">A side-effect-free function</param>
+		/// <returns>The original value of the array element.</returns>
+		public static long GetAndUpdate(this long[] array, long index, FunctionPointer<long, long> updater)
             => GetAndUpdate(ref array[index], updater);
     }
 }

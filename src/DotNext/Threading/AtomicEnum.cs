@@ -124,6 +124,19 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
 		public E AccumulateAndGet(E x, Func<E, E, E> accumulator)
+            => AccumulateAndGet(x, new FunctionPointer<E, E, E>(accumulator));
+
+        /// <summary>
+		/// Atomically updates the current value with the results of applying the given function 
+		/// to the current and given values, returning the updated value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the current value as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments</param>
+		/// <returns>The updated value.</returns>
+		public E AccumulateAndGet(E x, FunctionPointer<E, E, E> accumulator)
             => Atomic<long, E, AtomicEnum<E>>.Accumulate(ref this, x, accumulator).NewValue;
 
         /// <summary>
@@ -137,6 +150,19 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
 		public E GetAndAccumulate(E x, Func<E, E, E> accumulator)
+            => GetAndAccumulate(x, new FunctionPointer<E, E, E>(accumulator));
+
+        /// <summary>
+		/// Atomically updates the current value with the results of applying the given function 
+		/// to the current and given values, returning the original value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the current value as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments</param>
+		/// <returns>The original value.</returns>
+		public E GetAndAccumulate(E x, FunctionPointer<E, E, E> accumulator)
             => Atomic<long, E, AtomicEnum<E>>.Accumulate(ref this, x, accumulator).OldValue;
 
         /// <summary>
@@ -146,6 +172,15 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
         public E UpdateAndGet(Func<E, E> updater)
+            => UpdateAndGet(new FunctionPointer<E, E>(updater));
+
+        /// <summary>
+        /// Atomically updates the stored value with the results 
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The updated value.</returns>
+        public E UpdateAndGet(FunctionPointer<E, E> updater)
             => Atomic<long, E, AtomicEnum<E>>.Update(ref this, updater).NewValue;
 
         /// <summary>
@@ -155,6 +190,15 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         public E GetAndUpdate(Func<E, E> updater)
+            => GetAndUpdate(new FunctionPointer<E, E>(updater));
+
+        /// <summary>
+        /// Atomically updates the stored value with the results 
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The original value.</returns>
+        public E GetAndUpdate(FunctionPointer<E, E> updater)
             => Atomic<long, E, AtomicEnum<E>>.Update(ref this, updater).OldValue;
 
         /// <summary>

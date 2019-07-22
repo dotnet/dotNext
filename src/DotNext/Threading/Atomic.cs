@@ -42,23 +42,23 @@ namespace DotNext.Threading
         internal bool CompareAndSet(ref T value, T expected, T update)
             => Equals(CompareExchange(ref value, update, expected), expected);
 
-        internal (T OldValue, T NewValue) Update(ref T value, Func<T, T> updater)
+        internal (T OldValue, T NewValue) Update(ref T value, FunctionPointer<T, T> updater)
         {
             T oldValue, newValue;
             do
             {
-                newValue = updater(oldValue = Read(ref value));
+                newValue = updater.Invoke(oldValue = Read(ref value));
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
         }
 
-        internal (T OldValue, T NewValue) Accumulate(ref T value, T x, Func<T, T, T> accumulator)
+        internal (T OldValue, T NewValue) Accumulate(ref T value, T x, FunctionPointer<T, T, T> accumulator)
         {
             T oldValue, newValue;
             do
             {
-                newValue = accumulator(oldValue = Read(ref value), x);
+                newValue = accumulator.Invoke(oldValue = Read(ref value), x);
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -78,23 +78,23 @@ namespace DotNext.Threading
         internal static bool CompareAndSet(ref W wrapper, V expected, V update)
             => wrapper.Atomic.CompareAndSet(ref wrapper.Reference, wrapper.Convert(expected), wrapper.Convert(update));
 
-        internal static (V OldValue, V NewValue) Update(ref W wrapper, Func<V, V> updater)
+        internal static (V OldValue, V NewValue) Update(ref W wrapper, FunctionPointer<V, V> updater)
         {
             V oldValue, newValue;
             do
             {
-                newValue = updater(oldValue = wrapper.Convert(Atomic<T>.Read(ref wrapper.Reference)));
+                newValue = updater.Invoke(oldValue = wrapper.Convert(Atomic<T>.Read(ref wrapper.Reference)));
             }
             while (!CompareAndSet(ref wrapper, oldValue, newValue));
             return (oldValue, newValue);
         }
 
-        internal static (V OldValue, V NewValue) Accumulate(ref W wrapper, V x, Func<V, V, V> accumulator)
+        internal static (V OldValue, V NewValue) Accumulate(ref W wrapper, V x, FunctionPointer<V, V, V> accumulator)
         {
             V oldValue, newValue;
             do
             {
-                newValue = accumulator(oldValue = wrapper.Convert(Atomic<T>.Read(ref wrapper.Reference)), x);
+                newValue = accumulator.Invoke(oldValue = wrapper.Convert(Atomic<T>.Read(ref wrapper.Reference)), x);
             }
             while (!CompareAndSet(ref wrapper, oldValue, newValue));
             return (oldValue, newValue);
