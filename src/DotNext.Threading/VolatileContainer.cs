@@ -21,7 +21,7 @@ namespace DotNext.Threading
             {
                 T result;
                 try_again:
-                var currentCount = readCount.VolatileRead();
+                var currentCount = readCount;
                 if(currentCount >= 0 && readCount.CompareAndSet(currentCount, currentCount + 1))
                 {
                     result = value;
