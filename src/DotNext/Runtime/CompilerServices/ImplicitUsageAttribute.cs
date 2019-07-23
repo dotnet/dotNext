@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace DotNext.Runtime.CompilerServices
 {
     /// <summary>
-    /// Marker interface indicating that program element is implicitly used from Reflection.
+    /// Marker interface indicating that program element is implicitly used from Reflection or pure IL code.
     /// </summary>
     [Conditional("DEBUG")]
     [SuppressMessage("Style", "CA1051", Justification = "This type for internal purposes only")]
@@ -25,8 +25,8 @@ namespace DotNext.Runtime.CompilerServices
         /// <summary>
         /// Initializes a new attribute.
         /// </summary>
-        /// <param name="consumerType">The type which contains code that uses the marked program element through reflection.</param>
-        /// <param name="consumerMethod">The method declared in <paramref name="consumerType"/> containing Reflection code.</param>
+        /// <param name="consumerType">The type which contains code that uses the marked program element through reflection or pure IL code.</param>
+        /// <param name="consumerMethod">The method declared in <paramref name="consumerType"/> containing Reflection or IL code.</param>
         public ImplicitUsageAttribute(Type consumerType, string consumerMethod = "")
         {
             ConsumerType = consumerType;

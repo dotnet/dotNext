@@ -975,7 +975,8 @@ namespace DotNext
             this.target = target;
         }
 
-        [ImplicitUsage(typeof(Runtime.InteropServices.Memory))]
+        [ImplicitUsage(typeof(Runtime.InteropServices.Memory), nameof(Runtime.InteropServices.Memory.GetHashCode64))]
+        [ImplicitUsage(typeof(Runtime.InteropServices.Memory), nameof(Runtime.InteropServices.Memory.GetHashCode32))]
         internal FunctionPointer(IntPtr methodPtr, object target)
         {
             this.methodPtr = methodPtr;
