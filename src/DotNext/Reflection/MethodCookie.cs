@@ -44,7 +44,7 @@ namespace DotNext.Reflection
             Push(target);
             Push(ctorPtr);
             //here I use constructor as instance method to initialize pointer of type P. As far as I know it is legal because constructor is
-            //indistinguishable at CLR level. Anyway, it is cheaper that doing Reflection call with all these boxing/unboxing
+            //indistinguishable from regular instance method at CLR level. Anyway, it is cheaper that doing Reflection call with all these boxing/unboxing
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(RuntimeMethodHandle), typeof(object)));
             MarkLabel(MethodExit);
             return result;
