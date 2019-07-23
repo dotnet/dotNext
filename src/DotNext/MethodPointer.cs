@@ -10,6 +10,8 @@ using TR = InlineIL.TypeRef;
 
 namespace DotNext
 {
+    using ImplicitUsageAttribute = Runtime.CompilerServices.ImplicitUsageAttribute;
+
     internal sealed class MethodPointerException : NullReferenceException
     {
         internal MethodPointerException()
@@ -26,8 +28,8 @@ namespace DotNext
     /// The method pointer supports the same semantics as regular .NET delegates.
     /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
-    /// <seealso cref="Reflection.MethodCookie{D}"/>
-    /// <seealso cref="Reflection.MethodCookie{T,D}"/>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct ActionPointer : IMethodPointer<Action>, IEquatable<ActionPointer>
     {
         private readonly IntPtr methodPtr;
@@ -38,7 +40,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -59,6 +61,9 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal ActionPointer(RuntimeMethodHandle method, object target)
         {
             this.target = target;
@@ -173,6 +178,8 @@ namespace DotNext
     /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct FunctionPointer<R> : IMethodPointer<Func<R>>, IEquatable<FunctionPointer<R>>, ISupplier<R>
     {
         private readonly IntPtr methodPtr;
@@ -183,7 +190,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D, P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -204,6 +211,8 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal FunctionPointer(RuntimeMethodHandle method, object target)
             : this(method.GetFunctionPointer(), target)
         {
@@ -371,6 +380,8 @@ namespace DotNext
     /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument)
     /// </remarks>
     /// <typeparam name="T">The type of the predicate parameter.</typeparam>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct PredicatePointer<T> : IMethodPointer<Predicate<T>>, IEquatable<PredicatePointer<T>>
     {
         private readonly IntPtr methodPtr;
@@ -381,7 +392,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -402,6 +413,8 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal PredicatePointer(RuntimeMethodHandle method, object target)
             : this(method.GetFunctionPointer(), target)
         {
@@ -612,6 +625,8 @@ namespace DotNext
     /// </remarks>
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct FunctionPointer<T, R> : IMethodPointer<Func<T, R>>, IEquatable<FunctionPointer<T, R>>
     {
         private readonly IntPtr methodPtr;
@@ -622,7 +637,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -643,6 +658,8 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal FunctionPointer(RuntimeMethodHandle method, object target)
         {
             methodPtr = method.GetFunctionPointer();
@@ -762,6 +779,8 @@ namespace DotNext
     /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct ActionPointer<T> : IMethodPointer<Action<T>>, IEquatable<ActionPointer<T>>
     {
         private readonly IntPtr methodPtr;
@@ -772,7 +791,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -793,6 +812,8 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal ActionPointer(RuntimeMethodHandle method, object target)
         {
             methodPtr = method.GetFunctionPointer();
@@ -913,6 +934,8 @@ namespace DotNext
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct FunctionPointer<T1, T2, R> : IMethodPointer<Func<T1, T2, R>>, IEquatable<FunctionPointer<T1, T2, R>>
     {
         private readonly IntPtr methodPtr;
@@ -923,7 +946,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -944,11 +967,15 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal FunctionPointer(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
         {
+            methodPtr = method.GetFunctionPointer();
+            this.target = target;
         }
 
+        [ImplicitUsage(typeof(Runtime.InteropServices.Memory))]
         internal FunctionPointer(IntPtr methodPtr, object target)
         {
             this.methodPtr = methodPtr;
@@ -1072,6 +1099,8 @@ namespace DotNext
     /// </remarks>
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct ActionPointer<T1, T2> : IMethodPointer<Action<T1, T2>>, IEquatable<ActionPointer<T1, T2>>
     {
         private readonly IntPtr methodPtr;
@@ -1082,7 +1111,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -1103,6 +1132,8 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal ActionPointer(RuntimeMethodHandle method, object target)
         {
             methodPtr = method.GetFunctionPointer();
@@ -1227,6 +1258,8 @@ namespace DotNext
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct FunctionPointer<T1, T2, T3, R> : IMethodPointer<Func<T1, T2, T3, R>>, IEquatable<FunctionPointer<T1, T2, T3, R>>
     {
         private readonly IntPtr methodPtr;
@@ -1237,7 +1270,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -1258,6 +1291,8 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal FunctionPointer(RuntimeMethodHandle method, object target)
         {
             methodPtr = method.GetFunctionPointer();
@@ -1385,6 +1420,8 @@ namespace DotNext
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct ActionPointer<T1, T2, T3> : IMethodPointer<Action<T1, T2, T3>>, IEquatable<ActionPointer<T1, T2, T3>>
     {
         private readonly IntPtr methodPtr;
@@ -1395,7 +1432,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -1416,6 +1453,8 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal ActionPointer(RuntimeMethodHandle method, object target)
         {
             methodPtr = method.GetFunctionPointer();
@@ -1544,6 +1583,8 @@ namespace DotNext
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct FunctionPointer<T1, T2, T3, T4, R> : IMethodPointer<Func<T1, T2, T3, T4, R>>, IEquatable<FunctionPointer<T1, T2, T3, T4, R>>
     {
         private readonly IntPtr methodPtr;
@@ -1554,7 +1595,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -1575,6 +1616,8 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal FunctionPointer(RuntimeMethodHandle method, object target)
         {
             methodPtr = method.GetFunctionPointer();
@@ -1706,6 +1749,8 @@ namespace DotNext
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct ActionPointer<T1, T2, T3, T4> : IMethodPointer<Action<T1, T2, T3, T4>>, IEquatable<ActionPointer<T1, T2, T3, T4>>
     {
         private readonly IntPtr methodPtr;
@@ -1716,7 +1761,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -1737,6 +1782,8 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal ActionPointer(RuntimeMethodHandle method, object target)
         {
             methodPtr = method.GetFunctionPointer();
@@ -1869,6 +1916,8 @@ namespace DotNext
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     /// <typeparam name="T5">The type of the fifth method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct FunctionPointer<T1, T2, T3, T4, T5, R> : IMethodPointer<Func<T1, T2, T3, T4, T5, R>>, IEquatable<FunctionPointer<T1, T2, T3, T4, T5, R>>
     {
         private readonly IntPtr methodPtr;
@@ -1879,7 +1928,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -1900,6 +1949,8 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal FunctionPointer(RuntimeMethodHandle method, object target)
         {
             methodPtr = method.GetFunctionPointer();
@@ -2035,6 +2086,8 @@ namespace DotNext
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     /// <typeparam name="T5">The type of the fifth method parameter.</typeparam>
+    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
+    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
     public readonly struct ActionPointer<T1, T2, T3, T4, T5> : IMethodPointer<Action<T1, T2, T3, T4, T5>>, IEquatable<ActionPointer<T1, T2, T3, T4, T5>>
     {
         private readonly IntPtr methodPtr;
@@ -2045,7 +2098,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D}"/> or <see cref="Reflection.MethodCookie{T,D}"/> type.
+        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <param name="target">The object targeted by the method pointer.</param>
@@ -2066,6 +2119,8 @@ namespace DotNext
             target = @delegate.Target;
         }
 
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
+        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal ActionPointer(RuntimeMethodHandle method, object target)
         {
             methodPtr = method.GetFunctionPointer();

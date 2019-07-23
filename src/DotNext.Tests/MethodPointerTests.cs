@@ -51,8 +51,8 @@ namespace DotNext
             var obj = "123";
             var ptr = new FunctionPointer<string>(method, obj);
             Equal("123123", ptr.Invoke());
-            var cookie = new MethodCookie<string, Func<string>>(method);
-            ptr = cookie.CreatePointer("456");
+            var cookie = new MethodCookie<string, Func<string>, FunctionPointer<string>>(method);
+            ptr = cookie & "456";
             Equal("456456", ptr.Invoke());
         }
         
@@ -78,8 +78,8 @@ namespace DotNext
         [Fact]
         public static void UsingMethodPointerSource()
         {
-            var factory = new MethodCookie<Func<object>>(CreateObject);
-            NotNull(factory.CreatePointer().Invoke());
+            var factory = new MethodCookie<Func<object>, FunctionPointer<object>>(CreateObject);
+            NotNull(factory.Pointer.Invoke());
         }
 
         [Fact]

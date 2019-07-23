@@ -1,8 +1,53 @@
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using CallSiteDescr = InlineIL.StandAloneMethodSig;
 
 namespace DotNext.Reflection
 {
+    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
+
+    [RuntimeFeatures(PrivateReflection = true)]
+    internal readonly struct MethodPointerFactory<P>
+        where P : struct, IMethodPointer<Delegate>
+    {
+        private static readonly RuntimeMethodHandle ConstructorHandle;
+
+        static MethodPointerFactory()
+        {
+            var ctor = typeof(P).GetConstructor(BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance, null, new[] { typeof(RuntimeMethodHandle), typeof(bool) }, Array.Empty<ParameterModifier>()) ?? throw new GenericArgumentException<P>(ExceptionMessages.UnsupportedMethodPointerType);
+            ConstructorHandle = ctor.MethodHandle;
+        }
+
+        private readonly RuntimeMethodHandle method;
+        private readonly IntPtr ctorPtr;
+
+        internal MethodPointerFactory(MethodInfo method)
+        {
+            this.method = method.MethodHandle;
+            ctorPtr = ConstructorHandle.GetFunctionPointer();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal P Create(object target = null)
+        {
+            var result = default(P);
+            const string MethodExit = "exit";
+            Push(ctorPtr);
+            Brfalse(MethodExit);
+            
+            Push(ref result);   //this arg
+            Push(method);
+            Push(target);
+            Push(ctorPtr);
+            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(RuntimeMethodHandle), typeof(object)));
+            MarkLabel(MethodExit);
+            return result;
+        }
+    }
+
     /// <summary>
     /// Represents a source of static method pointers.
     /// </summary>
@@ -10,24 +55,24 @@ namespace DotNext.Reflection
     /// The reason to having this method is to avoid heap allocations every time
     /// when you need typed method pointer. The constructor of such pointer
     /// performs runtime checks using Reflection. These checks require such allocations.
-    /// To avoid that, it is possible to create <see cref="MethodCookie{D}"/>
+    /// To avoid that, it is possible to create <see cref="MethodCookie{D, P}"/>
     /// once and store it in <c>static readonly</c> field. After that, every creation
     /// of typed method pointer doesn't produce unecessary memory allocations.
     /// </remarks>
+    /// <typeparam name="P">The type of the managed pointer.</typeparam>
     /// <typeparam name="D">The type of the delegate compatible with managed pointer.</typeparam>
-    public readonly struct MethodCookie<D>
+    public readonly struct MethodCookie<D, P>
         where D : Delegate
+        where P : struct, IMethodPointer<D>
     {
-        internal readonly RuntimeMethodHandle MethodHandle;
+        private readonly MethodPointerFactory<P> factory;
 
         /// <summary>
         /// Initializes a new static method cookie.
         /// </summary>
         /// <param name="delegate">The delegate referencing a static method for which pointers should be created.</param>
         public MethodCookie(D @delegate)
-        {
-            MethodHandle = @delegate.Target is null ? @delegate.Method.MethodHandle : throw new ArgumentException(ExceptionMessages.InvalidMethodSignature, nameof(@delegate));
-        }
+            => factory = new MethodPointerFactory<P>(@delegate.Target is null ? @delegate.Method : throw new ArgumentException(ExceptionMessages.InvalidMethodSignature, nameof(@delegate)));
 
         /// <summary>
         /// Initializes a new static method cookie.
@@ -39,9 +84,17 @@ namespace DotNext.Reflection
         }
 
         /// <summary>
-        /// Gets method referenced by this cookie.
+        /// Gets pointer to the underlying static method.
         /// </summary>
-        public MethodBase Method => MethodBase.GetMethodFromHandle(MethodHandle);
+        /// <value>The pointer to the underlying static method.</value>
+        public P Pointer => factory.Create();
+
+        /// <summary>
+        /// Gets pointer to the underlying static method.
+        /// </summary>
+        /// <param name="cookie">A cookie representing validated method.</param>
+        /// <returns>The pointer to the underlying static method.</returns>
+        public static implicit operator P(in MethodCookie<D, P> cookie) => cookie.Pointer;
     }
 
     /// <summary>
@@ -51,26 +104,26 @@ namespace DotNext.Reflection
     /// The reason to having this method is to avoid heap allocations every time
     /// when you need typed method pointer. The constructor of such pointer
     /// performs runtime checks using Reflection. These checks require such allocations.
-    /// To avoid that, it is possible to create <see cref="MethodCookie{D}"/>
+    /// To avoid that, it is possible to create <see cref="MethodCookie{T,D,P}"/>
     /// once and store it in <c>static readonly</c> field. After that, every creation
     /// of typed method pointer doesn't produce unecessary memory allocations.
     /// </remarks>
     /// <typeparam name="T">The type of the method target.</typeparam>
     /// <typeparam name="D">The type of the delegate compatible with managed pointer.</typeparam>
-    public readonly struct MethodCookie<T, D>
+    /// <typeparam name="P">The type of the managed pointer.</typeparam>
+    public readonly struct MethodCookie<T, D, P>
         where D : Delegate
         where T : class
+        where P : struct, IMethodPointer<D>
     {
-        internal readonly RuntimeMethodHandle MethodHandle;
+        private readonly MethodPointerFactory<P> factory;
 
         /// <summary>
         /// Initializes a new instance method cookie.
         /// </summary>
         /// <param name="delegate">The delegate referencing an instance method for which pointers should be created.</param>
         public MethodCookie(D @delegate)
-        {
-            MethodHandle = @delegate.Target is T ? @delegate.Method.MethodHandle : throw new ArgumentException(ExceptionMessages.InvalidMethodSignature, nameof(@delegate)); 
-        }
+            => factory = new MethodPointerFactory<P>( @delegate.Target is T ? @delegate.Method : throw new ArgumentException(ExceptionMessages.InvalidMethodSignature, nameof(@delegate)));
 
         /// <summary>
         /// Initializes a new instance method cookie.
@@ -94,302 +147,24 @@ namespace DotNext.Reflection
             else
                 thisTypeOk = method.DeclaringType.IsAssignableFrom(typeof(T));
             if(thisTypeOk && method.SignatureEquals(expectedParams) && expectedReturnType.IsAssignableFrom(method.ReturnType))
-                MethodHandle = method.MethodHandle;
+                factory = new MethodPointerFactory<P>(method);
             else
                 throw new ArgumentException(ExceptionMessages.InvalidMethodSignature, nameof(method));
         }
 
         /// <summary>
-        /// Gets method referenced by this cookie.
+        /// Creates pointer to the instance method.
         /// </summary>
-        public MethodBase Method => MethodBase.GetMethodFromHandle(MethodHandle);
-    }
-
-    /// <summary>
-    /// Provides factory methods for creating typed method pointers using method cookie.
-    /// </summary>
-    public static class MethodCookie
-    {
-        /// <summary>
-        /// Creates pointer to the static method.
-        /// </summary>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static method.</returns>
-        public static ActionPointer CreatePointer(this in MethodCookie<Action> cookie) => new ActionPointer(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance method method.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to be targeted by method pointer.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
         /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance method.</returns>
-        public static ActionPointer CreatePointer<T>(this in MethodCookie<T, Action> cookie, T obj) where T : class => new ActionPointer(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
+        /// <returns>The created pointer.</returns>
+        public P CreatePointer(T obj) => factory.Create(obj ?? throw new ArgumentNullException(nameof(obj)));
 
         /// <summary>
-        /// Creates pointer to the static method.
+        /// Creates pointer to the instance method.
         /// </summary>
-        /// <typeparam name="R">The return type.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static method.</returns>
-        public static FunctionPointer<R> CreatePointer<R>(this MethodCookie<Func<R>> cookie) => new FunctionPointer<R>(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance method method.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to be targeted by method pointer.</typeparam>
-        /// <typeparam name="R">The return type.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
+        /// <param name="cookie">A cookie representing validated method.</param>
         /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance method.</returns>
-        public static FunctionPointer<R> CreatePointer<T, R>(this MethodCookie<T, Func<R>> cookie, T obj) where T : class => new FunctionPointer<R>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
-
-        /// <summary>
-        /// Creates pointer to the static predicate.
-        /// </summary>
-        /// <typeparam name="T">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static predicate.</returns>
-        public static PredicatePointer<T> CreatePointer<T>(this in MethodCookie<Predicate<T>> cookie) => new PredicatePointer<T>(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance predicate.
-        /// </summary>
-        /// <typeparam name="S">The type of the object to be targeted by method pointer.</typeparam>
-        /// <typeparam name="T">The type of the first argument to be passed into method pointer.</typeparam>       
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance predicate.</returns>
-        public static PredicatePointer<T> CreatePointer<S, T>(this in MethodCookie<Predicate<T>> cookie, S obj) where S : class => new PredicatePointer<T>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
-
-        /// <summary>
-        /// Creates pointer to the static method.
-        /// </summary>
-        /// <typeparam name="T">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static method.</returns>
-        public static ActionPointer<T> CreatePointer<T>(this in MethodCookie<Action<T>> cookie) => new ActionPointer<T>(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance method method.
-        /// </summary>
-        /// <typeparam name="S">The type of the object to be targeted by method pointer.</typeparam>
-        /// <typeparam name="T">The type of the first argument to be passed into method pointer.</typeparam>       
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance method.</returns>
-        public static ActionPointer<T> CreatePointer<S, T>(this in MethodCookie<S, Action<T>> cookie, S obj) where S : class => new ActionPointer<T>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
-
-        /// <summary>
-        /// Creates pointer to the static method.
-        /// </summary>
-        /// <typeparam name="T">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="R">The return type.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static method.</returns>
-        public static FunctionPointer<T, R> CreatePointer<T, R>(this in MethodCookie<Func<T, R>> cookie) => new FunctionPointer<T, R>(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance method method.
-        /// </summary>
-        /// <typeparam name="S">The type of the object to be targeted by method pointer.</typeparam>
-        /// <typeparam name="T">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="R">The return type.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance method.</returns>
-        public static FunctionPointer<T, R> CreatePointer<S, T, R>(this in MethodCookie<S, Func<T, R>> cookie, S obj) where S : class => new FunctionPointer<T, R>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
-
-        /// <summary>
-        /// Creates pointer to the static method.
-        /// </summary>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static method.</returns>
-        public static ActionPointer<T1, T2> CreatePointer<T1, T2>(this in MethodCookie<Action<T1, T2>> cookie) => new ActionPointer<T1, T2>(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance method method.
-        /// </summary>
-        /// <typeparam name="S">The type of the object to be targeted by method pointer.</typeparam>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>    
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance method.</returns>
-        public static ActionPointer<T1, T2> CreatePointer<S, T1, T2>(this in MethodCookie<S, Action<T1, T2>> cookie, S obj) where S : class => new ActionPointer<T1, T2>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
-
-        /// <summary>
-        /// Creates pointer to the static method.
-        /// </summary>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>    
-        /// <typeparam name="R">The return type.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static method.</returns>
-        public static FunctionPointer<T1, T2, R> CreatePointer<T1, T2, R>(this in MethodCookie<Func<T1, T2, R>> cookie) => new FunctionPointer<T1, T2, R>(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance method method.
-        /// </summary>
-        /// <typeparam name="S">The type of the object to be targeted by method pointer.</typeparam>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="R">The return type.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance method.</returns>
-        public static FunctionPointer<T1, T2, R> CreatePointer<S, T1, T2, R>(this in MethodCookie<S, Func<T1, T2, R>> cookie, S obj) where S : class => new FunctionPointer<T1, T2, R>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
-
-        /// <summary>
-        /// Creates pointer to the static method.
-        /// </summary>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T3">The type of the third argument to be passed into method pointer.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static method.</returns>
-        public static ActionPointer<T1, T2, T3> CreatePointer<T1, T2, T3>(this in MethodCookie<Action<T1, T2, T3>> cookie) => new ActionPointer<T1, T2, T3>(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance method method.
-        /// </summary>
-        /// <typeparam name="S">The type of the object to be targeted by method pointer.</typeparam>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>    
-        /// <typeparam name="T3">The type of the third argument to be passed into method pointer.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance method.</returns>
-        public static ActionPointer<T1, T2, T3> CreatePointer<S, T1, T2, T3>(this in MethodCookie<S, Action<T1, T2, T3>> cookie, S obj) where S : class => new ActionPointer<T1, T2, T3>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
-
-        /// <summary>
-        /// Creates pointer to the static method.
-        /// </summary>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>    
-        /// <typeparam name="T3">The type of the third argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="R">The return type.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static method.</returns>
-        public static FunctionPointer<T1, T2, T3, R> CreatePointer<T1, T2, T3, R>(this in MethodCookie<Func<T1, T2, T3, R>> cookie) => new FunctionPointer<T1, T2, T3, R>(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance method method.
-        /// </summary>
-        /// <typeparam name="S">The type of the object to be targeted by method pointer.</typeparam>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T3">The type of the third argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="R">The return type.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance method.</returns>
-        public static FunctionPointer<T1, T2, T3, R> CreatePointer<S, T1, T2, T3, R>(this in MethodCookie<S, Func<T1, T2, T3, R>> cookie, S obj) where S : class => new FunctionPointer<T1, T2, T3, R>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
-
-        /// <summary>
-        /// Creates pointer to the static method.
-        /// </summary>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T3">The type of the third argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T4">The type of the fourth argument to be passed into method pointer.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static method.</returns>
-        public static ActionPointer<T1, T2, T3, T4> CreatePointer<T1, T2, T3, T4>(this in MethodCookie<Action<T1, T2, T3, T4>> cookie) => new ActionPointer<T1, T2, T3, T4>(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance method method.
-        /// </summary>
-        /// <typeparam name="S">The type of the object to be targeted by method pointer.</typeparam>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>    
-        /// <typeparam name="T3">The type of the third argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T4">The type of the fourth argument to be passed into method pointer.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance method.</returns>
-        public static ActionPointer<T1, T2, T3, T4> CreatePointer<S, T1, T2, T3, T4>(this in MethodCookie<S, Action<T1, T2, T3, T4>> cookie, S obj) where S : class => new ActionPointer<T1, T2, T3, T4>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
-
-        /// <summary>
-        /// Creates pointer to the static method.
-        /// </summary>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>    
-        /// <typeparam name="T3">The type of the third argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T4">The type of the fourth argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="R">The return type.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static method.</returns>
-        public static FunctionPointer<T1, T2, T3, T4, R> CreatePointer<T1, T2, T3, T4, R>(this in MethodCookie<Func<T1, T2, T3, T4, R>> cookie) => new FunctionPointer<T1, T2, T3, T4, R>(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance method method.
-        /// </summary>
-        /// <typeparam name="S">The type of the object to be targeted by method pointer.</typeparam>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T3">The type of the third argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T4">The type of the fourth argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="R">The return type.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance method.</returns>
-        public static FunctionPointer<T1, T2, T3, T4, R> CreatePointer<S, T1, T2, T3, T4, R>(this in MethodCookie<S, Func<T1, T2, T3, T4, R>> cookie, S obj) where S : class => new FunctionPointer<T1, T2, T3, T4, R>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
-
-        /// <summary>
-        /// Creates pointer to the static method.
-        /// </summary>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T3">The type of the third argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T4">The type of the fourth argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T5">The type of the fifth argument to be passed into method pointer.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static method.</returns>
-        public static ActionPointer<T1, T2, T3, T4, T5> CreatePointer<T1, T2, T3, T4, T5>(this in MethodCookie<Action<T1, T2, T3, T4, T5>> cookie) => new ActionPointer<T1, T2, T3, T4, T5>(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance method method.
-        /// </summary>
-        /// <typeparam name="S">The type of the object to be targeted by method pointer.</typeparam>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>    
-        /// <typeparam name="T3">The type of the third argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T4">The type of the fourth argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T5">The type of the fifth argument to be passed into method pointer.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance method.</returns>
-        public static ActionPointer<T1, T2, T3, T4, T5> CreatePointer<S, T1, T2, T3, T4, T5>(this in MethodCookie<S, Action<T1, T2, T3, T4, T5>> cookie, S obj) where S : class => new ActionPointer<T1, T2, T3, T4, T5>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
-
-        /// <summary>
-        /// Creates pointer to the static method.
-        /// </summary>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>    
-        /// <typeparam name="T3">The type of the third argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T4">The type of the fourth argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T5">The type of the fifth argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="R">The return type.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <returns>The pointer to the static method.</returns>
-        public static FunctionPointer<T1, T2, T3, T4, T5, R> CreatePointer<T1, T2, T3, T4, T5, R>(this in MethodCookie<Func<T1, T2, T3, T4, T5, R>> cookie) => new FunctionPointer<T1, T2, T3, T4, T5, R>(cookie.MethodHandle, null);
-
-        /// <summary>
-        /// Creates pointer to the instance method method.
-        /// </summary>
-        /// <typeparam name="S">The type of the object to be targeted by method pointer.</typeparam>
-        /// <typeparam name="T1">The type of the first argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T2">The type of the second argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T3">The type of the third argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T4">The type of the fourth argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="T5">The type of the fifth argument to be passed into method pointer.</typeparam>
-        /// <typeparam name="R">The return type.</typeparam>
-        /// <param name="cookie">The object representing validated method.</param>
-        /// <param name="obj">The object to be used as <c>this</c> argument.</param>
-        /// <returns>The pointer to the instance method.</returns>
-        public static FunctionPointer<T1, T2, T3, T4, T5, R> CreatePointer<S, T1, T2, T3, T4, T5, R>(this in MethodCookie<S, Func<T1, T2, T3, T4, T5, R>> cookie, S obj) where S : class => new FunctionPointer<T1, T2, T3, T4, T5, R>(cookie.MethodHandle, obj ?? throw new ArgumentNullException(nameof(obj)));
+        /// <returns>The created pointer.</returns>
+        public static P operator &(in MethodCookie<T, D, P> cookie, T obj) => cookie.CreatePointer(obj); 
     }
 }

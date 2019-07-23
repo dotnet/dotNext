@@ -23,5 +23,7 @@ namespace DotNext
         internal static string NullMethodPointer => Resources.GetString("NullMethodPointer");
 
         internal static string InvalidMethodSignature => Resources.GetString("CannotMakeMethodPointer");
+
+        internal static string UnsupportedMethodPointerType => Resources.GetString("UnsupportedMethodPointerType");
     }
 }

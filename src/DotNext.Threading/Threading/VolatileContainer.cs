@@ -18,12 +18,21 @@ namespace DotNext.Threading
         where T : struct
     {
         /// <summary>
-        /// Represents equality comparer.
+        /// Represents atomic update action.
         /// </summary>
-        /// <param name="first">The first value to compare.</param>
-        /// <param name="second">The second value to compare.</param>
-        /// <returns><see langword="true"/> if <paramref name="first"/> is equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
-        public delegate bool EqualityComparer(in T first, in T second);
+        /// <remarks>The atomic update action should side-effect free.</remarks>
+        /// <param name="current">The value to update.</param>
+        /// <param name="newValue">The updated value.</param>
+        public delegate void Updater(in T current, out T newValue);
+
+        /// <summary>
+        /// Represents atomic accumulator.
+        /// </summary>
+        /// <remarks>The atomic accumulator should side-effect free.</remarks>
+        /// <param name="current">The value to update.</param>
+        /// <param name="x">The supplied value to be combined with the </param>
+        /// <param name="newValue">The accumulated value.</param>
+        public delegate void Accumulator(in T current, in T x, out T newValue);
 
         private T value;
 
@@ -51,24 +60,43 @@ namespace DotNext.Threading
             state.Value = false;
         }
 
-        public void CompareExchange(in T update, in T expected, EqualityComparer comparer, out T result)
+        /// <summary>
+        /// Compares two values of type <typeparamref name="T"/> for bitwise equality and, if they are equal, replaces the stored value.
+        /// </summary>
+        /// <param name="update">The value that replaces the stored value if the comparison results in equality.</param>
+        /// <param name="expected">The value that is compared to the stored value.</param>
+        /// <param name="result">The origin value stored in this container before modification.</param>
+        public void CompareExchange(in T update, in T expected, out T result)
         {
             for(SpinWait spinner; !state.FalseToTrue(); spinner.SpinOnce()) {}
             var current = value;
-            if(comparer(in current, in expected))
+            if(ValueType<T>.BitwiseEquals(current, expected))
                 Copy(in update, out value);
             Copy(in current, out result);
             state.Value = false;
         }
 
-        public bool CompareAndSet(in T expected, in T update, EqualityComparer comparer)
+        /// <summary>
+        /// Atomically sets the stored value to the given updated value if the current value == the expected value.
+        /// </summary>
+        /// <param name="expected">The expected value.</param>
+        /// <param name="update">The new value.</param>
+        /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
+        public bool CompareAndSet(in T expected, in T update)
         {
             for(SpinWait spinner; !state.FalseToTrue(); spinner.SpinOnce()) {}
-            if(comparer(in value, in expected))
+            bool result;
+            if(result = ValueType<T>.BitwiseEquals(value, expected))
                 Copy(in update, out value);
             state.Value = false;
+            return result;
         }
-
+        
+        /// <summary>
+        /// Sets a value stored in this container to a specified value and returns the original value, as an atomic operation.
+        /// </summary>
+        /// <param name="update">The value that replaces the stored value.</param>
+        /// <param name="previous">The original stored value before modification.</param>
         public void Exchange(in T update, out T previous)
         {
             for(SpinWait spinner; !state.FalseToTrue(); spinner.SpinOnce()) {}
@@ -77,35 +105,72 @@ namespace DotNext.Threading
             state.Value = false;
         }
 
-        private void Update(in T update, FunctionPointer<T, T> updater, EqualityComparer comparer, out T result, bool newValueExpected)
+        private void Update(Updater updater, out T result, bool newValueExpected)
         {
             T newValue, oldValue;
             do
             {
                 Read(out oldValue);
-                newValue = updater.Invoke(oldValue);
+                updater(oldValue, out newValue);
             }
-            while (!CompareAndSet(in oldValue, in newValue, comparer));
+            while (!CompareAndSet(in oldValue, in newValue));
             result = newValueExpected ? newValue : oldValue;
         }
 
-        public void UpdateAndGet(in T update, FunctionPointer<T, T> updater, EqualityComparer comparer, out T result)
-            => Update(in update, updater, comparer, out result, true);
+        /// <summary>
+        /// Atomically updates the stored value with the results of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <param name="result">The updated value.</param>
+        public void UpdateAndGet(Updater updater, out T result)
+            => Update(updater, out result, true);
 
-        public void GetAndUpdate(in T update, FunctionPointer<T, T> updater, EqualityComparer comparer, out T result)
-            => Update(in update, updater, comparer, out result, false);
+        /// <summary>
+        /// Atomically updates the stored value with the results 
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <param name="result">The original value.</param>
+        public void GetAndUpdate(Updater updater, out T result)
+            => Update(updater, out result, false);
 
-        private void Accumulate(ref T value, T x, FunctionPointer<T, T, T> accumulator, EqualityComparer comparer, out T result, bool newValueExpected)
+        private void Accumulate(in T x, Accumulator accumulator, out T result, bool newValueExpected)
         {
             T oldValue, newValue;
             do
             {
                 Read(out oldValue);
-                newValue = accumulator.Invoke(oldValue, x);
+                accumulator(oldValue, x, out newValue);
             }
-            while (!CompareAndSet(oldValue, newValue, comparer));
+            while (!CompareAndSet(oldValue, newValue));
             result = newValueExpected ? newValue : oldValue;
         }
+
+        /// <summary>
+        /// Atomically updates the stored value with the results of applying the given function 
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <param name="result">The updated value.</param>
+        public void AccumulateAndGet(in T x, Accumulator accumulator, out T result)
+            => Accumulate(x, accumulator, out result, true);
+
+        /// <summary>
+        /// Atomically updates the stored value with the results of applying the given function 
+        /// to the current and given values, returning the updated value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <param name="result">The original value.</param>
+        public void GetAndAccumulate(in T x, Accumulator accumulator, out T result)
+            => Accumulate(x, accumulator, out result, false);
 
         /// <summary>
         /// Gets or sets value in volatile manner.
@@ -128,6 +193,16 @@ namespace DotNext.Threading
         {
             get => Value;
             set => Value = (T)value;
+        }
+
+        /// <summary>
+        /// Converts the stored value into string atomically.
+        /// </summary>
+        /// <returns>The string returned from <see cref="object.ToString"/> method called on the stored value.</returns>
+        public override string ToString()
+        {
+            Read(out var result);
+            return result.ToString();
         }
     }
 }
