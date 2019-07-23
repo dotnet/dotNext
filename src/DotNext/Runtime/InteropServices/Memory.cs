@@ -829,5 +829,22 @@ namespace DotNext.Runtime.InteropServices
         public static unsafe ReadOnlySpan<byte> AsReadOnlySpan<T>(T* pointer)
             where T : unmanaged
             => new ReadOnlySpan<byte>(pointer, Unsafe.SizeOf<T>());
+        
+        /// <summary>
+        /// Copies one value into another.
+        /// </summary>
+        /// <typeparam name="T">The value type to copy.</typeparam>
+        /// <param name="input">The reference to the source location.</param>
+        /// <param name="output">The reference to the destination location.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Copy<T>(in T input, out T output)
+            where T : struct
+        {
+            Ldarg(nameof(output));
+            Ldarg(nameof(input));
+            Cpobj(typeof(T));
+            Ret();
+            throw Unreachable();    //need here because output var should be assigned
+        }
     }
 }

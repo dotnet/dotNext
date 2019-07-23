@@ -15,20 +15,9 @@ namespace DotNext.Threading
 	/// <seealso cref="Interlocked"/>
     public static class AtomicSingle
     {
-        private sealed class Operations : Atomic<float>
-        {
-            internal Operations() { }
-
-            internal override float Exchange(ref float value, float update) => Interlocked.Exchange(ref value, update);
-
-            internal override float CompareExchange(ref float value, float update, float expected)
-                => Interlocked.CompareExchange(ref value, update, expected);
-        }
-
         private static readonly FunctionPointer<float, float> Increment = new FunctionPointer<float, float>(value => value + 1F);
         private static readonly FunctionPointer<float, float> Decrement = new FunctionPointer<float, float>(value => value - 1F);
         private static readonly FunctionPointer<float, float, float> Sum = new FunctionPointer<float, float, float>((x, y) => x + y);
-        internal static readonly Atomic<float> Atomic = new Operations();
 
         /// <summary>
         /// Reads the value of the specified field. On systems that require it, inserts a
@@ -43,7 +32,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float VolatileRead(ref this float value) => Volatile.Read(ref value);
+        public static float VolatileRead(ref this float value) => Atomic<float>.Read(ref value);
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -58,7 +47,7 @@ namespace DotNext.Threading
         /// </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileWrite(ref this float value, float newValue)
-            => Volatile.Write(ref value, newValue);
+            => Atomic<float>.Write(ref value, newValue);
 
         /// <summary>
 		/// Atomically increments by one referenced value.
@@ -95,7 +84,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet(ref this float value, float expected, float update)
-            => Atomic.CompareAndSet(ref value, expected, update);
+            => Atomic<float>.Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
 
         /// <summary>
 		/// Modifies referenced value atomically.
@@ -118,6 +107,28 @@ namespace DotNext.Threading
         {
             VolatileWrite(ref value, update);
             return update;
+        }
+
+        private static (float OldValue, float NewValue) Update(ref float value, FunctionPointer<float, float> updater)
+        {
+            float oldValue, newValue;
+            do
+            {
+                newValue = updater.Invoke(oldValue = VolatileRead(ref value));
+            }
+            while (!CompareAndSet(ref value, oldValue, newValue));
+            return (oldValue, newValue);
+        }
+
+        private static (float OldValue, float NewValue) Accumulate(ref float value, float x, FunctionPointer<float, float, float> accumulator)
+        {
+            float oldValue, newValue;
+            do
+            {
+                newValue = accumulator.Invoke(oldValue = VolatileRead(ref value), x);
+            }
+            while (!CompareAndSet(ref value, oldValue, newValue));
+            return (oldValue, newValue);
         }
 
         /// <summary>
@@ -148,7 +159,7 @@ namespace DotNext.Threading
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float AccumulateAndGet(ref this float value, float x, FunctionPointer<float, float, float> accumulator)
-            => Atomic.Accumulate(ref value, x, accumulator).NewValue;
+            => Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -178,7 +189,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float GetAndAccumulate(ref this float value, float x, FunctionPointer<float, float, float> accumulator)
-            => Atomic.Accumulate(ref value, x, accumulator).OldValue;
+            => Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
 		/// Atomically updates the stored value with the results 
@@ -200,7 +211,7 @@ namespace DotNext.Threading
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float UpdateAndGet(ref this float value, FunctionPointer<float, float> updater)
-            => Atomic.Update(ref value, updater).NewValue;
+            => Update(ref value, updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -222,7 +233,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float GetAndUpdate(ref this float value, FunctionPointer<float, float> updater)
-            => Atomic.Update(ref value, updater).OldValue;
+            => Update(ref value, updater).OldValue;
 
         /// <summary>
         /// Performs volatile read of the array element.

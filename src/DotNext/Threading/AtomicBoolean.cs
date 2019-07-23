@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Threading;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 
@@ -15,7 +16,7 @@ namespace DotNext.Threading
     [Serializable]
     [SuppressMessage("Design", "CA1066")]
     [SuppressMessage("Usage", "CA2231")]
-    public struct AtomicBoolean : IEquatable<bool>, ISerializable, IAtomicWrapper<int, bool>
+    public struct AtomicBoolean : IEquatable<bool>, ISerializable
     {
         private const string ValueSerData = "value";
         private int value;
@@ -31,12 +32,6 @@ namespace DotNext.Threading
         {
             value = (int)info.GetValue(ValueSerData, typeof(int));
         }
-
-        bool IAtomicWrapper<int, bool>.Convert(int value) => value.ToBoolean();
-
-        int IAtomicWrapper<int, bool>.Convert(bool value) => value.ToInt32();
-
-        Atomic<int> IAtomicWrapper<int, bool>.Atomic => AtomicInt32.Atomic;
 
         /// <summary>
         /// Gets or sets boolean value in volatile manner.
@@ -62,16 +57,6 @@ namespace DotNext.Threading
             }
         }
 
-        ref int IAtomicWrapper<int, bool>.Reference
-        {
-            get
-            {
-                Ldarg_0();
-                Ldflda(new F(typeof(AtomicBoolean), nameof(value)));
-                return ref ReturnRef<int>();
-            }
-        }
-
         /// <summary>
 		/// Atomically sets referenced value to the given updated value if the current value == the expected value.
 		/// </summary>
@@ -80,7 +65,7 @@ namespace DotNext.Threading
 		/// <returns>The original value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CompareExchange(bool update, bool expected)
-            => Atomic<int, bool, AtomicBoolean>.CompareExchange(ref this, update, expected);
+            => Interlocked.CompareExchange(ref value, update.ToInt32(), expected.ToInt32()).ToBoolean();
 
         /// <summary>
 		/// Atomically sets referenced value to the given updated value if the current value == the expected value.
@@ -90,7 +75,7 @@ namespace DotNext.Threading
 		/// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool CompareAndSet(bool expected, bool update)
-            => Atomic<int, bool, AtomicBoolean>.CompareAndSet(ref this, expected, update);
+            => CompareExchange(update, expected) == expected;
 
         /// <summary>
         /// Atomically sets <see langword="true"/> value if the
@@ -128,8 +113,7 @@ namespace DotNext.Threading
 		/// <param name="update">A new value to be stored into this container.</param>
 		/// <returns>Original value before modification.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool GetAndSet(bool update)
-            => Atomic<int, bool, AtomicBoolean>.GetAndSet(ref this, ref value, update);
+        public bool GetAndSet(bool update) => value.GetAndSet(update.ToInt32()).ToBoolean();
 
         /// <summary>
 		/// Modifies the current value atomically.
@@ -141,6 +125,28 @@ namespace DotNext.Threading
         {
             Value = update;
             return update;
+        }
+
+        private (bool OldValue, bool NewValue) Update(FunctionPointer<bool, bool> updater)
+        {
+            bool oldValue, newValue;
+            do
+            {
+                newValue = updater.Invoke(oldValue = Atomic<int>.Read(ref value).ToBoolean());
+            }
+            while (!CompareAndSet(oldValue, newValue));
+            return (oldValue, newValue);
+        }
+
+        private (bool OldValue, bool NewValue) Accumulate(bool x, FunctionPointer<bool, bool, bool> accumulator)
+        {
+            bool oldValue, newValue;
+            do
+            {
+                newValue = accumulator.Invoke(oldValue = Atomic<int>.Read(ref value).ToBoolean(), x);
+            }
+            while (!CompareAndSet(oldValue, newValue));
+            return (oldValue, newValue);
         }
 
         /// <summary>
@@ -167,7 +173,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
 		public bool AccumulateAndGet(bool x, FunctionPointer<bool, bool, bool> accumulator)
-            => Atomic<int, bool, AtomicBoolean>.Accumulate(ref this, x, accumulator).NewValue;
+            => Accumulate(x, accumulator).NewValue;
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -193,7 +199,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
 		public bool GetAndAccumulate(bool x, FunctionPointer<bool, bool, bool> accumulator)
-            => Atomic<int, bool, AtomicBoolean>.Accumulate(ref this, x, accumulator).OldValue;
+            => Accumulate(x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -211,7 +217,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
         public bool UpdateAndGet(FunctionPointer<bool, bool> updater)
-            => Atomic<int, bool, AtomicBoolean>.Update(ref this, updater).NewValue;
+            => Update(updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -229,7 +235,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         public bool GetAndUpdate(FunctionPointer<bool, bool> updater)
-            => Atomic<int, bool, AtomicBoolean>.Update(ref this, updater).OldValue;
+            => Update(updater).OldValue;
 
         /// <summary>
         /// Determines whether stored value is equal to value passed as argument.

@@ -11,18 +11,6 @@ namespace DotNext.Threading
     /// </summary>
     public static class AtomicReference
     {
-        private sealed class Operations<T> : Atomic<T>
-            where T : class
-        {
-            internal static readonly Operations<T> Instance = new Operations<T>();
-            private Operations() { }
-
-            internal override T Exchange(ref T value, T update) => Interlocked.Exchange(ref value, update);
-
-            internal override T CompareExchange(ref T value, T update, T expected)
-                => Interlocked.CompareExchange(ref value, update, expected);
-        }
-
         /// <summary>
         /// Compares two values for equality and, if they are equal, 
         /// replaces the stored value.
@@ -35,7 +23,31 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet<T>(ref T value, T expected, T update)
             where T : class
-            => Operations<T>.Instance.CompareAndSet(ref value, expected, update);
+            => Atomic<T>.Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
+
+        private static (T OldValue, T NewValue) Update<T>(ref T value, FunctionPointer<T, T> updater)
+            where T : class
+        {
+            T oldValue, newValue;
+            do
+            {
+                newValue = updater.Invoke(oldValue = Atomic<T>.Read(ref value));
+            }
+            while (!CompareAndSet(ref value, oldValue, newValue));
+            return (oldValue, newValue);
+        }
+
+        private static (T OldValue, T NewValue) Accumulate<T>(ref T value, T x, FunctionPointer<T, T, T> accumulator)
+            where T : class
+        {
+            T oldValue, newValue;
+            do
+            {
+                newValue = accumulator.Invoke(oldValue = Atomic<T>.Read(ref value), x);
+            }
+            while (!CompareAndSet(ref value, oldValue, newValue));
+            return (oldValue, newValue);
+        }
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -69,7 +81,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T AccumulateAndGet<T>(ref T value, T x, FunctionPointer<T, T, T> accumulator)
             where T : class
-            => Operations<T>.Instance.Accumulate(ref value, x, accumulator).NewValue;
+            => Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -103,7 +115,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetAndAccumulate<T>(ref T value, T x, FunctionPointer<T, T, T> accumulator)
             where T : class
-            => Operations<T>.Instance.Accumulate(ref value, x, accumulator).OldValue;
+            => Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -129,7 +141,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T UpdateAndGet<T>(ref T value, FunctionPointer<T, T> updater)
             where T : class
-            => Operations<T>.Instance.Update(ref value, updater).NewValue;
+            => Update(ref value, updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -155,7 +167,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetAndUpdate<T>(ref T value, FunctionPointer<T, T> updater)
             where T : class
-            => Operations<T>.Instance.Update(ref value, updater).OldValue;
+            => Update(ref value, updater).OldValue;
 
         /// <summary>
         /// Performs volatile read of the array element.
@@ -166,7 +178,7 @@ namespace DotNext.Threading
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T VolatileRead<T>(this T[] array, long index)
             where T : class
-            => Operations<T>.Read(ref array[index]);
+            => Atomic<T>.Read(ref array[index]);
 
         /// <summary>
         /// Performs volatile write to the array element.
@@ -177,7 +189,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileWrite<T>(this T[] array, long index, T element)
             where T : class
-            => Operations<T>.Write(ref array[index], element);
+            => Atomic<T>.Write(ref array[index], element);
 
         /// <summary>
 		/// Atomically sets array element to the given updated value if the array element == the expected value.

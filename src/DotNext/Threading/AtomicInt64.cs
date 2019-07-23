@@ -15,18 +15,6 @@ namespace DotNext.Threading
     /// <seealso cref="Interlocked"/>
     public static class AtomicInt64
     {
-        private sealed class Operations : Atomic<long>
-        {
-            internal Operations() { }
-
-            internal override long Exchange(ref long value, long update) => Interlocked.Exchange(ref value, update);
-
-            internal override long CompareExchange(ref long value, long update, long expected)
-                => Interlocked.CompareExchange(ref value, update, expected);
-        }
-
-        internal static readonly Atomic<long> Atomic = new Operations();
-
         /// <summary>
         /// Reads the value of the specified field. On systems that require it, inserts a
         /// memory barrier that prevents the processor from reordering memory operations
@@ -40,7 +28,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long VolatileRead(ref this long value) => Operations.Read(ref value);
+        public static long VolatileRead(ref this long value) => Atomic<long>.Read(ref value);
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -54,7 +42,7 @@ namespace DotNext.Threading
         /// all processors in the computer.
         /// </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileWrite(ref this long value, long newValue) => Operations.Write(ref value, newValue);
+        public static void VolatileWrite(ref this long value, long newValue) => Atomic<long>.Write(ref value, newValue);
 
         /// <summary>
         /// Atomically increments by one referenced value.
@@ -83,7 +71,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet(ref this long value, long expected, long update)
-            => Atomic.CompareAndSet(ref value, expected, update);
+            => Interlocked.CompareExchange(ref value, update, expected) == expected;
 
         /// <summary>
         /// Adds two 64-bit integers and replaces referenced integer with the sum, 
@@ -119,6 +107,28 @@ namespace DotNext.Threading
             return update;
         }
 
+        private static (long OldValue, long NewValue) Update(ref long value, FunctionPointer<long, long> updater)
+        {
+            long oldValue, newValue;
+            do
+            {
+                newValue = updater.Invoke(oldValue = VolatileRead(ref value));
+            }
+            while (!CompareAndSet(ref value, oldValue, newValue));
+            return (oldValue, newValue);
+        }
+
+        private static (long OldValue, long NewValue) Accumulate(ref long value, long x, FunctionPointer<long, long, long> accumulator)
+        {
+            long oldValue, newValue;
+            do
+            {
+                newValue = accumulator.Invoke(oldValue = VolatileRead(ref value), x);
+            }
+            while (!CompareAndSet(ref value, oldValue, newValue));
+            return (oldValue, newValue);
+        }
+
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
         /// to the current and given values, returning the updated value.
@@ -147,7 +157,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long AccumulateAndGet(ref this long value, long x, FunctionPointer<long, long, long> accumulator)
-            => Atomic.Accumulate(ref value, x, accumulator).NewValue;
+            => Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -177,7 +187,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndAccumulate(ref this long value, long x, FunctionPointer<long, long, long> accumulator)
-            => Atomic.Accumulate(ref value, x, accumulator).OldValue;
+            => Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -199,7 +209,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long UpdateAndGet(ref this long value, FunctionPointer<long, long> updater)
-            => Atomic.Update(ref value, updater).NewValue;
+            => Update(ref value, updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -221,7 +231,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndUpdate(ref this long value, FunctionPointer<long, long> updater)
-            => Atomic.Update(ref value, updater).OldValue;
+            => Update(ref value, updater).OldValue;
 
         /// <summary>
         /// Performs volatile read of the array element.
