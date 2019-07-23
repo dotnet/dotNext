@@ -17,12 +17,13 @@ namespace DotNext.Reflection
 
         static MethodPointerFactory()
         {
+            //FIXME: It is bad trick based on assumption that every method pointer has appropriate constructor. It would be better to have another way (i.e. under compiler control) of generic instantation of method pointers but I don't see it at this moment
             var ctor = typeof(P).GetConstructor(BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance, null, new[] { typeof(RuntimeMethodHandle), typeof(bool) }, Array.Empty<ParameterModifier>()) ?? throw new GenericArgumentException<P>(ExceptionMessages.UnsupportedMethodPointerType);
             ConstructorHandle = ctor.MethodHandle;
         }
 
         private readonly RuntimeMethodHandle method;
-        private readonly IntPtr ctorPtr;
+        private readonly IntPtr ctorPtr;    //pointer to constructor P::.ctor(RuntimeMethodHandle, object)
 
         internal MethodPointerFactory(MethodInfo method)
         {
@@ -42,6 +43,8 @@ namespace DotNext.Reflection
             Push(method);
             Push(target);
             Push(ctorPtr);
+            //here I use constructor as instance method to initialize pointer of type P. As far as I know it is legal because constructor is
+            //indistinguishable at CLR level. Anyway, it is cheaper that doing Reflection call with all these boxing/unboxing
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(RuntimeMethodHandle), typeof(object)));
             MarkLabel(MethodExit);
             return result;
@@ -52,7 +55,7 @@ namespace DotNext.Reflection
     /// Represents a source of static method pointers.
     /// </summary>
     /// <remarks>
-    /// The reason to having this method is to avoid heap allocations every time
+    /// The reason to having this type is to avoid heap allocations every time
     /// when you need typed method pointer. The constructor of such pointer
     /// performs runtime checks using Reflection. These checks require such allocations.
     /// To avoid that, it is possible to create <see cref="MethodCookie{D, P}"/>
@@ -101,7 +104,7 @@ namespace DotNext.Reflection
     /// Represents a source of instance method pointers.
     /// </summary>
     /// <remarks>
-    /// The reason to having this method is to avoid heap allocations every time
+    /// The reason to having this type is to avoid heap allocations every time
     /// when you need typed method pointer. The constructor of such pointer
     /// performs runtime checks using Reflection. These checks require such allocations.
     /// To avoid that, it is possible to create <see cref="MethodCookie{T,D,P}"/>
