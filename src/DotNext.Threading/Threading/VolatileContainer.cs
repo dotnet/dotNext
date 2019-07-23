@@ -52,11 +52,11 @@ namespace DotNext.Threading
         /// <summary>
         /// Performs atomic write.
         /// </summary>
-        /// <param name="value">The value to be stored into this container.</param>
-        public void Write(in T value)
+        /// <param name="newValue">The value to be stored into this container.</param>
+        public void Write(in T newValue)
         {
             for(SpinWait spinner; !state.FalseToTrue(); spinner.SpinOnce()) {}
-            Copy(in value, out this.value);
+            Copy(in newValue, out value);
             state.Value = false;
         }
 
