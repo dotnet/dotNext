@@ -12,7 +12,7 @@ namespace DotNext.Threading.Tasks
     {
         private sealed class Continuation
         {
-            private static readonly Func<object, Action> ContinuationWithoutContextFactory = DelegateHelpers.CreateClosedDelegateFactory<Action>(() => QueueContinuation(null));
+            private static readonly Func<Action, Action> ContinuationWithoutContextFactory = DelegateHelpers.CreateClosedDelegateFactory<Action>(() => QueueContinuation(null));
 
             private readonly Action callback;
             private readonly SynchronizationContext context;
