@@ -102,26 +102,17 @@ namespace DotNext.Threading.Tasks
             continuation = null;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        private void AttachContinuation(Action callback)
-        {
-            if (IsCompleted)
-                callback();
-            else
-                continuation += callback;
-        }
-
         /// <summary>
         /// Attaches the callback that will be invoked on completion.
         /// </summary>
         /// <param name="callback">The callback to be attached to the asynchronous operation which result is represented by this awaitable object.</param>
-
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void OnCompleted(Action callback)
         {
             if (IsCompleted)
                 callback();
-            callback = Continuation.Create(callback);
-            AttachContinuation(callback);
+            else
+                continuation += Continuation.Create(callback);
         }
     }
 
