@@ -8,7 +8,7 @@ namespace DotNext.Threading.Tasks
     /// <summary>
     /// Represents lightweight version of <see cref="Task"/>.
     /// </summary>
-    public abstract class Future
+    public abstract class Future : INotifyCompletion
     {
         private sealed class Continuation
         {
