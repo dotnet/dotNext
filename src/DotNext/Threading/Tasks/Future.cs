@@ -8,8 +8,49 @@ namespace DotNext.Threading.Tasks
     /// <summary>
     /// Represents lightweight version of <see cref="Task"/>.
     /// </summary>
-    public abstract class Future : INotifyCompletion
+    public abstract class Future : IFuture
     {
+        /// <summary>
+        /// Represents awaiter of the asynchronous computation result represented by future object.
+        /// </summary>
+        public interface IAwaiter : IFuture
+        {
+            /// <summary>
+            /// Gets result of asynchronous operation represented by Future object.
+            /// </summary>
+            /// <exception cref="OperationCanceledException">Cancellation requested and caller specified that exception should be thrown.</exception>
+            /// <exception cref="IncompletedFutureException">The current future is not completed.</exception>
+            void GetResult();
+        }
+
+        /// <summary>
+        /// Represents awaiter of the asynchronous computation result represented by future object.
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        public interface IAwaiter<R> : IFuture
+        {
+            /// <summary>
+            /// Gets result
+            /// </summary>
+            /// <returns>The result of asynchronous computation.</returns>
+            /// <exception cref="OperationCanceledException">Cancellation requested and caller specified that exception should be thrown.</exception>
+            /// <exception cref="IncompletedFutureException">The current future is not completed.</exception>
+            R GetResult();
+        }
+
+        /// <summary>
+        /// Represents exception indicating that the result is requested from incompleted Future object.
+        /// </summary>
+        protected sealed class IncompletedFutureException : InvalidOperationException
+        {
+            /// <summary>
+            /// Initializes a new exception.
+            /// </summary>
+            public IncompletedFutureException()
+            {
+            }
+        }
+
         private sealed class Continuation
         {
             private static readonly Func<Action, Action> ContinuationWithoutContextFactory = DelegateHelpers.CreateClosedDelegateFactory<Action>(() => QueueContinuation(null));
@@ -61,18 +102,26 @@ namespace DotNext.Threading.Tasks
             continuation = null;
         }
 
-        /// <summary>
-        /// Attaches the callback that will be invoked on completion.
-        /// </summary>
-        /// <param name="callback">The callback to be attached to the asynchronous operation which result is represented by this awaitable object.</param>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void OnCompleted(Action callback)
+        private void AttachContinuation(Action callback)
         {
-            callback = Continuation.Create(callback);
             if (IsCompleted)
                 callback();
             else
                 continuation += callback;
+        }
+
+        /// <summary>
+        /// Attaches the callback that will be invoked on completion.
+        /// </summary>
+        /// <param name="callback">The callback to be attached to the asynchronous operation which result is represented by this awaitable object.</param>
+
+        public void OnCompleted(Action callback)
+        {
+            if (IsCompleted)
+                callback();
+            callback = Continuation.Create(callback);
+            AttachContinuation(callback);
         }
     }
 
