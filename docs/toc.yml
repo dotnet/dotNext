@@ -1,6 +1,6 @@
 - name: Features
   href: features/
-- name: API Documentation
+- name: API Reference
   href: api/
 - name: Benchmarks
   href: benchmarks.md
