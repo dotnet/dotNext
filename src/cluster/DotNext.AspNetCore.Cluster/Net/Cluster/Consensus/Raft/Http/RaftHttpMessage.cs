@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private protected override void FillRequest(HttpRequestMessage request)
         {
-            request.Headers.Add(TermHeader, Convert.ToString(ConsensusTerm, InvariantCulture));
+            request.Headers.Add(TermHeader, ConsensusTerm.ToString(InvariantCulture));
             base.FillRequest(request);
         }
 
@@ -42,8 +42,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected static Task SaveResponse(HttpResponse response, Result<bool> result)
         {
             response.StatusCode = StatusCodes.Status200OK;
-            response.Headers.Add(TermHeader, Convert.ToString(result.Term, InvariantCulture));
-            return response.WriteAsync(Convert.ToString(result.Value, InvariantCulture));
+            response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
+            return response.WriteAsync(result.Value.ToString(InvariantCulture));
         }
     }
 }
