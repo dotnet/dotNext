@@ -115,6 +115,7 @@ namespace DotNext
             Ret();
             MarkLabel(callImplicitThis);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void)));
             Ret();
         }
@@ -315,6 +316,7 @@ namespace DotNext
             Ret();
             MarkLabel(callImplicitThis);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R)));
             return Return<R>();
         }
@@ -554,6 +556,7 @@ namespace DotNext
             MarkLabel(callImplicitThis);
             Push(arg);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(bool), typeof(T)));
             return Return<bool>();
         }
@@ -716,6 +719,7 @@ namespace DotNext
             MarkLabel(callImplicitThis);
             Push(arg);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T)));
             return Return<R>();
         }
@@ -869,6 +873,7 @@ namespace DotNext
             MarkLabel(callImplicitThis);
             Push(arg);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T)));
             Ret();
         }
@@ -1036,6 +1041,7 @@ namespace DotNext
             Push(arg1);
             Push(arg2);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T1), typeof(T2)));
             return Return<R>();
         }
@@ -1193,6 +1199,7 @@ namespace DotNext
             Push(arg1);
             Push(arg2);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T1), typeof(T2)));
             Ret();
         }
@@ -1356,6 +1363,7 @@ namespace DotNext
             Push(arg2);
             Push(arg3);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T1), typeof(T2), typeof(T3)));
             return Return<R>();
         }
@@ -1517,6 +1525,7 @@ namespace DotNext
             Push(arg2);
             Push(arg3);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T1), typeof(T2), typeof(T3)));
             Ret();
         }
@@ -1684,6 +1693,7 @@ namespace DotNext
             Push(arg3);
             Push(arg4);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
             return Return<R>();
         }
@@ -1849,6 +1859,7 @@ namespace DotNext
             Push(arg3);
             Push(arg4);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
         }
@@ -2020,6 +2031,7 @@ namespace DotNext
             Push(arg4);
             Push(arg5);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
             return Return<R>();
         }
@@ -2189,6 +2201,7 @@ namespace DotNext
             Push(arg4);
             Push(arg5);
             Push(methodPtr);
+            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
             Ret();
         }

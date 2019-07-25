@@ -57,7 +57,7 @@ namespace DotNext.Threading
 
         private static void SynchronizedWrite()
         {
-            for(var i = 0; i < 100; i++)
+            for(var i = 0; i < 1000; i++)
                 SContainer.Write(in Value);
         }
 

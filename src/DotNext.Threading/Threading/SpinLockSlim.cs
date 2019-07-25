@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace DotNext.Threading
 {
-    internal struct ExclusiveLockSlim
+    internal struct SpinLockSlim
     {
         private AtomicBoolean state;
 

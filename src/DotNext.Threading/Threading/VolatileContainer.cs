@@ -36,7 +36,7 @@ namespace DotNext.Threading
 
         private T value;
 
-        private ExclusiveLockSlim @lock;
+        private SpinLockSlim @lock;
 
         /// <summary>
         /// Clones thic container atomically.
