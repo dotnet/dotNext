@@ -12,7 +12,7 @@ namespace DotNext
     /// <see cref="System.Threading.ThreadLocal{T}"/> provides guarantees that each thread has its own local view of the stored value.
     /// <see cref="System.Threading.AsyncLocal{T}"/> provides guarantees that each asynchronous execution flow has its own local view of the stored value.
     /// <see cref="StackLocal{T}"/> is more restrictive and provides guarantees that the value stored inside of it is allocated on the stack
-    /// and can be accessible only by subsequent method calls placed into the current call stack.
+    /// and can be accessible only by subsequent method calls in the current call stack.
     /// </remarks>
     /// <typeparam name="T">The type which value is stack-allocated.</typeparam>
     public ref struct StackLocal<T>
@@ -30,6 +30,10 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public StackLocal(T value) => Value = value;
 
+        /// <summary>
+        /// Gets managed pointer to <see cref="Value"/>.
+        /// </summary>
+        /// <value>The managed pointer to <see cref="Value"/>.</value>
         internal ref T Ref
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

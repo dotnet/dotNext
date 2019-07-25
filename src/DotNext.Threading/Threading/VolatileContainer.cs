@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace DotNext.Threading
 {
@@ -64,6 +63,31 @@ namespace DotNext.Threading
         {
             @lock.Acquire();
             Copy(in value, out result);
+            @lock.Release();
+        }
+
+        /// <summary>
+        /// Swaps the value stored in this container and the given value atomically.
+        /// </summary>
+        /// <remarks>
+        /// This operation is atomic for both containers.
+        /// </remarks>
+        /// <param name="other">The container for the value.</param>
+        public void Swap(ref VolatileContainer<T> other)
+        {
+            other.@lock.Acquire();
+            Swap(ref other.value);
+            other.@lock.Release();
+        }
+
+        /// <summary>
+        /// Swaps the value stored in this container and the given value atomically.
+        /// </summary>
+        /// <param name="other">The managed pointer to the value to swap.</param>
+        public void Swap(ref T other)
+        {
+            @lock.Acquire();
+            Runtime.InteropServices.Memory.Swap(ref value, ref other);
             @lock.Release();
         }
 

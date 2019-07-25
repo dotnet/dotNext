@@ -816,14 +816,23 @@ namespace DotNext.Runtime.InteropServices
             => new Span<byte>(pointer, Unsafe.SizeOf<T>());
 
         /// <summary>
+        /// Converts stack-allocated value into unmanaged pointer to it.
+        /// </summary>
+        /// <typeparam name="T">The unmanaged type.</typeparam>
+        /// <param name="value">The value allocated on the stack.</param>
+        /// <returns>The pointer to the value allocated on the stack.</returns>
+        [CLSCompliant(false)]
+        public static T* ToPointer<T>(this ref StackLocal<T> value)
+            where T : unmanaged
+            => (T*)Unsafe.AsPointer(ref value.Ref);
+
+        /// <summary>
         /// Converts stack-allocated value into span of bytes.
         /// </summary>
         /// <typeparam name="T">The unmanaged type.</typeparam>
         /// <param name="value">The value allocated on the stack.</param>
         /// <returns>The span representing stack-allocated value in binary format.</returns>
-        public static Span<byte> AsSpan<T>(in StackLocal<T> value)
-            where T : unmanaged
-            => AsSpan((T*)Unsafe.AsPointer(ref value.Ref));
+        public static Span<byte> AsSpan<T>(this ref StackLocal<T> value)where T : unmanaged => AsSpan(value.ToPointer());
         
         /// <summary>
         /// Copies one value into another.
