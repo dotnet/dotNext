@@ -800,7 +800,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="value">The value allocated on the stack.</param>
         /// <returns>The pointer to the value allocated on the stack.</returns>
         public static unsafe implicit operator Pointer<T>(in StackLocal<T> value)
-            => new Pointer<T>(new IntPtr(Unsafe.AsPointer(ref Unsafe.AsRef(value.Value))));
+            => new Pointer<T>((T*)Unsafe.AsPointer(ref Unsafe.AsRef(value.Value)));
 
         bool IEquatable<Pointer<T>>.Equals(Pointer<T> other) => Equals(other);
 
