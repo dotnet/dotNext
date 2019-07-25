@@ -39,7 +39,8 @@ namespace DotNext
             /// <param name="second">The second value to be compared.</param>
             /// <returns><see langword="true"/>, if two values are equal; otherwise, <see langword="false"/>.</returns>
             /// <seealso cref="BitwiseEquals(T, T)"/>
-            public bool Equals(T first, T second) => BitwiseEquals(ref first, ref second);
+            public bool Equals(T first, T second)
+                => BitwiseEquals(ref Unsafe.As<T, byte>(ref first), ref Unsafe.As<T, byte>(ref second));
 
             /// <summary>
             /// Computes bitwise hash code for the given value.
@@ -78,7 +79,7 @@ namespace DotNext
         /// </summary>
         public static readonly bool IsPrimitive = typeof(T).IsPrimitive;
 
-        private static bool BitwiseEquals(ref T first, ref T second)
+        private static bool BitwiseEquals(ref byte first, ref byte second)
         {
             Sizeof(typeof(T));
             Conv_I8();
@@ -140,26 +141,10 @@ namespace DotNext
         /// <param name="first">The first value to check.</param>
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool BitwiseEquals<U>(T first, U second)
             where U : struct
-        {
-            const string methodExit = "exit";
-            Sizeof(typeof(T));
-            Conv_I8();
-            Pop(out long size);
-            Push(size);
-            Sizeof(typeof(U));
-            Conv_I8();
-            Ceq();
-            Dup();
-            Brfalse(methodExit);//sizeof(T) != sizeof(U), return false
-            Pop();  //to remove value produced by Dup()
-            Push(ref first);
-            Push(ref second);
-            Call(new M(typeof(ValueType<T>), nameof(BitwiseEquals), new TypeRef(typeof(T)).MakeByRefType(), new TypeRef(typeof(T)).MakeByRefType()));
-            MarkLabel(methodExit);
-            return Return<bool>();
-        }
+            => Unsafe.SizeOf<T>() == Unsafe.SizeOf<U>() && BitwiseEquals(ref Unsafe.As<T, byte>(ref first), ref Unsafe.As<U, byte>(ref second));
 
         /// <summary>
         /// Checks bitwise equality between two values of the same value type.
@@ -171,7 +156,9 @@ namespace DotNext
         /// <param name="first">The first value to check.</param>
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
-        public static bool BitwiseEquals(T first, T second) => BitwiseEquals(ref first, ref second);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool BitwiseEquals(T first, T second) 
+            => BitwiseEquals(ref Unsafe.As<T, byte>(ref first), ref Unsafe.As<T, byte>(ref second));
 
         /// <summary>
         /// Checks bitwise equality between two values of the same value type.
@@ -183,8 +170,9 @@ namespace DotNext
         /// <param name="first">The first value to check.</param>
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool BitwiseEquals(in StackLocal<T> first, in StackLocal<T> second)
-            => BitwiseEquals(ref first.Ref, ref second.Ref);
+            => BitwiseEquals(ref Unsafe.As<T, byte>(ref first.Ref), ref Unsafe.As<T, byte>(ref second.Ref));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int BitwiseHashCode(ref T value, int hash, FunctionPointer<int, int, int> hashFunction, bool salted)
