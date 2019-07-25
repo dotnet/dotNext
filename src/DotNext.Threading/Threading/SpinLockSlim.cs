@@ -10,7 +10,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Acquire()
         {
-            for (SpinWait spinner; !state.FalseToTrue(); spinner.SpinOnce()) { }
+            for (SpinWait spinner; state.CompareExchange(true, false); spinner.SpinOnce()) { }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
