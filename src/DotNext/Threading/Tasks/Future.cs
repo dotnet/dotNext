@@ -32,7 +32,7 @@ namespace DotNext.Threading.Tasks
         /// Represents awaiter of the asynchronous computation result represented by future object.
         /// </summary>
         /// <typeparam name="R"></typeparam>
-        public interface IAwaiter<R> : IFuture
+        public interface IAwaiter<out R> : IFuture
         {
             /// <summary>
             /// Gets result
