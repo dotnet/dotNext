@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -14,7 +15,7 @@ namespace DotNext.Threading
     /// inside of value type then <c>VolatileContainer</c> is the best choice. Its performance is better
     /// than synchronized methods according with benchmarks.
     /// </remarks>
-    public struct VolatileContainer<T> : IStrongBox
+    public struct VolatileContainer<T> : IStrongBox, ICloneable
         where T : struct
     {
         /// <summary>
@@ -37,6 +38,19 @@ namespace DotNext.Threading
         private T value;
 
         private AtomicBoolean state;
+
+        /// <summary>
+        /// Clones thic container atomically.
+        /// </summary>
+        /// <returns>The cloned container.</returns>
+        public VolatileContainer<T> Clone()
+        {
+            var container = new VolatileContainer<T>();
+            Read(out container.value);
+            return container;
+        }
+
+        object ICloneable.Clone() => Clone();
 
         /// <summary>
         /// Performs atomic read.
