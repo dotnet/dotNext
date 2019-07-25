@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
-using TypeRef = InlineIL.TypeRef;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
 {
@@ -57,7 +57,7 @@ namespace DotNext
             /// <param name="second">The second value to compare.</param>
             /// <returns>A value that indicates the relative order of the objects being compared.</returns>
             /// <seealso cref="BitwiseCompare(T, T)"/>
-            public int Compare(T first, T second) => BitwiseCompare(ref first, ref second);
+            public int Compare(T first, T second) => BitwiseCompare(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace DotNext
         public static int Size
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.SizeOf<T>();
+            get => SizeOf<T>();
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool BitwiseEquals<U>(T first, U second)
             where U : struct
-            => Unsafe.SizeOf<T>() == Unsafe.SizeOf<U>() && BitwiseEquals(ref Unsafe.As<T, byte>(ref first), ref Unsafe.As<U, byte>(ref second));
+            => SizeOf<T>() == SizeOf<U>() && BitwiseEquals(ref As<T, byte>(ref first), ref As<U, byte>(ref second));
 
         /// <summary>
         /// Checks bitwise equality between two values of the same value type.
@@ -158,7 +158,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool BitwiseEquals(T first, T second) 
-            => BitwiseEquals(ref Unsafe.As<T, byte>(ref first), ref Unsafe.As<T, byte>(ref second));
+            => BitwiseEquals(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
 
         /// <summary>
         /// Checks bitwise equality between two values of the same value type.
@@ -172,7 +172,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool BitwiseEquals(in StackLocal<T> first, in StackLocal<T> second)
-            => BitwiseEquals(ref Unsafe.As<T, byte>(ref first.Ref), ref Unsafe.As<T, byte>(ref second.Ref));
+            => BitwiseEquals(ref As<T, byte>(ref first.Ref), ref As<T, byte>(ref second.Ref));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int BitwiseHashCode(ref T value, int hash, FunctionPointer<int, int, int> hashFunction, bool salted)
@@ -377,6 +377,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsDefault(T value) => IsDefault(ref value);
 
         /// <summary>
@@ -384,6 +385,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsDefault(in StackLocal<T> value) => IsDefault(ref value.Ref);
 
         /// <summary>
@@ -392,9 +394,9 @@ namespace DotNext
         /// <param name="value">Stack-allocated value to convert.</param>
         /// <returns>An array of bytes representing binary content of value type.</returns>
         public static unsafe byte[] AsBinary(T value)
-            => new ReadOnlySpan<byte>(Unsafe.AsPointer(ref value), Size).ToArray();
+            => new ReadOnlySpan<byte>(AsPointer(ref value), Size).ToArray();
 
-        private static int BitwiseCompare(ref T first, ref T second)
+        private static int BitwiseCompare(ref byte first, ref byte second)
         {
             Sizeof(typeof(T));
             Conv_I8();
@@ -447,7 +449,8 @@ namespace DotNext
         /// <param name="first">The first value to compare.</param>
         /// <param name="second">The second value to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-        public static int BitwiseCompare(T first, T second) => BitwiseCompare(ref first, ref second);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int BitwiseCompare(T first, T second) => BitwiseCompare(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
 
         /// <summary>
         /// Compares bits of two values of the same type.
@@ -455,8 +458,9 @@ namespace DotNext
         /// <param name="first">The first value to compare.</param>
         /// <param name="second">The second value to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int BitwiseCompare(in StackLocal<T> first, in StackLocal<T> second)
-            => BitwiseCompare(ref first.Ref, ref second.Ref);
+            => BitwiseCompare(ref As<T, byte>(ref first.Ref), ref As<T, byte>(ref second.Ref));
 
         /// <summary>
         /// Compares bits of two values of the different type.
@@ -465,24 +469,11 @@ namespace DotNext
         /// <param name="first">The first value to compare.</param>
         /// <param name="second">The second value to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int BitwiseCompare<U>(T first, U second)
             where U : struct
-        {
-            const string fastPath = "fast";
-            Sizeof(typeof(T));
-            Pop(out uint size);
-            Push(ref size);
-            Sizeof(typeof(U));
-            Call(new M(typeof(uint), nameof(uint.CompareTo), typeof(uint)));
-            Dup();
-            Brfalse(fastPath);
-            Pop();
-            Push(ref first);
-            Push(ref second);
-            Call(new M(typeof(ValueType<T>), nameof(BitwiseEquals), new TypeRef(typeof(T)).MakeByRefType(), new TypeRef(typeof(T)).MakeByRefType()));
-            MarkLabel(fastPath);
-            return Return<int>();
-        }
+            => SizeOf<T>() == SizeOf<U>() ? BitwiseCompare(ref As<T, byte>(ref first), ref As<U, byte>(ref second)) : SizeOf<T>().CompareTo(SizeOf<U>());
+            
 
         /// <summary>
         /// Obtain a value of type <typeparamref name="To"/> by 
@@ -498,6 +489,7 @@ namespace DotNext
         /// <param name="input">A value to convert.</param>
         /// <param name="output">Conversion result.</param>
         /// <typeparam name="To">The type of output struct.</typeparam>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Bitcast<To>(in T input, out To output)
             where To : unmanaged
         {

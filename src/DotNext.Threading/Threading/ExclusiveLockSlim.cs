@@ -7,6 +7,7 @@ namespace DotNext.Threading
     {
         private AtomicBoolean state;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Acquire()
         {
             for (SpinWait spinner; !state.FalseToTrue(); spinner.SpinOnce()) { }
