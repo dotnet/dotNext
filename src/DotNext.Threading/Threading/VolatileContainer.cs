@@ -42,15 +42,19 @@ namespace DotNext.Threading
         /// <summary>
         /// Clones thic container atomically.
         /// </summary>
-        /// <returns>The cloned container.</returns>
-        public VolatileContainer<T> Clone()
+        /// <param name="container">The memory location used to store cloned container.</param>
+        public void Clone(out VolatileContainer<T> container)
         {
-            var container = new VolatileContainer<T>();
+            container = default;
             Read(out container.value);
-            return container;
         }
 
-        object ICloneable.Clone() => Clone();
+        object ICloneable.Clone()
+        {
+            object result = new VolatileContainer<T>();
+            Clone(out GetBoxedValue<VolatileContainer<T>>(result));
+            return result;
+        }
 
         /// <summary>
         /// Performs atomic read.
