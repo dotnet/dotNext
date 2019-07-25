@@ -83,7 +83,7 @@ namespace DotNext
             Sizeof(typeof(T));
             Conv_I8();
             Pop(out long size);
-            switch(size)
+            switch (size)
             {
                 case 1:
                     Push(ref first);
@@ -174,18 +174,20 @@ namespace DotNext
         public static bool BitwiseEquals(T first, T second) => BitwiseEquals(ref first, ref second);
 
         /// <summary>
-        /// Computes bitwise hash code for the specified value.
+        /// Checks bitwise equality between two values of the same value type.
         /// </summary>
         /// <remarks>
-        /// This method doesn't use <see cref="object.GetHashCode"/>
+        /// This method doesn't use <see cref="object.Equals(object)"/>
         /// even if it is overridden by value type.
         /// </remarks>
-        /// <param name="value">A value to be hashed.</param>
-        /// <param name="hash">Initial value of the hash.</param>
-        /// <param name="hashFunction">Hashing function.</param>
-        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>Bitwise hash code.</returns>
-        public static int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
+        /// <param name="first">The first value to check.</param>
+        /// <param name="second">The second value to check.</param>
+        /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
+        public static bool BitwiseEquals(in StackLocal<T> first, in StackLocal<T> second)
+            => BitwiseEquals(ref first.Ref, ref second.Ref);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int BitwiseHashCode(ref T value, int hash, FunctionPointer<int, int, int> hashFunction, bool salted)
         {
             Push(ref value);
             Sizeof(typeof(T));
@@ -193,10 +195,10 @@ namespace DotNext
             Push(hash);
             Push(hashFunction);
             Push(salted);
-            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(Func<int, int, int>), typeof(bool)));
+            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(FunctionPointer<int, int, int>), typeof(bool)));
             return Return<int>();
         }
-        
+
         /// <summary>
         /// Computes bitwise hash code for the specified value.
         /// </summary>
@@ -209,17 +211,53 @@ namespace DotNext
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
-        public static unsafe int BitwiseHashCode(T value, int hash, FunctionPointer<int, int, int> hashFunction, bool salted = true)
-        {
-            Push(ref value);
-            Sizeof(typeof(T));
-            Conv_I8();
-            Push(hash);
-            Push(hashFunction);
-            Push(salted);
-            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(FunctionPointer<int, int, int>), typeof(bool)));
-            return Return<int>();
-        }
+        public static int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            => BitwiseHashCode(ref value, hash, new FunctionPointer<int, int, int>(hashFunction), salted);
+
+        /// <summary>
+        /// Computes bitwise hash code for the specified value.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't use <see cref="object.GetHashCode"/>
+        /// even if it is overridden by value type.
+        /// </remarks>
+        /// <param name="value">A value to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Bitwise hash code.</returns>
+        public static int BitwiseHashCode(T value, int hash, FunctionPointer<int, int, int> hashFunction, bool salted = true)
+            => BitwiseHashCode(ref value, hash, hashFunction, salted);
+
+        /// <summary>
+        /// Computes bitwise hash code for the specified value.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't use <see cref="object.GetHashCode"/>
+        /// even if it is overridden by value type.
+        /// </remarks>
+        /// <param name="value">Stack-allocated value to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Bitwise hash code.</returns>
+        public static int BitwiseHashCode(in StackLocal<T> value, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            => BitwiseHashCode(ref value.Ref, hash, new FunctionPointer<int, int, int>(hashFunction), salted);
+
+        /// <summary>
+        /// Computes bitwise hash code for the specified value.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't use <see cref="object.GetHashCode"/>
+        /// even if it is overridden by value type.
+        /// </remarks>
+        /// <param name="value">Stack-allocated value to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Bitwise hash code.</returns>
+        public static int BitwiseHashCode(in StackLocal<T> value, int hash, FunctionPointer<int, int, int> hashFunction, bool salted = true)
+            => BitwiseHashCode(ref value.Ref, hash, hashFunction, salted);
 
         private static int BitwiseHashCode(ref T value, bool salted)
         {
@@ -273,27 +311,39 @@ namespace DotNext
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int BitwiseHashCode(T value, bool salted) => BitwiseHashCode(ref value, salted);
+        public static int BitwiseHashCode(T value, bool salted) => BitwiseHashCode(ref value, salted);
 
         /// <summary>
 		/// Computes salted hash code for the structure content.
 		/// </summary>
 		/// <param name="value">Value to be hashed.</param>
-		/// <returns>Content hash code.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]      
-        public static unsafe int BitwiseHashCode(T value) => BitwiseHashCode(ref value, true);
+		/// <returns>Content hash code.</returns>   
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int BitwiseHashCode(T value) => BitwiseHashCode(ref value, true);
 
         /// <summary>
-        /// Indicates that specified value type is the default value.
+        /// Computes hash code for the structure content.
         /// </summary>
-        /// <param name="value">Value to check.</param>
-        /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
-        public static bool IsDefault(T value)
+        /// <param name="value">Stack-allocated value to be hashed.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Content hash code.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int BitwiseHashCode(in StackLocal<T> value, bool salted) => BitwiseHashCode(ref value.Ref, salted);
+
+        /// <summary>
+		/// Computes salted hash code for the structure content.
+		/// </summary>
+		/// <param name="value">Stack-allocated value to be hashed.</param>
+		/// <returns>Content hash code.</returns>   
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int BitwiseHashCode(in StackLocal<T> value) => BitwiseHashCode(value, true);
+
+        private static bool IsDefault(ref T value)
         {
             Sizeof(typeof(T));
             Conv_I8();
             Pop(out long size);
-            switch(size)
+            switch (size)
             {
                 case 1:
                     Push(ref value);
@@ -335,9 +385,23 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Indicates that specified value type is the default value.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
+        public static bool IsDefault(T value) => IsDefault(ref value);
+
+        /// <summary>
+        /// Indicates that specified value type is the default value.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
+        public static bool IsDefault(in StackLocal<T> value) => IsDefault(ref value.Ref);
+
+        /// <summary>
         /// Convert value type content into array of bytes.
         /// </summary>
-        /// <param name="value">A value to convert.</param>
+        /// <param name="value">Stack-allocated value to convert.</param>
         /// <returns>An array of bytes representing binary content of value type.</returns>
         public static unsafe byte[] AsBinary(T value)
             => new ReadOnlySpan<byte>(Unsafe.AsPointer(ref value), Size).ToArray();
@@ -395,7 +459,16 @@ namespace DotNext
         /// <param name="first">The first value to compare.</param>
         /// <param name="second">The second value to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-        public static unsafe int BitwiseCompare(T first, T second) => BitwiseCompare(ref first, ref second);
+        public static int BitwiseCompare(T first, T second) => BitwiseCompare(ref first, ref second);
+
+        /// <summary>
+        /// Compares bits of two values of the same type.
+        /// </summary>
+        /// <param name="first">The first value to compare.</param>
+        /// <param name="second">The second value to compare.</param>
+        /// <returns>A value that indicates the relative order of the objects being compared.</returns>
+        public static int BitwiseCompare(in StackLocal<T> first, in StackLocal<T> second)
+            => BitwiseCompare(ref first.Ref, ref second.Ref);
 
         /// <summary>
         /// Compares bits of two values of the different type.
@@ -404,7 +477,7 @@ namespace DotNext
         /// <param name="first">The first value to compare.</param>
         /// <param name="second">The second value to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-        public static unsafe int BitwiseCompare<U>(T first, U second)
+        public static int BitwiseCompare<U>(T first, U second)
             where U : struct
         {
             const string fastPath = "fast";

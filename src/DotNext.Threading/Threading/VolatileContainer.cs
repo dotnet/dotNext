@@ -37,7 +37,7 @@ namespace DotNext.Threading
 
         private T value;
 
-        private AtomicBoolean state;
+        private ExclusiveLockSlim @lock;
 
         /// <summary>
         /// Clones thic container atomically.
@@ -45,15 +45,15 @@ namespace DotNext.Threading
         /// <param name="container">The memory location used to store cloned container.</param>
         public void Clone(out VolatileContainer<T> container)
         {
-            container = default;
-            Read(out container.value);
+            @lock.Acquire();
+            Copy(this, out container);
+            @lock.Release();
         }
 
         object ICloneable.Clone()
         {
-            object result = new VolatileContainer<T>();
-            Clone(out GetBoxedValue<VolatileContainer<T>>(result));
-            return result;
+            Clone(out var container);
+            return container;
         }
 
         /// <summary>
@@ -62,9 +62,9 @@ namespace DotNext.Threading
         /// <param name="result">The result of volatile read.</param>
         public void Read(out T result)
         {
-            for(SpinWait spinner; !state.FalseToTrue(); spinner.SpinOnce()) {}
+            @lock.Acquire();
             Copy(in value, out result);
-            state.Value = false;
+            @lock.Release();
         }
 
         /// <summary>
@@ -73,9 +73,9 @@ namespace DotNext.Threading
         /// <param name="newValue">The value to be stored into this container.</param>
         public void Write(in T newValue)
         {
-            for(SpinWait spinner; !state.FalseToTrue(); spinner.SpinOnce()) {}
+            @lock.Acquire();
             Copy(in newValue, out value);
-            state.Value = false;
+            @lock.Release();
         }
 
         /// <summary>
@@ -86,12 +86,12 @@ namespace DotNext.Threading
         /// <param name="result">The origin value stored in this container before modification.</param>
         public void CompareExchange(in T update, in T expected, out T result)
         {
-            for(SpinWait spinner; !state.FalseToTrue(); spinner.SpinOnce()) {}
+            @lock.Acquire();
             var current = value;
             if(ValueType<T>.BitwiseEquals(current, expected))
                 Copy(in update, out value);
             Copy(in current, out result);
-            state.Value = false;
+            @lock.Release();
         }
 
         /// <summary>
@@ -102,11 +102,11 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         public bool CompareAndSet(in T expected, in T update)
         {
-            for(SpinWait spinner; !state.FalseToTrue(); spinner.SpinOnce()) {}
+            @lock.Acquire();
             bool result;
             if(result = ValueType<T>.BitwiseEquals(value, expected))
                 Copy(in update, out value);
-            state.Value = false;
+            @lock.Release();
             return result;
         }
         
@@ -117,10 +117,10 @@ namespace DotNext.Threading
         /// <param name="previous">The original stored value before modification.</param>
         public void Exchange(in T update, out T previous)
         {
-            for(SpinWait spinner; !state.FalseToTrue(); spinner.SpinOnce()) {}
+            @lock.Acquire();
             Copy(in value, out previous);
             Copy(in update, out value);
-            state.Value = false;
+            @lock.Release();
         }
 
         private void Update(Updater updater, out T result, bool newValueExpected)

@@ -409,9 +409,6 @@ namespace DotNext.Runtime.InteropServices
             return Return<int>();
         }
 
-        internal static int GetHashCode32Aligned(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool salted)
-            => GetHashCode32Aligned(source, length, hash, new FunctionPointer<int, int, int>(hashFunction), salted);
-
         internal static int GetHashCode32Aligned(IntPtr source, long length, int hash, FunctionPointer<int, int, int> hashFunction, bool salted)
         {
             while (length >= sizeof(int))
@@ -819,16 +816,14 @@ namespace DotNext.Runtime.InteropServices
             => new Span<byte>(pointer, Unsafe.SizeOf<T>());
 
         /// <summary>
-        /// Converts contiguous memory identified by the specified pointer
-        /// into <see cref="ReadOnlySpan{T}"/>.
+        /// Converts stack-allocated value into span of bytes.
         /// </summary>
-        /// <param name="pointer">The typed pointer.</param>
-        /// <typeparam name="T">The type of the pointer.</typeparam>
-        /// <returns>The span of contiguous memory.</returns>
-        [CLSCompliant(false)]
-        public static unsafe ReadOnlySpan<byte> AsReadOnlySpan<T>(T* pointer)
+        /// <typeparam name="T">The unmanaged type.</typeparam>
+        /// <param name="value">The value allocated on the stack.</param>
+        /// <returns>The span representing stack-allocated value in binary format.</returns>
+        public static Span<byte> AsSpan<T>(in StackLocal<T> value)
             where T : unmanaged
-            => new ReadOnlySpan<byte>(pointer, Unsafe.SizeOf<T>());
+            => AsSpan((T*)Unsafe.AsPointer(ref value.Ref));
         
         /// <summary>
         /// Copies one value into another.

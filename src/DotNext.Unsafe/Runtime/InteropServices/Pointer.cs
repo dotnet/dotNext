@@ -794,6 +794,8 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator false(Pointer<T> ptr) => ptr.IsNull;
 
+        public static implicit operator Pointer<T>(in StackLocal<T> value) => new Pointer<T>(new IntPtr(Unsafe.AsPointer()))
+
         bool IEquatable<Pointer<T>>.Equals(Pointer<T> other) => Equals(other);
 
         /// <summary>
