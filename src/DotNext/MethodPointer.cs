@@ -150,7 +150,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -224,7 +224,7 @@ namespace DotNext
             this.target = target;
         }
 
-        private static R CreateDefault() => default(R);
+        private static R CreateDefault() => default;
 
         /// <summary>
         /// Returns activator for type <typeparamref name="R"/> in the form of typed method pointer.
@@ -352,7 +352,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -589,7 +589,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -751,7 +751,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -904,7 +904,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -1071,7 +1071,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -1228,7 +1228,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -1391,7 +1391,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -1552,7 +1552,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -1719,7 +1719,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -1884,7 +1884,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -2055,7 +2055,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -2224,7 +2224,7 @@ namespace DotNext
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => methodPtr.ToString("X");
+        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
 
         /// <summary>
         /// Determines whether the pointers represent the same method.

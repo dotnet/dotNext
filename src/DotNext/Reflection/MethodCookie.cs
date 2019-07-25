@@ -31,6 +31,8 @@ namespace DotNext.Reflection
             ctorPtr = ConstructorHandle.GetFunctionPointer();
         }
 
+        internal MethodBase Method => MethodBase.GetMethodFromHandle(method);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal P Create(object target = null)
         {
@@ -91,6 +93,12 @@ namespace DotNext.Reflection
         /// </summary>
         /// <value>The pointer to the underlying static method.</value>
         public P Pointer => factory.Create();
+
+        /// <summary>
+        /// Gets underlying method in textual format.
+        /// </summary>
+        /// <returns>The method represented by this cookie in the form of string.</returns>
+        public override string ToString() => factory.Method.ToString();
 
         /// <summary>
         /// Gets pointer to the underlying static method.
@@ -161,6 +169,12 @@ namespace DotNext.Reflection
         /// <param name="obj">The object to be used as <c>this</c> argument.</param>
         /// <returns>The created pointer.</returns>
         public P CreatePointer(T obj) => factory.Create(obj ?? throw new ArgumentNullException(nameof(obj)));
+
+        /// <summary>
+        /// Gets underlying method in textual format.
+        /// </summary>
+        /// <returns>The method represented by this cookie in the form of string.</returns>
+        public override string ToString() => factory.Method.ToString();
 
         /// <summary>
         /// Creates pointer to the instance method.

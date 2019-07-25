@@ -103,6 +103,8 @@ namespace DotNext
         {
             var ptr = new FunctionPointer<string, string, string, string>(string.Concat);
             Equal("Hello, world!", ptr.Invoke("Hello", ", ", "world!"));
+            ptr = new MethodCookie<Func<string, string, string, string>, FunctionPointer<string, string, string, string>>(string.Concat);
+            Equal("Hello, world!", ptr.Invoke("Hello", ", ", "world!"));
         }
 
         [Fact]
