@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace DotNext.Threading
 {
@@ -36,7 +37,14 @@ namespace DotNext.Threading
 
         private T value;
 
-        private SpinLockSlim @lock;
+        private AtomicBoolean lockState;
+
+        private void Lock()
+        {
+            for (SpinWait spinner; lockState.CompareExchange(true, false); spinner.SpinOnce()) { }
+        }
+
+        private void Unlock() => lockState.Value = false;
 
         /// <summary>
         /// Clones thic container atomically.
@@ -44,9 +52,9 @@ namespace DotNext.Threading
         /// <param name="container">The memory location used to store cloned container.</param>
         public void Clone(out VolatileContainer<T> container)
         {
-            @lock.Acquire();
+            Lock();
             Copy(this, out container);
-            @lock.Release();
+            Unlock();
         }
 
         object ICloneable.Clone()
@@ -61,9 +69,9 @@ namespace DotNext.Threading
         /// <param name="result">The result of volatile read.</param>
         public void Read(out T result)
         {
-            @lock.Acquire();
+            Lock();
             Copy(in value, out result);
-            @lock.Release();
+            Unlock();
         }
 
         /// <summary>
@@ -75,9 +83,9 @@ namespace DotNext.Threading
         /// <param name="other">The container for the value.</param>
         public void Swap(ref VolatileContainer<T> other)
         {
-            other.@lock.Acquire();
+            Lock();
             Swap(ref other.value);
-            other.@lock.Release();
+            Unlock();
         }
 
         /// <summary>
@@ -86,9 +94,9 @@ namespace DotNext.Threading
         /// <param name="other">The managed pointer to the value to swap.</param>
         public void Swap(ref T other)
         {
-            @lock.Acquire();
+            Lock();
             Runtime.InteropServices.Memory.Swap(ref value, ref other);
-            @lock.Release();
+            Unlock();
         }
 
         /// <summary>
@@ -97,9 +105,9 @@ namespace DotNext.Threading
         /// <param name="newValue">The value to be stored into this container.</param>
         public void Write(in T newValue)
         {
-            @lock.Acquire();
+            Lock();
             Copy(in newValue, out value);
-            @lock.Release();
+            Unlock();
         }
 
         /// <summary>
@@ -110,12 +118,12 @@ namespace DotNext.Threading
         /// <param name="result">The origin value stored in this container before modification.</param>
         public void CompareExchange(in T update, in T expected, out T result)
         {
-            @lock.Acquire();
+            Lock();
             var current = value;
             if(ValueType<T>.BitwiseEquals(current, expected))
                 Copy(in update, out value);
             Copy(in current, out result);
-            @lock.Release();
+            Unlock();
         }
 
         /// <summary>
@@ -126,11 +134,11 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         public bool CompareAndSet(in T expected, in T update)
         {
-            @lock.Acquire();
+            Lock();
             bool result;
             if(result = ValueType<T>.BitwiseEquals(value, expected))
                 Copy(in update, out value);
-            @lock.Release();
+            Unlock();
             return result;
         }
         
@@ -141,10 +149,10 @@ namespace DotNext.Threading
         /// <param name="previous">The original stored value before modification.</param>
         public void Exchange(in T update, out T previous)
         {
-            @lock.Acquire();
+            Lock();
             Copy(in value, out previous);
             Copy(in update, out value);
-            @lock.Release();
+            Unlock();
         }
 
         private void Update(Updater updater, out T result, bool newValueExpected)

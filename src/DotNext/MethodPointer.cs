@@ -384,7 +384,7 @@ namespace DotNext
     /// <typeparam name="T">The type of the predicate parameter.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct PredicatePointer<T> : IMethodPointer<Predicate<T>>, IEquatable<PredicatePointer<T>>
+    public readonly struct PredicatePointer<T> : IMethodPointer<Predicate<T>>, IMethodPointer<Func<T, bool>>, IEquatable<PredicatePointer<T>>
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -408,11 +408,21 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the predicate.
         /// </summary>
-        /// <param name="delegate">The predicate representing method.</param>
-        public PredicatePointer(Predicate<T> @delegate)
+        /// <param name="predicate">The predicate representing method.</param>
+        public PredicatePointer(Predicate<T> predicate)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
+            methodPtr = predicate.Method.MethodHandle.GetFunctionPointer();
+            target = predicate.Target;
+        }
+
+        /// <summary>
+        /// Initializes a new pointer based on extracted pointer from the predicate.
+        /// </summary>
+        /// <param name="predicate">The predicate representing method.</param>
+        public PredicatePointer(Func<T, bool> predicate)
+        {
+            methodPtr = predicate.Method.MethodHandle.GetFunctionPointer();
+            target = predicate.Target;
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
@@ -507,7 +517,9 @@ namespace DotNext
         }
 
         IntPtr IMethodPointer<Predicate<T>>.Address => methodPtr;
+        IntPtr IMethodPointer<Func<T, bool>>.Address => methodPtr;
         object IMethodPointer<Predicate<T>>.Target => target;
+        object IMethodPointer<Func<T, bool>>.Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Predicate{T}"/>.
@@ -525,6 +537,20 @@ namespace DotNext
             Push(methodPtr);
             Newobj(M.Constructor(typeof(Predicate<T>), typeof(object), typeof(IntPtr)));
             return Return<Predicate<T>>();
+        }
+
+        Func<T, bool> IMethodPointer<Func<T, bool>>.ToDelegate() => ToFunc().ToDelegate();
+
+        /// <summary>
+        /// Spins until the condition represented by this predicate is satisfied.
+        /// </summary>
+        /// <remarks>
+        /// The predicate has to be executed over and over until it returns true.
+        /// </remarks>
+        /// <param name="arg">The value to be passed into predicate.</param>
+        public void SpinWait(T arg)
+        {
+            for (System.Threading.SpinWait spinner; !Invoke(arg); spinner.SpinOnce()) { }
         }
 
         /// <summary>
