@@ -74,7 +74,7 @@ The next series of benchmarks demonstrate performance of strongly typed reflecti
 | Direct call | 11.52 ns | 0.2284 ns | 0.5109 ns |
 | Reflection with DotNext using delegate type `MemberGetter<IndexOfCalculator, int>` | 11.58 ns | 0.2291 ns | 0.3136 ns |
 | Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` | 19.12 ns | 0.3870 ns | 0.9919 ns |
-| `ObjectAccess` class from _FastMember_ library |  19.12 ns | 0.3870 ns | 0.9919 ns |
+| `ObjectAccess` class from _FastMember_ library |  50.25 ns | 0.3870 ns | 0.8247 ns |
 | .NET reflection | 157.71 ns | 3.1092 ns | 4.5574 ns |
 
 Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.
