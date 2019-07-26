@@ -59,18 +59,26 @@ namespace DotNext
             : this(action.Method.MethodHandle, action.Target)
         {
         }
-        
+
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
         [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal ActionPointer(RuntimeMethodHandle method, object target)
+            : this(method.GetFunctionPointer(), target)
         {
+        }
+
+        internal ActionPointer(IntPtr methodPtr, object target)
+        {
+            this.methodPtr = methodPtr;
             this.target = target;
-            methodPtr = method.GetFunctionPointer();
         }
 
         IntPtr IMethodPointer<Action>.Address => methodPtr;
 
-        object IMethodPointer<Action>.Target => target;
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action"/>.
@@ -89,6 +97,16 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Action), typeof(object), typeof(IntPtr)));
             return Return<Action>();
         }
+
+        /// <summary>
+        /// Converts implicitly bound method pointer into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
+        /// <returns>Unbound version of method pointer.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
+        public ActionPointer<G> Unbind<G>()
+            where G : class
+            => target is G ? new ActionPointer<G>(methodPtr, null) : throw new InvalidOperationException();
 
         /// <summary>
         /// Invokes method by pointer.
@@ -216,7 +234,7 @@ namespace DotNext
         {
         }
 
-        private FunctionPointer(IntPtr methodPtr, object target)
+        internal FunctionPointer(IntPtr methodPtr, object target)
         {
             this.methodPtr = methodPtr;
             this.target = target;
@@ -269,7 +287,10 @@ namespace DotNext
 
         IntPtr IMethodPointer<Func<R>>.Address => methodPtr;
 
-        object IMethodPointer<Func<R>>.Target => target;
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{TResult}"/>.
@@ -288,6 +309,16 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Func<R>), typeof(object), typeof(IntPtr)));
             return Return<Func<R>>();
         }
+
+        /// <summary>
+        /// Converts implicitly bound method pointer into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
+        /// <returns>Unbound version of method pointer.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
+        public FunctionPointer<G, R> Unbind<G>()
+            where G : class
+            => target is G ? new FunctionPointer<G, R>(methodPtr, null) : throw new InvalidOperationException();
 
         /// <summary>
         /// Invokes method by pointer.
@@ -513,8 +544,11 @@ namespace DotNext
 
         IntPtr IMethodPointer<Predicate<T>>.Address => methodPtr;
         IntPtr IMethodPointer<Func<T, bool>>.Address => methodPtr;
-        object IMethodPointer<Predicate<T>>.Target => target;
-        object IMethodPointer<Func<T, bool>>.Target => target;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Predicate{T}"/>.
@@ -533,6 +567,28 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Predicate<T>), typeof(object), typeof(IntPtr)));
             return Return<Predicate<T>>();
         }
+
+        /// <summary>
+        /// Converts implicitly bound method pointer into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
+        /// <returns>Unbound version of method pointer.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
+        public FunctionPointer<G, T, bool> Unbind<G>()
+            where G : class
+            => target is G ? new FunctionPointer<G, T, bool>(methodPtr, null) : throw new InvalidOperationException();
+
+        /// <summary>
+        /// Produces method pointer which first argument is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
+        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The pointer to the method targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
+        public FunctionPointer<bool> Bind<G>(G obj)
+            where G : class, T
+            => target is null ? new FunctionPointer<bool>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
 
         Func<T, bool> IMethodPointer<Func<T, bool>>.ToDelegate() => ToFunc().ToDelegate();
 
@@ -693,17 +749,24 @@ namespace DotNext
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
         [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal FunctionPointer(RuntimeMethodHandle method, object target)
+            : this(method.GetFunctionPointer(), target)
         {
-            methodPtr = method.GetFunctionPointer();
+        }
+
+        internal FunctionPointer(IntPtr methodPtr, object target)
+        {
+            this.methodPtr = methodPtr;
             this.target = target;
         }
 
         IntPtr IMethodPointer<Func<T, R>>.Address => methodPtr;
-        object IMethodPointer<Func<T, R>>.Target => target;
-
         IntPtr IMethodPointer<Converter<T, R>>.Address => methodPtr;
-        object IMethodPointer<Converter<T, R>>.Target => target;
         Converter<T, R> IMethodPointer<Converter<T, R>>.ToDelegate() => ToConverter();
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T, TResult}"/>.
@@ -722,6 +785,28 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Func<T, R>), typeof(object), typeof(IntPtr)));
             return Return<Func<T, R>>();
         }
+
+        /// <summary>
+        /// Converts implicitly bound method pointer into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
+        /// <returns>Unbound version of method pointer.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
+        public FunctionPointer<G, T, R> Unbind<G>()
+            where G : class
+            => target is G ? new FunctionPointer<G, T, R>(methodPtr, null) : throw new InvalidOperationException();
+
+        /// <summary>
+        /// Produces method pointer which first argument is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
+        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The pointer to the method targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
+        public FunctionPointer<R> Bind<G>(G obj)
+            where G : class, T
+            => target is null ? new FunctionPointer<R>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
 
         /// <summary>
         /// Converts this pointer into <see cref="Converter{T, TResult}"/>.
@@ -876,13 +961,22 @@ namespace DotNext
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
         [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal ActionPointer(RuntimeMethodHandle method, object target)
+            : this(method.GetFunctionPointer(), target)
         {
-            methodPtr = method.GetFunctionPointer();
+        }
+
+        internal ActionPointer(IntPtr methodPtr, object target)
+        {
+            this.methodPtr = methodPtr;
             this.target = target;
         }
 
         IntPtr IMethodPointer<Action<T>>.Address => methodPtr;
-        object IMethodPointer<Action<T>>.Target => target;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action{T}"/>.
@@ -901,6 +995,28 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Action<T>), typeof(object), typeof(IntPtr)));
             return Return<Action<T>>();
         }
+
+        /// <summary>
+        /// Converts implicitly bound method pointer into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
+        /// <returns>Unbound version of method pointer.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
+        public ActionPointer<G, T> Unbind<G>()
+            where G : class
+            => target is G ? new ActionPointer<G, T>(methodPtr, null) : throw new InvalidOperationException();
+
+        /// <summary>
+        /// Produces method pointer which first argument is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
+        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The pointer to the method targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
+        public ActionPointer Bind<G>(G obj)
+            where G : class, T
+            => target is null ? new ActionPointer(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
 
         /// <summary>
         /// Invokes method by pointer.
@@ -1031,9 +1147,8 @@ namespace DotNext
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
         [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal FunctionPointer(RuntimeMethodHandle method, object target)
+            : this(method.GetFunctionPointer(), target)
         {
-            methodPtr = method.GetFunctionPointer();
-            this.target = target;
         }
 
         [ImplicitUsage(typeof(Runtime.InteropServices.Memory), nameof(Runtime.InteropServices.Memory.GetHashCode64))]
@@ -1045,7 +1160,11 @@ namespace DotNext
         }
 
         IntPtr IMethodPointer<Func<T1, T2, R>>.Address => methodPtr;
-        object IMethodPointer<Func<T1, T2, R>>.Target => target;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, TResult}"/>.
@@ -1064,6 +1183,28 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Func<T1, T2, R>), typeof(object), typeof(IntPtr)));
             return Return<Func<T1, T2, R>>();
         }
+
+        /// <summary>
+        /// Converts implicitly bound method pointer into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
+        /// <returns>Unbound version of method pointer.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
+        public FunctionPointer<G, T1, T2, R> Unbind<G>()
+            where G : class
+            => target is G ? new FunctionPointer<G, T1, T2, R>(methodPtr, null) : throw new InvalidOperationException();
+
+        /// <summary>
+        /// Produces method pointer which first argument is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
+        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The pointer to the method targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
+        public FunctionPointer<T2, R> Bind<G>(G obj)
+            where G : class, T1
+            => target is null ? new FunctionPointer<T2, R>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
 
         /// <summary>
         /// Invokes method by pointer.
@@ -1197,13 +1338,22 @@ namespace DotNext
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
         [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal ActionPointer(RuntimeMethodHandle method, object target)
+            : this(method.GetFunctionPointer(), target)
         {
-            methodPtr = method.GetFunctionPointer();
+        }
+
+        internal ActionPointer(IntPtr methodPtr, object target)
+        {
+            this.methodPtr = methodPtr;
             this.target = target;
         }
 
         IntPtr IMethodPointer<Action<T1, T2>>.Address => methodPtr;
-        object IMethodPointer<Action<T1, T2>>.Target => target;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1,T2}"/>.
@@ -1222,6 +1372,28 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Action<T1, T2>), typeof(object), typeof(IntPtr)));
             return Return<Action<T1, T2>>();
         }
+
+        /// <summary>
+        /// Converts implicitly bound method pointer into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
+        /// <returns>Unbound version of method pointer.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
+        public ActionPointer<G, T1, T2> Unbind<G>()
+            where G : class
+            => target is G ? new ActionPointer<G, T1, T2>(methodPtr, null) : throw new InvalidOperationException();
+
+        /// <summary>
+        /// Produces method pointer which first argument is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
+        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The pointer to the method targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
+        public ActionPointer<T2> Bind<G>(G obj)
+            where G : class, T1
+            => target is null ? new ActionPointer<T2>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
 
         /// <summary>
         /// Invokes method by pointer.
@@ -1358,13 +1530,22 @@ namespace DotNext
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
         [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal FunctionPointer(RuntimeMethodHandle method, object target)
+            : this(method.GetFunctionPointer(), target)
         {
-            methodPtr = method.GetFunctionPointer();
+        }
+
+        internal FunctionPointer(IntPtr methodPtr, object target)
+        {
+            this.methodPtr = methodPtr;
             this.target = target;
         }
 
         IntPtr IMethodPointer<Func<T1, T2, T3, R>>.Address => methodPtr;
-        object IMethodPointer<Func<T1, T2, T3, R>>.Target => target;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, TResult}"/>.
@@ -1383,6 +1564,28 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Func<T1, T2, T3, R>), typeof(object), typeof(IntPtr)));
             return Return<Func<T1, T2, T3, R>>();
         }
+
+        /// <summary>
+        /// Converts implicitly bound method pointer into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
+        /// <returns>Unbound version of method pointer.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
+        public FunctionPointer<G, T1, T2, T3, R> Unbind<G>()
+            where G : class
+            => target is G ? new FunctionPointer<G, T1, T2, T3, R>(methodPtr, null) : throw new InvalidOperationException();
+
+        /// <summary>
+        /// Produces method pointer which first argument is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
+        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The pointer to the method targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
+        public FunctionPointer<T2, T3, R> Bind<G>(G obj)
+            where G : class, T1
+            => target is null ? new FunctionPointer<T2, T3, R>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
 
         /// <summary>
         /// Invokes method by pointer.
@@ -1520,13 +1723,22 @@ namespace DotNext
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
         [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal ActionPointer(RuntimeMethodHandle method, object target)
+            : this(method.GetFunctionPointer(), target)
         {
-            methodPtr = method.GetFunctionPointer();
+        }
+
+        internal ActionPointer(IntPtr methodPtr, object target)
+        {
+            this.methodPtr = methodPtr;
             this.target = target;
         }
 
         IntPtr IMethodPointer<Action<T1, T2, T3>>.Address => methodPtr;
-        object IMethodPointer<Action<T1, T2, T3>>.Target => target;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1,T2,T3}"/>.
@@ -1545,6 +1757,28 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Action<T1, T2, T3>), typeof(object), typeof(IntPtr)));
             return Return<Action<T1, T2, T3>>();
         }
+
+        /// <summary>
+        /// Converts implicitly bound method pointer into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
+        /// <returns>Unbound version of method pointer.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
+        public ActionPointer<G, T1, T2, T3> Unbind<G>()
+            where G : class
+            => target is G ? new ActionPointer<G, T1, T2, T3>(methodPtr, null) : throw new InvalidOperationException();
+
+        /// <summary>
+        /// Produces method pointer which first argument is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
+        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The pointer to the method targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
+        public ActionPointer<T2, T3> Bind<G>(G obj)
+            where G : class, T1
+            => target is null ? new ActionPointer<T2, T3>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
 
         /// <summary>
         /// Invokes method by pointer.
@@ -1683,13 +1917,22 @@ namespace DotNext
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
         [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal FunctionPointer(RuntimeMethodHandle method, object target)
+            : this(method.GetFunctionPointer(), target)
         {
-            methodPtr = method.GetFunctionPointer();
+        }
+
+        internal FunctionPointer(IntPtr methodPtr, object target)
+        {
             this.target = target;
+            this.methodPtr = methodPtr;
         }
 
         IntPtr IMethodPointer<Func<T1, T2, T3, T4, R>>.Address => methodPtr;
-        object IMethodPointer<Func<T1, T2, T3, T4, R>>.Target => target;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, T4, TResult}"/>.
@@ -1708,6 +1951,28 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Func<T1, T2, T3, T4, R>), typeof(object), typeof(IntPtr)));
             return Return<Func<T1, T2, T3, T4, R>>();
         }
+
+        /// <summary>
+        /// Converts implicitly bound method pointer into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
+        /// <returns>Unbound version of method pointer.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
+        public FunctionPointer<G, T1, T2, T3, T4, R> Unbind<G>()
+            where G : class
+            => target is G ? new FunctionPointer<G, T1, T2, T3, T4, R>(methodPtr, null) : throw new InvalidOperationException();
+
+        /// <summary>
+        /// Produces method pointer which first argument is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
+        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The pointer to the method targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
+        public FunctionPointer<T2, T3, T4, R> Bind<G>(G obj)
+            where G : class, T1
+            => target is null ? new FunctionPointer<T2, T3, T4, R>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
 
         /// <summary>
         /// Invokes method by pointer.
@@ -1849,13 +2114,22 @@ namespace DotNext
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
         [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal ActionPointer(RuntimeMethodHandle method, object target)
+            : this(method.GetFunctionPointer(), target)
         {
-            methodPtr = method.GetFunctionPointer();
+        }
+        
+        internal ActionPointer(IntPtr methodPtr, object target)
+        {
+            this.methodPtr = methodPtr;
             this.target = target;
         }
 
         IntPtr IMethodPointer<Action<T1, T2, T3, T4>>.Address => methodPtr;
-        object IMethodPointer<Action<T1, T2, T3, T4>>.Target => target;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1,T2,T3,T4}"/>.
@@ -1874,6 +2148,28 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Action<T1, T2, T3, T4>), typeof(object), typeof(IntPtr)));
             return Return<Action<T1, T2, T3, T4>>();
         }
+
+        /// <summary>
+        /// Converts implicitly bound method pointer into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
+        /// <returns>Unbound version of method pointer.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
+        public ActionPointer<G, T1, T2, T3, T4> Unbind<G>()
+            where G : class
+            => target is G ? new ActionPointer<G, T1, T2, T3, T4>(methodPtr, null) : throw new InvalidOperationException();
+
+        /// <summary>
+        /// Produces method pointer which first argument is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
+        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The pointer to the method targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
+        public ActionPointer<T2, T3, T4> Bind<G>(G obj)
+            where G : class, T1
+            => target is null ? new ActionPointer<T2, T3, T4>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
 
         /// <summary>
         /// Invokes method by pointer.
@@ -2016,13 +2312,22 @@ namespace DotNext
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
         [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal FunctionPointer(RuntimeMethodHandle method, object target)
+            : this(method.GetFunctionPointer(), target)
         {
-            methodPtr = method.GetFunctionPointer();
+        }
+
+        internal FunctionPointer(IntPtr methodPtr, object target)
+        {
             this.target = target;
+            this.methodPtr = methodPtr;
         }
 
         IntPtr IMethodPointer<Func<T1, T2, T3, T4, T5, R>>.Address => methodPtr;
-        object IMethodPointer<Func<T1, T2, T3, T4, T5, R>>.Target => target;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, T4, T5, TResult}"/>.
@@ -2041,6 +2346,18 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Func<T1, T2, T3, T4, T5, R>), typeof(object), typeof(IntPtr)));
             return Return<Func<T1, T2, T3, T4, T5, R>>();
         }
+
+        /// <summary>
+        /// Produces method pointer which first argument is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
+        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The pointer to the method targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
+        public FunctionPointer<T2, T3, T4, T5, R> Bind<G>(G obj)
+            where G : class, T1
+            => target is null ? new FunctionPointer<T2, T3, T4, T5, R>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
 
         /// <summary>
         /// Invokes method by pointer.
@@ -2186,13 +2503,22 @@ namespace DotNext
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
         [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
         internal ActionPointer(RuntimeMethodHandle method, object target)
+            : this(method.GetFunctionPointer(), target)
         {
-            methodPtr = method.GetFunctionPointer();
+        }
+
+        internal ActionPointer(IntPtr methodPtr, object target)
+        {
+            this.methodPtr = methodPtr;
             this.target = target;
         }
 
         IntPtr IMethodPointer<Action<T1, T2, T3, T4, T5>>.Address => methodPtr;
-        object IMethodPointer<Action<T1, T2, T3, T4, T5>>.Target => target;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1, T2, T3, T4, T5}"/>.
@@ -2211,6 +2537,18 @@ namespace DotNext
             Newobj(M.Constructor(typeof(Action<T1, T2, T3, T4, T5>), typeof(object), typeof(IntPtr)));
             return Return<Action<T1, T2, T3, T4, T5>>();
         }
+
+        /// <summary>
+        /// Produces method pointer which first argument is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
+        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The pointer to the method targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
+        public ActionPointer<T2, T3, T4, T5> Bind<G>(G obj)
+            where G : class, T1
+            => target is null ? new ActionPointer<T2, T3, T4, T5>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
 
         /// <summary>
         /// Invokes method by pointer.
