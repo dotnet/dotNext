@@ -794,14 +794,6 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator false(Pointer<T> ptr) => ptr.IsNull;
 
-        /// <summary>
-        /// Converts stack-allocated value into unmanaged pointer to it.
-        /// </summary>
-        /// <param name="value">The value allocated on the stack.</param>
-        /// <returns>The pointer to the value allocated on the stack.</returns>
-        public static unsafe implicit operator Pointer<T>(in StackLocal<T> value)
-            => new Pointer<T>((T*)Unsafe.AsPointer(ref Unsafe.AsRef(value.Value)));
-
         bool IEquatable<Pointer<T>>.Equals(Pointer<T> other) => Equals(other);
 
         /// <summary>

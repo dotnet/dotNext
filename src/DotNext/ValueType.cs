@@ -160,20 +160,6 @@ namespace DotNext
         public static bool BitwiseEquals(T first, T second) 
             => BitwiseEquals(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
 
-        /// <summary>
-        /// Checks bitwise equality between two values of the same value type.
-        /// </summary>
-        /// <remarks>
-        /// This method doesn't use <see cref="object.Equals(object)"/>
-        /// even if it is overridden by value type.
-        /// </remarks>
-        /// <param name="first">The first value to check.</param>
-        /// <param name="second">The second value to check.</param>
-        /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool BitwiseEquals(in StackLocal<T> first, in StackLocal<T> second)
-            => BitwiseEquals(ref As<T, byte>(ref first.Ref), ref As<T, byte>(ref second.Ref));
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int BitwiseHashCode(ref T value, int hash, FunctionPointer<int, int, int> hashFunction, bool salted)
         {
@@ -216,36 +202,6 @@ namespace DotNext
         /// <returns>Bitwise hash code.</returns>
         public static int BitwiseHashCode(T value, int hash, FunctionPointer<int, int, int> hashFunction, bool salted = true)
             => BitwiseHashCode(ref value, hash, hashFunction, salted);
-
-        /// <summary>
-        /// Computes bitwise hash code for the specified value.
-        /// </summary>
-        /// <remarks>
-        /// This method doesn't use <see cref="object.GetHashCode"/>
-        /// even if it is overridden by value type.
-        /// </remarks>
-        /// <param name="value">Stack-allocated value to be hashed.</param>
-        /// <param name="hash">Initial value of the hash.</param>
-        /// <param name="hashFunction">Hashing function.</param>
-        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>Bitwise hash code.</returns>
-        public static int BitwiseHashCode(in StackLocal<T> value, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => BitwiseHashCode(ref value.Ref, hash, new FunctionPointer<int, int, int>(hashFunction), salted);
-
-        /// <summary>
-        /// Computes bitwise hash code for the specified value.
-        /// </summary>
-        /// <remarks>
-        /// This method doesn't use <see cref="object.GetHashCode"/>
-        /// even if it is overridden by value type.
-        /// </remarks>
-        /// <param name="value">Stack-allocated value to be hashed.</param>
-        /// <param name="hash">Initial value of the hash.</param>
-        /// <param name="hashFunction">Hashing function.</param>
-        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>Bitwise hash code.</returns>
-        public static int BitwiseHashCode(in StackLocal<T> value, int hash, FunctionPointer<int, int, int> hashFunction, bool salted = true)
-            => BitwiseHashCode(ref value.Ref, hash, hashFunction, salted);
 
         private static int BitwiseHashCode(ref T value, bool salted)
         {
@@ -309,23 +265,6 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int BitwiseHashCode(T value) => BitwiseHashCode(ref value, true);
 
-        /// <summary>
-        /// Computes hash code for the structure content.
-        /// </summary>
-        /// <param name="value">Stack-allocated value to be hashed.</param>
-        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>Content hash code.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int BitwiseHashCode(in StackLocal<T> value, bool salted) => BitwiseHashCode(ref value.Ref, salted);
-
-        /// <summary>
-		/// Computes salted hash code for the structure content.
-		/// </summary>
-		/// <param name="value">Stack-allocated value to be hashed.</param>
-		/// <returns>Content hash code.</returns>   
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int BitwiseHashCode(in StackLocal<T> value) => BitwiseHashCode(value, true);
-
         private static bool IsDefault(ref T value)
         {
             Sizeof(typeof(T));
@@ -379,14 +318,6 @@ namespace DotNext
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsDefault(T value) => IsDefault(ref value);
-
-        /// <summary>
-        /// Indicates that specified value type is the default value.
-        /// </summary>
-        /// <param name="value">Value to check.</param>
-        /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsDefault(in StackLocal<T> value) => IsDefault(ref value.Ref);
 
         /// <summary>
         /// Convert value type content into array of bytes.
@@ -451,16 +382,6 @@ namespace DotNext
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int BitwiseCompare(T first, T second) => BitwiseCompare(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
-
-        /// <summary>
-        /// Compares bits of two values of the same type.
-        /// </summary>
-        /// <param name="first">The first value to compare.</param>
-        /// <param name="second">The second value to compare.</param>
-        /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int BitwiseCompare(in StackLocal<T> first, in StackLocal<T> second)
-            => BitwiseCompare(ref As<T, byte>(ref first.Ref), ref As<T, byte>(ref second.Ref));
 
         /// <summary>
         /// Compares bits of two values of the different type.
