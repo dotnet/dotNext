@@ -77,7 +77,7 @@ namespace DotNext
         /// <param name="result2">Second decomposition result.</param>
         public static void Decompose<T, R1, R2>(this T obj, Func<T, R1> decomposer1, Func<T, R2> decomposer2, out R1 result1, out R2 result2)
             where T : class
-            => Decompose(obj, new FunctionPointer<T, R1>(decomposer1), new FunctionPointer<T, R2>(decomposer2), out result1, out result2);
+            => Decompose(obj, new ValueFunc<T, R1>(decomposer1), new ValueFunc<T, R2>(decomposer2), out result1, out result2);
 
         /// <summary>
         /// Performs decomposition of object into two values.
@@ -90,7 +90,7 @@ namespace DotNext
         /// <param name="decomposer2">Second decomposition function.</param>
         /// <param name="result1">First decomposition result.</param>
         /// <param name="result2">Second decomposition result.</param>
-        public static void Decompose<T, R1, R2>(this T obj, FunctionPointer<T, R1> decomposer1, FunctionPointer<T, R2> decomposer2, out R1 result1, out R2 result2)
+        public static void Decompose<T, R1, R2>(this T obj, ValueFunc<T, R1> decomposer1, ValueFunc<T, R2> decomposer2, out R1 result1, out R2 result2)
             where T : class
         {
             result1 = decomposer1.Invoke(obj);
@@ -109,7 +109,7 @@ namespace DotNext
         /// <returns>Decomposition result.</returns>
         public static (R1, R2) Decompose<T, R1, R2>(this T obj, Func<T, R1> decomposer1, Func<T, R2> decomposer2)
             where T : class
-            => Decompose(obj, new FunctionPointer<T, R1>(decomposer1), new FunctionPointer<T, R2>(decomposer2));
+            => Decompose(obj, new ValueFunc<T, R1>(decomposer1), new ValueFunc<T, R2>(decomposer2));
 
         /// <summary>
         /// Performs decomposition of object into tuple.
@@ -121,7 +121,7 @@ namespace DotNext
         /// <param name="decomposer1">First decomposition function.</param>
         /// <param name="decomposer2">Second decomposition function.</param>
         /// <returns>Decomposition result.</returns>
-        public static (R1, R2) Decompose<T, R1, R2>(this T obj, FunctionPointer<T, R1> decomposer1, FunctionPointer<T, R2> decomposer2)
+        public static (R1, R2) Decompose<T, R1, R2>(this T obj, ValueFunc<T, R1> decomposer1, ValueFunc<T, R2> decomposer2)
             where T : class
         {
             var tuple = default((R1 result1, R2 result2));

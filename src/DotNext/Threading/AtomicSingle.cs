@@ -15,9 +15,9 @@ namespace DotNext.Threading
 	/// <seealso cref="Interlocked"/>
     public static class AtomicSingle
     {
-        private static readonly FunctionPointer<float, float> Increment = new FunctionPointer<float, float>(new Func<float, float>(value => value + 1F));
-        private static readonly FunctionPointer<float, float> Decrement = new FunctionPointer<float, float>(new Func<float, float>(value => value - 1F));
-        private static readonly FunctionPointer<float, float, float> Sum = new FunctionPointer<float, float, float>((x, y) => x + y);
+        private static readonly ValueFunc<float, float> Increment = new ValueFunc<float, float>(new Func<float, float>(value => value + 1F));
+        private static readonly ValueFunc<float, float> Decrement = new ValueFunc<float, float>(new Func<float, float>(value => value - 1F));
+        private static readonly ValueFunc<float, float, float> Sum = new ValueFunc<float, float, float>((x, y) => x + y);
 
         /// <summary>
         /// Reads the value of the specified field. On systems that require it, inserts a
@@ -109,7 +109,7 @@ namespace DotNext.Threading
             return update;
         }
 
-        private static (float OldValue, float NewValue) Update(ref float value, FunctionPointer<float, float> updater)
+        private static (float OldValue, float NewValue) Update(ref float value, ValueFunc<float, float> updater)
         {
             float oldValue, newValue;
             do
@@ -120,7 +120,7 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-        private static (float OldValue, float NewValue) Accumulate(ref float value, float x, FunctionPointer<float, float, float> accumulator)
+        private static (float OldValue, float NewValue) Accumulate(ref float value, float x, ValueFunc<float, float, float> accumulator)
         {
             float oldValue, newValue;
             do
@@ -144,7 +144,7 @@ namespace DotNext.Threading
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float AccumulateAndGet(ref this float value, float x, Func<float, float, float> accumulator)
-            => AccumulateAndGet(ref value, x, new FunctionPointer<float, float, float>(accumulator));
+            => AccumulateAndGet(ref value, x, new ValueFunc<float, float, float>(accumulator));
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -158,7 +158,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float AccumulateAndGet(ref this float value, float x, FunctionPointer<float, float, float> accumulator)
+        public static float AccumulateAndGet(ref this float value, float x, ValueFunc<float, float, float> accumulator)
             => Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float GetAndAccumulate(ref this float value, float x, Func<float, float, float> accumulator)
-            => GetAndAccumulate(ref value, x, new FunctionPointer<float, float, float>(accumulator));
+            => GetAndAccumulate(ref value, x, new ValueFunc<float, float, float>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -188,7 +188,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float GetAndAccumulate(ref this float value, float x, FunctionPointer<float, float, float> accumulator)
+        public static float GetAndAccumulate(ref this float value, float x, ValueFunc<float, float, float> accumulator)
             => Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace DotNext.Threading
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float UpdateAndGet(ref this float value, Func<float, float> updater)
-            => UpdateAndGet(ref value, new FunctionPointer<float, float>(updater));
+            => UpdateAndGet(ref value, new ValueFunc<float, float>(updater));
 
         /// <summary>
 		/// Atomically updates the stored value with the results 
@@ -210,7 +210,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float UpdateAndGet(ref this float value, FunctionPointer<float, float> updater)
+        public static float UpdateAndGet(ref this float value, ValueFunc<float, float> updater)
             => Update(ref value, updater).NewValue;
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float GetAndUpdate(ref this float value, Func<float, float> updater)
-            => GetAndUpdate(ref value, new FunctionPointer<float, float>(updater));
+            => GetAndUpdate(ref value, new ValueFunc<float, float>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -232,7 +232,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float GetAndUpdate(ref this float value, FunctionPointer<float, float> updater)
+        public static float GetAndUpdate(ref this float value, ValueFunc<float, float> updater)
             => Update(ref value, updater).OldValue;
 
         /// <summary>
@@ -349,7 +349,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The updated value.</returns>
 		public static float AccumulateAndGet(this float[] array, long index, float x, Func<float, float, float> accumulator)
-            => AccumulateAndGet(array, index, x, new FunctionPointer<float, float, float>(accumulator));
+            => AccumulateAndGet(array, index, x, new ValueFunc<float, float, float>(accumulator));
 
         /// <summary>
 		/// Atomically updates the array element with the results of applying the given function 
@@ -363,7 +363,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The updated value.</returns>
-		public static float AccumulateAndGet(this float[] array, long index, float x, FunctionPointer<float, float, float> accumulator)
+		public static float AccumulateAndGet(this float[] array, long index, float x, ValueFunc<float, float, float> accumulator)
             => AccumulateAndGet(ref array[index], x, accumulator);
 
         /// <summary>
@@ -379,7 +379,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The original value of the array element.</returns>
 		public static float GetAndAccumulate(this float[] array, long index, float x, Func<float, float, float> accumulator)
-            => GetAndAccumulate(array, index, x, new FunctionPointer<float, float, float>(accumulator));
+            => GetAndAccumulate(array, index, x, new ValueFunc<float, float, float>(accumulator));
 
         /// <summary>
 		/// Atomically updates the array element with the results of applying the given function 
@@ -393,7 +393,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The original value of the array element.</returns>
-		public static float GetAndAccumulate(this float[] array, long index, float x, FunctionPointer<float, float, float> accumulator)
+		public static float GetAndAccumulate(this float[] array, long index, float x, ValueFunc<float, float, float> accumulator)
             => GetAndAccumulate(ref array[index], x, accumulator);
 
         /// <summary>
@@ -405,7 +405,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
 		public static float UpdateAndGet(this float[] array, long index, Func<float, float> updater)
-            => UpdateAndGet(array, index, new FunctionPointer<float, float>(updater));
+            => UpdateAndGet(array, index, new ValueFunc<float, float>(updater));
 
         /// <summary>
 		/// Atomically updates the array element with the results 
@@ -415,7 +415,7 @@ namespace DotNext.Threading
         /// <param name="index">The index of the array element to be modified.</param>
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
-		public static float UpdateAndGet(this float[] array, long index, FunctionPointer<float, float> updater)
+		public static float UpdateAndGet(this float[] array, long index, ValueFunc<float, float> updater)
             => UpdateAndGet(ref array[index], updater);
 
         /// <summary>
@@ -427,7 +427,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value of the array element.</returns>
 		public static float GetAndUpdate(this float[] array, long index, Func<float, float> updater)
-            => GetAndUpdate(array, index, new FunctionPointer<float, float>(updater));
+            => GetAndUpdate(array, index, new ValueFunc<float, float>(updater));
 
         /// <summary>
 		/// Atomically updates the array element with the results 
@@ -437,7 +437,7 @@ namespace DotNext.Threading
         /// <param name="index">The index of the array element to be modified.</param>
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value of the array element.</returns>
-		public static float GetAndUpdate(this float[] array, long index, FunctionPointer<float, float> updater)
+		public static float GetAndUpdate(this float[] array, long index, ValueFunc<float, float> updater)
             => GetAndUpdate(ref array[index], updater);
     }
 }

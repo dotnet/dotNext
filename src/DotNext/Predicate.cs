@@ -10,24 +10,24 @@ namespace DotNext
     {
         private static class TruePredicate<T>
         {
-            internal static readonly Predicate<T> Value = PredicatePointer<T>.True.ToDelegate();
+            internal static readonly Predicate<T> Value = ValuePredicate<T>.True.ToDelegate();
         }
 
         private static class FalsePredicate<T>
         {
-            internal static readonly Predicate<T> Value = PredicatePointer<T>.False.ToDelegate();
+            internal static readonly Predicate<T> Value = ValuePredicate<T>.False.ToDelegate();
         }
 
         private static class IsNullPredicate<T>
             where T : class
         {
-            internal static readonly Predicate<T> Value = PredicatePointer<T>.IsNull.ToDelegate();
+            internal static readonly Predicate<T> Value = ValuePredicate<T>.IsNull.ToDelegate();
         }
 
         private static class IsNotNullPredicate<T>
             where T : class
         {
-            internal static readonly Predicate<T> Value = PredicatePointer<T>.IsNotNull.ToDelegate();
+            internal static readonly Predicate<T> Value = ValuePredicate<T>.IsNotNull.ToDelegate();
         }
 
         private static class HasValuePredicate<T>

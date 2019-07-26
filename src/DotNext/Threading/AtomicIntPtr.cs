@@ -15,9 +15,9 @@ namespace DotNext.Threading
     /// <seealso cref="Interlocked"/>
     public static class AtomicIntPtr
     {
-        private static readonly FunctionPointer<IntPtr, IntPtr> Increment = new FunctionPointer<IntPtr, IntPtr>(new Func<IntPtr, IntPtr>(ValueTypeExtensions.Increment));
-        private static readonly FunctionPointer<IntPtr, IntPtr> Decrement = new FunctionPointer<IntPtr, IntPtr>(new Func<IntPtr, IntPtr>(ValueTypeExtensions.Decrement));
-        private static readonly FunctionPointer<IntPtr, IntPtr, IntPtr> Sum = new FunctionPointer<IntPtr, IntPtr, IntPtr>(ValueTypeExtensions.Add);
+        private static readonly ValueFunc<IntPtr, IntPtr> Increment = new ValueFunc<IntPtr, IntPtr>(new Func<IntPtr, IntPtr>(ValueTypeExtensions.Increment));
+        private static readonly ValueFunc<IntPtr, IntPtr> Decrement = new ValueFunc<IntPtr, IntPtr>(new Func<IntPtr, IntPtr>(ValueTypeExtensions.Decrement));
+        private static readonly ValueFunc<IntPtr, IntPtr, IntPtr> Sum = new ValueFunc<IntPtr, IntPtr, IntPtr>(ValueTypeExtensions.Add);
 
         /// <summary>
         /// Reads the value of the specified field. On systems that require it, inserts a
@@ -110,7 +110,7 @@ namespace DotNext.Threading
             return update;
         }
 
-        private static (IntPtr OldValue, IntPtr NewValue) Update(ref IntPtr value, FunctionPointer<IntPtr, IntPtr> updater)
+        private static (IntPtr OldValue, IntPtr NewValue) Update(ref IntPtr value, ValueFunc<IntPtr, IntPtr> updater)
         {
             IntPtr oldValue, newValue;
             do
@@ -121,7 +121,7 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-        private static (IntPtr OldValue, IntPtr NewValue) Accumulate(ref IntPtr value, IntPtr x, FunctionPointer<IntPtr, IntPtr, IntPtr> accumulator)
+        private static (IntPtr OldValue, IntPtr NewValue) Accumulate(ref IntPtr value, IntPtr x, ValueFunc<IntPtr, IntPtr, IntPtr> accumulator)
         {
             IntPtr oldValue, newValue;
             do
@@ -145,7 +145,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr AccumulateAndGet(ref this IntPtr value, IntPtr x, Func<IntPtr, IntPtr, IntPtr> accumulator)
-            => AccumulateAndGet(ref value, x, new FunctionPointer<IntPtr, IntPtr, IntPtr>(accumulator));
+            => AccumulateAndGet(ref value, x, new ValueFunc<IntPtr, IntPtr, IntPtr>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -159,7 +159,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr AccumulateAndGet(ref this IntPtr value, IntPtr x, FunctionPointer<IntPtr, IntPtr, IntPtr> accumulator)
+        public static IntPtr AccumulateAndGet(ref this IntPtr value, IntPtr x, ValueFunc<IntPtr, IntPtr, IntPtr> accumulator)
             => Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr GetAndAccumulate(ref this IntPtr value, IntPtr x, Func<IntPtr, IntPtr, IntPtr> accumulator)
-            => GetAndAccumulate(ref value, x, new FunctionPointer<IntPtr, IntPtr, IntPtr>(accumulator));
+            => GetAndAccumulate(ref value, x, new ValueFunc<IntPtr, IntPtr, IntPtr>(accumulator));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -189,7 +189,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr GetAndAccumulate(ref this IntPtr value, IntPtr x, FunctionPointer<IntPtr, IntPtr, IntPtr> accumulator)
+        public static IntPtr GetAndAccumulate(ref this IntPtr value, IntPtr x, ValueFunc<IntPtr, IntPtr, IntPtr> accumulator)
             => Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr UpdateAndGet(ref this IntPtr value, Func<IntPtr, IntPtr> updater)
-            => UpdateAndGet(ref value, new FunctionPointer<IntPtr, IntPtr>(updater));
+            => UpdateAndGet(ref value, new ValueFunc<IntPtr, IntPtr>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -211,7 +211,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr UpdateAndGet(ref this IntPtr value, FunctionPointer<IntPtr, IntPtr> updater)
+        public static IntPtr UpdateAndGet(ref this IntPtr value, ValueFunc<IntPtr, IntPtr> updater)
             => Update(ref value, updater).NewValue;
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr GetAndUpdate(ref this IntPtr value, Func<IntPtr, IntPtr> updater)
-            => GetAndUpdate(ref value, new FunctionPointer<IntPtr, IntPtr>(updater));
+            => GetAndUpdate(ref value, new ValueFunc<IntPtr, IntPtr>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -233,7 +233,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr GetAndUpdate(ref this IntPtr value, FunctionPointer<IntPtr, IntPtr> updater)
+        public static IntPtr GetAndUpdate(ref this IntPtr value, ValueFunc<IntPtr, IntPtr> updater)
             => Update(ref value, updater).OldValue;
 
         /// <summary>
@@ -338,7 +338,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The updated value.</returns>
 		public static IntPtr AccumulateAndGet(this IntPtr[] array, long index, IntPtr x, Func<IntPtr, IntPtr, IntPtr> accumulator)
-            => AccumulateAndGet(array, index, x, new FunctionPointer<IntPtr, IntPtr, IntPtr>(accumulator));
+            => AccumulateAndGet(array, index, x, new ValueFunc<IntPtr, IntPtr, IntPtr>(accumulator));
 
         /// <summary>
 		/// Atomically updates the array element with the results of applying the given function 
@@ -352,7 +352,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The updated value.</returns>
-		public static IntPtr AccumulateAndGet(this IntPtr[] array, long index, IntPtr x, FunctionPointer<IntPtr, IntPtr, IntPtr> accumulator)
+		public static IntPtr AccumulateAndGet(this IntPtr[] array, long index, IntPtr x, ValueFunc<IntPtr, IntPtr, IntPtr> accumulator)
             => AccumulateAndGet(ref array[index], x, accumulator);
 
         /// <summary>
@@ -368,7 +368,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The original value of the array element.</returns>
 		public static IntPtr GetAndAccumulate(this IntPtr[] array, long index, IntPtr x, Func<IntPtr, IntPtr, IntPtr> accumulator)
-            => GetAndAccumulate(array, index, x, new FunctionPointer<IntPtr, IntPtr, IntPtr>(accumulator));
+            => GetAndAccumulate(array, index, x, new ValueFunc<IntPtr, IntPtr, IntPtr>(accumulator));
 
         /// <summary>
 		/// Atomically updates the array element with the results of applying the given function 
@@ -382,7 +382,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The original value of the array element.</returns>
-		public static IntPtr GetAndAccumulate(this IntPtr[] array, long index, IntPtr x, FunctionPointer<IntPtr, IntPtr, IntPtr> accumulator)
+		public static IntPtr GetAndAccumulate(this IntPtr[] array, long index, IntPtr x, ValueFunc<IntPtr, IntPtr, IntPtr> accumulator)
             => GetAndAccumulate(ref array[index], x, accumulator);
 
         /// <summary>
@@ -394,7 +394,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
 		public static IntPtr UpdateAndGet(this IntPtr[] array, long index, Func<IntPtr, IntPtr> updater)
-            => UpdateAndGet(array, index, new FunctionPointer<IntPtr, IntPtr>(updater));
+            => UpdateAndGet(array, index, new ValueFunc<IntPtr, IntPtr>(updater));
 
         /// <summary>
 		/// Atomically updates the array element with the results 
@@ -404,7 +404,7 @@ namespace DotNext.Threading
         /// <param name="index">The index of the array element to be modified.</param>
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
-		public static IntPtr UpdateAndGet(this IntPtr[] array, long index, FunctionPointer<IntPtr, IntPtr> updater)
+		public static IntPtr UpdateAndGet(this IntPtr[] array, long index, ValueFunc<IntPtr, IntPtr> updater)
             => UpdateAndGet(ref array[index], updater);
 
         /// <summary>
@@ -416,7 +416,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value of the array element.</returns>
 		public static IntPtr GetAndUpdate(this IntPtr[] array, long index, Func<IntPtr, IntPtr> updater)
-            => GetAndUpdate(array, index, new FunctionPointer<IntPtr, IntPtr>(updater));
+            => GetAndUpdate(array, index, new ValueFunc<IntPtr, IntPtr>(updater));
 
         /// <summary>
 		/// Atomically updates the array element with the results 
@@ -426,7 +426,7 @@ namespace DotNext.Threading
         /// <param name="index">The index of the array element to be modified.</param>
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value of the array element.</returns>
-		public static IntPtr GetAndUpdate(this IntPtr[] array, long index, FunctionPointer<IntPtr, IntPtr> updater)
+		public static IntPtr GetAndUpdate(this IntPtr[] array, long index, ValueFunc<IntPtr, IntPtr> updater)
             => GetAndUpdate(ref array[index], updater);
     }
 }

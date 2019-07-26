@@ -166,7 +166,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         public static long GetHashCode64(IntPtr source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(source, length, hash, new FunctionPointer<long, long, long>(hashFunction), salted);
+            => GetHashCode64(source, length, hash, new ValueFunc<long, long, long>(hashFunction), salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory, 64-bit version.
@@ -181,7 +181,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
-        public static long GetHashCode64(IntPtr source, long length, long hash, FunctionPointer<long, long, long> hashFunction, bool salted = true)
+        public static long GetHashCode64(IntPtr source, long length, long hash, ValueFunc<long, long, long> hashFunction, bool salted = true)
         {
             switch (length)
             {
@@ -225,7 +225,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
         public static long GetHashCode64(void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(new IntPtr(source), length, hash, new FunctionPointer<long, long, long>(hashFunction), salted);
+            => GetHashCode64(new IntPtr(source), length, hash, new ValueFunc<long, long, long>(hashFunction), salted);
         
         /// <summary>
 		/// Computes 64-bit hash code for the block of memory, 64-bit version.
@@ -241,7 +241,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
-        public static long GetHashCode64(void* source, long length, long hash, FunctionPointer<long, long, long> hashFunction, bool salted = true)
+        public static long GetHashCode64(void* source, long length, long hash, ValueFunc<long, long, long> hashFunction, bool salted = true)
             => GetHashCode64(new IntPtr(source), length, hash, hashFunction, salted);
 
         /// <summary>
@@ -262,9 +262,9 @@ namespace DotNext.Runtime.InteropServices
             Ldc_I8(FNV1a64.Offset);
             Ldftn(new M(typeof(Memory.FNV1a64), nameof(FNV1a64.GetHashCode), typeof(long), typeof(long)));
             Ldnull();
-            Newobj(M.Constructor(typeof(FunctionPointer<long, long, long>), typeof(IntPtr), typeof(object)));
+            Newobj(M.Constructor(typeof(ValueFunc<long, long, long>), typeof(IntPtr), typeof(object)));
             Push(salted);
-            Call(new M(typeof(Memory), nameof(GetHashCode64), typeof(IntPtr), typeof(long), typeof(long), typeof(FunctionPointer<long, long, long>), typeof(bool)));
+            Call(new M(typeof(Memory), nameof(GetHashCode64), typeof(IntPtr), typeof(long), typeof(long), typeof(ValueFunc<long, long, long>), typeof(bool)));
             return Return<long>();
         }
 
@@ -297,7 +297,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         public static int GetHashCode32(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(source, length, hash, new FunctionPointer<int, int, int>(hashFunction), salted);
+            => GetHashCode32(source, length, hash, new ValueFunc<int, int, int>(hashFunction), salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -312,7 +312,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
-        public static int GetHashCode32(IntPtr source, long length, int hash, FunctionPointer<int, int, int> hashFunction, bool salted = true)
+        public static int GetHashCode32(IntPtr source, long length, int hash, ValueFunc<int, int, int> hashFunction, bool salted = true)
         {
             switch (length)
             {
@@ -353,7 +353,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static int GetHashCode32(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(new IntPtr(source), length, hash, new FunctionPointer<int, int, int>(hashFunction), salted);
+            => GetHashCode32(new IntPtr(source), length, hash, new ValueFunc<int, int, int>(hashFunction), salted);
         
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -369,7 +369,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
-        public static int GetHashCode32(void* source, long length, int hash, FunctionPointer<int, int, int> hashFunction, bool salted = true)
+        public static int GetHashCode32(void* source, long length, int hash, ValueFunc<int, int, int> hashFunction, bool salted = true)
             => GetHashCode32(new IntPtr(source), length, hash, hashFunction, salted);
 
         /// <summary>
@@ -390,9 +390,9 @@ namespace DotNext.Runtime.InteropServices
             Ldc_I4(FNV1a32.Offset);
             Ldftn(new M(typeof(Memory.FNV1a32), nameof(FNV1a32.GetHashCode), typeof(int), typeof(int)));
             Ldnull();
-            Newobj(M.Constructor(typeof(FunctionPointer<int, int, int>), typeof(IntPtr), typeof(object)));
+            Newobj(M.Constructor(typeof(ValueFunc<int, int, int>), typeof(IntPtr), typeof(object)));
             Push(salted);
-            Call(new M(typeof(Memory), nameof(GetHashCode32), typeof(IntPtr), typeof(long), typeof(int), typeof(FunctionPointer<int, int, int>), typeof(bool)));
+            Call(new M(typeof(Memory), nameof(GetHashCode32), typeof(IntPtr), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>), typeof(bool)));
             return Return<int>();
         }
 
@@ -403,13 +403,13 @@ namespace DotNext.Runtime.InteropServices
             Ldc_I4(FNV1a32.Offset);
             Ldftn(new M(typeof(Memory.FNV1a32), nameof(FNV1a32.GetHashCode), typeof(int), typeof(int)));
             Ldnull();
-            Newobj(M.Constructor(typeof(FunctionPointer<int, int, int>), typeof(IntPtr), typeof(object)));
+            Newobj(M.Constructor(typeof(ValueFunc<int, int, int>), typeof(IntPtr), typeof(object)));
             Push(salted);
-            Call(new M(typeof(Memory), nameof(GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(FunctionPointer<int, int, int>), typeof(bool)));
+            Call(new M(typeof(Memory), nameof(GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>), typeof(bool)));
             return Return<int>();
         }
 
-        internal static int GetHashCode32Aligned(IntPtr source, long length, int hash, FunctionPointer<int, int, int> hashFunction, bool salted)
+        internal static int GetHashCode32Aligned(IntPtr source, long length, int hash, ValueFunc<int, int, int> hashFunction, bool salted)
         {
             while (length >= sizeof(int))
             {

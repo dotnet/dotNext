@@ -161,7 +161,7 @@ namespace DotNext
             => BitwiseEquals(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int BitwiseHashCode(ref T value, int hash, FunctionPointer<int, int, int> hashFunction, bool salted)
+        private static int BitwiseHashCode(ref T value, int hash, ValueFunc<int, int, int> hashFunction, bool salted)
         {
             Push(ref value);
             Sizeof(typeof(T));
@@ -169,7 +169,7 @@ namespace DotNext
             Push(hash);
             Push(hashFunction);
             Push(salted);
-            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(FunctionPointer<int, int, int>), typeof(bool)));
+            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>), typeof(bool)));
             return Return<int>();
         }
 
@@ -186,7 +186,7 @@ namespace DotNext
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
         public static int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => BitwiseHashCode(ref value, hash, new FunctionPointer<int, int, int>(hashFunction), salted);
+            => BitwiseHashCode(ref value, hash, new ValueFunc<int, int, int>(hashFunction), salted);
 
         /// <summary>
         /// Computes bitwise hash code for the specified value.
@@ -200,7 +200,7 @@ namespace DotNext
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
-        public static int BitwiseHashCode(T value, int hash, FunctionPointer<int, int, int> hashFunction, bool salted = true)
+        public static int BitwiseHashCode(T value, int hash, ValueFunc<int, int, int> hashFunction, bool salted = true)
             => BitwiseHashCode(ref value, hash, hashFunction, salted);
 
         private static int BitwiseHashCode(ref T value, bool salted)

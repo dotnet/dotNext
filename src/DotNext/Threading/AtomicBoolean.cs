@@ -127,7 +127,7 @@ namespace DotNext.Threading
             return update;
         }
 
-        private (bool OldValue, bool NewValue) Update(FunctionPointer<bool, bool> updater)
+        private (bool OldValue, bool NewValue) Update(ValueFunc<bool, bool> updater)
         {
             bool oldValue, newValue;
             do
@@ -138,7 +138,7 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-        private (bool OldValue, bool NewValue) Accumulate(bool x, FunctionPointer<bool, bool, bool> accumulator)
+        private (bool OldValue, bool NewValue) Accumulate(bool x, ValueFunc<bool, bool, bool> accumulator)
         {
             bool oldValue, newValue;
             do
@@ -160,7 +160,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
 		public bool AccumulateAndGet(bool x, Func<bool, bool, bool> accumulator)
-            => AccumulateAndGet(x, new FunctionPointer<bool, bool, bool>(accumulator));
+            => AccumulateAndGet(x, new ValueFunc<bool, bool, bool>(accumulator));
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -172,7 +172,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
-		public bool AccumulateAndGet(bool x, FunctionPointer<bool, bool, bool> accumulator)
+		public bool AccumulateAndGet(bool x, ValueFunc<bool, bool, bool> accumulator)
             => Accumulate(x, accumulator).NewValue;
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
 		public bool GetAndAccumulate(bool x, Func<bool, bool, bool> accumulator)
-            => GetAndAccumulate(x, new FunctionPointer<bool, bool, bool>(accumulator));
+            => GetAndAccumulate(x, new ValueFunc<bool, bool, bool>(accumulator));
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -198,7 +198,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
-		public bool GetAndAccumulate(bool x, FunctionPointer<bool, bool, bool> accumulator)
+		public bool GetAndAccumulate(bool x, ValueFunc<bool, bool, bool> accumulator)
             => Accumulate(x, accumulator).OldValue;
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
         public bool UpdateAndGet(Func<bool, bool> updater)
-            => UpdateAndGet(new FunctionPointer<bool, bool>(updater));
+            => UpdateAndGet(new ValueFunc<bool, bool>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -216,7 +216,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
-        public bool UpdateAndGet(FunctionPointer<bool, bool> updater)
+        public bool UpdateAndGet(ValueFunc<bool, bool> updater)
             => Update(updater).NewValue;
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         public bool GetAndUpdate(Func<bool, bool> updater)
-            => GetAndUpdate(new FunctionPointer<bool, bool>(updater));
+            => GetAndUpdate(new ValueFunc<bool, bool>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -234,7 +234,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
-        public bool GetAndUpdate(FunctionPointer<bool, bool> updater)
+        public bool GetAndUpdate(ValueFunc<bool, bool> updater)
             => Update(updater).OldValue;
 
         /// <summary>

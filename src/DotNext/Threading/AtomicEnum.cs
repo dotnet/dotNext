@@ -81,7 +81,7 @@ namespace DotNext.Threading
             return update;
         }
 
-        private (E OldValue, E NewValue) Update(FunctionPointer<E, E> updater)
+        private (E OldValue, E NewValue) Update(ValueFunc<E, E> updater)
         {
             E oldValue, newValue;
             do
@@ -92,7 +92,7 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-        private (E OldValue, E NewValue) Accumulate(E x, FunctionPointer<E, E, E> accumulator)
+        private (E OldValue, E NewValue) Accumulate(E x, ValueFunc<E, E, E> accumulator)
         {
             E oldValue, newValue;
             do
@@ -114,7 +114,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
 		public E AccumulateAndGet(E x, Func<E, E, E> accumulator)
-            => AccumulateAndGet(x, new FunctionPointer<E, E, E>(accumulator));
+            => AccumulateAndGet(x, new ValueFunc<E, E, E>(accumulator));
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -126,7 +126,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
-		public E AccumulateAndGet(E x, FunctionPointer<E, E, E> accumulator)
+		public E AccumulateAndGet(E x, ValueFunc<E, E, E> accumulator)
             => Accumulate(x, accumulator).NewValue;
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
 		public E GetAndAccumulate(E x, Func<E, E, E> accumulator)
-            => GetAndAccumulate(x, new FunctionPointer<E, E, E>(accumulator));
+            => GetAndAccumulate(x, new ValueFunc<E, E, E>(accumulator));
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -152,7 +152,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
-		public E GetAndAccumulate(E x, FunctionPointer<E, E, E> accumulator)
+		public E GetAndAccumulate(E x, ValueFunc<E, E, E> accumulator)
             => Accumulate(x, accumulator).OldValue;
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
         public E UpdateAndGet(Func<E, E> updater)
-            => UpdateAndGet(new FunctionPointer<E, E>(updater));
+            => UpdateAndGet(new ValueFunc<E, E>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -170,7 +170,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
-        public E UpdateAndGet(FunctionPointer<E, E> updater)
+        public E UpdateAndGet(ValueFunc<E, E> updater)
             => Update(updater).NewValue;
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         public E GetAndUpdate(Func<E, E> updater)
-            => GetAndUpdate(new FunctionPointer<E, E>(updater));
+            => GetAndUpdate(new ValueFunc<E, E>(updater));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -188,7 +188,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
-        public E GetAndUpdate(FunctionPointer<E, E> updater)
+        public E GetAndUpdate(ValueFunc<E, E> updater)
             => Update(updater).OldValue;
 
         /// <summary>
