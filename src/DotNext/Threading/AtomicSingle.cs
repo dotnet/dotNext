@@ -15,8 +15,8 @@ namespace DotNext.Threading
 	/// <seealso cref="Interlocked"/>
     public static class AtomicSingle
     {
-        private static readonly FunctionPointer<float, float> Increment = new FunctionPointer<float, float>(value => value + 1F);
-        private static readonly FunctionPointer<float, float> Decrement = new FunctionPointer<float, float>(value => value - 1F);
+        private static readonly FunctionPointer<float, float> Increment = new FunctionPointer<float, float>(new Func<float, float>(value => value + 1F));
+        private static readonly FunctionPointer<float, float> Decrement = new FunctionPointer<float, float>(new Func<float, float>(value => value - 1F));
         private static readonly FunctionPointer<float, float, float> Sum = new FunctionPointer<float, float, float>((x, y) => x + y);
 
         /// <summary>

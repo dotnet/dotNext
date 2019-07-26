@@ -15,8 +15,8 @@ namespace DotNext.Threading
     /// <seealso cref="Interlocked"/>
     public static class AtomicIntPtr
     {
-        private static readonly FunctionPointer<IntPtr, IntPtr> Increment = new FunctionPointer<IntPtr, IntPtr>(ValueTypeExtensions.Increment);
-        private static readonly FunctionPointer<IntPtr, IntPtr> Decrement = new FunctionPointer<IntPtr, IntPtr>(ValueTypeExtensions.Decrement);
+        private static readonly FunctionPointer<IntPtr, IntPtr> Increment = new FunctionPointer<IntPtr, IntPtr>(new Func<IntPtr, IntPtr>(ValueTypeExtensions.Increment));
+        private static readonly FunctionPointer<IntPtr, IntPtr> Decrement = new FunctionPointer<IntPtr, IntPtr>(new Func<IntPtr, IntPtr>(ValueTypeExtensions.Decrement));
         private static readonly FunctionPointer<IntPtr, IntPtr, IntPtr> Sum = new FunctionPointer<IntPtr, IntPtr, IntPtr>(ValueTypeExtensions.Add);
 
         /// <summary>
