@@ -54,13 +54,11 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public ActionPointer(Action @delegate)
+        /// <param name="action">The delegate representing method.</param>
+        public ActionPointer(Action action)
+            : this(action.Method.MethodHandle, action.Target)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
         }
-
         
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
         [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
@@ -205,11 +203,10 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public FunctionPointer(Func<R> @delegate)
+        /// <param name="func">The delegate representing method.</param>
+        public FunctionPointer(Func<R> func)
+            : this(func.Method.MethodHandle, func.Target)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
@@ -410,19 +407,17 @@ namespace DotNext
         /// </summary>
         /// <param name="predicate">The predicate representing method.</param>
         public PredicatePointer(Predicate<T> predicate)
+            : this(predicate.Method.MethodHandle, predicate.Target)
         {
-            methodPtr = predicate.Method.MethodHandle.GetFunctionPointer();
-            target = predicate.Target;
         }
 
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the predicate.
         /// </summary>
-        /// <param name="predicate">The predicate representing method.</param>
-        public PredicatePointer(Func<T, bool> predicate)
+        /// <param name="func">The predicate representing method.</param>
+        public PredicatePointer(Func<T, bool> func)
+            : this(func.Method.MethodHandle, func.Target)
         {
-            methodPtr = predicate.Method.MethodHandle.GetFunctionPointer();
-            target = predicate.Target;
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
@@ -680,18 +675,18 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public FunctionPointer(Func<T, R> @delegate)
-            : this(@delegate.Method.MethodHandle, @delegate.Target)
+        /// <param name="func">The delegate representing method.</param>
+        public FunctionPointer(Func<T, R> func)
+            : this(func.Method.MethodHandle, func.Target)
         {
         }
 
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public FunctionPointer(Converter<T, R> @delegate)
-            : this(@delegate.Method.MethodHandle, @delegate.Target)
+        /// <param name="converter">The delegate representing method.</param>
+        public FunctionPointer(Converter<T, R> converter)
+            : this(converter.Method.MethodHandle, converter.Target)
         {
         }
 
@@ -872,11 +867,10 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public ActionPointer(Action<T> @delegate)
+        /// <param name="action">The delegate representing method.</param>
+        public ActionPointer(Action<T> action)
+            : this(action.Method.MethodHandle, action.Target)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
@@ -1028,11 +1022,10 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public FunctionPointer(Func<T1, T2, R> @delegate)
+        /// <param name="func">The delegate representing method.</param>
+        public FunctionPointer(Func<T1, T2, R> func)
+            : this(func.Method.MethodHandle, func.Target)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
@@ -1195,11 +1188,10 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public ActionPointer(Action<T1, T2> @delegate)
+        /// <param name="action">The delegate representing method.</param>
+        public ActionPointer(Action<T1, T2> action)
+            : this(action.Method.MethodHandle, action.Target)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
@@ -1355,11 +1347,12 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public FunctionPointer(Func<T1, T2, T3, R> @delegate)
+        /// <param name="func">The delegate representing method.</param>
+        public FunctionPointer(Func<T1, T2, T3, R> func)
+            : this(func.Method.MethodHandle, func.Target)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
+            methodPtr = func.Method.MethodHandle.GetFunctionPointer();
+            target = func.Target;
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
@@ -1518,11 +1511,10 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public ActionPointer(Action<T1, T2, T3> @delegate)
+        /// <param name="action">The delegate representing method.</param>
+        public ActionPointer(Action<T1, T2, T3> action)
+            : this(action.Method.MethodHandle, action.Target)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
@@ -1682,11 +1674,10 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public FunctionPointer(Func<T1, T2, T3, T4, R> @delegate)
+        /// <param name="func">The delegate representing method.</param>
+        public FunctionPointer(Func<T1, T2, T3, T4, R> func)
+            : this(func.Method.MethodHandle, func.Target)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
@@ -1849,11 +1840,10 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public ActionPointer(Action<T1, T2, T3, T4> @delegate)
+        /// <param name="action">The delegate representing method.</param>
+        public ActionPointer(Action<T1, T2, T3, T4> action)
+            : this(action.Method.MethodHandle, action.Target)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
@@ -2017,11 +2007,10 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public FunctionPointer(Func<T1, T2, T3, T4, T5, R> @delegate)
+        /// <param name="func">The delegate representing method.</param>
+        public FunctionPointer(Func<T1, T2, T3, T4, T5, R> func)
+            : this(func.Method.MethodHandle, func.Target)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
@@ -2188,11 +2177,10 @@ namespace DotNext
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
-        /// <param name="delegate">The delegate representing method.</param>
-        public ActionPointer(Action<T1, T2, T3, T4, T5> @delegate)
+        /// <param name="action">The delegate representing method.</param>
+        public ActionPointer(Action<T1, T2, T3, T4, T5> action)
+            : this(action.Method.MethodHandle, action.Target)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
