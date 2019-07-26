@@ -40,7 +40,7 @@ namespace DotNext
             /// <returns><see langword="true"/>, if two values are equal; otherwise, <see langword="false"/>.</returns>
             /// <seealso cref="BitwiseEquals(T, T)"/>
             public bool Equals(T first, T second)
-                => BitwiseEquals(ref Unsafe.As<T, byte>(ref first), ref Unsafe.As<T, byte>(ref second));
+                => BitwiseEquals(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
 
             /// <summary>
             /// Computes bitwise hash code for the given value.
@@ -415,11 +415,11 @@ namespace DotNext
             where To : unmanaged
         {
             if (Size >= ValueType<To>.Size)
-                output = Unsafe.As<T, To>(ref Unsafe.AsRef(in input));
+                output = As<T, To>(ref AsRef(in input));
             else
             {
                 output = default;
-                Unsafe.As<To, T>(ref output) = input;
+                As<To, T>(ref output) = input;
             }
         }
 
