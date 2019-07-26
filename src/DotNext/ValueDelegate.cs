@@ -10,7 +10,8 @@ using TR = InlineIL.TypeRef;
 
 namespace DotNext
 {
-    using ImplicitUsageAttribute = Runtime.CompilerServices.ImplicitUsageAttribute;
+    using IMethodCookieSupport = Reflection.IMethodCookieSupport;
+
 
     internal sealed class MethodPointerException : NullReferenceException
     {
@@ -30,7 +31,7 @@ namespace DotNext
     /// </remarks>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueAction : IMethodPointer<Action>, IEquatable<ValueAction>
+    public readonly struct ValueAction : IMethodPointer<Action>, IEquatable<ValueAction>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -56,14 +57,7 @@ namespace DotNext
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action action)
-            : this(action.Method.MethodHandle, action.Target)
-        {
-        }
-
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValueAction(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
+            : this(action.Method.MethodHandle.GetFunctionPointer(), action.Target)
         {
         }
 
@@ -71,6 +65,12 @@ namespace DotNext
         {
             this.methodPtr = methodPtr;
             this.target = target;
+        }
+
+        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValueAction), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
         }
 
         IntPtr IMethodPointer<Action>.Address => methodPtr;
@@ -197,7 +197,7 @@ namespace DotNext
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueFunc<R> : IMethodPointer<Func<R>>, IEquatable<ValueFunc<R>>, ISupplier<R>
+    public readonly struct ValueFunc<R> : IMethodPointer<Func<R>>, IEquatable<ValueFunc<R>>, ISupplier<R>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -223,14 +223,7 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
         public ValueFunc(Func<R> func)
-            : this(func.Method.MethodHandle, func.Target)
-        {
-        }
-
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValueFunc(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
+            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
         }
 
@@ -238,6 +231,12 @@ namespace DotNext
         {
             this.methodPtr = methodPtr;
             this.target = target;
+        }
+
+        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValueFunc<R>), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
         }
 
         private static R CreateDefault() => default;
@@ -349,7 +348,11 @@ namespace DotNext
             return Return<R>();
         }
 
-        R ISupplier<R>.Supply() => Invoke();
+        R ISupplier<R>.Supply()
+        {
+            Jmp(new M(typeof(ValueFunc<R>), nameof(Invoke)));
+            throw Unreachable();
+        }
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{TResult}"/>.
@@ -412,7 +415,7 @@ namespace DotNext
     /// <typeparam name="T">The type of the predicate parameter.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValuePredicate<T> : IMethodPointer<Predicate<T>>, IMethodPointer<Func<T, bool>>, IEquatable<ValuePredicate<T>>
+    public readonly struct ValuePredicate<T> : IMethodPointer<Predicate<T>>, IMethodPointer<Func<T, bool>>, IEquatable<ValuePredicate<T>>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -438,7 +441,7 @@ namespace DotNext
         /// </summary>
         /// <param name="predicate">The predicate representing method.</param>
         public ValuePredicate(Predicate<T> predicate)
-            : this(predicate.Method.MethodHandle, predicate.Target)
+            : this(predicate.Method.MethodHandle.GetFunctionPointer(), predicate.Target)
         {
         }
 
@@ -447,16 +450,8 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The predicate representing method.</param>
         public ValuePredicate(Func<T, bool> func)
-            : this(func.Method.MethodHandle, func.Target)
+            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
-        }
-
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValuePredicate(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
-        {
-
         }
 
         private ValuePredicate(IntPtr methodPtr, object target)
@@ -465,16 +460,17 @@ namespace DotNext
             this.target = target;
         }
 
+        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
+        }
+
         /// <summary>
         /// Converts this typed pointer into <see cref="ValueFunc{T,R}"/>.
         /// </summary>
         /// <returns>The converted pointer.</returns>
-        public ValueFunc<T, bool> ToFunc()
-        {
-            Ldarg_0();
-            Ldobj(typeof(ValueFunc<T, bool>));
-            return Return<ValueFunc<T, bool>>();
-        }
+        public ValueFunc<T, bool> ToFunc() => new ValueFunc<T, bool>(methodPtr, target);
 
         [SuppressMessage("Usage", "CA1801")]
         private static bool AlwaysTrue(T value) => true;
@@ -641,9 +637,9 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Predicate{T}"/>.
         /// </summary>
-        /// <param name="pointer">The pointer to convert.</param>
+        /// <param name="predicate">The pointer to convert.</param>
         /// <returns>The predicate created from this method pointer.</returns>
-        public static explicit operator Predicate<T>(ValuePredicate<T> pointer) => pointer.ToDelegate();
+        public static explicit operator Predicate<T>(ValuePredicate<T> predicate) => predicate.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -707,7 +703,7 @@ namespace DotNext
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueFunc<T, R> : IMethodPointer<Func<T, R>>, IMethodPointer<Converter<T, R>>, IEquatable<ValueFunc<T, R>>
+    public readonly struct ValueFunc<T, R> : IMethodPointer<Func<T, R>>, IMethodPointer<Converter<T, R>>, IEquatable<ValueFunc<T, R>>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -733,7 +729,7 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
         public ValueFunc(Func<T, R> func)
-            : this(func.Method.MethodHandle, func.Target)
+            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
         }
 
@@ -742,14 +738,7 @@ namespace DotNext
         /// </summary>
         /// <param name="converter">The delegate representing method.</param>
         public ValueFunc(Converter<T, R> converter)
-            : this(converter.Method.MethodHandle, converter.Target)
-        {
-        }
-
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValueFunc(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
+            : this(converter.Method.MethodHandle.GetFunctionPointer(), converter.Target)
         {
         }
 
@@ -757,6 +746,12 @@ namespace DotNext
         {
             this.methodPtr = methodPtr;
             this.target = target;
+        }
+
+        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValueFunc<T, R>), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
         }
 
         IntPtr IMethodPointer<Func<T, R>>.Address => methodPtr;
@@ -928,7 +923,7 @@ namespace DotNext
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueAction<T> : IMethodPointer<Action<T>>, IEquatable<ValueAction<T>>
+    public readonly struct ValueAction<T> : IMethodPointer<Action<T>>, IEquatable<ValueAction<T>>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -954,14 +949,7 @@ namespace DotNext
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action<T> action)
-            : this(action.Method.MethodHandle, action.Target)
-        {
-        }
-
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValueAction(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
+            : this(action.Method.MethodHandle.GetFunctionPointer(), action.Target)
         {
         }
 
@@ -969,6 +957,12 @@ namespace DotNext
         {
             this.methodPtr = methodPtr;
             this.target = target;
+        }
+
+        void Reflection.IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValueAction<T>), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
         }
 
         IntPtr IMethodPointer<Action<T>>.Address => methodPtr;
@@ -1114,7 +1108,7 @@ namespace DotNext
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueFunc<T1, T2, R> : IMethodPointer<Func<T1, T2, R>>, IEquatable<ValueFunc<T1, T2, R>>
+    public readonly struct ValueFunc<T1, T2, R> : IMethodPointer<Func<T1, T2, R>>, IEquatable<ValueFunc<T1, T2, R>>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -1140,23 +1134,20 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
         public ValueFunc(Func<T1, T2, R> func)
-            : this(func.Method.MethodHandle, func.Target)
+            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
         }
 
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValueFunc(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
-        {
-        }
-
-        [ImplicitUsage(typeof(Runtime.InteropServices.Memory), nameof(Runtime.InteropServices.Memory.GetHashCode64))]
-        [ImplicitUsage(typeof(Runtime.InteropServices.Memory), nameof(Runtime.InteropServices.Memory.GetHashCode32))]
         internal ValueFunc(IntPtr methodPtr, object target)
         {
             this.methodPtr = methodPtr;
             this.target = target;
+        }
+
+        void Reflection.IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValueFunc<T1, T2, R>), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
         }
 
         IntPtr IMethodPointer<Func<T1, T2, R>>.Address => methodPtr;
@@ -1305,7 +1296,7 @@ namespace DotNext
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueAction<T1, T2> : IMethodPointer<Action<T1, T2>>, IEquatable<ValueAction<T1, T2>>
+    public readonly struct ValueAction<T1, T2> : IMethodPointer<Action<T1, T2>>, IEquatable<ValueAction<T1, T2>>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -1331,14 +1322,7 @@ namespace DotNext
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action<T1, T2> action)
-            : this(action.Method.MethodHandle, action.Target)
-        {
-        }
-
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValueAction(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
+            : this(action.Method.MethodHandle.GetFunctionPointer(), action.Target)
         {
         }
 
@@ -1346,6 +1330,12 @@ namespace DotNext
         {
             this.methodPtr = methodPtr;
             this.target = target;
+        }
+
+        void Reflection.IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValueAction<T1, T2>), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
         }
 
         IntPtr IMethodPointer<Action<T1, T2>>.Address => methodPtr;
@@ -1495,7 +1485,7 @@ namespace DotNext
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueFunc<T1, T2, T3, R> : IMethodPointer<Func<T1, T2, T3, R>>, IEquatable<ValueFunc<T1, T2, T3, R>>
+    public readonly struct ValueFunc<T1, T2, T3, R> : IMethodPointer<Func<T1, T2, T3, R>>, IEquatable<ValueFunc<T1, T2, T3, R>>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -1521,16 +1511,7 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
         public ValueFunc(Func<T1, T2, T3, R> func)
-            : this(func.Method.MethodHandle, func.Target)
-        {
-            methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-            target = func.Target;
-        }
-
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValueFunc(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
+            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
         }
 
@@ -1538,6 +1519,12 @@ namespace DotNext
         {
             this.methodPtr = methodPtr;
             this.target = target;
+        }
+
+        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValueFunc<T1, T1, T3, R>), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
         }
 
         IntPtr IMethodPointer<Func<T1, T2, T3, R>>.Address => methodPtr;
@@ -1690,7 +1677,7 @@ namespace DotNext
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueAction<T1, T2, T3> : IMethodPointer<Action<T1, T2, T3>>, IEquatable<ValueAction<T1, T2, T3>>
+    public readonly struct ValueAction<T1, T2, T3> : IMethodPointer<Action<T1, T2, T3>>, IEquatable<ValueAction<T1, T2, T3>>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -1716,14 +1703,7 @@ namespace DotNext
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action<T1, T2, T3> action)
-            : this(action.Method.MethodHandle, action.Target)
-        {
-        }
-
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValueAction(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
+            : this(action.Method.MethodHandle.GetFunctionPointer(), action.Target)
         {
         }
 
@@ -1731,6 +1711,12 @@ namespace DotNext
         {
             this.methodPtr = methodPtr;
             this.target = target;
+        }
+
+        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValueAction<T1, T1, T3>), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
         }
 
         IntPtr IMethodPointer<Action<T1, T2, T3>>.Address => methodPtr;
@@ -1884,7 +1870,7 @@ namespace DotNext
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueFunc<T1, T2, T3, T4, R> : IMethodPointer<Func<T1, T2, T3, T4, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, R>>
+    public readonly struct ValueFunc<T1, T2, T3, T4, R> : IMethodPointer<Func<T1, T2, T3, T4, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, R>>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -1910,14 +1896,7 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
         public ValueFunc(Func<T1, T2, T3, T4, R> func)
-            : this(func.Method.MethodHandle, func.Target)
-        {
-        }
-
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValueFunc(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
+            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
         }
 
@@ -1925,6 +1904,12 @@ namespace DotNext
         {
             this.target = target;
             this.methodPtr = methodPtr;
+        }
+
+        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValueFunc<T1, T1, T3, T4, R>), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
         }
 
         IntPtr IMethodPointer<Func<T1, T2, T3, T4, R>>.Address => methodPtr;
@@ -2081,7 +2066,7 @@ namespace DotNext
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueAction<T1, T2, T3, T4> : IMethodPointer<Action<T1, T2, T3, T4>>, IEquatable<ValueAction<T1, T2, T3, T4>>
+    public readonly struct ValueAction<T1, T2, T3, T4> : IMethodPointer<Action<T1, T2, T3, T4>>, IEquatable<ValueAction<T1, T2, T3, T4>>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -2107,14 +2092,7 @@ namespace DotNext
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action<T1, T2, T3, T4> action)
-            : this(action.Method.MethodHandle, action.Target)
-        {
-        }
-
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValueAction(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
+            : this(action.Method.MethodHandle.GetFunctionPointer(), action.Target)
         {
         }
         
@@ -2122,6 +2100,12 @@ namespace DotNext
         {
             this.methodPtr = methodPtr;
             this.target = target;
+        }
+
+        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValueAction<T1, T1, T3, T4>), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
         }
 
         IntPtr IMethodPointer<Action<T1, T2, T3, T4>>.Address => methodPtr;
@@ -2279,7 +2263,7 @@ namespace DotNext
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueFunc<T1, T2, T3, T4, T5, R> : IMethodPointer<Func<T1, T2, T3, T4, T5, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>
+    public readonly struct ValueFunc<T1, T2, T3, T4, T5, R> : IMethodPointer<Func<T1, T2, T3, T4, T5, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -2305,14 +2289,7 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
         public ValueFunc(Func<T1, T2, T3, T4, T5, R> func)
-            : this(func.Method.MethodHandle, func.Target)
-        {
-        }
-
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValueFunc(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
+            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
         }
 
@@ -2320,6 +2297,12 @@ namespace DotNext
         {
             this.target = target;
             this.methodPtr = methodPtr;
+        }
+
+        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValueFunc<T1, T1, T3, T4, T5, R>), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
         }
 
         IntPtr IMethodPointer<Func<T1, T2, T3, T4, T5, R>>.Address => methodPtr;
@@ -2470,7 +2453,7 @@ namespace DotNext
     /// <typeparam name="T5">The type of the fifth method parameter.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueAction<T1, T2, T3, T4, T5> : IMethodPointer<Action<T1, T2, T3, T4, T5>>, IEquatable<ValueAction<T1, T2, T3, T4, T5>>
+    public readonly struct ValueAction<T1, T2, T3, T4, T5> : IMethodPointer<Action<T1, T2, T3, T4, T5>>, IEquatable<ValueAction<T1, T2, T3, T4, T5>>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -2496,14 +2479,7 @@ namespace DotNext
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action<T1, T2, T3, T4, T5> action)
-            : this(action.Method.MethodHandle, action.Target)
-        {
-        }
-
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
-        [ImplicitUsage(typeof(Reflection.MethodCookie<,,>))]
-        internal ValueAction(RuntimeMethodHandle method, object target)
-            : this(method.GetFunctionPointer(), target)
+            : this(action.Method.MethodHandle.GetFunctionPointer(), action.Target)
         {
         }
 
@@ -2511,6 +2487,12 @@ namespace DotNext
         {
             this.methodPtr = methodPtr;
             this.target = target;
+        }
+
+        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
+        {
+            Jmp(M.Constructor(typeof(ValueAction<T1, T1, T3, T1, T5>), typeof(IntPtr), typeof(object)));
+            throw Unreachable();
         }
 
         IntPtr IMethodPointer<Action<T1, T2, T3, T4, T5>>.Address => methodPtr;

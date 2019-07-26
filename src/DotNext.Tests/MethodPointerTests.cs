@@ -132,7 +132,7 @@ namespace DotNext
             var method = typeof(StringBuilder).GetMethod(nameof(ToString), Type.EmptyTypes);
             var cookie = new MethodCookie<StringBuilder, Func<string>, ValueFunc<string>>(method);
             var builder = new StringBuilder("Hello, world!");
-            Equal("Hello, world!", cookie.CreatePointer(builder).Invoke());
+            Equal("Hello, world!", cookie.Bind(builder).Invoke());
         }
     }
 }

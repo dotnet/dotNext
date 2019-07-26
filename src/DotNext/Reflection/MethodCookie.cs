@@ -1,35 +1,39 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using CallSiteDescr = InlineIL.StandAloneMethodSig;
 using static System.Runtime.Serialization.FormatterServices;
 
 namespace DotNext.Reflection
 {
     using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
 
+    /// <summary>
+    /// Represents interface for value delegates supporting instantiation
+    /// through <see cref="MethodCookie{D,P}"/> or <see cref="MethodCookie{T,D,P}"/>.
+    /// </summary>
+    /// <remarks>
+    /// This API supports the product infrastructure and is not intended to be used directly from your code. 
+    /// </remarks>
+    public interface IMethodCookieSupport
+    {
+        /// <summary>
+        /// Initializes value delegate from the surrogate of the method pointer.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the managed method.</param>
+        /// <param name="target">The object targeted by the method pointer.</param>
+        void Construct(IntPtr methodPtr, object target);
+    }
+
     [RuntimeFeatures(PrivateReflection = true)]
     internal readonly struct MethodPointerFactory<P>
-        where P : struct, IMethodPointer<Delegate>
+        where P : struct, IMethodPointer<Delegate>, IMethodCookieSupport
     {
-        private static readonly RuntimeMethodHandle ConstructorHandle;
-
-        static MethodPointerFactory()
-        {
-            //FIXME: It is bad trick based on assumption that every method pointer has appropriate constructor. It would be better to have another way (i.e. under compiler control) of generic instantation of method pointers but I don't see it at this moment
-            var ctor = typeof(P).GetConstructor(BindingFlags.NonPublic | BindingFlags.DeclaredOnly | BindingFlags.Instance, null, new[] { typeof(RuntimeMethodHandle), typeof(bool) }, Array.Empty<ParameterModifier>()) ?? throw new GenericArgumentException<P>(ExceptionMessages.UnsupportedMethodPointerType);
-            ConstructorHandle = ctor.MethodHandle;
-        }
-
         private readonly RuntimeMethodHandle method;
-        private readonly IntPtr ctorPtr;    //pointer to constructor P::.ctor(RuntimeMethodHandle, object)
 
         internal MethodPointerFactory(MethodInfo method)
         {
             this.method = method.MethodHandle;
-            ctorPtr = ConstructorHandle.GetFunctionPointer();
         }
 
         internal MethodBase Method => MethodBase.GetMethodFromHandle(method);
@@ -38,18 +42,7 @@ namespace DotNext.Reflection
         internal P Create(object target = null)
         {
             var result = default(P);
-            const string MethodExit = "exit";
-            Push(ctorPtr);
-            Brfalse(MethodExit);
-            
-            Push(ref result);   //this arg
-            Push(method);
-            Push(target);
-            Push(ctorPtr);
-            //here I use constructor as instance method to initialize pointer of type P. As far as I know it is legal because constructor is
-            //indistinguishable from regular instance method at CLR level. Anyway, it is cheaper that doing Reflection call with all these boxing/unboxing
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(RuntimeMethodHandle), typeof(object)));
-            MarkLabel(MethodExit);
+            result.Construct(method.GetFunctionPointer(), target);
             return result;
         }
     }
@@ -69,7 +62,7 @@ namespace DotNext.Reflection
     /// <typeparam name="D">The type of the delegate compatible with managed pointer.</typeparam>
     public readonly struct MethodCookie<D, P>
         where D : Delegate
-        where P : struct, IMethodPointer<D>
+        where P : struct, IMethodPointer<D>, IMethodCookieSupport
     {
         private readonly MethodPointerFactory<P> factory;
 
@@ -126,7 +119,7 @@ namespace DotNext.Reflection
     public readonly struct MethodCookie<T, D, P>
         where D : Delegate
         where T : class
-        where P : struct, IMethodPointer<D>
+        where P : struct, IMethodPointer<D>, IMethodCookieSupport
     {
         private readonly MethodPointerFactory<P> factory;
 
@@ -146,21 +139,23 @@ namespace DotNext.Reflection
         {
         }
 
+        [SuppressMessage("Usage", "CA1816", Justification = "SuppressFinalize is required to avoid possible problems when finalizing uninitialized object")]
         private static object CreateStub()
         {
             if (typeof(T) == typeof(string))
                 return string.Empty;
+            //TODO: Should be replaced with RuntimeHelpers.GetUninitializedObject in .NET Standard 2.1
             var obj = GetSafeUninitializedObject(typeof(T));
-            GC.SuppressFinalize(obj);   //to avoid possible problems when finalizing uninitialized object
+            GC.SuppressFinalize(obj);
             return obj;
         }
 
         /// <summary>
-        /// Creates pointer to the instance method.
+        /// Creates value delegate targeting the specified object.
         /// </summary>
         /// <param name="obj">The object to be used as <c>this</c> argument.</param>
         /// <returns>The created pointer.</returns>
-        public P CreatePointer(T obj) => factory.Create(obj ?? throw new ArgumentNullException(nameof(obj)));
+        public P Bind(T obj) => factory.Create(obj ?? throw new ArgumentNullException(nameof(obj)));
 
         /// <summary>
         /// Gets underlying method in textual format.
@@ -174,6 +169,6 @@ namespace DotNext.Reflection
         /// <param name="cookie">A cookie representing validated method.</param>
         /// <param name="obj">The object to be used as <c>this</c> argument.</param>
         /// <returns>The created pointer.</returns>
-        public static P operator &(in MethodCookie<T, D, P> cookie, T obj) => cookie.CreatePointer(obj); 
+        public static P operator &(in MethodCookie<T, D, P> cookie, T obj) => cookie.Bind(obj); 
     }
 }
