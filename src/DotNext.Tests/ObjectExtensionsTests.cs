@@ -48,6 +48,16 @@ namespace DotNext
         }
 
         [Fact]
+        public static void UserDataStorageGetOrSetSimpleFactory()
+        {
+            string CreateString() => "Hello, world!";
+
+            var obj = new object();
+            var slot = UserDataSlot<string>.Allocate();
+            Equal("Hello, world!", obj.GetUserData().GetOrSet(slot, CreateString));
+        }
+
+        [Fact]
         public static void InvalidDataSlot()
         {
             var str = new string('b', 3);
