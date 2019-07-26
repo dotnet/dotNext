@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using CallSiteDescr = InlineIL.StandAloneMethodSig;
+using static System.Runtime.Serialization.FormatterServices;
 
 namespace DotNext.Reflection
 {
@@ -141,26 +142,8 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="method">An instance method for which pointers should be created.</param>
         public MethodCookie(MethodInfo method)
+            : this(method.CreateDelegate<D>(typeof(T) == typeof(string) ? string.Empty : GetSafeUninitializedObject(typeof(T))))
         {
-            Type[] expectedParams;
-            Type expectedReturnType;
-            {
-                var invokeMethod = DelegateType.GetInvokeMethod<D>();
-                expectedParams = invokeMethod.GetParameterTypes();
-                expectedReturnType = invokeMethod.ReturnType;
-            }
-            bool thisTypeOk;
-            if(method.IsStatic)
-            {
-                expectedParams = expectedParams.Insert(typeof(T), 0L);
-                thisTypeOk = true;
-            }
-            else
-                thisTypeOk = method.DeclaringType.IsAssignableFrom(typeof(T));
-            if(thisTypeOk && method.SignatureEquals(expectedParams) && expectedReturnType.IsAssignableFrom(method.ReturnType))
-                factory = new MethodPointerFactory<P>(method);
-            else
-                throw new ArgumentException(ExceptionMessages.InvalidMethodSignature, nameof(method));
         }
 
         /// <summary>

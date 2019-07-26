@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Text;
 using Xunit;
 
 namespace DotNext
@@ -55,6 +56,17 @@ namespace DotNext
             ptr = cookie & "456";
             Equal("456456", ptr.Invoke());
         }
+
+        [Fact]
+        public static void BindUnbind()
+        {
+            var ptr = new ValueFunc<string, string>(new Func<string, string>(Dup));
+            Equal("123123", ptr.Invoke("123"));
+            var ptr2 = ptr.Bind("456");
+            Equal("456456", ptr2.Invoke());
+            ptr = ptr2.Unbind<string>();
+            Equal("123123", ptr.Invoke("123"));
+        }
         
         [Fact]
         public static void ParameterlessPointerWithTarget()
@@ -85,7 +97,7 @@ namespace DotNext
         [Fact]
         public static void ParseViaPointer()
         {
-            var ptr = new ValueFunc<string, int>(int.Parse);
+            var ptr = new ValueFunc<string, int>(new Func<string, int>(int.Parse));
             Equal(123, ptr.Invoke("123"));
             ptr = default;
             Null(ptr.ToDelegate());
@@ -112,6 +124,15 @@ namespace DotNext
         {
             var ptr = new ValueFunc<string, string, string, string, string>(string.Concat);
             Equal("Hello, world!", ptr.Invoke("Hello", ", ", "world", "!"));
+        }
+
+        [Fact]
+        public static void InstanceMethodCookie()
+        {
+            var method = typeof(StringBuilder).GetMethod(nameof(ToString), Type.EmptyTypes);
+            var cookie = new MethodCookie<StringBuilder, Func<string>, ValueFunc<string>>(method);
+            var builder = new StringBuilder("Hello, world!");
+            Equal("Hello, world!", cookie.CreatePointer(builder).Invoke());
         }
     }
 }
