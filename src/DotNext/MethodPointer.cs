@@ -656,7 +656,7 @@ namespace DotNext
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct FunctionPointer<T, R> : IMethodPointer<Func<T, R>>, IEquatable<FunctionPointer<T, R>>
+    public readonly struct FunctionPointer<T, R> : IMethodPointer<Func<T, R>>, IMethodPointer<Converter<T, R>>, IEquatable<FunctionPointer<T, R>>
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -682,9 +682,17 @@ namespace DotNext
         /// </summary>
         /// <param name="delegate">The delegate representing method.</param>
         public FunctionPointer(Func<T, R> @delegate)
+            : this(@delegate.Method.MethodHandle, @delegate.Target)
         {
-            methodPtr = @delegate.Method.MethodHandle.GetFunctionPointer();
-            target = @delegate.Target;
+        }
+
+        /// <summary>
+        /// Initializes a new pointer based on extracted pointer from the delegate.
+        /// </summary>
+        /// <param name="delegate">The delegate representing method.</param>
+        public FunctionPointer(Converter<T, R> @delegate)
+            : this(@delegate.Method.MethodHandle, @delegate.Target)
+        {
         }
 
         [ImplicitUsage(typeof(Reflection.MethodCookie<,>))]
@@ -697,6 +705,10 @@ namespace DotNext
 
         IntPtr IMethodPointer<Func<T, R>>.Address => methodPtr;
         object IMethodPointer<Func<T, R>>.Target => target;
+
+        IntPtr IMethodPointer<Converter<T, R>>.Address => methodPtr;
+        object IMethodPointer<Converter<T, R>>.Target => target;
+        Converter<T, R> IMethodPointer<Converter<T, R>>.ToDelegate() => ToConverter();
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T, TResult}"/>.
@@ -714,6 +726,24 @@ namespace DotNext
             Push(methodPtr);
             Newobj(M.Constructor(typeof(Func<T, R>), typeof(object), typeof(IntPtr)));
             return Return<Func<T, R>>();
+        }
+
+        /// <summary>
+        /// Converts this pointer into <see cref="Converter{T, TResult}"/>.
+        /// </summary>
+        /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
+        public Converter<T, R> ToConverter()
+        {
+            const string makeDelegate = "makeDelegate";
+            Push(methodPtr);
+            Brtrue(makeDelegate);
+            Ldnull();
+            Ret();
+            MarkLabel(makeDelegate);
+            Push(target);
+            Push(methodPtr);
+            Newobj(M.Constructor(typeof(Converter<T, R>), typeof(object), typeof(IntPtr)));
+            return Return<Converter<T, R>>();
         }
 
         /// <summary>
@@ -756,6 +786,13 @@ namespace DotNext
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Func<T, R>(FunctionPointer<T, R> pointer) => pointer.ToDelegate();
+
+        /// <summary>
+        /// Converts this pointer into <see cref="Converter{T, TResult}"/>.
+        /// </summary>
+        /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The delegate created from this method pointer.</returns>
+        public static explicit operator Converter<T, R>(FunctionPointer<T, R> pointer) => pointer.ToConverter();
 
         /// <summary>
         /// Computes hash code of this pointer.
