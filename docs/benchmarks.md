@@ -45,7 +45,7 @@ Bitwise equality method has the better performance than field-by-field equality 
 | `Guid[].SequenceEqual`, large arrays (~100 elements) | 309.409 ns | 6.0189 ns | 7.3917 ns |
 | `for` loop, large arrays (~100 elements) | 727.733 ns | 14.5560 ns | 23.9160 ns |
 
-`BtiwiseEquals` is an absolute winner for equality check between arrays of any size.
+`BitwiseEquals` is an absolute winner for equality check between arrays of any size.
 
 # Bitwise Hash Code
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs) compares performance of [ValueType&lt;T&gt;.BitwiseHashCode](./api/DotNext.ValueType-1.yml) and `GetHashCode` instance method for the types [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
