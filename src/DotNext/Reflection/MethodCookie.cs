@@ -142,8 +142,17 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="method">An instance method for which pointers should be created.</param>
         public MethodCookie(MethodInfo method)
-            : this(method.CreateDelegate<D>(typeof(T) == typeof(string) ? string.Empty : GetSafeUninitializedObject(typeof(T))))
+            : this(method.CreateDelegate<D>(CreateStub()))
         {
+        }
+
+        private static object CreateStub()
+        {
+            if (typeof(T) == typeof(string))
+                return string.Empty;
+            var obj = GetSafeUninitializedObject(typeof(T));
+            GC.SuppressFinalize(obj);   //to avoid possible problems when finalizing uninitialized object
+            return obj;
         }
 
         /// <summary>
