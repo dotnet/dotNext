@@ -45,9 +45,35 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>32-bit hash code of the array content.</returns>
+        public static int BitwiseHashCode<T>(this Span<T> span, int hash, ValueFunc<int, int, int> hashFunction, bool salted = true)
+            where T : unmanaged
+            => BitwiseHashCode((ReadOnlySpan<T>)span, hash, hashFunction, salted);
+
+        /// <summary>
+        /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the span.</typeparam>
+        /// <param name="span">The span whose content to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Custom hashing algorithm.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>32-bit hash code of the array content.</returns>
         public static int BitwiseHashCode<T>(this Span<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
             => BitwiseHashCode((ReadOnlySpan<T>)span, hash, hashFunction, salted);
+        
+        /// <summary>
+        /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the span.</typeparam>
+        /// <param name="span">The span whose content to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Custom hashing algorithm.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>64-bit hash code of the array content.</returns>
+        public static long BitwiseHashCode64<T>(this Span<T> span, long hash, ValueFunc<long, long, long> hashFunction, bool salted = true)
+            where T : unmanaged
+            => BitwiseHashCode64((ReadOnlySpan<T>)span, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
@@ -61,7 +87,7 @@ namespace DotNext
         public static long BitwiseHashCode64<T>(this Span<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
             => BitwiseHashCode64((ReadOnlySpan<T>)span, hash, hashFunction, salted);
-
+        
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
         /// </summary>
@@ -71,7 +97,7 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>32-bit hash code of the array content.</returns>
-        public static unsafe int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
+        public static unsafe int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, ValueFunc<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
         {
             if (span.IsEmpty)
@@ -88,8 +114,21 @@ namespace DotNext
         /// <param name="hash">Initial value of the hash.</param>
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>32-bit hash code of the array content.</returns>
+        public static int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            where T : unmanaged
+            => BitwiseHashCode(span, hash, new ValueFunc<int, int, int>(hashFunction), salted);
+        
+        /// <summary>
+        /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the span.</typeparam>
+        /// <param name="span">The span whose content to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Custom hashing algorithm.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>64-bit hash code of the array content.</returns>
-        public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
+        public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, ValueFunc<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
         {
             if (span.IsEmpty)
@@ -97,6 +136,19 @@ namespace DotNext
             fixed (T* ptr = span)
                 return Memory.GetHashCode64(ptr, span.Length * ValueType<T>.Size, hash, hashFunction, salted);
         }
+
+        /// <summary>
+        /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the span.</typeparam>
+        /// <param name="span">The span whose content to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Custom hashing algorithm.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>64-bit hash code of the array content.</returns>
+        public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
+            where T : unmanaged
+            => BitwiseHashCode64(span, hash, new ValueFunc<long, long, long>(hashFunction), salted);
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span.

@@ -185,7 +185,7 @@ namespace DotNext.Collections.Concurrent
         /// <typeparam name="G">The type of source items.</typeparam>
         /// <param name="items">The source items to be converted and placed into this list.</param>
         /// <param name="converter">The convert of source items.</param>
-        public void Set<G>(ICollection<G> items, Converter<G, T> converter)
+        public void Set<G>(ICollection<G> items, ValueFunc<G, T> converter)
         {
             if (items.Count == 0)
             {
@@ -195,9 +195,18 @@ namespace DotNext.Collections.Concurrent
             var array = new T[items.Count];
             var index = 0L;
             foreach (var item in items)
-                array[index++] = converter(item);
+                array[index++] = converter.Invoke(item);
             ReplaceStore(array);
         }
+
+        /// <summary>
+        /// Replaces all items in this list with new items.
+        /// </summary>
+        /// <typeparam name="G">The type of source items.</typeparam>
+        /// <param name="items">The source items to be converted and placed into this list.</param>
+        /// <param name="converter">The convert of source items.</param>
+        public void Set<G>(ICollection<G> items, Converter<G, T> converter)
+            => Set(items, new ValueFunc<G, T>(converter));
 
         /// <summary>
         /// Removes all items from this list.
@@ -212,16 +221,22 @@ namespace DotNext.Collections.Concurrent
         /// Removes all items from this list and performs cleanup operation for each item.
         /// </summary>
         /// <param name="cleaner">The action used to clean item from this list.</param>
-        public void Clear(Action<T> cleaner)
+        public void Clear(ValueAction<T> cleaner)
         {
             var oldStore = ReplaceStore(Array.Empty<T>());
-
-            oldStore.ForEach((long index, ref T item) =>
+            for(var i = 0L; i < oldStore.LongLength; i++)
             {
-                cleaner(item);
+                ref var item = ref oldStore[i];
+                cleaner.Invoke(item);
                 item = default;
-            });
+            }
         }
+
+        /// <summary>
+        /// Removes all items from this list and performs cleanup operation for each item.
+        /// </summary>
+        /// <param name="cleaner">The action used to clean item from this list.</param>
+        public void Clear(Action<T> cleaner) => Clear(new ValueAction<T>(cleaner));
 
         /// <summary>
         /// Removes the element at the specified index of this list.
@@ -273,7 +288,7 @@ namespace DotNext.Collections.Concurrent
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <returns>The number of elements removed from this list.</returns>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public long RemoveAll(Predicate<T> match)
+        public long RemoveAll(ValuePredicate<T> match)
         {
             backingStore = backingStore.RemoveAll(match, out var count);
             return count;
@@ -283,10 +298,24 @@ namespace DotNext.Collections.Concurrent
         /// Removes all the elements that match the conditions defined by the specified predicate.
         /// </summary>
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
+        /// <returns>The number of elements removed from this list.</returns>
+        public long RemoveAll(Predicate<T> match) => RemoveAll(new ValuePredicate<T>(match));
+
+        /// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <param name="callback">The delegate that is used to accept removed items.</param>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void RemoveAll(Predicate<T> match, Action<T> callback)
+        public void RemoveAll(ValuePredicate<T> match, ValueAction<T> callback)
             => backingStore = backingStore.RemoveAll(match, callback);
+
+        /// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
+        /// <param name="callback">The delegate that is used to accept removed items.</param>
+        public void RemoveAll(Predicate<T> match, Action<T> callback) => RemoveAll(new ValuePredicate<T>(match), new ValueAction<T>(callback));
 
         void IList<T>.Insert(int index, T item) => Insert(index, item);
 

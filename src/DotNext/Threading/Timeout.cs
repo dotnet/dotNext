@@ -27,14 +27,14 @@ namespace DotNext.Threading
         /// <summary>
         /// Indicates that timeout is reached.
         /// </summary>
-        public bool Expired => CurrentUnixTime - created > timeout.TotalMilliseconds;
+        public bool IsExpired => CurrentUnixTime - created > timeout.TotalMilliseconds;
 
         /// <summary>
         /// Throws <see cref="TimeoutException"/> if timeout occurs.
         /// </summary>
         public void ThrowIfExpired()
         {
-            if (Expired)
+            if (IsExpired)
                 throw new TimeoutException();
         }
 
@@ -43,14 +43,14 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="timeout">Timeout control object.</param>
         /// <returns><see langword="true"/>, if timeout is reached; otherwise, <see langword="false"/>.</returns>
-        public static bool operator true(in Timeout timeout) => timeout.Expired;
+        public static bool operator true(in Timeout timeout) => timeout.IsExpired;
 
         /// <summary>
         /// Indicates that timeout is not reached.
         /// </summary>
         /// <param name="timeout">Timeout control object.</param>
         /// <returns><see langword="false"/>, if timeout is not reached; otherwise, <see langword="false"/>.</returns>
-        public static bool operator false(in Timeout timeout) => !timeout.Expired;
+        public static bool operator false(in Timeout timeout) => !timeout.IsExpired;
 
         /// <summary>
         /// Extracts original timeout value from this object.
