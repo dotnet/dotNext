@@ -424,6 +424,39 @@ namespace DotNext.Runtime.InteropServices
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
+        internal static long GetHashCode64Aligned(IntPtr source, long length, bool salted)
+        {
+            Push(source);
+            Push(length);
+            Ldc_I8(FNV1a64.Offset);
+            Ldftn(new M(typeof(Memory.FNV1a64), nameof(FNV1a64.GetHashCode), typeof(long), typeof(long)));
+            Ldnull();
+            Newobj(M.Constructor(typeof(ValueFunc<long, long, long>), typeof(IntPtr), typeof(object)));
+            Push(salted);
+            Call(new M(typeof(Memory), nameof(GetHashCode64Aligned), typeof(IntPtr), typeof(long), typeof(long), typeof(ValueFunc<long, long, long>), typeof(bool)));
+            return Return<long>();
+        }
+
+        internal static long GetHashCode64Aligned(IntPtr source, long length, long hash, ValueFunc<long, long, long> hashFunction, bool salted)
+        {
+            while (length >= sizeof(long))
+            {
+                hash = hashFunction.Invoke(hash, Read<long>(ref source));
+                length -= sizeof(long);
+            }
+            while (length >= sizeof(int))
+            {
+                hash = hashFunction.Invoke(hash, Read<int>(ref source));
+                length -= sizeof(int);
+            }
+            while (length > 0)
+            {
+                hash = hashFunction.Invoke(hash, Read<byte>(ref source));
+                length -= sizeof(byte);
+            }
+            return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
+        }
+
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
         /// </summary>

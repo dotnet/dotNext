@@ -12,15 +12,6 @@ namespace DotNext
 {
     using IMethodCookieSupport = Reflection.IMethodCookieSupport;
 
-
-    internal sealed class MethodPointerException : NullReferenceException
-    {
-        internal MethodPointerException()
-            : base(ExceptionMessages.NullMethodPointer)
-        {
-        }
-    }
-
     /// <summary>
     /// Represents a pointer to parameterless method with <see cref="void"/> return type.
     /// </summary>
@@ -57,8 +48,17 @@ namespace DotNext
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action action)
-            : this(action.Method.MethodHandle.GetFunctionPointer(), action.Target)
         {
+            if(action.Method.IsAbstract)
+            {
+                target = action;
+                methodPtr = default;
+            }
+            else
+            {
+                target = action.Target;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
+            }
         }
 
         internal ValueAction(IntPtr methodPtr, object target)
@@ -68,10 +68,7 @@ namespace DotNext
         }
 
         void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValueAction), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValueAction), typeof(IntPtr), typeof(object)));
 
         IntPtr IMethodPointer<Action>.Address => methodPtr;
 
@@ -87,13 +84,14 @@ namespace DotNext
         public Action ToDelegate()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Action));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Action), typeof(object), typeof(IntPtr)));
             return Return<Action>();
         }
@@ -106,7 +104,13 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
         public ValueAction<G> Unbind<G>()
             where G : class
-            => target is G ? new ValueAction<G>(methodPtr, null) : throw new InvalidOperationException();
+        {
+            if(ObjectExtensions.IsContravariant(target, typeof(G)))
+                return new ValueAction<G>(methodPtr, null);
+            if(target is Action action && methodPtr == IntPtr.Zero)
+                return new ValueAction<G>(action.Unbind<G>());
+            throw new InvalidOperationException();
+        }
 
         /// <summary>
         /// Invokes method by pointer.
@@ -115,13 +119,14 @@ namespace DotNext
         {
             const string callIndirect = "indirect";
             const string callImplicitThis = "implicitThis";
+            Push(target);
             Push(methodPtr);
             Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
+            Tail();
+            Callvirt(new M(typeof(Action), nameof(Invoke)));
+            Ret();
             MarkLabel(callIndirect);
             
-            Push(target);
             Dup();
             Brtrue(callImplicitThis);
             Pop();
@@ -223,8 +228,17 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
         public ValueFunc(Func<R> func)
-            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
+            if(func.Method.IsAbstract)
+            {
+                target = func;
+                methodPtr = default;
+            }
+            else
+            {
+                target = func.Target;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
+            }
         }
 
         internal ValueFunc(IntPtr methodPtr, object target)
@@ -234,10 +248,7 @@ namespace DotNext
         }
 
         void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValueFunc<R>), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValueFunc<R>), typeof(IntPtr), typeof(object)));
 
         private static R CreateDefault() => default;
 
@@ -298,13 +309,14 @@ namespace DotNext
         public Func<R> ToDelegate()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Func<R>));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Func<R>), typeof(object), typeof(IntPtr)));
             return Return<Func<R>>();
         }
@@ -317,7 +329,13 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
         public ValueFunc<G, R> Unbind<G>()
             where G : class
-            => target is G ? new ValueFunc<G, R>(methodPtr, null) : throw new InvalidOperationException();
+        {
+            if(ObjectExtensions.IsContravariant(target, typeof(G)))
+                return new ValueFunc<G, R>(methodPtr, null);
+            if(target is Func<R> func && methodPtr == IntPtr.Zero)
+                return new ValueFunc<G, R>(func.Unbind<G, R>());
+            throw new InvalidOperationException();
+        }
 
         /// <summary>
         /// Invokes method by pointer.
@@ -327,13 +345,14 @@ namespace DotNext
         {
             const string callIndirect = "indirect";
             const string callImplicitThis = "implicitThis";
+            Push(target);
             Push(methodPtr);
             Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
+            Tail();
+            Callvirt(new M(typeof(Func<R>), nameof(Invoke)));
+            Ret();
             MarkLabel(callIndirect);
             
-            Push(target);
             Dup();
             Brtrue(callImplicitThis);
             Pop();
@@ -346,12 +365,6 @@ namespace DotNext
             Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R)));
             return Return<R>();
-        }
-
-        R ISupplier<R>.Supply()
-        {
-            Jmp(new M(typeof(ValueFunc<R>), nameof(Invoke)));
-            throw Unreachable();
         }
 
         /// <summary>
@@ -415,10 +428,9 @@ namespace DotNext
     /// <typeparam name="T">The type of the predicate parameter.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValuePredicate<T> : IMethodPointer<Predicate<T>>, IMethodPointer<Func<T, bool>>, IEquatable<ValuePredicate<T>>, IMethodCookieSupport
+    public readonly struct ValuePredicate<T> : IMethodPointer<Predicate<T>>, IEquatable<ValuePredicate<T>>, IMethodCookieSupport
     {
-        private readonly IntPtr methodPtr;
-        private readonly object target;
+        private readonly ValueFunc<T, bool> func;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -431,46 +443,31 @@ namespace DotNext
         /// <param name="target">The object targeted by the method pointer.</param>
         /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Signature of <paramref name="method"/> doesn't match to this pointer type.</exception>
-        public ValuePredicate(MethodInfo method, object target = null)
-            : this(method.CreateDelegate<Predicate<T>>(target))
-        {
-        }
+        public ValuePredicate(MethodInfo method, object target = null) => func = new ValueFunc<T, bool>(method, target);
 
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the predicate.
         /// </summary>
         /// <param name="predicate">The predicate representing method.</param>
         public ValuePredicate(Predicate<T> predicate)
-            : this(predicate.Method.MethodHandle.GetFunctionPointer(), predicate.Target)
-        {
-        }
+            => func = predicate.Method.IsAbstract ? new ValueFunc<T, bool>(default(IntPtr), predicate.ChangeType<Func<T, bool>>()) : new ValueFunc<T, bool>(predicate.Method.MethodHandle.GetFunctionPointer(), predicate.Target);
 
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the predicate.
         /// </summary>
         /// <param name="func">The predicate representing method.</param>
-        public ValuePredicate(Func<T, bool> func)
-            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
-        {
-        }
+        public ValuePredicate(Func<T, bool> func) => this.func = new ValueFunc<T, bool>(func);
 
-        private ValuePredicate(IntPtr methodPtr, object target)
-        {
-            this.methodPtr = methodPtr;
-            this.target = target;
-        }
+        private ValuePredicate(IntPtr methodPtr, object target) => func = new ValueFunc<T, bool>(methodPtr, target);
 
         void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr), typeof(object)));
 
         /// <summary>
         /// Converts this typed pointer into <see cref="ValueFunc{T,R}"/>.
         /// </summary>
         /// <returns>The converted pointer.</returns>
-        public ValueFunc<T, bool> ToFunc() => new ValueFunc<T, bool>(methodPtr, target);
+        public ValueFunc<T, bool> Func => func;
 
         [SuppressMessage("Usage", "CA1801")]
         private static bool AlwaysTrue(T value) => true;
@@ -538,31 +535,33 @@ namespace DotNext
             }
         }
 
-        IntPtr IMethodPointer<Predicate<T>>.Address => methodPtr;
-        IntPtr IMethodPointer<Func<T, bool>>.Address => methodPtr;
+        IntPtr IMethodPointer<Predicate<T>>.Address => func.Address;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => target;
+        public object Target => func.Target;
+
+        private static Predicate<T> ToDelegate(IntPtr methodPtr, object target)
+        {
+            const string makeDelegate = "makeDelegate";
+            Push(target);
+            Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Predicate<T>));
+            Ret();
+            MarkLabel(makeDelegate);
+            Newobj(M.Constructor(typeof(Predicate<T>), typeof(object), typeof(IntPtr)));
+            return Return<Predicate<T>>();
+        }
 
         /// <summary>
         /// Converts this pointer into <see cref="Predicate{T}"/>.
         /// </summary>
         /// <returns>The predicate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Predicate<T> ToDelegate()
-        {
-            const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
-            Push(target);
-            Push(methodPtr);
-            Newobj(M.Constructor(typeof(Predicate<T>), typeof(object), typeof(IntPtr)));
-            return Return<Predicate<T>>();
-        }
+        public Predicate<T> ToDelegate() => ToDelegate(func.Address, Target);
 
         /// <summary>
         /// Converts implicitly bound method pointer into its unbound version.
@@ -570,9 +569,7 @@ namespace DotNext
         /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
         /// <returns>Unbound version of method pointer.</returns>
         /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
-        public ValueFunc<G, T, bool> Unbind<G>()
-            where G : class
-            => target is G ? new ValueFunc<G, T, bool>(methodPtr, null) : throw new InvalidOperationException();
+        public ValueFunc<G, T, bool> Unbind<G>() where G : class => func.Unbind<G>();
 
         /// <summary>
         /// Produces method pointer which first argument is implicitly bound to the given object.
@@ -582,11 +579,7 @@ namespace DotNext
         /// <returns>The pointer to the method targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
         /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
-        public ValueFunc<bool> Bind<G>(G obj)
-            where G : class, T
-            => target is null ? new ValueFunc<bool>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
-
-        Func<T, bool> IMethodPointer<Func<T, bool>>.ToDelegate() => ToFunc().ToDelegate();
+        public ValueFunc<bool> Bind<G>(G obj) where G : class, T => func.Bind(obj);
 
         /// <summary>
         /// Spins until the condition represented by this predicate is satisfied.
@@ -605,34 +598,8 @@ namespace DotNext
         /// </summary>
         /// <param name="arg">The first argument to be passed into the target method.</param>
         /// <returns>The result of method invocation.</returns>
-        public bool Invoke(T arg)
-        {
-            const string callIndirect = "indirect";
-            const string callImplicitThis = "implicitThis";
-            Push(methodPtr);
-            Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
-            MarkLabel(callIndirect);
-            
-            Push(target);
-            Dup();
-            Brtrue(callImplicitThis);
-            
-            Pop();
-            Push(arg);
-            Push(methodPtr);
-            Tail();
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(bool), typeof(T)));
-            Ret();
-            
-            MarkLabel(callImplicitThis);
-            Push(arg);
-            Push(methodPtr);
-            Tail();
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(bool), typeof(T)));
-            return Return<bool>();
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Invoke(T arg) => func.Invoke(arg);
 
         /// <summary>
         /// Converts this pointer into <see cref="Predicate{T}"/>.
@@ -645,27 +612,27 @@ namespace DotNext
         /// Computes hash code of this pointer.
         /// </summary>
         /// <returns>The hash code of this pointer.</returns>
-        public override int GetHashCode() => methodPtr.GetHashCode() ^ RuntimeHelpers.GetHashCode(target);
+        public override int GetHashCode() => func.GetHashCode();
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ValuePredicate<T> other) => methodPtr == other.methodPtr && ReferenceEquals(target, other.target);
+        public bool Equals(ValuePredicate<T> other) => func == other.func;
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The object implementing <see cref="IMethodPointer{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is IMethodPointer<Delegate> ptr && methodPtr == ptr.Address && ReferenceEquals(target, ptr.Target);
+        public override bool Equals(object other) => func.Equals(other);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
+        public override string ToString() => func.ToString();
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -688,7 +655,7 @@ namespace DotNext
         /// </summary>
         /// <param name="predicate">The predicate to convert.</param>
         /// <returns>The converted pointer.</returns>
-        public static implicit operator ValueFunc<T, bool>(ValuePredicate<T> predicate) => predicate.ToFunc();
+        public static implicit operator ValueFunc<T, bool>(ValuePredicate<T> predicate) => predicate.func;
     }
 
     /// <summary>
@@ -729,8 +696,17 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
         public ValueFunc(Func<T, R> func)
-            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
+            if(func.Method.IsAbstract)
+            {
+                target = func;
+                methodPtr = default;
+            }
+            else
+            {
+                target = func.Target;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
+            }
         }
 
         /// <summary>
@@ -738,7 +714,7 @@ namespace DotNext
         /// </summary>
         /// <param name="converter">The delegate representing method.</param>
         public ValueFunc(Converter<T, R> converter)
-            : this(converter.Method.MethodHandle.GetFunctionPointer(), converter.Target)
+            : this(converter.ChangeType<Func<T, R>>())
         {
         }
 
@@ -749,10 +725,9 @@ namespace DotNext
         }
 
         void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValueFunc<T, R>), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValueFunc<T, R>), typeof(IntPtr), typeof(object)));
+
+        internal IntPtr Address => methodPtr;
 
         IntPtr IMethodPointer<Func<T, R>>.Address => methodPtr;
         IntPtr IMethodPointer<Converter<T, R>>.Address => methodPtr;
@@ -770,13 +745,14 @@ namespace DotNext
         public Func<T, R> ToDelegate()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Func<T, R>));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Func<T, R>), typeof(object), typeof(IntPtr)));
             return Return<Func<T, R>>();
         }
@@ -789,7 +765,13 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
         public ValueFunc<G, T, R> Unbind<G>()
             where G : class
-            => target is G ? new ValueFunc<G, T, R>(methodPtr, null) : throw new InvalidOperationException();
+        {
+            if(ObjectExtensions.IsContravariant(target, typeof(G)))
+                return new ValueFunc<G, T, R>(methodPtr, null);
+            if(target is Func<T, R> func && methodPtr == IntPtr.Zero)
+                return new ValueFunc<G, T, R>(func.Unbind<G, T, R>());
+            throw new InvalidOperationException();
+        }
 
         /// <summary>
         /// Produces method pointer which first argument is implicitly bound to the given object.
@@ -801,7 +783,19 @@ namespace DotNext
         /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
         public ValueFunc<R> Bind<G>(G obj)
             where G : class, T
-            => target is null ? new ValueFunc<R>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
+        {
+            if(obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            switch(target)
+            {
+                case null:
+                    return new ValueFunc<R>(methodPtr, obj);
+                case Func<T, R> func when methodPtr == IntPtr.Zero:
+                    return new ValueFunc<R>(func.Bind<G, R>(obj, true));
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
         /// <summary>
         /// Converts this pointer into <see cref="Converter{T, TResult}"/>.
@@ -810,13 +804,14 @@ namespace DotNext
         public Converter<T, R> ToConverter()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Converter<T, R>));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Converter<T, R>), typeof(object), typeof(IntPtr)));
             return Return<Converter<T, R>>();
         }
@@ -830,13 +825,16 @@ namespace DotNext
         {
             const string callIndirect = "indirect";
             const string callImplicitThis = "implicitThis";
+            Push(target);
             Push(methodPtr);
             Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
+
+            Push(arg);
+            Tail();
+            Callvirt(new M(typeof(Func<T, R>), nameof(Invoke)));
+            Ret();
             MarkLabel(callIndirect);
             
-            Push(target);
             Dup();
             Brtrue(callImplicitThis);
             
@@ -923,7 +921,7 @@ namespace DotNext
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
     /// <seealso cref="Reflection.MethodCookie{D,P}"/>
     /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueAction<T> : IMethodPointer<Action<T>>, IEquatable<ValueAction<T>>, IMethodCookieSupport
+    public readonly struct ValueAction<T> : IMethodPointer<Action<T>>, IEquatable<ValueAction<T>>, IMethodCookieSupport, IConsumer<T>
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
@@ -949,8 +947,17 @@ namespace DotNext
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action<T> action)
-            : this(action.Method.MethodHandle.GetFunctionPointer(), action.Target)
         {
+            if(action.Method.IsAbstract)
+            {
+                methodPtr = default;
+                target = action;
+            }
+            else
+            {
+                target = action.Target;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
+            }
         }
 
         internal ValueAction(IntPtr methodPtr, object target)
@@ -960,10 +967,7 @@ namespace DotNext
         }
 
         void Reflection.IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValueAction<T>), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValueAction<T>), typeof(IntPtr), typeof(object)));
 
         IntPtr IMethodPointer<Action<T>>.Address => methodPtr;
 
@@ -979,13 +983,14 @@ namespace DotNext
         public Action<T> ToDelegate()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Action<T>));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Action<T>), typeof(object), typeof(IntPtr)));
             return Return<Action<T>>();
         }
@@ -998,7 +1003,13 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
         public ValueAction<G, T> Unbind<G>()
             where G : class
-            => target is G ? new ValueAction<G, T>(methodPtr, null) : throw new InvalidOperationException();
+        {
+            if(ObjectExtensions.IsContravariant(target, typeof(G)))
+                return new ValueAction<G, T>(methodPtr, null);
+            if(target is Action<T> action && methodPtr == IntPtr.Zero)
+                return new ValueAction<G, T>(action.Unbind<G, T>());
+            throw new InvalidOperationException();
+        }
 
         /// <summary>
         /// Produces method pointer which first argument is implicitly bound to the given object.
@@ -1010,7 +1021,19 @@ namespace DotNext
         /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
         public ValueAction Bind<G>(G obj)
             where G : class, T
-            => target is null ? new ValueAction(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
+        {
+            if(obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            switch(target)
+            {
+                case null:
+                    return new ValueAction(methodPtr, obj);
+                case Action<T> action when methodPtr == IntPtr.Zero:
+                    return new ValueAction(action.Bind<G>(obj, true));
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
         /// <summary>
         /// Invokes method by pointer.
@@ -1020,13 +1043,15 @@ namespace DotNext
         {
             const string callIndirect = "indirect";
             const string callImplicitThis = "implicitThis";
+            Push(target);
             Push(methodPtr);
             Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
+            Push(arg);
+            Tail();
+            Callvirt(new M(typeof(Action<T>), nameof(Invoke)));
+            Ret();
             MarkLabel(callIndirect);
             
-            Push(target);
             Dup();
             Brtrue(callImplicitThis);
             
@@ -1134,8 +1159,17 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
         public ValueFunc(Func<T1, T2, R> func)
-            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
+            if(func.Method.IsAbstract)
+            {
+                target = func;
+                methodPtr = default;
+            }
+            else
+            {
+                target = func.Target;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
+            }
         }
 
         internal ValueFunc(IntPtr methodPtr, object target)
@@ -1145,10 +1179,7 @@ namespace DotNext
         }
 
         void Reflection.IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValueFunc<T1, T2, R>), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValueFunc<T1, T2, R>), typeof(IntPtr), typeof(object)));
 
         IntPtr IMethodPointer<Func<T1, T2, R>>.Address => methodPtr;
 
@@ -1164,13 +1195,14 @@ namespace DotNext
         public Func<T1, T2, R> ToDelegate()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Func<T1, T2, R>));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Func<T1, T2, R>), typeof(object), typeof(IntPtr)));
             return Return<Func<T1, T2, R>>();
         }
@@ -1183,7 +1215,13 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
         public ValueFunc<G, T1, T2, R> Unbind<G>()
             where G : class
-            => target is G ? new ValueFunc<G, T1, T2, R>(methodPtr, null) : throw new InvalidOperationException();
+        {
+            if(ObjectExtensions.IsContravariant(target, typeof(G)))
+                return new ValueFunc<G, T1, T2, R>(methodPtr, null);
+            if(target is Func<T1, T2, R> func && methodPtr == IntPtr.Zero)
+                return new ValueFunc<G, T1, T2, R>(func.Unbind<G, T1, T2, R>());
+            throw new InvalidOperationException();
+        }
 
         /// <summary>
         /// Produces method pointer which first argument is implicitly bound to the given object.
@@ -1195,7 +1233,19 @@ namespace DotNext
         /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
         public ValueFunc<T2, R> Bind<G>(G obj)
             where G : class, T1
-            => target is null ? new ValueFunc<T2, R>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
+        {
+            if(obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            switch(target)
+            {
+                case null:
+                    return new ValueFunc<T2, R>(methodPtr, obj);
+                case Func<T1, T2, R> func when methodPtr == IntPtr.Zero:
+                    return new ValueFunc<T2, R>(func.Bind<G, T2, R>(obj, true));
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
         /// <summary>
         /// Invokes method by pointer.
@@ -1207,13 +1257,16 @@ namespace DotNext
         {
             const string callIndirect = "indirect";
             const string callImplicitThis = "implicitThis";
+            Push(target);
             Push(methodPtr);
             Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
+            Push(arg1);
+            Push(arg2);
+            Tail();
+            Callvirt(new M(typeof(Func<T1, T2, R>), nameof(Invoke)));
+            Ret();
             MarkLabel(callIndirect);
             
-            Push(target);
             Dup();
             Brtrue(callImplicitThis);
             
@@ -1322,8 +1375,17 @@ namespace DotNext
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action<T1, T2> action)
-            : this(action.Method.MethodHandle.GetFunctionPointer(), action.Target)
         {
+            if(action.Method.IsAbstract)
+            {
+                target = action;
+                methodPtr = default;
+            }
+            else
+            {
+                target = action.Target;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
+            }
         }
 
         internal ValueAction(IntPtr methodPtr, object target)
@@ -1333,10 +1395,7 @@ namespace DotNext
         }
 
         void Reflection.IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValueAction<T1, T2>), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValueAction<T1, T2>), typeof(IntPtr), typeof(object)));
 
         IntPtr IMethodPointer<Action<T1, T2>>.Address => methodPtr;
 
@@ -1352,13 +1411,14 @@ namespace DotNext
         public Action<T1, T2> ToDelegate()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Action<T1, T2>));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Action<T1, T2>), typeof(object), typeof(IntPtr)));
             return Return<Action<T1, T2>>();
         }
@@ -1371,7 +1431,13 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
         public ValueAction<G, T1, T2> Unbind<G>()
             where G : class
-            => target is G ? new ValueAction<G, T1, T2>(methodPtr, null) : throw new InvalidOperationException();
+         {
+             if(ObjectExtensions.IsContravariant(target, typeof(G)))
+                return new ValueAction<G, T1, T2>(methodPtr, null);
+            if(target is Action<T1, T2> action && methodPtr == IntPtr.Zero)
+                return new ValueAction<G, T1, T2>(action.Unbind<G, T1, T2>());
+            throw new InvalidOperationException();
+         }
 
         /// <summary>
         /// Produces method pointer which first argument is implicitly bound to the given object.
@@ -1383,7 +1449,19 @@ namespace DotNext
         /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
         public ValueAction<T2> Bind<G>(G obj)
             where G : class, T1
-            => target is null ? new ValueAction<T2>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
+        {
+            if(obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            switch(target)
+            {
+                case null:
+                    return new ValueAction<T2>(methodPtr, obj);
+                case Action<T1, T2> action when methodPtr == IntPtr.Zero:
+                    return new ValueAction<T2>(action.Bind<G, T2>(obj, true));
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
         /// <summary>
         /// Invokes method by pointer.
@@ -1394,13 +1472,16 @@ namespace DotNext
         {
             const string callIndirect = "indirect";
             const string callImplicitThis = "implicitThis";
+            Push(target);
             Push(methodPtr);
             Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
+            Push(arg1);
+            Push(arg2);
+            Tail();
+            Callvirt(new M(typeof(Action<T1, T2>), nameof(Invoke)));
+            Ret();
             MarkLabel(callIndirect);
             
-            Push(target);
             Dup();
             Brtrue(callImplicitThis);
             
@@ -1511,8 +1592,17 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
         public ValueFunc(Func<T1, T2, T3, R> func)
-            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
+            if(func.Method.IsAbstract)
+            {
+                target = func;
+                methodPtr = default;
+            }
+            else
+            {
+                target = func.Target;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
+            }
         }
 
         internal ValueFunc(IntPtr methodPtr, object target)
@@ -1522,10 +1612,7 @@ namespace DotNext
         }
 
         void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValueFunc<T1, T1, T3, R>), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValueFunc<T1, T1, T3, R>), typeof(IntPtr), typeof(object)));
 
         IntPtr IMethodPointer<Func<T1, T2, T3, R>>.Address => methodPtr;
 
@@ -1541,13 +1628,14 @@ namespace DotNext
         public Func<T1, T2, T3, R> ToDelegate()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Func<T1, T2, T3, R>));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Func<T1, T2, T3, R>), typeof(object), typeof(IntPtr)));
             return Return<Func<T1, T2, T3, R>>();
         }
@@ -1560,7 +1648,13 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
         public ValueFunc<G, T1, T2, T3, R> Unbind<G>()
             where G : class
-            => target is G ? new ValueFunc<G, T1, T2, T3, R>(methodPtr, null) : throw new InvalidOperationException();
+        {
+            if(ObjectExtensions.IsContravariant(target, typeof(G)))
+                return new ValueFunc<G, T1, T2, T3, R>(methodPtr, null);
+            if(target is Func<T1, T2, T3, R> func && methodPtr == IntPtr.Zero)
+                return new ValueFunc<G, T1, T2, T3, R>(func.Unbind<G, T1, T2, T3, R>());
+            throw new InvalidOperationException();
+        }
 
         /// <summary>
         /// Produces method pointer which first argument is implicitly bound to the given object.
@@ -1572,7 +1666,19 @@ namespace DotNext
         /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
         public ValueFunc<T2, T3, R> Bind<G>(G obj)
             where G : class, T1
-            => target is null ? new ValueFunc<T2, T3, R>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
+        {
+            if(obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            switch(target)
+            {
+                case null:
+                    return new ValueFunc<T2, T3, R>(methodPtr, obj);
+                case Func<T1, T2, T3, R> func when methodPtr == IntPtr.Zero:
+                    return new ValueFunc<T2, T3, R>(func.Bind<G, T2, T3, R>(obj, true));
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
         /// <summary>
         /// Invokes method by pointer.
@@ -1585,13 +1691,17 @@ namespace DotNext
         {
             const string callIndirect = "indirect";
             const string callImplicitThis = "implicitThis";
+            Push(target);
             Push(methodPtr);
             Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
+            Push(arg1);
+            Push(arg2);
+            Push(arg3);
+            Tail();
+            Callvirt(new M(typeof(Func<T1, T2, T3, R>), nameof(Invoke)));
+            Ret();
             MarkLabel(callIndirect);
             
-            Push(target);
             Dup();
             Brtrue(callImplicitThis);
             
@@ -1703,8 +1813,17 @@ namespace DotNext
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action<T1, T2, T3> action)
-            : this(action.Method.MethodHandle.GetFunctionPointer(), action.Target)
         {
+            if(action.Method.IsAbstract)
+            {
+                target = action;
+                methodPtr = default;
+            }
+            else
+            {
+                target = action.Target;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
+            }
         }
 
         internal ValueAction(IntPtr methodPtr, object target)
@@ -1714,10 +1833,7 @@ namespace DotNext
         }
 
         void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValueAction<T1, T1, T3>), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValueAction<T1, T1, T3>), typeof(IntPtr), typeof(object)));
 
         IntPtr IMethodPointer<Action<T1, T2, T3>>.Address => methodPtr;
 
@@ -1733,13 +1849,14 @@ namespace DotNext
         public Action<T1, T2, T3> ToDelegate()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Action<T1, T2, T3>));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Action<T1, T2, T3>), typeof(object), typeof(IntPtr)));
             return Return<Action<T1, T2, T3>>();
         }
@@ -1752,7 +1869,13 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
         public ValueAction<G, T1, T2, T3> Unbind<G>()
             where G : class
-            => target is G ? new ValueAction<G, T1, T2, T3>(methodPtr, null) : throw new InvalidOperationException();
+        {
+            if(ObjectExtensions.IsContravariant(target, typeof(G)))
+                return new ValueAction<G, T1, T2, T3>(methodPtr, null);
+            if(target is Action<T1, T2, T3> action && methodPtr == IntPtr.Zero)
+                return new ValueAction<G, T1, T2, T3>(action.Unbind<G, T1, T2, T3>());
+            throw new InvalidOperationException();
+        }
 
         /// <summary>
         /// Produces method pointer which first argument is implicitly bound to the given object.
@@ -1764,7 +1887,19 @@ namespace DotNext
         /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
         public ValueAction<T2, T3> Bind<G>(G obj)
             where G : class, T1
-            => target is null ? new ValueAction<T2, T3>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
+        {
+            if(obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            switch(target)
+            {
+                case null:
+                    return new ValueAction<T2, T3>(methodPtr, obj);
+                case Action<T1, T2, T3> action when methodPtr == IntPtr.Zero:
+                    return new ValueAction<T2, T3>(action.Bind<G, T2, T3>(obj, true));
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
         /// <summary>
         /// Invokes method by pointer.
@@ -1776,13 +1911,17 @@ namespace DotNext
         {
             const string callIndirect = "indirect";
             const string callImplicitThis = "implicitThis";
+            Push(target);
             Push(methodPtr);
             Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
+            Push(arg1);
+            Push(arg2);
+            Push(arg3);
+            Tail();
+            Callvirt(new M(typeof(Action<T1, T2, T3>), nameof(Invoke)));
+            Ret();
             MarkLabel(callIndirect);
             
-            Push(target);
             Dup();
             Brtrue(callImplicitThis);
             
@@ -1896,8 +2035,17 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
         public ValueFunc(Func<T1, T2, T3, T4, R> func)
-            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
+            if(func.Method.IsAbstract)
+            {
+                target = func;
+                methodPtr = default;
+            }
+            else
+            {
+                target = func.Target;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
+            }
         }
 
         internal ValueFunc(IntPtr methodPtr, object target)
@@ -1907,10 +2055,7 @@ namespace DotNext
         }
 
         void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValueFunc<T1, T1, T3, T4, R>), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValueFunc<T1, T1, T3, T4, R>), typeof(IntPtr), typeof(object)));
 
         IntPtr IMethodPointer<Func<T1, T2, T3, T4, R>>.Address => methodPtr;
 
@@ -1926,13 +2071,14 @@ namespace DotNext
         public Func<T1, T2, T3, T4, R> ToDelegate()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Func<T1, T2, T3, T4, R>));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Func<T1, T2, T3, T4, R>), typeof(object), typeof(IntPtr)));
             return Return<Func<T1, T2, T3, T4, R>>();
         }
@@ -1945,7 +2091,13 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
         public ValueFunc<G, T1, T2, T3, T4, R> Unbind<G>()
             where G : class
-            => target is G ? new ValueFunc<G, T1, T2, T3, T4, R>(methodPtr, null) : throw new InvalidOperationException();
+        {
+            if(ObjectExtensions.IsContravariant(target, typeof(G)))
+                return new ValueFunc<G, T1, T2, T3, T4, R>(methodPtr, null);
+            if(target is Func<T1, T2, T3, T4, R> func && methodPtr == IntPtr.Zero)
+                return new ValueFunc<G, T1, T2, T3, T4, R>(func.Unbind<G, T1, T2, T3, T4, R>());
+            throw new InvalidOperationException();
+        }
 
         /// <summary>
         /// Produces method pointer which first argument is implicitly bound to the given object.
@@ -1957,7 +2109,19 @@ namespace DotNext
         /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
         public ValueFunc<T2, T3, T4, R> Bind<G>(G obj)
             where G : class, T1
-            => target is null ? new ValueFunc<T2, T3, T4, R>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
+        {
+            if(obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            switch(target)
+            {
+                case null:
+                    return new ValueFunc<T2, T3, T4, R>(methodPtr, obj);
+                case Func<T1, T2, T3, T4, R> func when methodPtr == IntPtr.Zero:
+                    return new ValueFunc<T2, T3, T4, R>(func.Bind<G, T2, T3, T4, R>(obj, true));
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
         /// <summary>
         /// Invokes method by pointer.
@@ -1971,13 +2135,18 @@ namespace DotNext
         {
             const string callIndirect = "indirect";
             const string callImplicitThis = "implicitThis";
+            Push(target);
             Push(methodPtr);
             Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
+            Push(arg1);
+            Push(arg2);
+            Push(arg3);
+            Push(arg4);
+            Tail();
+            Callvirt(new M(typeof(Func<T1, T2, T3, T4, R>), nameof(Invoke)));
+            Ret();
             MarkLabel(callIndirect);
             
-            Push(target);
             Dup();
             Brtrue(callImplicitThis);
             
@@ -2092,8 +2261,17 @@ namespace DotNext
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action<T1, T2, T3, T4> action)
-            : this(action.Method.MethodHandle.GetFunctionPointer(), action.Target)
         {
+            if(action.Method.IsAbstract)
+            {
+                target = action;
+                methodPtr = default;
+            }
+            else
+            {
+                target = action.Target;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
+            }
         }
         
         internal ValueAction(IntPtr methodPtr, object target)
@@ -2103,10 +2281,7 @@ namespace DotNext
         }
 
         void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValueAction<T1, T1, T3, T4>), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValueAction<T1, T1, T3, T4>), typeof(IntPtr), typeof(object)));
 
         IntPtr IMethodPointer<Action<T1, T2, T3, T4>>.Address => methodPtr;
 
@@ -2122,13 +2297,14 @@ namespace DotNext
         public Action<T1, T2, T3, T4> ToDelegate()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Action<T1, T2, T3, T4>));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Action<T1, T2, T3, T4>), typeof(object), typeof(IntPtr)));
             return Return<Action<T1, T2, T3, T4>>();
         }
@@ -2141,7 +2317,13 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
         public ValueAction<G, T1, T2, T3, T4> Unbind<G>()
             where G : class
-            => target is G ? new ValueAction<G, T1, T2, T3, T4>(methodPtr, null) : throw new InvalidOperationException();
+        {
+            if(ObjectExtensions.IsContravariant(target, typeof(G)))
+                return new ValueAction<G, T1, T2, T3, T4>(methodPtr, null);
+            if(target is Action<T1, T2, T3, T4> action && methodPtr == IntPtr.Zero)
+                return new ValueAction<G, T1, T2, T3, T4>(action.Unbind<G, T1, T2, T3, T4>());
+            throw new InvalidOperationException();
+        }
 
         /// <summary>
         /// Produces method pointer which first argument is implicitly bound to the given object.
@@ -2153,7 +2335,19 @@ namespace DotNext
         /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
         public ValueAction<T2, T3, T4> Bind<G>(G obj)
             where G : class, T1
-            => target is null ? new ValueAction<T2, T3, T4>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
+        {
+            if(obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            switch(target)
+            {
+                case null:
+                    return new ValueAction<T2, T3, T4>(methodPtr, obj);
+                case Action<T1, T2, T3, T4> action when methodPtr == IntPtr.Zero:
+                    return new ValueAction<T2, T3, T4>(action.Bind<G, T2, T3, T4>(obj, true));
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
         /// <summary>
         /// Invokes method by pointer.
@@ -2166,13 +2360,18 @@ namespace DotNext
         {
             const string callIndirect = "indirect";
             const string callImplicitThis = "implicitThis";
+            Push(target);
             Push(methodPtr);
             Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
+            Push(arg1);
+            Push(arg2);
+            Push(arg3);
+            Push(arg4);
+            Tail();
+            Callvirt(new M(typeof(Action<T1, T2, T3, T4>), nameof(Invoke)));
+            Ret();
             MarkLabel(callIndirect);
             
-            Push(target);
             Dup();
             Brtrue(callImplicitThis);
             
@@ -2289,8 +2488,17 @@ namespace DotNext
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
         public ValueFunc(Func<T1, T2, T3, T4, T5, R> func)
-            : this(func.Method.MethodHandle.GetFunctionPointer(), func.Target)
         {
+            if(func.Method.IsAbstract)
+            {
+                target = func;
+                methodPtr = default;
+            }
+            else
+            {
+                target = func.Target;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
+            }
         }
 
         internal ValueFunc(IntPtr methodPtr, object target)
@@ -2300,10 +2508,7 @@ namespace DotNext
         }
 
         void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValueFunc<T1, T1, T3, T4, T5, R>), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValueFunc<T1, T1, T3, T4, T5, R>), typeof(IntPtr), typeof(object)));
 
         IntPtr IMethodPointer<Func<T1, T2, T3, T4, T5, R>>.Address => methodPtr;
 
@@ -2319,13 +2524,14 @@ namespace DotNext
         public Func<T1, T2, T3, T4, T5, R> ToDelegate()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Func<T1, T2, T3, T4, T5, R>));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Func<T1, T2, T3, T4, T5, R>), typeof(object), typeof(IntPtr)));
             return Return<Func<T1, T2, T3, T4, T5, R>>();
         }
@@ -2340,7 +2546,19 @@ namespace DotNext
         /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
         public ValueFunc<T2, T3, T4, T5, R> Bind<G>(G obj)
             where G : class, T1
-            => target is null ? new ValueFunc<T2, T3, T4, T5, R>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
+        {
+            if(obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            switch(target)
+            {
+                case null:
+                    return new ValueFunc<T2, T3, T4, T5, R>(methodPtr, obj);
+                case Func<T1, T2, T3, T4, T5, R> func when methodPtr == IntPtr.Zero:
+                    return new ValueFunc<T2, T3, T4, T5, R>(func.Bind<G, T2, T3, T4, T5, R>(obj, true));
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
         /// <summary>
         /// Invokes method by pointer.
@@ -2355,13 +2573,19 @@ namespace DotNext
         {
             const string callIndirect = "indirect";
             const string callImplicitThis = "implicitThis";
+            Push(target);
             Push(methodPtr);
             Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
+            Push(arg1);
+            Push(arg2);
+            Push(arg3);
+            Push(arg4);
+            Push(arg5);
+            Tail();
+            Callvirt(new M(typeof(Func<T1, T2, T3, T4, T5, R>), nameof(Invoke)));
+            Ret();
             MarkLabel(callIndirect);
             
-            Push(target);
             Dup();
             Brtrue(callImplicitThis);
             
@@ -2479,8 +2703,17 @@ namespace DotNext
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action<T1, T2, T3, T4, T5> action)
-            : this(action.Method.MethodHandle.GetFunctionPointer(), action.Target)
         {
+            if(action.Method.IsAbstract)
+            {
+                target = action;
+                methodPtr = default;
+            }
+            else
+            {
+                target = action.Target;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
+            }
         }
 
         internal ValueAction(IntPtr methodPtr, object target)
@@ -2490,10 +2723,7 @@ namespace DotNext
         }
 
         void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-        {
-            Jmp(M.Constructor(typeof(ValueAction<T1, T1, T3, T1, T5>), typeof(IntPtr), typeof(object)));
-            throw Unreachable();
-        }
+            => Jmp(M.Constructor(typeof(ValueAction<T1, T1, T3, T1, T5>), typeof(IntPtr), typeof(object)));
 
         IntPtr IMethodPointer<Action<T1, T2, T3, T4, T5>>.Address => methodPtr;
 
@@ -2509,13 +2739,14 @@ namespace DotNext
         public Action<T1, T2, T3, T4, T5> ToDelegate()
         {
             const string makeDelegate = "makeDelegate";
-            Push(methodPtr);
-            Brtrue(makeDelegate);
-            Ldnull();
-            Ret();
-            MarkLabel(makeDelegate);
             Push(target);
             Push(methodPtr);
+            Dup();
+            Brtrue(makeDelegate);
+            Pop();
+            Isinst(typeof(Action<T1, T2, T3, T4, T5>));
+            Ret();
+            MarkLabel(makeDelegate);
             Newobj(M.Constructor(typeof(Action<T1, T2, T3, T4, T5>), typeof(object), typeof(IntPtr)));
             return Return<Action<T1, T2, T3, T4, T5>>();
         }
@@ -2530,7 +2761,19 @@ namespace DotNext
         /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
         public ValueAction<T2, T3, T4, T5> Bind<G>(G obj)
             where G : class, T1
-            => target is null ? new ValueAction<T2, T3, T4, T5>(methodPtr, obj ?? throw new ArgumentNullException(nameof(obj))) : throw new InvalidOperationException();
+        {
+            if(obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            switch(target)
+            {
+                case null:
+                    return new ValueAction<T2, T3, T4, T5>(methodPtr, obj);
+                case Action<T1, T2, T3, T4, T5> action when methodPtr == IntPtr.Zero:
+                    return new ValueAction<T2, T3, T4, T5>(action.Bind<G, T2, T3, T4, T5>(obj, true));
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
         /// <summary>
         /// Invokes method by pointer.
@@ -2544,13 +2787,19 @@ namespace DotNext
         {
             const string callIndirect = "indirect";
             const string callImplicitThis = "implicitThis";
+            Push(target);
             Push(methodPtr);
             Brtrue(callIndirect);
-            Newobj(M.Constructor(typeof(MethodPointerException)));
-            Throw();
+            Push(arg1);
+            Push(arg2);
+            Push(arg3);
+            Push(arg4);
+            Push(arg5);
+            Tail();
+            Callvirt(new M(typeof(Action<T1, T2, T3, T4, T5>), nameof(Invoke)));
+            Ret();
             MarkLabel(callIndirect);
             
-            Push(target);
             Dup();
             Brtrue(callImplicitThis);
             

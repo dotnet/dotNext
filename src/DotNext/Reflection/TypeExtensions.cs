@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 namespace DotNext.Reflection
 {
@@ -78,6 +79,41 @@ namespace DotNext.Reflection
             if (includeInterfaces)
                 foreach (var iface in type.GetInterfaces())
                     yield return iface;
+        }
+
+        private static bool CheckBaseDefinition(MemberInfo candidate, object criteria)
+            => candidate is MethodInfo method && method.GetBaseDefinition().Equals(criteria);
+
+        /// <summary>
+        /// Returns method that overrides the specified method.
+        /// </summary>
+        /// <param name="type">The type that contains overridden method.</param>
+        /// <param name="abstractMethod">The abstract method definition.</param>
+        /// <returns>The method that overrides <paramref name="abstractMethod"/>.</returns>
+        public static MethodInfo Devirtualize(this Type type, MethodInfo abstractMethod)
+        {
+            if(abstractMethod.IsFinal || !abstractMethod.IsVirtual)
+                return abstractMethod;
+            if(type.IsInterface)
+                goto exit;
+            if(abstractMethod.DeclaringType.IsInterface && abstractMethod.DeclaringType.IsAssignableFrom(type))
+            {
+                //Interface maps for generic interfaces on arrays cannot be retrieved.
+                if(type.IsArray && abstractMethod.DeclaringType.IsGenericType)   
+                    goto exit;  
+                var interfaceMap = type.GetInterfaceMap(abstractMethod.DeclaringType);
+                for(var i = 0L; i < interfaceMap.InterfaceMethods.LongLength; i++)
+                    if(interfaceMap.InterfaceMethods[i] == abstractMethod)
+                        return interfaceMap.TargetMethods[i];
+                goto exit;
+            }
+            //handle virtual method
+            foreach(var lookup in GetBaseTypes(type, includeTopLevel : true))
+                foreach(var candidate in lookup.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+                    if(candidate.GetBaseDefinition() == abstractMethod)
+                        return candidate;
+        exit:
+            return null;
         }
 
         /// <summary>

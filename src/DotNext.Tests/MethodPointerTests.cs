@@ -11,11 +11,16 @@ namespace DotNext
     {
         private static object CreateObject() => new object();
 
-        private sealed class Counter
+        private interface ICounter
+        {
+            void Increment();
+        }
+
+        private sealed class Counter : ICounter
         {
             internal int Value;
 
-            internal void Increment() => Value += 1;
+            public void Increment() => Value += 1;
         }
 
         private static string Dup(string value) => value + value;
@@ -133,6 +138,58 @@ namespace DotNext
             var cookie = new MethodCookie<StringBuilder, Func<string>, ValueFunc<string>>(method);
             var builder = new StringBuilder("Hello, world!");
             Equal("Hello, world!", cookie.Bind(builder).Invoke());
+        }
+
+        [Fact]
+        public static void InterfaceMethod()
+        {
+            var method = typeof(ICounter).GetMethod(nameof(ICounter.Increment));
+            var ptr = new ValueAction<ICounter>(method);
+            True(ptr.Target is Action<ICounter>);
+            var counter = new Counter() { Value = 42 };
+            ptr.Invoke(counter);
+            Equal(43, counter.Value);
+        }
+
+        [Fact]
+        public static void Devirtualization()
+        {
+            var method = typeof(ICounter).GetMethod(nameof(ICounter.Increment));
+            var counter = new Counter() { Value = 42 };
+            var ptr = new ValueAction<ICounter>(method).Bind(counter);
+            True(ptr.Target is Counter);
+            ptr.Invoke();
+            Equal(43, counter.Value);
+        }
+
+        [Fact]
+        public static void InterfaceMethodUsingCookie()
+        {
+            var method = typeof(ICounter).GetMethod(nameof(ICounter.Increment));
+            var cookie = new MethodCookie<Action<ICounter>, ValueAction<ICounter>>(method);
+            var ptr = cookie.Pointer;
+            True(ptr.Target is Action<ICounter>);
+            var counter = new Counter() { Value = 42 };
+            ptr.Invoke(counter);
+            Equal(43, counter.Value);
+        }
+
+        [Fact]
+        public static void DevirtualizationByMethodCookie()
+        {
+            var method = typeof(ICounter).GetMethod(nameof(ICounter.Increment));
+            var cookie = new MethodCookie<Counter, Action, ValueAction>(method);
+            var counter = new Counter() { Value = 42 };
+            var ptr = cookie.Bind(counter);
+            True(ptr.Target is Counter);
+            ptr.Invoke();
+            Equal(43, counter.Value);
+        }
+
+        [Fact]
+        public static void NullPtr()
+        {
+            Throws<NullReferenceException>(() => new ValueAction().Invoke());
         }
     }
 }

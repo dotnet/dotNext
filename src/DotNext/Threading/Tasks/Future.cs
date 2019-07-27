@@ -21,7 +21,7 @@ namespace DotNext.Threading.Tasks
         public interface IAwaiter : IFuture
         {
             /// <summary>
-            /// Gets result of asynchronous operation represented by Future object.
+            /// Ends the wait for the completion of the asynchronous task.
             /// </summary>
             /// <exception cref="OperationCanceledException">Cancellation requested and caller specified that exception should be thrown.</exception>
             /// <exception cref="IncompletedFutureException">The current future is not completed.</exception>
@@ -35,7 +35,7 @@ namespace DotNext.Threading.Tasks
         public interface IAwaiter<out R> : IFuture
         {
             /// <summary>
-            /// Gets result
+            /// Ends the wait for the completion of the asynchronous task.
             /// </summary>
             /// <returns>The result of asynchronous computation.</returns>
             /// <exception cref="OperationCanceledException">Cancellation requested and caller specified that exception should be thrown.</exception>

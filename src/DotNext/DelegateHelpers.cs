@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
+    using static Reflection.TypeExtensions;
+
     /// <summary>
     /// Represents various extensions of delegates.
     /// </summary>
@@ -98,5 +100,107 @@ namespace DotNext
         /// <exception cref="ArgumentException">Cannot convert delegate type.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static D ChangeType<D>(this Delegate d) where D : Delegate => d.Method.CreateDelegate<D>(d.Target);
+
+        private static D BindUnsafe<T, D>(this Delegate del, T obj, bool devirtualize)
+            where T : class
+            where D : Delegate
+        {
+            if(obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            if(!(del.Target is null))
+                throw new InvalidOperationException();
+            var method = del.Method;
+            if(devirtualize)
+                method = obj.GetType().Devirtualize(method) ?? method;
+            return method.CreateDelegate<D>(obj); 
+        }
+
+        public static Action Bind<T>(this Action<T> action, T obj, bool devirtualize = false)
+            where T : class
+            => action.BindUnsafe<T, Action>(obj, devirtualize);
+        
+        public static Func<R> Bind<T, R>(this Func<T, R> func, T obj, bool devirtualize = false)
+            where T : class
+            => func.BindUnsafe<T, Func<R>>(obj, devirtualize);
+        
+        public static Func<T2, R> Bind<T1, T2, R>(this Func<T1, T2, R> func, T1 obj, bool devirtualize = false)
+            where T1 : class
+            => func.BindUnsafe<T1, Func<T2, R>>(obj, devirtualize);
+        
+        public static Action<T2> Bind<T1, T2>(this Action<T1, T2> action, T1 obj, bool devirtualize = false)
+            where T1 : class
+            => action.BindUnsafe<T1, Action<T2>>(obj, devirtualize);
+
+        public static Func<T2, T3, R> Bind<T1, T2, T3, R>(this Func<T1, T2, T3, R> func, T1 obj, bool devirtualize = false)
+            where T1 : class
+            => func.BindUnsafe<T1, Func<T2, T3, R>>(obj, devirtualize);
+        
+        public static Action<T2, T3> Bind<T1, T2, T3>(this Action<T1, T2, T3> action, T1 obj, bool devirtualize = false)
+            where T1 : class
+            => action.BindUnsafe<T1, Action<T2, T3>>(obj, devirtualize);
+        
+        public static Func<T2, T3, T4, R> Bind<T1, T2, T3, T4, R>(this Func<T1, T2, T3, T4, R> func, T1 obj, bool devirtualize = false)
+            where T1 : class
+            => func.BindUnsafe<T1, Func<T2, T3, T4, R>>(obj, devirtualize);
+        
+        public static Action<T2, T3, T4> Bind<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action, T1 obj, bool devirtualize = false)
+            where T1 : class
+            => action.BindUnsafe<T1, Action<T2, T3, T4>>(obj, devirtualize);
+        
+        public static Func<T2, T3, T4, T5, R> Bind<T1, T2, T3, T4, T5, R>(this Func<T1, T2, T3, T4, T5, R> func, T1 obj, bool devirtualize = false)
+            where T1 : class
+            => func.BindUnsafe<T1, Func<T2, T3, T4, T5, R>>(obj, devirtualize);
+        
+        public static Action<T2, T3, T4, T5> Bind<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action, T1 obj, bool devirtualize = false)
+            where T1 : class
+            => action.BindUnsafe<T1, Action<T2, T3, T4, T5>>(obj, devirtualize);
+
+        private static U UnsafeUnbind<U>(this Delegate del, Type targetType)
+            where U : MulticastDelegate
+            => ObjectExtensions.IsContravariant(del.Target, targetType) ? del.Method.CreateDelegate<U>() : throw new InvalidOperationException();
+
+        public static Action<T> Unbind<T>(this Action action) where T : class => action.UnsafeUnbind<Action<T>>(typeof(T));
+        
+        public static Func<T, R> Unbind<T, R>(this Func<R> func) where T : class => func.UnsafeUnbind<Func<T, R>>(typeof(T));
+        
+        public static Func<G, T, R> Unbind<G, T, R>(this Func<T, R> func)
+            where G : class
+            => func.UnsafeUnbind<Func<G, T, R>>(typeof(G));
+
+        public static Action<G, T> Unbind<G, T>(this Action<T> action)
+            where G : class
+            => action.UnsafeUnbind<Action<G, T>>(typeof(G));
+        
+        public static Func<G, T1, T2, R> Unbind<G, T1, T2, R>(this Func<T1, T2, R> func)
+            where G : class
+            => func.UnsafeUnbind<Func<G, T1, T2, R>>(typeof(G));
+
+        public static Action<G, T1, T2> Unbind<G, T1, T2>(this Action<T1, T2> action)
+            where G : class
+            => action.UnsafeUnbind<Action<G, T1, T2>>(typeof(G));
+        
+        public static Func<G, T1, T2, T3, R> Unbind<G, T1, T2, T3, R>(this Func<T1, T2, T3, R> func)
+            where G : class
+            => func.UnsafeUnbind<Func<G, T1, T2, T3, R>>(typeof(G));
+        
+        public static Action<G, T1, T2, T3> Unbind<G, T1, T2, T3>(this Action<T1, T2, T3> action)
+            where G : class
+            => action.UnsafeUnbind<Action<G, T1, T2, T3>>(typeof(G));
+        
+        public static Func<G, T1, T2, T3, T4, R> Unbind<G, T1, T2, T3, T4, R>(this Func<T1, T2, T3, T4, R> func)
+            where G : class
+            => func.UnsafeUnbind<Func<G, T1, T2, T3, T4, R>>(typeof(G));
+        
+        public static Action<G, T1, T2, T3, T4> Unbind<G, T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action)
+            where G : class
+            => action.UnsafeUnbind<Action<G, T1, T2, T3, T4>>(typeof(G));
+        
+        public static Func<G, T1, T2, T3, T4, T5, R> Unbind<G, T1, T2, T3, T4, T5, R>(this Func<T1, T2, T3, T4, T5, R> func)
+            where G : class
+            => func.UnsafeUnbind<Func<G, T1, T2, T3, T4, T5, R>>(typeof(G));
+        
+        public static Action<G, T1, T2, T3, T4, T5> Unbind<G, T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action)
+            where G : class
+            => action.UnsafeUnbind<Action<G, T1, T2, T3, T4, T5>>(typeof(G));
     }
 }

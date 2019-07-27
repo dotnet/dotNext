@@ -128,5 +128,7 @@ namespace DotNext
             obj.Decompose(decomposer1, decomposer2, out tuple.result1, out tuple.result2);
             return tuple;
         }
+
+        internal static bool IsContravariant(object obj, Type type) => obj != null && obj.GetType().IsAssignableFrom(type);
     }
 }

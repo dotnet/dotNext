@@ -236,6 +236,16 @@ namespace DotNext
         public T OrThrow<E>()
             where E : Exception, new()
             => IsPresent ? value : throw new E();
+        
+        /// <summary>
+        /// If a value is present, returns the value, otherwise throw exception.
+        /// </summary>
+        /// <typeparam name="E"></typeparam>
+        /// <param name="exceptionFactory">Exception factory.</param>
+        /// <returns>The value, if present.</returns>
+        public T OrThrow<E>(ValueFunc<E> exceptionFactory)
+            where E : Exception
+            => IsPresent ? value : throw exceptionFactory.Invoke();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
@@ -245,14 +255,21 @@ namespace DotNext
         /// <returns>The value, if present.</returns>
         public T OrThrow<E>(Func<E> exceptionFactory)
             where E : Exception
-            => IsPresent ? value : throw exceptionFactory();
+            => OrThrow(new ValueFunc<E>(exceptionFactory));
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<T> defaultFunc) => IsPresent ? value : defaultFunc();
+        public T OrInvoke(ValueFunc<T> defaultFunc) => IsPresent ? value : defaultFunc.Invoke();
+
+        /// <summary>
+        /// Returns the value if present; otherwise invoke delegate.
+        /// </summary>
+        /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
+        /// <returns>The value, if present, otherwise returned from delegate.</returns>
+        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc));
 
         /// <summary>
         /// If a value is present, returns the value, otherwise return default value.
@@ -273,7 +290,16 @@ namespace DotNext
         /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-        public Optional<U> Convert<U>(Converter<T, U> mapper) => IsPresent ? mapper(value) : Optional<U>.Empty;
+        public Optional<U> Convert<U>(ValueFunc<T, U> mapper) => IsPresent ? mapper.Invoke(value) : Optional<U>.Empty;
+
+        /// <summary>
+        /// If a value is present, apply the provided mapping function to it, and if the result is 
+        /// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
+        /// </summary>
+        /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
+        /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
+        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
+        public Optional<U> Convert<U>(Converter<T, U> mapper) => Convert(new ValueFunc<T, U>(mapper));
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is 
@@ -282,7 +308,16 @@ namespace DotNext
         /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-		public Optional<U> Convert<U>(Converter<T, Optional<U>> mapper) => IsPresent ? mapper(value) : Optional<U>.Empty;
+		public Optional<U> Convert<U>(ValueFunc<T, Optional<U>> mapper) => IsPresent ? mapper.Invoke(value) : Optional<U>.Empty;
+
+        /// <summary>
+        /// If a value is present, apply the provided mapping function to it, and if the result is 
+		/// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
+        /// </summary>
+        /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
+        /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
+        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
+		public Optional<U> Convert<U>(Converter<T, Optional<U>> mapper) => Convert(new ValueFunc<T, Optional<U>>(mapper));
 
         /// <summary>
         /// If a value is present, and the value matches the given predicate, 
@@ -290,7 +325,15 @@ namespace DotNext
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
         /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
-        public Optional<T> If(Predicate<T> condition) => IsPresent && condition(value) ? this : Empty;
+        public Optional<T> If(ValuePredicate<T> condition) => IsPresent && condition.Invoke(value) ? this : Empty;
+
+        /// <summary>
+        /// If a value is present, and the value matches the given predicate, 
+        /// return an Optional describing the value, otherwise return an empty Optional.
+        /// </summary>
+        /// <param name="condition">A predicate to apply to the value, if present.</param>
+        /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
+        public Optional<T> If(Predicate<T> condition) => If(new ValuePredicate<T>(condition));
 
         /// <summary>
         /// Returns textual representation of this object.

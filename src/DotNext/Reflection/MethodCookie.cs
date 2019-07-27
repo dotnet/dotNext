@@ -42,7 +42,10 @@ namespace DotNext.Reflection
         internal P Create(object target = null)
         {
             var result = default(P);
-            result.Construct(method.GetFunctionPointer(), target);
+            if(target is Delegate && ValueType<RuntimeMethodHandle>.IsDefault(method))
+                result.Construct(IntPtr.Zero, target);
+            else
+                result.Construct(method.GetFunctionPointer(), target);
             return result;
         }
     }
@@ -65,13 +68,27 @@ namespace DotNext.Reflection
         where P : struct, IMethodPointer<D>, IMethodCookieSupport
     {
         private readonly MethodPointerFactory<P> factory;
+        private readonly D prototype;
 
         /// <summary>
         /// Initializes a new static method cookie.
         /// </summary>
         /// <param name="delegate">The delegate referencing a static method for which pointers should be created.</param>
         public MethodCookie(D @delegate)
-            => factory = new MethodPointerFactory<P>(@delegate.Target is null ? @delegate.Method : throw new ArgumentException(ExceptionMessages.InvalidMethodSignature, nameof(@delegate)));
+        {
+            if(@delegate.Target != null)
+                throw new ArgumentException(ExceptionMessages.InvalidMethodSignature, nameof(@delegate));
+            if(@delegate.Method.IsAbstract)
+            {
+                factory = default;
+                prototype = @delegate;
+            }
+            else
+            {
+                factory = new MethodPointerFactory<P>(@delegate.Method);
+                prototype = null;
+            }
+        }
 
         /// <summary>
         /// Initializes a new static method cookie.
@@ -86,7 +103,7 @@ namespace DotNext.Reflection
         /// Gets pointer to the underlying static method.
         /// </summary>
         /// <value>The pointer to the underlying static method.</value>
-        public P Pointer => factory.Create();
+        public P Pointer => factory.Create(prototype);
 
         /// <summary>
         /// Gets underlying method in textual format.
@@ -122,18 +139,37 @@ namespace DotNext.Reflection
         where P : struct, IMethodPointer<D>, IMethodCookieSupport
     {
         private readonly MethodPointerFactory<P> factory;
+        private readonly MethodInfo prototype;
 
         /// <summary>
-        /// Initializes a new instance method cookie.
+        /// Initializes a new instance of method cookie.
         /// </summary>
         /// <param name="delegate">The delegate referencing an instance method for which pointers should be created.</param>
         public MethodCookie(D @delegate)
-            => factory = new MethodPointerFactory<P>( @delegate.Target is T ? @delegate.Method : throw new ArgumentException(ExceptionMessages.InvalidMethodSignature, nameof(@delegate)));
+        {
+            if(!(@delegate.Target is T))
+                throw new ArgumentException(ExceptionMessages.InvalidMethodSignature, nameof(@delegate));
+            var method = typeof(T).Devirtualize(@delegate.Method);
+            if(method is null)
+            {
+                prototype = @delegate.Method;
+                factory = default;
+            }
+            else
+            {
+                prototype = null;
+                factory = new MethodPointerFactory<P>(method);
+            }
+        }
 
         /// <summary>
-        /// Initializes a new instance method cookie.
+        /// Initializes a new instance of method cookie.
         /// </summary>
+        /// <remarks>
+        /// This constructor is supported only when <typeparamref name="T"/> is not an interface.
+        /// </remarks>
         /// <param name="method">An instance method for which pointers should be created.</param>
+        /// <exception cref="ArgumentException">The method is abstract.</exception>
         public MethodCookie(MethodInfo method)
             : this(method.CreateDelegate<D>(CreateStub()))
         {
@@ -155,7 +191,14 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="obj">The object to be used as <c>this</c> argument.</param>
         /// <returns>The created pointer.</returns>
-        public P Bind(T obj) => factory.Create(obj ?? throw new ArgumentNullException(nameof(obj)));
+        public P Bind(T obj)
+        {
+            if(obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            return prototype is null ? 
+                factory.Create(obj) :
+                factory.Create(prototype.CreateDelegate<D>(obj));
+        }
 
         /// <summary>
         /// Gets underlying method in textual format.

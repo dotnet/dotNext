@@ -31,7 +31,7 @@ namespace DotNext
                 this.factory = factory;
             }
 
-            V ISupplier<V>.Supply() => factory.Invoke(arg);
+            V ISupplier<V>.Invoke() => factory.Invoke(arg);
         }
 
         private readonly struct Supplier<T1, T2, V> : ISupplier<V>
@@ -47,7 +47,7 @@ namespace DotNext
                 this.factory = factory;
             }
 
-            V ISupplier<V>.Supply() => factory.Invoke(arg1, arg2);
+            V ISupplier<V>.Invoke() => factory.Invoke(arg1, arg2);
         }
 
         [SuppressMessage("Performance", "CA1812", Justification = "It is instantiated by method GetOrCreateValue")]
@@ -78,7 +78,7 @@ namespace DotNext
                 using (synchronizer.AcquireWriteLock())
                 {
                     if (!slot.GetUserData(this, out userData))
-                        slot.SetUserData(this, userData = valueFactory.Supply());
+                        slot.SetUserData(this, userData = valueFactory.Invoke());
                     return userData;
                 }
             }

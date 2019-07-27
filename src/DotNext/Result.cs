@@ -124,12 +124,12 @@ namespace DotNext
         /// <param name="converter">A mapping function to be applied to the value, if present.</param>
         /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
         /// <returns>The conversion result.</returns>
-        public Result<U> Convert<U>(Converter<T, U> converter)
+        public Result<U> Convert<U>(ValueFunc<T, U> converter)
         {
             if (exception is null)
                 try
                 {
-                    return converter(value);
+                    return converter.Invoke(value);
                 }
                 catch (Exception e)
                 {
@@ -138,6 +138,15 @@ namespace DotNext
             else
                 return new Result<U>(exception);
         }
+
+        /// <summary>
+        /// If successful result is present, apply the provided mapping function hiding any exception
+        /// caused by the converter.
+        /// </summary>
+        /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+        /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
+        /// <returns>The conversion result.</returns>
+        public Result<U> Convert<U>(Converter<T, U> converter) => Convert(new ValueFunc<T, U>(converter));
 
         /// <summary>
         /// Attempts to extract value from container if it is present.
@@ -168,14 +177,28 @@ namespace DotNext
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<T> defaultFunc) => exception is null ? value : defaultFunc();
+        public T OrInvoke(ValueFunc<T> defaultFunc) => exception is null ? value : defaultFunc.Invoke();
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<Exception, T> defaultFunc) => exception is null ? value : defaultFunc(exception.SourceException);
+        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc));
+
+        /// <summary>
+        /// Returns the value if present; otherwise invoke delegate.
+        /// </summary>
+        /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
+        /// <returns>The value, if present, otherwise returned from delegate.</returns>
+        public T OrInvoke(ValueFunc<Exception, T> defaultFunc) => exception is null ? value : defaultFunc.Invoke(exception.SourceException);
+
+        /// <summary>
+        /// Returns the value if present; otherwise invoke delegate.
+        /// </summary>
+        /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
+        /// <returns>The value, if present, otherwise returned from delegate.</returns>
+        public T OrInvoke(Func<Exception, T> defaultFunc) => OrInvoke(new ValueFunc<Exception, T>(defaultFunc));
 
         /// <summary>
         /// Gets exception associated with this result.
