@@ -12,17 +12,25 @@ namespace DotNext
 {
     using IMethodCookieSupport = Reflection.IMethodCookieSupport;
 
+    /// <summary>
+    /// Represents call delegation type.
+    /// </summary>
     internal enum DelegationType : uint
     {
-        None = 0,
+        /// <summary>
+        /// The call should be done using underlying delegate instance.
+        /// </summary>
+        RedirectToDelegate = 0,
 
-        OpenStaticMethod = 1,
+        /// <summary>
+        /// The call should be performed using CALLI instruction and Standard managed calling convention
+        /// </summary>
+        StaticIndirectCall = 1U,
 
-        ClosedStaticMethod = 2,
-
-        OpenInstanceMethod = 3,
-
-        ClosedInstanceMethod = 4
+        /// <summary>
+        /// The call should be performed using CALLI instruction and HasThis managed calling convention
+        /// </summary>
+        InstanceIndirectCall = 2U
     }
 
     /// <summary>
@@ -38,7 +46,8 @@ namespace DotNext
     public readonly struct ValueAction : IMethodPointer<Action>, IEquatable<ValueAction>, IMethodCookieSupport
     {
         private readonly IntPtr methodPtr;
-        private readonly object target;
+        private readonly DelegationType type;
+        private readonly Action action;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -48,11 +57,10 @@ namespace DotNext
         /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
-        /// <param name="target">The object targeted by the method pointer.</param>
         /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Signature of <paramref name="method"/> doesn't match to this pointer type.</exception>
-        public ValueAction(MethodInfo method, object target = null)
-            : this(method.CreateDelegate<Action>(target))
+        public ValueAction(MethodInfo method)
+            : this(method.CreateDelegate<Action>())
         {
         }
 
@@ -62,22 +70,23 @@ namespace DotNext
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action action)
         {
-            if(action.Method.IsAbstract)
+            if(action.Method.IsAbstract || action.Target != null)
             {
-                target = action;
+                this.action = action;
+                type = DelegationType.RedirectToDelegate;
                 methodPtr = default;
             }
             else
             {
-                target = action.Target;
+                this.action = null;
+                type = action.Method.IsStatic ? DelegationType.StaticIndirectCall : DelegationType.InstanceIndirectCall;
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
-        internal ValueAction(IntPtr methodPtr, object target)
+        internal ValueAction(RuntimeMethodHandle method, bool isInstance, object target)
         {
-            this.methodPtr = methodPtr;
-            this.target = target;
+            
         }
 
         void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
@@ -88,26 +97,22 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => target;
+        public object Target => action?.Target;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Action CreateDelegate(IntPtr methodPtr, object target)
+        {
+            Push(target);
+            Push(methodPtr);
+            Newobj(M.Constructor(typeof(Action), typeof(object), typeof(IntPtr)));
+            return Return<Action>();
+        }
 
         /// <summary>
         /// Converts this pointer into <see cref="Action"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Action ToDelegate()
-        {
-            const string makeDelegate = "makeDelegate";
-            Push(target);
-            Push(methodPtr);
-            Dup();
-            Brtrue(makeDelegate);
-            Pop();
-            Isinst(typeof(Action));
-            Ret();
-            MarkLabel(makeDelegate);
-            Newobj(M.Constructor(typeof(Action), typeof(object), typeof(IntPtr)));
-            return Return<Action>();
-        }
+        public Action ToDelegate() => methodPtr == IntPtr.Zero ? action as Action : CreateDelegate(methodPtr, null);
 
         /// <summary>
         /// Converts implicitly bound method pointer into its unbound version.
