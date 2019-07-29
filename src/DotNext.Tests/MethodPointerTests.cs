@@ -191,5 +191,13 @@ namespace DotNext
         {
             Throws<NullReferenceException>(() => new ValueAction().Invoke());
         }
+
+        [Fact]
+        public static void OperatorAsDelegate()
+        {
+            var op = DelegateHelpers.CreateOpenDelegate<Func<decimal, decimal>>(arg => -arg);
+            var ptr = new ValueFunc<decimal, decimal>(op);
+            Equal(-10M, ptr.Invoke(10M));
+        }
     }
 }

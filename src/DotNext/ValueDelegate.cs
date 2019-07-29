@@ -12,6 +12,19 @@ namespace DotNext
 {
     using IMethodCookieSupport = Reflection.IMethodCookieSupport;
 
+    internal enum DelegationType : uint
+    {
+        None = 0,
+
+        OpenStaticMethod = 1,
+
+        ClosedStaticMethod = 2,
+
+        OpenInstanceMethod = 3,
+
+        ClosedInstanceMethod = 4
+    }
+
     /// <summary>
     /// Represents a pointer to parameterless method with <see cref="void"/> return type.
     /// </summary>
@@ -674,6 +687,7 @@ namespace DotNext
     {
         private readonly IntPtr methodPtr;
         private readonly object target;
+        private readonly DelegationType type;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -701,11 +715,15 @@ namespace DotNext
             {
                 target = func;
                 methodPtr = default;
+                type = DelegationType.None;
             }
             else
             {
                 target = func.Target;
                 methodPtr = func.Method.MethodHandle.GetFunctionPointer();
+                type = func.Method.IsStatic ?
+                    (target is null ? DelegationType.OpenStaticMethod : DelegationType.ClosedStaticMethod) :
+                    (target is null ? DelegationType.OpenInstanceMethod : DelegationType.ClosedInstanceMethod);
             }
         }
 
@@ -722,6 +740,7 @@ namespace DotNext
         {
             this.methodPtr = methodPtr;
             this.target = target;
+            type = DelegationType.None;
         }
 
         void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
@@ -823,29 +842,49 @@ namespace DotNext
         /// <returns>The result of method invocation.</returns>
         public R Invoke(T arg)
         {
-            const string callIndirect = "indirect";
-            const string callImplicitThis = "implicitThis";
+            const string callDelegate = "delegate";
+            const string openStatic = "openStatic";
+            const string closedStatic = "closedStatic";
+            const string openInstance = "openInstance";
+            const string closedInstance = "closedInstance";
+            Push(type);
+            Switch(callDelegate, openStatic, closedStatic, openInstance, closedInstance);
+            
+            //redirect call to delegate
+            MarkLabel(callDelegate);
             Push(target);
-            Push(methodPtr);
-            Brtrue(callIndirect);
-
             Push(arg);
             Tail();
             Callvirt(new M(typeof(Func<T, R>), nameof(Invoke)));
             Ret();
-            MarkLabel(callIndirect);
-            
-            Dup();
-            Brtrue(callImplicitThis);
-            
-            Pop();
+
+            //open static method
+            MarkLabel(openStatic);
             Push(arg);
             Push(methodPtr);
             Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T)));
             Ret();
-            
-            MarkLabel(callImplicitThis);
+
+            //closed static method
+            MarkLabel(closedStatic);
+            Push(target);
+            Push(arg);
+            Push(methodPtr);
+            Tail();
+            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(object), typeof(T)));
+            Ret();
+
+            //open instance method
+            MarkLabel(openInstance);
+            Push(arg);
+            Push(methodPtr);
+            Tail();
+            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R)));
+            Ret();
+
+            MarkLabel(closedInstance);
+            Push(target);
             Push(arg);
             Push(methodPtr);
             Tail();
