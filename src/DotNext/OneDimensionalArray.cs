@@ -284,7 +284,7 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>32-bit hash code of the array content.</returns>
-        public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, ValueFunc<int, int, int> hashFunction, bool salted = true)
+        public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
         {
             if (array.IsNullOrEmpty())
@@ -315,7 +315,7 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>64-bit hash code of the array content.</returns>
-        public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, ValueFunc<long, long, long> hashFunction, bool salted = true)
+        public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
         {
             if (array.IsNullOrEmpty())

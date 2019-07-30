@@ -25,7 +25,7 @@ namespace DotNext.Threading
             where T : class
             => Atomic<T>.Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
 
-        private static (T OldValue, T NewValue) Update<T>(ref T value, ValueFunc<T, T> updater)
+        private static (T OldValue, T NewValue) Update<T>(ref T value, in ValueFunc<T, T> updater)
             where T : class
         {
             T oldValue, newValue;
@@ -37,7 +37,7 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-        private static (T OldValue, T NewValue) Accumulate<T>(ref T value, T x, ValueFunc<T, T, T> accumulator)
+        private static (T OldValue, T NewValue) Accumulate<T>(ref T value, T x, in ValueFunc<T, T, T> accumulator)
             where T : class
         {
             T oldValue, newValue;
@@ -79,7 +79,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T AccumulateAndGet<T>(ref T value, T x, ValueFunc<T, T, T> accumulator)
+        public static T AccumulateAndGet<T>(ref T value, T x, in ValueFunc<T, T, T> accumulator)
             where T : class
             => Accumulate(ref value, x, accumulator).NewValue;
 
@@ -113,7 +113,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T GetAndAccumulate<T>(ref T value, T x, ValueFunc<T, T, T> accumulator)
+        public static T GetAndAccumulate<T>(ref T value, T x, in ValueFunc<T, T, T> accumulator)
             where T : class
             => Accumulate(ref value, x, accumulator).OldValue;
 
@@ -139,7 +139,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T UpdateAndGet<T>(ref T value, ValueFunc<T, T> updater)
+        public static T UpdateAndGet<T>(ref T value, in ValueFunc<T, T> updater)
             where T : class
             => Update(ref value, updater).NewValue;
 
@@ -165,7 +165,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T GetAndUpdate<T>(ref T value, ValueFunc<T, T> updater)
+        public static T GetAndUpdate<T>(ref T value, in ValueFunc<T, T> updater)
             where T : class
             => Update(ref value, updater).OldValue;
 
@@ -271,7 +271,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The updated value.</returns>
-		public static T AccumulateAndGet<T>(this T[] array, long index, T x, ValueFunc<T, T, T> accumulator)
+		public static T AccumulateAndGet<T>(this T[] array, long index, T x, in ValueFunc<T, T, T> accumulator)
             where T : class
             => AccumulateAndGet(ref array[index], x, accumulator);
 
@@ -303,7 +303,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The original value of the array element.</returns>
-		public static T GetAndAccumulate<T>(this T[] array, long index, T x, ValueFunc<T, T, T> accumulator)
+		public static T GetAndAccumulate<T>(this T[] array, long index, T x, in ValueFunc<T, T, T> accumulator)
             where T : class
             => GetAndAccumulate(ref array[index], x, accumulator);
 
@@ -327,7 +327,7 @@ namespace DotNext.Threading
         /// <param name="index">The index of the array element to be modified.</param>
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
-		public static T UpdateAndGet<T>(this T[] array, long index, ValueFunc<T, T> updater)
+		public static T UpdateAndGet<T>(this T[] array, long index, in ValueFunc<T, T> updater)
             where T : class
             => UpdateAndGet(ref array[index], updater);
 
@@ -351,7 +351,7 @@ namespace DotNext.Threading
         /// <param name="index">The index of the array element to be modified.</param>
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value of the array element.</returns>
-		public static T GetAndUpdate<T>(this T[] array, long index, ValueFunc<T, T> updater)
+		public static T GetAndUpdate<T>(this T[] array, long index, in ValueFunc<T, T> updater)
             where T : class
             => GetAndUpdate(ref array[index], updater);
     }
@@ -500,7 +500,7 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The updated value.</returns>
-        public T AccumulateAndGet(T x, ValueFunc<T, T, T> accumulator)
+        public T AccumulateAndGet(T x, in ValueFunc<T, T, T> accumulator)
             => AtomicReference.AccumulateAndGet(ref value, x, accumulator);
 
         /// <summary>
@@ -526,7 +526,7 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The original value.</returns>
-        public T GetAndAccumulate(T x, ValueFunc<T, T, T> accumulator)
+        public T GetAndAccumulate(T x, in ValueFunc<T, T, T> accumulator)
             => AtomicReference.GetAndAccumulate(ref value, x, accumulator);
 
         /// <summary>
@@ -544,7 +544,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
-        public T UpdateAndGet(ValueFunc<T, T> updater)
+        public T UpdateAndGet(in ValueFunc<T, T> updater)
             => AtomicReference.UpdateAndGet(ref value, updater);
 
         /// <summary>
@@ -562,7 +562,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
-        public T GetAndUpdate(ValueFunc<T, T> updater)
+        public T GetAndUpdate(in ValueFunc<T, T> updater)
             => AtomicReference.GetAndUpdate(ref value, updater);
 
         /// <summary>

@@ -90,7 +90,7 @@ namespace DotNext
         /// <param name="decomposer2">Second decomposition function.</param>
         /// <param name="result1">First decomposition result.</param>
         /// <param name="result2">Second decomposition result.</param>
-        public static void Decompose<T, R1, R2>(this T obj, ValueFunc<T, R1> decomposer1, ValueFunc<T, R2> decomposer2, out R1 result1, out R2 result2)
+        public static void Decompose<T, R1, R2>(this T obj, in ValueFunc<T, R1> decomposer1, in ValueFunc<T, R2> decomposer2, out R1 result1, out R2 result2)
             where T : class
         {
             result1 = decomposer1.Invoke(obj);
@@ -121,7 +121,7 @@ namespace DotNext
         /// <param name="decomposer1">First decomposition function.</param>
         /// <param name="decomposer2">Second decomposition function.</param>
         /// <returns>Decomposition result.</returns>
-        public static (R1, R2) Decompose<T, R1, R2>(this T obj, ValueFunc<T, R1> decomposer1, ValueFunc<T, R2> decomposer2)
+        public static (R1, R2) Decompose<T, R1, R2>(this T obj, in ValueFunc<T, R1> decomposer1, in ValueFunc<T, R2> decomposer2)
             where T : class
         {
             var tuple = default((R1 result1, R2 result2));

@@ -87,7 +87,7 @@ namespace DotNext.Collections.Generic
         /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
         /// <param name="mapper">Element mapping function.</param>
         /// <returns>An array of list items.</returns>
-        public static O[] ToArray<I, O>(this IList<I> input, ValueFunc<I, O> mapper)
+        public static O[] ToArray<I, O>(this IList<I> input, in ValueFunc<I, O> mapper)
         {
             var output = OneDimensionalArray.New<O>(input.Count);
             for (var i = 0; i < input.Count; i++)
@@ -115,7 +115,7 @@ namespace DotNext.Collections.Generic
         /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
         /// <param name="mapper">Index-aware element mapping function.</param>
         /// <returns>An array of list items.</returns>
-        public static O[] ToArray<I, O>(this IList<I> input, ValueFunc<int, I, O> mapper)
+        public static O[] ToArray<I, O>(this IList<I> input, in ValueFunc<int, I, O> mapper)
         {
             var output = OneDimensionalArray.New<O>(input.Count);
             for (var i = 0; i < input.Count; i++)
@@ -143,7 +143,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="I">Type of items in the source list.</typeparam>
         /// <typeparam name="O">Type of items in the target list.</typeparam>
         /// <returns>Lazily converted read-only list.</returns>
-        public static ReadOnlyListView<I, O> Convert<I, O>(this IReadOnlyList<I> list, ValueFunc<I, O> converter) => new ReadOnlyListView<I, O>(list, converter);
+        public static ReadOnlyListView<I, O> Convert<I, O>(this IReadOnlyList<I> list, in ValueFunc<I, O> converter) => new ReadOnlyListView<I, O>(list, converter);
 
         /// <summary>
         /// Returns lazily converted read-only list.

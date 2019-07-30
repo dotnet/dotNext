@@ -16,7 +16,7 @@ namespace DotNext.Collections.Generic
         /// <param name="collection">Read-only collection to convert.</param>
         /// <param name="converter">A collection item conversion function.</param>
         /// <returns>Lazily converted read-only collection.</returns>
-        public static ReadOnlyCollectionView<I, O> Convert<I, O>(this IReadOnlyCollection<I> collection, ValueFunc<I, O> converter)
+        public static ReadOnlyCollectionView<I, O> Convert<I, O>(this IReadOnlyCollection<I> collection, in ValueFunc<I, O> converter)
             => new ReadOnlyCollectionView<I, O>(collection, converter);
 
         /// <summary>

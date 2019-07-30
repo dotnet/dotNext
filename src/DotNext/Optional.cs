@@ -243,7 +243,7 @@ namespace DotNext
         /// <typeparam name="E"></typeparam>
         /// <param name="exceptionFactory">Exception factory.</param>
         /// <returns>The value, if present.</returns>
-        public T OrThrow<E>(ValueFunc<E> exceptionFactory)
+        public T OrThrow<E>(in ValueFunc<E> exceptionFactory)
             where E : Exception
             => IsPresent ? value : throw exceptionFactory.Invoke();
 
@@ -262,7 +262,7 @@ namespace DotNext
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(ValueFunc<T> defaultFunc) => IsPresent ? value : defaultFunc.Invoke();
+        public T OrInvoke(in ValueFunc<T> defaultFunc) => IsPresent ? value : defaultFunc.Invoke();
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
@@ -290,7 +290,7 @@ namespace DotNext
         /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-        public Optional<U> Convert<U>(ValueFunc<T, U> mapper) => IsPresent ? mapper.Invoke(value) : Optional<U>.Empty;
+        public Optional<U> Convert<U>(in ValueFunc<T, U> mapper) => IsPresent ? mapper.Invoke(value) : Optional<U>.Empty;
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is 
@@ -308,7 +308,7 @@ namespace DotNext
         /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-		public Optional<U> Convert<U>(ValueFunc<T, Optional<U>> mapper) => IsPresent ? mapper.Invoke(value) : Optional<U>.Empty;
+		public Optional<U> Convert<U>(in ValueFunc<T, Optional<U>> mapper) => IsPresent ? mapper.Invoke(value) : Optional<U>.Empty;
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is 

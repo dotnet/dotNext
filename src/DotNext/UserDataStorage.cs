@@ -25,7 +25,7 @@ namespace DotNext
             private readonly T arg;
             private readonly ValueFunc<T, V> factory;
 
-            internal Supplier(T arg, ValueFunc<T, V> factory)
+            internal Supplier(T arg, in ValueFunc<T, V> factory)
             {
                 this.arg = arg;
                 this.factory = factory;
@@ -40,7 +40,7 @@ namespace DotNext
             private readonly T2 arg2;
             private readonly ValueFunc<T1, T2, V> factory;
 
-            internal Supplier(T1 arg1, T2 arg2, ValueFunc<T1, T2, V> factory)
+            internal Supplier(T1 arg1, T2 arg2, in ValueFunc<T1, T2, V> factory)
             {
                 this.arg1 = arg1;
                 this.arg2 = arg2;
@@ -234,8 +234,8 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V  GetOrSet<V>(UserDataSlot<V> slot, ValueFunc<V> valueFactory)
-            => GetStorage(true).GetOrSet(slot, ref valueFactory);
+        public V GetOrSet<V>(UserDataSlot<V> slot, in ValueFunc<V> valueFactory)
+            => GetStorage(true).GetOrSet(slot, ref Unsafe.AsRef(valueFactory));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -246,7 +246,7 @@ namespace DotNext
         /// <param name="arg">The argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, ValueFunc<T, V> valueFactory)
+        public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, in ValueFunc<T, V> valueFactory)
         {
             var supplier = new Supplier<T, V>(arg, valueFactory);
             return GetStorage(true).GetOrSet(slot, ref supplier);
@@ -263,7 +263,7 @@ namespace DotNext
         /// <param name="arg2">The second argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, ValueFunc<T1, T2, V> valueFactory)
+        public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, in ValueFunc<T1, T2, V> valueFactory)
         {
             var supplier = new Supplier<T1, T2, V>(arg1, arg2, valueFactory);
             return GetStorage(true).GetOrSet(slot, ref supplier);

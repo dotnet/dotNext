@@ -21,7 +21,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="collection">Read-only collection to convert.</param>
         /// <param name="mapper">Collection items converter.</param>
-        public ReadOnlyCollectionView(IReadOnlyCollection<I> collection, ValueFunc<I, O> mapper)
+        public ReadOnlyCollectionView(IReadOnlyCollection<I> collection, in ValueFunc<I, O> mapper)
         {
             source = collection ?? throw new ArgumentNullException(nameof(collection));
             this.mapper = mapper;

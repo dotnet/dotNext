@@ -81,7 +81,7 @@ namespace DotNext.Threading
             return update;
         }
 
-        private (E OldValue, E NewValue) Update(ValueFunc<E, E> updater)
+        private (E OldValue, E NewValue) Update(in ValueFunc<E, E> updater)
         {
             E oldValue, newValue;
             do
@@ -92,7 +92,7 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-        private (E OldValue, E NewValue) Accumulate(E x, ValueFunc<E, E, E> accumulator)
+        private (E OldValue, E NewValue) Accumulate(E x, in ValueFunc<E, E, E> accumulator)
         {
             E oldValue, newValue;
             do
@@ -126,7 +126,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
-		public E AccumulateAndGet(E x, ValueFunc<E, E, E> accumulator)
+		public E AccumulateAndGet(E x, in ValueFunc<E, E, E> accumulator)
             => Accumulate(x, accumulator).NewValue;
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
-		public E GetAndAccumulate(E x, ValueFunc<E, E, E> accumulator)
+		public E GetAndAccumulate(E x, in ValueFunc<E, E, E> accumulator)
             => Accumulate(x, accumulator).OldValue;
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
-        public E UpdateAndGet(ValueFunc<E, E> updater)
+        public E UpdateAndGet(in ValueFunc<E, E> updater)
             => Update(updater).NewValue;
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
-        public E GetAndUpdate(ValueFunc<E, E> updater)
+        public E GetAndUpdate(in ValueFunc<E, E> updater)
             => Update(updater).OldValue;
 
         /// <summary>

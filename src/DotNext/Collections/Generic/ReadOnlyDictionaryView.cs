@@ -22,7 +22,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="dictionary">Read-only dictionary to convert.</param>
         /// <param name="mapper">Value converter.</param>
-        public ReadOnlyDictionaryView(IReadOnlyDictionary<K, I> dictionary, ValueFunc<I, O> mapper)
+        public ReadOnlyDictionaryView(IReadOnlyDictionary<K, I> dictionary, in ValueFunc<I, O> mapper)
         {
             source = dictionary ?? throw new ArgumentNullException(nameof(dictionary));
             this.mapper = mapper;

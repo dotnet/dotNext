@@ -107,7 +107,7 @@ namespace DotNext.Threading
             return update;
         }
 
-        private static (long OldValue, long NewValue) Update(ref long value, ValueFunc<long, long> updater)
+        private static (long OldValue, long NewValue) Update(ref long value, in ValueFunc<long, long> updater)
         {
             long oldValue, newValue;
             do
@@ -118,7 +118,7 @@ namespace DotNext.Threading
             return (oldValue, newValue);
         }
 
-        private static (long OldValue, long NewValue) Accumulate(ref long value, long x, ValueFunc<long, long, long> accumulator)
+        private static (long OldValue, long NewValue) Accumulate(ref long value, long x, in ValueFunc<long, long, long> accumulator)
         {
             long oldValue, newValue;
             do
@@ -156,7 +156,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long AccumulateAndGet(ref this long value, long x, ValueFunc<long, long, long> accumulator)
+        public static long AccumulateAndGet(ref this long value, long x, in ValueFunc<long, long, long> accumulator)
             => Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetAndAccumulate(ref this long value, long x, ValueFunc<long, long, long> accumulator)
+        public static long GetAndAccumulate(ref this long value, long x, in ValueFunc<long, long, long> accumulator)
             => Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long UpdateAndGet(ref this long value, ValueFunc<long, long> updater)
+        public static long UpdateAndGet(ref this long value, in ValueFunc<long, long> updater)
             => Update(ref value, updater).NewValue;
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetAndUpdate(ref this long value, ValueFunc<long, long> updater)
+        public static long GetAndUpdate(ref this long value, in ValueFunc<long, long> updater)
             => Update(ref value, updater).OldValue;
 
         /// <summary>
@@ -361,7 +361,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The updated value.</returns>
-		public static long AccumulateAndGet(this long[] array, long index, long x, ValueFunc<long, long, long> accumulator)
+		public static long AccumulateAndGet(this long[] array, long index, long x, in ValueFunc<long, long, long> accumulator)
             => AccumulateAndGet(ref array[index], x, accumulator);
 
         /// <summary>
@@ -391,7 +391,7 @@ namespace DotNext.Threading
 		/// <param name="x">Accumulator operand.</param>
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The original value of the array element.</returns>
-		public static long GetAndAccumulate(this long[] array, long index, long x, ValueFunc<long, long, long> accumulator)
+		public static long GetAndAccumulate(this long[] array, long index, long x, in ValueFunc<long, long, long> accumulator)
             => GetAndAccumulate(ref array[index], x, accumulator);
 
         /// <summary>
@@ -413,7 +413,7 @@ namespace DotNext.Threading
         /// <param name="index">The index of the array element to be modified.</param>
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
-		public static long UpdateAndGet(this long[] array, long index, ValueFunc<long, long> updater)
+		public static long UpdateAndGet(this long[] array, long index, in ValueFunc<long, long> updater)
             => UpdateAndGet(ref array[index], updater);
 
         /// <summary>
@@ -435,7 +435,7 @@ namespace DotNext.Threading
         /// <param name="index">The index of the array element to be modified.</param>
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value of the array element.</returns>
-		public static long GetAndUpdate(this long[] array, long index, ValueFunc<long, long> updater)
+		public static long GetAndUpdate(this long[] array, long index, in ValueFunc<long, long> updater)
             => GetAndUpdate(ref array[index], updater);
     }
 }

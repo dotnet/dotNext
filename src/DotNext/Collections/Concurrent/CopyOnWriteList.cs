@@ -185,7 +185,7 @@ namespace DotNext.Collections.Concurrent
         /// <typeparam name="G">The type of source items.</typeparam>
         /// <param name="items">The source items to be converted and placed into this list.</param>
         /// <param name="converter">The convert of source items.</param>
-        public void Set<G>(ICollection<G> items, ValueFunc<G, T> converter)
+        public void Set<G>(ICollection<G> items, in ValueFunc<G, T> converter)
         {
             if (items.Count == 0)
             {
