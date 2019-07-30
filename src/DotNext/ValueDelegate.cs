@@ -972,7 +972,7 @@ namespace DotNext
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
-    public readonly struct ValueFunc<T1, T2, R> : ICallable<Func<T1, T2, R>>, IEquatable<ValueFunc<T1, T2, R>>
+    public readonly struct ValueFunc<T1, T2, R> : ICallable<Func<T1, T2, R>>, IEquatable<ValueFunc<T1, T2, R>>, ISupplier<T1, T2, R>
     {
         private readonly IntPtr methodPtr;
         private readonly bool isStatic;

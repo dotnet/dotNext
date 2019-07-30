@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using static System.Runtime.CompilerServices.Unsafe;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext
@@ -11,6 +12,15 @@ namespace DotNext
     /// </summary>
     public static class Span
     {
+        private readonly struct ValueComparer<T> : ISupplier<T, T, int>
+        {
+            private readonly IComparer<T> comparer;
+
+            internal ValueComparer(IComparer<T> comparer) => this.comparer = comparer;
+
+            int ISupplier<T, T, int>.Invoke(T arg1, T arg2) => comparer.Compare(arg1, arg2);
+        }
+
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span.
         /// </summary>
@@ -45,7 +55,7 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>32-bit hash code of the array content.</returns>
-        public static int BitwiseHashCode<T>(this Span<T> span, int hash, ValueFunc<int, int, int> hashFunction, bool salted = true)
+        public static int BitwiseHashCode<T>(this Span<T> span, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
             => BitwiseHashCode((ReadOnlySpan<T>)span, hash, hashFunction, salted);
 
@@ -71,7 +81,7 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>64-bit hash code of the array content.</returns>
-        public static long BitwiseHashCode64<T>(this Span<T> span, long hash, ValueFunc<long, long, long> hashFunction, bool salted = true)
+        public static long BitwiseHashCode64<T>(this Span<T> span, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
             => BitwiseHashCode64((ReadOnlySpan<T>)span, hash, hashFunction, salted);
 
@@ -97,7 +107,7 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>32-bit hash code of the array content.</returns>
-        public static unsafe int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, ValueFunc<int, int, int> hashFunction, bool salted = true)
+        public static unsafe int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
         {
             if (span.IsEmpty)
@@ -128,7 +138,7 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>64-bit hash code of the array content.</returns>
-        public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, ValueFunc<long, long, long> hashFunction, bool salted = true)
+        public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
         {
             if (span.IsEmpty)
@@ -225,14 +235,15 @@ namespace DotNext
             where T : unmanaged
             => AsBytes(first).SequenceCompareTo(AsBytes(second));
 
-        private static int Partition<T>(Span<T> span, int startIndex, int endIndex, IComparer<T> comparison)
+        private static int Partition<T, C>(Span<T> span, int startIndex, int endIndex, ref C comparison)
+            where C : struct, ISupplier<T, T, int>
         {
             var pivot = span[endIndex];
             var i = startIndex - 1;
             for (var j = startIndex; j < endIndex; j++)
             {
                 ref var jptr = ref span[j];
-                if (comparison.Compare(jptr, pivot) > 0) continue;
+                if (comparison.Invoke(jptr, pivot) > 0) continue;
                 i += 1;
                 Memory.Swap(ref span[i], ref jptr);
             }
@@ -242,12 +253,13 @@ namespace DotNext
             return i;
         }
 
-        private static void QuickSort<T>(Span<T> span, int startIndex, int endIndex, IComparer<T> comparison)
+        private static void QuickSort<T, C>(Span<T> span, int startIndex, int endIndex, ref C comparison)
+            where C : struct, ISupplier<T, T, int>
         {
             while (startIndex < endIndex)
             {
-                var partitionIndex = Partition(span, startIndex, endIndex, comparison);
-                QuickSort(span, startIndex, partitionIndex - 1, comparison);
+                var partitionIndex = Partition(span, startIndex, endIndex, ref comparison);
+                QuickSort(span, startIndex, partitionIndex - 1, ref comparison);
                 startIndex = partitionIndex + 1;
             }
         }
@@ -259,6 +271,18 @@ namespace DotNext
         /// <param name="comparison">The comparer used for sorting.</param>
         /// <typeparam name="T">The type of the elements.</typeparam>
         public static void Sort<T>(this Span<T> span, IComparer<T> comparison = null)
-            => QuickSort(span, 0, span.Length - 1, comparison ?? Comparer<T>.Default);
+        {
+            var cmp = new ValueComparer<T>(comparison ?? Comparer<T>.Default);
+            QuickSort(span, 0, span.Length - 1, ref cmp);
+        }
+
+        /// <summary>
+        /// Sorts the elements.
+        /// </summary>
+        /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
+        /// <param name="comparison">The comparer used for sorting.</param>
+        /// <typeparam name="T">The type of the elements.</typeparam>
+        public static void Sort<T>(this Span<T> span, in ValueFunc<T, T, int> comparison)
+            => QuickSort(span, 0, span.Length - 1, ref AsRef(comparison));
     }
 }
