@@ -161,15 +161,15 @@ namespace DotNext
             => BitwiseEquals(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int BitwiseHashCode(ref T value, int hash, ValueFunc<int, int, int> hashFunction, bool salted)
+        private static int BitwiseHashCode(ref T value, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
         {
             Push(ref value);
             Sizeof(typeof(T));
             Conv_I8();
             Push(hash);
-            Push(hashFunction);
+            Ldarg(nameof(hashFunction));
             Push(salted);
-            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>), typeof(bool)));
+            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>).MakeByRefType(), typeof(bool)));
             return Return<int>();
         }
 

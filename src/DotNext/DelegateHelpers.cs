@@ -115,6 +115,14 @@ namespace DotNext
             return method.CreateDelegate<D>(obj); 
         }
 
+        /// <summary>
+        /// Produces delegate which first argument is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of the first argument to bind.</typeparam>
+        /// <param name="action">The action to bind.</param>
+        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <param name="devirtualize"><see langword="true"/> to devirtualize the method identified by the passed delegate using <paramref name="obj"/>; otherwise, <see langword="false"/>.</param>
+        /// <returns>The delegate targeting the specified object.</returns>
         public static Action Bind<T>(this Action<T> action, T obj, bool devirtualize = false)
             where T : class
             => action.BindUnsafe<T, Action>(obj, devirtualize);
@@ -159,6 +167,12 @@ namespace DotNext
             where U : MulticastDelegate
             => ObjectExtensions.IsContravariant(del.Target, targetType) ? del.Method.CreateDelegate<U>() : throw new InvalidOperationException();
 
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="T">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <param name="action">The delegate to unbind.</param>
+        /// <returns>Unbound version of method pointer.</returns>
         public static Action<T> Unbind<T>(this Action action) where T : class => action.UnsafeUnbind<Action<T>>(typeof(T));
         
         public static Func<T, R> Unbind<T, R>(this Func<R> func) where T : class => func.UnsafeUnbind<Func<T, R>>(typeof(T));

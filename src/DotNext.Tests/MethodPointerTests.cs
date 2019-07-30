@@ -5,8 +5,6 @@ using Xunit;
 
 namespace DotNext
 {
-    using Reflection;
-
     public sealed class MethodPointerTests : Assert
     {
         private static object CreateObject() => new object();
@@ -55,22 +53,8 @@ namespace DotNext
         {
             var method = GetType().GetMethod(nameof(Dup), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
             var obj = "123";
-            var ptr = new ValueFunc<string>(method, obj);
+            var ptr = new ValueFunc<string>(method.CreateDelegate<Func<string>>(obj));
             Equal("123123", ptr.Invoke());
-            var cookie = new MethodCookie<string, Func<string>, ValueFunc<string>>(method);
-            ptr = cookie & "456";
-            Equal("456456", ptr.Invoke());
-        }
-
-        [Fact]
-        public static void BindUnbind()
-        {
-            var ptr = new ValueFunc<string, string>(new Func<string, string>(Dup));
-            Equal("123123", ptr.Invoke("123"));
-            var ptr2 = ptr.Bind("456");
-            Equal("456456", ptr2.Invoke());
-            ptr = ptr2.Unbind<string>();
-            Equal("123123", ptr.Invoke("123"));
         }
         
         [Fact]
@@ -93,17 +77,11 @@ namespace DotNext
         }
 
         [Fact]
-        public static void UsingMethodPointerSource()
-        {
-            var factory = new MethodCookie<Func<object>, ValueFunc<object>>(CreateObject);
-            NotNull(factory.Pointer.Invoke());
-        }
-
-        [Fact]
         public static void ParseViaPointer()
         {
             var ptr = new ValueFunc<string, int>(new Func<string, int>(int.Parse));
             Equal(123, ptr.Invoke("123"));
+            Equal(123, ptr.ToDelegate().Invoke("123"));
             ptr = default;
             Null(ptr.ToDelegate());
         }
@@ -120,8 +98,6 @@ namespace DotNext
         {
             var ptr = new ValueFunc<string, string, string, string>(string.Concat);
             Equal("Hello, world!", ptr.Invoke("Hello", ", ", "world!"));
-            ptr = new MethodCookie<Func<string, string, string, string>, ValueFunc<string, string, string, string>>(string.Concat);
-            Equal("Hello, world!", ptr.Invoke("Hello", ", ", "world!"));
         }
 
         [Fact]
@@ -132,12 +108,13 @@ namespace DotNext
         }
 
         [Fact]
-        public static void InstanceMethodCookie()
+        public static void OpenInstanceMethod()
         {
             var method = typeof(StringBuilder).GetMethod(nameof(ToString), Type.EmptyTypes);
-            var cookie = new MethodCookie<StringBuilder, Func<string>, ValueFunc<string>>(method);
+            var ptr = new ValueFunc<StringBuilder, string>(method);
+            Null(ptr.Target);
             var builder = new StringBuilder("Hello, world!");
-            Equal("Hello, world!", cookie.Bind(builder).Invoke());
+            Equal("Hello, world!", ptr.Invoke(builder));
         }
 
         [Fact]
@@ -145,46 +122,11 @@ namespace DotNext
         {
             var method = typeof(ICounter).GetMethod(nameof(ICounter.Increment));
             var ptr = new ValueAction<ICounter>(method);
-            True(ptr.Target is Action<ICounter>);
             var counter = new Counter() { Value = 42 };
             ptr.Invoke(counter);
             Equal(43, counter.Value);
         }
 
-        [Fact]
-        public static void Devirtualization()
-        {
-            var method = typeof(ICounter).GetMethod(nameof(ICounter.Increment));
-            var counter = new Counter() { Value = 42 };
-            var ptr = new ValueAction<ICounter>(method).Bind(counter);
-            True(ptr.Target is Counter);
-            ptr.Invoke();
-            Equal(43, counter.Value);
-        }
-
-        [Fact]
-        public static void InterfaceMethodUsingCookie()
-        {
-            var method = typeof(ICounter).GetMethod(nameof(ICounter.Increment));
-            var cookie = new MethodCookie<Action<ICounter>, ValueAction<ICounter>>(method);
-            var ptr = cookie.Pointer;
-            True(ptr.Target is Action<ICounter>);
-            var counter = new Counter() { Value = 42 };
-            ptr.Invoke(counter);
-            Equal(43, counter.Value);
-        }
-
-        [Fact]
-        public static void DevirtualizationByMethodCookie()
-        {
-            var method = typeof(ICounter).GetMethod(nameof(ICounter.Increment));
-            var cookie = new MethodCookie<Counter, Action, ValueAction>(method);
-            var counter = new Counter() { Value = 42 };
-            var ptr = cookie.Bind(counter);
-            True(ptr.Target is Counter);
-            ptr.Invoke();
-            Equal(43, counter.Value);
-        }
 
         [Fact]
         public static void NullPtr()
