@@ -10,43 +10,15 @@ using TR = InlineIL.TypeRef;
 
 namespace DotNext
 {
-    using IMethodCookieSupport = Reflection.IMethodCookieSupport;
-
-    /// <summary>
-    /// Represents call delegation type.
-    /// </summary>
-    internal enum DelegationType : uint
-    {
-        /// <summary>
-        /// The call should be done using underlying delegate instance.
-        /// </summary>
-        RedirectToDelegate = 0,
-
-        /// <summary>
-        /// The call should be performed using CALLI instruction and Standard managed calling convention
-        /// </summary>
-        StaticIndirectCall = 1U,
-
-        /// <summary>
-        /// The call should be performed using CALLI instruction and HasThis managed calling convention
-        /// </summary>
-        InstanceIndirectCall = 2U
-    }
-
     /// <summary>
     /// Represents a pointer to parameterless method with <see cref="void"/> return type.
     /// </summary>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
-    /// The method pointer supports the same semantics as regular .NET delegates.
-    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
-    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
-    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueAction : IMethodPointer<Action>, IEquatable<ValueAction>, IMethodCookieSupport
+    public readonly struct ValueAction : IMethodPointer<Action>, IEquatable<ValueAction>
     {
         private readonly IntPtr methodPtr;
-        private readonly DelegationType type;
         private readonly Action action;
 
         /// <summary>
@@ -54,7 +26,7 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
+        /// with the delegate type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
         /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
@@ -68,66 +40,42 @@ namespace DotNext
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
         public ValueAction(Action action)
         {
+            if(action is null)
+                throw new ArgumentNullException(nameof(action));
             if(action.Method.IsAbstract || action.Target != null)
             {
                 this.action = action;
-                type = DelegationType.RedirectToDelegate;
                 methodPtr = default;
             }
             else
             {
                 this.action = null;
-                type = action.Method.IsStatic ? DelegationType.StaticIndirectCall : DelegationType.InstanceIndirectCall;
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
             }
         }
-
-        internal ValueAction(RuntimeMethodHandle method, bool isInstance, object target)
-        {
-            
-        }
-
-        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-            => Jmp(M.Constructor(typeof(ValueAction), typeof(IntPtr), typeof(object)));
-
-        IntPtr IMethodPointer<Action>.Address => methodPtr;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => action?.Target;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Action CreateDelegate(IntPtr methodPtr, object target)
-        {
-            Push(target);
-            Push(methodPtr);
-            Newobj(M.Constructor(typeof(Action), typeof(object), typeof(IntPtr)));
-            return Return<Action>();
-        }
-
         /// <summary>
         /// Converts this pointer into <see cref="Action"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Action ToDelegate() => methodPtr == IntPtr.Zero ? action as Action : CreateDelegate(methodPtr, null);
-
-        /// <summary>
-        /// Converts implicitly bound method pointer into its unbound version.
-        /// </summary>
-        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
-        /// <returns>Unbound version of method pointer.</returns>
-        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
-        public ValueAction<G> Unbind<G>()
-            where G : class
+        public Action ToDelegate()
         {
-            if(ObjectExtensions.IsContravariant(target, typeof(G)))
-                return new ValueAction<G>(methodPtr, null);
-            if(target is Action action && methodPtr == IntPtr.Zero)
-                return new ValueAction<G>(action.Unbind<G>());
-            throw new InvalidOperationException();
+            const string methodExit = "exit";
+            Push(action);
+            Dup();
+            Brtrue(methodExit);
+            Push(methodPtr);
+            Newobj(M.Constructor(typeof(Action), typeof(object), typeof(IntPtr)));
+            MarkLabel(methodExit);
+            return Return<Action>();
         }
 
         /// <summary>
@@ -135,27 +83,20 @@ namespace DotNext
         /// </summary>
         public void Invoke()
         {
-            const string callIndirect = "indirect";
-            const string callImplicitThis = "implicitThis";
-            Push(target);
+            const string callDelegate = "delegate";
             Push(methodPtr);
-            Brtrue(callIndirect);
-            Tail();
-            Callvirt(new M(typeof(Action), nameof(Invoke)));
-            Ret();
-            MarkLabel(callIndirect);
-            
             Dup();
-            Brtrue(callImplicitThis);
-            Pop();
-            Push(methodPtr);
+            Brfalse(callDelegate);
+
             Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void)));
             Ret();
-            MarkLabel(callImplicitThis);
-            Push(methodPtr);
+
+            MarkLabel(callDelegate);
+            Pop();
+            Push(action);
             Tail();
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void)));
+            Callvirt(new M(typeof(Action), nameof(Invoke)));
             Ret();
         }
 
@@ -164,33 +105,36 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Action(ValueAction pointer) => pointer.ToDelegate();
+        public static explicit operator Action(in ValueAction pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
         /// </summary>
         /// <returns>The hash code of this pointer.</returns>
-        public override int GetHashCode() => methodPtr.GetHashCode() ^ RuntimeHelpers.GetHashCode(target);
+        public override int GetHashCode() => methodPtr.GetHashCode() ^ action?.GetHashCode() ?? 0;
+
+        bool IEquatable<ValueAction>.Equals(ValueAction other) => Equals(other);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ValueAction other) => methodPtr == other.methodPtr && ReferenceEquals(target, other.target);
+        [CLSCompliant(false)]
+        public bool Equals(in ValueAction other) => methodPtr == other.methodPtr && Equals(action, other.action);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The object implementing <see cref="IMethodPointer{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is IMethodPointer<Delegate> ptr && methodPtr == ptr.Address && ReferenceEquals(target, ptr.Target);
+        public override bool Equals(object other) => other is ValueAction action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
+        public override string ToString() => action?.ToString() ?? methodPtr.ToString("X");
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -198,7 +142,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(ValueAction first, ValueAction second) => first.Equals(second);
+        public static bool operator ==(in ValueAction first, in ValueAction second) => first.Equals(second);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -206,7 +150,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(ValueAction first, ValueAction second) => !first.Equals(second);
+        public static bool operator !=(in ValueAction first, in ValueAction second) => !first.Equals(second);
     }
 
     /// <summary>
@@ -214,30 +158,25 @@ namespace DotNext
     /// </summary>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
-    /// The method pointer supports the same semantics as regular .NET delegates.
-    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
-    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
-    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueFunc<R> : IMethodPointer<Func<R>>, IEquatable<ValueFunc<R>>, ISupplier<R>, IMethodCookieSupport
+    public readonly struct ValueFunc<R> : IMethodPointer<Func<R>>, IEquatable<ValueFunc<R>>, ISupplier<R>
     {
         private readonly IntPtr methodPtr;
-        private readonly object target;
+        private readonly Func<R> func;
 
         /// <summary>
         /// Initializes a new pointer to the method.
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D, P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
+        /// with the delegate type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
-        /// <param name="target">The object targeted by the method pointer.</param>
         /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Signature of <paramref name="method"/> doesn't match to this pointer type.</exception>
-        public ValueFunc(MethodInfo method, object target = null)
-            : this(method.CreateDelegate<Func<R>>(target))
+        public ValueFunc(MethodInfo method)
+            : this(method.CreateDelegate<Func<R>>())
         {
         }
 
@@ -245,28 +184,28 @@ namespace DotNext
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public ValueFunc(Func<R> func)
         {
-            if(func.Method.IsAbstract)
+            if(func is null)
+                throw new ArgumentNullException(nameof(func));
+            if(func.Method.IsAbstract || func.Target != null)
             {
-                target = func;
+                this.func = func;
                 methodPtr = default;
             }
             else
             {
-                target = func.Target;
+                this.func = null;
                 methodPtr = func.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
-        internal ValueFunc(IntPtr methodPtr, object target)
+        private ValueFunc(IntPtr methodPtr)
         {
             this.methodPtr = methodPtr;
-            this.target = target;
+            func = null;
         }
-
-        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-            => Jmp(M.Constructor(typeof(ValueFunc<R>), typeof(IntPtr), typeof(object)));
 
         private static R CreateDefault() => default;
 
@@ -291,8 +230,7 @@ namespace DotNext
 
                 MarkLabel(HandleRefType);
                 Ldftn(new M(typeof(Activator), nameof(System.Activator.CreateInstance), Array.Empty<TR>()).MakeGenericMethod(typeof(R)));
-                Ldnull();
-                Newobj(M.Constructor(typeof(ValueFunc<R>), typeof(IntPtr), typeof(object)));
+                Newobj(M.Constructor(typeof(ValueFunc<R>), typeof(IntPtr)));
                 return Return<ValueFunc<R>>();
             }
         }
@@ -307,18 +245,15 @@ namespace DotNext
             get
             {
                 Ldftn(new M(typeof(ValueFunc<R>), nameof(CreateDefault)));
-                Ldnull();
-                Newobj(M.Constructor(typeof(ValueFunc<R>), typeof(IntPtr), typeof(object)));
+                Newobj(M.Constructor(typeof(ValueFunc<R>), typeof(IntPtr)));
                 return Return<ValueFunc<R>>();
             }
         }
 
-        IntPtr IMethodPointer<Func<R>>.Address => methodPtr;
-
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => target;
+        public object Target => func?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{TResult}"/>.
@@ -326,33 +261,14 @@ namespace DotNext
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
         public Func<R> ToDelegate()
         {
-            const string makeDelegate = "makeDelegate";
-            Push(target);
-            Push(methodPtr);
+            const string methodExit = "exit";
+            Push(func);
             Dup();
-            Brtrue(makeDelegate);
-            Pop();
-            Isinst(typeof(Func<R>));
-            Ret();
-            MarkLabel(makeDelegate);
+            Brtrue(methodExit);
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Func<R>), typeof(object), typeof(IntPtr)));
+            MarkLabel(methodExit);
             return Return<Func<R>>();
-        }
-
-        /// <summary>
-        /// Converts implicitly bound method pointer into its unbound version.
-        /// </summary>
-        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
-        /// <returns>Unbound version of method pointer.</returns>
-        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
-        public ValueFunc<G, R> Unbind<G>()
-            where G : class
-        {
-            if(ObjectExtensions.IsContravariant(target, typeof(G)))
-                return new ValueFunc<G, R>(methodPtr, null);
-            if(target is Func<R> func && methodPtr == IntPtr.Zero)
-                return new ValueFunc<G, R>(func.Unbind<G, R>());
-            throw new InvalidOperationException();
         }
 
         /// <summary>
@@ -361,27 +277,20 @@ namespace DotNext
         /// <returns>The result of method invocation.</returns>
         public R Invoke()
         {
-            const string callIndirect = "indirect";
-            const string callImplicitThis = "implicitThis";
-            Push(target);
+            const string callDelegate = "delegate";
             Push(methodPtr);
-            Brtrue(callIndirect);
-            Tail();
-            Callvirt(new M(typeof(Func<R>), nameof(Invoke)));
-            Ret();
-            MarkLabel(callIndirect);
-            
             Dup();
-            Brtrue(callImplicitThis);
-            Pop();
-            Push(methodPtr);
+            Brfalse(callDelegate);
+
             Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R)));
             Ret();
-            MarkLabel(callImplicitThis);
-            Push(methodPtr);
+
+            MarkLabel(callDelegate);
+            Pop();
+            Push(func);
             Tail();
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R)));
+            Callvirt(new M(typeof(Action), nameof(Invoke)));
             return Return<R>();
         }
 
@@ -390,33 +299,36 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Func<R>(ValueFunc<R> pointer) => pointer.ToDelegate();
+        public static explicit operator Func<R>(in ValueFunc<R> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
         /// </summary>
         /// <returns>The hash code of this pointer.</returns>
-        public override int GetHashCode() => methodPtr.GetHashCode() ^ RuntimeHelpers.GetHashCode(target);
+        public override int GetHashCode() => methodPtr.GetHashCode() ^ func?.GetHashCode() ?? 0;
+
+        bool IEquatable<ValueFunc<R>>.Equals(ValueFunc<R> other) => Equals(other);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ValueFunc<R> other) => methodPtr == other.methodPtr && ReferenceEquals(target, other.target);
+        [CLSCompliant(false)]
+        public bool Equals(in ValueFunc<R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The object implementing <see cref="IMethodPointer{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is IMethodPointer<Delegate> ptr && methodPtr == ptr.Address && ReferenceEquals(target, ptr.Target);
+        public override bool Equals(object other) => other is ValueFunc<R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
+        public override string ToString() => func?.ToString() ?? methodPtr.ToString("X");
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -424,7 +336,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(ValueFunc<R> first, ValueFunc<R> second) => first.Equals(second);
+        public static bool operator ==(in ValueFunc<R> first, in ValueFunc<R> second) => first.Equals(second);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -432,7 +344,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(ValueFunc<R> first, ValueFunc<R> second) => !first.Equals(second);
+        public static bool operator !=(in ValueFunc<R> first, in ValueFunc<R> second) => !first.Equals(second);
     }
     
     /// <summary>
@@ -440,13 +352,9 @@ namespace DotNext
     /// </summary>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
-    /// The method pointer supports the same semantics as regular .NET delegates.
-    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument)
     /// </remarks>
     /// <typeparam name="T">The type of the predicate parameter.</typeparam>
-    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
-    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValuePredicate<T> : IMethodPointer<Predicate<T>>, IEquatable<ValuePredicate<T>>, IMethodCookieSupport
+    public readonly struct ValuePredicate<T> : IMethodPointer<Predicate<T>>, IEquatable<ValuePredicate<T>>
     {
         private readonly ValueFunc<T, bool> func;
 
@@ -455,20 +363,19 @@ namespace DotNext
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
+        /// with the delegate type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
-        /// <param name="target">The object targeted by the method pointer.</param>
         /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Signature of <paramref name="method"/> doesn't match to this pointer type.</exception>
-        public ValuePredicate(MethodInfo method, object target = null) => func = new ValueFunc<T, bool>(method, target);
+        public ValuePredicate(MethodInfo method) => func = new ValueFunc<T, bool>(method);
 
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the predicate.
         /// </summary>
         /// <param name="predicate">The predicate representing method.</param>
         public ValuePredicate(Predicate<T> predicate)
-            => func = predicate.Method.IsAbstract ? new ValueFunc<T, bool>(default(IntPtr), predicate.ChangeType<Func<T, bool>>()) : new ValueFunc<T, bool>(predicate.Method.MethodHandle.GetFunctionPointer(), predicate.Target);
+            => func = new ValueFunc<T, bool>(predicate.ChangeType<Func<T, bool>>());
 
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the predicate.
@@ -476,10 +383,7 @@ namespace DotNext
         /// <param name="func">The predicate representing method.</param>
         public ValuePredicate(Func<T, bool> func) => this.func = new ValueFunc<T, bool>(func);
 
-        private ValuePredicate(IntPtr methodPtr, object target) => func = new ValueFunc<T, bool>(methodPtr, target);
-
-        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-            => Jmp(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr), typeof(object)));
+        private ValuePredicate(IntPtr methodPtr) => func = new ValueFunc<T, bool>(methodPtr);
 
         /// <summary>
         /// Converts this typed pointer into <see cref="ValueFunc{T,R}"/>.
@@ -505,8 +409,7 @@ namespace DotNext
             get
             {
                 Ldftn(new M(typeof(ValuePredicate<T>), nameof(CheckNull)));
-                Ldnull();
-                Newobj(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr), typeof(object)));
+                Newobj(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr)));
                 return Return<ValuePredicate<T>>();
             }
         }
@@ -519,8 +422,7 @@ namespace DotNext
             get
             {
                 Ldftn(new M(typeof(ValuePredicate<T>), nameof(CheckNotNull)));
-                Ldnull();
-                Newobj(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr), typeof(object)));
+                Newobj(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr)));
                 return Return<ValuePredicate<T>>();
             }
         }
@@ -533,8 +435,7 @@ namespace DotNext
             get
             {
                 Ldftn(new M(typeof(ValuePredicate<T>), nameof(AlwaysTrue)));
-                Ldnull();
-                Newobj(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr), typeof(object)));
+                Newobj(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr)));
                 return Return<ValuePredicate<T>>();
             }
         }
@@ -547,57 +448,21 @@ namespace DotNext
             get
             {
                 Ldftn(new M(typeof(ValuePredicate<T>), nameof(AlwaysFalse)));
-                Ldnull();
-                Newobj(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr), typeof(object)));
+                Newobj(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr)));
                 return Return<ValuePredicate<T>>();
             }
         }
-
-        IntPtr IMethodPointer<Predicate<T>>.Address => func.Address;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => func.Target;
 
-        private static Predicate<T> ToDelegate(IntPtr methodPtr, object target)
-        {
-            const string makeDelegate = "makeDelegate";
-            Push(target);
-            Push(methodPtr);
-            Dup();
-            Brtrue(makeDelegate);
-            Pop();
-            Isinst(typeof(Predicate<T>));
-            Ret();
-            MarkLabel(makeDelegate);
-            Newobj(M.Constructor(typeof(Predicate<T>), typeof(object), typeof(IntPtr)));
-            return Return<Predicate<T>>();
-        }
-
         /// <summary>
         /// Converts this pointer into <see cref="Predicate{T}"/>.
         /// </summary>
         /// <returns>The predicate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Predicate<T> ToDelegate() => ToDelegate(func.Address, Target);
-
-        /// <summary>
-        /// Converts implicitly bound method pointer into its unbound version.
-        /// </summary>
-        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
-        /// <returns>Unbound version of method pointer.</returns>
-        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
-        public ValueFunc<G, T, bool> Unbind<G>() where G : class => func.Unbind<G>();
-
-        /// <summary>
-        /// Produces method pointer which first argument is implicitly bound to the given object.
-        /// </summary>
-        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
-        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
-        /// <returns>The pointer to the method targeting the specified object.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
-        public ValueFunc<bool> Bind<G>(G obj) where G : class, T => func.Bind(obj);
+        public Predicate<T> ToDelegate() => func.ToPredicateUnsafe();
 
         /// <summary>
         /// Spins until the condition represented by this predicate is satisfied.
@@ -624,7 +489,14 @@ namespace DotNext
         /// </summary>
         /// <param name="predicate">The pointer to convert.</param>
         /// <returns>The predicate created from this method pointer.</returns>
-        public static explicit operator Predicate<T>(ValuePredicate<T> predicate) => predicate.ToDelegate();
+        public static explicit operator Predicate<T>(in ValuePredicate<T> predicate) => predicate.ToDelegate();
+
+        /// <summary>
+        /// Converts this typed pointer into <see cref="ValueFunc{T,R}"/>.
+        /// </summary>
+        /// <param name="predicate">The predicate to convert.</param>
+        /// <returns>The converted pointer.</returns>
+        public static implicit operator ValueFunc<T, bool>(ValuePredicate<T> predicate) => predicate.func;
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -632,12 +504,15 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => func.GetHashCode();
 
+        bool IEquatable<ValuePredicate<T>>.Equals(ValuePredicate<T> other) => Equals(other);
+
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ValuePredicate<T> other) => func == other.func;
+        [CLSCompliant(false)]
+        public bool Equals(in ValuePredicate<T> other) => func == other.func;
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
@@ -666,14 +541,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(ValuePredicate<T> first, ValuePredicate<T> second) => first.Equals(second);
-
-        /// <summary>
-        /// Converts this typed pointer into <see cref="ValueFunc{T,R}"/>.
-        /// </summary>
-        /// <param name="predicate">The predicate to convert.</param>
-        /// <returns>The converted pointer.</returns>
-        public static implicit operator ValueFunc<T, bool>(ValuePredicate<T> predicate) => predicate.func;
+        public static bool operator !=(ValuePredicate<T> first, ValuePredicate<T> second) => !first.Equals(second);
     }
 
     /// <summary>
@@ -681,32 +549,27 @@ namespace DotNext
     /// </summary>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
-    /// The method pointer supports the same semantics as regular .NET delegates.
-    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
-    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
-    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueFunc<T, R> : IMethodPointer<Func<T, R>>, IMethodPointer<Converter<T, R>>, IEquatable<ValueFunc<T, R>>, IMethodCookieSupport
+    public readonly struct ValueFunc<T, R> : IMethodPointer<Func<T, R>>, IMethodPointer<Converter<T, R>>, IEquatable<ValueFunc<T, R>>
     {
         private readonly IntPtr methodPtr;
-        private readonly object target;
-        private readonly DelegationType type;
+        private readonly bool isStatic;
+        private readonly Func<T, R> func;
 
         /// <summary>
         /// Initializes a new pointer to the method.
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
+        /// with the delegate type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
-        /// <param name="target">The object targeted by the method pointer.</param>
         /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Signature of <paramref name="method"/> doesn't match to this pointer type.</exception>
-        public ValueFunc(MethodInfo method, object target = null)
-            : this(method.CreateDelegate<Func<T, R>>(target))
+        public ValueFunc(MethodInfo method)
+            : this(method.CreateDelegate<Func<T, R>>())
         {
         }
 
@@ -714,21 +577,22 @@ namespace DotNext
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public ValueFunc(Func<T, R> func)
         {
-            if(func.Method.IsAbstract)
+            if(func is null)
+                throw new ArgumentNullException(nameof(func));
+            if(func.Method.IsAbstract || func.Target != null)
             {
-                target = func;
+                this.func = func;
                 methodPtr = default;
-                type = DelegationType.None;
+                isStatic = default;
             }
             else
             {
-                target = func.Target;
+                this.func = null;
                 methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-                type = func.Method.IsStatic ?
-                    (target is null ? DelegationType.OpenStaticMethod : DelegationType.ClosedStaticMethod) :
-                    (target is null ? DelegationType.OpenInstanceMethod : DelegationType.ClosedInstanceMethod);
+                isStatic = func.Method.IsStatic;
             }
         }
 
@@ -741,26 +605,40 @@ namespace DotNext
         {
         }
 
-        internal ValueFunc(IntPtr methodPtr, object target)
+        internal ValueFunc(IntPtr methodPtr)
         {
             this.methodPtr = methodPtr;
-            this.target = target;
-            type = DelegationType.None;
+            func = null;
+            isStatic = true;
         }
 
-        void IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-            => Jmp(M.Constructor(typeof(ValueFunc<T, R>), typeof(IntPtr), typeof(object)));
-
-        internal IntPtr Address => methodPtr;
-
-        IntPtr IMethodPointer<Func<T, R>>.Address => methodPtr;
-        IntPtr IMethodPointer<Converter<T, R>>.Address => methodPtr;
-        Converter<T, R> IMethodPointer<Converter<T, R>>.ToDelegate() => ToConverter();
+        Converter<T, R> IMethodPointer<Converter<T, R>>.ToDelegate()
+        {
+            const string methodExit = "exit";
+            Push(func);
+            Dup();
+            Brtrue(methodExit);
+            Push(methodPtr);
+            Newobj(M.Constructor(typeof(Converter<T, R>), typeof(object), typeof(IntPtr)));
+            MarkLabel(methodExit);
+            return Return<Converter<T, R>>();
+        }
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => target;
+        public object Target => func?.Target;
+
+        private static Predicate<T> ToPredicateUnsafe(IntPtr methodPtr)
+        {
+            Ldnull();
+            Push(methodPtr);
+            Newobj(M.Constructor(typeof(Predicate<T>), typeof(object), typeof(IntPtr)));
+            return Return<Predicate<T>>();
+        }
+
+        internal Predicate<T> ToPredicateUnsafe() 
+            => func is null ? ToPredicateUnsafe(methodPtr) : func.ChangeType<Predicate<T>>();
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T, TResult}"/>.
@@ -768,76 +646,14 @@ namespace DotNext
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
         public Func<T, R> ToDelegate()
         {
-            const string makeDelegate = "makeDelegate";
-            Push(target);
-            Push(methodPtr);
+            const string methodExit = "exit";
+            Push(func);
             Dup();
-            Brtrue(makeDelegate);
-            Pop();
-            Isinst(typeof(Func<T, R>));
-            Ret();
-            MarkLabel(makeDelegate);
+            Brtrue(methodExit);
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Func<T, R>), typeof(object), typeof(IntPtr)));
+            MarkLabel(methodExit);
             return Return<Func<T, R>>();
-        }
-
-        /// <summary>
-        /// Converts implicitly bound method pointer into its unbound version.
-        /// </summary>
-        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
-        /// <returns>Unbound version of method pointer.</returns>
-        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
-        public ValueFunc<G, T, R> Unbind<G>()
-            where G : class
-        {
-            if(ObjectExtensions.IsContravariant(target, typeof(G)))
-                return new ValueFunc<G, T, R>(methodPtr, null);
-            if(target is Func<T, R> func && methodPtr == IntPtr.Zero)
-                return new ValueFunc<G, T, R>(func.Unbind<G, T, R>());
-            throw new InvalidOperationException();
-        }
-
-        /// <summary>
-        /// Produces method pointer which first argument is implicitly bound to the given object.
-        /// </summary>
-        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
-        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
-        /// <returns>The pointer to the method targeting the specified object.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
-        public ValueFunc<R> Bind<G>(G obj)
-            where G : class, T
-        {
-            if(obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            switch(target)
-            {
-                case null:
-                    return new ValueFunc<R>(methodPtr, obj);
-                case Func<T, R> func when methodPtr == IntPtr.Zero:
-                    return new ValueFunc<R>(func.Bind<G, R>(obj, true));
-                default:
-                    throw new InvalidOperationException();
-            }
-        }
-
-        /// <summary>
-        /// Converts this pointer into <see cref="Converter{T, TResult}"/>.
-        /// </summary>
-        /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Converter<T, R> ToConverter()
-        {
-            const string makeDelegate = "makeDelegate";
-            Push(target);
-            Push(methodPtr);
-            Dup();
-            Brtrue(makeDelegate);
-            Pop();
-            Isinst(typeof(Converter<T, R>));
-            Ret();
-            MarkLabel(makeDelegate);
-            Newobj(M.Constructor(typeof(Converter<T, R>), typeof(object), typeof(IntPtr)));
-            return Return<Converter<T, R>>();
         }
 
         /// <summary>
@@ -848,52 +664,29 @@ namespace DotNext
         public R Invoke(T arg)
         {
             const string callDelegate = "delegate";
-            const string openStatic = "openStatic";
-            const string closedStatic = "closedStatic";
-            const string openInstance = "openInstance";
-            const string closedInstance = "closedInstance";
-            Push(type);
-            Switch(callDelegate, openStatic, closedStatic, openInstance, closedInstance);
-            
-            //redirect call to delegate
-            MarkLabel(callDelegate);
-            Push(target);
-            Push(arg);
-            Tail();
-            Callvirt(new M(typeof(Func<T, R>), nameof(Invoke)));
-            Ret();
+            const string callInstance = "instance";
+            Push(methodPtr);
+            Brfalse(callDelegate);
 
-            //open static method
-            MarkLabel(openStatic);
             Push(arg);
             Push(methodPtr);
+            Push(isStatic);
+
+            Brfalse(callInstance);
             Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T)));
             Ret();
 
-            //closed static method
-            MarkLabel(closedStatic);
-            Push(target);
-            Push(arg);
-            Push(methodPtr);
-            Tail();
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(object), typeof(T)));
-            Ret();
-
-            //open instance method
-            MarkLabel(openInstance);
-            Push(arg);
-            Push(methodPtr);
+            MarkLabel(callInstance);
             Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R)));
             Ret();
 
-            MarkLabel(closedInstance);
-            Push(target);
+            MarkLabel(callDelegate);
+            Push(func);
             Push(arg);
-            Push(methodPtr);
             Tail();
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T)));
+            Callvirt(new M(typeof(Func<T, R>), nameof(Invoke)));
             return Return<R>();
         }
 
@@ -902,40 +695,49 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Func<T, R>(ValueFunc<T, R> pointer) => pointer.ToDelegate();
+        public static explicit operator Func<T, R>(in ValueFunc<T, R> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Converts this pointer into <see cref="Converter{T, TResult}"/>.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Converter<T, R>(ValueFunc<T, R> pointer) => pointer.ToConverter();
+        public static explicit operator Converter<T, R>(in ValueFunc<T, R> pointer)
+        {
+            Push(nameof(pointer));
+            Constrained(typeof(ValueFunc<T, R>));
+            Callvirt(new M(typeof(IMethodPointer<Converter<T, R>>), nameof(IMethodPointer<Converter<T, R>>.ToDelegate)));
+            return Return<Converter<T, R>>();
+        }
 
         /// <summary>
         /// Computes hash code of this pointer.
         /// </summary>
         /// <returns>The hash code of this pointer.</returns>
-        public override int GetHashCode() => methodPtr.GetHashCode() ^ RuntimeHelpers.GetHashCode(target);
+        public override int GetHashCode() => methodPtr.GetHashCode() ^ func?.GetHashCode() ?? 0;
+
+        bool IEquatable<ValueFunc<T, R>>.Equals(ValueFunc<T, R> other) => Equals(other);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ValueFunc<T, R> other) => methodPtr == other.methodPtr && ReferenceEquals(target, other.target);
+        [CLSCompliant(false)]
+        public bool Equals(in ValueFunc<T, R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The object implementing <see cref="IMethodPointer{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is IMethodPointer<Delegate> ptr && methodPtr == ptr.Address && ReferenceEquals(target, ptr.Target);
+        public override bool Equals(object other) => other is ValueFunc<T, R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
+        public override string ToString() => func?.ToString() ?? methodPtr.ToString("X");
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -943,7 +745,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(ValueFunc<T, R> first, ValueFunc<T, R> second) => first.Equals(second);
+        public static bool operator ==(in ValueFunc<T, R> first, in ValueFunc<T, R> second) => first.Equals(second);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -951,7 +753,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(ValueFunc<T, R> first, ValueFunc<T, R> second) => first.Equals(second);
+        public static bool operator !=(in ValueFunc<T, R> first, in ValueFunc<T, R> second) => !first.Equals(second);
     }
 
     /// <summary>
@@ -959,30 +761,26 @@ namespace DotNext
     /// </summary>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
-    /// The method pointer supports the same semantics as regular .NET delegates.
-    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
-    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
-    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueAction<T> : IMethodPointer<Action<T>>, IEquatable<ValueAction<T>>, IMethodCookieSupport, IConsumer<T>
+    public readonly struct ValueAction<T> : IMethodPointer<Action<T>>, IEquatable<ValueAction<T>>, IConsumer<T>
     {
         private readonly IntPtr methodPtr;
-        private readonly object target;
+        private readonly bool isStatic;
+        private readonly Action<T> action;
 
         /// <summary>
         /// Initializes a new pointer to the method.
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
+        /// with the delegate type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
-        /// <param name="target">The object targeted by the method pointer.</param>
         /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Signature of <paramref name="method"/> doesn't match to this pointer type.</exception>
-        public ValueAction(MethodInfo method, object target = null)
-            : this(method.CreateDelegate<Action<T>>(target))
+        public ValueAction(MethodInfo method)
+            : this(method.CreateDelegate<Action<T>>())
         {
         }
 
@@ -990,35 +788,29 @@ namespace DotNext
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
         public ValueAction(Action<T> action)
         {
-            if(action.Method.IsAbstract)
+            if(action is null)
+                throw new ArgumentNullException(nameof(action));
+            if(action.Method.IsAbstract || action.Target != null)
             {
+                this.action = action;
                 methodPtr = default;
-                target = action;
+                isStatic = default;
             }
             else
             {
-                target = action.Target;
+                this.action = null;
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
+                isStatic = action.Method.IsStatic;
             }
         }
-
-        internal ValueAction(IntPtr methodPtr, object target)
-        {
-            this.methodPtr = methodPtr;
-            this.target = target;
-        }
-
-        void Reflection.IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-            => Jmp(M.Constructor(typeof(ValueAction<T>), typeof(IntPtr), typeof(object)));
-
-        IntPtr IMethodPointer<Action<T>>.Address => methodPtr;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => target;
+        public object Target => action?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action{T}"/>.
@@ -1026,57 +818,14 @@ namespace DotNext
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
         public Action<T> ToDelegate()
         {
-            const string makeDelegate = "makeDelegate";
-            Push(target);
-            Push(methodPtr);
+            const string methodExit = "exit";
+            Push(action);
             Dup();
-            Brtrue(makeDelegate);
-            Pop();
-            Isinst(typeof(Action<T>));
-            Ret();
-            MarkLabel(makeDelegate);
+            Brtrue(methodExit);
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Action<T>), typeof(object), typeof(IntPtr)));
+            MarkLabel(methodExit);
             return Return<Action<T>>();
-        }
-
-        /// <summary>
-        /// Converts implicitly bound method pointer into its unbound version.
-        /// </summary>
-        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
-        /// <returns>Unbound version of method pointer.</returns>
-        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
-        public ValueAction<G, T> Unbind<G>()
-            where G : class
-        {
-            if(ObjectExtensions.IsContravariant(target, typeof(G)))
-                return new ValueAction<G, T>(methodPtr, null);
-            if(target is Action<T> action && methodPtr == IntPtr.Zero)
-                return new ValueAction<G, T>(action.Unbind<G, T>());
-            throw new InvalidOperationException();
-        }
-
-        /// <summary>
-        /// Produces method pointer which first argument is implicitly bound to the given object.
-        /// </summary>
-        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
-        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
-        /// <returns>The pointer to the method targeting the specified object.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
-        public ValueAction Bind<G>(G obj)
-            where G : class, T
-        {
-            if(obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            switch(target)
-            {
-                case null:
-                    return new ValueAction(methodPtr, obj);
-                case Action<T> action when methodPtr == IntPtr.Zero:
-                    return new ValueAction(action.Bind<G>(obj, true));
-                default:
-                    throw new InvalidOperationException();
-            }
         }
 
         /// <summary>
@@ -1085,32 +834,30 @@ namespace DotNext
         /// <param name="arg">The first argument to be passed into the target method.</param>
         public void Invoke(T arg)
         {
-            const string callIndirect = "indirect";
-            const string callImplicitThis = "implicitThis";
-            Push(target);
+            const string callDelegate = "delegate";
+            const string callInstance = "instance";
             Push(methodPtr);
-            Brtrue(callIndirect);
-            Push(arg);
-            Tail();
-            Callvirt(new M(typeof(Action<T>), nameof(Invoke)));
-            Ret();
-            MarkLabel(callIndirect);
-            
-            Dup();
-            Brtrue(callImplicitThis);
-            
-            Pop();
+            Brfalse(callDelegate);
+
             Push(arg);
             Push(methodPtr);
+            Push(isStatic);
+
+            Brfalse(callInstance);
             Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T)));
             Ret();
-            
-            MarkLabel(callImplicitThis);
-            Push(arg);
-            Push(methodPtr);
+
+            MarkLabel(callInstance);
             Tail();
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T)));
+            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void)));
+            Ret();
+
+            MarkLabel(callDelegate);
+            Push(action);
+            Push(arg);
+            Tail();
+            Callvirt(new M(typeof(Action<T>), nameof(Invoke)));
             Ret();
         }
 
@@ -1119,33 +866,36 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Action<T>(ValueAction<T> pointer) => pointer.ToDelegate();
+        public static explicit operator Action<T>(in ValueAction<T> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
         /// </summary>
         /// <returns>The hash code of this pointer.</returns>
-        public override int GetHashCode() => methodPtr.GetHashCode() ^ RuntimeHelpers.GetHashCode(target);
+        public override int GetHashCode() => methodPtr.GetHashCode() ^ action?.GetHashCode() ?? 0;
+
+        bool IEquatable<ValueAction<T>>.Equals(ValueAction<T> other) => Equals(other);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ValueAction<T> other) => methodPtr == other.methodPtr && ReferenceEquals(target, other.target);
+        [CLSCompliant(false)]
+        public bool Equals(in ValueAction<T> other) => methodPtr == other.methodPtr && Equals(action, other.action);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The object implementing <see cref="IMethodPointer{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is IMethodPointer<Delegate> ptr && methodPtr == ptr.Address && ReferenceEquals(target, ptr.Target);
+        public override bool Equals(object other) => other is ValueAction<T> action && Equals(in action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
+        public override string ToString() => action?.ToString() ?? methodPtr.ToString("X");
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -1153,7 +903,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(ValueAction<T> first, ValueAction<T> second) => first.Equals(second);
+        public static bool operator ==(in ValueAction<T> first, in ValueAction<T> second) => first.Equals(second);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -1161,7 +911,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(ValueAction<T> first, ValueAction<T> second) => !first.Equals(second);
+        public static bool operator !=(in ValueAction<T> first, in ValueAction<T> second) => !first.Equals(second);
     }
 
     /// <summary>
@@ -1169,32 +919,28 @@ namespace DotNext
     /// </summary>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
-    /// The method pointer supports the same semantics as regular .NET delegates.
-    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
-    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
-    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueFunc<T1, T2, R> : IMethodPointer<Func<T1, T2, R>>, IEquatable<ValueFunc<T1, T2, R>>, IMethodCookieSupport
+    public readonly struct ValueFunc<T1, T2, R> : IMethodPointer<Func<T1, T2, R>>, IEquatable<ValueFunc<T1, T2, R>>
     {
         private readonly IntPtr methodPtr;
-        private readonly object target;
+        private readonly bool isStatic;
+        private readonly Func<T1, T2, R> func;
 
         /// <summary>
         /// Initializes a new pointer to the method.
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
+        /// with the delegate type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
-        /// <param name="target">The object targeted by the method pointer.</param>
         /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Signature of <paramref name="method"/> doesn't match to this pointer type.</exception>
-        public ValueFunc(MethodInfo method, object target = null)
-            : this(method.CreateDelegate<Func<T1, T2, R>>(target))
+        public ValueFunc(MethodInfo method)
+            : this(method.CreateDelegate<Func<T1, T2, R>>())
         {
         }
 
@@ -1202,35 +948,36 @@ namespace DotNext
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public ValueFunc(Func<T1, T2, R> func)
         {
-            if(func.Method.IsAbstract)
+            if(func is null)
+                throw new ArgumentNullException(nameof(func));
+            if(func.Method.IsAbstract || func.Target != null)
             {
-                target = func;
+                this.func = func;
                 methodPtr = default;
+                isStatic = default;
             }
             else
             {
-                target = func.Target;
+                this.func = null;
                 methodPtr = func.Method.MethodHandle.GetFunctionPointer();
+                isStatic = func.Method.IsStatic;
             }
         }
 
-        internal ValueFunc(IntPtr methodPtr, object target)
+        internal ValueFunc(IntPtr methodPtr)
         {
             this.methodPtr = methodPtr;
-            this.target = target;
+            func = null;
+            isStatic = true;
         }
-
-        void Reflection.IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-            => Jmp(M.Constructor(typeof(ValueFunc<T1, T2, R>), typeof(IntPtr), typeof(object)));
-
-        IntPtr IMethodPointer<Func<T1, T2, R>>.Address => methodPtr;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => target;
+        public object Target => func?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, TResult}"/>.
@@ -1238,57 +985,14 @@ namespace DotNext
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
         public Func<T1, T2, R> ToDelegate()
         {
-            const string makeDelegate = "makeDelegate";
-            Push(target);
-            Push(methodPtr);
+            const string methodExit = "exit";
+            Push(func);
             Dup();
-            Brtrue(makeDelegate);
-            Pop();
-            Isinst(typeof(Func<T1, T2, R>));
-            Ret();
-            MarkLabel(makeDelegate);
+            Brtrue(methodExit);
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Func<T1, T2, R>), typeof(object), typeof(IntPtr)));
+            MarkLabel(methodExit);
             return Return<Func<T1, T2, R>>();
-        }
-
-        /// <summary>
-        /// Converts implicitly bound method pointer into its unbound version.
-        /// </summary>
-        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
-        /// <returns>Unbound version of method pointer.</returns>
-        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
-        public ValueFunc<G, T1, T2, R> Unbind<G>()
-            where G : class
-        {
-            if(ObjectExtensions.IsContravariant(target, typeof(G)))
-                return new ValueFunc<G, T1, T2, R>(methodPtr, null);
-            if(target is Func<T1, T2, R> func && methodPtr == IntPtr.Zero)
-                return new ValueFunc<G, T1, T2, R>(func.Unbind<G, T1, T2, R>());
-            throw new InvalidOperationException();
-        }
-
-        /// <summary>
-        /// Produces method pointer which first argument is implicitly bound to the given object.
-        /// </summary>
-        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
-        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
-        /// <returns>The pointer to the method targeting the specified object.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
-        public ValueFunc<T2, R> Bind<G>(G obj)
-            where G : class, T1
-        {
-            if(obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            switch(target)
-            {
-                case null:
-                    return new ValueFunc<T2, R>(methodPtr, obj);
-                case Func<T1, T2, R> func when methodPtr == IntPtr.Zero:
-                    return new ValueFunc<T2, R>(func.Bind<G, T2, R>(obj, true));
-                default:
-                    throw new InvalidOperationException();
-            }
         }
 
         /// <summary>
@@ -1299,35 +1003,32 @@ namespace DotNext
         /// <returns>The result of method invocation.</returns>
         public R Invoke(T1 arg1, T2 arg2)
         {
-            const string callIndirect = "indirect";
-            const string callImplicitThis = "implicitThis";
-            Push(target);
+            const string callDelegate = "delegate";
+            const string callInstance = "instance";
             Push(methodPtr);
-            Brtrue(callIndirect);
+            Brfalse(callDelegate);
+
+            Push(arg1);
+            Push(arg2);
+            Push(methodPtr);
+            Push(isStatic);
+
+            Brfalse(callInstance);
+            Tail();
+            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2)));
+            Ret();
+
+            MarkLabel(callInstance);
+            Tail();
+            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2)));
+            Ret();
+
+            MarkLabel(callDelegate);
+            Push(func);
             Push(arg1);
             Push(arg2);
             Tail();
             Callvirt(new M(typeof(Func<T1, T2, R>), nameof(Invoke)));
-            Ret();
-            MarkLabel(callIndirect);
-            
-            Dup();
-            Brtrue(callImplicitThis);
-            
-            Pop();
-            Push(arg1);
-            Push(arg2);
-            Push(methodPtr);
-            Tail();
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2)));
-            Ret();
-            
-            MarkLabel(callImplicitThis);
-            Push(arg1);
-            Push(arg2);
-            Push(methodPtr);
-            Tail();
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T1), typeof(T2)));
             return Return<R>();
         }
 
@@ -1336,33 +1037,36 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Func<T1, T2, R>(ValueFunc<T1, T2, R> pointer) => pointer.ToDelegate();
+        public static explicit operator Func<T1, T2, R>(in ValueFunc<T1, T2, R> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
         /// </summary>
         /// <returns>The hash code of this pointer.</returns>
-        public override int GetHashCode() => methodPtr.GetHashCode() ^ RuntimeHelpers.GetHashCode(target);
+        public override int GetHashCode() => methodPtr.GetHashCode() ^ func?.GetHashCode() ?? 0;
+
+        bool IEquatable<ValueFunc<T1, T2, R>>.Equals(ValueFunc<T1, T2, R> other) => Equals(other);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ValueFunc<T1, T2, R> other) => methodPtr == other.methodPtr && ReferenceEquals(target, other.target);
+        [CLSCompliant(false)]
+        public bool Equals(in ValueFunc<T1, T2, R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The object implementing <see cref="IMethodPointer{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is IMethodPointer<Delegate> ptr && methodPtr == ptr.Address && ReferenceEquals(target, ptr.Target);
+        public override bool Equals(object other) => other is ValueFunc<T1, T2, R> func && Equals(in func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
+        public override string ToString() => func?.ToString() ?? methodPtr.ToString("X");
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -1370,7 +1074,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(ValueFunc<T1, T2, R> first, ValueFunc<T1, T2, R> second) => first.Equals(second);
+        public static bool operator ==(in ValueFunc<T1, T2, R> first, in ValueFunc<T1, T2, R> second) => first.Equals(second);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -1378,7 +1082,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(ValueFunc<T1, T2, R> first, ValueFunc<T1, T2, R> second) => !first.Equals(second);
+        public static bool operator !=(in ValueFunc<T1, T2, R> first, in ValueFunc<T1, T2, R> second) => !first.Equals(second);
     }
 
     /// <summary>
@@ -1386,31 +1090,27 @@ namespace DotNext
     /// </summary>
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
-    /// The method pointer supports the same semantics as regular .NET delegates.
-    /// It means that pointer can be open (for instance methods) or closed (for static methods with captured first argument).
     /// </remarks>
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
-    /// <seealso cref="Reflection.MethodCookie{D,P}"/>
-    /// <seealso cref="Reflection.MethodCookie{T,D,P}"/>
-    public readonly struct ValueAction<T1, T2> : IMethodPointer<Action<T1, T2>>, IEquatable<ValueAction<T1, T2>>, IMethodCookieSupport
+    public readonly struct ValueAction<T1, T2> : IMethodPointer<Action<T1, T2>>, IEquatable<ValueAction<T1, T2>>
     {
         private readonly IntPtr methodPtr;
-        private readonly object target;
+        private readonly bool isStatic;
+        private readonly Action<T1, T2> action;
 
         /// <summary>
         /// Initializes a new pointer to the method.
         /// </summary>
         /// <remarks>
         /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the pointer type. To avoid these allocations, use <see cref="Reflection.MethodCookie{D,P}"/> or <see cref="Reflection.MethodCookie{T,D,P}"/> type.
+        /// with the delegate type.
         /// </remarks>
         /// <param name="method">The method to convert into pointer.</param>
-        /// <param name="target">The object targeted by the method pointer.</param>
         /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">Signature of <paramref name="method"/> doesn't match to this pointer type.</exception>
-        public ValueAction(MethodInfo method, object target = null)
-            : this(method.CreateDelegate<Action<T1, T2>>(target))
+        public ValueAction(MethodInfo method)
+            : this(method.CreateDelegate<Action<T1, T2>>())
         {
         }
 
@@ -1420,33 +1120,26 @@ namespace DotNext
         /// <param name="action">The delegate representing method.</param>
         public ValueAction(Action<T1, T2> action)
         {
-            if(action.Method.IsAbstract)
+            if(action is null)
+                throw new ArgumentNullException(nameof(action));
+            if(action.Method.IsAbstract || action.Target != null)
             {
-                target = action;
+                this.action = action;
                 methodPtr = default;
+                isStatic = default;
             }
             else
             {
-                target = action.Target;
+                this.action = null;
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
+                isStatic = action.Method.IsStatic;
             }
         }
-
-        internal ValueAction(IntPtr methodPtr, object target)
-        {
-            this.methodPtr = methodPtr;
-            this.target = target;
-        }
-
-        void Reflection.IMethodCookieSupport.Construct(IntPtr methodPtr, object target)
-            => Jmp(M.Constructor(typeof(ValueAction<T1, T2>), typeof(IntPtr), typeof(object)));
-
-        IntPtr IMethodPointer<Action<T1, T2>>.Address => methodPtr;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => target;
+        public object Target => action?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1,T2}"/>.
@@ -1454,57 +1147,14 @@ namespace DotNext
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
         public Action<T1, T2> ToDelegate()
         {
-            const string makeDelegate = "makeDelegate";
-            Push(target);
-            Push(methodPtr);
+            const string methodExit = "exit";
+            Push(action);
             Dup();
-            Brtrue(makeDelegate);
-            Pop();
-            Isinst(typeof(Action<T1, T2>));
-            Ret();
-            MarkLabel(makeDelegate);
+            Brtrue(methodExit);
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Action<T1, T2>), typeof(object), typeof(IntPtr)));
+            MarkLabel(methodExit);
             return Return<Action<T1, T2>>();
-        }
-
-        /// <summary>
-        /// Converts implicitly bound method pointer into its unbound version.
-        /// </summary>
-        /// <typeparam name="G">The expected type of <see cref="Target"/>.</typeparam>
-        /// <returns>Unbound version of method pointer.</returns>
-        /// <exception cref="InvalidOperationException"><see cref="Target"/> is not of type <typeparamref name="G"/>.</exception>
-        public ValueAction<G, T1, T2> Unbind<G>()
-            where G : class
-         {
-             if(ObjectExtensions.IsContravariant(target, typeof(G)))
-                return new ValueAction<G, T1, T2>(methodPtr, null);
-            if(target is Action<T1, T2> action && methodPtr == IntPtr.Zero)
-                return new ValueAction<G, T1, T2>(action.Unbind<G, T1, T2>());
-            throw new InvalidOperationException();
-         }
-
-        /// <summary>
-        /// Produces method pointer which first argument is implicitly bound to the given object.
-        /// </summary>
-        /// <typeparam name="G">The type of the first argument to bind.</typeparam>
-        /// <param name="obj">The object to be passed as first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
-        /// <returns>The pointer to the method targeting the specified object.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException">This pointer has already bound to the object.</exception>
-        public ValueAction<T2> Bind<G>(G obj)
-            where G : class, T1
-        {
-            if(obj is null)
-                throw new ArgumentNullException(nameof(obj));
-            switch(target)
-            {
-                case null:
-                    return new ValueAction<T2>(methodPtr, obj);
-                case Action<T1, T2> action when methodPtr == IntPtr.Zero:
-                    return new ValueAction<T2>(action.Bind<G, T2>(obj, true));
-                default:
-                    throw new InvalidOperationException();
-            }
         }
 
         /// <summary>
@@ -1514,35 +1164,32 @@ namespace DotNext
         /// <param name="arg2">The second argument to be passed into the target method.</param>
         public void Invoke(T1 arg1, T2 arg2)
         {
-            const string callIndirect = "indirect";
-            const string callImplicitThis = "implicitThis";
-            Push(target);
+            const string callDelegate = "delegate";
+            const string callInstance = "instance";
             Push(methodPtr);
-            Brtrue(callIndirect);
+            Brfalse(callDelegate);
+
+            Push(arg1);
+            Push(arg2);
+            Push(methodPtr);
+            Push(isStatic);
+
+            Brfalse(callInstance);
+            Tail();
+            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2)));
+            Ret();
+
+            MarkLabel(callInstance);
+            Tail();
+            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2)));
+            Ret();
+
+            MarkLabel(callDelegate);
+            Push(action);
             Push(arg1);
             Push(arg2);
             Tail();
             Callvirt(new M(typeof(Action<T1, T2>), nameof(Invoke)));
-            Ret();
-            MarkLabel(callIndirect);
-            
-            Dup();
-            Brtrue(callImplicitThis);
-            
-            Pop();
-            Push(arg1);
-            Push(arg2);
-            Push(methodPtr);
-            Tail();
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2)));
-            Ret();
-            
-            MarkLabel(callImplicitThis);
-            Push(arg1);
-            Push(arg2);
-            Push(methodPtr);
-            Tail();
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T1), typeof(T2)));
             Ret();
         }
 
@@ -1551,33 +1198,36 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Action<T1, T2>(ValueAction<T1, T2> pointer) => pointer.ToDelegate();
+        public static explicit operator Action<T1, T2>(in ValueAction<T1, T2> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
         /// </summary>
         /// <returns>The hash code of this pointer.</returns>
-        public override int GetHashCode() => methodPtr.GetHashCode() ^ RuntimeHelpers.GetHashCode(target);
+        public override int GetHashCode() => methodPtr.GetHashCode() ^ action?.GetHashCode() ?? 0;
+
+        bool IEquatable<ValueAction<T1, T2>>.Equals(ValueAction<T1, T2> other) => Equals(other);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ValueAction<T1, T2> other) => methodPtr == other.methodPtr && ReferenceEquals(target, other.target);
+        [CLSCompliant(false)]
+        public bool Equals(in ValueAction<T1, T2> other) => methodPtr == other.methodPtr && Equals(action, other.action);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The object implementing <see cref="IMethodPointer{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is IMethodPointer<Delegate> ptr && methodPtr == ptr.Address && ReferenceEquals(target, ptr.Target);
+        public override bool Equals(object other) => other is ValueAction<T1, T2> action && action.Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
         /// </summary>
         /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => $"Address={methodPtr:X}, Target={target}";
+        public override string ToString() => action?.ToString() ?? methodPtr.ToString("X");
 
         /// <summary>
         /// Determines whether the pointers represent the same method.
@@ -1585,7 +1235,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(ValueAction<T1, T2> first, ValueAction<T1, T2> second) => first.Equals(second);
+        public static bool operator ==(in ValueAction<T1, T2> first, in ValueAction<T1, T2> second) => first.Equals(second);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -1593,7 +1243,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(ValueAction<T1, T2> first, ValueAction<T1, T2> second) => !first.Equals(second);
+        public static bool operator !=(in ValueAction<T1, T2> first, in ValueAction<T1, T2> second) => !first.Equals(second);
     }
 
     /// <summary>

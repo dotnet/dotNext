@@ -25,16 +25,14 @@ namespace DotNext.Runtime.InteropServices
             internal const int Offset = unchecked((int)2166136261);
             private const int Prime = 16777619;
 
-            internal static int GetHashCode(int hash, int data) => (hash ^ data) * Prime;
+            internal static readonly ValueFunc<int, int, int> Func = new ValueFunc<int, int, int>((hash, data) => (hash ^ data) * Prime);
         }
 
         private static class FNV1a64
         {
             internal const long Offset = unchecked((long)14695981039346656037);
             private const long Prime = 1099511628211;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal static long GetHashCode(long hash, long data) => (hash ^ data) * Prime;
+            internal static readonly ValueFunc<long, long, long> Func = new ValueFunc<long, long, long>((hash, data) => (hash ^ data) * Prime);
         }
 
         /// <summary>
@@ -181,7 +179,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
-        public static long GetHashCode64(IntPtr source, long length, long hash, ValueFunc<long, long, long> hashFunction, bool salted = true)
+        public static long GetHashCode64(IntPtr source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
         {
             switch (length)
             {
@@ -241,7 +239,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
-        public static long GetHashCode64(void* source, long length, long hash, ValueFunc<long, long, long> hashFunction, bool salted = true)
+        public static long GetHashCode64(void* source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
             => GetHashCode64(new IntPtr(source), length, hash, hashFunction, salted);
 
         /// <summary>
@@ -256,17 +254,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         public static long GetHashCode64(IntPtr source, long length, bool salted = true)
-        {
-            Push(source);
-            Push(length);
-            Ldc_I8(FNV1a64.Offset);
-            Ldftn(new M(typeof(Memory.FNV1a64), nameof(FNV1a64.GetHashCode), typeof(long), typeof(long)));
-            Ldnull();
-            Newobj(M.Constructor(typeof(ValueFunc<long, long, long>), typeof(IntPtr), typeof(object)));
-            Push(salted);
-            Call(new M(typeof(Memory), nameof(GetHashCode64), typeof(IntPtr), typeof(long), typeof(long), typeof(ValueFunc<long, long, long>), typeof(bool)));
-            return Return<long>();
-        }
+            => GetHashCode64(source, length, FNV1a64.Offset, FNV1a64.Func, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory.
@@ -312,7 +300,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
-        public static int GetHashCode32(IntPtr source, long length, int hash, ValueFunc<int, int, int> hashFunction, bool salted = true)
+        public static int GetHashCode32(IntPtr source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
         {
             switch (length)
             {
@@ -369,7 +357,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
-        public static int GetHashCode32(void* source, long length, int hash, ValueFunc<int, int, int> hashFunction, bool salted = true)
+        public static int GetHashCode32(void* source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
             => GetHashCode32(new IntPtr(source), length, hash, hashFunction, salted);
 
         /// <summary>
@@ -384,32 +372,12 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         public static int GetHashCode32(IntPtr source, long length, bool salted = true)
-        {
-            Push(source);
-            Push(length);
-            Ldc_I4(FNV1a32.Offset);
-            Ldftn(new M(typeof(Memory.FNV1a32), nameof(FNV1a32.GetHashCode), typeof(int), typeof(int)));
-            Ldnull();
-            Newobj(M.Constructor(typeof(ValueFunc<int, int, int>), typeof(IntPtr), typeof(object)));
-            Push(salted);
-            Call(new M(typeof(Memory), nameof(GetHashCode32), typeof(IntPtr), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>), typeof(bool)));
-            return Return<int>();
-        }
+            => GetHashCode32(source, length, FNV1a32.Offset, FNV1a32.Func, salted);
 
         internal static int GetHashCode32Aligned(IntPtr source, long length, bool salted)
-        {
-            Push(source);
-            Push(length);
-            Ldc_I4(FNV1a32.Offset);
-            Ldftn(new M(typeof(Memory.FNV1a32), nameof(FNV1a32.GetHashCode), typeof(int), typeof(int)));
-            Ldnull();
-            Newobj(M.Constructor(typeof(ValueFunc<int, int, int>), typeof(IntPtr), typeof(object)));
-            Push(salted);
-            Call(new M(typeof(Memory), nameof(GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>), typeof(bool)));
-            return Return<int>();
-        }
+            => GetHashCode32Aligned(source, length, FNV1a32.Offset, FNV1a32.Func, salted);
 
-        internal static int GetHashCode32Aligned(IntPtr source, long length, int hash, ValueFunc<int, int, int> hashFunction, bool salted)
+        internal static int GetHashCode32Aligned(IntPtr source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
         {
             while (length >= sizeof(int))
             {
@@ -425,19 +393,9 @@ namespace DotNext.Runtime.InteropServices
         }
 
         internal static long GetHashCode64Aligned(IntPtr source, long length, bool salted)
-        {
-            Push(source);
-            Push(length);
-            Ldc_I8(FNV1a64.Offset);
-            Ldftn(new M(typeof(Memory.FNV1a64), nameof(FNV1a64.GetHashCode), typeof(long), typeof(long)));
-            Ldnull();
-            Newobj(M.Constructor(typeof(ValueFunc<long, long, long>), typeof(IntPtr), typeof(object)));
-            Push(salted);
-            Call(new M(typeof(Memory), nameof(GetHashCode64Aligned), typeof(IntPtr), typeof(long), typeof(long), typeof(ValueFunc<long, long, long>), typeof(bool)));
-            return Return<long>();
-        }
+            => GetHashCode64Aligned(source, length, FNV1a64.Offset, FNV1a64.Func, salted);
 
-        internal static long GetHashCode64Aligned(IntPtr source, long length, long hash, ValueFunc<long, long, long> hashFunction, bool salted)
+        internal static long GetHashCode64Aligned(IntPtr source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
         {
             while (length >= sizeof(long))
             {

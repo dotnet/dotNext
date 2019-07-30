@@ -16,11 +16,6 @@ namespace DotNext
         D ToDelegate();
 
         /// <summary>
-        /// Gets address of the method.
-        /// </summary>
-        IntPtr Address { get; }
-
-        /// <summary>
         /// Gets object targeted by this pointer.
         /// </summary>
         /// <value>The object targeted by this pointer.</value>
