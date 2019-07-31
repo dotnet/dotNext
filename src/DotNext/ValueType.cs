@@ -186,7 +186,7 @@ namespace DotNext
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
         public static int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => BitwiseHashCode(ref value, hash, new ValueFunc<int, int, int>(hashFunction), salted);
+            => BitwiseHashCode(ref value, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
 
         /// <summary>
         /// Computes bitwise hash code for the specified value.
@@ -201,7 +201,7 @@ namespace DotNext
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
         public static int BitwiseHashCode(T value, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
-            => BitwiseHashCode(ref value, hash, hashFunction, salted);
+            => BitwiseHashCode(ref value, hash, hashFunction, salted); 
 
         private static int BitwiseHashCode(ref T value, bool salted)
         {

@@ -144,7 +144,7 @@ namespace DotNext.Threading
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float AccumulateAndGet(ref this float value, float x, Func<float, float, float> accumulator)
-            => AccumulateAndGet(ref value, x, new ValueFunc<float, float, float>(accumulator));
+            => AccumulateAndGet(ref value, x, new ValueFunc<float, float, float>(accumulator, true));
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -174,7 +174,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float GetAndAccumulate(ref this float value, float x, Func<float, float, float> accumulator)
-            => GetAndAccumulate(ref value, x, new ValueFunc<float, float, float>(accumulator));
+            => GetAndAccumulate(ref value, x, new ValueFunc<float, float, float>(accumulator, true));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -200,7 +200,7 @@ namespace DotNext.Threading
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float UpdateAndGet(ref this float value, Func<float, float> updater)
-            => UpdateAndGet(ref value, new ValueFunc<float, float>(updater));
+            => UpdateAndGet(ref value, new ValueFunc<float, float>(updater, true));
 
         /// <summary>
 		/// Atomically updates the stored value with the results 
@@ -222,7 +222,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float GetAndUpdate(ref this float value, Func<float, float> updater)
-            => GetAndUpdate(ref value, new ValueFunc<float, float>(updater));
+            => GetAndUpdate(ref value, new ValueFunc<float, float>(updater, true));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -349,7 +349,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The updated value.</returns>
 		public static float AccumulateAndGet(this float[] array, long index, float x, Func<float, float, float> accumulator)
-            => AccumulateAndGet(array, index, x, new ValueFunc<float, float, float>(accumulator));
+            => AccumulateAndGet(array, index, x, new ValueFunc<float, float, float>(accumulator, true));
 
         /// <summary>
 		/// Atomically updates the array element with the results of applying the given function 
@@ -379,7 +379,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The original value of the array element.</returns>
 		public static float GetAndAccumulate(this float[] array, long index, float x, Func<float, float, float> accumulator)
-            => GetAndAccumulate(array, index, x, new ValueFunc<float, float, float>(accumulator));
+            => GetAndAccumulate(array, index, x, new ValueFunc<float, float, float>(accumulator, true));
 
         /// <summary>
 		/// Atomically updates the array element with the results of applying the given function 
@@ -405,7 +405,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
 		public static float UpdateAndGet(this float[] array, long index, Func<float, float> updater)
-            => UpdateAndGet(array, index, new ValueFunc<float, float>(updater));
+            => UpdateAndGet(array, index, new ValueFunc<float, float>(updater, true));
 
         /// <summary>
 		/// Atomically updates the array element with the results 
@@ -427,7 +427,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value of the array element.</returns>
 		public static float GetAndUpdate(this float[] array, long index, Func<float, float> updater)
-            => GetAndUpdate(array, index, new ValueFunc<float, float>(updater));
+            => GetAndUpdate(array, index, new ValueFunc<float, float>(updater, true));
 
         /// <summary>
 		/// Atomically updates the array element with the results 

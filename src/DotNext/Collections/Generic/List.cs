@@ -104,7 +104,7 @@ namespace DotNext.Collections.Generic
         /// <param name="input">A list to convert. Cannot be <see langword="null"/>.</param>
         /// <param name="mapper">Element mapping function.</param>
         /// <returns>An array of list items.</returns>
-        public static O[] ToArray<I, O>(this IList<I> input, Converter<I, O> mapper) => ToArray(input, new ValueFunc<I, O>(mapper));
+        public static O[] ToArray<I, O>(this IList<I> input, Converter<I, O> mapper) => ToArray(input, new ValueFunc<I, O>(mapper, true));
 
         /// <summary>
         /// Converts list into array and perform mapping for each
@@ -133,7 +133,7 @@ namespace DotNext.Collections.Generic
         /// <param name="mapper">Index-aware element mapping function.</param>
         /// <returns>An array of list items.</returns>
         public static O[] ToArray<I, O>(this IList<I> input, Func<int, I, O> mapper)
-            => ToArray(input, new ValueFunc<int, I, O>(mapper));
+            => ToArray(input, new ValueFunc<int, I, O>(mapper, true));
 
         /// <summary>
         /// Returns lazily converted read-only list.
@@ -154,7 +154,7 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="O">Type of items in the target list.</typeparam>
         /// <returns>Lazily converted read-only list.</returns>
         public static ReadOnlyListView<I, O> Convert<I, O>(this IReadOnlyList<I> list, Converter<I, O> converter) 
-            => Convert(list, new ValueFunc<I, O>(converter));
+            => Convert(list, new ValueFunc<I, O>(converter, true));
 
         /// <summary>
         /// Constructs read-only list with single item in it.

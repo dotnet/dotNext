@@ -160,7 +160,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
 		public bool AccumulateAndGet(bool x, Func<bool, bool, bool> accumulator)
-            => AccumulateAndGet(x, new ValueFunc<bool, bool, bool>(accumulator));
+            => AccumulateAndGet(x, new ValueFunc<bool, bool, bool>(accumulator, true));
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -186,7 +186,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
 		public bool GetAndAccumulate(bool x, Func<bool, bool, bool> accumulator)
-            => GetAndAccumulate(x, new ValueFunc<bool, bool, bool>(accumulator));
+            => GetAndAccumulate(x, new ValueFunc<bool, bool, bool>(accumulator, true));
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -208,7 +208,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
         public bool UpdateAndGet(Func<bool, bool> updater)
-            => UpdateAndGet(new ValueFunc<bool, bool>(updater));
+            => UpdateAndGet(new ValueFunc<bool, bool>(updater, true));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -226,7 +226,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         public bool GetAndUpdate(Func<bool, bool> updater)
-            => GetAndUpdate(new ValueFunc<bool, bool>(updater));
+            => GetAndUpdate(new ValueFunc<bool, bool>(updater, true));
 
         /// <summary>
         /// Atomically updates the stored value with the results 

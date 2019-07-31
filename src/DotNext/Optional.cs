@@ -255,7 +255,7 @@ namespace DotNext
         /// <returns>The value, if present.</returns>
         public T OrThrow<E>(Func<E> exceptionFactory)
             where E : Exception
-            => OrThrow(new ValueFunc<E>(exceptionFactory));
+            => OrThrow(new ValueFunc<E>(exceptionFactory, true));
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
@@ -269,7 +269,7 @@ namespace DotNext
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc));
+        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc, true));
 
         /// <summary>
         /// If a value is present, returns the value, otherwise return default value.
@@ -299,7 +299,7 @@ namespace DotNext
         /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-        public Optional<U> Convert<U>(Converter<T, U> mapper) => Convert(new ValueFunc<T, U>(mapper));
+        public Optional<U> Convert<U>(Converter<T, U> mapper) => Convert(new ValueFunc<T, U>(mapper, true));
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is 
@@ -317,7 +317,7 @@ namespace DotNext
         /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-		public Optional<U> Convert<U>(Converter<T, Optional<U>> mapper) => Convert(new ValueFunc<T, Optional<U>>(mapper));
+		public Optional<U> Convert<U>(Converter<T, Optional<U>> mapper) => Convert(new ValueFunc<T, Optional<U>>(mapper, true));
 
         /// <summary>
         /// If a value is present, and the value matches the given predicate, 

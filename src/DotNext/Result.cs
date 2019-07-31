@@ -146,7 +146,7 @@ namespace DotNext
         /// <param name="converter">A mapping function to be applied to the value, if present.</param>
         /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
         /// <returns>The conversion result.</returns>
-        public Result<U> Convert<U>(Converter<T, U> converter) => Convert(new ValueFunc<T, U>(converter));
+        public Result<U> Convert<U>(Converter<T, U> converter) => Convert(new ValueFunc<T, U>(converter, true));
 
         /// <summary>
         /// Attempts to extract value from container if it is present.
@@ -184,7 +184,7 @@ namespace DotNext
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc));
+        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc, true));
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
@@ -198,7 +198,7 @@ namespace DotNext
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<Exception, T> defaultFunc) => OrInvoke(new ValueFunc<Exception, T>(defaultFunc));
+        public T OrInvoke(Converter<Exception, T> defaultFunc) => OrInvoke(new ValueFunc<Exception, T>(defaultFunc, true));
 
         /// <summary>
         /// Gets exception associated with this result.

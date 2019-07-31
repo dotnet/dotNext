@@ -141,5 +141,28 @@ namespace DotNext
             var ptr = new ValueFunc<decimal, decimal>(op);
             Equal(-10M, ptr.Invoke(10M));
         }
+
+        private static string ToString(int value) => value.ToString();
+
+        [Fact]
+        public static void ConverterAsFunc()
+        {
+            var ptr = new ValueFunc<int, string>(new Converter<int, string>(ToString), true);
+            Equal("42", ptr.Invoke(42));
+        }
+
+        private static bool IsNegative(int value) => value < 0;
+
+        [Fact]
+        public static void PredicateAsFunc()
+        {
+            var predicate = new ValuePredicate<int>(new Predicate<int>(IsNegative), true);
+            True(predicate.Invoke(-1));
+            False(predicate.Invoke(0));
+
+            ValueFunc<int, bool> func = predicate;
+            True(func.Invoke(-1));
+            False(func.Invoke(0));
+        }
     }
 }

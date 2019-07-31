@@ -25,14 +25,19 @@ namespace DotNext.Runtime.InteropServices
             internal const int Offset = unchecked((int)2166136261);
             private const int Prime = 16777619;
 
-            internal static readonly ValueFunc<int, int, int> Func = new ValueFunc<int, int, int>((hash, data) => (hash ^ data) * Prime);
+            private static int GetHashCode(int hash, int data) => (hash ^ data) * Prime;
+
+            internal static readonly ValueFunc<int, int, int> Func = new ValueFunc<int, int, int>(GetHashCode);
         }
 
         private static class FNV1a64
         {
             internal const long Offset = unchecked((long)14695981039346656037);
             private const long Prime = 1099511628211;
-            internal static readonly ValueFunc<long, long, long> Func = new ValueFunc<long, long, long>((hash, data) => (hash ^ data) * Prime);
+
+            private static long GetHashCode(long hash, long data) => (hash ^ data) * Prime;
+
+            internal static readonly ValueFunc<long, long, long> Func = new ValueFunc<long, long, long>(GetHashCode);
         }
 
         /// <summary>
@@ -164,7 +169,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         public static long GetHashCode64(IntPtr source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(source, length, hash, new ValueFunc<long, long, long>(hashFunction), salted);
+            => GetHashCode64(source, length, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory, 64-bit version.
@@ -223,7 +228,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
         public static long GetHashCode64(void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(new IntPtr(source), length, hash, new ValueFunc<long, long, long>(hashFunction), salted);
+            => GetHashCode64(new IntPtr(source), length, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
         
         /// <summary>
 		/// Computes 64-bit hash code for the block of memory, 64-bit version.
@@ -285,7 +290,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         public static int GetHashCode32(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(source, length, hash, new ValueFunc<int, int, int>(hashFunction), salted);
+            => GetHashCode32(source, length, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -341,7 +346,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static int GetHashCode32(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(new IntPtr(source), length, hash, new ValueFunc<int, int, int>(hashFunction), salted);
+            => GetHashCode32(new IntPtr(source), length, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
         
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.

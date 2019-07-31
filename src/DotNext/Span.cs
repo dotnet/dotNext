@@ -127,7 +127,7 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode(span, hash, new ValueFunc<int, int, int>(hashFunction), salted);
+            => BitwiseHashCode(span, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
         
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
@@ -158,7 +158,7 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode64(span, hash, new ValueFunc<long, long, long>(hashFunction), salted);
+            => BitwiseHashCode64(span, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span.

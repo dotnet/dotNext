@@ -1,4 +1,5 @@
 using System;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
 {
@@ -88,7 +89,7 @@ namespace DotNext
             }
         }
 
-        private static T[] RemoveAll<T, C>(T[] array, ValuePredicate<T> match, ref C callback)
+        private static T[] RemoveAll<T, C>(T[] array, in ValuePredicate<T> match, ref C callback)
             where C : struct, IConsumer<T>
         {
             if (array.LongLength == 0L)
@@ -144,8 +145,8 @@ namespace DotNext
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <param name="callback">The delegate that is used to accept removed items.</param>
         /// <returns>A modified array with removed elements.</returns>
-        public static T[] RemoveAll<T>(this T[] array, ValuePredicate<T> match, ValueAction<T> callback)
-            => RemoveAll(array, match, ref callback);
+        public static T[] RemoveAll<T>(this T[] array, in ValuePredicate<T> match, in ValueAction<T> callback)
+            => RemoveAll(array, match, ref AsRef(callback));
 
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
@@ -155,7 +156,7 @@ namespace DotNext
         /// <param name="callback">The delegate that is used to accept removed items.</param>
         /// <returns>A modified array with removed elements.</returns>
         public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, Action<T> callback)
-            => RemoveAll(array, new ValuePredicate<T>(match), new ValueAction<T>(callback));
+            => RemoveAll(array, new ValuePredicate<T>(match, true), new ValueAction<T>(callback, true));
 
         internal static T[] New<T>(long length) => length == 0L ? Array.Empty<T>() : new T[length];
 
@@ -304,7 +305,7 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static int BitwiseHashCode<T>(this T[] array, int hash, Func<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode(array, hash, new ValueFunc<int, int, int>(hashFunction), salted);
+            => BitwiseHashCode(array, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
         
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -335,7 +336,7 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static long BitwiseHashCode64<T>(this T[] array, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
-            => BitwiseHashCode64(array, hash, new ValueFunc<long, long, long>(hashFunction), salted);
+            => BitwiseHashCode64(array, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
 
         /// <summary>
         /// Computes bitwise hash code for the array content.

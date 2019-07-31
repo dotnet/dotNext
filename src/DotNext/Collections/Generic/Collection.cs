@@ -28,7 +28,7 @@ namespace DotNext.Collections.Generic
         /// <param name="converter">A collection item conversion function.</param>
         /// <returns>Lazily converted read-only collection.</returns>
         public static ReadOnlyCollectionView<I, O> Convert<I, O>(this IReadOnlyCollection<I> collection, Converter<I, O> converter)
-            => Convert(collection, new ValueFunc<I, O>(converter));
+            => Convert(collection, new ValueFunc<I, O>(converter, true));
 
         private static T[] ToArray<C, T>(C collection, int count)
             where C : class, IEnumerable<T>

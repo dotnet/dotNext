@@ -44,12 +44,13 @@ namespace DotNext
         /// for subsequent calls.
         /// </remarks>
         /// <param name="action">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="action"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
-        public ValueAction(Action action)
+        public ValueAction(Action action, bool wrap = false)
         {
             if(action is null)
                 throw new ArgumentNullException(nameof(action));
-            if(action.Method.IsAbstract || action.Target != null)
+            if(wrap || action.Method.IsAbstract || action.Target != null)
             {
                 this.action = action;
                 methodPtr = default;
@@ -201,12 +202,13 @@ namespace DotNext
         /// for subsequent calls.
         /// </remarks>
         /// <param name="func">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="func"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
-        public ValueFunc(Func<R> func)
+        public ValueFunc(Func<R> func, bool wrap = false)
         {
             if(func is null)
                 throw new ArgumentNullException(nameof(func));
-            if(func.Method.IsAbstract || func.Target != null)
+            if(wrap || func.Method.IsAbstract || func.Target != null)
             {
                 this.func = func;
                 methodPtr = default;
@@ -400,14 +402,16 @@ namespace DotNext
         /// for subsequent calls.
         /// </remarks>
         /// <param name="predicate">The predicate representing method.</param>
-        public ValuePredicate(Predicate<T> predicate)
-            => func = new ValueFunc<T, bool>(predicate.ChangeType<Func<T, bool>>());
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="predicate"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
+        public ValuePredicate(Predicate<T> predicate, bool wrap = false)
+            => func = new ValueFunc<T, bool>(Unsafe.As<Func<T, bool>>(predicate), wrap);
 
         /// <summary>
         /// Initializes a new pointer based on extracted pointer from the predicate.
         /// </summary>
         /// <param name="func">The predicate representing method.</param>
-        public ValuePredicate(Func<T, bool> func) => this.func = new ValueFunc<T, bool>(func);
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="func"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
+        public ValuePredicate(Func<T, bool> func, bool wrap = false) => this.func = new ValueFunc<T, bool>(func, wrap);
 
         private ValuePredicate(IntPtr methodPtr) => func = new ValueFunc<T, bool>(methodPtr);
 
@@ -488,7 +492,7 @@ namespace DotNext
         /// Converts this pointer into <see cref="Predicate{T}"/>.
         /// </summary>
         /// <returns>The predicate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Predicate<T> ToDelegate() => func.ToPredicateUnsafe();
+        public Predicate<T> ToDelegate() => Unsafe.As<Predicate<T>>(func.ToDelegate());
 
         /// <summary>
         /// Spins until the condition represented by this predicate is satisfied.
@@ -609,12 +613,13 @@ namespace DotNext
         /// for subsequent calls.
         /// </remarks>
         /// <param name="func">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="func"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
-        public ValueFunc(Func<T, R> func)
+        public ValueFunc(Func<T, R> func, bool wrap = false)
         {
             if(func is null)
                 throw new ArgumentNullException(nameof(func));
-            if(func.Method.IsAbstract || func.Target != null)
+            if(wrap || func.Method.IsAbstract || func.Target != null)
             {
                 this.func = func;
                 methodPtr = default;
@@ -632,8 +637,10 @@ namespace DotNext
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
         /// <param name="converter">The delegate representing method.</param>
-        public ValueFunc(Converter<T, R> converter)
-            : this(converter.ChangeType<Func<T, R>>())
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="converter"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="converter"/> is <see langword="null"/>.</exception>
+        public ValueFunc(Converter<T, R> converter, bool wrap = false)
+            : this(Unsafe.As<Func<T, R>>(converter), wrap)
         {
         }
 
@@ -644,32 +651,12 @@ namespace DotNext
             isStatic = true;
         }
 
-        Converter<T, R> ICallable<Converter<T, R>>.ToDelegate()
-            => func is null ? ToConverter(methodPtr) : func.AsConverter();
+        Converter<T, R> ICallable<Converter<T, R>>.ToDelegate() => Unsafe.As<Converter<T, R>>(ToDelegate());
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => func?.Target;
-
-        private static Converter<T, R> ToConverter(IntPtr methodPtr)
-        {
-            Ldnull();
-            Push(methodPtr);
-            Newobj(M.Constructor(typeof(Converter<T, R>), typeof(object), typeof(IntPtr)));
-            return Return<Converter<T, R>>();
-        }
-
-        private static Predicate<T> ToPredicateUnsafe(IntPtr methodPtr)
-        {
-            Ldnull();
-            Push(methodPtr);
-            Newobj(M.Constructor(typeof(Predicate<T>), typeof(object), typeof(IntPtr)));
-            return Return<Predicate<T>>();
-        }
-
-        internal Predicate<T> ToPredicateUnsafe() 
-            => func is null ? ToPredicateUnsafe(methodPtr) : func.ChangeType<Predicate<T>>();
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T, TResult}"/>.
@@ -828,12 +815,13 @@ namespace DotNext
         /// for subsequent calls.
         /// </remarks>
         /// <param name="action">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="action"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
-        public ValueAction(Action<T> action)
+        public ValueAction(Action<T> action, bool wrap = false)
         {
             if(action is null)
                 throw new ArgumentNullException(nameof(action));
-            if(action.Method.IsAbstract || action.Target != null)
+            if(wrap || action.Method.IsAbstract || action.Target != null)
             {
                 this.action = action;
                 methodPtr = default;
@@ -1001,12 +989,13 @@ namespace DotNext
         /// for subsequent calls.
         /// </remarks>
         /// <param name="func">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="func"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
-        public ValueFunc(Func<T1, T2, R> func)
+        public ValueFunc(Func<T1, T2, R> func, bool wrap = false)
         {
             if(func is null)
                 throw new ArgumentNullException(nameof(func));
-            if(func.Method.IsAbstract || func.Target != null)
+            if(wrap || func.Method.IsAbstract || func.Target != null)
             {
                 this.func = func;
                 methodPtr = default;
@@ -1180,12 +1169,13 @@ namespace DotNext
         /// for subsequent calls.
         /// </remarks>
         /// <param name="action">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="action"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
-        public ValueAction(Action<T1, T2> action)
+        public ValueAction(Action<T1, T2> action, bool wrap = false)
         {
             if(action is null)
                 throw new ArgumentNullException(nameof(action));
-            if(action.Method.IsAbstract || action.Target != null)
+            if(wrap || action.Method.IsAbstract || action.Target != null)
             {
                 this.action = action;
                 methodPtr = default;
@@ -1357,12 +1347,13 @@ namespace DotNext
         /// for subsequent calls.
         /// </remarks>
         /// <param name="func">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="func"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
-        public ValueFunc(Func<T1, T2, T3, R> func)
+        public ValueFunc(Func<T1, T2, T3, R> func, bool wrap = false)
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (func.Method.IsAbstract || func.Target != null)
+            if (wrap || func.Method.IsAbstract || func.Target != null)
             {
                 this.func = func;
                 methodPtr = default;
@@ -1533,12 +1524,13 @@ namespace DotNext
         /// for subsequent calls.
         /// </remarks>
         /// <param name="action">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="action"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
-        public ValueAction(Action<T1, T2, T3> action)
+        public ValueAction(Action<T1, T2, T3> action, bool wrap = false)
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (action.Method.IsAbstract || action.Target != null)
+            if (wrap || action.Method.IsAbstract || action.Target != null)
             {
                 this.action = action;
                 methodPtr = default;
@@ -1714,12 +1706,13 @@ namespace DotNext
         /// for subsequent calls.
         /// </remarks>
         /// <param name="func">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="func"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
-        public ValueFunc(Func<T1, T2, T3, T4, R> func)
+        public ValueFunc(Func<T1, T2, T3, T4, R> func, bool wrap = false)
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (func.Method.IsAbstract || func.Target != null)
+            if (wrap || func.Method.IsAbstract || func.Target != null)
             {
                 this.func = func;
                 methodPtr = default;
@@ -1894,12 +1887,13 @@ namespace DotNext
         /// for subsequent calls.
         /// </remarks>
         /// <param name="action">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="action"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
-        public ValueAction(Action<T1, T2, T3, T4> action)
+        public ValueAction(Action<T1, T2, T3, T4> action, bool wrap = false)
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (action.Method.IsAbstract || action.Target != null)
+            if (wrap || action.Method.IsAbstract || action.Target != null)
             {
                 this.action = action;
                 methodPtr = default;
@@ -2075,12 +2069,13 @@ namespace DotNext
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
         /// <param name="func">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="func"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
-        public ValueFunc(Func<T1, T2, T3, T4, T5, R> func)
+        public ValueFunc(Func<T1, T2, T3, T4, T5, R> func, bool wrap = false)
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (func.Method.IsAbstract || func.Target != null)
+            if (wrap || func.Method.IsAbstract || func.Target != null)
             {
                 this.func = func;
                 methodPtr = default;
@@ -2255,12 +2250,13 @@ namespace DotNext
         /// Initializes a new pointer based on extracted pointer from the delegate.
         /// </summary>
         /// <param name="action">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="action"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
-        public ValueAction(Action<T1, T2, T3, T4, T5> action)
+        public ValueAction(Action<T1, T2, T3, T4, T5> action, bool wrap = false)
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (action.Method.IsAbstract || action.Target != null)
+            if (wrap || action.Method.IsAbstract || action.Target != null)
             {
                 this.action = action;
                 methodPtr = default;

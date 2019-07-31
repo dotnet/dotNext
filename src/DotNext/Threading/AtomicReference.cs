@@ -64,7 +64,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T AccumulateAndGet<T>(ref T value, T x, Func<T, T, T> accumulator)
             where T : class
-            => AccumulateAndGet(ref value, x, new ValueFunc<T, T, T>(accumulator));
+            => AccumulateAndGet(ref value, x, new ValueFunc<T, T, T>(accumulator, true));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -98,7 +98,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetAndAccumulate<T>(ref T value, T x, Func<T, T, T> accumulator)
             where T : class
-            => GetAndAccumulate(ref value, x, new ValueFunc<T, T, T>(accumulator));
+            => GetAndAccumulate(ref value, x, new ValueFunc<T, T, T>(accumulator, true));
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -128,7 +128,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T UpdateAndGet<T>(ref T value, Func<T, T> updater)
             where T : class
-            => UpdateAndGet(ref value, new ValueFunc<T, T>(updater));
+            => UpdateAndGet(ref value, new ValueFunc<T, T>(updater, true));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -154,7 +154,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetAndUpdate<T>(ref T value, Func<T, T> updater)
             where T : class
-            => GetAndUpdate(ref value, new ValueFunc<T, T>(updater));
+            => GetAndUpdate(ref value, new ValueFunc<T, T>(updater, true));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -257,7 +257,7 @@ namespace DotNext.Threading
 		/// <returns>The updated value.</returns>
 		public static T AccumulateAndGet<T>(this T[] array, long index, T x, Func<T, T, T> accumulator)
             where T : class
-            => AccumulateAndGet(array, index, x, new ValueFunc<T, T, T>(accumulator));
+            => AccumulateAndGet(array, index, x, new ValueFunc<T, T, T>(accumulator, true));
 
         /// <summary>
 		/// Atomically updates the array element with the results of applying the given function 
@@ -289,7 +289,7 @@ namespace DotNext.Threading
 		/// <returns>The original value of the array element.</returns>
 		public static T GetAndAccumulate<T>(this T[] array, long index, T x, Func<T, T, T> accumulator)
             where T : class
-            => GetAndAccumulate(array, index, x, new ValueFunc<T, T, T>(accumulator));
+            => GetAndAccumulate(array, index, x, new ValueFunc<T, T, T>(accumulator, true));
 
         /// <summary>
 		/// Atomically updates the array element with the results of applying the given function 
@@ -317,7 +317,7 @@ namespace DotNext.Threading
 		/// <returns>The updated value.</returns>
 		public static T UpdateAndGet<T>(this T[] array, long index, Func<T, T> updater)
             where T : class
-            => UpdateAndGet(array, index, new ValueFunc<T, T>(updater));
+            => UpdateAndGet(array, index, new ValueFunc<T, T>(updater, true));
 
         /// <summary>
 		/// Atomically updates the array element with the results 
@@ -341,7 +341,7 @@ namespace DotNext.Threading
 		/// <returns>The original value of the array element.</returns>
 		public static T GetAndUpdate<T>(this T[] array, long index, Func<T, T> updater)
             where T : class
-            => GetAndUpdate(array, index, new ValueFunc<T, T>(updater));
+            => GetAndUpdate(array, index, new ValueFunc<T, T>(updater, true));
 
         /// <summary>
 		/// Atomically updates the array element with the results 

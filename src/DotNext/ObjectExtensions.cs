@@ -77,7 +77,7 @@ namespace DotNext
         /// <param name="result2">Second decomposition result.</param>
         public static void Decompose<T, R1, R2>(this T obj, Func<T, R1> decomposer1, Func<T, R2> decomposer2, out R1 result1, out R2 result2)
             where T : class
-            => Decompose(obj, new ValueFunc<T, R1>(decomposer1), new ValueFunc<T, R2>(decomposer2), out result1, out result2);
+            => Decompose(obj, new ValueFunc<T, R1>(decomposer1, true), new ValueFunc<T, R2>(decomposer2, true), out result1, out result2);
 
         /// <summary>
         /// Performs decomposition of object into two values.
@@ -109,7 +109,7 @@ namespace DotNext
         /// <returns>Decomposition result.</returns>
         public static (R1, R2) Decompose<T, R1, R2>(this T obj, Func<T, R1> decomposer1, Func<T, R2> decomposer2)
             where T : class
-            => Decompose(obj, new ValueFunc<T, R1>(decomposer1), new ValueFunc<T, R2>(decomposer2));
+            => Decompose(obj, new ValueFunc<T, R1>(decomposer1, true), new ValueFunc<T, R2>(decomposer2, true));
 
         /// <summary>
         /// Performs decomposition of object into tuple.

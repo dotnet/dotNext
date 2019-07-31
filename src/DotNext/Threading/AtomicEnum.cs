@@ -114,7 +114,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
 		public E AccumulateAndGet(E x, Func<E, E, E> accumulator)
-            => AccumulateAndGet(x, new ValueFunc<E, E, E>(accumulator));
+            => AccumulateAndGet(x, new ValueFunc<E, E, E>(accumulator, true));
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -140,7 +140,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
 		public E GetAndAccumulate(E x, Func<E, E, E> accumulator)
-            => GetAndAccumulate(x, new ValueFunc<E, E, E>(accumulator));
+            => GetAndAccumulate(x, new ValueFunc<E, E, E>(accumulator, true));
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -162,7 +162,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
         public E UpdateAndGet(Func<E, E> updater)
-            => UpdateAndGet(new ValueFunc<E, E>(updater));
+            => UpdateAndGet(new ValueFunc<E, E>(updater, true));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -180,7 +180,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         public E GetAndUpdate(Func<E, E> updater)
-            => GetAndUpdate(new ValueFunc<E, E>(updater));
+            => GetAndUpdate(new ValueFunc<E, E>(updater, true));
 
         /// <summary>
         /// Atomically updates the stored value with the results 
