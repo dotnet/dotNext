@@ -727,7 +727,7 @@ namespace DotNext
         /// <returns>The delegate created from this method pointer.</returns>
         public static explicit operator Converter<T, R>(in ValueFunc<T, R> pointer)
         {
-            Push(nameof(pointer));
+            Ldarg(nameof(pointer));
             Constrained(typeof(ValueFunc<T, R>));
             Callvirt(new M(typeof(ICallable<Converter<T, R>>), nameof(ICallable<Converter<T, R>>.ToDelegate)));
             return Return<Converter<T, R>>();

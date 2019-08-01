@@ -163,6 +163,9 @@ namespace DotNext
             ValueFunc<int, bool> func = predicate;
             True(func.Invoke(-1));
             False(func.Invoke(0));
+            var converter = (Converter<int, bool>)func;
+            True(converter.Invoke(-1));
+            False(converter.Invoke(0));
         }
     }
 }
