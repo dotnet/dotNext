@@ -15,8 +15,6 @@ namespace DotNext.Threading
     /// <seealso cref="Interlocked"/>
     public static class AtomicIntPtr
     {
-        private static readonly ValueFunc<IntPtr, IntPtr> Increment = new ValueFunc<IntPtr, IntPtr>(new Func<IntPtr, IntPtr>(ValueTypeExtensions.Increment));
-        private static readonly ValueFunc<IntPtr, IntPtr> Decrement = new ValueFunc<IntPtr, IntPtr>(new Func<IntPtr, IntPtr>(ValueTypeExtensions.Decrement));
         private static readonly ValueFunc<IntPtr, IntPtr, IntPtr> Sum = new ValueFunc<IntPtr, IntPtr, IntPtr>(ValueTypeExtensions.Add);
 
         /// <summary>
@@ -55,7 +53,7 @@ namespace DotNext.Threading
         /// <returns>Incremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr IncrementAndGet(ref this IntPtr value)
-            => UpdateAndGet(ref value, Increment);
+            => AccumulateAndGet(ref value, new IntPtr(1), Sum);
 
         /// <summary>
         /// Atomically decrements the referenced value by one.
@@ -64,7 +62,7 @@ namespace DotNext.Threading
         /// <returns>Decremented value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr DecrementAndGet(ref this IntPtr value)
-            => UpdateAndGet(ref value, Decrement);
+            => AccumulateAndGet(ref value, new IntPtr(-1), Sum);
 
         /// <summary>
 		/// Adds two native integers and replaces referenced storage with the sum, 

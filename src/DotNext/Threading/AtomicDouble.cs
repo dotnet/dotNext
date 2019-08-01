@@ -15,9 +15,9 @@ namespace DotNext.Threading
 	/// <seealso cref="Interlocked"/>
     public static class AtomicDouble
     {
-        private static readonly ValueFunc<double, double> Increment = new ValueFunc<double, double>(new Func<double, double>(value => value + 1D));
-        private static readonly ValueFunc<double, double> Decrement = new ValueFunc<double, double>(new Func<double, double>(value => value - 1D));
-        private static readonly ValueFunc<double, double, double> Sum = new ValueFunc<double, double, double>((x, y) => x + y);
+        private static readonly ValueFunc<double, double, double> Sum = new ValueFunc<double, double, double>(SumImpl);
+
+        private static double SumImpl(double x, double y) => x + y;
 
         /// <summary>
         /// Reads the value of the specified field. On systems that require it, inserts a
@@ -54,7 +54,7 @@ namespace DotNext.Threading
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <returns>Incremented value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double IncrementAndGet(ref this double value) => UpdateAndGet(ref value, Increment);
+        public static double IncrementAndGet(ref this double value) => AccumulateAndGet(ref value, 1D, Sum);
 
         /// <summary>
 		/// Atomically decrements by one the current value.
@@ -62,7 +62,7 @@ namespace DotNext.Threading
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <returns>Decremented value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double DecrementAndGet(ref this double value) => UpdateAndGet(ref value, Decrement);
+        public static double DecrementAndGet(ref this double value) => AccumulateAndGet(ref value, -1D, Sum);
 
         /// <summary>
 		/// Adds two 64-bit floating-point numbers and replaces referenced storage with the sum, 

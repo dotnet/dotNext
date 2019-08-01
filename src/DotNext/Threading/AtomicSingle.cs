@@ -15,9 +15,9 @@ namespace DotNext.Threading
 	/// <seealso cref="Interlocked"/>
     public static class AtomicSingle
     {
-        private static readonly ValueFunc<float, float> Increment = new ValueFunc<float, float>(new Func<float, float>(value => value + 1F));
-        private static readonly ValueFunc<float, float> Decrement = new ValueFunc<float, float>(new Func<float, float>(value => value - 1F));
-        private static readonly ValueFunc<float, float, float> Sum = new ValueFunc<float, float, float>((x, y) => x + y);
+        private static readonly ValueFunc<float, float, float> Sum = new ValueFunc<float, float, float>(SumImpl);
+
+        private static float SumImpl(float x, float y) => x + y;
 
         /// <summary>
         /// Reads the value of the specified field. On systems that require it, inserts a
@@ -55,7 +55,7 @@ namespace DotNext.Threading
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <returns>Incremented value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float IncrementAndGet(ref this float value) => UpdateAndGet(ref value, Increment);
+        public static float IncrementAndGet(ref this float value) => AccumulateAndGet(ref value, 1F, Sum);
 
         /// <summary>
 		/// Atomically decrements by one the current value.
@@ -63,7 +63,7 @@ namespace DotNext.Threading
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <returns>Decremented value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float DecrementAndGet(ref this float value) => UpdateAndGet(ref value, Decrement);
+        public static float DecrementAndGet(ref this float value) => AccumulateAndGet(ref value, -1F, Sum);
 
         /// <summary>
 		/// Adds two 64-bit floating-point numbers and replaces referenced storage with the sum, 
