@@ -42,13 +42,6 @@ namespace DotNext
         }
 
         [Fact]
-        public static void PredicateTest()
-        {
-            True(ValuePredicate<int>.True.Invoke(10));
-            False(ValuePredicate<int>.False.Invoke(10));
-        }
-
-        [Fact]
         public void StaticMethodAsClosedFunctionPtr()
         {
             var method = GetType().GetMethod(nameof(Dup), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
@@ -156,14 +149,11 @@ namespace DotNext
         [Fact]
         public static void PredicateAsFunc()
         {
-            var predicate = new ValuePredicate<int>(new Predicate<int>(IsNegative), true);
+            var predicate = new Predicate<int>(IsNegative).AsValueFunc();
             True(predicate.Invoke(-1));
             False(predicate.Invoke(0));
 
-            ValueFunc<int, bool> func = predicate;
-            True(func.Invoke(-1));
-            False(func.Invoke(0));
-            var converter = (Converter<int, bool>)func;
+            var converter = (Converter<int, bool>)predicate;
             True(converter.Invoke(-1));
             False(converter.Invoke(0));
         }

@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Messaging;
     using Threading;
     using static Threading.Tasks.Continuation;
     using static Threading.Tasks.ValueTaskSynchronization;
@@ -178,7 +177,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Indicates that local member is a leader.
         /// </summary>
         protected bool IsLeaderLocal => state is LeaderState;
-
 
         IAuditTrail<ILogEntry> IReplicationCluster<ILogEntry>.AuditTrail => auditTrail;
 
@@ -459,6 +457,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
         }
 
+        private TimeSpan HeartbeatPeriod => TimeSpan.FromMilliseconds(electionTimeout / 2D);
+
         [SuppressMessage("Reliability", "CA2000", Justification = "The instance returned by StartLeading is the same as 'this'")]
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {
@@ -469,10 +469,54 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     candidateState.Dispose();
                     Leader = newLeader as TMember;
-                    state = new LeaderState(this, allowPartitioning, auditTrail.Term).StartLeading(electionTimeout / 2,
+                    state = new LeaderState(this, allowPartitioning, auditTrail.Term).StartLeading(HeartbeatPeriod,
                         auditTrail);
                     Logger.TransitionToLeaderStateCompleted();
                 }
+            }
+        }
+
+        private async Task WaitForCommit(long commitIndex)
+        {
+            var notifier = new CommitEvent<ILogEntry>(commitIndex);
+            notifier.AttachTo(auditTrail);
+            try
+            {
+                while (!await notifier.Wait(HeartbeatPeriod, transitionCancellation.Token).ConfigureAwait(false))
+                    if (!IsLeaderLocal)
+                        throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
+            }
+            finally
+            {
+                notifier.DetachFrom(auditTrail);
+                notifier.Dispose();
+            }
+        }
+
+        private async Task WriteAsync<T>(DataHandler<T, ILogEntry> handler, T input, bool waitForCommit)
+        {
+            var entries = await handler(input).ConfigureAwait(false);
+            if (entries.Count == 0)
+                return;
+            var index = await auditTrail.AppendAsync(entries).ConfigureAwait(false);
+            if (waitForCommit)
+                await WaitForCommit(index + entries.Count - 1L).ConfigureAwait(false);
+            else if (IsLeaderLocal)
+                return;
+            else
+                throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
+        }
+
+        Task IReplicationCluster<ILogEntry>.WriteAsync<T>(DataHandler<T, ILogEntry> handler, T input, WriteConcern concern)
+        {
+            switch (concern)
+            {
+                case WriteConcern.None:
+                    return WriteAsync(handler, input, false);
+                case WriteConcern.LeaderOnly:
+                    return WriteAsync(handler, input, true);
+                default:
+                    return Task.FromException(new NotSupportedException());
             }
         }
 
@@ -494,11 +538,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Interlocked.Exchange(ref state, null)?.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        public Task WriteAsync(IMessage content, WriteConcern concern)
-        {
-            throw new NotImplementedException();
         }
     }
 }

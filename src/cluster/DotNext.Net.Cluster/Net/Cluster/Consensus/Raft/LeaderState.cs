@@ -141,13 +141,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //it is partitioned network with absolute majority, not possible to have more than one leader
             stateMachine.MoveToFollowerState(false, term);
             return false;
-
         }
 
         private async void DoHeartbeats(object transactionLog, bool timedOut)
         {
             Debug.Assert(transactionLog is IAuditTrail<ILogEntry>);
-            if (IsDisposed || !timedOut || !processingState.FalseToTrue()) return;
+            if (IsDisposed || !timedOut || processingState.CompareExchange(true, false)) return;
             try
             {
                 if (!await DoHeartbeats((IAuditTrail<ILogEntry>)transactionLog).ConfigureAwait(false))
@@ -164,7 +163,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="period">Time period of Heartbeats</param>
         /// <param name="transactionLog">Transaction log.</param>
-        internal LeaderState StartLeading(int period, IAuditTrail<ILogEntry> transactionLog)
+        internal LeaderState StartLeading(TimeSpan period, IAuditTrail<ILogEntry> transactionLog)
         {
             processingState.Value = false;
             if (transactionLog != null)

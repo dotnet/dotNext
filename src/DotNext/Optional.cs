@@ -325,7 +325,7 @@ namespace DotNext
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
         /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
-        public Optional<T> If(ValuePredicate<T> condition) => IsPresent && condition.Invoke(value) ? this : Empty;
+        public Optional<T> If(in ValueFunc<T, bool> condition) => IsPresent && condition.Invoke(value) ? this : Empty;
 
         /// <summary>
         /// If a value is present, and the value matches the given predicate, 
@@ -333,7 +333,7 @@ namespace DotNext
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
         /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
-        public Optional<T> If(Predicate<T> condition) => If(new ValuePredicate<T>(condition));
+        public Optional<T> If(Predicate<T> condition) => If(condition.AsValueFunc(true));
 
         /// <summary>
         /// Returns textual representation of this object.

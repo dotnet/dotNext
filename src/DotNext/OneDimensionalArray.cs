@@ -89,7 +89,7 @@ namespace DotNext
             }
         }
 
-        private static T[] RemoveAll<T, C>(T[] array, in ValuePredicate<T> match, ref C callback)
+        private static T[] RemoveAll<T, C>(T[] array, in ValueFunc<T, bool> match, ref C callback)
             where C : struct, IConsumer<T>
         {
             if (array.LongLength == 0L)
@@ -120,7 +120,7 @@ namespace DotNext
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <param name="count">The number of elements removed from this list.</param>
         /// <returns>A modified array with removed elements.</returns>
-        public static T[] RemoveAll<T>(this T[] array, ValuePredicate<T> match, out long count)
+        public static T[] RemoveAll<T>(this T[] array, in ValueFunc<T, bool> match, out long count)
         {
             var counter = new RemovalCounter<T>();
             var result = RemoveAll(array, match, ref counter);
@@ -136,7 +136,7 @@ namespace DotNext
         /// <param name="count">The number of elements removed from this list.</param>
         /// <returns>A modified array with removed elements.</returns>
         public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, out long count)
-            => RemoveAll(array, new ValuePredicate<T>(match), out count);
+            => RemoveAll(array, match.AsValueFunc(true), out count);
 
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
@@ -145,7 +145,7 @@ namespace DotNext
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <param name="callback">The delegate that is used to accept removed items.</param>
         /// <returns>A modified array with removed elements.</returns>
-        public static T[] RemoveAll<T>(this T[] array, in ValuePredicate<T> match, in ValueAction<T> callback)
+        public static T[] RemoveAll<T>(this T[] array, in ValueFunc<T, bool> match, in ValueAction<T> callback)
             => RemoveAll(array, match, ref AsRef(callback));
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace DotNext
         /// <param name="callback">The delegate that is used to accept removed items.</param>
         /// <returns>A modified array with removed elements.</returns>
         public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, Action<T> callback)
-            => RemoveAll(array, new ValuePredicate<T>(match, true), new ValueAction<T>(callback, true));
+            => RemoveAll(array, match.AsValueFunc(true), new ValueAction<T>(callback, true));
 
         internal static T[] New<T>(long length) => length == 0L ? Array.Empty<T>() : new T[length];
 

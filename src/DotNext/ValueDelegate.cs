@@ -370,211 +370,6 @@ namespace DotNext
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in ValueFunc<R> first, in ValueFunc<R> second) => !first.Equals(second);
     }
-    
-    /// <summary>
-    /// Represents a pointer to the predicate.
-    /// </summary>
-    /// <remarks>
-    /// This method pointer is intended to call managed methods only.
-    /// </remarks>
-    /// <typeparam name="T">The type of the predicate parameter.</typeparam>
-    public readonly struct ValuePredicate<T> : ICallable<Predicate<T>>, IEquatable<ValuePredicate<T>>
-    {
-        private readonly ValueFunc<T, bool> func;
-
-        /// <summary>
-        /// Initializes a new pointer to the method.
-        /// </summary>
-        /// <remarks>
-        /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
-        /// with the delegate type.
-        /// </remarks>
-        /// <param name="method">The method to convert into pointer.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentException">Signature of <paramref name="method"/> doesn't match to this pointer type.</exception>
-        public ValuePredicate(MethodInfo method) => func = new ValueFunc<T, bool>(method);
-
-        /// <summary>
-        /// Initializes a new pointer based on extracted pointer from the predicate.
-        /// </summary>
-        /// <remarks>
-        /// You can use this constructor to create value delegate once and cache it using <c>static readonly</c> field
-        /// for subsequent calls.
-        /// </remarks>
-        /// <param name="predicate">The predicate representing method.</param>
-        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="predicate"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
-        public ValuePredicate(Predicate<T> predicate, bool wrap = false)
-            => func = new ValueFunc<T, bool>(Unsafe.As<Func<T, bool>>(predicate), wrap);
-
-        /// <summary>
-        /// Initializes a new pointer based on extracted pointer from the predicate.
-        /// </summary>
-        /// <param name="func">The predicate representing method.</param>
-        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="func"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
-        public ValuePredicate(Func<T, bool> func, bool wrap = false) => this.func = new ValueFunc<T, bool>(func, wrap);
-
-        private ValuePredicate(IntPtr methodPtr) => func = new ValueFunc<T, bool>(methodPtr);
-
-        /// <summary>
-        /// Converts this typed pointer into <see cref="ValueFunc{T,R}"/>.
-        /// </summary>
-        /// <returns>The converted pointer.</returns>
-        public ValueFunc<T, bool> Func => func;
-
-        [SuppressMessage("Usage", "CA1801")]
-        private static bool AlwaysTrue(T value) => true;
-
-        [SuppressMessage("Usage", "CA1801")]
-        private static bool AlwaysFalse(T value) => false;
-
-        private static bool CheckNull(T value) => value == null;
-
-        private static bool CheckNotNull(T value) => value != null;
-
-        /// <summary>
-        /// Gets pointer to the method determining whether the passed argument is <see langword="null"/>.
-        /// </summary>
-        public static ValuePredicate<T> IsNull
-        {
-            get
-            {
-                Ldftn(new M(typeof(ValuePredicate<T>), nameof(CheckNull)));
-                Newobj(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr)));
-                return Return<ValuePredicate<T>>();
-            }
-        }
-
-        /// <summary>
-        /// Gets pointer to the method determining whether the passed argument is not <see langword="null"/>.
-        /// </summary>
-        public static ValuePredicate<T> IsNotNull
-        {
-            get
-            {
-                Ldftn(new M(typeof(ValuePredicate<T>), nameof(CheckNotNull)));
-                Newobj(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr)));
-                return Return<ValuePredicate<T>>();
-            }
-        }
-
-        /// <summary>
-        /// Returns a predicate which always returns <see langword="true"/>.
-        /// </summary>
-        public static ValuePredicate<T> True
-        {
-            get
-            {
-                Ldftn(new M(typeof(ValuePredicate<T>), nameof(AlwaysTrue)));
-                Newobj(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr)));
-                return Return<ValuePredicate<T>>();
-            }
-        }
-
-        /// <summary>
-        /// Returns a predicate which always returns <see langword="false"/>.
-        /// </summary>
-        public static ValuePredicate<T> False
-        {
-            get
-            {
-                Ldftn(new M(typeof(ValuePredicate<T>), nameof(AlwaysFalse)));
-                Newobj(M.Constructor(typeof(ValuePredicate<T>), typeof(IntPtr)));
-                return Return<ValuePredicate<T>>();
-            }
-        }
-
-        /// <summary>
-        /// Gets the object on which the current pointer invokes the method.
-        /// </summary>
-        public object Target => func.Target;
-
-        /// <summary>
-        /// Converts this pointer into <see cref="Predicate{T}"/>.
-        /// </summary>
-        /// <returns>The predicate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Predicate<T> ToDelegate() => Unsafe.As<Predicate<T>>(func.ToDelegate());
-
-        /// <summary>
-        /// Spins until the condition represented by this predicate is satisfied.
-        /// </summary>
-        /// <remarks>
-        /// The predicate has to be executed over and over until it returns true.
-        /// </remarks>
-        /// <param name="arg">The value to be passed into predicate.</param>
-        public void SpinWait(T arg)
-        {
-            for (System.Threading.SpinWait spinner; !Invoke(arg); spinner.SpinOnce()) { }
-        }
-
-        /// <summary>
-        /// Invokes predicate by pointer.
-        /// </summary>
-        /// <param name="arg">The first argument to be passed into the target method.</param>
-        /// <returns>The result of method invocation.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Invoke(T arg) => func.Invoke(arg);
-
-        object ICallable.DynamicInvoke(params object[] args) => Invoke((T)args[0]);
-
-        /// <summary>
-        /// Converts this pointer into <see cref="Predicate{T}"/>.
-        /// </summary>
-        /// <param name="predicate">The pointer to convert.</param>
-        /// <returns>The predicate created from this method pointer.</returns>
-        public static explicit operator Predicate<T>(in ValuePredicate<T> predicate) => predicate.ToDelegate();
-
-        /// <summary>
-        /// Converts this typed pointer into <see cref="ValueFunc{T,R}"/>.
-        /// </summary>
-        /// <param name="predicate">The predicate to convert.</param>
-        /// <returns>The converted pointer.</returns>
-        public static implicit operator ValueFunc<T, bool>(ValuePredicate<T> predicate) => predicate.func;
-
-        /// <summary>
-        /// Computes hash code of this pointer.
-        /// </summary>
-        /// <returns>The hash code of this pointer.</returns>
-        public override int GetHashCode() => func.GetHashCode();
-
-        bool IEquatable<ValuePredicate<T>>.Equals(ValuePredicate<T> other) => Equals(other);
-
-        /// <summary>
-        /// Determines whether this object points to the same method as other object.
-        /// </summary>
-        /// <param name="other">The pointer to compare.</param>
-        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValuePredicate<T> other) => func == other.func;
-
-        /// <summary>
-        /// Determines whether this object points to the same method as other object.
-        /// </summary>
-        /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
-        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => func.Equals(other);
-
-        /// <summary>
-        /// Obtains pointer value in HEX format.
-        /// </summary>
-        /// <returns>The address represented by pointer.</returns>
-        public override string ToString() => func.ToString();
-
-        /// <summary>
-        /// Determines whether the pointers represent the same method.
-        /// </summary>
-        /// <param name="first">The first pointer to compare.</param>
-        /// <param name="second">The second pointer to compare.</param>
-        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(ValuePredicate<T> first, ValuePredicate<T> second) => first.Equals(second);
-
-        /// <summary>
-        /// Determines whether the pointers represent different methods.
-        /// </summary>
-        /// <param name="first">The first pointer to compare.</param>
-        /// <param name="second">The second pointer to compare.</param>
-        /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(ValuePredicate<T> first, ValuePredicate<T> second) => !first.Equals(second);
-    }
 
     /// <summary>
     /// Represents a pointer to the method with single parameter and return type.
@@ -644,14 +439,9 @@ namespace DotNext
         {
         }
 
-        internal ValueFunc(IntPtr methodPtr)
-        {
-            this.methodPtr = methodPtr;
-            func = null;
-            isStatic = true;
-        }
+        private Converter<T, R> ToConverter() => Unsafe.As<Converter<T, R>>(ToDelegate());
 
-        Converter<T, R> ICallable<Converter<T, R>>.ToDelegate() => Unsafe.As<Converter<T, R>>(ToDelegate());
+        Converter<T, R> ICallable<Converter<T, R>>.ToDelegate() => ToConverter();
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -716,22 +506,17 @@ namespace DotNext
         /// <summary>
         /// Converts this pointer into <see cref="Func{T, TResult}"/>.
         /// </summary>
-        /// <param name="pointer">The pointer to convert.</param>
+        /// <param name="func">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Func<T, R>(in ValueFunc<T, R> pointer) => pointer.ToDelegate();
+        public static explicit operator Func<T, R>(in ValueFunc<T, R> func) => func.ToDelegate();
 
         /// <summary>
         /// Converts this pointer into <see cref="Converter{T, TResult}"/>.
         /// </summary>
-        /// <param name="pointer">The pointer to convert.</param>
+        /// <param name="func">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Converter<T, R>(in ValueFunc<T, R> pointer)
-        {
-            Ldarg(nameof(pointer));
-            Constrained(typeof(ValueFunc<T, R>));
-            Callvirt(new M(typeof(ICallable<Converter<T, R>>), nameof(ICallable<Converter<T, R>>.ToDelegate)));
-            return Return<Converter<T, R>>();
-        }
+        public static explicit operator Converter<T, R>(in ValueFunc<T, R> func)
+            => func.ToConverter();
 
         /// <summary>
         /// Computes hash code of this pointer.

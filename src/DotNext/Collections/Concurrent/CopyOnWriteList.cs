@@ -288,7 +288,7 @@ namespace DotNext.Collections.Concurrent
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <returns>The number of elements removed from this list.</returns>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public long RemoveAll(ValuePredicate<T> match)
+        public long RemoveAll(ValueFunc<T, bool> match)
         {
             backingStore = backingStore.RemoveAll(match, out var count);
             return count;
@@ -299,7 +299,7 @@ namespace DotNext.Collections.Concurrent
         /// </summary>
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <returns>The number of elements removed from this list.</returns>
-        public long RemoveAll(Predicate<T> match) => RemoveAll(new ValuePredicate<T>(match));
+        public long RemoveAll(Predicate<T> match) => RemoveAll(match.AsValueFunc(true));
 
         /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
@@ -307,7 +307,7 @@ namespace DotNext.Collections.Concurrent
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <param name="callback">The delegate that is used to accept removed items.</param>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void RemoveAll(ValuePredicate<T> match, in ValueAction<T> callback)
+        public void RemoveAll(in ValueFunc<T, bool> match, in ValueAction<T> callback)
             => backingStore = backingStore.RemoveAll(match, callback);
 
         /// <summary>
@@ -315,7 +315,7 @@ namespace DotNext.Collections.Concurrent
         /// </summary>
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <param name="callback">The delegate that is used to accept removed items.</param>
-        public void RemoveAll(Predicate<T> match, Action<T> callback) => RemoveAll(new ValuePredicate<T>(match, true), new ValueAction<T>(callback));
+        public void RemoveAll(Predicate<T> match, Action<T> callback) => RemoveAll(match.AsValueFunc(true), new ValueAction<T>(callback));
 
         void IList<T>.Insert(int index, T item) => Insert(index, item);
 

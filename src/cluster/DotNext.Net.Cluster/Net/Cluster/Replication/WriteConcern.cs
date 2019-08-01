@@ -11,12 +11,12 @@ namespace DotNext.Net.Cluster.Replication
         None = 0,
 
         /// <summary>
-        /// Guarantees that new log entries are appended and commited by leader node.
+        /// Guarantees that new log entries are appended and committed by leader node.
         /// </summary>
         LeaderOnly,
 
         /// <summary>
-        /// Guarantees that new log entries are appended and committed by majority nodes.
+        /// Guarantees that new log entries are appended and committed by majority of nodes.
         /// </summary>
         Majority,
 

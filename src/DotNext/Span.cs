@@ -284,5 +284,14 @@ namespace DotNext
         /// <typeparam name="T">The type of the elements.</typeparam>
         public static void Sort<T>(this Span<T> span, in ValueFunc<T, T, int> comparison)
             => QuickSort(span, 0, span.Length - 1, ref AsRef(comparison));
+
+        /// <summary>
+        /// Sorts the elements.
+        /// </summary>
+        /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
+        /// <param name="comparison">The comparer used for sorting.</param>
+        /// <typeparam name="T">The type of the elements.</typeparam>
+        public static void Sort<T>(this Span<T> span, Comparison<T> comparison)
+            => Sort(span, comparison.AsValueFunc(true));
     }
 }
