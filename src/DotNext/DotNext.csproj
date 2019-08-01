@@ -18,7 +18,7 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Typed method pointers are introduced as allocation-free alternative to classic delegates
+	<PackageReleaseNotes>Value (struct) delegates are introduced as allocation-free alternative to classic delegates
 VolatileContainer&lt;T&gt; is added to provide atomic operations and volatile read/write for arbitrary value types
 Improved performance of methods declared in EnumConverter
 Improved performance of atomic operations such as UpdateAndGet and AccumulateAndGet
