@@ -40,5 +40,13 @@ namespace DotNext
         {
             Equal("ab", "abcd".TrimLength(2));
         }
+
+        [Fact]
+        public static void StringRawData()
+        {
+            var str = "Hello, world!";
+            ref readonly var ch = ref str.GetRawData();
+            Equal('H', ch);
+        }
     }
 }

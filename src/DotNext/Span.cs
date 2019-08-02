@@ -293,5 +293,25 @@ namespace DotNext
         /// <typeparam name="T">The type of the elements.</typeparam>
         public static void Sort<T>(this Span<T> span, Comparison<T> comparison)
             => Sort(span, comparison.AsValueFunc(true));
+
+        /// <summary>
+        /// Trims the span to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original span returned.
+        /// </summary>
+        /// <param name="span">A contiguous region of arbitrary memory.</param>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <returns>Trimmed span.</returns>
+        public static Span<T> TrimLength<T>(this Span<T> span, int maxLength)
+            => span.Length <= maxLength ? span : span.Slice(0, maxLength);
+
+        /// <summary>
+        /// Trims the span to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original span returned.
+        /// </summary>
+        /// <param name="span">A contiguous region of arbitrary memory.</param>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <returns>Trimmed span.</returns>
+        public static ReadOnlySpan<T> TrimLength<T>(this ReadOnlySpan<T> span, int maxLength)
+            => span.Length <= maxLength ? span : span.Slice(0, maxLength);
     }
 }

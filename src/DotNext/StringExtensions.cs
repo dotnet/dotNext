@@ -1,4 +1,9 @@
 using System;
+using System.Runtime.CompilerServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using Var = InlineIL.LocalVar;
+using M = InlineIL.MethodRef;
 
 namespace DotNext
 {
@@ -68,5 +73,24 @@ namespace DotNext
         /// <param name="chunkSize">The maximum length of the substring in the sequence.</param>
         /// <returns>The sequence of substrings.</returns>
         public static ChunkSequence<char> Split(this string str, int chunkSize) => new ChunkSequence<char>(str.AsMemory(), chunkSize);
+
+        /// <summary>
+        /// Gets managed pointer to the first character in the string.
+        /// </summary>
+        /// <param name="str">The string data.</param>
+        /// <returns>The managed pointer to the first character in the string.</returns>
+        public static ref readonly char GetRawData(this string str)
+        {
+            const string pinnedString = "pinnedStr";
+            DeclareLocals(new Var(pinnedString, typeof(string)).Pinned());
+            Push(str);
+            Stloc(pinnedString);
+            Ldloc(pinnedString);
+            Conv_U();
+            Call(M.PropertyGet(typeof(RuntimeHelpers), nameof(RuntimeHelpers.OffsetToStringData)));
+            Conv_U();
+            Add();
+            return ref ReturnRef<char>();
+        }
     }
 }
