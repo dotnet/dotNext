@@ -33,7 +33,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         };
 
-        private AtomicBoolean processingState;
+        private long heartbeatCounter;
         private volatile RegisteredWaitHandle heartbeatTimer;
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
@@ -45,7 +45,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             currentTerm = term;
             this.allowPartitioning = allowPartitioning;
             timerCancellation = new CancellationTokenSource();
-            processingState = new AtomicBoolean(false);
         }
 
         //true if at least one entry from current term is stored on this node; otherwise, false
@@ -146,17 +145,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async void DoHeartbeats(object transactionLog, bool timedOut)
         {
             Debug.Assert(transactionLog is IAuditTrail<ILogEntry>);
-            if (IsDisposed || !timedOut || processingState.CompareExchange(true, false)) return;
-            try
+            if (IsDisposed || !timedOut || heartbeatCounter.IncrementAndGet() > 1L)
+                return;
+            do
             {
-                if (!await DoHeartbeats((IAuditTrail<ILogEntry>)transactionLog).ConfigureAwait(false))
-                    heartbeatTimer?.Unregister(null);
+                if (await DoHeartbeats((IAuditTrail<ILogEntry>)transactionLog).ConfigureAwait(false))
+                    continue;
+                heartbeatTimer?.Unregister(null);
+                break;
             }
-            finally
-            {
-                processingState.Value = false;
-            }
+            while (heartbeatCounter.DecrementAndGet() > 0L);
         }
+
+        internal void ForceReplication(IAuditTrail<ILogEntry> transactionLog)
+            => DoHeartbeats(transactionLog, true);
 
         /// <summary>
         /// Starts cluster synchronization.
@@ -165,7 +167,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="transactionLog">Transaction log.</param>
         internal LeaderState StartLeading(TimeSpan period, IAuditTrail<ILogEntry> transactionLog)
         {
-            processingState.Value = false;
+            heartbeatCounter.VolatileWrite(0L);
             if (transactionLog != null)
                 foreach (var member in stateMachine.Members)
                     member.NextIndex = transactionLog.GetLastIndex(false) + 1;

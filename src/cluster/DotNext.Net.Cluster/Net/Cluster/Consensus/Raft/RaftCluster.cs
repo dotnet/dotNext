@@ -457,8 +457,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
         }
 
-        private TimeSpan HeartbeatPeriod => TimeSpan.FromMilliseconds(electionTimeout / 2D);
-
         [SuppressMessage("Reliability", "CA2000", Justification = "The instance returned by StartLeading is the same as 'this'")]
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {
@@ -469,7 +467,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     candidateState.Dispose();
                     Leader = newLeader as TMember;
-                    state = new LeaderState(this, allowPartitioning, auditTrail.Term).StartLeading(HeartbeatPeriod,
+                    state = new LeaderState(this, allowPartitioning, auditTrail.Term).StartLeading(TimeSpan.FromMilliseconds(electionTimeout / 2D),
                         auditTrail);
                     Logger.TransitionToLeaderStateCompleted();
                 }
@@ -478,13 +476,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task WaitForCommit(long commitIndex)
         {
+            /*
+             * Performance of this method is optimized as follows:
+             * 1. If the current node is leader then this method forces replication
+             *      without waiting for the scheduled heartbeat. This is the best case
+             * 2. If the current node is downgraded to the follower during replication
+             *      then client needs to wait (maximum is electionTimeout), which is
+             *      worst case but it should happen rarely
+             */
             var notifier = new CommitEvent<ILogEntry>(commitIndex);
             notifier.AttachTo(auditTrail);
             try
             {
-                while (!await notifier.Wait(HeartbeatPeriod, transitionCancellation.Token).ConfigureAwait(false))
-                    if (!IsLeaderLocal)
+                do
+                {
+                    var leaderState = state as LeaderState;
+                    if (leaderState is null)
                         throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
+                    else
+                        leaderState.ForceReplication(auditTrail);
+                }
+                while (!await notifier.Wait(TimeSpan.FromMilliseconds(electionTimeout), transitionCancellation.Token).ConfigureAwait(false));
             }
             finally
             {
