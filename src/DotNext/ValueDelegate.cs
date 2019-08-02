@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
@@ -96,14 +95,12 @@ namespace DotNext
             Dup();
             Brfalse(callDelegate);
 
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void)));
             Ret();
 
             MarkLabel(callDelegate);
             Pop();
             Push(action);
-            Tail();
             Callvirt(new M(typeof(Action), nameof(Invoke)));
             Ret();
         }
@@ -304,14 +301,12 @@ namespace DotNext
             Dup();
             Brfalse(callDelegate);
 
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R)));
             Ret();
 
             MarkLabel(callDelegate);
             Pop();
             Push(func);
-            Tail();
             Callvirt(new M(typeof(Func<R>), nameof(Invoke)));
             return Return<R>();
         }
@@ -484,19 +479,16 @@ namespace DotNext
             Push(isStatic);
 
             Brfalse(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T)));
             Ret();
 
             MarkLabel(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R)));
             Ret();
 
             MarkLabel(callDelegate);
             Push(func);
             Push(arg);
-            Tail();
             Callvirt(new M(typeof(Func<T, R>), nameof(Invoke)));
             return Return<R>();
         }
@@ -660,19 +652,16 @@ namespace DotNext
             Push(isStatic);
 
             Brfalse(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T)));
             Ret();
 
             MarkLabel(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void)));
             Ret();
 
             MarkLabel(callDelegate);
             Push(action);
             Push(arg);
-            Tail();
             Callvirt(new M(typeof(Action<T>), nameof(Invoke)));
             Ret();
         }
@@ -844,12 +833,10 @@ namespace DotNext
             Push(isStatic);
 
             Brfalse(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2)));
             Ret();
 
             MarkLabel(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2)));
             Ret();
 
@@ -857,7 +844,6 @@ namespace DotNext
             Push(func);
             Push(arg1);
             Push(arg2);
-            Tail();
             Callvirt(new M(typeof(Func<T1, T2, R>), nameof(Invoke)));
             return Return<R>();
         }
@@ -1016,12 +1002,10 @@ namespace DotNext
             Push(isStatic);
 
             Brfalse(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2)));
             Ret();
 
             MarkLabel(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2)));
             Ret();
 
@@ -1029,7 +1013,6 @@ namespace DotNext
             Push(action);
             Push(arg1);
             Push(arg2);
-            Tail();
             Callvirt(new M(typeof(Action<T1, T2>), nameof(Invoke)));
             Ret();
         }
@@ -1197,12 +1180,10 @@ namespace DotNext
             Push(isStatic);
 
             Brfalse(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2), typeof(T3)));
             Ret();
 
             MarkLabel(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2), typeof(T3)));
             Ret();
 
@@ -1211,7 +1192,6 @@ namespace DotNext
             Push(arg1);
             Push(arg2);
             Push(arg3);
-            Tail();
             Callvirt(new M(typeof(Func<T1, T2, T3, R>), nameof(Invoke)));
             return Return<R>();
         }
@@ -1373,12 +1353,10 @@ namespace DotNext
             Push(isStatic);
 
             Brfalse(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2), typeof(T3)));
             Ret();
 
             MarkLabel(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2), typeof(T3)));
             Ret();
 
@@ -1387,7 +1365,6 @@ namespace DotNext
             Push(arg1);
             Push(arg2);
             Push(arg3);
-            Tail();
             Callvirt(new M(typeof(Action<T1, T2, T3>), nameof(Invoke)));
             Ret();
         }
@@ -1558,12 +1535,10 @@ namespace DotNext
             Push(isStatic);
 
             Brfalse(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
 
             MarkLabel(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
 
@@ -1573,7 +1548,6 @@ namespace DotNext
             Push(arg2);
             Push(arg3);
             Push(arg4);
-            Tail();
             Callvirt(new M(typeof(Func<T1, T2, T3, T4, R>), nameof(Invoke)));
             return Return<R>();
         }
@@ -1738,12 +1712,10 @@ namespace DotNext
             Push(isStatic);
 
             Brfalse(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
 
             MarkLabel(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
 
@@ -1753,7 +1725,6 @@ namespace DotNext
             Push(arg2);
             Push(arg3);
             Push(arg4);
-            Tail();
             Callvirt(new M(typeof(Action<T1, T2, T3, T4>), nameof(Invoke)));
             Ret();
         }
@@ -1923,12 +1894,10 @@ namespace DotNext
             Push(isStatic);
 
             Brfalse(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
             Ret();
 
             MarkLabel(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
             Ret();
 
@@ -1939,7 +1908,6 @@ namespace DotNext
             Push(arg3);
             Push(arg4);
             Push(arg5);
-            Tail();
             Callvirt(new M(typeof(Func<T1, T2, T3, T4, T5, R>), nameof(Invoke)));
             return Return<R>();
         }
@@ -2103,12 +2071,10 @@ namespace DotNext
             Push(isStatic);
 
             Brfalse(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
             Ret();
 
             MarkLabel(callInstance);
-            Tail();
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
             Ret();
 
@@ -2119,7 +2085,6 @@ namespace DotNext
             Push(arg3);
             Push(arg4);
             Push(arg5);
-            Tail();
             Callvirt(new M(typeof(Action<T1, T2, T3, T4, T5>), nameof(Invoke)));
             Ret();
         }
