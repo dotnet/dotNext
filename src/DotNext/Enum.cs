@@ -164,7 +164,7 @@ namespace DotNext
         /// <summary>
         /// Gets code of the underlying primitive type.
         /// </summary>
-        public static TypeCode UnderlyingTypeCode => ValueTypeExtensions.GetTypeCode<E>();
+        public static TypeCode UnderlyingTypeCode => Type.GetTypeCode(typeof(E));
 
         private const string NameSerData = "Name";
         private const string ValueSerData = "Value";

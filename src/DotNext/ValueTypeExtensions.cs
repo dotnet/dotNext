@@ -17,9 +17,6 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string ToString<T>(T value, string format, IFormatProvider provider = null) where T : struct, IFormattable => value.ToString(format, provider);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static TypeCode GetTypeCode<T>() where T : struct, IConvertible => new T().GetTypeCode();
-
         /// <summary>
         /// Obtain a value of type <typeparamref name="To"/> by 
         /// reinterpreting the object representation of <typeparamref name="From"/>.
