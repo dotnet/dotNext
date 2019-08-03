@@ -31,22 +31,26 @@ All these things are implemented on top of existing .NET Standard stack without 
 * [Benchmarks](https://sakno.github.io/dotNext/benchmarks.html)
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
-**DISCLAIMER**: API is unstable prior to 1.0 version because the library is in active development. Backward compatibility is not guaranteed.
-
 # What's new
-Release Date: 07-XX-2019
+Release Date: 08-XX-2019
+<a href="https://www.nuget.org/packages/dotnext/0.12.0">DotNext 0.12.0</a>
 
-Released Components:
-* <a href="https://www.nuget.org/packages/dotnext/0.12.0">DotNext-0.12.0</a>
-* <a href="https://www.nuget.org/packages/dotnext.reflection/0.12.0">DotNext.Reflection-0.12.0</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/0.12.0">DotNext.Reflection 0.12.0</a>
 
 Changelog for previous versions located [here](./CHANGELOG.md).
+
+# Release Policy
+* The libraries are versioned according with [Semantic Versioning 2.0](https://semver.org/).
+* API is unstable prior to `1.0` version because the library is in active development. Backward compatibility is not guaranteed.
+* Version 0.x relies on .NET Standard 2.0.
+* Support of newer versions of .NET Standard is aligned with .NET Core LTS (Long-Term Support) release train. For example, support for .NET Standard 2.1 is scheduled no earlier than in November, 2019. Check [.NET Core Support Policy](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) for more information.
 
 # Development Process
 Philosophy of development process:
 1. All libraries in .NEXT family based on .NET Standard to be available for wide range of .NET implementations: Mono, Xamarin, .NET Core
+1. Compatibility with AOT compiler should be checked for every release
 1. Minimize set of dependencies
-1. Rely on .NET standard libraries
+1. Rely on .NET Standard specification
 1. Provide high-quality documentation
 1. Stay cross-platform
 1. Provide benchmarks
