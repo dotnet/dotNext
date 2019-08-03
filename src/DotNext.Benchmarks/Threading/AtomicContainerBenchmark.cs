@@ -9,7 +9,7 @@ namespace DotNext.Threading
 {
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 10)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-    public class VolatileContainerBenchmark
+    public class AtomicContainerBenchmark
     {
         private struct LargeStruct
         {
@@ -27,7 +27,7 @@ namespace DotNext.Threading
             internal void Write(in LargeStruct value) => this.value = value;
         }
 
-        private static VolatileContainer<LargeStruct> VContainer = new VolatileContainer<LargeStruct>();
+        private static Atomic<LargeStruct> VContainer = new Atomic<LargeStruct>();
         private static readonly SynchronizedContainer SContainer = new SynchronizedContainer();
 
         private static readonly LargeStruct Value = new LargeStruct { Field2 = Guid.NewGuid(), Field1 = Guid.NewGuid(), Field3 = Guid.NewGuid() };

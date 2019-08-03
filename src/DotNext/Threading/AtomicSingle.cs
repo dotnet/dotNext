@@ -32,7 +32,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float VolatileRead(ref this float value) => Atomic<float>.Read(ref value);
+        public static float VolatileRead(ref this float value) => Atomic.Read(ref value);
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -47,7 +47,7 @@ namespace DotNext.Threading
         /// </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileWrite(ref this float value, float newValue)
-            => Atomic<float>.Write(ref value, newValue);
+            => Atomic.Write(ref value, newValue);
 
         /// <summary>
 		/// Atomically increments by one referenced value.

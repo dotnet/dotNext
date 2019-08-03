@@ -132,7 +132,7 @@ namespace DotNext.Threading
             bool oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = Atomic<int>.Read(ref value).ToBoolean());
+                newValue = updater.Invoke(oldValue = Atomic.Read(ref value).ToBoolean());
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
@@ -143,7 +143,7 @@ namespace DotNext.Threading
             bool oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = Atomic<int>.Read(ref value).ToBoolean(), x);
+                newValue = accumulator.Invoke(oldValue = Atomic.Read(ref value).ToBoolean(), x);
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);

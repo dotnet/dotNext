@@ -7,6 +7,45 @@ using System.Threading;
 namespace DotNext.Threading
 {
     /// <summary>
+    /// Provides basic atomic operations for arbitrary enum type.
+    /// </summary>
+    public static class AtomicEnum
+    {
+        /// <summary>
+        /// Reads the value of the specified field. On systems that require it, inserts a
+        /// memory barrier that prevents the processor from reordering memory operations
+        /// as follows: If a read or write appears after this method in the code, the processor
+        /// cannot move it before this method.
+        /// </summary>
+        /// <param name="value">The field to read.</param>
+        /// <returns>
+        /// The value that was read. This value is the latest written by any processor in
+        /// the computer, regardless of the number of processors or the state of processor
+        /// cache.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static E VolatileRead<E>(this ref E value)
+            where E : struct, Enum
+            => Atomic.Read(ref value);
+
+        /// <summary>
+        /// Writes the specified value to the specified field. On systems that require it,
+        /// inserts a memory barrier that prevents the processor from reordering memory operations
+        /// as follows: If a read or write appears before this method in the code, the processor
+        /// cannot move it after this method.
+        /// </summary>
+        /// <param name="value">The field where the value is written.</param>
+        /// <param name="newValue">
+        /// The value to write. The value is written immediately so that it is visible to
+        /// all processors in the computer.
+        /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileWrite<E>(this ref E value, E newValue)
+            where E : struct, Enum
+            => Atomic.Write(ref value, newValue);
+    }
+
+    /// <summary>
     /// Represents atomic enum value.
     /// </summary>
     [Serializable]
@@ -86,7 +125,7 @@ namespace DotNext.Threading
             E oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = Atomic<long>.Read(ref value).ToEnum<E>());
+                newValue = updater.Invoke(oldValue = Atomic.Read(ref value).ToEnum<E>());
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
@@ -97,7 +136,7 @@ namespace DotNext.Threading
             E oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = Atomic<long>.Read(ref value).ToEnum<E>(), x);
+                newValue = accumulator.Invoke(oldValue = Atomic.Read(ref value).ToEnum<E>(), x);
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);

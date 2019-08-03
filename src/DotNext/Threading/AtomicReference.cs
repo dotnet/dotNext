@@ -23,7 +23,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet<T>(ref T value, T expected, T update)
             where T : class
-            => Atomic<T>.Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
+            => Atomic.Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
 
         private static (T OldValue, T NewValue) Update<T>(ref T value, in ValueFunc<T, T> updater)
             where T : class
@@ -31,7 +31,7 @@ namespace DotNext.Threading
             T oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = Atomic<T>.Read(ref value));
+                newValue = updater.Invoke(oldValue = Atomic.Read(ref value));
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -43,7 +43,7 @@ namespace DotNext.Threading
             T oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = Atomic<T>.Read(ref value), x);
+                newValue = accumulator.Invoke(oldValue = Atomic.Read(ref value), x);
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -178,7 +178,7 @@ namespace DotNext.Threading
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T VolatileRead<T>(this T[] array, long index)
             where T : class
-            => Atomic<T>.Read(ref array[index]);
+            => Atomic.Read(ref array[index]);
 
         /// <summary>
         /// Performs volatile write to the array element.
@@ -189,7 +189,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileWrite<T>(this T[] array, long index, T element)
             where T : class
-            => Atomic<T>.Write(ref array[index], element);
+            => Atomic.Write(ref array[index], element);
 
         /// <summary>
 		/// Atomically sets array element to the given updated value if the array element == the expected value.
