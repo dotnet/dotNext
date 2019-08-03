@@ -21,9 +21,10 @@ Quick overview of additional features:
 * [Fast Reflection](https://sakno.github.io/dotNext/features/reflection/fast.html)
 * `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://sakno.github.io/dotNext/features/threading/rwlock.html)
 * Powerful concurrent [ObjectPool](https://sakno.github.io/dotNext/features/threading/objectpool.html)
+* [Atomic](https://sakno.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types
 * ASP.NET Core [Clustered microservices](https://sakno.github.io/dotNext/features/cluster/aspnetcore.html) powered by Raft Consensus Algorithm, data replication and point-to-point messaging
 
-All these things are implemented on top of existing .NET Standard stack without modifications of Roslyn compiler or CoreFX libraries.
+All these things are implemented in 100% managed code on top of existing .NET Standard stack without modifications of Roslyn compiler or CoreFX libraries.
 
 # Quick Links
 
