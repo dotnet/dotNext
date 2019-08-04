@@ -44,12 +44,20 @@ namespace DotNext.Threading
         /// <summary>
         /// Gets value if it is already computed.
         /// </summary>
-        public Optional<T> Value
+        public Result<T>? Value
         {
             get
             {
                 var t = task;
-                return (t?.IsCompleted).GetValueOrDefault(false) ? new Optional<T>(t.Result) : Optional<T>.Empty;
+                switch(t?.Status)
+                {
+                    case TaskStatus.RanToCompletion:
+                        return new Result<T>(t.Result);
+                    case TaskStatus.Faulted:
+                        return new Result<T>(t.Exception);
+                    default:
+                        return null;
+                }
             }
         }
 
@@ -98,6 +106,13 @@ namespace DotNext.Threading
         /// </summary>
         /// <returns>The task awaiter.</returns>
         public TaskAwaiter<T> GetAwaiter() => Task.GetAwaiter();
+
+        /// <summary>
+        /// Configures an awaiter used to await asynchronous lazy initialization.
+        /// </summary>
+        /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false"/>.</param>
+        /// <returns>An object used to await asynchronous lazy initialization.</returns>
+        public ConfiguredTaskAwaitable<T> ConfigureAwait(bool continueOnCapturedContext) => Task.ConfigureAwait(continueOnCapturedContext);
 
         /// <summary>
         /// Returns textual representation of this object.
