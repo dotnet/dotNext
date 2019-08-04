@@ -15,7 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>unsafe;unmanaged;pointer;pinvoke;interop</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>UnmanagedFunction and UnmanagedFunction&lt;T&gt; class is introduced to call unmanaged functions by pointer.</PackageReleaseNotes>
+    <PackageReleaseNotes>UnmanagedFunction and UnmanagedFunction&lt;R&gt; classes are introduced to call unmanaged functions by pointer</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

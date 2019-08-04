@@ -4,7 +4,7 @@
 	  <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.11.1</Version>
+    <Version>0.12.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Unit tests for .NEXT Familiy of Libraries</Description>

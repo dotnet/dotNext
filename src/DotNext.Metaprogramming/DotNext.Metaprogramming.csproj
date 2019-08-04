@@ -15,7 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>metaprogramming</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Safe navigation expression is introduced</PackageReleaseNotes>
+    <PackageReleaseNotes>Null-safe navigation expression is introduced</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
