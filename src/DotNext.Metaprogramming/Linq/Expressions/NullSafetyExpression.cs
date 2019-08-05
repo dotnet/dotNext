@@ -104,7 +104,7 @@ namespace DotNext.Linq.Expressions
             Expression conditional = Condition(Target.IsNotNull(), body, Default(body.Type));
             return assignment is null ? 
                 conditional :
-                Expression.Block(body.Type, Sequence.Singleton(Target), assignment, conditional);
+                Block(body.Type, Sequence.Singleton(Target), assignment, conditional);
         }
     }
 }
