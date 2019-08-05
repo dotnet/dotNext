@@ -414,13 +414,23 @@ namespace DotNext
         public static void Bitcast<To>(in T input, out To output)
             where To : unmanaged
         {
-            if (Size >= ValueType<To>.Size)
-                output = As<T, To>(ref AsRef(in input));
-            else
-            {
-                output = default;
-                As<To, T>(ref output) = input;
-            }
+            const string slowPath = "slow";
+            Ldarg(nameof(output));
+            Sizeof(typeof(T));
+            Sizeof(typeof(To));
+            Blt_Un(slowPath);
+            //copy from input into output as-is
+            Ldarg(nameof(input));
+            Cpobj(typeof(To));
+            Ret();
+
+            MarkLabel(slowPath);
+            Dup();
+            Initobj(typeof(To));
+            Ldarg(nameof(input));
+            Cpobj(typeof(T));
+            Ret();
+            throw Unreachable();    //output must be defined within scope
         }
 
         /// <summary>

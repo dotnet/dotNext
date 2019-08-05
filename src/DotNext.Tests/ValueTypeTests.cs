@@ -15,9 +15,18 @@ namespace DotNext
         {
             var point = new Point { X = 40, Y = 100 };
             point.Bitcast(out decimal dec);
+            point = default;
             dec.Bitcast(out point);
             Equal(40, point.X);
             Equal(100, point.Y);
+        }
+
+        [Fact]
+        public static void BitcastToLargerValueType()
+        {
+            var point = new Point { X = 40, Y = 100 };
+            point.Bitcast(out Guid g);
+            False(g == Guid.Empty);
         }
 
         [Fact]
