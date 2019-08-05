@@ -427,17 +427,6 @@ namespace DotNext
             }
         }
 
-        /// <summary>
-        /// Initializes a new pointer based on extracted pointer from the delegate.
-        /// </summary>
-        /// <param name="converter">The delegate representing method.</param>
-        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="converter"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="converter"/> is <see langword="null"/>.</exception>
-        public ValueFunc(Converter<T, R> converter, bool wrap = false)
-            : this(Unsafe.As<Func<T, R>>(converter), wrap)
-        {
-        }
-
         private Converter<T, R> ToConverter() => Unsafe.As<Converter<T, R>>(ToDelegate());
 
         Converter<T, R> ICallable<Converter<T, R>>.ToDelegate() => ToConverter();

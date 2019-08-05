@@ -206,7 +206,7 @@ namespace DotNext.Collections.Concurrent
         /// <param name="items">The source items to be converted and placed into this list.</param>
         /// <param name="converter">The convert of source items.</param>
         public void Set<G>(ICollection<G> items, Converter<G, T> converter)
-            => Set(items, new ValueFunc<G, T>(converter, true));
+            => Set(items, converter.AsValueFunc(true));
 
         /// <summary>
         /// Removes all items from this list.

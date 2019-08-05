@@ -140,7 +140,7 @@ namespace DotNext
         [Fact]
         public static void ConverterAsFunc()
         {
-            var ptr = new ValueFunc<int, string>(new Converter<int, string>(ToString), true);
+            var ptr = new Converter<int, string>(ToString).AsValueFunc(true);
             Equal("42", ptr.Invoke(42));
         }
 
