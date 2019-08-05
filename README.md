@@ -50,7 +50,7 @@ Release Date: 08-XX-2019
 
 This release introduces a new feature called Value Delegates which are allocation-free alternative to regular .NET delegates. Value Delegate is a value type which holds a pointer to the managed method and can be invoked using `Invoke` method in the same way as regular .NET delegate. Read more [here](https://sakno.github.io/dotNext/features/core/valued.html).
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/0.12.0">DotNext.Reflection 0.12.0</a><br/>
+<a href="https://www.nuget.org/packages/dotnext.reflection/0.12.0">DotNext.Reflection 0.12.0</a>
 * Ability to obtain managed pointer (type T&amp;, or `ref T`) to static or instance field from [FieldInfo](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo) using [Reflector](https://sakno.github.io/dotNext/api/DotNext.Reflection.Reflector.html) class
 
 <a href="https://www.nuget.org/packages/dotnext.threading/0.12.0">DotNext.Threading 0.12.0</a><br/>
@@ -60,7 +60,7 @@ This release introduces a new feature called Value Delegates which are allocatio
 * [Null-safe navigation expression](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.NullSafetyExpression.html) is introduced
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/0.12.0">DotNext.Unsafe 0.12.0</a><br/>
-* [UnmanagedFunction](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.UnmanagedFunction.html) and [UnmanagedFunction&lt;R&gt;]((https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.UnmanagedFunction-1.html) classes are introduced to call unmanaged functions by pointer
+* [UnmanagedFunction](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.UnmanagedFunction.html) and [UnmanagedFunction&lt;R&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.UnmanagedFunction-1.html) classes are introduced to call unmanaged functions by pointer
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/0.12.0">DotNext.Net.Cluster 0.2.0</a><br/>
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.12.0">DotNext.AspNetCore.Cluster 0.2.0</a><br/>
