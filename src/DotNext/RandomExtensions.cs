@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
+using TR = InlineIL.TypeRef;
 using CallSiteDescr = InlineIL.StandAloneMethodSig;
 
 namespace DotNext
@@ -50,7 +51,7 @@ namespace DotNext
             Ret();
         }
 
-        private static unsafe string GenerateString<TSource>(funcptr generator, TSource source, ReadOnlySpan<char> allowedChars, int length)
+        private static unsafe string NextString<TSource>(funcptr generator, TSource source, ReadOnlySpan<char> allowedChars, int length)
             where TSource : class
         {
             //TODO: should be reviewed for .NET Standard 2.1
@@ -80,7 +81,7 @@ namespace DotNext
             Push(random);
             Ldarg(nameof(allowedChars));
             Push(length);
-            Call(new M(typeof(RandomExtensions), nameof(GenerateString)).MakeGenericMethod(typeof(Random)));
+            Call(new M(typeof(RandomExtensions), nameof(NextString), typeof(funcptr), TR.MethodGenericParameters[0], typeof(ReadOnlySpan<char>), typeof(int)).MakeGenericMethod(typeof(Random)));
             return Return<string>();
         }
 
@@ -120,7 +121,7 @@ namespace DotNext
             Push(random);           
             Ldarg(nameof(allowedChars));
             Push(length);
-            Call(new M(typeof(RandomExtensions), nameof(GenerateString)).MakeGenericMethod(typeof(RandomNumberGenerator)));
+            Call(new M(typeof(RandomExtensions), nameof(NextString), typeof(funcptr), TR.MethodGenericParameters[0], typeof(ReadOnlySpan<char>), typeof(int)).MakeGenericMethod(typeof(RandomNumberGenerator)));
             return Return<string>();
         }
 
