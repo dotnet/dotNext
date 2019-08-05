@@ -6,11 +6,12 @@
 | Proposal | Implementation |
 | ---- | ---- |
 | [Static Delegates](https://github.com/dotnet/csharplang/blob/master/proposals/static-delegates.md) | [Value Delegates](https://sakno.github.io/dotNext/features/core/valued.html) |
-| [Enum API](https://github.com/dotnet/corefx/issues/34077) | [Documentation](https://sakno.github.io/dotNext/features/core/enum.html)
+| [Operators for IntPtr and UIntPtr](https://github.com/dotnet/corefx/issues/32775) | [Extension methods](https://sakno.github.io/dotNext/api/DotNext.ValueTypeExtensions.html) for arithmetic, bitwise and comparison operations |
+| [Enum API](https://github.com/dotnet/corefx/issues/34077) | [Documentation](https://sakno.github.io/dotNext/features/core/enum.html) |
 | [Check if an instance of T is a default(T)](https://github.com/dotnet/corefx/issues/16209) | [IsDefault() method](https://sakno.github.io/dotNext/api/DotNext.ValueType-1.html#DotNext_ValueType_1_IsDefault__0_) |
 | [Concept Types](https://github.com/dotnet/csharplang/issues/110) | [Documentation](https://sakno.github.io/dotNext/features/concept.html) |
 | [Expression Trees covering additional language constructs](https://github.com/dotnet/csharplang/issues/158), i.e. `foreach`, `await`, patterns, multi-line lambda expressions | [Metaprogramming](https://sakno.github.io/dotNext/features/metaprogramming/index.html) |
-| [Async Locks](https://github.com/dotnet/corefx/issues/34073) | [Documentation](https://sakno.github.io/dotNext/features/threading/index.html)
+| [Async Locks](https://github.com/dotnet/corefx/issues/34073) | [Documentation](https://sakno.github.io/dotNext/features/threading/index.html) |
 
 Quick overview of additional features:
 
@@ -39,6 +40,7 @@ Release Date: 08-XX-2019
 <a href="https://www.nuget.org/packages/dotnext/0.12.0">DotNext 0.12.0</a><br/>
 * Value (struct) Delegates are introduced as allocation-free alternative to classic delegates
 * Atomic&lt;T&gt; is added to provide atomic memory access operations for arbitrary value types
+* Arithmetic, bitwise and comparison operations for [IntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) and [UIntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.uintptr)
 * Improved performance of methods declared in [EnumConverter](https://sakno.github.io/dotNext/api/DotNext.EnumConverter.html)
 * Improved performance of atomic operations
 * Improved performance of bitwise equality and bitwise comparison methods for value types
@@ -46,7 +48,7 @@ Release Date: 08-XX-2019
 * GetUnderlyingType() method is added to obtain underlying type of Result&lt;T&gt;
 * [TypedReference](https://sakno.github.io/dotNext/api/DotNext.ValueType-1.html#DotNext_ValueType_1_IsDefault__0_) can be converted into managed pointer (type T&amp;, or ref T) using [Memory](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Memory.html) class
 
-This release introduces a new feature called Value Delegates which are allocation-free alternative to regular .NET delegates. Value Delegate is a value type which holds a pointer to the managed method and can be invoked using `Invoke` method in the same way as regular .NET delegate. Read more [here](https://sakno.github.io/dotNext/features/core/valued.html)
+This release introduces a new feature called Value Delegates which are allocation-free alternative to regular .NET delegates. Value Delegate is a value type which holds a pointer to the managed method and can be invoked using `Invoke` method in the same way as regular .NET delegate. Read more [here](https://sakno.github.io/dotNext/features/core/valued.html).
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/0.12.0">DotNext.Reflection 0.12.0</a><br/>
 * Ability to obtain managed pointer (type T&amp;, or `ref T`) to static or instance field from [FieldInfo](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo) using [Reflector](https://sakno.github.io/dotNext/api/DotNext.Reflection.Reflector.html) class

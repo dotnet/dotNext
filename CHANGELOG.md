@@ -5,6 +5,7 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext/0.12.0">DotNext 0.12.0</a><br/>
 * Value (struct) Delegates are introduced as allocation-free alternative to classic delegates
 * Atomic&lt;T&gt; is added to provide atomic memory access operations for arbitrary value types
+* Arithmetic, bitwise and comparison operations for [IntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) and [UIntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.uintptr)
 * Improved performance of methods declared in [EnumConverter](https://sakno.github.io/dotNext/api/DotNext.EnumConverter.html)
 * Improved performance of atomic operations
 * Improved performance of bitwise equality and bitwise comparison methods for value types
