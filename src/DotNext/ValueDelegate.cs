@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using CallSiteDescr = InlineIL.StandAloneMethodSig;
@@ -15,6 +16,7 @@ namespace DotNext
     /// <remarks>
     /// This method pointer is intended to call managed methods only.
     /// </remarks>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueAction : ICallable<Action>, IEquatable<ValueAction>
     {
         private readonly IntPtr methodPtr;
@@ -171,6 +173,7 @@ namespace DotNext
     /// This method pointer is intended to call managed methods only.
     /// </remarks>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueFunc<R> : ICallable<Func<R>>, IEquatable<ValueFunc<R>>, ISupplier<R>
     {
         private readonly IntPtr methodPtr;
@@ -374,6 +377,7 @@ namespace DotNext
     /// </remarks>
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueFunc<T, R> : ICallable<Func<T, R>>, ICallable<Converter<T, R>>, IEquatable<ValueFunc<T, R>>
     {
         private readonly IntPtr methodPtr;
@@ -563,6 +567,7 @@ namespace DotNext
     /// This method pointer is intended to call managed methods only.
     /// </remarks>
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueAction<T> : ICallable<Action<T>>, IEquatable<ValueAction<T>>, IConsumer<T>
     {
         private readonly IntPtr methodPtr;
@@ -734,6 +739,7 @@ namespace DotNext
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueFunc<T1, T2, R> : ICallable<Func<T1, T2, R>>, IEquatable<ValueFunc<T1, T2, R>>, ISupplier<T1, T2, R>
     {
         private readonly IntPtr methodPtr;
@@ -911,6 +917,7 @@ namespace DotNext
     /// </remarks>
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueAction<T1, T2> : ICallable<Action<T1, T2>>, IEquatable<ValueAction<T1, T2>>
     {
         private readonly IntPtr methodPtr;
@@ -1086,6 +1093,7 @@ namespace DotNext
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueFunc<T1, T2, T3, R> : ICallable<Func<T1, T2, T3, R>>, IEquatable<ValueFunc<T1, T2, T3, R>>
     {
         private readonly IntPtr methodPtr;
@@ -1260,6 +1268,7 @@ namespace DotNext
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueAction<T1, T2, T3> : ICallable<Action<T1, T2, T3>>, IEquatable<ValueAction<T1, T2, T3>>
     {
         private readonly IntPtr methodPtr;
@@ -1439,6 +1448,7 @@ namespace DotNext
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueFunc<T1, T2, T3, T4, R> : ICallable<Func<T1, T2, T3, T4, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, R>>
     {
         private readonly IntPtr methodPtr;
@@ -1617,6 +1627,7 @@ namespace DotNext
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueAction<T1, T2, T3, T4> : ICallable<Action<T1, T2, T3, T4>>, IEquatable<ValueAction<T1, T2, T3, T4>>
     {
         private readonly IntPtr methodPtr;
@@ -1800,6 +1811,7 @@ namespace DotNext
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     /// <typeparam name="T5">The type of the fifth method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueFunc<T1, T2, T3, T4, T5, R> : ICallable<Func<T1, T2, T3, T4, T5, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>
     {
         private readonly IntPtr methodPtr;
@@ -1978,6 +1990,7 @@ namespace DotNext
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     /// <typeparam name="T5">The type of the fifth method parameter.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ValueAction<T1, T2, T3, T4, T5> : ICallable<Action<T1, T2, T3, T4, T5>>, IEquatable<ValueAction<T1, T2, T3, T4, T5>>
     {
         private readonly IntPtr methodPtr;
