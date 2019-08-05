@@ -2,22 +2,22 @@ Collection Enhancements
 ====
 Collection Helpers are set of extension methods and classes aimed to improve _System.Linq.Enumerable_ and .NET Collection types:
 
-# Read-only collection view
-Instance of `System.Collections.ObjectModel.ReadOnlyCollection<T>` is the read-only **copy** of the source collection. It can be redundant or not acceptable by performance reasons. In this case, the family of read-only views can be used to save memory and performance. Read-only view doesn't create a copy of the original collection and just expose read-only API for the collection.
+# Read-only mapped view
+Transformation of collection types can be done in lazy mode when item is converting on-demand without touching entire collection. Lazy converted collection is called _mapped view_.
 
-.NEXT provides the following set of read-only views:
-* [Read-only list view](../../api/DotNext.Collections.Generic.ReadOnlyListView-1.yml) for lists and arrays
-* [Read-only collection view](../../api/DotNext.Collections.Generic.ReadOnlyCollectionView-1.yml) for generic collections without indexer support
-* [Read-only dictionary view](../../api/DotNext.Collections.Generic.ReadOnlyDictionaryView-2.yml) for generic dictionaries
+There are several mapped views for different collection types:
+* [Read-only list view](../../api/DotNext.Collections.Generic.ReadOnlyListView-2.yml) for lists and arrays
+* [Read-only collection view](../../api/DotNext.Collections.Generic.ReadOnlyCollectionView-2.yml) for generic collections without indexer support
+* [Read-only dictionary view](../../api/DotNext.Collections.Generic.ReadOnlyDictionaryView-3.yml) for generic dictionaries
 
-The following example demonstrates how to obtain read-only view for different types of collections:
+The following example demonstrates how to obtain read-only mapped view for the list:
 ```csharp
-using System.Collections.Generic;
 using DotNext.Collections.Generic;
+using System.Collections.Generic;
 
-var list = new List<string>() { "a", "b", "c" };
-var readOnlyList = List.AsReadOnlyView(list);
-var readOnlyCollection = Collection.AsReadOnlyView(list);
+var list = new List<string>() { "1", "2", "3" };
+var mappedList = list.Convert(int.Parse);
+var first = mappedList[0];	//first == 1
 ```
 
 # ToArray
