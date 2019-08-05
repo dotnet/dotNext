@@ -37,7 +37,7 @@ All these things are implemented in 100% managed code on top of existing .NET St
 # What's new
 Release Date: 08-XX-2019
 
-<a href="https://www.nuget.org/packages/dotnext/0.12.0">DotNext 0.12.0</a><br/>
+<a href="https://www.nuget.org/packages/dotnext/0.12.0">DotNext 0.12.0</a>
 * Value (struct) Delegates are introduced as allocation-free alternative to classic delegates
 * Atomic&lt;T&gt; is added to provide atomic memory access operations for arbitrary value types
 * Arithmetic, bitwise and comparison operations for [IntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) and [UIntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.uintptr)
@@ -53,17 +53,17 @@ This release introduces a new feature called Value Delegates which are allocatio
 <a href="https://www.nuget.org/packages/dotnext.reflection/0.12.0">DotNext.Reflection 0.12.0</a>
 * Ability to obtain managed pointer (type T&amp;, or `ref T`) to static or instance field from [FieldInfo](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo) using [Reflector](https://sakno.github.io/dotNext/api/DotNext.Reflection.Reflector.html) class
 
-<a href="https://www.nuget.org/packages/dotnext.threading/0.12.0">DotNext.Threading 0.12.0</a><br/>
+<a href="https://www.nuget.org/packages/dotnext.threading/0.12.0">DotNext.Threading 0.12.0</a>
 * [AsyncLazy&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncLazy-1.html) is introduced as asynchronous alternative to [Lazy&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.lazy-1) class
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/0.12.0">DotNext.Metaprogramming 0.12.0</a><br/>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/0.12.0">DotNext.Metaprogramming 0.12.0</a>
 * [Null-safe navigation expression](https://sakno.github.io/dotNext/api/DotNext.Linq.Expressions.NullSafetyExpression.html) is introduced
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/0.12.0">DotNext.Unsafe 0.12.0</a><br/>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/0.12.0">DotNext.Unsafe 0.12.0</a>
 * [UnmanagedFunction](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.UnmanagedFunction.html) and [UnmanagedFunction&lt;R&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.UnmanagedFunction-1.html) classes are introduced to call unmanaged functions by pointer
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/0.12.0">DotNext.Net.Cluster 0.2.0</a><br/>
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.12.0">DotNext.AspNetCore.Cluster 0.2.0</a><br/>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/0.12.0">DotNext.Net.Cluster 0.2.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.12.0">DotNext.AspNetCore.Cluster 0.2.0</a>
 * Raft client is now capable to ensure that changes are committed by leader node using [WriteConcern](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Replication.WriteConcern.html)
 
 Changelog for previous versions located [here](./CHANGELOG.md).
