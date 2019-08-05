@@ -643,10 +643,10 @@ namespace DotNext
         /// <param name="value">The operand.</param>
         /// <returns>The result of bitwise complement.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr Not(this IntPtr value)
+        public static IntPtr OnesComplement(this IntPtr value)
         {
             Push(value);
-            Emit.Not();
+            Not();
             return Return<IntPtr>();
         }
 
@@ -657,10 +657,10 @@ namespace DotNext
         /// <returns>The result of bitwise complement.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static UIntPtr Not(this UIntPtr value)
+        public static UIntPtr OnesComplement(this UIntPtr value)
         {
             Push(value);
-            Emit.Not();
+            Not();
             return Return<UIntPtr>();
         }
 
