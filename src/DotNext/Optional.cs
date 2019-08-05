@@ -15,7 +15,7 @@ namespace DotNext
     public static class Optional
     {
         /// <summary>
-        /// If a value is present, returns the value, otherwise null.
+        /// If a value is present, returns the value, otherwise <see langword="null"/>.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <param name="task">The task returning optional value.</param>
@@ -108,7 +108,7 @@ namespace DotNext
         /// Returns the underlying type argument of the specified optional type.
         /// </summary>
         /// <param name="optionalType">Optional type.</param>
-        /// <returns>Underlying type argument of optional type; otherwise, null.</returns>
+        /// <returns>Underlying type argument of optional type; otherwise, <see langword="null"/>.</returns>
         public static Type GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
 
         /// <summary>
@@ -236,6 +236,16 @@ namespace DotNext
         public T OrThrow<E>()
             where E : Exception, new()
             => IsPresent ? value : throw new E();
+        
+        /// <summary>
+        /// If a value is present, returns the value, otherwise throw exception.
+        /// </summary>
+        /// <typeparam name="E"></typeparam>
+        /// <param name="exceptionFactory">Exception factory.</param>
+        /// <returns>The value, if present.</returns>
+        public T OrThrow<E>(in ValueFunc<E> exceptionFactory)
+            where E : Exception
+            => IsPresent ? value : throw exceptionFactory.Invoke();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
@@ -245,14 +255,21 @@ namespace DotNext
         /// <returns>The value, if present.</returns>
         public T OrThrow<E>(Func<E> exceptionFactory)
             where E : Exception
-            => IsPresent ? value : throw exceptionFactory();
+            => OrThrow(new ValueFunc<E>(exceptionFactory, true));
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(Func<T> defaultFunc) => IsPresent ? value : defaultFunc();
+        public T OrInvoke(in ValueFunc<T> defaultFunc) => IsPresent ? value : defaultFunc.Invoke();
+
+        /// <summary>
+        /// Returns the value if present; otherwise invoke delegate.
+        /// </summary>
+        /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
+        /// <returns>The value, if present, otherwise returned from delegate.</returns>
+        public T OrInvoke(Func<T> defaultFunc) => OrInvoke(new ValueFunc<T>(defaultFunc, true));
 
         /// <summary>
         /// If a value is present, returns the value, otherwise return default value.
@@ -273,7 +290,16 @@ namespace DotNext
         /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-        public Optional<U> Convert<U>(Converter<T, U> mapper) => IsPresent ? mapper(value) : Optional<U>.Empty;
+        public Optional<U> Convert<U>(in ValueFunc<T, U> mapper) => IsPresent ? mapper.Invoke(value) : Optional<U>.Empty;
+
+        /// <summary>
+        /// If a value is present, apply the provided mapping function to it, and if the result is 
+        /// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
+        /// </summary>
+        /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
+        /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
+        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
+        public Optional<U> Convert<U>(Converter<T, U> mapper) => Convert(mapper.AsValueFunc(true));
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is 
@@ -282,7 +308,16 @@ namespace DotNext
         /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-		public Optional<U> Convert<U>(Converter<T, Optional<U>> mapper) => IsPresent ? mapper(value) : Optional<U>.Empty;
+		public Optional<U> Convert<U>(in ValueFunc<T, Optional<U>> mapper) => IsPresent ? mapper.Invoke(value) : Optional<U>.Empty;
+
+        /// <summary>
+        /// If a value is present, apply the provided mapping function to it, and if the result is 
+		/// non-null, return an Optional describing the result. Otherwise returns <see cref="Empty"/>.
+        /// </summary>
+        /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
+        /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
+        /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
+		public Optional<U> Convert<U>(Converter<T, Optional<U>> mapper) => Convert(mapper.AsValueFunc(true));
 
         /// <summary>
         /// If a value is present, and the value matches the given predicate, 
@@ -290,7 +325,15 @@ namespace DotNext
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
         /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
-        public Optional<T> If(Predicate<T> condition) => IsPresent && condition(value) ? this : Empty;
+        public Optional<T> If(in ValueFunc<T, bool> condition) => IsPresent && condition.Invoke(value) ? this : Empty;
+
+        /// <summary>
+        /// If a value is present, and the value matches the given predicate, 
+        /// return an Optional describing the value, otherwise return an empty Optional.
+        /// </summary>
+        /// <param name="condition">A predicate to apply to the value, if present.</param>
+        /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
+        public Optional<T> If(Predicate<T> condition) => If(condition.AsValueFunc(true));
 
         /// <summary>
         /// Returns textual representation of this object.

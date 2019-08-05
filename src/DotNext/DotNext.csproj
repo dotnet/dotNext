@@ -7,7 +7,7 @@
     <Authors>Roman Sakno</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>0.11.1</Version>
+    <Version>0.12.0</Version>
 	<AssemblyName>DotNext</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
@@ -18,9 +18,14 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
 	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>Improved performance of random string generation with RandomNumberGenerator
-System.
-Threading.Tasks.Task can be awaited asynchronously using timeout and/or cancellation token</PackageReleaseNotes>
+	<PackageReleaseNotes>Value (struct) delegates are introduced as allocation-free alternative to classic delegates
+Atomic&lt;T&gt; is added to provide atomic memory access operations for arbitrary value types
+Arithmetic, bitwise and comparison operations for IntPtr and UIntPtr
+Improved performance of methods declared in EnumConverter
+Improved performance of atomic operations such as UpdateAndGet and AccumulateAndGet
+Improved performance of bitwise equality method for value types
+GetUnderlyingType() method is added to obtain underlying type of Result&lt;T&gt;
+TypedReference can be converted into managed pointer (type T&amp;, or ref T) using Memory class</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -41,10 +46,12 @@ Threading.Tasks.Task can be awaited asynchronously using timeout and/or cancella
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.4" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
     <PackageReference Include="System.Buffers" Version="4.5.0" />
+    <PackageReference Include="Fody" Version="5.1.1" PrivateAssets="all" />
+    <PackageReference Include="InlineIL.Fody" Version="1.2.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

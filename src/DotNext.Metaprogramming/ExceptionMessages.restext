@@ -20,3 +20,4 @@ InvalidRethrow=A throw statement without arguments is not allowed outside of cat
 BoolExpressionExpected=Expression should be of System.Boolean type
 InvalidFragmentRendering=Expression fragment cannot be rendered with invalid set of actual arguments
 CollectionImplementationExpected=One of the supported collection interfaces is not implemented
+UnsupportedSafeNavigationType=Type {0} cannot be used in null-safe navigation

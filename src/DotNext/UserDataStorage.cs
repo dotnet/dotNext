@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
 
 namespace DotNext
 {
@@ -18,60 +20,34 @@ namespace DotNext
     [SuppressMessage("Design", "CA1066")]
     public readonly ref struct UserDataStorage
     {
-        private interface ISupplier<V>
-        {
-            V Supply();
-        }
-
-        private readonly struct FuncSupplier<V> : ISupplier<V>
-        {
-            private readonly Func<V> factory;
-
-            internal FuncSupplier(Func<V> factory) => this.factory = factory;
-
-            V ISupplier<V>.Supply() => factory();
-        }
-
-        private readonly struct FuncSupplier<T, V> : ISupplier<V>
+        private readonly struct Supplier<T, V> : ISupplier<V>
         {
             private readonly T arg;
-            private readonly Func<T, V> factory;
+            private readonly ValueFunc<T, V> factory;
 
-            internal FuncSupplier(T arg, Func<T, V> factory)
+            internal Supplier(T arg, in ValueFunc<T, V> factory)
             {
                 this.arg = arg;
                 this.factory = factory;
             }
 
-            V ISupplier<V>.Supply() => factory(arg);
+            V ISupplier<V>.Invoke() => factory.Invoke(arg);
         }
 
-        private readonly struct FuncSupplier<T1, T2, V> : ISupplier<V>
+        private readonly struct Supplier<T1, T2, V> : ISupplier<V>
         {
             private readonly T1 arg1;
             private readonly T2 arg2;
-            private readonly Func<T1, T2, V> factory;
+            private readonly ValueFunc<T1, T2, V> factory;
 
-            internal FuncSupplier(T1 arg1, T2 arg2, Func<T1, T2, V> factory)
+            internal Supplier(T1 arg1, T2 arg2, in ValueFunc<T1, T2, V> factory)
             {
                 this.arg1 = arg1;
                 this.arg2 = arg2;
                 this.factory = factory;
             }
 
-            V ISupplier<V>.Supply() => factory(arg1, arg2);
-        }
-
-        private readonly struct CtorSupplier<V> : ISupplier<V>
-            where V : new()
-        {
-            V ISupplier<V>.Supply() => new V();
-        }
-
-        private readonly struct CtorSupplier<B, D> : ISupplier<B>
-            where D : class, B, new()
-        {
-            B ISupplier<B>.Supply() => new D();
+            V ISupplier<V>.Invoke() => factory.Invoke(arg1, arg2);
         }
 
         [SuppressMessage("Performance", "CA1812", Justification = "It is instantiated by method GetOrCreateValue")]
@@ -102,7 +78,7 @@ namespace DotNext
                 using (synchronizer.AcquireWriteLock())
                 {
                     if (!slot.GetUserData(this, out userData))
-                        slot.SetUserData(this, userData = valueFactory.Supply());
+                        slot.SetUserData(this, userData = valueFactory.Invoke());
                     return userData;
                 }
             }
@@ -195,11 +171,11 @@ namespace DotNext
         /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<V>(UserDataSlot<V> slot)
+        public V GetOrSet<V>(UserDataSlot<V> slot) 
             where V : new()
         {
-            var supplier = new CtorSupplier<V>();
-            return GetStorage(true).GetOrSet(slot, ref supplier);
+            var activator = ValueFunc<V>.Activator;
+            return GetStorage(true).GetOrSet(slot, ref activator);
         }
 
         /// <summary>
@@ -212,8 +188,8 @@ namespace DotNext
         public B GetOrSet<B, D>(UserDataSlot<B> slot)
             where D : class, B, new()
         {
-            var supplier = new CtorSupplier<B, D>();
-            return GetStorage(true).GetOrSet(slot, ref supplier);
+            var activator = ValueFunc<D>.Activator;
+            return GetStorage(true).GetOrSet(slot, ref activator);
         }
 
         /// <summary>
@@ -223,11 +199,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<V>(UserDataSlot<V> slot, Func<V> valueFactory)
-        {
-            var supplier = new FuncSupplier<V>(valueFactory);
-            return GetStorage(true).GetOrSet(slot, ref supplier);
-        }
+        public V GetOrSet<V>(UserDataSlot<V> slot, Func<V> valueFactory) => GetOrSet(slot, new ValueFunc<V>(valueFactory, true));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -239,8 +211,44 @@ namespace DotNext
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
         public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, Func<T, V> valueFactory)
+            => GetOrSet(slot, arg, new ValueFunc<T, V>(valueFactory, true));
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first argument to be passed into factory.</typeparam>
+        /// <typeparam name="T2">The type of the first argument to be passed into factory.</typeparam>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="arg1">The first argument to be passed into factory.</param>
+        /// <param name="arg2">The second argument to be passed into factory.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, Func<T1, T2, V> valueFactory)
+            => GetOrSet(slot, arg1, arg2, new ValueFunc<T1, T2, V>(valueFactory, true));
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public V GetOrSet<V>(UserDataSlot<V> slot, in ValueFunc<V> valueFactory)
+            => GetStorage(true).GetOrSet(slot, ref Unsafe.AsRef(valueFactory));
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="T">The type of the argument to be passed into factory.</typeparam>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="arg">The argument to be passed into factory.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, in ValueFunc<T, V> valueFactory)
         {
-            var supplier = new FuncSupplier<T, V>(arg, valueFactory);
+            var supplier = new Supplier<T, V>(arg, valueFactory);
             return GetStorage(true).GetOrSet(slot, ref supplier);
         }
 
@@ -255,9 +263,9 @@ namespace DotNext
         /// <param name="arg2">The second argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, Func<T1, T2, V> valueFactory)
+        public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, in ValueFunc<T1, T2, V> valueFactory)
         {
-            var supplier = new FuncSupplier<T1, T2, V>(arg1, arg2, valueFactory);
+            var supplier = new Supplier<T1, T2, V>(arg1, arg2, valueFactory);
             return GetStorage(true).GetOrSet(slot, ref supplier);
         }
 

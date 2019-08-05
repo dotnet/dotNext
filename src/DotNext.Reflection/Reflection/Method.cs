@@ -421,7 +421,7 @@ namespace DotNext.Reflection
                 return ReflectInstance(thisParam, argumentsType, typeof(void), methodName, nonPublic);
             else
             {
-                DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
+                DelegateType.GetInvokeMethod<D>().Decompose(MethodExtensions.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
                 thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
                 return ReflectInstance(thisParam, parameters.RemoveFirst(1), returnType, methodName, nonPublic);
             }
@@ -445,7 +445,7 @@ namespace DotNext.Reflection
                 return ReflectStatic(declaringType, delegateType.GetGenericArguments()[0], typeof(void), methodName, nonPublic);
             else
             {
-                DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
+                DelegateType.GetInvokeMethod<D>().Decompose(MethodExtensions.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
                 return ReflectStatic(declaringType, parameters, returnType, methodName, nonPublic);
             }
         }
@@ -513,7 +513,7 @@ namespace DotNext.Reflection
                 return Unreflect(method, Expression.Parameter(thisParam.MakeByRefType()), argumentsType, typeof(void));
             else
             {
-                DelegateType.GetInvokeMethod<D>().Decompose(Method.GetParameterTypes, m => m.ReturnType, out var parameters, out returnType);
+                DelegateType.GetInvokeMethod<D>().Decompose(MethodExtensions.GetParameterTypes, m => m.ReturnType, out var parameters, out returnType);
                 thisParam = parameters.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
                 parameters = parameters.RemoveFirst(1);
                 if (method.SignatureEquals(parameters) && method.ReturnType == returnType)

@@ -49,7 +49,7 @@ namespace DotNext.Threading
                     for (var k = 0; k < tasks.Length; k++)
                         tasks[k] = Task.Factory.StartNew(index => actions[Convert.ToInt32(index)](), k, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
                     await Task.WhenAll(tasks);
-                    Assert.Equal(0, barrier.ParticipantCount);
+                    Equal(0, barrier.ParticipantCount);
                 }
             }
         }

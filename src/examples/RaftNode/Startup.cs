@@ -23,7 +23,6 @@ namespace RaftNode
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IRaftClusterConfigurator, ClusterConfigurator>()
-                .AddSingleton<IMessageHandler, MessageHandler>()
                 .AddSingleton<FileListener>()
                 .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
                 .AddOptions().BecomeClusterMember(configuration);

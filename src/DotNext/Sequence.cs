@@ -9,6 +9,10 @@ namespace DotNext
     /// </summary>
     public static class Sequence
     {
+        private const int HashSalt = -1521134295;
+
+        private static int GetHashCode(int hash, object obj) => hash * HashSalt + obj?.GetHashCode() ?? 0;
+
         /// <summary>
         /// Computes hash code for the sequence of objects.
         /// </summary>
@@ -17,8 +21,8 @@ namespace DotNext
         /// <returns>The hash code computed from each element in the sequence.</returns>
         public static int SequenceHashCode(this IEnumerable<object> sequence, bool salted = true)
         {
-            var hashCode = sequence.Aggregate(-910176598, (current, item) => current * -1521134295 + (item?.GetHashCode()).GetValueOrDefault());
-            return salted ? hashCode * -1521134295 + RandomExtensions.BitwiseHashSalt : hashCode;
+            var hashCode = sequence.Aggregate(-910176598, GetHashCode);
+            return salted ? hashCode * HashSalt + RandomExtensions.BitwiseHashSalt : hashCode;
         }
 
         /// <summary>
@@ -27,10 +31,18 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
         /// <param name="action">An action to applied for each element.</param>
-        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action)
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> action) => ForEach(collection, new ValueAction<T>(action, true));
+
+        /// <summary>
+        /// Apply specified action to each collection element.
+        /// </summary>
+        /// <typeparam name="T">Type of elements in the collection.</typeparam>
+        /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
+        /// <param name="action">An action to applied for each element.</param>
+        public static void ForEach<T>(this IEnumerable<T> collection, in ValueAction<T> action)
         {
             foreach (var item in collection)
-                action(item);
+                action.Invoke(item);
         }
 
         /// <summary>

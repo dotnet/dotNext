@@ -25,6 +25,32 @@ namespace DotNext
     /// </summary>
 	public static class Procedure
     {
+        private sealed class Closure<T, A>
+            where A : struct
+        {
+            private readonly Procedure<T, A> procedure;
+            private readonly T target;
+
+            internal Closure(Procedure<T, A> procedure, T target)
+            {
+                this.procedure = procedure;
+                this.target = target;
+            }
+
+            internal void Invoke(in A arguments) => procedure(target, arguments);
+        }
+
+        /// <summary>
+        /// Converts <see cref="Procedure{T, A}"/> into <see cref="Procedure{A}"/> through
+        /// capturing of the first argument of <see cref="Procedure{T, A}"/> delegate.
+        /// </summary>
+        /// <typeparam name="T">Type of instance to be passed into underlying method.</typeparam>
+        /// <typeparam name="A">Type of structure with procedure arguments allocated on the stack.</typeparam>
+        /// <param name="procedure">The procedure to be converted.</param>
+        /// <param name="this">The first argument to be captured.</param>
+        /// <returns>The procedure instance.</returns>
+        public static Procedure<A> Capture<T, A>(this Procedure<T, A> procedure, T @this) where A : struct => new Closure<T, A>(procedure, @this).Invoke;
+
         /// <summary>
         /// Allocates list of arguments on the stack.
         /// </summary>

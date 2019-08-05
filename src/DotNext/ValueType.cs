@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using M = InlineIL.MethodRef;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
 {
@@ -35,7 +39,8 @@ namespace DotNext
             /// <param name="second">The second value to be compared.</param>
             /// <returns><see langword="true"/>, if two values are equal; otherwise, <see langword="false"/>.</returns>
             /// <seealso cref="BitwiseEquals(T, T)"/>
-            public bool Equals(T first, T second) => BitwiseEquals(first, second);
+            public bool Equals(T first, T second)
+                => BitwiseEquals(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
 
             /// <summary>
             /// Computes bitwise hash code for the given value.
@@ -43,7 +48,7 @@ namespace DotNext
             /// <param name="obj">The value for which a hash code is to be returned.</param>
             /// <returns>A hash code for the specified object.</returns>
             /// <seealso cref="BitwiseHashCode(T)"/>
-            public int GetHashCode(T obj) => BitwiseHashCode(obj);
+            public int GetHashCode(T obj) => BitwiseHashCode(ref obj, true);
 
             /// <summary>
             /// Performs bitwise comparison between two values.
@@ -52,7 +57,7 @@ namespace DotNext
             /// <param name="second">The second value to compare.</param>
             /// <returns>A value that indicates the relative order of the objects being compared.</returns>
             /// <seealso cref="BitwiseCompare(T, T)"/>
-            public int Compare(T first, T second) => BitwiseCompare(first, second);
+            public int Compare(T first, T second) => BitwiseCompare(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
         }
 
         /// <summary>
@@ -61,7 +66,7 @@ namespace DotNext
         public static int Size
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Unsafe.SizeOf<T>();
+            get => SizeOf<T>();
         }
 
         /// <summary>
@@ -73,6 +78,57 @@ namespace DotNext
         /// Indicates that value type is primitive type.
         /// </summary>
         public static readonly bool IsPrimitive = typeof(T).IsPrimitive;
+
+        private static bool BitwiseEquals(ref byte first, ref byte second)
+        {
+            Sizeof(typeof(T));
+            Conv_I8();
+            Pop(out long size);
+            switch (size)
+            {
+                case 1:
+                    Push(ref first);
+                    Ldind_I1();
+                    Push(ref second);
+                    Ldind_I1();
+                    Ceq();
+                    break;
+                case 2:
+                    Push(ref first);
+                    Ldind_I2();
+                    Push(ref second);
+                    Ldind_I2();
+                    Ceq();
+                    break;
+                case 3:
+                    goto default;
+                case 4:
+                    Push(ref first);
+                    Ldind_I4();
+                    Push(ref second);
+                    Ldind_I4();
+                    Ceq();
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
+                case 8:
+                    Push(ref first);
+                    Ldind_I8();
+                    Push(ref second);
+                    Ldind_I8();
+                    Ceq();
+                    break;
+                default:
+                    Push(ref first);
+                    Push(ref second);
+                    Push(size);
+                    Call(new M(typeof(Memory), nameof(Memory.EqualsAligned)));
+                    break;
+            }
+            return Return<bool>();
+        }
 
         /// <summary>
         /// Checks bitwise equality between two values of different value types.
@@ -86,9 +142,9 @@ namespace DotNext
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe bool BitwiseEquals<U>(T first, U second)
+        public static bool BitwiseEquals<U>(T first, U second)
             where U : struct
-            => Size == ValueType<U>.Size && Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
+            => SizeOf<T>() == SizeOf<U>() && BitwiseEquals(ref As<T, byte>(ref first), ref As<U, byte>(ref second));
 
         /// <summary>
         /// Checks bitwise equality between two values of the same value type.
@@ -101,8 +157,21 @@ namespace DotNext
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe bool BitwiseEquals(T first, T second)
-            => Memory.Equals(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
+        public static bool BitwiseEquals(T first, T second) 
+            => BitwiseEquals(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int BitwiseHashCode(ref T value, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
+        {
+            Push(ref value);
+            Sizeof(typeof(T));
+            Conv_I8();
+            Push(hash);
+            Ldarg(nameof(hashFunction));
+            Push(salted);
+            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>).MakeByRefType(), typeof(bool)));
+            return Return<int>();
+        }
 
         /// <summary>
         /// Computes bitwise hash code for the specified value.
@@ -116,8 +185,68 @@ namespace DotNext
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
-        public static unsafe int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => Memory.GetHashCode32(Unsafe.AsPointer(ref value), Size, hash, hashFunction, salted);
+        public static int BitwiseHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            => BitwiseHashCode(ref value, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+
+        /// <summary>
+        /// Computes bitwise hash code for the specified value.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't use <see cref="object.GetHashCode"/>
+        /// even if it is overridden by value type.
+        /// </remarks>
+        /// <param name="value">A value to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Bitwise hash code.</returns>
+        public static int BitwiseHashCode(T value, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
+            => BitwiseHashCode(ref value, hash, hashFunction, salted); 
+
+        private static int BitwiseHashCode(ref T value, bool salted)
+        {
+            const string methodExit = "exit";
+            Sizeof(typeof(T));
+            Conv_I8();
+            Pop(out long size);
+            switch(size)
+            {
+                case 1:
+                    Push(ref value);
+                    Ldind_I1();
+                    break;
+                case 2:
+                    Push(ref value);
+                    Ldind_I2();
+                    break;
+                case 3:
+                    goto default;
+                case 4:
+                    Push(ref value);
+                    Ldind_I4();
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
+                case 8:
+                    Push(ref value);
+                    Call(new M(typeof(ulong), nameof(GetHashCode)));
+                    break;
+                default:
+                    Push(ref value);
+                    Push(size);
+                    Push(salted);
+                    Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(bool)));
+                    return Return<int>();
+            }
+            Push(salted);
+            Brfalse(methodExit);
+            Push(RandomExtensions.BitwiseHashSalt);
+            Add();
+            MarkLabel(methodExit);
+            return Return<int>();
+        }
 
         /// <summary>
         /// Computes hash code for the structure content.
@@ -126,30 +255,124 @@ namespace DotNext
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int BitwiseHashCode(T value, bool salted)
-            => Memory.GetHashCode32(Unsafe.AsPointer(ref value), Size, salted);
+        public static int BitwiseHashCode(T value, bool salted) => BitwiseHashCode(ref value, salted);
 
         /// <summary>
 		/// Computes salted hash code for the structure content.
 		/// </summary>
 		/// <param name="value">Value to be hashed.</param>
-		/// <returns>Content hash code.</returns>
-        public static int BitwiseHashCode(T value) => BitwiseHashCode(value, true);
+		/// <returns>Content hash code.</returns>   
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int BitwiseHashCode(T value) => BitwiseHashCode(ref value, true);
+
+        private static bool IsDefault(ref T value)
+        {
+            Sizeof(typeof(T));
+            Conv_I8();
+            Pop(out long size);
+            switch (size)
+            {
+                case 1:
+                    Push(ref value);
+                    Ldind_I1();
+                    Ldc_I4_0();
+                    Ceq();
+                    break;
+                case 2:
+                    Push(ref value);
+                    Ldind_I2();
+                    Ldc_I4_0();
+                    Ceq();
+                    break;
+                case 3:
+                    goto default;
+                case 4:
+                    Push(ref value);
+                    Ldind_I4();
+                    Ldc_I4_0();
+                    Ceq();
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
+                case 8:
+                    Push(ref value);
+                    Ldind_I8();
+                    Ldc_I8(0L);
+                    Ceq();
+                    break;
+                default:
+                    Push(ref value);
+                    Push(size);
+                    Call(new M(typeof(Memory), nameof(Memory.IsZeroAligned)));
+                    break;
+            }
+            return Return<bool>();
+        }
 
         /// <summary>
         /// Indicates that specified value type is the default value.
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
-        public static unsafe bool IsDefault(T value) => Memory.IsZero(Unsafe.AsPointer(ref value), Size);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsDefault(T value) => IsDefault(ref value);
 
         /// <summary>
         /// Convert value type content into array of bytes.
         /// </summary>
-        /// <param name="value">A value to convert.</param>
+        /// <param name="value">Stack-allocated value to convert.</param>
         /// <returns>An array of bytes representing binary content of value type.</returns>
         public static unsafe byte[] AsBinary(T value)
-            => new ReadOnlySpan<byte>(Unsafe.AsPointer(ref value), Size).ToArray();
+            => new ReadOnlySpan<byte>(AsPointer(ref value), Size).ToArray();
+
+        private static int BitwiseCompare(ref byte first, ref byte second)
+        {
+            Sizeof(typeof(T));
+            Conv_I8();
+            Pop(out long size);
+            switch(size)
+            {
+                case 1:
+                    Push(ref first);
+                    Push(ref second);
+                    Ldind_U1();
+                    Call(new M(typeof(byte), nameof(byte.CompareTo), typeof(byte)));
+                    break;
+                case 2:
+                    Push(ref first);
+                    Push(ref second);
+                    Ldind_U2();
+                    Call(new M(typeof(ushort), nameof(ushort.CompareTo), typeof(ushort)));
+                    break;
+                case 3:
+                    goto default;
+                case 4:
+                    Push(ref first);
+                    Push(ref second);
+                    Ldind_U4();
+                    Call(new M(typeof(uint), nameof(uint.CompareTo), typeof(uint)));
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
+                case 8:
+                    Push(ref first);
+                    Push(ref second);
+                    Ldobj(typeof(ulong));
+                    Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
+                    break;
+                default:
+                    Push(ref first);
+                    Push(ref second);
+                    Push(size);
+                    Call(new M(typeof(Memory), nameof(Memory.CompareUnaligned)));
+                    break;
+            }
+            return Return<int>();
+        }
 
         /// <summary>
         /// Compares bits of two values of the same type.
@@ -157,8 +380,8 @@ namespace DotNext
         /// <param name="first">The first value to compare.</param>
         /// <param name="second">The second value to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-        public static unsafe int BitwiseCompare(T first, T second)
-            => Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int BitwiseCompare(T first, T second) => BitwiseCompare(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
 
         /// <summary>
         /// Compares bits of two values of the different type.
@@ -167,11 +390,11 @@ namespace DotNext
         /// <param name="first">The first value to compare.</param>
         /// <param name="second">The second value to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-        public static unsafe int BitwiseCompare<U>(T first, U second)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int BitwiseCompare<U>(T first, U second)
             where U : struct
-            => Size == ValueType<U>.Size ?
-                    Memory.Compare(Unsafe.AsPointer(ref first), Unsafe.AsPointer(ref second), Size) :
-                    Size.CompareTo(ValueType<U>.Size);
+            => SizeOf<T>() == SizeOf<U>() ? BitwiseCompare(ref As<T, byte>(ref first), ref As<U, byte>(ref second)) : SizeOf<T>().CompareTo(SizeOf<U>());
+            
 
         /// <summary>
         /// Obtain a value of type <typeparamref name="To"/> by 
@@ -187,15 +410,48 @@ namespace DotNext
         /// <param name="input">A value to convert.</param>
         /// <param name="output">Conversion result.</param>
         /// <typeparam name="To">The type of output struct.</typeparam>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Bitcast<To>(in T input, out To output)
             where To : unmanaged
         {
-            if (Size >= ValueType<To>.Size)
-                output = Unsafe.As<T, To>(ref Unsafe.AsRef(in input));
-            else
+            const string slowPath = "slow";
+            Ldarg(nameof(output));
+            Sizeof(typeof(T));
+            Sizeof(typeof(To));
+            Blt_Un(slowPath);
+            //copy from input into output as-is
+            Ldarg(nameof(input));
+            Cpobj(typeof(To));
+            Ret();
+
+            MarkLabel(slowPath);
+            Dup();
+            Initobj(typeof(To));
+            Ldarg(nameof(input));
+            Cpobj(typeof(T));
+            Ret();
+            throw Unreachable();    //output must be defined within scope
+        }
+
+        /// <summary>
+        /// Attempts to unbox value type.
+        /// </summary>
+        /// <param name="boxed">The boxed struct.</param>
+        /// <returns>Unboxed representation of <typeparamref name="T"/>.</returns>
+        public static T? TryUnbox(object boxed)
+        {
+            switch (boxed)
             {
-                output = default;
-                Unsafe.As<To, T>(ref output) = input;
+                case T vt:
+                    return vt;
+                case Optional<T> optional:
+                    return optional.OrNull();
+                case Result<T> result:
+                    return result.OrNull();
+                case ValueType<T> vt:
+                    return vt.Value;
+                default:
+                    return null;
             }
         }
 

@@ -2,17 +2,57 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Threading;
 
 namespace DotNext.Threading
 {
+    /// <summary>
+    /// Provides basic atomic operations for arbitrary enum type.
+    /// </summary>
+    public static class AtomicEnum
+    {
+        /// <summary>
+        /// Reads the value of the specified field. On systems that require it, inserts a
+        /// memory barrier that prevents the processor from reordering memory operations
+        /// as follows: If a read or write appears after this method in the code, the processor
+        /// cannot move it before this method.
+        /// </summary>
+        /// <param name="value">The field to read.</param>
+        /// <returns>
+        /// The value that was read. This value is the latest written by any processor in
+        /// the computer, regardless of the number of processors or the state of processor
+        /// cache.
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static E VolatileRead<E>(this ref E value)
+            where E : struct, Enum
+            => Atomic.Read(ref value);
+
+        /// <summary>
+        /// Writes the specified value to the specified field. On systems that require it,
+        /// inserts a memory barrier that prevents the processor from reordering memory operations
+        /// as follows: If a read or write appears before this method in the code, the processor
+        /// cannot move it after this method.
+        /// </summary>
+        /// <param name="value">The field where the value is written.</param>
+        /// <param name="newValue">
+        /// The value to write. The value is written immediately so that it is visible to
+        /// all processors in the computer.
+        /// </param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void VolatileWrite<E>(this ref E value, E newValue)
+            where E : struct, Enum
+            => Atomic.Write(ref value, newValue);
+    }
+
     /// <summary>
     /// Represents atomic enum value.
     /// </summary>
     [Serializable]
     [SuppressMessage("Design", "CA1066")]
     [SuppressMessage("Usage", "CA2231")]
-    public struct AtomicEnum<E> : IEquatable<E>, ISerializable, IAtomicWrapper<long, E>
-        where E : unmanaged, Enum
+    public struct AtomicEnum<E> : IEquatable<E>, ISerializable
+        where E : struct, Enum
     {
         private const string ValueSerData = "value";
 
@@ -29,12 +69,6 @@ namespace DotNext.Threading
         {
             value = (long)info.GetValue(ValueSerData, typeof(long));
         }
-
-        E IAtomicWrapper<long, E>.Convert(long value) => value.ToEnum<E>();
-
-        long IAtomicWrapper<long, E>.Convert(E value) => value.ToInt64();
-
-        Atomic<long> IAtomicWrapper<long, E>.Atomic => AtomicInt64.Atomic;
 
         /// <summary>
         /// Gets or sets enum value in volatile manner.
@@ -55,7 +89,7 @@ namespace DotNext.Threading
 		/// <returns>The original value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public E CompareExchange(E update, E expected)
-            => Atomic<long, E, AtomicEnum<E>>.CompareExchange(ref this, ref value, update, expected);
+            => Interlocked.CompareExchange(ref value, update.ToInt64(), expected.ToInt64()).ToEnum<E>();
 
         /// <summary>
         /// Atomically sets referenced value to the given updated value if the current value == the expected value.
@@ -64,7 +98,7 @@ namespace DotNext.Threading
         /// <param name="update">The new value.</param>
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool CompareAndSet(E expected, E update) => Atomic<long, E, AtomicEnum<E>>.CompareAndSet(ref this, ref value, expected, update);
+        public bool CompareAndSet(E expected, E update) => Atomic<E>.Equals(CompareExchange(update, expected), expected);
 
         /// <summary>
 		/// Modifies the current value atomically.
@@ -72,7 +106,7 @@ namespace DotNext.Threading
 		/// <param name="update">A new value to be stored into this container.</param>
 		/// <returns>Original value before modification.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public E GetAndSet(E update) => Atomic<long, E, AtomicEnum<E>>.GetAndSet(ref this, ref value, update);
+        public E GetAndSet(E update) => value.GetAndSet(update.ToInt64()).ToEnum<E>();
 
         /// <summary>
 		/// Modifies the current value atomically.
@@ -86,6 +120,28 @@ namespace DotNext.Threading
             return update;
         }
 
+        private (E OldValue, E NewValue) Update(in ValueFunc<E, E> updater)
+        {
+            E oldValue, newValue;
+            do
+            {
+                newValue = updater.Invoke(oldValue = Atomic.Read(ref value).ToEnum<E>());
+            }
+            while (!CompareAndSet(oldValue, newValue));
+            return (oldValue, newValue);
+        }
+
+        private (E OldValue, E NewValue) Accumulate(E x, in ValueFunc<E, E, E> accumulator)
+        {
+            E oldValue, newValue;
+            do
+            {
+                newValue = accumulator.Invoke(oldValue = Atomic.Read(ref value).ToEnum<E>(), x);
+            }
+            while (!CompareAndSet(oldValue, newValue));
+            return (oldValue, newValue);
+        }
+
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
 		/// to the current and given values, returning the updated value.
@@ -97,7 +153,20 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The updated value.</returns>
 		public E AccumulateAndGet(E x, Func<E, E, E> accumulator)
-            => Atomic<long, E, AtomicEnum<E>>.Accumulate(ref this, ref value, x, accumulator).NewValue;
+            => AccumulateAndGet(x, new ValueFunc<E, E, E>(accumulator, true));
+
+        /// <summary>
+		/// Atomically updates the current value with the results of applying the given function 
+		/// to the current and given values, returning the updated value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the current value as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments</param>
+		/// <returns>The updated value.</returns>
+		public E AccumulateAndGet(E x, in ValueFunc<E, E, E> accumulator)
+            => Accumulate(x, accumulator).NewValue;
 
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
@@ -110,7 +179,20 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments</param>
 		/// <returns>The original value.</returns>
 		public E GetAndAccumulate(E x, Func<E, E, E> accumulator)
-            => Atomic<long, E, AtomicEnum<E>>.Accumulate(ref this, ref value, x, accumulator).OldValue;
+            => GetAndAccumulate(x, new ValueFunc<E, E, E>(accumulator, true));
+
+        /// <summary>
+		/// Atomically updates the current value with the results of applying the given function 
+		/// to the current and given values, returning the original value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the current value as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments</param>
+		/// <returns>The original value.</returns>
+		public E GetAndAccumulate(E x, in ValueFunc<E, E, E> accumulator)
+            => Accumulate(x, accumulator).OldValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -119,7 +201,16 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The updated value.</returns>
         public E UpdateAndGet(Func<E, E> updater)
-            => Atomic<long, E, AtomicEnum<E>>.Update(ref this, ref value, updater).NewValue;
+            => UpdateAndGet(new ValueFunc<E, E>(updater, true));
+
+        /// <summary>
+        /// Atomically updates the stored value with the results 
+        /// of applying the given function, returning the updated value.
+        /// </summary>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The updated value.</returns>
+        public E UpdateAndGet(in ValueFunc<E, E> updater)
+            => Update(updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -128,7 +219,16 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         public E GetAndUpdate(Func<E, E> updater)
-            => Atomic<long, E, AtomicEnum<E>>.Update(ref this, ref value, updater).OldValue;
+            => GetAndUpdate(new ValueFunc<E, E>(updater, true));
+
+        /// <summary>
+        /// Atomically updates the stored value with the results 
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The original value.</returns>
+        public E GetAndUpdate(in ValueFunc<E, E> updater)
+            => Update(updater).OldValue;
 
         /// <summary>
         /// Determines whether stored value is equal to

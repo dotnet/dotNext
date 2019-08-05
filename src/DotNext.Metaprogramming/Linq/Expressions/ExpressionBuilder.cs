@@ -259,8 +259,19 @@ namespace DotNext.Linq.Expressions
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns><see langword="null"/> check operation.</returns>
-        public static BinaryExpression IsNull(this Expression operand)
-            => Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
+        public static Expression IsNull(this Expression operand)
+        {
+            //handle nullable value type
+            var underlyingType = Nullable.GetUnderlyingType(operand.Type);
+            if(!(underlyingType is null))
+                return operand.Property(nameof(Nullable<int>.HasValue)).Not();
+            //handle optional type
+            underlyingType = Optional.GetUnderlyingType(operand.Type);
+            if(!(underlyingType is null))
+                return operand.Property(nameof(Optional<int>.IsPresent)).Not();
+            //handle reference type or value type
+            return operand.Type.IsValueType || operand.Type.IsPointer ? (Expression) Const<bool>(false) : Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
+        }
 
         /// <summary>
         /// Constructs <see langword="null"/> check.
@@ -270,8 +281,19 @@ namespace DotNext.Linq.Expressions
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns><see langword="null"/> check operation.</returns>
-        public static BinaryExpression IsNotNull(this Expression operand)
-            => Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type));
+        public static Expression IsNotNull(this Expression operand)
+        {
+            //handle nullable value type
+            var underlyingType = Nullable.GetUnderlyingType(operand.Type);
+            if(!(underlyingType is null))
+                return operand.Property(nameof(Nullable<int>.HasValue));
+            //handle optional type
+            underlyingType = Optional.GetUnderlyingType(operand.Type);
+            if(!(underlyingType is null))
+                return operand.Property(nameof(Optional<int>.IsPresent));
+            //handle reference type or value type
+            return operand.Type.IsValueType || operand.Type.IsPointer ? (Expression) Const<bool>(true) : Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type));
+        }
 
         /// <summary>
         /// Constructs raising a number to a power expression.
@@ -1181,5 +1203,14 @@ namespace DotNext.Linq.Expressions
             else
                 return CallStatic(typeof(Debug), nameof(Debug.Assert), test, Const(message));
         }
+
+        /// <summary>
+        /// Creates a new safe navigation expression.
+        /// </summary>
+        /// <param name="target">The expression that is guarded by <see langword="null"/> check.</param>
+        /// <param name="body">The body to be executed if <paramref name="target"/> is not <see langword="null"/>. </param>
+        /// <returns>The expression representing safe navigation.</returns>
+        public static NullSafetyExpression IfNotNull(this Expression target, Func<ParameterExpression, Expression> body)
+            => NullSafetyExpression.Create(target, body);
     }
 }

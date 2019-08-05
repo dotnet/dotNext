@@ -1,4 +1,5 @@
 using System;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
 {
@@ -9,25 +10,11 @@ namespace DotNext
     /// </summary>
     public static class OneDimensionalArray
     {
-        private interface IRemovalCallback<in T>
-        {
-            void Removed(T item);
-        }
-
-        private struct RemovalCounter<T> : IRemovalCallback<T>
+        private struct RemovalCounter<T> : IConsumer<T>
         {
             internal long Count;
 
-            void IRemovalCallback<T>.Removed(T item) => Count += 1;
-        }
-
-        private readonly struct RemovalDelegate<T> : IRemovalCallback<T>
-        {
-            private readonly Action<T> callback;
-
-            internal RemovalDelegate(Action<T> callback) => this.callback = callback;
-
-            void IRemovalCallback<T>.Removed(T item) => callback(item);
+            void IConsumer<T>.Invoke(T item) => Count += 1;
         }
 
         /// <summary>
@@ -102,16 +89,16 @@ namespace DotNext
             }
         }
 
-        private static T[] RemoveAll<T, C>(T[] array, Predicate<T> match, ref C callback)
-            where C : struct, IRemovalCallback<T>
+        private static T[] RemoveAll<T, C>(T[] array, in ValueFunc<T, bool> match, ref C callback)
+            where C : struct, IConsumer<T>
         {
             if (array.LongLength == 0L)
                 return array;
             var newLength = 0L;
             var tempArray = new T[array.LongLength];
             foreach (var item in array)
-                if (match(item))
-                    callback.Removed(item);
+                if (match.Invoke(item))
+                    callback.Invoke(item);
                 else
                     tempArray[newLength++] = item;
             if (array.LongLength - newLength == 0L)
@@ -133,7 +120,7 @@ namespace DotNext
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <param name="count">The number of elements removed from this list.</param>
         /// <returns>A modified array with removed elements.</returns>
-        public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, out long count)
+        public static T[] RemoveAll<T>(this T[] array, in ValueFunc<T, bool> match, out long count)
         {
             var counter = new RemovalCounter<T>();
             var result = RemoveAll(array, match, ref counter);
@@ -146,13 +133,30 @@ namespace DotNext
         /// </summary>
         /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
         /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
+        /// <param name="count">The number of elements removed from this list.</param>
+        /// <returns>A modified array with removed elements.</returns>
+        public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, out long count)
+            => RemoveAll(array, match.AsValueFunc(true), out count);
+
+        /// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
+        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
+        /// <param name="callback">The delegate that is used to accept removed items.</param>
+        /// <returns>A modified array with removed elements.</returns>
+        public static T[] RemoveAll<T>(this T[] array, in ValueFunc<T, bool> match, in ValueAction<T> callback)
+            => RemoveAll(array, match, ref AsRef(callback));
+
+        /// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
+        /// <param name="match">The predicate that defines the conditions of the elements to remove.</param>
         /// <param name="callback">The delegate that is used to accept removed items.</param>
         /// <returns>A modified array with removed elements.</returns>
         public static T[] RemoveAll<T>(this T[] array, Predicate<T> match, Action<T> callback)
-        {
-            var cb = new RemovalDelegate<T>(callback);
-            return RemoveAll(array, match, ref cb);
-        }
+            => RemoveAll(array, match.AsValueFunc(true), new ValueAction<T>(callback, true));
 
         internal static T[] New<T>(long length) => length == 0L ? Array.Empty<T>() : new T[length];
 
@@ -253,7 +257,7 @@ namespace DotNext
                 return true;
             else
                 fixed (T* firstPtr = first, secondPtr = second)
-                    return Memory.Equals(firstPtr, secondPtr, first.LongLength * ValueType<T>.Size);
+                    return Memory.EqualsAligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * ValueType<T>.Size);
         }
 
         /// <summary>
@@ -269,7 +273,7 @@ namespace DotNext
             if (array.IsNullOrEmpty())
                 return 0;
             fixed (T* ptr = array)
-                return Memory.GetHashCode32(ptr, array.LongLength * ValueType<T>.Size, salted);
+                return Memory.GetHashCode32Aligned(new IntPtr(ptr), array.LongLength * ValueType<T>.Size, salted);
         }
 
         /// <summary>
@@ -281,13 +285,44 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>32-bit hash code of the array content.</returns>
-        public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, Func<int, int, int> hashFunction, bool salted = true)
+        public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
         {
             if (array.IsNullOrEmpty())
                 return hash;
             fixed (T* ptr = array)
-                return Memory.GetHashCode32(ptr, array.LongLength * ValueType<T>.Size, hash, hashFunction, salted);
+                return Memory.GetHashCode32Aligned(new IntPtr(ptr), array.LongLength * ValueType<T>.Size, hash, hashFunction, salted);
+        }
+
+        /// <summary>
+        /// Computes bitwise hash code for the array content using custom hash function.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="array">The array to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Custom hashing algorithm.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>32-bit hash code of the array content.</returns>
+        public static int BitwiseHashCode<T>(this T[] array, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            where T : unmanaged
+            => BitwiseHashCode(array, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+        
+        /// <summary>
+        /// Computes bitwise hash code for the array content using custom hash function.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="array">The array to be hashed.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Custom hashing algorithm.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>64-bit hash code of the array content.</returns>
+        public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
+            where T : unmanaged
+        {
+            if (array.IsNullOrEmpty())
+                return hash;
+            fixed (T* ptr = array)
+                return Memory.GetHashCode64Aligned(new IntPtr(ptr), array.LongLength * ValueType<T>.Size, hash, hashFunction, salted);
         }
 
         /// <summary>
@@ -299,14 +334,9 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>64-bit hash code of the array content.</returns>
-        public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, Func<long, long, long> hashFunction, bool salted = true)
+        public static long BitwiseHashCode64<T>(this T[] array, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
-        {
-            if (array.IsNullOrEmpty())
-                return hash;
-            fixed (T* ptr = array)
-                return Memory.GetHashCode64(ptr, array.LongLength * ValueType<T>.Size, hash, hashFunction, salted);
-        }
+            => BitwiseHashCode64(array, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
 
         /// <summary>
         /// Computes bitwise hash code for the array content.
@@ -321,7 +351,7 @@ namespace DotNext
             if (array.IsNullOrEmpty())
                 return 0;
             fixed (T* ptr = array)
-                return Memory.GetHashCode64(ptr, array.LongLength * ValueType<T>.Size, salted);
+                return Memory.GetHashCode64Aligned(new IntPtr(ptr), array.LongLength * ValueType<T>.Size, salted);
         }
 
         /// <summary>
@@ -364,7 +394,7 @@ namespace DotNext
             else if (first.LongLength != second.LongLength)
                 return first.LongLength.CompareTo(second.LongLength);
             fixed (T* firstPtr = first, secondPtr = second)
-                return Memory.Compare(firstPtr, secondPtr, first.LongLength * ValueType<T>.Size);
+                return Memory.CompareUnaligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * ValueType<T>.Size);
         }
     }
 }

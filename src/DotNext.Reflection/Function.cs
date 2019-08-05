@@ -30,6 +30,33 @@ namespace DotNext
     /// </summary>
     public static class Function
     {
+        private sealed class Closure<T, A, R>
+            where A : struct
+        {
+            private readonly Function<T, A, R> function;
+            private readonly T target;
+
+            internal Closure(Function<T, A, R> function, T target)
+            {
+                this.function = function;
+                this.target = target;
+            }
+
+            internal R Invoke(in A arguments) => function(target, arguments);
+        }
+
+        /// <summary>
+        /// Converts <see cref="Function{T, A, R}"/> into <see cref="Function{A, R}"/> through
+        /// capturing of the first argument of <see cref="Function{T, A, R}"/> delegate.
+        /// </summary>
+        /// <typeparam name="T">Type of instance to be passed into underlying method.</typeparam>
+        /// <typeparam name="A">Type of structure with function arguments allocated on the stack.</typeparam>
+        /// <typeparam name="R">Type of function return value.</typeparam>
+        /// <param name="function">The function to be converted.</param>
+        /// <param name="this">The first argument to be captured.</param>
+        /// <returns>The function instance.</returns>
+        public static Function<A, R> Capture<T, A, R>(this Function<T, A, R> function, T @this) where A : struct => new Closure<T, A, R>(function, @this).Invoke;
+
         /// <summary>
         /// Invokes function without throwing exception in case of its failure.
         /// </summary>

@@ -10,7 +10,7 @@ namespace DotNext.Benchmarks
     public class BitwiseHashCodeBenchmark
     {
         private static readonly Guid NonEmptyGuid = Guid.NewGuid();
-        private static readonly BitwiseEqualityBenchmark.BigStructure NonEmptyBigStruct = new BitwiseEqualityBenchmark.BigStructure { X = 10M, C = 42M };
+        private static readonly BitwiseEqualityBenchmark.LargeStruct NonEmptyBigStruct = new BitwiseEqualityBenchmark.LargeStruct { X = 10M, C = 42M };
 
         [Benchmark]
         public void GuidHashCode()
@@ -33,7 +33,7 @@ namespace DotNext.Benchmarks
         [Benchmark]
         public void BigStructureBitwiseHashCode()
         {
-            ValueType<BitwiseEqualityBenchmark.BigStructure>.BitwiseHashCode(NonEmptyBigStruct, false);
+            ValueType<BitwiseEqualityBenchmark.LargeStruct>.BitwiseHashCode(NonEmptyBigStruct, false);
         }
     }
 }

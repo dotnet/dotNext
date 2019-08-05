@@ -5,6 +5,8 @@ using System.Runtime.Serialization;
 
 namespace DotNext
 {
+    using Threading;
+
     /// <summary>
     /// Provides strongly typed way to reflect enum type.
     /// </summary>
@@ -36,7 +38,7 @@ namespace DotNext
             public static implicit operator Tuple(E value) => new Tuple(value);
 
             public bool Equals(Tuple other)
-                => Name is null ? other.Name is null && ValueTypeExtensions.ToUInt64(Value) == ValueTypeExtensions.ToUInt64(other.Value) : Name == other.Name;
+                => Name is null ? other.Name is null && Atomic.Equals(Value, other.Value) : Name == other.Name;
 
             public override bool Equals(object other) => other is Tuple t && Equals(t);
             public override int GetHashCode() => Name is null ? Value.GetHashCode() : Name.GetHashCode();
@@ -162,7 +164,7 @@ namespace DotNext
         /// <summary>
         /// Gets code of the underlying primitive type.
         /// </summary>
-        public static TypeCode UnderlyingTypeCode => ValueTypeExtensions.GetTypeCode<E>();
+        public static TypeCode UnderlyingTypeCode => Type.GetTypeCode(typeof(E));
 
         private const string NameSerData = "Name";
         private const string ValueSerData = "Value";
@@ -209,7 +211,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns>Equality check result.</returns>
-        public bool Equals(E other) => EqualityComparer<E>.Default.Equals(Value, other);
+        public bool Equals(E other) => Atomic<E>.Equals(Value, other);
 
         /// <summary>
         /// Determines whether two enum members are equal.

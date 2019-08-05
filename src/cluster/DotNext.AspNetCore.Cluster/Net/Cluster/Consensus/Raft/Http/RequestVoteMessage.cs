@@ -39,8 +39,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected override void FillRequest(HttpRequestMessage request)
         {
             base.FillRequest(request);
-            request.Headers.Add(RecordIndexHeader, Convert.ToString(LastLogIndex, InvariantCulture));
-            request.Headers.Add(RecordTermHeader, Convert.ToString(LastLogTerm, InvariantCulture));
+            request.Headers.Add(RecordIndexHeader, LastLogIndex.ToString(InvariantCulture));
+            request.Headers.Add(RecordTermHeader, LastLogTerm.ToString(InvariantCulture));
         }
 
         Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);

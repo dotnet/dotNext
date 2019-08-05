@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             return new NameValueCollection
             {
-                { cacheMemoryLimitMegabytes, Convert.ToString(memoryLimitMB, InvariantCulture) },
+                { cacheMemoryLimitMegabytes, memoryLimitMB.ToString(InvariantCulture) },
                 { pollingInterval, pollingTime.ToString() }
             };
         }

@@ -1,4 +1,5 @@
-NoConsensus=There is no consens in the cluster
+NoConsensus=There is no consensus in the cluster
 ReplicationRejected=Cluster member rejects replication
 CannotRemoveLocalNode=Local node cannot be removed
 EntrySetIsEmpty=Unable to append empty set of entries
+LocalNodeNotLeader=The local cluster member is not a leader

@@ -178,7 +178,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         protected bool IsLeaderLocal => state is LeaderState;
 
-
         IAuditTrail<ILogEntry> IReplicationCluster<ILogEntry>.AuditTrail => auditTrail;
 
         /// <summary>
@@ -468,10 +467,68 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     candidateState.Dispose();
                     Leader = newLeader as TMember;
-                    state = new LeaderState(this, allowPartitioning, auditTrail.Term).StartLeading(electionTimeout / 2,
+                    state = new LeaderState(this, allowPartitioning, auditTrail.Term).StartLeading(TimeSpan.FromMilliseconds(electionTimeout / 2D),
                         auditTrail);
                     Logger.TransitionToLeaderStateCompleted();
                 }
+            }
+        }
+
+        private async Task WaitForCommit(long commitIndex)
+        {
+            /*
+             * Performance of this method is optimized as follows:
+             * 1. If the current node is leader then this method forces replication
+             *      without waiting for the scheduled heartbeat. This is the best case
+             * 2. If the current node is downgraded to the follower during replication
+             *      then client needs to wait (maximum is electionTimeout), which is
+             *      worst case but it should happen rarely
+             */
+            var notifier = new CommitEvent<ILogEntry>(commitIndex);
+            notifier.AttachTo(auditTrail);
+            try
+            {
+                do
+                {
+                    var leaderState = state as LeaderState;
+                    if (leaderState is null)
+                        throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
+                    else
+                        leaderState.ForceReplication(auditTrail);
+                }
+                while (!await notifier.Wait(TimeSpan.FromMilliseconds(electionTimeout), transitionCancellation.Token).ConfigureAwait(false));
+            }
+            finally
+            {
+                notifier.DetachFrom(auditTrail);
+                notifier.Dispose();
+            }
+        }
+
+        private async Task WriteAsync<T>(DataHandler<T, ILogEntry> handler, T input, bool waitForCommit)
+        {
+            var entries = await handler(input).ConfigureAwait(false);
+            if (entries.Count == 0)
+                return;
+            var index = await auditTrail.AppendAsync(entries).ConfigureAwait(false);
+            if (waitForCommit)
+                await WaitForCommit(index + entries.Count - 1L).ConfigureAwait(false);
+            else if (IsLeaderLocal)
+                return;
+            else
+                throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
+        }
+
+        Task IReplicationCluster<ILogEntry>.WriteAsync<T>(DataHandler<T, ILogEntry> handler, T input, WriteConcern concern)
+        {
+            switch (concern)
+            {
+                case WriteConcern.None:
+                    return WriteAsync(handler, input, false);
+                case WriteConcern.LeaderOnly:
+                    return WriteAsync(handler, input, true);
+                default:
+                    return Task.FromException(new NotSupportedException());
             }
         }
 
