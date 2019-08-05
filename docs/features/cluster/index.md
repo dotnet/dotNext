@@ -34,7 +34,7 @@ Usually, you don't to implement `IMessage` interface directly due to existence o
 
 # Distributed Consensus
 Consensus Algorithm allows to achieve overall reliability in the presence of faulty nodes. The most commonly used consensus algorithms are:
-* [Chandra-Toueg consensus algorithm](https://en.wikipedia.org/wiki/Chandra%E2%80%93Toueg_consensus_algorithm))
+* [Chandra-Toueg consensus algorithm](https://en.wikipedia.org/wiki/Chandra%E2%80%93Toueg_consensus_algorithm)
 * [Paxos](https://en.wikipedia.org/wiki/Paxos_(computer_science))
 * [Raft](https://en.wikipedia.org/wiki/Raft_(computer_science))
 
