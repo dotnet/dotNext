@@ -116,7 +116,7 @@ namespace DotNext
             True(second.GreaterThanOrEqual(first));
         }
 
-        [Fact]
+        [Require64BitProcess]
         public static void IntPtrArithmetic()
         {
             var value = new IntPtr(40);
