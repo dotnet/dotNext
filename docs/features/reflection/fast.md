@@ -94,6 +94,38 @@ tryParse(args);
 decimal v = args.result;    //v == 42M
 ```
 
+# Field
+Managed pointer to the static or instance field can obtained from [FieldInfo](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo) using `Unreflect` extension method declared in [Reflector](../../api/DotNext.Reflection.Reflector.yml) class. This feature gives the power to work with field values using Reflection without performance loss.
+
+> [!IMPORTANT]
+> Managed pointer to the field is mutable even if field is **readonly**. As a result, you can modify value of such field. It is responsibility of the developer to control access to read-only fields.
+
+This is not the only way to obtain direct access to the field. [Field&lt;V&gt;](../../api/DotNext.Reflection.Field-1.yml) and [Field&lt;T,V&gt;](../../api/DotNext.Reflection.Field-2.yml) that can be returned by [Type&lt;T&gt;.Field&lt;T&gt;](../../api/DotNext.Reflection.Type-1.Field-1.yml) provide access to static and field value respectively.
+
+The following example demonstrates how to obtain managed pointer to the static and instance fields:
+```csharp
+using DotNext.Reflection;
+using System.Reflection;
+
+class MyClass
+{
+	private static long StaticField;
+
+	private string instanceField;
+
+	public MyClass(string str) => instanceField = str;
+}
+
+//change value of static field
+ref long staticField = typeof(MyClass).GetField("StaticField", BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly).Unreflect<long>();
+staticField = 42L;
+
+//change value of instance field
+var obj = new MyClass();
+ref string instanceField = obj.GetClass().GetField("instanceField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly).Unreflect<string>(obj);
+instanceField = "Hello, world";
+```
+
 # Performance
 Invocation of members through special delegates is not a free lunch: you pay for passing arguments through the stack. But it still much faster than classic .NET Reflection. The following list describes performance impact using different approaches to reflection (from fast to slow).
 
