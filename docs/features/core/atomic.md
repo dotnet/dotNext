@@ -27,14 +27,17 @@ Numeric types have the following atomic operations:
 Reference types have similar set of atomic operations except arithmetic operations such as increment, decrement and addition.
 
 # Atomic operations for scalar types
-All atomic operations are extension methods grouped by specific target scalar types:
-* [AtomicInteger](../../api/DotNext.Threading.AtomicInt32.yml) for [int](https://docs.microsoft.com/en-us/dotnet/api/system.int32)
-* [AtomicLong](../../api/DotNext.Threading.AtomicInt64.yml) for [long](https://docs.microsoft.com/en-us/dotnet/api/system.int64)
-* [AtomicFloat](../../api/DotNext.Threading.AtomicSingle.yml) for [float](https://docs.microsoft.com/en-us/dotnet/api/system.single)
+Atomic operations are extension methods grouped by specific target scalar types:
+* [AtomcInt32](../../api/DotNext.Threading.AtomicInt32.yml) for [int](https://docs.microsoft.com/en-us/dotnet/api/system.int32)
+* [AtomicInt64](../../api/DotNext.Threading.AtomicInt64.yml) for [long](https://docs.microsoft.com/en-us/dotnet/api/system.int64)
+* [AtomicSingle](../../api/DotNext.Threading.AtomicSingle.yml) for [float](https://docs.microsoft.com/en-us/dotnet/api/system.single)
 * [AtomicDouble](../../api/DotNext.Threading.AtomicDouble.yml) for [double](https://docs.microsoft.com/en-us/dotnet/api/system.double)
+* [AtomicIntPtr](../../api/DotNext.Threading.AtomicIntPtr.yml) for [IntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr)
 * [AtomicReference](../../api/DotNext.Threading.AtomicReference.yml) for [reference types](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types)
 
-One exception is [bool](https://docs.microsoft.com/en-us/dotnet/api/system.boolean) data type. The only way to use atomic boolean operations is to replace this data type with [AtomicBoolean](../../api/DotNext.Threading.AtomicBoolean.yml) type.
+Atomic operations for some data types represented by atomic containers instread of extension methods:
+* [AtomicBoolean](../../api/DotNext.Threading.AtomicBoolean.yml) for [bool](https://docs.microsoft.com/en-us/dotnet/api/system.boolean) data type
+* [AtomicEnum](../../api/DotNext.Threading.AtomicEnum-1.yml) for **enum** data types
 
 The following example demonstrates how to use advanced atomic operations
 ```csharp
@@ -63,4 +66,33 @@ var array = new double[10];
 var result = array.IncrementAndGet(2);   //2 is an index of array element to be modified
 result = array.VolatileRead(2);  //atomic read of array element
 array.VolatileWrite(2, 30D);  //atomic modification of array element
+```
+
+# Atomic operations with pointers
+Working with unmanaged memory in multithreaded application also requires atomic operations and volatile memory access. [AtomicPointer](../../api/DotNext.Threading.AtomicPointer.yml) provides all necessary functionality as extension methods for [Pointer&lt;T&gt;](../../api/DotNext.Runtime.InteropServices.Pointer-1.yml) data type.
+
+# Atomic access for arbitrary value types
+Volatile memory access is hardware dependent feature. For instance, on x86 atomic read/write can be guaranteed for 32-bit data types only. On x86_64, this guarantee is extended to 64-bit data type. What if you need to have hardware-independent atomic read/write for arbitrary value type? The naive solution is to use [Synchronized](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.methodimploptions#System_Runtime_CompilerServices_MethodImplOptions_Synchronized) method. It can be declared in class only, not in value type. If your volatile field declared in value type then you cannot use such kind of methods or you need to create container in the form of the class which requires allocation on the heap.
+
+[Atomic&lt;T&gt;](../../api/DotNext.Threading.Atomic-1.yml) is a container that provides atomic operations for arbitrary value type. The container is value type itself and do not require heap allocation. Memory access to the stored value is organized through software-emulated memory barrier which is portable across CPU architectures. Performance impact is very low. Under heavy lock contention, the access time is 40% faster than Synchronized methods. Check [Benchmarks](../../benchmarks.md) for information.
+
+The following example demonstrates how to organize atomic access to field of type [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid).
+```csharp
+using DotNext.Threading;
+
+class MyClass
+{
+	private Atomic<Guid> id;
+
+	public void GenerateNewId() => id.Write(Guid.NewGuid());	//Write is atomic
+
+	public bool IsEmptyId 
+	{
+		get
+		{
+			id.Read(out var value);	//Read is atomic
+			return value == Guid.Empty;
+		}
+	}
+}
 ```
