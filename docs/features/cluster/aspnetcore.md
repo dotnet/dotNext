@@ -253,3 +253,11 @@ dotnet RaftNode.dll 3264
 ```
 
 Every instance should be launched in separated Terminal session. After that, you will see diagnostics messages in `stdout` about election process. Press _Ctrl+C_ in the window related to the leader node and ensure that new leader will be elected.
+
+Optionally, you can test replication and [WriteConcern](../../api/DotNext.Net.Cluster.Replication.WriteConcern.yml). To do that, you need to created a separate folder and place empty file into. The file changes are tracked by leader node and distributed across nodes. It should be specified as the second command-line argument:
+```bash
+dotnet RaftNode.dll 3262 ./folder/content.txt
+dotnet RaftNode.dll 3263 ./folder/content.txt
+dotnet RaftNode.dll 3264 ./folder/content.txt
+```
+When consensus is reached, you can open the file and change its content. You will see the message in Console window owned by leader node that the content is added into replication log. A few moments later you will that the uncomitted record is added by every cluster node, then the record will be committed by the leader node. 
