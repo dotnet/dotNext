@@ -10,7 +10,7 @@ Cluster Computing is a form of distributed computing where each node set to perf
 The programming model at higher level of abstraction is represented by interfaces:
 * [IClusterMember](../../api/DotNext.Net.Cluster.IClusterMember.yml) represents individual node in the cluster
 * [ICluster](../../api/DotNext.Net.Cluster.ICluster.yml) represents entire cluster. This is an entry point to work with cluster using .NEXT library.
-* [IExpandableCluster](../../api/DotNext.Net.Cluster.ICluster.yml) optional interface that extends `ICluster` and represents dynamically configurable cluster where the nodes can be added or removed on-the-fly. If actual implementation doesn't support this interface then cluster can be configured only statically - it is required to shutdown entire cluster if you want to add or remove nodes
+* [IExpandableCluster](../../api/DotNext.Net.Cluster.IExpandableCluster.yml) optional interface that extends `ICluster` and represents dynamically configurable cluster where the nodes can be added or removed on-the-fly. If actual implementation doesn't support this interface then cluster can be configured only statically - it is required to shutdown entire cluster if you want to add or remove nodes
 * [IMessageBus](../../api/DotNext.Net.Cluster.Messaging.IMessageBus.yml) optional interface provides message-based communication between nodes in  point-to-point manner
 * [IReplicationCluster](../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.yml) optional interface represents a cluster where its state can be replicated across nodes to ensure consistency between them. Replication functionality based on [audit trail](../../api/DotNext.Net.Cluster.Replication.IAuditTrail-1.yml). By default, design of replication infrastructure supports [Weak Consistency](https://en.wikipedia.org/wiki/Weak_consistency).
 
@@ -47,6 +47,14 @@ The consensus algorithm allows to choose exactly one leader node in the cluster.
 
 # Replication
 Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of [IAuditTrail](../../api/DotNext.Net.Cluster.Replication.IAuditTrail-1.yml) interface.
+
+[IReplicationCluster](../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.yml) contains special method `WriteAsync` that allows clustered application to submit changes and wait unit they are replicated and committed. The behavior of this method depends on the passed [WriteConcern](../../api/DotNext.Net.Cluster.Replication.WriteConcern.yml) value. It regulates when to return control back to the client:
+* _None_ indicates that control should be returned immediately after recording of changeset to the log. This mode doesn't provide any guarantees about consistency of the subsequent reads.
+* _LeaderOnly_ indicates that control should be returned after commit by leader node. It means that leader has replicated the changes across cluster and mark its local changes as committed. In case of Raft this mode means that changes are replicated to the majority of nodes but committed only by leader.
+* _Majority_ indicates that control should be returned to the caller when majority of nodes commit the changes.
+* _All_ indicates that control should be returned to the caller when all clusted nodes commit the changes.
+
+The current Raft implementation supports _None_ and _LeaderOnly_ write concerns only.
 
 # Implementations
 .NEXT offers extensions for ASP.NET Core which allow to build clustered microservices with the following features:
