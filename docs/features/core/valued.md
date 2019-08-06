@@ -81,3 +81,5 @@ The second `bool` parameter of Value Deleate constructor is not used because _pr
 
 > [!WARNING]
 > It is not recommended to create Value Delegates using lambda expression because C# compiler produces hidden closure even if nothing is captured from outer lexical scope. This closure is stored in _Target_ property of the delegate and force _proxy_ mode.
+
+Invocation of Value Delegate has approximately the same performance as regular .NET delegates. To verify that, check out [Benchmarks](../../benchmarks.md).

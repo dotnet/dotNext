@@ -14,7 +14,7 @@ The configuration of all benchmarks:
 | CPU | Intel Core i7-6700HQ CPU 2.60GHz (Skylake) |
 | Number of CPUs | 1 |
 | Physical Cores | 4 |
-| Logiccal Cores | 8 |
+| Logical Cores | 8 |
 | RAM | 24 GB |
 
 # Bitwise Equality
@@ -80,7 +80,7 @@ The next series of benchmarks demonstrate performance of strongly typed reflecti
 Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.
 
 ## Instance Method Call
-[This benchmarks](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/StringMethodReflectionBenchmark.cs) demonstrates overhead of calling instance method `IndexOf` of type **string** caused by different mechanisms:
+[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/StringMethodReflectionBenchmark.cs) demonstrates overhead of calling instance method `IndexOf` of type **string** caused by different mechanisms:
 1. Using strongly typed reflection from DotNext Reflection library: `Type<string>.Method<char, int>.Require<int>(nameof(string.IndexOf))`
 1. Using strongly typed reflection from DotNext Reflection library using special delegate type: `Type<string>.RequireMethod<(char, int), int>(nameof(string.IndexOf));`
 1. Using strongly typed reflection from DotNext Reflection library using special delegate type: `Function<object, (object, object), object>`. It is assumed that types of all parameters are not known at compile time.
@@ -109,13 +109,13 @@ The benchmark uses series of different strings to run the same set of tests. Wor
 DotNext Reflection library offers the best result in case when delegate type exactly matches to the reflected method with small overhead measured in a few nanoseconds.
 
 ## Static Method Call
-[This benchmarks](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/TryParseReflectionBenchmark.cs) demonstrates overhead of calling static method `TryParse` of type **decimal** caused by different mechanisms:
+[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/TryParseReflectionBenchmark.cs) demonstrates overhead of calling static method `TryParse` of type **decimal** caused by different mechanisms:
 1. Using strongly typed reflection from DotNext Reflection library: `Type<decimal>.Method.Get<TryParseDelegate>(nameof(decimal.TryParse), MethodLookup.Static)`. The delegate type exactly matches to the reflected method signature: `delegate bool TryParseDelegate(string text, out decimal result)`
 1. Using strongly typed reflection from DotNext Reflection library using special delegate type: `Function<(string text, decimal result), bool>`
 1. Using strongly typed reflection from DotNext Reflection library using special delegate type: `Function<(object text, object result), object>`. It is assumed that types of all parameters are not known at compile time.
 1. Classic .NET reflection
 
-| Method | Mean | Error | StdDev |
+| Method | Mean | Error | StdDev | Median |
 | ---- | ---- | ---- | ---- |
 | Direct call | 169.7 ns | 3.3878 ns | 5.6602 ns | 168.5 ns |
 | Reflection with DotNext using delegate type `TryParseDelegate` | 167.8 ns |  3.3781 ns | 6.0045 ns | 166.1 ns |
@@ -124,3 +124,30 @@ DotNext Reflection library offers the best result in case when delegate type exa
 | .NET reflection | 625.4 ns | 11.3603 ns | 9.4864 ns | 626.2 ns |
 
 Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.
+
+# Volatile Access to Arbitrary Value Type
+[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs) compares performance of [Atomic&lt;T&gt;](./api/DotNext.Threading.Atomic-1.yml) and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.
+
+| Method | Mean | Error | StdDev | Median |
+| ---- | ---- | ---- | ---- |
+| Atomic | 1.194 ms | 0.0245 ms | 0.2223 ms | 1.144 ms |
+| Synchronized | 1.502 ms | 0.288 ms | 0.2623 ms | 1.451 ms |
+
+# Value Delegate
+[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/FunctionPointerBenchmark.cs) compares performance of [Atomic&lt;T&gt;](./api/DotNext.Threading.Atomic-1.yml) and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.
+
+| Method | Mean | Error | StdDev | Median |
+| ---- | ---- | ---- | ---- |
+| Instance method, regular delegate, has implicit **this** | 2.747 ns | 0.0379 ns | 0.0336 ns | 2.741 ns |
+| Instance method, Value Delegate, has implicit **this** | 4.108 ns | 0.0652 ns | 0.0578 ns | 4.101 ns |
+| Static method, regular delegate, large size of param type, no implicitly captured object | 6.590 ns | 0.3193 ns | 0.9366 ns | 6.435 ns |
+| Static method, Value Delegate, large size of param type, no implicitly captured object | 17.790 ns | 0.5467 ns | 1.0268 ns | 17.582 ns |
+| Static method, regular delegate, small size of param type, no implicitly captured object | 85.961 ns | 1.7877 ns | 4.1076 ns | 84.270 ns |
+| Static method, Value Delegate, small size of param type, no implicitly captured object | 80.220 ns | 0.7253 ns | 0.6430 ns | 80.184 ns |
+
+_Large size of param type_ means that the type of the parameter is larger than 64 bit.
+
+Interpretation of benchmark results:
+* _Proxy_ mode of Value Delegate adds a small overhead in comparison with regular delegate
+* If the type of the parameter is less than or equal to the size of CPU register then Value Delegate offers the best performance
+* If the type of the parameter is greater than the size of CPU register then Value Delegate is slower than regular delegate
