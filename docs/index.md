@@ -16,9 +16,9 @@ Prerequisites:
 # DotNext
 <a href="https://www.nuget.org/packages/dotnext/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.svg?style=flat"></a><br/>
 This library is the core of .NEXT which extends .NET Standard API with
-  * Extension methods for .NET Standard types including generic collections
+  * Value Delegates as allocation-free and lightweight alternative to regular .NET delegates
   * Enum API to work with arbitrary **enum** types
-  * Thread-safe advanced atomic operations to work with **int**, **long**, **bool**, **double**, **float** and reference types
+  * Thread-safe advanced atomic operations to work with **int**, **long**, **bool**, **double**, **float**, **IntPtr*, arbitrary reference and value types
   * Unified representation of various synchronization primitives in the form of the lock
   * Generic specialization with constant values
   * Generation of random strings
@@ -43,8 +43,8 @@ This library provides a special types to work with unmanaged memory in type-safe
 * Unstructured access to unmanaged memory
 * Typed unmanaged array and list
 * CLS-compliant generic pointer type for .NET languages without direct support of such type. Use this feature to work with pointers from VB.NET or F#.
-* Volatile pointer operations
-* Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc.
+* Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc, volatile access
+* Calling unmanaged functions by pointer
 
 # DotNext.Threading
 <a href="https://www.nuget.org/packages/dotnext.threading/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.threading.svg?style=flat"></a><br/>
@@ -68,4 +68,4 @@ Provides basic framework for building [clustered microservices](https://en.wikip
 
 # DotNext.AspNetCore.Cluster
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?style=flat"></a><br/>
-Allows to build clustered microservices which rely on network consensus and distributed messaging with [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/) framework. This library contains HTTP-based implementation of Raft Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node and many other things.
+Allows to build clustered microservices which rely on network consensus and distributed messaging with [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/) framework. This library contains HTTP-based implementation of [Raft](https://raft.github.io/) Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node and many other things.
