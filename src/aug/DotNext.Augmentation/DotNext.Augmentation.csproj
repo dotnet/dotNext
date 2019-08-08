@@ -19,7 +19,8 @@
     <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>ILWeaving, Fody, Cecil, ValueDelegate</PackageTags>
-    <PackageReleaseNotes>Instantiation of ValueDelegates for static methods in the same fashion as regular .NET delegates</PackageReleaseNotes>
+    <PackageReleaseNotes>modopt and modreq injection
+Instantiation of ValueDelegates for static methods is supported in the same fashion as regular .NET delegates</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

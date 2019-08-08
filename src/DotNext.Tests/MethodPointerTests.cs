@@ -164,5 +164,13 @@ namespace DotNext
             True(converter.Invoke(-1));
             False(converter.Invoke(0));
         }
+
+        [Fact]
+        public static void AugmentedValueFuncConstruction()
+        {
+            var ptr = ValueFuncFactory.CreateSumFunction();
+            NotSame(ptr.ToDelegate(), ptr.ToDelegate());
+            Equal(42UL, ptr.Invoke(40UL, 2UL));
+        }
     }
 }

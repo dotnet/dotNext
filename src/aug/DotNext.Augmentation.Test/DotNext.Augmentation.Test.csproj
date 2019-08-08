@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>DotNext</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\DotNext\DotNext.csproj" />
+
+    <PackageReference Include="Fody" Version="5.1.1" PrivateAssets="all" />
+    <WeaverFiles Include="$(SolutionDir)aug\DotNext.Augmentation.Fody\bin\$(Configuration)\netstandard2.0\DotNext.Augmentation.Fody.dll" />
+  </ItemGroup>
+
+</Project>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -70,6 +71,7 @@ namespace DotNext
         /// </summary>
         /// <param name="methodPtr">The pointer to the static managed method.</param>
         [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;
@@ -238,6 +240,7 @@ namespace DotNext
         /// </summary>
         /// <param name="methodPtr">The pointer to the static managed method.</param>
         [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             func = null;
@@ -449,6 +452,7 @@ namespace DotNext
         /// </summary>
         /// <param name="methodPtr">The pointer to the static managed method.</param>
         [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             func = null;
@@ -640,6 +644,7 @@ namespace DotNext
         /// </summary>
         /// <param name="methodPtr">The pointer to the static managed method.</param>
         [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;
@@ -824,6 +829,7 @@ namespace DotNext
         /// </summary>
         /// <param name="methodPtr">The pointer to the static managed method.</param>
         [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             func = null;
@@ -1007,6 +1013,7 @@ namespace DotNext
         /// </summary>
         /// <param name="methodPtr">The pointer to the static managed method.</param>
         [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;
@@ -1195,6 +1202,7 @@ namespace DotNext
         /// </summary>
         /// <param name="methodPtr">The pointer to the static managed method.</param>
         [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             func = null;
@@ -1382,6 +1390,7 @@ namespace DotNext
         /// </summary>
         /// <param name="methodPtr">The pointer to the static managed method.</param>
         [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;
@@ -1574,6 +1583,7 @@ namespace DotNext
         /// </summary>
         /// <param name="methodPtr">The pointer to the static managed method.</param>
         [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             func = null;
@@ -1765,6 +1775,7 @@ namespace DotNext
         /// </summary>
         /// <param name="methodPtr">The pointer to the static managed method.</param>
         [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;
@@ -1957,6 +1968,7 @@ namespace DotNext
         /// </summary>
         /// <param name="methodPtr">The pointer to the static managed method.</param>
         [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             func = null;
@@ -2148,6 +2160,7 @@ namespace DotNext
         /// </summary>
         /// <param name="methodPtr">The pointer to the static managed method.</param>
         [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;

@@ -1,5 +1,6 @@
 ﻿using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Rocks;
 using static System.Reflection.ConstructorInfo;
 
 namespace DotNext.Runtime.CompilerServices
@@ -9,8 +10,12 @@ namespace DotNext.Runtime.CompilerServices
         private const string Namespace = "DotNext";
         private const string ValueActionType = "ValueAction";
         private const string ValueFuncType = "ValueFunc";
+        private const string ManagedMethodPointerType = Namespace + ".Runtime.CompilerServices.ManagedMethodPointer";
 
-        private static void ReplaceValueDelegateConstruction(ILProcessor processor, TypeReference delegateType, Instruction instruction)
+        private static TypeReference Import(this ILProcessor processor, TypeReference typeRef)
+            => processor.Body.Method.Module.ImportReference(typeRef);
+
+        private static void ReplaceValueDelegateConstruction(ILProcessor processor, TypeReference delegateType, Instruction instruction, Fody.TypeSystem typeLoader)
         {
             /*
              * ldnull
@@ -42,21 +47,22 @@ namespace DotNext.Runtime.CompilerServices
             processor.Remove(loadNull);
             processor.Remove(newDelegate);
             processor.Remove(loadFalse);
-            //replace ValueDelegate constructor with specialized version
-            foreach (var ctor in delegateType.Resolve().Methods)
-                if (ctor.Name == ConstructorName && ctor.Parameters.Count == 1 && ctor.Parameters[0].ParameterType.IsRequiredModifier)
-                {
-                    processor.Replace(instruction, Instruction.Create(instruction.OpCode, processor.Body.Method.Module.ImportReference(ctor)));
-                    break;
-                }
+            //replace ValueDelegate constructor with its specialized version
+            var ctor = new MethodReference(ConstructorName, typeLoader.VoidReference, delegateType)
+            {
+                HasThis = true
+            };
+            var modreq = processor.Import(delegateType.Resolve().Module.GetType(ManagedMethodPointerType));
+            modreq = typeLoader.IntPtrReference.MakeRequiredModifierType(modreq);
+            ctor.Parameters.Add(new ParameterDefinition(modreq));
+            processor.Replace(instruction, Instruction.Create(instruction.OpCode, ctor));
         }
 
-        internal static void Process(MethodBody body)
+        internal static void Process(MethodBody body, Fody.TypeSystem typeLoader)
         {
             for (var instruction = body.Instructions[0]; instruction != null; instruction = instruction.Next)
                 if (instruction.OpCode.FlowControl == FlowControl.Call && instruction.Operand is MethodReference methodRef && methodRef.DeclaringType.Namespace == Namespace && methodRef.DeclaringType.IsValueType && methodRef.Name == ConstructorName && methodRef.Parameters.Count == 2 && (methodRef.DeclaringType.Name.StartsWith(ValueFuncType) || methodRef.DeclaringType.Name.StartsWith(ValueActionType)))
-                    ReplaceValueDelegateConstruction(body.GetILProcessor(), methodRef.DeclaringType, instruction);
-                    
+                    ReplaceValueDelegateConstruction(body.GetILProcessor(), methodRef.DeclaringType, instruction, typeLoader);
         }
     }
 }

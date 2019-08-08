@@ -8,8 +8,6 @@ namespace DotNext.Runtime.CompilerServices
 {
     public sealed class ModuleWeaver : BaseModuleWeaver
     {
-        private const string CompilerServicesAssembly = "DotNext.Runtime.CompilerServices";
-
         private static void ProcessModifier<TWeaver>(TWeaver weaver, Collection<CustomAttribute> attributes)
             where TWeaver : struct, IModifierWeaver
         {
@@ -38,23 +36,11 @@ namespace DotNext.Runtime.CompilerServices
                 foreach (var method in type.Methods)
                 {
                     if (!method.IsInternalCall && method.Body != null)
-                        ValueDelegateWeaver.Process(method.Body);
+                        ValueDelegateWeaver.Process(method.Body, new Fody.TypeSystem(FindType, ModuleDefinition));
                     foreach (var param in method.Parameters)
                         ProcessModifier(new ParameterModifierWeaver(param), param.CustomAttributes);
                     ProcessModifier(new ReturnTypeModifierWeaver(method.MethodReturnType), method.MethodReturnType.CustomAttributes);
                 }
-            }
-            //remove references to the library
-            var removedReferences = new LinkedList<AssemblyNameReference>();
-            foreach (var reference in ModuleDefinition.AssemblyReferences)
-                if (reference.Name == CompilerServicesAssembly)
-                    removedReferences.AddLast(reference);
-            foreach (var removedRef in removedReferences)
-            {
-                ModuleDefinition.AssemblyReferences.Remove(removedRef);
-                ReferenceCopyLocalPaths.Remove(removedRef.Name + ".dll");
-                ReferenceCopyLocalPaths.Remove(removedRef.Name + ".xml");
-                ReferenceCopyLocalPaths.Remove(removedRef.Name + ".pdb");
             }
         }
 
@@ -62,7 +48,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             yield return "netstandard";
             yield return "mscorlib";
-            yield return "DotNext";
+            yield return "DotNext.dll";
         }
     }
 }

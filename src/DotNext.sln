@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Augmentation", "aug
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Augmentation.Fody", "aug\DotNext.Augmentation.Fody\DotNext.Augmentation.Fody.csproj", "{3A488042-F09F-4D43-88A8-259B06D7377F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNext.Augmentation.Test", "aug\DotNext.Augmentation.Test\DotNext.Augmentation.Test.csproj", "{E1DA704A-3BE6-4328-893B-5ACF536AEE36}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,10 @@ Global
 		{3A488042-F09F-4D43-88A8-259B06D7377F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A488042-F09F-4D43-88A8-259B06D7377F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A488042-F09F-4D43-88A8-259B06D7377F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1DA704A-3BE6-4328-893B-5ACF536AEE36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1DA704A-3BE6-4328-893B-5ACF536AEE36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1DA704A-3BE6-4328-893B-5ACF536AEE36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1DA704A-3BE6-4328-893B-5ACF536AEE36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
