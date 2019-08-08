@@ -12,10 +12,19 @@ namespace DotNext.Runtime.CompilerServices
         private const string ValueFuncType = "ValueFunc";
         private const string ManagedMethodPointerType = Namespace + ".Runtime.CompilerServices.ManagedMethodPointer";
 
-        private static TypeReference Import(this ILProcessor processor, TypeReference typeRef)
-            => processor.Body.Method.Module.ImportReference(typeRef);
+        private static MethodReference Rewrite(ModuleDefinition module, MethodReference ctor, Fody.TypeSystem typeLoader)
+        {
+            var result = new MethodReference(ctor.Name, ctor.ReturnType, ctor.DeclaringType)
+            {
+                HasThis = ctor.HasThis
+            };
+            var modreq = module.ImportReference(ctor.Resolve().Module.GetType(ManagedMethodPointerType));
+            modreq = typeLoader.IntPtrReference.MakeRequiredModifierType(modreq);
+            result.Parameters.Add(new ParameterDefinition(modreq));
+            return result;
+        }
 
-        private static void ReplaceValueDelegateConstruction(ILProcessor processor, TypeReference delegateType, Instruction instruction, Fody.TypeSystem typeLoader)
+        private static void ReplaceValueDelegateConstruction(ILProcessor processor, MethodReference ctor, Instruction instruction, Fody.TypeSystem typeLoader)
         {
             /*
              * ldnull
@@ -48,13 +57,7 @@ namespace DotNext.Runtime.CompilerServices
             processor.Remove(newDelegate);
             processor.Remove(loadFalse);
             //replace ValueDelegate constructor with its specialized version
-            var ctor = new MethodReference(ConstructorName, typeLoader.VoidReference, delegateType)
-            {
-                HasThis = true
-            };
-            var modreq = processor.Import(delegateType.Resolve().Module.GetType(ManagedMethodPointerType));
-            modreq = typeLoader.IntPtrReference.MakeRequiredModifierType(modreq);
-            ctor.Parameters.Add(new ParameterDefinition(modreq));
+            ctor = Rewrite(processor.Body.Method.Module, ctor, typeLoader);
             processor.Replace(instruction, Instruction.Create(instruction.OpCode, ctor));
         }
 
@@ -62,7 +65,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             for (var instruction = body.Instructions[0]; instruction != null; instruction = instruction.Next)
                 if (instruction.OpCode.FlowControl == FlowControl.Call && instruction.Operand is MethodReference methodRef && methodRef.DeclaringType.Namespace == Namespace && methodRef.DeclaringType.IsValueType && methodRef.Name == ConstructorName && methodRef.Parameters.Count == 2 && (methodRef.DeclaringType.Name.StartsWith(ValueFuncType) || methodRef.DeclaringType.Name.StartsWith(ValueActionType)))
-                    ReplaceValueDelegateConstruction(body.GetILProcessor(), methodRef.DeclaringType, instruction, typeLoader);
+                    ReplaceValueDelegateConstruction(body.GetILProcessor(), methodRef, instruction, typeLoader);
         }
     }
 }

@@ -81,7 +81,7 @@ namespace DotNext.Runtime.InteropServices
         public unsafe static void BitwiseEqualityForLong()
         {
             var value1 = 10L;
-            var value2 = 20L;
+            var value2 = 20L;   
             False(Memory.Equals(&value1, &value2, sizeof(long)));
             value2 = 10;
             True(Memory.Equals(&value1, &value2, sizeof(long)));
