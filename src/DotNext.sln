@@ -23,7 +23,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Net.Cluster", "clus
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.AspNetCore.Cluster", "cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj", "{D9A4D7A3-A948-465A-B679-546411DC885D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaftNode", "examples\RaftNode\RaftNode.csproj", "{EF588447-3DB4-4719-A9FB-210C21035C65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaftNode", "examples\RaftNode\RaftNode.csproj", "{EF588447-3DB4-4719-A9FB-210C21035C65}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Augmentation", "aug\DotNext.Augmentation\DotNext.Augmentation.csproj", "{EA43BB33-55A2-4C3E-821D-2D5FCB7AFA05}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3A488042-F09F-4D43-88A8-259B06D7377F} = {3A488042-F09F-4D43-88A8-259B06D7377F}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Augmentation.Fody", "aug\DotNext.Augmentation.Fody\DotNext.Augmentation.Fody.csproj", "{3A488042-F09F-4D43-88A8-259B06D7377F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +82,14 @@ Global
 		{EF588447-3DB4-4719-A9FB-210C21035C65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF588447-3DB4-4719-A9FB-210C21035C65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF588447-3DB4-4719-A9FB-210C21035C65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA43BB33-55A2-4C3E-821D-2D5FCB7AFA05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA43BB33-55A2-4C3E-821D-2D5FCB7AFA05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA43BB33-55A2-4C3E-821D-2D5FCB7AFA05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA43BB33-55A2-4C3E-821D-2D5FCB7AFA05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A488042-F09F-4D43-88A8-259B06D7377F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A488042-F09F-4D43-88A8-259B06D7377F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A488042-F09F-4D43-88A8-259B06D7377F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A488042-F09F-4D43-88A8-259B06D7377F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

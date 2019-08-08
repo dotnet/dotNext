@@ -10,6 +10,8 @@ using TR = InlineIL.TypeRef;
 
 namespace DotNext
 {
+    using Runtime.CompilerServices;
+
     /// <summary>
     /// Represents a pointer to parameterless method with <see cref="void"/> return type.
     /// </summary>
@@ -61,6 +63,17 @@ namespace DotNext
                 this.action = null;
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
             }
+        }
+
+        /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
+        {
+            action = null;
+            this.methodPtr = methodPtr;
         }
 
         /// <summary>
@@ -220,10 +233,15 @@ namespace DotNext
             }
         }
 
-        private ValueFunc(IntPtr methodPtr)
+        /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
-            this.methodPtr = methodPtr;
             func = null;
+            this.methodPtr = methodPtr;
         }
 
         private static R CreateDefault() => default;
@@ -246,10 +264,9 @@ namespace DotNext
 
                 Call(M.PropertyGet(typeof(ValueFunc<R>), nameof(DefaultValueProvider)));
                 Ret();
-
                 MarkLabel(HandleRefType);
                 Ldftn(new M(typeof(Activator), nameof(System.Activator.CreateInstance), Array.Empty<TR>()).MakeGenericMethod(typeof(R)));
-                Newobj(M.Constructor(typeof(ValueFunc<R>), typeof(IntPtr)));
+                Newobj(M.Constructor(typeof(ValueFunc<R>), new TR(typeof(IntPtr)).WithRequiredModifier(typeof(ManagedMethodPointer))));
                 return Return<ValueFunc<R>>();
             }
         }
@@ -264,7 +281,7 @@ namespace DotNext
             get
             {
                 Ldftn(new M(typeof(ValueFunc<R>), nameof(CreateDefault)));
-                Newobj(M.Constructor(typeof(ValueFunc<R>), typeof(IntPtr)));
+                Newobj(M.Constructor(typeof(ValueFunc<R>), new TR(typeof(IntPtr)).WithRequiredModifier(typeof(ManagedMethodPointer))));
                 return Return<ValueFunc<R>>();
             }
         }
@@ -425,6 +442,18 @@ namespace DotNext
                 methodPtr = func.Method.MethodHandle.GetFunctionPointer();
                 isStatic = func.Method.IsStatic;
             }
+        }
+
+        /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
+        {
+            func = null;
+            this.methodPtr = methodPtr;
+            isStatic = true;
         }
 
         private Converter<T, R> ToConverter() => Unsafe.As<Converter<T, R>>(ToDelegate());
@@ -607,6 +636,18 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
+        {
+            action = null;
+            this.methodPtr = methodPtr;
+            isStatic = true;
+        }
+
+        /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => action?.Target;
@@ -778,10 +819,15 @@ namespace DotNext
             }
         }
 
-        internal ValueFunc(IntPtr methodPtr)
+        /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
-            this.methodPtr = methodPtr;
             func = null;
+            this.methodPtr = methodPtr;
             isStatic = true;
         }
 
@@ -954,6 +1000,18 @@ namespace DotNext
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
                 isStatic = action.Method.IsStatic;
             }
+        }
+
+        /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
+        {
+            action = null;
+            this.methodPtr = methodPtr;
+            isStatic = true;
         }
 
         /// <summary>
@@ -1133,6 +1191,18 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
+        {
+            func = null;
+            this.methodPtr = methodPtr;
+            isStatic = true;
+        }
+
+        /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => func?.Target;
@@ -1305,6 +1375,18 @@ namespace DotNext
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
                 isStatic = action.Method.IsStatic;
             }
+        }
+
+        /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
+        {
+            action = null;
+            this.methodPtr = methodPtr;
+            isStatic = true;
         }
 
         /// <summary>
@@ -1488,6 +1570,18 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
+        {
+            func = null;
+            this.methodPtr = methodPtr;
+            isStatic = true;
+        }
+
+        /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => func?.Target;
@@ -1664,6 +1758,18 @@ namespace DotNext
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
                 isStatic = action.Method.IsStatic;
             }
+        }
+
+        /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
+        {
+            action = null;
+            this.methodPtr = methodPtr;
+            isStatic = true;
         }
 
         /// <summary>
@@ -1847,6 +1953,18 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
+        {
+            func = null;
+            this.methodPtr = methodPtr;
+            isStatic = true;
+        }
+
+        /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => func?.Target;
@@ -2023,6 +2141,18 @@ namespace DotNext
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
                 isStatic = action.Method.IsStatic;
             }
+        }
+
+        /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
+        {
+            action = null;
+            this.methodPtr = methodPtr;
+            isStatic = true;
         }
 
         /// <summary>

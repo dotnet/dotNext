@@ -60,6 +60,13 @@ namespace DotNext
         }
 
         [Fact]
+        public static void PointerWithTarget()
+        {
+            var ptr = new ValueFunc<StringComparison, int>("Hello, world".GetHashCode);
+            NotEqual(0, ptr.Invoke(StringComparison.OrdinalIgnoreCase));
+        }
+
+        [Fact]
         public void ParameterlessPointer()
         {
             var ptr = new ValueFunc<object>(GetType().GetMethod(nameof(CreateObject), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic));

@@ -8,6 +8,7 @@ using M = InlineIL.MethodRef;
 
 namespace DotNext.Runtime.InteropServices
 {
+    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
     using typedref = TypedReference;    //IL compliant alias to TypedReference
 
     /// <summary>
@@ -25,9 +26,7 @@ namespace DotNext.Runtime.InteropServices
             internal const int Offset = unchecked((int)2166136261);
             private const int Prime = 16777619;
 
-            private static int GetHashCode(int hash, int data) => (hash ^ data) * Prime;
-
-            internal static readonly ValueFunc<int, int, int> Func = new ValueFunc<int, int, int>(GetHashCode);
+            internal static int GetHashCode(int hash, int data) => (hash ^ data) * Prime;
         }
 
         private static class FNV1a64
@@ -35,9 +34,7 @@ namespace DotNext.Runtime.InteropServices
             internal const long Offset = unchecked((long)14695981039346656037);
             private const long Prime = 1099511628211;
 
-            private static long GetHashCode(long hash, long data) => (hash ^ data) * Prime;
-
-            internal static readonly ValueFunc<long, long, long> Func = new ValueFunc<long, long, long>(GetHashCode);
+            internal static long GetHashCode(long hash, long data) => (hash ^ data) * Prime;
         }
 
         /// <summary>
@@ -258,8 +255,9 @@ namespace DotNext.Runtime.InteropServices
         /// </remarks>
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
+        [RuntimeFeatures(Augmentation = true)]
         public static long GetHashCode64(IntPtr source, long length, bool salted = true)
-            => GetHashCode64(source, length, FNV1a64.Offset, FNV1a64.Func, salted);
+            => GetHashCode64(source, length, FNV1a64.Offset, new ValueFunc<long, long, long>(FNV1a64.GetHashCode), salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory.
@@ -376,11 +374,13 @@ namespace DotNext.Runtime.InteropServices
         /// </remarks>
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
+        [RuntimeFeatures(Augmentation = true)]
         public static int GetHashCode32(IntPtr source, long length, bool salted = true)
-            => GetHashCode32(source, length, FNV1a32.Offset, FNV1a32.Func, salted);
+            => GetHashCode32(source, length, FNV1a32.Offset, new ValueFunc<int, int, int>(FNV1a32.GetHashCode), salted);
 
+        [RuntimeFeatures(Augmentation = true)]
         internal static int GetHashCode32Aligned(IntPtr source, long length, bool salted)
-            => GetHashCode32Aligned(source, length, FNV1a32.Offset, FNV1a32.Func, salted);
+            => GetHashCode32Aligned(source, length, FNV1a32.Offset, new ValueFunc<int, int, int>(FNV1a32.GetHashCode), salted);
 
         internal static int GetHashCode32Aligned(IntPtr source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
         {
@@ -397,8 +397,9 @@ namespace DotNext.Runtime.InteropServices
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
+        [RuntimeFeatures(Augmentation = true)]
         internal static long GetHashCode64Aligned(IntPtr source, long length, bool salted)
-            => GetHashCode64Aligned(source, length, FNV1a64.Offset, FNV1a64.Func, salted);
+            => GetHashCode64Aligned(source, length, FNV1a64.Offset, new ValueFunc<long, long, long>(FNV1a64.GetHashCode), salted);
 
         internal static long GetHashCode64Aligned(IntPtr source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
         {
