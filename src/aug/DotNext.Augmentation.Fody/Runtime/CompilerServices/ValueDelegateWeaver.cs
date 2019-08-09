@@ -24,6 +24,19 @@ namespace DotNext.Runtime.CompilerServices
             return result;
         }
 
+        private static SequencePoint FindSequencePoint(MethodDebugInformation debugInfo, Instruction instr)
+        {
+            while(instr != null)
+            {
+                var sp = debugInfo.GetSequencePoint(instr);
+                if (sp is null)
+                    instr = instr.Previous;
+                else
+                    return sp;
+            }
+            return null;
+        }
+
         private static void ReplaceValueDelegateConstruction(ILProcessor processor, MethodReference ctor, Instruction instruction, Fody.TypeSystem typeLoader)
         {
             /*
@@ -33,6 +46,9 @@ namespace DotNext.Runtime.CompilerServices
              * ldc_i4_0
              * newobj ValueDelegate::.ctor(<DelegateType>, bool)
              */
+            //find sequence point for mapping
+            var debugInfo = processor.Body.Method.DebugInformation;
+            var sequencePoint = FindSequencePoint(debugInfo, instruction);
             //ldc_i4_0
             var loadFalse = instruction.Previous;
             if (loadFalse is null || loadFalse.OpCode.Code != Code.Ldc_I4_0)
@@ -58,7 +74,11 @@ namespace DotNext.Runtime.CompilerServices
             processor.Remove(loadFalse);
             //replace ValueDelegate constructor with its specialized version
             ctor = Rewrite(processor.Body.Method.Module, ctor, typeLoader);
-            processor.Replace(instruction, Instruction.Create(instruction.OpCode, ctor));
+            var newInstruction = Instruction.Create(instruction.OpCode, ctor);
+            processor.Replace(instruction, newInstruction);
+            //remap sequence points
+            if (sequencePoint != null && debugInfo.SequencePoints.Count == 0)
+                debugInfo.SequencePoints.Add(sequencePoint);
         }
 
         internal static void Process(MethodBody body, Fody.TypeSystem typeLoader)

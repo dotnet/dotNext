@@ -51,7 +51,7 @@ TypedReference can be converted into managed pointer (type T&amp;, or ref T) usi
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
     <PackageReference Include="System.Buffers" Version="4.5.0" />
     <PackageReference Include="Fody" Version="5.1.1" PrivateAssets="all" />
-    <PackageReference Include="DotNext.Augmentation.Fody" Version="0.12.1" PrivateAssets="all" />
+    <PackageReference Include="DotNext.Augmentation.Fody" Version="0.12.2" PrivateAssets="all" />
     <PackageReference Include="InlineIL.Fody" Version="1.2.0" PrivateAssets="all" />
   </ItemGroup>
 
