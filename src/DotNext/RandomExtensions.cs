@@ -10,7 +10,7 @@ using CallSiteDescr = InlineIL.StandAloneMethodSig;
 
 namespace DotNext
 {
-    using funcptr = IntPtr;
+    using funcptr = Runtime.CompilerServices.ManagedMethodPointer;
 
     /// <summary>
     /// Provides random data generation.
@@ -39,18 +39,6 @@ namespace DotNext
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe void NextString<TSource>(funcptr generator, TSource source, Span<char> buffer, ReadOnlySpan<char> allowedChars)
-            where TSource : class
-        {
-            Push(source);
-            Ldarg(nameof(buffer));
-            Ldarg(nameof(allowedChars));
-            Push(generator);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(TSource), typeof(Span<char>), typeof(ReadOnlySpan<char>)));
-            Ret();
-        }
-
         private static unsafe string NextString<TSource>(funcptr generator, TSource source, ReadOnlySpan<char> allowedChars, int length)
             where TSource : class
         {
@@ -62,7 +50,7 @@ namespace DotNext
             const short smallStringLength = 1024;
             //use stack allocation for small strings, which is 99% of all use cases
             Span<char> result = length <= smallStringLength ? stackalloc char[length] : new char[length];
-            NextString(generator, source, result, allowedChars);
+            generator.InvokeStaticVoid(source, result, allowedChars);
             fixed (char* ptr = result)
                 return new string(ptr, 0, length);
         }
@@ -78,6 +66,7 @@ namespace DotNext
         public static string NextString(this Random random, ReadOnlySpan<char> allowedChars, int length)
         {
             Ldftn(new M(typeof(RandomExtensions), nameof(NextString), typeof(Random), typeof(Span<char>), typeof(ReadOnlySpan<char>)));
+            Newobj(M.Constructor(typeof(funcptr), typeof(IntPtr)));
             Push(random);
             Ldarg(nameof(allowedChars));
             Push(length);
@@ -118,6 +107,7 @@ namespace DotNext
         public static string NextString(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
         {
             Ldftn(new M(typeof(RandomExtensions), nameof(NextString), typeof(RandomNumberGenerator), typeof(Span<char>), typeof(ReadOnlySpan<char>)));
+            Newobj(M.Constructor(typeof(funcptr), typeof(IntPtr)));
             Push(random);           
             Ldarg(nameof(allowedChars));
             Push(length);

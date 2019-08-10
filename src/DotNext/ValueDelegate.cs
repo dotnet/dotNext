@@ -73,6 +73,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;
@@ -243,6 +244,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             func = null;
@@ -456,6 +458,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             func = null;
@@ -463,7 +466,20 @@ namespace DotNext
             isStatic = true;
         }
 
-        private Converter<T, R> ToConverter() => Unsafe.As<Converter<T, R>>(ToDelegate());
+        private Converter<T, R> ToConverter()
+        {
+            const string returnDelegate = "delegate";
+            Push(func);
+            Push(methodPtr);
+            Dup();
+            Brfalse(returnDelegate);
+            Newobj(M.Constructor(typeof(Converter<T, R>), typeof(object), typeof(IntPtr)));
+            Ret();
+
+            MarkLabel(returnDelegate);
+            Pop();
+            return Return<Converter<T, R>>();
+        }
 
         Converter<T, R> ICallable<Converter<T, R>>.ToDelegate() => ToConverter();
 
@@ -649,6 +665,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;
@@ -835,6 +852,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             func = null;
@@ -1020,6 +1038,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;
@@ -1210,6 +1229,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             func = null;
@@ -1399,6 +1419,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;
@@ -1593,6 +1614,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             func = null;
@@ -1786,6 +1808,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;
@@ -1980,6 +2003,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             func = null;
@@ -2173,6 +2197,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;
@@ -2370,6 +2395,7 @@ namespace DotNext
         [RuntimeFeatures(Augmentation = true)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
         public ValueRefAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
         {
             action = null;
