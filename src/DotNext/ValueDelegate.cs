@@ -2304,4 +2304,193 @@ namespace DotNext
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in ValueAction<T1, T2, T3, T4, T5> first, in ValueAction<T1, T2, T3, T4, T5> second) => !first.Equals(second);
     }
+
+    /// <summary>
+    /// Represents action that accepts arbitrary value by reference.
+    /// </summary>
+    /// <remarks>
+    /// This method pointer is intended to call managed methods only.
+    /// </remarks>
+    /// <typeparam name="T">The type of the object to be passed by reference into the action.</typeparam>
+    /// <typeparam name="TArgs">The type of the arguments to be passed into the action.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
+    public readonly struct ValueRefAction<T, TArgs> : ICallable<RefAction<T, TArgs>>, IEquatable<ValueRefAction<T, TArgs>>
+    {
+        private readonly IntPtr methodPtr;
+        private readonly bool isStatic;
+        private readonly RefAction<T, TArgs> action;
+
+        /// <summary>
+        /// Initializes a new pointer to the method.
+        /// </summary>
+        /// <remarks>
+        /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
+        /// with the delegate type.
+        /// </remarks>
+        /// <param name="method">The method to convert into pointer.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">Signature of <paramref name="method"/> doesn't match to this pointer type.</exception>
+        public ValueRefAction(MethodInfo method)
+            : this(method.CreateDelegate<RefAction<T, TArgs>>())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new pointer based on extracted pointer from the delegate.
+        /// </summary>
+        /// <remarks>
+        /// You can use this constructor to create value delegate once and cache it using <c>static readonly</c> field
+        /// for subsequent calls.
+        /// </remarks>
+        /// <param name="action">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="action"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
+        public ValueRefAction(RefAction<T, TArgs> action, bool wrap = false)
+        {
+            if (action is null)
+                throw new ArgumentNullException(nameof(action));
+            if (wrap || action.Method.IsAbstract || action.Target != null)
+            {
+                this.action = action;
+                methodPtr = default;
+                isStatic = default;
+            }
+            else
+            {
+                this.action = null;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
+                isStatic = action.Method.IsStatic;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ValueRefAction([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
+        {
+            action = null;
+            this.methodPtr = methodPtr;
+            isStatic = true;
+        }
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => action?.Target;
+
+        /// <summary>
+        /// Converts this pointer into <see cref="Action{T1,T2}"/>.
+        /// </summary>
+        /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
+        public RefAction<T, TArgs> ToDelegate()
+        {
+            const string returnDelegate = "delegate";
+            Push(action);
+            Push(methodPtr);
+            Dup();
+            Brfalse(returnDelegate);
+            Newobj(M.Constructor(typeof(RefAction<T, TArgs>), typeof(object), typeof(IntPtr)));
+            Ret();
+
+            MarkLabel(returnDelegate);
+            Pop();
+            return Return<RefAction<T, TArgs>>();
+        }
+
+        /// <summary>
+        /// Invokes method by pointer.
+        /// </summary>
+        /// <param name="reference">The object passed by reference.</param>
+        /// <param name="args">The action arguments.</param>
+        public void Invoke(ref T reference, TArgs args)
+        {
+            const string callDelegate = "delegate";
+            const string callInstance = "instance";
+            Push(methodPtr);
+            Brfalse(callDelegate);
+
+            Push(ref reference);
+            Push(args);
+            Push(methodPtr);
+            Push(isStatic);
+
+            Brfalse(callInstance);
+            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), new TR(typeof(T)).MakeByRefType(), typeof(TArgs)));
+            Ret();
+
+            MarkLabel(callInstance);
+            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(TArgs)));
+            Ret();
+
+            MarkLabel(callDelegate);
+            Push(action);
+            Push(ref reference);
+            Push(args);
+            Callvirt(new M(typeof(RefAction<T, TArgs>), nameof(Invoke)));
+            Ret();
+        }
+
+        object ICallable.DynamicInvoke(params object[] args)
+        {
+            var reference = (T)args[0];
+            Invoke(ref reference, (TArgs)args[1]);
+            return null;
+        }
+
+        /// <summary>
+        /// Converts this pointer into <see cref="RefAction{T, TArgs}"/>.
+        /// </summary>
+        /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The delegate created from this method pointer.</returns>
+        public static explicit operator RefAction<T, TArgs>(in ValueRefAction<T, TArgs> pointer) => pointer.ToDelegate();
+
+        /// <summary>
+        /// Computes hash code of this pointer.
+        /// </summary>
+        /// <returns>The hash code of this pointer.</returns>
+        public override int GetHashCode() => action?.GetHashCode() ?? methodPtr.GetHashCode();
+
+        bool IEquatable<ValueRefAction<T, TArgs>>.Equals(ValueRefAction<T, TArgs> other) => Equals(other);
+
+        /// <summary>
+        /// Determines whether this object points to the same method as other object.
+        /// </summary>
+        /// <param name="other">The pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        [CLSCompliant(false)]
+        public bool Equals(in ValueRefAction<T, TArgs> other) => methodPtr == other.methodPtr && Equals(action, other.action);
+
+        /// <summary>
+        /// Determines whether this object points to the same method as other object.
+        /// </summary>
+        /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object other) => other is ValueRefAction<T, TArgs> action && action.Equals(action);
+
+        /// <summary>
+        /// Obtains pointer value in HEX format.
+        /// </summary>
+        /// <returns>The address represented by pointer.</returns>
+        public override string ToString() => action?.ToString() ?? methodPtr.ToString("X");
+
+        /// <summary>
+        /// Determines whether the pointers represent the same method.
+        /// </summary>
+        /// <param name="first">The first pointer to compare.</param>
+        /// <param name="second">The second pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(in ValueRefAction<T, TArgs> first, in ValueAction<T, TArgs> second) => first.Equals(second);
+
+        /// <summary>
+        /// Determines whether the pointers represent different methods.
+        /// </summary>
+        /// <param name="first">The first pointer to compare.</param>
+        /// <param name="second">The second pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(in ValueRefAction<T, TArgs> first, in ValueAction<T, TArgs> second) => !first.Equals(second);
+    }
 }
