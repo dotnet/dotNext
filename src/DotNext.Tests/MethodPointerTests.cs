@@ -49,7 +49,7 @@ namespace DotNext
             var ptr = new ValueFunc<string>(method.CreateDelegate<Func<string>>(obj));
             Equal("123123", ptr.Invoke());
         }
-        
+
         [Fact]
         public static void ParameterlessPointerWithTarget()
         {

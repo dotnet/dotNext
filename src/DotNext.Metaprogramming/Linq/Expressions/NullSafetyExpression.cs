@@ -15,10 +15,10 @@ namespace DotNext.Linq.Expressions
         internal NullSafetyExpression(Expression target)
         {
             //TODO: expr.Type.IsByRefLike check should be there in .NET Standard 2.1
-            if(target.Type.IsPointer)
+            if (target.Type.IsPointer)
                 throw new NotSupportedException(ExceptionMessages.UnsupportedSafeNavigationType(target.Type));
             alwaysNotNull = target.Type.IsValueType && Nullable.GetUnderlyingType(target.Type) is null && Optional.GetUnderlyingType(target.Type) is null;
-            if(target is ParameterExpression variable)
+            if (target is ParameterExpression variable)
             {
                 assignment = null;
                 Target = variable;
@@ -55,7 +55,7 @@ namespace DotNext.Linq.Expressions
         {
             get => body ?? Empty();
             internal set => body = value;
-        }        
+        }
 
         /// <summary>
         /// Always returns <see langword="true"/> because
@@ -98,11 +98,11 @@ namespace DotNext.Linq.Expressions
         public override Expression Reduce()
         {
             //fast path, Target is value type that cannot be null
-            if(alwaysNotNull)
+            if (alwaysNotNull)
                 return Body;
             var body = Body.Type.IsValueType ? Convert(Body, Type) : Body;
             Expression conditional = Condition(Target.IsNotNull(), body, Default(body.Type));
-            return assignment is null ? 
+            return assignment is null ?
                 conditional :
                 Block(body.Type, Sequence.Singleton(Target), assignment, conditional);
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Linq;
 
 namespace DotNext.Reflection
 {
@@ -92,27 +91,27 @@ namespace DotNext.Reflection
         /// <returns>The method that overrides <paramref name="abstractMethod"/>.</returns>
         public static MethodInfo Devirtualize(this Type type, MethodInfo abstractMethod)
         {
-            if(abstractMethod.IsFinal || !abstractMethod.IsVirtual)
+            if (abstractMethod.IsFinal || !abstractMethod.IsVirtual)
                 return abstractMethod;
-            if(type.IsInterface)
+            if (type.IsInterface)
                 goto exit;
-            if(abstractMethod.DeclaringType.IsInterface && abstractMethod.DeclaringType.IsAssignableFrom(type))
+            if (abstractMethod.DeclaringType.IsInterface && abstractMethod.DeclaringType.IsAssignableFrom(type))
             {
                 //Interface maps for generic interfaces on arrays cannot be retrieved.
-                if(type.IsArray && abstractMethod.DeclaringType.IsGenericType)   
-                    goto exit;  
+                if (type.IsArray && abstractMethod.DeclaringType.IsGenericType)
+                    goto exit;
                 var interfaceMap = type.GetInterfaceMap(abstractMethod.DeclaringType);
-                for(var i = 0L; i < interfaceMap.InterfaceMethods.LongLength; i++)
-                    if(interfaceMap.InterfaceMethods[i] == abstractMethod)
+                for (var i = 0L; i < interfaceMap.InterfaceMethods.LongLength; i++)
+                    if (interfaceMap.InterfaceMethods[i] == abstractMethod)
                         return interfaceMap.TargetMethods[i];
                 goto exit;
             }
             //handle virtual method
-            foreach(var lookup in GetBaseTypes(type, includeTopLevel : true))
-                foreach(var candidate in lookup.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
-                    if(candidate.GetBaseDefinition() == abstractMethod)
+            foreach (var lookup in GetBaseTypes(type, includeTopLevel: true))
+                foreach (var candidate in lookup.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+                    if (candidate.GetBaseDefinition() == abstractMethod)
                         return candidate;
-        exit:
+                    exit:
             return null;
         }
 

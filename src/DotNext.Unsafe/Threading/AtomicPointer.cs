@@ -784,14 +784,14 @@ namespace DotNext.Threading
 		/// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndUpdateValue(this Pointer<long> pointer, Func<long, long> updater) => AtomicInt64.GetAndUpdate(ref pointer.Ref, updater);
-        
+
         /// <summary>
-		/// Atomically updates the value referenced by pointer with the results 
-		/// of applying the given function, returning the original value.
-		/// </summary>
-		/// <param name="pointer">A pointer to a value to be modified.</param>
-		/// <param name="updater">A side-effect-free function</param>
-		/// <returns>The original value.</returns>
+        /// Atomically updates the value referenced by pointer with the results 
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="pointer">A pointer to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long GetAndUpdateValue(this Pointer<long> pointer, ValueFunc<long, long> updater) => AtomicInt64.GetAndUpdate(ref pointer.Ref, updater);
 

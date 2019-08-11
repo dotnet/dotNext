@@ -1,12 +1,9 @@
 using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
 using TR = InlineIL.TypeRef;
-using CallSiteDescr = InlineIL.StandAloneMethodSig;
 
 namespace DotNext
 {
@@ -31,7 +28,7 @@ namespace DotNext
             var bytes = new byte[buffer.Length * sizeof(int)];
             rng.GetBytes(bytes, 0, bytes.Length);
             var offset = 0;
-            foreach(ref var element in buffer)
+            foreach (ref var element in buffer)
             {
                 var randomNumber = (BitConverter.ToInt32(bytes, offset) & int.MaxValue) % allowedChars.Length;
                 element = allowedChars[randomNumber];
@@ -108,7 +105,7 @@ namespace DotNext
         {
             Ldftn(new M(typeof(RandomExtensions), nameof(NextString), typeof(RandomNumberGenerator), typeof(Span<char>), typeof(ReadOnlySpan<char>)));
             Newobj(M.Constructor(typeof(funcptr), typeof(IntPtr)));
-            Push(random);           
+            Push(random);
             Ldarg(nameof(allowedChars));
             Push(length);
             Call(new M(typeof(RandomExtensions), nameof(NextString), typeof(funcptr), TR.MethodGenericParameters[0], typeof(ReadOnlySpan<char>), typeof(int)).MakeGenericMethod(typeof(RandomNumberGenerator)));

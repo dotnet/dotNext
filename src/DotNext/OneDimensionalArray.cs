@@ -319,7 +319,7 @@ namespace DotNext
         public static int BitwiseHashCode<T>(this T[] array, int hash, Func<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
             => BitwiseHashCode(array, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
-        
+
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
         /// </summary>

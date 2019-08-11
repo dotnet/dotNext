@@ -26,7 +26,7 @@ namespace DotNext.Runtime.CompilerServices
 
         private static SequencePoint FindSequencePoint(MethodDebugInformation debugInfo, Instruction instr)
         {
-            while(instr != null)
+            while (instr != null)
             {
                 var sp = debugInfo.GetSequencePoint(instr);
                 if (sp is null)

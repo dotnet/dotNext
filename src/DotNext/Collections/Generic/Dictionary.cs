@@ -197,7 +197,7 @@ namespace DotNext.Collections.Generic
             foreach (var (key, value) in dictionary)
                 action.Invoke(key, value);
         }
-        
+
         /// <summary>
         /// Applies specific action to each dictionary
         /// </summary>
@@ -205,9 +205,9 @@ namespace DotNext.Collections.Generic
         /// <typeparam name="V">The value type of the dictionary.</typeparam>
         /// <param name="dictionary">A dictionary to read from.</param>
         /// <param name="action">The action to be applied for each key/value pair.</param>
-		public static void ForEach<K, V>(this IDictionary<K, V> dictionary, Action<K, V> action)
+        public static void ForEach<K, V>(this IDictionary<K, V> dictionary, Action<K, V> action)
             => ForEach(dictionary, new ValueAction<K, V>(action, true));
-        
+
         /// <summary>
         /// Gets dictionary value by key if it exists or
         /// invoke <paramref name="defaultValue"/> and
@@ -219,7 +219,7 @@ namespace DotNext.Collections.Generic
         /// <param name="key">A key associated with the value.</param>
         /// <param name="defaultValue">A delegate to be invoked if key doesn't exist in the dictionary.</param>
         /// <returns>The value associated with the key or returned by the delegate.</returns>
-		public static V GetOrInvoke<K, V>(this IDictionary<K, V> dictionary, K key, in ValueFunc<V> defaultValue)
+        public static V GetOrInvoke<K, V>(this IDictionary<K, V> dictionary, K key, in ValueFunc<V> defaultValue)
             => dictionary.TryGetValue(key, out var value) ? value : defaultValue.Invoke();
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace DotNext.Collections.Generic
         /// <returns>The value associated with the key or returned by the delegate.</returns>
 		public static V GetOrInvoke<K, V>(this IDictionary<K, V> dictionary, K key, Func<V> defaultValue)
             => GetOrInvoke(dictionary, key, new ValueFunc<V>(defaultValue, true));
-        
+
         /// <summary>
         /// Gets the value associated with the specified key.
         /// </summary>
@@ -257,7 +257,7 @@ namespace DotNext.Collections.Generic
         /// <returns>The optional value associated with the key.</returns>        
         public static Optional<V> TryGetValue<K, V>(IReadOnlyDictionary<K, V> dictionary, K key)
             => dictionary.TryGetValue(key, out var value) ? new Optional<V>(value) : Optional<V>.Empty;
-        
+
         /// <summary>
         /// Applies lazy conversion for each dictionary value.
         /// </summary>

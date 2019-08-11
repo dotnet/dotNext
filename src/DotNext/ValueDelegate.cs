@@ -52,9 +52,9 @@ namespace DotNext
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
         public ValueAction(Action action, bool wrap = false)
         {
-            if(action is null)
+            if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if(wrap || action.Method.IsAbstract || action.Target != null)
+            if (wrap || action.Method.IsAbstract || action.Target != null)
             {
                 this.action = action;
                 methodPtr = default;
@@ -223,9 +223,9 @@ namespace DotNext
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public ValueFunc(Func<R> func, bool wrap = false)
         {
-            if(func is null)
+            if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if(wrap || func.Method.IsAbstract || func.Target != null)
+            if (wrap || func.Method.IsAbstract || func.Target != null)
             {
                 this.func = func;
                 methodPtr = default;
@@ -435,9 +435,9 @@ namespace DotNext
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public ValueFunc(Func<T, R> func, bool wrap = false)
         {
-            if(func is null)
+            if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if(wrap || func.Method.IsAbstract || func.Target != null)
+            if (wrap || func.Method.IsAbstract || func.Target != null)
             {
                 this.func = func;
                 methodPtr = default;
@@ -642,9 +642,9 @@ namespace DotNext
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
         public ValueAction(Action<T> action, bool wrap = false)
         {
-            if(action is null)
+            if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if(wrap || action.Method.IsAbstract || action.Target != null)
+            if (wrap || action.Method.IsAbstract || action.Target != null)
             {
                 this.action = action;
                 methodPtr = default;
@@ -829,9 +829,9 @@ namespace DotNext
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public ValueFunc(Func<T1, T2, R> func, bool wrap = false)
         {
-            if(func is null)
+            if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if(wrap || func.Method.IsAbstract || func.Target != null)
+            if (wrap || func.Method.IsAbstract || func.Target != null)
             {
                 this.func = func;
                 methodPtr = default;
@@ -1015,9 +1015,9 @@ namespace DotNext
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
         public ValueAction(Action<T1, T2> action, bool wrap = false)
         {
-            if(action is null)
+            if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if(wrap || action.Method.IsAbstract || action.Target != null)
+            if (wrap || action.Method.IsAbstract || action.Target != null)
             {
                 this.action = action;
                 methodPtr = default;

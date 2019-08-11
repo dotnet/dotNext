@@ -1,9 +1,7 @@
-﻿using System.Threading;
-
-namespace DotNext.Net.Cluster.Replication
+﻿namespace DotNext.Net.Cluster.Replication
 {
-    using IMessage = Messaging.IMessage;
     using Threading;
+    using IMessage = Messaging.IMessage;
 
     internal sealed class CommitEvent<LogEntry> : AsyncManualResetEvent
         where LogEntry : class, IMessage
@@ -14,7 +12,7 @@ namespace DotNext.Net.Cluster.Replication
 
         private void SetIfCommitted(IAuditTrail<LogEntry> auditTrail)
         {
-            if(auditTrail.GetLastIndex(true) >= expectedIndex)
+            if (auditTrail.GetLastIndex(true) >= expectedIndex)
             {
                 Set();
                 DetachFrom(auditTrail);

@@ -36,7 +36,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [Fact]
-        public async static Task AwaitUsingConcept()
+        public static async Task AwaitUsingConcept()
         {
             var task = new Task<int>(() => 42);
             task.Start();

@@ -235,7 +235,7 @@ namespace DotNext.Metaprogramming
         /// <param name="delegate">The expression providing delegate to be invoked.</param>
         /// <param name="arguments">Delegate invocation arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Invoke(Expression @delegate, IEnumerable<Expression> arguments) 
+        public static void Invoke(Expression @delegate, IEnumerable<Expression> arguments)
             => LexicalScope.Current.AddStatement(Expression.Invoke(@delegate, arguments));
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Call(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
             => LexicalScope.Current.AddStatement(Expression.Call(instance, method, arguments));
-        
+
         /// <summary>
         /// Adds instance method call statement which is not invoked if <paramref name="instance"/> is <see langword="null"/>.
         /// </summary>
@@ -303,7 +303,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Call(Expression instance, MethodInfo method, params Expression[] arguments)
             => Call(instance, method, (IEnumerable<Expression>)arguments);
-        
+
         /// <summary>
         /// Adds instance method call statement which is not invoked if <paramref name="instance"/> is <see langword="null"/>.
         /// </summary>
@@ -323,7 +323,7 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Call(Expression instance, string methodName, params Expression[] arguments)
             => LexicalScope.Current.AddStatement(instance.Call(methodName, arguments));
-        
+
         /// <summary>
         /// Adds instance method call statement which is not invoked if <paramref name="instance"/> is <see langword="null"/>.
         /// </summary>

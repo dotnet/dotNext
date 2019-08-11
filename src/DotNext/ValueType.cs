@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
-using M = InlineIL.MethodRef;
 using static System.Runtime.CompilerServices.Unsafe;
+using M = InlineIL.MethodRef;
 
 namespace DotNext
 {
@@ -157,7 +157,7 @@ namespace DotNext
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool BitwiseEquals(T first, T second) 
+        public static bool BitwiseEquals(T first, T second)
             => BitwiseEquals(ref As<T, byte>(ref first), ref As<T, byte>(ref second));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -201,7 +201,7 @@ namespace DotNext
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
         public static int BitwiseHashCode(T value, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
-            => BitwiseHashCode(ref value, hash, hashFunction, salted); 
+            => BitwiseHashCode(ref value, hash, hashFunction, salted);
 
         private static int BitwiseHashCode(ref T value, bool salted)
         {
@@ -209,7 +209,7 @@ namespace DotNext
             Sizeof(typeof(T));
             Conv_I8();
             Pop(out long size);
-            switch(size)
+            switch (size)
             {
                 case 1:
                     Push(ref value);
@@ -332,7 +332,7 @@ namespace DotNext
             Sizeof(typeof(T));
             Conv_I8();
             Pop(out long size);
-            switch(size)
+            switch (size)
             {
                 case 1:
                     Push(ref first);
@@ -394,7 +394,7 @@ namespace DotNext
         public static int BitwiseCompare<U>(T first, U second)
             where U : struct
             => SizeOf<T>() == SizeOf<U>() ? BitwiseCompare(ref As<T, byte>(ref first), ref As<U, byte>(ref second)) : SizeOf<T>().CompareTo(SizeOf<U>());
-            
+
 
         /// <summary>
         /// Obtain a value of type <typeparamref name="To"/> by 

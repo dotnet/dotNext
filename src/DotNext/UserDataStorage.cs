@@ -207,7 +207,7 @@ namespace DotNext
         /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<V>(UserDataSlot<V> slot) 
+        public V GetOrSet<V>(UserDataSlot<V> slot)
             where V : new()
         {
             var activator = ValueFunc<V>.Activator;

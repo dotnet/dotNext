@@ -120,11 +120,11 @@ namespace DotNext.Threading
             ThrowIfDisposed();
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
-            if(token.IsCancellationRequested)
+            if (token.IsCancellationRequested)
                 return Task.FromCanceled<bool>(token);
             if (manager.TryAcquire())
                 return CompletedTask<bool, BooleanConst.True>.Task;
-            if(timeout == TimeSpan.Zero)
+            if (timeout == TimeSpan.Zero)
                 return CompletedTask<bool, BooleanConst.False>.Task;    //if timeout is zero fail fast
             if (head is null)
                 head = tail = manager.CreateNode(null);

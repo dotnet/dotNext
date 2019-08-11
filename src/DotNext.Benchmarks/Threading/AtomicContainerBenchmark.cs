@@ -38,26 +38,26 @@ namespace DotNext.Threading
         private static void VolatileRead()
         {
             LargeStruct value;
-            for(var i = 0; i < 10000; i++)
+            for (var i = 0; i < 10000; i++)
                 VContainer.Read(out value);
         }
 
         private static void SynchronizedRead()
         {
             LargeStruct value;
-            for(var i = 0; i < 10000; i++)
+            for (var i = 0; i < 10000; i++)
                 SContainer.Read(out value);
         }
 
         private static void VolatileWrite()
         {
-            for(var i = 0; i < 1000; i++)
+            for (var i = 0; i < 1000; i++)
                 VContainer.Write(in Value);
         }
 
         private static void SynchronizedWrite()
         {
-            for(var i = 0; i < 1000; i++)
+            for (var i = 0; i < 1000; i++)
                 SContainer.Write(in Value);
         }
 
@@ -91,7 +91,7 @@ namespace DotNext.Threading
             vWrite.Start();
             vRead1.Start();
             vRead2.Start();
-            
+
             vWrite.Join();
             vRead1.Join();
             vRead2.Join();

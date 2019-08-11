@@ -2,8 +2,8 @@ using System;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
-using Var = InlineIL.LocalVar;
 using M = InlineIL.MethodRef;
+using Var = InlineIL.LocalVar;
 
 namespace DotNext
 {

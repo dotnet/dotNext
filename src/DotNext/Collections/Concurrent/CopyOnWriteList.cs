@@ -224,7 +224,7 @@ namespace DotNext.Collections.Concurrent
         public void Clear(in ValueAction<T> cleaner)
         {
             var oldStore = ReplaceStore(Array.Empty<T>());
-            for(var i = 0L; i < oldStore.LongLength; i++)
+            for (var i = 0L; i < oldStore.LongLength; i++)
             {
                 ref var item = ref oldStore[i];
                 cleaner.Invoke(item);

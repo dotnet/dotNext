@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using Fody;
+﻿using Fody;
 using Mono.Cecil;
 using Mono.Collections.Generic;
+using System.Collections.Generic;
 
 namespace DotNext.Runtime.CompilerServices
 {

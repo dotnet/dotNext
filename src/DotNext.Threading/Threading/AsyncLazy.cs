@@ -49,7 +49,7 @@ namespace DotNext.Threading
             get
             {
                 var t = task;
-                switch(t?.Status)
+                switch (t?.Status)
                 {
                     case TaskStatus.RanToCompletion:
                         return new Result<T>(t.Result);
