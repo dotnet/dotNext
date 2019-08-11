@@ -6,6 +6,7 @@
     <RootNamespace>DotNext</RootNamespace>
     <StartupObject>DotNext.Program</StartupObject>
     <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
     <Version>0.12.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>

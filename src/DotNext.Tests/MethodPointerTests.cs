@@ -60,6 +60,13 @@ namespace DotNext
         }
 
         [Fact]
+        public static void PointerWithTarget()
+        {
+            var ptr = new ValueFunc<StringComparison, int>("Hello, world".GetHashCode);
+            NotEqual(0, ptr.Invoke(StringComparison.OrdinalIgnoreCase));
+        }
+
+        [Fact]
         public void ParameterlessPointer()
         {
             var ptr = new ValueFunc<object>(GetType().GetMethod(nameof(CreateObject), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic));
@@ -156,6 +163,31 @@ namespace DotNext
             var converter = (Converter<int, bool>)predicate;
             True(converter.Invoke(-1));
             False(converter.Invoke(0));
+        }
+
+        [Fact]
+        public static void AugmentedValueFuncConstruction()
+        {
+            var ptr = ValueFuncFactory.CreateSumFunction();
+            NotSame(ptr.ToDelegate(), ptr.ToDelegate());
+            Equal(42UL, ptr.Invoke(40UL, 2UL));
+        }
+
+        private static void ComputeSum(ref long x, long y)
+            => x += y;
+
+        [Fact]
+        public static void RefActionCall()
+        {
+            var action = new ValueRefAction<long, long>(ComputeSum);
+            var i = 10L;
+            action.Invoke(ref i, 32L);
+            Equal(42L, i);
+            var array = new[] { 1L, 2L, 3L };
+            array.ForEach(action);
+            Equal(1L, array[0]);
+            Equal(3L, array[1]);
+            Equal(5L, array[2]);
         }
     }
 }

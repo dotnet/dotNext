@@ -36,11 +36,24 @@ namespace DotNext
         /// <typeparam name="T">Type of array elements.</typeparam>
         /// <param name="array">An array to iterate.</param>
         /// <param name="action">An action to be applied for each element.</param>
-        public static void ForEach<T>(this T[] array, ItemAction<long, T> action)
+        public static void ForEach<T>(this T[] array, in ValueRefAction<T, long> action)
         {
             for (var i = 0L; i < array.LongLength; i++)
-                action(i, ref array[i]);
+                action.Invoke(ref array[i], i);
         }
+
+        /// <summary>
+        /// Applies specific action to each array element.
+        /// </summary>
+        /// <remarks>
+        /// This method support modification of array elements
+        /// because each array element is passed by reference into action.
+        /// </remarks>
+        /// <typeparam name="T">Type of array elements.</typeparam>
+        /// <param name="array">An array to iterate.</param>
+        /// <param name="action">An action to be applied for each element.</param>
+        public static void ForEach<T>(this T[] array, RefAction<T, long> action)
+            => ForEach(array, new ValueRefAction<T, long>(action, true));
 
         /// <summary>
         /// Insert a new element into array and return modified array.

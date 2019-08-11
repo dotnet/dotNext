@@ -32,5 +32,10 @@ namespace DotNext.Runtime.CompilerServices
         /// Indicates that code relies on reflection of private or internal members.
         /// </summary>
         public bool PrivateReflection;
+
+        /// <summary>
+        /// Indicates that code is augmented using .NEXT Weaver.
+        /// </summary>
+        public bool Augmentation;
     }
 }
