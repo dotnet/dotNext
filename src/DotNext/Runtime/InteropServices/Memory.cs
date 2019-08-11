@@ -53,11 +53,7 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T* ToPointer<T>(this IntPtr source)
             where T : unmanaged
-        {
-            Push(source);
-            Conv_U();
-            return ReturnPointer<T>();
-        }
+            => (T*)source.ToPointer();
 
         /// <summary>
         /// Reads a value of type <typeparamref name="T"/> from the given location

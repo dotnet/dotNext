@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -66,7 +67,11 @@ namespace DotNext
         public static int Size
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => SizeOf<T>();
+            get
+            {
+                Sizeof(typeof(T));
+                return Return<int>();
+            }
         }
 
         /// <summary>
@@ -468,6 +473,7 @@ namespace DotNext
         /// Gets pinnable reference to the boxed value.
         /// </summary>
         /// <returns>Pinnable reference.</returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public ref T GetPinnableReference() => ref Value;
 
         /// <summary>

@@ -41,9 +41,9 @@ namespace DotNext
             where T : unmanaged
         {
             if (span.IsEmpty)
-                return 0;
+                return salted ? RandomExtensions.BitwiseHashSalt : 0;
             fixed (T* ptr = span)
-                return Memory.GetHashCode32(ptr, span.Length * ValueType<T>.Size, salted);
+                return Memory.GetHashCode32(ptr, (long)span.Length * ValueType<T>.Size, salted);
         }
 
         /// <summary>
@@ -111,9 +111,9 @@ namespace DotNext
             where T : unmanaged
         {
             if (span.IsEmpty)
-                return hash;
+                return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
             fixed (T* ptr = span)
-                return Memory.GetHashCode32(ptr, span.Length * ValueType<T>.Size, hash, hashFunction, salted);
+                return Memory.GetHashCode32(ptr, (long)span.Length * ValueType<T>.Size, hash, hashFunction, salted);
         }
 
         /// <summary>
@@ -142,9 +142,9 @@ namespace DotNext
             where T : unmanaged
         {
             if (span.IsEmpty)
-                return hash;
+                return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
             fixed (T* ptr = span)
-                return Memory.GetHashCode64(ptr, span.Length * ValueType<T>.Size, hash, hashFunction, salted);
+                return Memory.GetHashCode64(ptr, (long)span.Length * ValueType<T>.Size, hash, hashFunction, salted);
         }
 
         /// <summary>
@@ -180,9 +180,9 @@ namespace DotNext
             where T : unmanaged
         {
             if (span.IsEmpty)
-                return 0;
+                return salted ? RandomExtensions.BitwiseHashSalt : 0L;
             fixed (T* ptr = span)
-                return Memory.GetHashCode64(ptr, span.Length * ValueType<T>.Size, salted);
+                return Memory.GetHashCode64(ptr, (long)span.Length * ValueType<T>.Size, salted);
         }
 
         /// <summary>

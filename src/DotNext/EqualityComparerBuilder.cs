@@ -45,7 +45,7 @@ namespace DotNext
             set => salted = value;
         }
 
-        private readonly struct ConstructedEqualityComparer : IEqualityComparer<T>
+        private sealed class ConstructedEqualityComparer : IEqualityComparer<T>
         {
             private readonly Func<T, T, bool> equality;
             private readonly Func<T, int> hashCode;
