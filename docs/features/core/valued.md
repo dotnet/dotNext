@@ -83,3 +83,31 @@ The second `bool` parameter of Value Deleate constructor is not used because _pr
 > It is not recommended to create Value Delegates using lambda expression because C# compiler produces hidden closure even if nothing is captured from outer lexical scope. This closure is stored in _Target_ property of the delegate and force _proxy_ mode.
 
 Invocation of Value Delegate has approximately the same performance as regular .NET delegates. To verify that, check out [Benchmarks](../../benchmarks.md).
+
+# Compile-Time Support
+.NEXT offers optional compile-time support of Value Delegates using [Compile-Time Augmentations](../aug.md) feature. This feature helps Roslyn compiler to understand instantiation semantics of Value Delegate and remove creation of regular delegate. Therefore, you don't need to store instance of Value Delegate in **static readonly** field. Instead of this, you can instantiate it in-place.
+
+Let's look at the following code:
+```csharp
+using DotNext;
+
+private static long Sum(long x, long y) => x + y;
+
+var sum = new ValueFunc<long, long, long>(Sum);
+sum.Invoke(2L, 3L);	//returns 5
+```
+
+The code looks fine but Roslyn can't understand your intentions because Value Delegates are not known to it. However, it can be compiled successfully with one side-effect: redundant memory allocation. This is happening because the actual compiler code looks like this:
+```csharp
+using DotNext;
+
+private static long Sum(long x, long y) => x + y;
+
+var sum = new ValueFunc<long, long, long>(new Func<long, long, long>(Sum));
+sum.Invoke(2L, 3L);	//returns 5
+```
+Now you see that `ValueFunc` constructor accepts instance of regular .NET delegate which is allocated on the heap. 
+
+.NEXT Augmented Compilation tells the compiler that this allocation is redundant and pointer to the static method can be passed into Value Delegate directly. The allocation of regular delegate is removed from IL code at compile-time by .NEXT code weaver.
+
+This feature is optional and become available only if .NEXT Augmented Compilation enabled. However, the code above is correct even if augmentations are not enabled for building pipeline. In this case, heap allocation of regular delegate stays in compiled code.
