@@ -1,8 +1,8 @@
-﻿using System.Net.Http;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {

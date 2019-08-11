@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;

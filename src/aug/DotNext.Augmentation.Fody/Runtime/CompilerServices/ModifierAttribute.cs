@@ -11,7 +11,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             using (var io = System.IO.File.AppendText("C:\\Users\\r_sakno\\Weaver.txt"))
                 io.WriteLine(attribute.AttributeType.FullName);
-                switch (attribute.AttributeType.FullName)
+            switch (attribute.AttributeType.FullName)
             {
                 case OptionalModifier:
                     required = false;

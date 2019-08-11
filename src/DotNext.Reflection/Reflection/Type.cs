@@ -35,7 +35,7 @@ namespace DotNext.Reflection
         /// For value type, it calls <see cref="object.GetHashCode"/> if it is overridden by the value type; otherwise,
         /// it calls <see cref="ValueType{T}.BitwiseHashCode(T, bool)"/>.
         /// </remarks>
-        public new static readonly Operator<T, int> GetHashCode;
+        public static new readonly Operator<T, int> GetHashCode;
 
         /// <summary>
         /// Provides smart equality check.
@@ -46,7 +46,7 @@ namespace DotNext.Reflection
         /// For value type, it calls equality operator or <see cref="IEquatable{T}.Equals(T)"/> if it is implemented by the value type; else,
         /// it calls <see cref="ValueType{T}.BitwiseEquals(T, T)"/>.
         /// </remarks>
-        public new static readonly Operator<T, T, bool> Equals;
+        public static new readonly Operator<T, T, bool> Equals;
 
         static Type()
         {

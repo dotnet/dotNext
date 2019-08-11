@@ -19,7 +19,7 @@ namespace DotNext.Runtime.InteropServices
     /// any safety check. Incorrect usage of them may destabilize
     /// Common Language Runtime.
     /// </remarks>
-    public unsafe static class Memory
+    public static unsafe class Memory
     {
         private static class FNV1a32
         {
@@ -51,7 +51,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The typed pointer.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T* ToPointer<T>(this IntPtr source) 
+        public static T* ToPointer<T>(this IntPtr source)
             where T : unmanaged
         {
             Push(source);
@@ -226,21 +226,21 @@ namespace DotNext.Runtime.InteropServices
 		[CLSCompliant(false)]
         public static long GetHashCode64(void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
             => GetHashCode64(new IntPtr(source), length, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
-        
+
         /// <summary>
-		/// Computes 64-bit hash code for the block of memory, 64-bit version.
-		/// </summary>
-		/// <remarks>
-		/// This method may give different value each time you run the program for
-		/// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
-		/// </remarks>
-		/// <param name="source">A pointer to the block of memory.</param>
-		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
-		/// <param name="hash">Initial value of the hash.</param>
-		/// <param name="hashFunction">Hashing function.</param>
-		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-		/// <returns>Hash code of the memory block.</returns>
-		[CLSCompliant(false)]
+        /// Computes 64-bit hash code for the block of memory, 64-bit version.
+        /// </summary>
+        /// <remarks>
+        /// This method may give different value each time you run the program for
+        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
+        /// </remarks>
+        /// <param name="source">A pointer to the block of memory.</param>
+        /// <param name="length">Length of memory block to be hashed, in bytes.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Hash code of the memory block.</returns>
+        [CLSCompliant(false)]
         public static long GetHashCode64(void* source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
             => GetHashCode64(new IntPtr(source), length, hash, hashFunction, salted);
 
@@ -345,7 +345,7 @@ namespace DotNext.Runtime.InteropServices
         [CLSCompliant(false)]
         public static int GetHashCode32(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
             => GetHashCode32(new IntPtr(source), length, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
-        
+
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
         /// </summary>
@@ -811,7 +811,7 @@ namespace DotNext.Runtime.InteropServices
         public static unsafe Span<byte> AsSpan<T>(T* pointer)
             where T : unmanaged
             => new Span<byte>(pointer, Unsafe.SizeOf<T>());
-        
+
         /// <summary>
         /// Copies one value into another.
         /// </summary>

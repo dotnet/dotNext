@@ -103,11 +103,11 @@ namespace DotNext
             where T : class
             where D : Delegate
         {
-            if(obj is null)
+            if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            if(!(del.Target is null))
+            if (!(del.Target is null))
                 throw new InvalidOperationException();
-            return del.Method.CreateDelegate<D>(obj); 
+            return del.Method.CreateDelegate<D>(obj);
         }
 
         /// <summary>

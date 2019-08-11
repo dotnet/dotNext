@@ -178,7 +178,7 @@ namespace DotNext.Collections.Generic
         public static int InsertOrdered<T>(this IList<T> list, T item, in ValueFunc<T, T, int> comparer)
         {
             int low = 0, high = list.Count;
-            while(low < high)
+            while (low < high)
             {
                 var mid = (low + high) / 2;
                 var cmp = comparer.Invoke(list[mid], item);

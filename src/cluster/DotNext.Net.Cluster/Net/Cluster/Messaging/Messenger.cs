@@ -57,7 +57,7 @@ namespace DotNext.Net.Cluster.Messaging
         public static Task SendTextSignalAsync(this IAddressee messenger, string messageName, string text, bool requiresConfirmation = true, string mediaType = null, CancellationToken token = default)
             => messenger.SendSignalAsync(new TextMessage(messageName, text, mediaType), requiresConfirmation, token);
 
-        private unsafe static string ToString(Encoding encoding, Span<byte> bytes)
+        private static unsafe string ToString(Encoding encoding, Span<byte> bytes)
         {
             fixed (byte* ptr = bytes)
                 return encoding.GetString(ptr, bytes.Length);

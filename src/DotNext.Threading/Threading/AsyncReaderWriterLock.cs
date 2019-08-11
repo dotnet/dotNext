@@ -33,7 +33,7 @@ namespace DotNext.Threading
             internal readonly struct LockManager : ILockManager<WriteLockNode>
             {
                 private readonly State state;
-                
+
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 internal LockManager(State state) => this.state = state;
 

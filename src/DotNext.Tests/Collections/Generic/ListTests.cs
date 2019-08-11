@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System;
 using Xunit;
 
 namespace DotNext.Collections.Generic

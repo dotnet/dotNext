@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -32,7 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             base.FillRequest(request);
         }
 
-        private protected new static async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response)
+        private protected static new async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response)
         {
             var result = await HttpMessage.ParseBoolResponse(response).ConfigureAwait(false);
             var term = ParseHeader<IEnumerable<string>, long>(TermHeader, response.Headers.TryGetValues, Int64Parser);

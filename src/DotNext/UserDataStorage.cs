@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
 
 namespace DotNext
 {
-    using System.Runtime.CompilerServices;
-    using static Threading.LockAcquisition;
-
     /// <summary>
     /// Provides access to user data associated with the object.
     /// </summary>
@@ -57,9 +53,14 @@ namespace DotNext
 
             internal V Get<V>(UserDataSlot<V> slot, V defaultValue)
             {
-                using (synchronizer.AcquireReadLock())
+                synchronizer.EnterReadLock();
+                try
                 {
                     return slot.GetUserData(this, defaultValue);
+                }
+                finally
+                {
+                    synchronizer.ExitReadLock();
                 }
             }
 
@@ -69,48 +70,74 @@ namespace DotNext
                 V userData;
                 //fast path - read user data if it is already exists
                 //do not use UpgradeableReadLock due to performance reasons
-                using (synchronizer.AcquireReadLock())
+                synchronizer.EnterReadLock();
+                try
                 {
                     if (slot.GetUserData(this, out userData))
                         return userData;
                 }
+                finally
+                {
+                    synchronizer.ExitReadLock();
+                }
                 //non-fast path, no user data presented
-                using (synchronizer.AcquireWriteLock())
+                synchronizer.EnterWriteLock();
+                try
                 {
                     if (!slot.GetUserData(this, out userData))
                         slot.SetUserData(this, userData = valueFactory.Invoke());
                     return userData;
                 }
+                finally
+                {
+                    synchronizer.ExitWriteLock();
+                }
             }
 
             internal bool Get<V>(UserDataSlot<V> slot, out V userData)
             {
-                using (synchronizer.AcquireReadLock())
+                synchronizer.EnterReadLock();
+                try
                 {
                     return slot.GetUserData(this, out userData);
+                }
+                finally
+                {
+                    synchronizer.ExitReadLock();
                 }
             }
 
             internal void Set<V>(UserDataSlot<V> slot, V userData)
             {
-                using (synchronizer.AcquireWriteLock())
+                synchronizer.EnterWriteLock();
+                try
                 {
                     slot.SetUserData(this, userData);
+                }
+                finally
+                {
+                    synchronizer.ExitWriteLock();
                 }
             }
 
             internal bool Remove<V>(UserDataSlot<V> slot)
             {
-                using (synchronizer.AcquireWriteLock())
+                synchronizer.EnterWriteLock();
+                try
                 {
                     return slot.RemoveUserData(this);
+                }
+                finally
+                {
+                    synchronizer.ExitWriteLock();
                 }
             }
 
             internal bool Remove<V>(UserDataSlot<V> slot, out V userData)
             {
                 //fast path if user data doesn't exist
-                using (synchronizer.AcquireReadLock())
+                synchronizer.EnterReadLock();
+                try
                 {
                     if (!slot.Contains(this))
                     {
@@ -118,11 +145,20 @@ namespace DotNext
                         return false;
                     }
                 }
+                finally
+                {
+                    synchronizer.ExitReadLock();
+                }
                 //non-fast path, user data exists, so remove it
-                using (synchronizer.AcquireWriteLock())
+                synchronizer.EnterWriteLock();
+                try
                 {
                     userData = slot.GetUserData(this, default);
                     return slot.RemoveUserData(this);
+                }
+                finally
+                {
+                    synchronizer.ExitWriteLock();
                 }
             }
 
@@ -171,7 +207,7 @@ namespace DotNext
         /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<V>(UserDataSlot<V> slot) 
+        public V GetOrSet<V>(UserDataSlot<V> slot)
             where V : new()
         {
             var activator = ValueFunc<V>.Activator;

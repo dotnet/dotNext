@@ -41,7 +41,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public unsafe static void SwapValuesByPointer()
+        public static unsafe void SwapValuesByPointer()
         {
             var x = 10;
             var y = 20;
@@ -68,7 +68,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public unsafe static void BitwiseEqualityForByte()
+        public static unsafe void BitwiseEqualityForByte()
         {
             byte value1 = 10;
             byte value2 = 20;
@@ -78,17 +78,17 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public unsafe static void BitwiseEqualityForLong()
+        public static unsafe void BitwiseEqualityForLong()
         {
             var value1 = 10L;
-            var value2 = 20L;   
+            var value2 = 20L;
             False(Memory.Equals(&value1, &value2, sizeof(long)));
             value2 = 10;
             True(Memory.Equals(&value1, &value2, sizeof(long)));
         }
 
         [Fact]
-        public unsafe static void BitwiseHashCode()
+        public static unsafe void BitwiseHashCode()
         {
             var i = 42L;
             NotEqual(0, Memory.GetHashCode32(&i, sizeof(long)));

@@ -402,7 +402,7 @@ namespace DotNext.Reflection
             : base(field)
         {
             //TODO: Should be optimized when LINQ Expression will have a support for ref return
-            provider = Lambda<Provider>(Call(typeof(Unsafe), nameof(Unsafe.AsRef), new [] { field.FieldType }, Field(null, field))).Compile();
+            provider = Lambda<Provider>(Call(typeof(Unsafe), nameof(Unsafe.AsRef), new[] { field.FieldType }, Field(null, field))).Compile();
             const BindingFlags staticPrivate = BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
             getter = GetType().GetMethod(nameof(GetValue), staticPrivate).CreateDelegate<MemberGetter<V>>(provider);
             setter = field.IsInitOnly ? null : GetType().GetMethod(nameof(SetValue), staticPrivate).CreateDelegate<MemberSetter<V>>(provider);

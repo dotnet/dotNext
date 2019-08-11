@@ -18,7 +18,7 @@ namespace DotNext.Threading.Tasks
         [Fact]
         public static async Task OnCompletedContinuation2()
         {
-            var t = Task<int>.Factory.StartNew(() => 
+            var t = Task<int>.Factory.StartNew(() =>
             {
                 Thread.Sleep(50);
                 return 42;

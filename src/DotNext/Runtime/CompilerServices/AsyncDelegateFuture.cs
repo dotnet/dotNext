@@ -13,7 +13,7 @@ namespace DotNext.Runtime.CompilerServices
     /// </summary>
     public abstract class AsyncDelegateFuture : Threading.Tasks.Future<Task>, Threading.Tasks.Future.IAwaiter
     {
-        private protected CancellationToken token;
+        private protected readonly CancellationToken token;
 
         private protected AsyncDelegateFuture(CancellationToken token) => this.token = token;
 

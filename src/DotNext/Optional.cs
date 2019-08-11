@@ -236,7 +236,7 @@ namespace DotNext
         public T OrThrow<E>()
             where E : Exception, new()
             => IsPresent ? value : throw new E();
-        
+
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
         /// </summary>

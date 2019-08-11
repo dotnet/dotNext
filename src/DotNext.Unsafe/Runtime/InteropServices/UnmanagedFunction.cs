@@ -101,7 +101,7 @@ namespace DotNext.Runtime.InteropServices
             Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
         }
-        
+
         /// <summary>
         /// Invokes unmanaged function with CDECL calling convention by its pointer.
         /// </summary>
@@ -356,7 +356,7 @@ namespace DotNext.Runtime.InteropServices
             Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
         }
-        
+
         /// <summary>
         /// Invokes unmanaged function with STDCALL calling convention by its pointer.
         /// </summary>
