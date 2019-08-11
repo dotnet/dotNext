@@ -47,7 +47,7 @@ using DotNext;
 
 private static long Sum(long x, long y) => x + y;
 
-var sum = new ValueFunc<long, long, long>(*Sum);
+var sum = new ValueFunc<long, long, long>(&Sum);
 sum.Invoke(2L, 3L);	//returns 5
 ```
 
