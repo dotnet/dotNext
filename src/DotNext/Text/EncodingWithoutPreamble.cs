@@ -3,6 +3,7 @@ using System.Text;
 
 namespace DotNext.Text
 {
+    //TODO: Should have additional overrides for .NET Standard 2.1
     internal sealed class EncodingWithoutPreamble : Encoding
     {
         private readonly Encoding encoding;
