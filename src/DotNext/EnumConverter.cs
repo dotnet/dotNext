@@ -17,6 +17,15 @@ namespace DotNext
         {
             switch (Code)
             {
+                default:
+                    Push(ref value);
+                    Ldtoken(typeof(O));
+                    Call(new M(typeof(Type), nameof(Type.GetTypeFromHandle)));
+                    Call(M.PropertyGet(typeof(CultureInfo), nameof(CultureInfo.InvariantCulture)));
+                    Constrained(typeof(I));
+                    Callvirt(new M(typeof(IConvertible), nameof(IConvertible.ToType)));
+                    Unbox_Any(typeof(O));
+                    break;
                 case TypeCode.Byte:
                     Push(value);
                     Conv_U1();
@@ -57,15 +66,6 @@ namespace DotNext
                 case TypeCode.UInt64:
                     Push(value);
                     Conv_U8();
-                    break;
-                default:
-                    Push(ref value);
-                    Ldtoken(typeof(O));
-                    Call(new M(typeof(Type), nameof(Type.GetTypeFromHandle)));
-                    Call(M.PropertyGet(typeof(CultureInfo), nameof(CultureInfo.InvariantCulture)));
-                    Constrained(typeof(I));
-                    Callvirt(new M(typeof(IConvertible), nameof(IConvertible.ToType)));
-                    Unbox_Any(typeof(O));
                     break;
             }
             return Return<O>();
