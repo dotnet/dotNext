@@ -189,5 +189,22 @@ namespace DotNext
             Equal(3L, array[1]);
             Equal(5L, array[2]);
         }
+
+        private struct StructForTest
+        {
+            internal long Value;
+
+            public void Add(long value) => Value += value;
+        }
+
+        [Fact]
+        public static void RefActionInstanceCall()
+        {
+            var method = typeof(StructForTest).GetMethod(nameof(StructForTest.Add), new []{ typeof(long) });
+            var action = new ValueRefAction<StructForTest, long>(method);
+            var i = new StructForTest { Value = 12L };
+            action.Invoke(ref i, 30L);
+            Equal(42L, i.Value);
+        }
     }
 }
