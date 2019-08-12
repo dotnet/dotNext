@@ -473,8 +473,15 @@ namespace DotNext.Runtime.InteropServices
                 return true;
             switch (length)
             {
+                default:
+                    Push(first);
+                    Push(second);
+                    Push(length);
+                    Call(new M(typeof(Memory), nameof(EqualsUnaligned)));
+                    break;
                 case 0L:
-                    return true;
+                    Ldc_I4_1();
+                    break;
                 case sizeof(byte):
                     Push(first);
                     Ldind_I1();
@@ -508,12 +515,6 @@ namespace DotNext.Runtime.InteropServices
                     Unaligned(1);
                     Ldind_I8();
                     Ceq();
-                    break;
-                default:
-                    Push(first);
-                    Push(second);
-                    Push(length);
-                    Call(new M(typeof(Memory), nameof(EqualsUnaligned)));
                     break;
             }
             return Return<bool>();
@@ -549,11 +550,17 @@ namespace DotNext.Runtime.InteropServices
         {
             if (first == second)
                 return 0;
-            long temp;
             switch (length)
             {
+                default:
+                    Push(first);
+                    Push(second);
+                    Push(length);
+                    Call(new M(typeof(Memory), nameof(CompareUnaligned)));
+                    break;
                 case 0L:
-                    return 0;
+                    Ldc_I4_0();
+                    break;
                 case 1:
                     Push(first);
                     Push(second);
@@ -566,7 +573,7 @@ namespace DotNext.Runtime.InteropServices
                     Unaligned(1);
                     Ldind_U2();
                     Conv_U8();
-                    Pop(out temp);
+                    Pop(out ulong temp);
                     Push(ref temp);
                     Push(second);
                     Unaligned(1);
@@ -574,8 +581,6 @@ namespace DotNext.Runtime.InteropServices
                     Conv_U8();
                     Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
                     break;
-                case 3:
-                    goto default;
                 case 4:
                     Push(first);
                     Unaligned(1);
@@ -589,10 +594,6 @@ namespace DotNext.Runtime.InteropServices
                     Conv_U8();
                     Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
                     break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
                 case 8:
                     Push(first);
                     Unaligned(1);
@@ -603,12 +604,6 @@ namespace DotNext.Runtime.InteropServices
                     Unaligned(1);
                     Ldobj(typeof(ulong));
                     Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
-                    break;
-                default:
-                    Push(first);
-                    Push(second);
-                    Push(length);
-                    Call(new M(typeof(Memory), nameof(CompareUnaligned)));
                     break;
             }
             return Return<int>();

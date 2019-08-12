@@ -91,45 +91,39 @@ namespace DotNext
             Pop(out long size);
             switch (size)
             {
-                case 1:
-                    Push(ref first);
-                    Ldind_I1();
-                    Push(ref second);
-                    Ldind_I1();
-                    Ceq();
-                    break;
-                case 2:
-                    Push(ref first);
-                    Ldind_I2();
-                    Push(ref second);
-                    Ldind_I2();
-                    Ceq();
-                    break;
-                case 3:
-                    goto default;
-                case 4:
-                    Push(ref first);
-                    Ldind_I4();
-                    Push(ref second);
-                    Ldind_I4();
-                    Ceq();
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
-                case 8:
-                    Push(ref first);
-                    Ldind_I8();
-                    Push(ref second);
-                    Ldind_I8();
-                    Ceq();
-                    break;
                 default:
                     Push(ref first);
                     Push(ref second);
                     Push(size);
                     Call(new M(typeof(Memory), nameof(Memory.EqualsAligned)));
+                    break;
+                case sizeof(byte):
+                    Push(ref first);
+                    Ldind_U1();
+                    Push(ref second);
+                    Ldind_I1();
+                    Ceq();
+                    break;
+                case sizeof(short):
+                    Push(ref first);
+                    Ldind_I2();
+                    Push(ref second);
+                    Ldind_I2();
+                    Ceq();
+                    break;
+                case sizeof(int):
+                    Push(ref first);
+                    Ldind_I4();
+                    Push(ref second);
+                    Ldind_I4();
+                    Ceq();
+                    break;
+                case sizeof(long):
+                    Push(ref first);
+                    Ldind_I8();
+                    Push(ref second);
+                    Ldind_I8();
+                    Ceq();
                     break;
             }
             return Return<bool>();
@@ -216,34 +210,28 @@ namespace DotNext
             Pop(out long size);
             switch (size)
             {
-                case 1:
-                    Push(ref value);
-                    Ldind_I1();
-                    break;
-                case 2:
-                    Push(ref value);
-                    Ldind_I2();
-                    break;
-                case 3:
-                    goto default;
-                case 4:
-                    Push(ref value);
-                    Ldind_I4();
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
-                case 8:
-                    Push(ref value);
-                    Call(new M(typeof(ulong), nameof(GetHashCode)));
-                    break;
                 default:
                     Push(ref value);
                     Push(size);
                     Push(salted);
                     Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(bool)));
                     return Return<int>();
+                case sizeof(byte):
+                    Push(ref value);
+                    Ldind_I1();
+                    break;
+                case sizeof(short):
+                    Push(ref value);
+                    Ldind_I2();
+                    break;
+                case sizeof(int):
+                    Push(ref value);
+                    Ldind_I4();
+                    break;
+                case sizeof(long):
+                    Push(ref value);
+                    Call(new M(typeof(ulong), nameof(GetHashCode)));
+                    break;
             }
             Push(salted);
             Brfalse(methodExit);
@@ -277,40 +265,34 @@ namespace DotNext
             Pop(out long size);
             switch (size)
             {
-                case 1:
+                default:
+                    Push(ref value);
+                    Push(size);
+                    Call(new M(typeof(Memory), nameof(Memory.IsZeroAligned)));
+                    break;
+                case sizeof(byte):
                     Push(ref value);
                     Ldind_I1();
                     Ldc_I4_0();
                     Ceq();
                     break;
-                case 2:
+                case sizeof(ushort):
                     Push(ref value);
                     Ldind_I2();
                     Ldc_I4_0();
                     Ceq();
                     break;
-                case 3:
-                    goto default;
-                case 4:
+                case sizeof(uint):
                     Push(ref value);
                     Ldind_I4();
                     Ldc_I4_0();
                     Ceq();
                     break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
-                case 8:
+                case sizeof(ulong):
                     Push(ref value);
                     Ldind_I8();
                     Ldc_I8(0L);
                     Ceq();
-                    break;
-                default:
-                    Push(ref value);
-                    Push(size);
-                    Call(new M(typeof(Memory), nameof(Memory.IsZeroAligned)));
                     break;
             }
             return Return<bool>();
@@ -339,41 +321,35 @@ namespace DotNext
             Pop(out long size);
             switch (size)
             {
-                case 1:
-                    Push(ref first);
-                    Push(ref second);
-                    Ldind_U1();
-                    Call(new M(typeof(byte), nameof(byte.CompareTo), typeof(byte)));
-                    break;
-                case 2:
-                    Push(ref first);
-                    Push(ref second);
-                    Ldind_U2();
-                    Call(new M(typeof(ushort), nameof(ushort.CompareTo), typeof(ushort)));
-                    break;
-                case 3:
-                    goto default;
-                case 4:
-                    Push(ref first);
-                    Push(ref second);
-                    Ldind_U4();
-                    Call(new M(typeof(uint), nameof(uint.CompareTo), typeof(uint)));
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
-                case 8:
-                    Push(ref first);
-                    Push(ref second);
-                    Ldobj(typeof(ulong));
-                    Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
-                    break;
                 default:
                     Push(ref first);
                     Push(ref second);
                     Push(size);
                     Call(new M(typeof(Memory), nameof(Memory.CompareUnaligned)));
+                    break;
+                case sizeof(byte):
+                    Push(ref first);
+                    Push(ref second);
+                    Ldind_U1();
+                    Call(new M(typeof(byte), nameof(byte.CompareTo), typeof(byte)));
+                    break;
+                case sizeof(ushort):
+                    Push(ref first);
+                    Push(ref second);
+                    Ldind_U2();
+                    Call(new M(typeof(ushort), nameof(ushort.CompareTo), typeof(ushort)));
+                    break;
+                case sizeof(uint):
+                    Push(ref first);
+                    Push(ref second);
+                    Ldind_U4();
+                    Call(new M(typeof(uint), nameof(uint.CompareTo), typeof(uint)));
+                    break;
+                case sizeof(ulong):
+                    Push(ref first);
+                    Push(ref second);
+                    Ldobj(typeof(ulong));
+                    Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
                     break;
             }
             return Return<int>();
