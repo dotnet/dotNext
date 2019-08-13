@@ -9,8 +9,6 @@ namespace DotNext.Runtime.CompilerServices
 
         internal static TypeReference GetModifierType(this CustomAttribute attribute, out bool required)
         {
-            using (var io = System.IO.File.AppendText("C:\\Users\\r_sakno\\Weaver.txt"))
-                io.WriteLine(attribute.AttributeType.FullName);
             switch (attribute.AttributeType.FullName)
             {
                 case OptionalModifier:

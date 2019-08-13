@@ -92,15 +92,16 @@ namespace DotNext
         public Action ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(action);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Action), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(action);
             return Return<Action>();
         }
 
@@ -305,15 +306,16 @@ namespace DotNext
         public Func<R> ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(func);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Func<R>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(func);
             return Return<Func<R>>();
         }
 
@@ -469,15 +471,16 @@ namespace DotNext
         private Converter<T, R> ToConverter()
         {
             const string returnDelegate = "delegate";
-            Push(func);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Converter<T, R>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(func);
             return Return<Converter<T, R>>();
         }
 
@@ -495,15 +498,16 @@ namespace DotNext
         public Func<T, R> ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(func);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Func<T, R>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(func);
             return Return<Func<T, R>>();
         }
 
@@ -685,15 +689,16 @@ namespace DotNext
         public Action<T> ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(action);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Action<T>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(action);
             return Return<Action<T>>();
         }
 
@@ -872,15 +877,16 @@ namespace DotNext
         public Func<T1, T2, R> ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(func);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Func<T1, T2, R>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(func);
             return Return<Func<T1, T2, R>>();
         }
 
@@ -1058,15 +1064,16 @@ namespace DotNext
         public Action<T1, T2> ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(action);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Action<T1, T2>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(action);
             return Return<Action<T1, T2>>();
         }
 
@@ -1249,15 +1256,16 @@ namespace DotNext
         public Func<T1, T2, T3, R> ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(func);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Func<T1, T2, T3, R>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(func);
             return Return<Func<T1, T2, T3, R>>();
         }
 
@@ -1439,15 +1447,16 @@ namespace DotNext
         public Action<T1, T2, T3> ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(action);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Action<T1, T2, T3>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(action);
             return Return<Action<T1, T2, T3>>();
         }
 
@@ -1634,15 +1643,16 @@ namespace DotNext
         public Func<T1, T2, T3, T4, R> ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(func);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Func<T1, T2, T3, T4, R>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(func);
             return Return<Func<T1, T2, T3, T4, R>>();
         }
 
@@ -1828,15 +1838,16 @@ namespace DotNext
         public Action<T1, T2, T3, T4> ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(action);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Action<T1, T2, T3, T4>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(action);
             return Return<Action<T1, T2, T3, T4>>();
         }
 
@@ -2023,15 +2034,16 @@ namespace DotNext
         public Func<T1, T2, T3, T4, T5, R> ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(func);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Func<T1, T2, T3, T4, T5, R>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(func);
             return Return<Func<T1, T2, T3, T4, T5, R>>();
         }
 
@@ -2217,15 +2229,16 @@ namespace DotNext
         public Action<T1, T2, T3, T4, T5> ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(action);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(Action<T1, T2, T3, T4, T5>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(action);
             return Return<Action<T1, T2, T3, T4, T5>>();
         }
 
@@ -2415,15 +2428,16 @@ namespace DotNext
         public RefAction<T, TArgs> ToDelegate()
         {
             const string returnDelegate = "delegate";
-            Push(action);
             Push(methodPtr);
-            Dup();
             Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
             Newobj(M.Constructor(typeof(RefAction<T, TArgs>), typeof(object), typeof(IntPtr)));
             Ret();
 
             MarkLabel(returnDelegate);
-            Pop();
+            Push(action);
             return Return<RefAction<T, TArgs>>();
         }
 

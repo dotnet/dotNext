@@ -53,11 +53,7 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T* ToPointer<T>(this IntPtr source)
             where T : unmanaged
-        {
-            Push(source);
-            Conv_U();
-            return ReturnPointer<T>();
-        }
+            => (T*)source.ToPointer();
 
         /// <summary>
         /// Reads a value of type <typeparamref name="T"/> from the given location
@@ -195,16 +191,10 @@ namespace DotNext.Runtime.InteropServices
                     hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<int>(source.ToPointer()));
                     break;
                 default:
-                    while (length >= sizeof(IntPtr))
-                    {
+                    for (; length >= sizeof(IntPtr); length -= sizeof(IntPtr))
                         hash = hashFunction.Invoke(hash, ReadUnaligned<IntPtr>(ref source).ToInt64());
-                        length -= sizeof(IntPtr);
-                    }
-                    while (length > 0)
-                    {
+                    for (; length > 0L; length -= sizeof(byte))
                         hash = hashFunction.Invoke(hash, Read<byte>(ref source));
-                        length -= sizeof(byte);
-                    }
                     break;
             }
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
@@ -314,16 +304,10 @@ namespace DotNext.Runtime.InteropServices
                     hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<short>(source.ToPointer()));
                     break;
                 default:
-                    while (length >= sizeof(int))
-                    {
+                    for (; length >= sizeof(int); length -= sizeof(int))
                         hash = hashFunction.Invoke(hash, ReadUnaligned<int>(ref source));
-                        length -= sizeof(int);
-                    }
-                    while (length > 0)
-                    {
+                    for (; length > 0L; length -= sizeof(byte))
                         hash = hashFunction.Invoke(hash, Read<byte>(ref source));
-                        length -= sizeof(byte);
-                    }
                     break;
             }
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
@@ -384,16 +368,10 @@ namespace DotNext.Runtime.InteropServices
 
         internal static int GetHashCode32Aligned(IntPtr source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
         {
-            while (length >= sizeof(int))
-            {
+            for (; length >= sizeof(int); length -= sizeof(int))
                 hash = hashFunction.Invoke(hash, Read<int>(ref source));
-                length -= sizeof(int);
-            }
-            while (length > 0)
-            {
+            for (; length > 0L; length -= sizeof(byte))
                 hash = hashFunction.Invoke(hash, Read<byte>(ref source));
-                length -= sizeof(byte);
-            }
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
@@ -403,21 +381,12 @@ namespace DotNext.Runtime.InteropServices
 
         internal static long GetHashCode64Aligned(IntPtr source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
         {
-            while (length >= sizeof(long))
-            {
+            for (; length >= sizeof(long); length -= sizeof(long))
                 hash = hashFunction.Invoke(hash, Read<long>(ref source));
-                length -= sizeof(long);
-            }
-            while (length >= sizeof(int))
-            {
+            for (; length >= sizeof(int); length -= sizeof(int))
                 hash = hashFunction.Invoke(hash, Read<int>(ref source));
-                length -= sizeof(int);
-            }
-            while (length > 0)
-            {
+            for (; length > 0L; length -= sizeof(byte))
                 hash = hashFunction.Invoke(hash, Read<byte>(ref source));
-                length -= sizeof(byte);
-            }
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
@@ -504,8 +473,15 @@ namespace DotNext.Runtime.InteropServices
                 return true;
             switch (length)
             {
+                default:
+                    Push(first);
+                    Push(second);
+                    Push(length);
+                    Call(new M(typeof(Memory), nameof(EqualsUnaligned)));
+                    break;
                 case 0L:
-                    return true;
+                    Ldc_I4_1();
+                    break;
                 case sizeof(byte):
                     Push(first);
                     Ldind_I1();
@@ -539,12 +515,6 @@ namespace DotNext.Runtime.InteropServices
                     Unaligned(1);
                     Ldind_I8();
                     Ceq();
-                    break;
-                default:
-                    Push(first);
-                    Push(second);
-                    Push(length);
-                    Call(new M(typeof(Memory), nameof(EqualsUnaligned)));
                     break;
             }
             return Return<bool>();
@@ -580,11 +550,17 @@ namespace DotNext.Runtime.InteropServices
         {
             if (first == second)
                 return 0;
-            long temp;
             switch (length)
             {
+                default:
+                    Push(first);
+                    Push(second);
+                    Push(length);
+                    Call(new M(typeof(Memory), nameof(CompareUnaligned)));
+                    break;
                 case 0L:
-                    return 0;
+                    Ldc_I4_0();
+                    break;
                 case 1:
                     Push(first);
                     Push(second);
@@ -597,7 +573,7 @@ namespace DotNext.Runtime.InteropServices
                     Unaligned(1);
                     Ldind_U2();
                     Conv_U8();
-                    Pop(out temp);
+                    Pop(out ulong temp);
                     Push(ref temp);
                     Push(second);
                     Unaligned(1);
@@ -605,8 +581,6 @@ namespace DotNext.Runtime.InteropServices
                     Conv_U8();
                     Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
                     break;
-                case 3:
-                    goto default;
                 case 4:
                     Push(first);
                     Unaligned(1);
@@ -620,10 +594,6 @@ namespace DotNext.Runtime.InteropServices
                     Conv_U8();
                     Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
                     break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
                 case 8:
                     Push(first);
                     Unaligned(1);
@@ -634,12 +604,6 @@ namespace DotNext.Runtime.InteropServices
                     Unaligned(1);
                     Ldobj(typeof(ulong));
                     Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
-                    break;
-                default:
-                    Push(first);
-                    Push(second);
-                    Push(length);
-                    Call(new M(typeof(Memory), nameof(CompareUnaligned)));
                     break;
             }
             return Return<int>();
