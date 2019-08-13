@@ -193,6 +193,7 @@ namespace DotNext
         private struct StructForTest
         {
             internal long Value;
+            internal int Field1, Field2, Field3;
 
             public void Add(long value) => Value += value;
         }

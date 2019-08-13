@@ -252,8 +252,6 @@ namespace DotNext
             this.methodPtr = methodPtr;
         }
 
-        private static R CreateDefault() => default;
-
         /// <summary>
         /// Returns activator for type <typeparamref name="R"/> in the form of typed method pointer.
         /// </summary>
@@ -272,6 +270,7 @@ namespace DotNext
 
                 Call(M.PropertyGet(typeof(ValueFunc<R>), nameof(DefaultValueProvider)));
                 Ret();
+
                 MarkLabel(HandleRefType);
                 Ldftn(new M(typeof(Activator), nameof(System.Activator.CreateInstance), Array.Empty<TR>()).MakeGenericMethod(typeof(R)));
                 Newobj(M.Constructor(typeof(ValueFunc<R>), new TR(typeof(IntPtr)).WithRequiredModifier(typeof(ManagedMethodPointer))));
@@ -288,7 +287,7 @@ namespace DotNext
         {
             get
             {
-                Ldftn(new M(typeof(ValueFunc<R>), nameof(CreateDefault)));
+                Ldftn(new M(typeof(ObjectExtensions), nameof(ObjectExtensions.DefaultOf)).MakeGenericMethod(typeof(R)));
                 Newobj(M.Constructor(typeof(ValueFunc<R>), new TR(typeof(IntPtr)).WithRequiredModifier(typeof(ManagedMethodPointer))));
                 return Return<ValueFunc<R>>();
             }
@@ -523,15 +522,18 @@ namespace DotNext
             Push(methodPtr);
             Brfalse(callDelegate);
 
+            Push(isStatic);
+            Brfalse(callInstance);
+
             Push(arg);
             Push(methodPtr);
-            Push(isStatic);
-
-            Brfalse(callInstance);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T)));
             Ret();
 
             MarkLabel(callInstance);
+            Push(arg);
+            Box(typeof(T));
+            Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R)));
             Ret();
 
@@ -713,15 +715,18 @@ namespace DotNext
             Push(methodPtr);
             Brfalse(callDelegate);
 
+            Push(isStatic);
+            Brfalse(callInstance);
+
             Push(arg);
             Push(methodPtr);
-            Push(isStatic);
-
-            Brfalse(callInstance);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T)));
             Ret();
 
             MarkLabel(callInstance);
+            Push(arg);
+            Box(typeof(T));
+            Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void)));
             Ret();
 
@@ -903,16 +908,20 @@ namespace DotNext
             Push(methodPtr);
             Brfalse(callDelegate);
 
+            Push(isStatic);
+            Brfalse(callInstance);
+
             Push(arg1);
             Push(arg2);
             Push(methodPtr);
-            Push(isStatic);
-
-            Brfalse(callInstance);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2)));
             Ret();
 
             MarkLabel(callInstance);
+            Push(arg1);
+            Box(typeof(T1));
+            Push(arg2);
+            Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2)));
             Ret();
 
@@ -1089,16 +1098,20 @@ namespace DotNext
             Push(methodPtr);
             Brfalse(callDelegate);
 
+            Push(isStatic);
+            Brfalse(callInstance);
+
             Push(arg1);
             Push(arg2);
             Push(methodPtr);
-            Push(isStatic);
-
-            Brfalse(callInstance);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2)));
             Ret();
 
             MarkLabel(callInstance);
+            Push(arg1);
+            Box(typeof(T1));
+            Push(arg2);
+            Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2)));
             Ret();
 
@@ -1283,17 +1296,22 @@ namespace DotNext
             Push(methodPtr);
             Brfalse(callDelegate);
 
+            Push(isStatic);
+            Brfalse(callInstance);
+
             Push(arg1);
             Push(arg2);
             Push(arg3);
             Push(methodPtr);
-            Push(isStatic);
-
-            Brfalse(callInstance);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2), typeof(T3)));
             Ret();
 
             MarkLabel(callInstance);
+            Push(arg1);
+            Box(typeof(T1));
+            Push(arg2);
+            Push(arg3);
+            Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2), typeof(T3)));
             Ret();
 
@@ -1473,17 +1491,22 @@ namespace DotNext
             Push(methodPtr);
             Brfalse(callDelegate);
 
+            Push(isStatic);
+            Brfalse(callInstance);
+
             Push(arg1);
             Push(arg2);
             Push(arg3);
             Push(methodPtr);
-            Push(isStatic);
-
-            Brfalse(callInstance);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2), typeof(T3)));
             Ret();
 
             MarkLabel(callInstance);
+            Push(arg1);
+            Box(typeof(T1));
+            Push(arg2);
+            Push(arg3);
+            Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2), typeof(T3)));
             Ret();
 
@@ -1671,18 +1694,24 @@ namespace DotNext
             Push(methodPtr);
             Brfalse(callDelegate);
 
+            Push(isStatic);
+            Brfalse(callInstance);
+
             Push(arg1);
             Push(arg2);
             Push(arg3);
             Push(arg4);
             Push(methodPtr);
-            Push(isStatic);
-
-            Brfalse(callInstance);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
 
             MarkLabel(callInstance);
+            Push(arg1);
+            Box(typeof(T1));
+            Push(arg2);
+            Push(arg3);
+            Push(arg4);
+            Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
 
@@ -1865,18 +1894,24 @@ namespace DotNext
             Push(methodPtr);
             Brfalse(callDelegate);
 
+            Push(isStatic);
+            Brfalse(callInstance);
+
             Push(arg1);
             Push(arg2);
             Push(arg3);
             Push(arg4);
             Push(methodPtr);
-            Push(isStatic);
-
-            Brfalse(callInstance);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
 
             MarkLabel(callInstance);
+            Push(arg1);
+            Box(typeof(T1));
+            Push(arg2);
+            Push(arg3);
+            Push(arg4);
+            Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
 
@@ -2063,19 +2098,26 @@ namespace DotNext
             Push(methodPtr);
             Brfalse(callDelegate);
 
+            Push(isStatic);
+            Brfalse(callInstance);
+
             Push(arg1);
             Push(arg2);
             Push(arg3);
             Push(arg4);
             Push(arg5);
             Push(methodPtr);
-            Push(isStatic);
-
-            Brfalse(callInstance);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
             Ret();
 
             MarkLabel(callInstance);
+            Push(arg1);
+            Box(typeof(T1));
+            Push(arg2);
+            Push(arg3);
+            Push(arg4);
+            Push(arg5);
+            Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
             Ret();
 
@@ -2257,19 +2299,26 @@ namespace DotNext
             Push(methodPtr);
             Brfalse(callDelegate);
 
+            Push(isStatic);
+            Brfalse(callInstance);
+
             Push(arg1);
             Push(arg2);
             Push(arg3);
             Push(arg4);
             Push(arg5);
             Push(methodPtr);
-            Push(isStatic);
-
-            Brfalse(callInstance);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
             Ret();
 
             MarkLabel(callInstance);
+            Push(arg1);
+            Box(typeof(T1));
+            Push(arg2);
+            Push(arg3);
+            Push(arg4);
+            Push(arg5);
+            Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
             Ret();
 
