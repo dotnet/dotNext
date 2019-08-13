@@ -116,7 +116,7 @@ DotNext Reflection library offers the best result in case when delegate type exa
 1. Classic .NET reflection
 
 | Method | Mean | Error | StdDev | Median |
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- | ---- | ---- |
 | Direct call | 169.7 ns | 3.3878 ns | 5.6602 ns | 168.5 ns |
 | Reflection with DotNext using delegate type `TryParseDelegate` | 167.8 ns |  3.3781 ns | 6.0045 ns | 166.1 ns |
 | Reflection with DotNext using delegate type `Function<(string text, decimal result), bool>` | 174.5 ns |  1.7939 ns | 1.6780 ns | 174.1 ns |
@@ -129,7 +129,7 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs) compares performance of [Atomic&lt;T&gt;](./api/DotNext.Threading.Atomic-1.yml) and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.
 
 | Method | Mean | Error | StdDev | Median |
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- | ---- | ---- |
 | Atomic | 1.194 ms | 0.0245 ms | 0.2223 ms | 1.144 ms |
 | Synchronized | 1.502 ms | 0.288 ms | 0.2623 ms | 1.451 ms |
 
@@ -137,7 +137,7 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/FunctionPointerBenchmark.cs) compares performance of [Atomic&lt;T&gt;](./api/DotNext.Threading.Atomic-1.yml) and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.
 
 | Method | Mean | Error | StdDev | Median |
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- | ---- | --- |
 | Instance method, regular delegate, has implicit **this** | 2.747 ns | 0.0379 ns | 0.0336 ns | 2.741 ns |
 | Instance method, Value Delegate, has implicit **this** | 4.108 ns | 0.0652 ns | 0.0578 ns | 4.101 ns |
 | Static method, regular delegate, large size of param type, no implicitly captured object | 6.590 ns | 0.3193 ns | 0.9366 ns | 6.435 ns |
