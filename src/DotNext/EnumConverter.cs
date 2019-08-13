@@ -26,6 +26,9 @@ namespace DotNext
                 string conversionMethod;
                 switch(Type.GetTypeCode(typeof(O)))
                 {
+                    default:
+                        conversionMethod = "<unknown>";
+                        break;
                     case TypeCode.Byte:
                         conversionMethod = nameof(System.Convert.ToByte);
                         break;
@@ -67,9 +70,6 @@ namespace DotNext
                         break;
                     case TypeCode.DateTime:
                         conversionMethod = nameof(System.Convert.ToDateTime);
-                        break;
-                    default:
-                        conversionMethod = "<unknown>";
                         break;
                 }
                 var type = typeof(I);
