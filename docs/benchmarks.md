@@ -125,7 +125,7 @@ DotNext Reflection library offers the best result in case when delegate type exa
 
 Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.
 
-# Volatile Access to Arbitrary Value Type
+# Atomic Access to Arbitrary Value Type
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs) compares performance of [Atomic&lt;T&gt;](./api/DotNext.Threading.Atomic-1.yml) and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.
 
 | Method | Mean | Error | StdDev | Median |
