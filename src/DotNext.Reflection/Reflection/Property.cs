@@ -365,7 +365,7 @@ namespace DotNext.Reflection
         }
 
         internal static Property<V> GetOrCreate<T>(string propertyName, bool nonPublic)
-            => typeof(T).GetUserData().GetOrSet<Cache<T>>(Cache<T>.Slot).GetOrCreate(propertyName, nonPublic);
+            => typeof(T).GetUserData().GetOrSet(Cache<T>.Slot).GetOrCreate(propertyName, nonPublic);
     }
 
     /// <summary>
@@ -481,6 +481,6 @@ namespace DotNext.Reflection
         }
 
         internal static Property<T, V> GetOrCreate(string propertyName, bool nonPublic)
-            => typeof(T).GetUserData().GetOrSet<Cache>(Cache.Slot).GetOrCreate(propertyName, nonPublic);
+            => typeof(T).GetUserData().GetOrSet(Cache.Slot).GetOrCreate(propertyName, nonPublic);
     }
 }

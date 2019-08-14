@@ -38,6 +38,8 @@
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.4" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext" Version="0.12.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="Fody" Version="5.1.1" PrivateAssets="all" />
+    <PackageReference Include="DotNext.Augmentation.Fody" Version="0.12.3" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

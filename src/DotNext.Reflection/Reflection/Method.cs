@@ -544,7 +544,7 @@ namespace DotNext.Reflection
         }
 
         internal static Method<D> GetOrCreate(MethodInfo method)
-            => method.GetUserData().GetOrSet(CacheSlot, method, Unreflect);
+            => method.GetUserData().GetOrSet(CacheSlot, method, new ValueFunc<MethodInfo, Method<D>>(Unreflect));
 
         internal static Method<D> GetOrCreate<T>(string methodName, bool nonPublic, MethodLookup lookup)
         {
