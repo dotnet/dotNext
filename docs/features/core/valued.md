@@ -19,6 +19,7 @@ Value Delegates provide general-purpose, CLS compliant, allocation-free, lightwe
 1. [ValueFunc&lt;T1,T2,T3,R&gt;](../../api/DotNext.ValueFunc-4.yml) as alternative to [Func&lt;T1,T2,T3,R&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-4)
 1. [ValueFunc&lt;T1,T2,T3,T4,R&gt;](../../api/DotNext.ValueFunc-5.yml) as alternative to [Func&lt;T1,T2,T3,T4,R&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-5)
 1. [ValueFunc&lt;T1,T2,T3,T4,T5,R&gt;](../../api/DotNext.ValueFunc-6.yml) as alternative to [Func&lt;T1,T2,T3,T4,T5,R&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-6)
+1. [ValueRefAction&lt;T,TArgs&gt;](../../api/DotNext.ValueRefAction-2.yml) as alternative to [RefAction&lt;T,TArgs&gt;](../../api/DotNext.RefAction-2.yml)
 
 > [!NOTE]
 > It is recommended to pass Value Delegates by reference using **in** modifier to avoid copying on the stack. 
@@ -36,8 +37,8 @@ parse = valueFunc.ToDelegate();
 ```
 
 Internally, Value Delegate is operating in two modes:
-1. _Normal_ mode means that the delegate just holds the pointer to the managed method for subsequent invocations. This mode is enabled only if the method passed into Value Delegate is static or instance without implicitly captured first argument (or **this** object). This is the most profitable mode because the delegate doesn't have any references to the heap.
-1. _Proxy_ mode means that the delegate acts as a wrapper for regular .NET delegate. This mode is enabled if the method passed into Value Delegate is abstract or have implicitly captured object. The delegate holds a reference to the regular .NET delegate allocated on the heap.
+1. _Normal_ mode means that the delegate just holds the pointer to the managed method for subsequent invocations. This mode is enabled only if the method passed into Value Delegate is static without implicitly captured first argument. This is the most profitable mode because the delegate doesn't have any references to the heap.
+1. _Proxy_ mode means that the delegate acts as a wrapper for regular .NET delegate. This mode is enabled if the method passed into Value Delegate is instance, abstract or have implicitly captured object. The delegate holds a reference to the regular .NET delegate allocated on the heap.
 
 However, _proxy_ mode is not useless and allow to achieve uniformity across API, utilizing both types of delegates:
 ```csharp
@@ -57,7 +58,7 @@ public static class ArrayUtils
 ```
 The second argument of [ValueFunc&lt;T1,T2,R&gt;](../../api/DotNext.ValueFunc-3.yml) constructor which is `true` means that it should be created in _proxy_ mode. 
 
-C# language has first-class support of .NET regular delegates in the form of the special syntax where method group can be passed into delegate constructor. Value Delegate doesn't have such native compiler support. Therefore, it uses regular .NET delegates for instantiation. If underlying delegate represents static or instance methods, its [Target](https://docs.microsoft.com/en-us/dotnet/api/system.delegate.target) property is **null* then Value Delegate will be created in _normal_ mode. Obviously, the construction of Value Delegate requires memory allocation in the form of regular delegate. However, the created delegate can be reclaimed by GC immediately after instantiation of Value Delegate. Therefore, it is recommended to save the created Value Delegate into `static readonly` as reuse it whenever possible.
+C# language has first-class support of .NET regular delegates in the form of the special syntax where method group can be passed into delegate constructor. Value Delegate doesn't have such native compiler support. Therefore, it uses regular .NET delegates for instantiation. If underlying delegate represents static method, its [Target](https://docs.microsoft.com/en-us/dotnet/api/system.delegate.target) property is **null* then Value Delegate will be created in _normal_ mode. Obviously, the construction of Value Delegate requires memory allocation in the form of regular delegate. However, the created delegate can be reclaimed by GC immediately after instantiation of Value Delegate. Thus, it is recommended to save the created Value Delegate into `static readonly` as reuse it whenever possible.
 ```csharp
 using DotNext;
 using System;
@@ -111,3 +112,6 @@ Now you see that `ValueFunc` constructor accepts instance of regular .NET delega
 .NEXT Augmented Compilation tells the compiler that this allocation is redundant and pointer to the static method can be passed into Value Delegate directly. The allocation of regular delegate is removed from IL code at compile-time by .NEXT code weaver.
 
 This feature is optional and become available only if .NEXT Augmented Compilation enabled. However, the code above is correct even if augmentations are not enabled for building pipeline. In this case, heap allocation of regular delegate stays in compiled code.
+
+# Instance Methoods
+Capturing of instance non-abstract methods are not supported in _normal_ mode. However, the early prototype had such support but later it was dropped. The main reason is IL limitation: it is not possible to express **this** argument in uniform way for value and reference type both. This magic is only allowed for virtual calls using `.constrained` prefix in conjunction with `callvirt` instruction but not for `calli` instruction. The second reason is C# compiler which allows to specify static method for open delegate or instance method for closed delegate. There is no syntax for open instance method. As a result, open delegates created for instance methods are used rarely.
