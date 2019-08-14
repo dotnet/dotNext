@@ -82,14 +82,18 @@ namespace DotNext
         public static ref readonly char GetRawData(this string str)
         {
             const string pinnedString = "pinnedStr";
-            DeclareLocals(new Var(pinnedString, typeof(string)).Pinned());
+            const string methodExit = "exit";
+            DeclareLocals(true, new Var(pinnedString, typeof(string)).Pinned());
             Push(str);
             Stloc(pinnedString);
             Ldloc(pinnedString);
             Conv_U();
+            Dup();
+            Brfalse(methodExit);
             Call(M.PropertyGet(typeof(RuntimeHelpers), nameof(RuntimeHelpers.OffsetToStringData)));
             Conv_U();
             Add();
+            MarkLabel(methodExit);
             return ref ReturnRef<char>();
         }
     }
