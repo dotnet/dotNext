@@ -252,16 +252,15 @@ namespace DotNext.Reflection
         }
 
         /// <summary>
-        /// Provides the fast way to check whether the specified type doesn't accept  <see langword="null"/> value as valid value.
+        /// Provides the fast way to check whether the specified type accepts  <see langword="null"/> value as valid value.
         /// </summary>
         /// <remarks>
-        /// This method always returns <see langword="true"/> for all value types except <see cref="Nullable{T}"/>,
-        /// and <see langword="false"/> for all reference types.
+        /// This method always returns <see langword="true"/> for all reference types and <see cref="Nullable{T}"/>.
         /// </remarks>
         /// <typeparam name="T">The type to check.</typeparam>
-        /// <returns><see langword="true"/> if <typeparamref name="T"/> is non-nullable type; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if <typeparamref name="T"/> is nullable type; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNotNullable<T>()
+        public static bool IsNullable<T>()
         {
             const string DefaultVar = "default";
             DeclareLocals(true, new Var(DefaultVar, typeof(T)));

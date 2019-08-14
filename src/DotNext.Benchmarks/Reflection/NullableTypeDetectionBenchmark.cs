@@ -12,8 +12,8 @@ namespace DotNext.Reflection
         [Benchmark]
         public void DetectNullableType()
         {
-            var vt = TypeExtensions.IsNotNullable<ValueFunc<int, int>>();
-            vt |= TypeExtensions.IsNotNullable<StringBuilder>();
+            var vt = TypeExtensions.IsNullable<ValueFunc<int, int>>();
+            vt |= TypeExtensions.IsNullable<StringBuilder>();
         }
 
         [Benchmark]
