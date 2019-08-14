@@ -54,15 +54,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (wrap || action.Method.IsAbstract || action.Target != null)
-            {
-                this.action = action;
-                methodPtr = default;
-            }
-            else
+            if (!wrap && action.Method.IsStatic && action.Target is null)
             {
                 this.action = null;
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
+            }
+            else
+            {
+                this.action = action;
+                methodPtr = default;
             }
         }
 
@@ -226,15 +226,15 @@ namespace DotNext
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (wrap || func.Method.IsAbstract || func.Target != null)
-            {
-                this.func = func;
-                methodPtr = default;
-            }
-            else
+            if (!wrap && func.Method.IsStatic && func.Target is null)
             {
                 this.func = null;
                 methodPtr = func.Method.MethodHandle.GetFunctionPointer();
+            }
+            else
+            {
+                this.func = func;
+                methodPtr = default;
             }
         }
 
@@ -406,7 +406,6 @@ namespace DotNext
     public readonly struct ValueFunc<T, R> : ICallable<Func<T, R>>, ICallable<Converter<T, R>>, IEquatable<ValueFunc<T, R>>
     {
         private readonly IntPtr methodPtr;
-        private readonly bool isStatic;
         private readonly Func<T, R> func;
 
         /// <summary>
@@ -438,17 +437,15 @@ namespace DotNext
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (wrap || func.Method.IsAbstract || func.Target != null)
-            {
-                this.func = func;
-                methodPtr = default;
-                isStatic = default;
-            }
-            else
+            if (!wrap && func.Method.IsStatic && func.Target is null)
             {
                 this.func = null;
                 methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-                isStatic = func.Method.IsStatic;
+            }
+            else
+            {
+                this.func = func;
+                methodPtr = default;
             }
         }
 
@@ -464,7 +461,6 @@ namespace DotNext
         {
             func = null;
             this.methodPtr = methodPtr;
-            isStatic = true;
         }
 
         private Converter<T, R> ToConverter()
@@ -518,23 +514,12 @@ namespace DotNext
         public R Invoke(T arg)
         {
             const string callDelegate = "delegate";
-            const string callInstance = "instance";
             Push(methodPtr);
             Brfalse(callDelegate);
-
-            Push(isStatic);
-            Brfalse(callInstance);
 
             Push(arg);
             Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T)));
-            Ret();
-
-            MarkLabel(callInstance);
-            Push(arg);
-            Box(typeof(T));
-            Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R)));
             Ret();
 
             MarkLabel(callDelegate);
@@ -618,7 +603,6 @@ namespace DotNext
     public readonly struct ValueAction<T> : ICallable<Action<T>>, IEquatable<ValueAction<T>>, IConsumer<T>
     {
         private readonly IntPtr methodPtr;
-        private readonly bool isStatic;
         private readonly Action<T> action;
 
         /// <summary>
@@ -650,17 +634,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (wrap || action.Method.IsAbstract || action.Target != null)
+            if (!wrap && action.Method.IsStatic && action.Target is null)
             {
                 this.action = action;
                 methodPtr = default;
-                isStatic = default;
             }
             else
             {
                 this.action = null;
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-                isStatic = action.Method.IsStatic;
             }
         }
 
@@ -676,7 +658,6 @@ namespace DotNext
         {
             action = null;
             this.methodPtr = methodPtr;
-            isStatic = true;
         }
 
         /// <summary>
@@ -711,23 +692,12 @@ namespace DotNext
         public void Invoke(T arg)
         {
             const string callDelegate = "delegate";
-            const string callInstance = "instance";
             Push(methodPtr);
             Brfalse(callDelegate);
-
-            Push(isStatic);
-            Brfalse(callInstance);
 
             Push(arg);
             Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T)));
-            Ret();
-
-            MarkLabel(callInstance);
-            Push(arg);
-            Box(typeof(T));
-            Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void)));
             Ret();
 
             MarkLabel(callDelegate);
@@ -809,7 +779,6 @@ namespace DotNext
     public readonly struct ValueFunc<T1, T2, R> : ICallable<Func<T1, T2, R>>, IEquatable<ValueFunc<T1, T2, R>>, ISupplier<T1, T2, R>
     {
         private readonly IntPtr methodPtr;
-        private readonly bool isStatic;
         private readonly Func<T1, T2, R> func;
 
         /// <summary>
@@ -841,17 +810,15 @@ namespace DotNext
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (wrap || func.Method.IsAbstract || func.Target != null)
-            {
-                this.func = func;
-                methodPtr = default;
-                isStatic = default;
-            }
-            else
+            if (!wrap && func.Method.IsStatic && func.Target is null)
             {
                 this.func = null;
                 methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-                isStatic = func.Method.IsStatic;
+            }
+            else
+            {
+                this.func = func;
+                methodPtr = default;
             }
         }
 
@@ -867,7 +834,6 @@ namespace DotNext
         {
             func = null;
             this.methodPtr = methodPtr;
-            isStatic = true;
         }
 
         /// <summary>
@@ -904,25 +870,13 @@ namespace DotNext
         public R Invoke(T1 arg1, T2 arg2)
         {
             const string callDelegate = "delegate";
-            const string callInstance = "instance";
             Push(methodPtr);
             Brfalse(callDelegate);
-
-            Push(isStatic);
-            Brfalse(callInstance);
 
             Push(arg1);
             Push(arg2);
             Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2)));
-            Ret();
-
-            MarkLabel(callInstance);
-            Push(arg1);
-            Box(typeof(T1));
-            Push(arg2);
-            Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2)));
             Ret();
 
             MarkLabel(callDelegate);
@@ -1000,7 +954,6 @@ namespace DotNext
     public readonly struct ValueAction<T1, T2> : ICallable<Action<T1, T2>>, IEquatable<ValueAction<T1, T2>>
     {
         private readonly IntPtr methodPtr;
-        private readonly bool isStatic;
         private readonly Action<T1, T2> action;
 
         /// <summary>
@@ -1032,17 +985,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (wrap || action.Method.IsAbstract || action.Target != null)
-            {
-                this.action = action;
-                methodPtr = default;
-                isStatic = default;
-            }
-            else
+            if (!wrap && action.Method.IsStatic && action.Target is null)
             {
                 this.action = null;
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-                isStatic = action.Method.IsStatic;
+            }
+            else
+            {
+                this.action = action;
+                methodPtr = default;
             }
         }
 
@@ -1058,7 +1009,6 @@ namespace DotNext
         {
             action = null;
             this.methodPtr = methodPtr;
-            isStatic = true;
         }
 
         /// <summary>
@@ -1094,25 +1044,13 @@ namespace DotNext
         public void Invoke(T1 arg1, T2 arg2)
         {
             const string callDelegate = "delegate";
-            const string callInstance = "instance";
             Push(methodPtr);
             Brfalse(callDelegate);
-
-            Push(isStatic);
-            Brfalse(callInstance);
 
             Push(arg1);
             Push(arg2);
             Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2)));
-            Ret();
-
-            MarkLabel(callInstance);
-            Push(arg1);
-            Box(typeof(T1));
-            Push(arg2);
-            Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2)));
             Ret();
 
             MarkLabel(callDelegate);
@@ -1196,7 +1134,6 @@ namespace DotNext
     public readonly struct ValueFunc<T1, T2, T3, R> : ICallable<Func<T1, T2, T3, R>>, IEquatable<ValueFunc<T1, T2, T3, R>>
     {
         private readonly IntPtr methodPtr;
-        private readonly bool isStatic;
         private readonly Func<T1, T2, T3, R> func;
 
         /// <summary>
@@ -1228,17 +1165,15 @@ namespace DotNext
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (wrap || func.Method.IsAbstract || func.Target != null)
-            {
-                this.func = func;
-                methodPtr = default;
-                isStatic = default;
-            }
-            else
+            if (!wrap && func.Method.IsStatic && func.Target is null)
             {
                 this.func = null;
                 methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-                isStatic = func.Method.IsStatic;
+            }
+            else
+            {
+                this.func = func;
+                methodPtr = default;
             }
         }
 
@@ -1254,7 +1189,6 @@ namespace DotNext
         {
             func = null;
             this.methodPtr = methodPtr;
-            isStatic = true;
         }
 
         /// <summary>
@@ -1292,27 +1226,14 @@ namespace DotNext
         public R Invoke(T1 arg1, T2 arg2, T3 arg3)
         {
             const string callDelegate = "delegate";
-            const string callInstance = "instance";
             Push(methodPtr);
             Brfalse(callDelegate);
-
-            Push(isStatic);
-            Brfalse(callInstance);
 
             Push(arg1);
             Push(arg2);
             Push(arg3);
             Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2), typeof(T3)));
-            Ret();
-
-            MarkLabel(callInstance);
-            Push(arg1);
-            Box(typeof(T1));
-            Push(arg2);
-            Push(arg3);
-            Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2), typeof(T3)));
             Ret();
 
             MarkLabel(callDelegate);
@@ -1392,7 +1313,6 @@ namespace DotNext
     public readonly struct ValueAction<T1, T2, T3> : ICallable<Action<T1, T2, T3>>, IEquatable<ValueAction<T1, T2, T3>>
     {
         private readonly IntPtr methodPtr;
-        private readonly bool isStatic;
         private readonly Action<T1, T2, T3> action;
 
         /// <summary>
@@ -1424,17 +1344,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (wrap || action.Method.IsAbstract || action.Target != null)
-            {
-                this.action = action;
-                methodPtr = default;
-                isStatic = default;
-            }
-            else
+            if (!wrap && action.Method.IsStatic && action.Target is null)
             {
                 this.action = null;
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-                isStatic = action.Method.IsStatic;
+            }
+            else
+            {
+                this.action = action;
+                methodPtr = default;
             }
         }
 
@@ -1450,7 +1368,6 @@ namespace DotNext
         {
             action = null;
             this.methodPtr = methodPtr;
-            isStatic = true;
         }
 
         /// <summary>
@@ -1487,27 +1404,14 @@ namespace DotNext
         public void Invoke(T1 arg1, T2 arg2, T3 arg3)
         {
             const string callDelegate = "delegate";
-            const string callInstance = "instance";
             Push(methodPtr);
             Brfalse(callDelegate);
-
-            Push(isStatic);
-            Brfalse(callInstance);
 
             Push(arg1);
             Push(arg2);
             Push(arg3);
             Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2), typeof(T3)));
-            Ret();
-
-            MarkLabel(callInstance);
-            Push(arg1);
-            Box(typeof(T1));
-            Push(arg2);
-            Push(arg3);
-            Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2), typeof(T3)));
             Ret();
 
             MarkLabel(callDelegate);
@@ -1593,7 +1497,6 @@ namespace DotNext
     public readonly struct ValueFunc<T1, T2, T3, T4, R> : ICallable<Func<T1, T2, T3, T4, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, R>>
     {
         private readonly IntPtr methodPtr;
-        private readonly bool isStatic;
         private readonly Func<T1, T2, T3, T4, R> func;
 
         /// <summary>
@@ -1625,17 +1528,15 @@ namespace DotNext
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (wrap || func.Method.IsAbstract || func.Target != null)
-            {
-                this.func = func;
-                methodPtr = default;
-                isStatic = default;
-            }
-            else
+            if (!wrap && func.Method.IsStatic && func.Target is null)
             {
                 this.func = null;
                 methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-                isStatic = func.Method.IsStatic;
+            }
+            else
+            {
+                this.func = func;
+                methodPtr = default;
             }
         }
 
@@ -1651,7 +1552,6 @@ namespace DotNext
         {
             func = null;
             this.methodPtr = methodPtr;
-            isStatic = true;
         }
 
         /// <summary>
@@ -1690,12 +1590,8 @@ namespace DotNext
         public R Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             const string callDelegate = "delegate";
-            const string callInstance = "instance";
             Push(methodPtr);
             Brfalse(callDelegate);
-
-            Push(isStatic);
-            Brfalse(callInstance);
 
             Push(arg1);
             Push(arg2);
@@ -1703,16 +1599,6 @@ namespace DotNext
             Push(arg4);
             Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
-            Ret();
-
-            MarkLabel(callInstance);
-            Push(arg1);
-            Box(typeof(T1));
-            Push(arg2);
-            Push(arg3);
-            Push(arg4);
-            Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
 
             MarkLabel(callDelegate);
@@ -1794,7 +1680,6 @@ namespace DotNext
     public readonly struct ValueAction<T1, T2, T3, T4> : ICallable<Action<T1, T2, T3, T4>>, IEquatable<ValueAction<T1, T2, T3, T4>>
     {
         private readonly IntPtr methodPtr;
-        private readonly bool isStatic;
         private readonly Action<T1, T2, T3, T4> action;
 
         /// <summary>
@@ -1826,17 +1711,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (wrap || action.Method.IsAbstract || action.Target != null)
-            {
-                this.action = action;
-                methodPtr = default;
-                isStatic = default;
-            }
-            else
+            if (!wrap && action.Method.IsStatic && action.Target is null)
             {
                 this.action = null;
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-                isStatic = action.Method.IsStatic;
+            }
+            else
+            {
+                this.action = action;
+                methodPtr = default;
             }
         }
 
@@ -1852,7 +1735,6 @@ namespace DotNext
         {
             action = null;
             this.methodPtr = methodPtr;
-            isStatic = true;
         }
 
         /// <summary>
@@ -1890,12 +1772,8 @@ namespace DotNext
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             const string callDelegate = "delegate";
-            const string callInstance = "instance";
             Push(methodPtr);
             Brfalse(callDelegate);
-
-            Push(isStatic);
-            Brfalse(callInstance);
 
             Push(arg1);
             Push(arg2);
@@ -1903,16 +1781,6 @@ namespace DotNext
             Push(arg4);
             Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
-            Ret();
-
-            MarkLabel(callInstance);
-            Push(arg1);
-            Box(typeof(T1));
-            Push(arg2);
-            Push(arg3);
-            Push(arg4);
-            Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2), typeof(T3), typeof(T4)));
             Ret();
 
             MarkLabel(callDelegate);
@@ -2000,7 +1868,6 @@ namespace DotNext
     public readonly struct ValueFunc<T1, T2, T3, T4, T5, R> : ICallable<Func<T1, T2, T3, T4, T5, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>
     {
         private readonly IntPtr methodPtr;
-        private readonly bool isStatic;
         private readonly Func<T1, T2, T3, T4, T5, R> func;
 
         /// <summary>
@@ -2028,17 +1895,15 @@ namespace DotNext
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (wrap || func.Method.IsAbstract || func.Target != null)
-            {
-                this.func = func;
-                methodPtr = default;
-                isStatic = default;
-            }
-            else
+            if (!wrap && func.Method.IsStatic && func.Target is null)
             {
                 this.func = null;
                 methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-                isStatic = func.Method.IsStatic;
+            }
+            else
+            {
+                this.func = func;
+                methodPtr = default;
             }
         }
 
@@ -2054,7 +1919,6 @@ namespace DotNext
         {
             func = null;
             this.methodPtr = methodPtr;
-            isStatic = true;
         }
 
         /// <summary>
@@ -2094,12 +1958,8 @@ namespace DotNext
         public R Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
             const string callDelegate = "delegate";
-            const string callInstance = "instance";
             Push(methodPtr);
             Brfalse(callDelegate);
-
-            Push(isStatic);
-            Brfalse(callInstance);
 
             Push(arg1);
             Push(arg2);
@@ -2108,17 +1968,6 @@ namespace DotNext
             Push(arg5);
             Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
-            Ret();
-
-            MarkLabel(callInstance);
-            Push(arg1);
-            Box(typeof(T1));
-            Push(arg2);
-            Push(arg3);
-            Push(arg4);
-            Push(arg5);
-            Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(R), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
             Ret();
 
             MarkLabel(callDelegate);
@@ -2202,7 +2051,6 @@ namespace DotNext
     public readonly struct ValueAction<T1, T2, T3, T4, T5> : ICallable<Action<T1, T2, T3, T4, T5>>, IEquatable<ValueAction<T1, T2, T3, T4, T5>>
     {
         private readonly IntPtr methodPtr;
-        private readonly bool isStatic;
         private readonly Action<T1, T2, T3, T4, T5> action;
 
         /// <summary>
@@ -2230,17 +2078,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (wrap || action.Method.IsAbstract || action.Target != null)
-            {
-                this.action = action;
-                methodPtr = default;
-                isStatic = default;
-            }
-            else
+            if (!wrap && action.Method.IsStatic && action.Target is null)
             {
                 this.action = null;
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-                isStatic = action.Method.IsStatic;
+            }
+            else
+            {
+                this.action = action;
+                methodPtr = default;
             }
         }
 
@@ -2256,7 +2102,6 @@ namespace DotNext
         {
             action = null;
             this.methodPtr = methodPtr;
-            isStatic = true;
         }
 
         /// <summary>
@@ -2295,12 +2140,8 @@ namespace DotNext
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
             const string callDelegate = "delegate";
-            const string callInstance = "instance";
             Push(methodPtr);
             Brfalse(callDelegate);
-
-            Push(isStatic);
-            Brfalse(callInstance);
 
             Push(arg1);
             Push(arg2);
@@ -2309,17 +2150,6 @@ namespace DotNext
             Push(arg5);
             Push(methodPtr);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
-            Ret();
-
-            MarkLabel(callInstance);
-            Push(arg1);
-            Box(typeof(T1));
-            Push(arg2);
-            Push(arg3);
-            Push(arg4);
-            Push(arg5);
-            Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
             Ret();
 
             MarkLabel(callDelegate);
@@ -2404,7 +2234,6 @@ namespace DotNext
     public readonly struct ValueRefAction<T, TArgs> : ICallable<RefAction<T, TArgs>>, IEquatable<ValueRefAction<T, TArgs>>
     {
         private readonly IntPtr methodPtr;
-        private readonly bool isStatic;
         private readonly RefAction<T, TArgs> action;
 
         /// <summary>
@@ -2436,17 +2265,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (wrap || action.Method.IsAbstract || action.Target != null)
-            {
-                this.action = action;
-                methodPtr = default;
-                isStatic = default;
-            }
-            else
+            if (!wrap && action.Method.IsStatic && action.Target is null)
             {
                 this.action = null;
                 methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-                isStatic = action.Method.IsStatic;
+            }
+            else
+            {
+                this.action = action;
+                methodPtr = default;
             }
         }
 
@@ -2462,7 +2289,6 @@ namespace DotNext
         {
             action = null;
             this.methodPtr = methodPtr;
-            isStatic = true;
         }
 
         /// <summary>
@@ -2498,21 +2324,13 @@ namespace DotNext
         public void Invoke(ref T reference, TArgs args)
         {
             const string callDelegate = "delegate";
-            const string callInstance = "instance";
             Push(methodPtr);
             Brfalse(callDelegate);
 
             Push(ref reference);
             Push(args);
             Push(methodPtr);
-            Push(isStatic);
-
-            Brfalse(callInstance);
             Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), new TR(typeof(T)).MakeByRefType(), typeof(TArgs)));
-            Ret();
-
-            MarkLabel(callInstance);
-            Calli(new CallSiteDescr(CallingConventions.HasThis, typeof(void), typeof(TArgs)));
             Ret();
 
             MarkLabel(callDelegate);
