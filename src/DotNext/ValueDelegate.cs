@@ -636,13 +636,13 @@ namespace DotNext
                 throw new ArgumentNullException(nameof(action));
             if (!wrap && action.Method.IsStatic && action.Target is null)
             {
-                this.action = action;
-                methodPtr = default;
+                this.action = null;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
             }
             else
             {
-                this.action = null;
-                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
+                this.action = action;
+                methodPtr = default;
             }
         }
 
