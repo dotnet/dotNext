@@ -33,12 +33,12 @@ namespace DotNext.Threading
     }
 
     /// <summary>
-    /// Provides volatile access to non-primitive data type.
+    /// Provides atomic access to non-primitive data type.
     /// </summary>
     /// <remarks>
     /// Synchronized methods can be declared in classes only. If you don't need to have extra heap allocation
     /// to keep synchronization root in the form of the object or you need to have volatile field
-    /// inside of value type then <c>VolatileContainer</c> is the best choice. Its performance is better
+    /// inside of value type then <see cref="Atomic{T}"/> is the best choice. Its performance is better
     /// than synchronized methods according with benchmarks.
     /// </remarks>
     public struct Atomic<T> : IStrongBox, ICloneable
@@ -92,7 +92,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Performs atomic read.
         /// </summary>
-        /// <param name="result">The result of volatile read.</param>
+        /// <param name="result">The result of atomic read.</param>
         public void Read(out T result)
         {
             Lock();
@@ -249,7 +249,7 @@ namespace DotNext.Threading
             => Accumulate(x, accumulator, out result, false);
 
         /// <summary>
-        /// Gets or sets value in volatile manner.
+        /// Gets or sets value atomically.
         /// </summary>
         /// <remarks>
         /// To achieve best performance it is recommended to use <see cref="Read"/> and <see cref="Write"/> methods
