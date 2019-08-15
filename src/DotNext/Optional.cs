@@ -178,6 +178,9 @@ namespace DotNext
             this.value = value;
             switch (type)
             {
+                default:
+                    IsPresent = false;
+                    break;
                 case ReferenceType:
                     IsPresent = value != null;
                     break;
@@ -186,9 +189,6 @@ namespace DotNext
                     break;
                 case NullableType:
                     IsPresent = !value.Equals(null);
-                    break;
-                default:
-                    IsPresent = false;
                     break;
             }
         }

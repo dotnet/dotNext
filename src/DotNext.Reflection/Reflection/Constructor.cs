@@ -349,12 +349,12 @@ namespace DotNext.Reflection
         }
 
         internal static Constructor<D> GetOrCreate(ConstructorInfo ctor)
-            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, Unreflect);
+            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, new ValueFunc<ConstructorInfo, Constructor<D>>(Unreflect));
 
         internal static Constructor<D> GetOrCreate<T>(bool nonPublic)
         {
             var type = typeof(T);
-            var ctor = type.GetUserData().GetOrSet(CacheSlot, nonPublic, Reflect);
+            var ctor = type.GetUserData().GetOrSet(CacheSlot, nonPublic, new ValueFunc<bool, Constructor<D>>(Reflect));
             return ctor?.DeclaringType == type ? ctor : null;
         }
     }

@@ -47,6 +47,7 @@ namespace DotNext
             var str = "Hello, world!";
             ref readonly var ch = ref str.GetRawData();
             Equal('H', ch);
+            Throws<NullReferenceException>(() => default(string).GetRawData());
         }
     }
 }

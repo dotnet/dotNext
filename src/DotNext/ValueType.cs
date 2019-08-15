@@ -77,7 +77,7 @@ namespace DotNext
         /// <summary>
         /// Default value of type <typeparamref name="T"/>.
         /// </summary>
-        public static T Default => default;
+        public static T Default => ObjectExtensions.DefaultOf<T>();
 
         /// <summary>
         /// Indicates that value type is primitive type.
@@ -395,6 +395,8 @@ namespace DotNext
         public static void Bitcast<To>(in T input, out To output)
             where To : unmanaged
         {
+            //ldobj/stobj pair is used instead of cpobj because this instruction
+            //has unspecified behavior if src is not assignable to dst, ECMA-335 III.4.4
             const string slowPath = "slow";
             Ldarg(nameof(output));
             Sizeof(typeof(T));
@@ -402,14 +404,16 @@ namespace DotNext
             Blt_Un(slowPath);
             //copy from input into output as-is
             Ldarg(nameof(input));
-            Cpobj(typeof(To));
+            Ldobj(typeof(To));
+            Stobj(typeof(To));
             Ret();
 
             MarkLabel(slowPath);
             Dup();
             Initobj(typeof(To));
             Ldarg(nameof(input));
-            Cpobj(typeof(T));
+            Ldobj(typeof(T));
+            Stobj(typeof(T));
             Ret();
             throw Unreachable();    //output must be defined within scope
         }

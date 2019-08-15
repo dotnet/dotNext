@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using Var = InlineIL.LocalVar;
 
 namespace DotNext.Reflection
 {
@@ -245,6 +249,26 @@ namespace DotNext.Reflection
                 return obj;
             else
                 throw new InvalidCastException();
+        }
+
+        /// <summary>
+        /// Provides the fast way to check whether the specified type accepts  <see langword="null"/> value as valid value.
+        /// </summary>
+        /// <remarks>
+        /// This method always returns <see langword="true"/> for all reference types and <see cref="Nullable{T}"/>.
+        /// </remarks>
+        /// <typeparam name="T">The type to check.</typeparam>
+        /// <returns><see langword="true"/> if <typeparamref name="T"/> is nullable type; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullable<T>()
+        {
+            const string DefaultVar = "default";
+            DeclareLocals(true, new Var(DefaultVar, typeof(T)));
+            Ldloc(DefaultVar);
+            Box(typeof(T));
+            Ldnull();
+            Ceq();
+            return Return<bool>();
         }
     }
 }

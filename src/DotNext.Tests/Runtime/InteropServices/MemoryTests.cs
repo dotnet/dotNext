@@ -94,5 +94,21 @@ namespace DotNext.Runtime.InteropServices
             NotEqual(0, Memory.GetHashCode32(&i, sizeof(long)));
             NotEqual(0L, Memory.GetHashCode64(&i, sizeof(long)));
         }
+
+        private static void NullRefCheck()
+        {
+            ref readonly var ch = ref default(string).GetRawData();
+            Memory.ThrowIfNull(in ch);
+        }
+
+        [Fact]
+        public static void NullCheck()
+        {
+            var i = 0L;
+            False(Memory.IsNull(in i));
+            ref readonly var ch = ref default(string).GetRawData();
+            True(Memory.IsNull(in ch));
+            Throws<NullReferenceException>(NullRefCheck);
+        }
     }
 }

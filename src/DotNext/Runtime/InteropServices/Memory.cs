@@ -792,5 +792,35 @@ namespace DotNext.Runtime.InteropServices
             Ret();
             throw Unreachable();    //need here because output var should be assigned
         }
+
+        /// <summary>
+        /// Determines whether the specified managed pointer is <see langword="null"/>.
+        /// </summary>
+        /// <param name="value">The managed pointer to check.</param>
+        /// <typeparam name="T">The type of the managed pointer.</typeparam>
+        /// <returns><see langword="true"/>, if the specified managed pointer is <see langword="null"/>; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNull<T>(in T value)
+        {
+            Ldarg(nameof(value));
+            Ldnull();
+            Ceq();
+            return Return<bool>();
+        }
+
+        /// <summary>
+        /// Throws <see cref="NullReferenceException"/> if given managed pointer is <see langword="null"/>.
+        /// </summary>
+        /// <param name="value">The managed pointer to check.</param>
+        /// <typeparam name="T">The type of the managed pointer.</typeparam>
+        /// <exception cref="NullReferenceException"><paramref name="value"/> pointer is <see langword="null"/>.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ThrowIfNull<T>(in T value)
+        {
+            Ldarg(nameof(value));
+            Ldobj(typeof(T));
+            Pop();
+            Ret();
+        }
     }
 }
