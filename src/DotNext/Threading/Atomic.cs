@@ -30,15 +30,6 @@ namespace DotNext.Threading
             Stobj(typeof(T));
             Ret();
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool Equals<T>(T x, T y)
-        {
-            Push(x);
-            Push(y);
-            Ceq();
-            return Return<bool>();
-        }
     }
 
     /// <summary>
