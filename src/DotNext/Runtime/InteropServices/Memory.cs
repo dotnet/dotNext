@@ -697,7 +697,6 @@ namespace DotNext.Runtime.InteropServices
         public static IntPtr AddressOf<T>(in T value)
         {
             Ldarg(nameof(value));
-            Conv_I();
             return Return<IntPtr>();
         }
 
@@ -724,6 +723,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="second">The second value to be replaced with <paramref name="first"/>.</param>
         /// <typeparam name="T">The type of the value.</typeparam>
         [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Swap<T>(T* first, T* second)
             where T : unmanaged
         {
@@ -804,6 +804,7 @@ namespace DotNext.Runtime.InteropServices
         {
             Ldarg(nameof(value));
             Ldnull();
+            Conv_I();
             Ceq();
             return Return<bool>();
         }
