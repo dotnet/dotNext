@@ -566,7 +566,7 @@ namespace DotNext.Runtime.InteropServices
                     Push(second);
                     Unaligned(1);
                     Ldind_U1();
-                    Call(new M(typeof(byte), nameof(ulong.CompareTo), typeof(byte)));
+                    Call(new M(typeof(byte), nameof(byte.CompareTo), typeof(byte)));
                     break;
                 case 2:
                     Push(first);
