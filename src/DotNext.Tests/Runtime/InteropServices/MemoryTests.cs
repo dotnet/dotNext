@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using Xunit;
 
 namespace DotNext.Runtime.InteropServices
@@ -60,11 +61,12 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static void UnboxRef()
         {
-            object obj = new Guid();
-            Equal(Guid.Empty, obj);
-            ref var boxed = ref Memory.GetBoxedValue<Guid>(obj);
-            boxed = Guid.NewGuid();
-            NotEqual(Guid.Empty, obj);
+            object obj = new Point();
+            Equal(Point.Empty, obj);
+            ref var boxed = ref Memory.GetBoxedValue<Point>(obj);
+            boxed.X = 10;
+            NotEqual(Point.Empty, obj);
+            Equal(10, ((Point)obj).X);
         }
 
         [Fact]
