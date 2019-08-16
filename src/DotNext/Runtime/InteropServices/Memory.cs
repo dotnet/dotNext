@@ -8,7 +8,7 @@ using M = InlineIL.MethodRef;
 
 namespace DotNext.Runtime.InteropServices
 {
-    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
+    using RuntimeFeaturesAttribute = CompilerServices.RuntimeFeaturesAttribute;
     using typedref = TypedReference;    //IL compliant alias to TypedReference
 
     /// <summary>
