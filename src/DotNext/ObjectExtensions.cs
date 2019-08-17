@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using Var = InlineIL.LocalVar;
 
 namespace DotNext
 {
@@ -137,13 +134,5 @@ namespace DotNext
         }
 
         internal static bool IsContravariant(object obj, Type type) => obj != null && obj.GetType().IsAssignableFrom(type);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static T DefaultOf<T>()
-        {
-            DeclareLocals(true, new Var(typeof(T)));
-            Ldloc_0();
-            return Return<T>();
-        }
     }
 }

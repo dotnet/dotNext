@@ -90,15 +90,5 @@ namespace DotNext.Reflection
             False(typeof(Guid).IsImmutable());
             True(typeof(long).IsImmutable());
         }
-
-        [Fact]
-        public static void IsNullable()
-        {
-            True(TypeExtensions.IsNullable<string>());
-            True(TypeExtensions.IsNullable<ValueType>());
-            True(TypeExtensions.IsNullable<int?>());
-            False(TypeExtensions.IsNullable<int>());
-            False(TypeExtensions.IsNullable<IntPtr>());
-        }
     }
 }

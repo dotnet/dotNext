@@ -6,6 +6,8 @@ using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext.Reflection
 {
+    using static Runtime.Intrinsics;
+
     /// <summary>
     /// Provides typed access to class or value type metadata.
     /// </summary>
@@ -20,7 +22,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Returns default value for this type.
         /// </summary>
-        public static T Default => default;
+        public static T Default => DefaultOf<T>();
 
         /// <summary>
         /// Checks whether the specified value is default value.

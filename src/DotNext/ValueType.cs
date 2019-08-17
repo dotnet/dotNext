@@ -9,6 +9,7 @@ using M = InlineIL.MethodRef;
 
 namespace DotNext
 {
+    using static Runtime.Intrinsics;
     using Runtime.InteropServices;
 
     /// <summary>
@@ -77,7 +78,7 @@ namespace DotNext
         /// <summary>
         /// Default value of type <typeparamref name="T"/>.
         /// </summary>
-        public static T Default => ObjectExtensions.DefaultOf<T>();
+        public static T Default => DefaultOf<T>();
 
         /// <summary>
         /// Indicates that value type is primitive type.

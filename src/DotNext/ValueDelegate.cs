@@ -11,6 +11,7 @@ using TR = InlineIL.TypeRef;
 
 namespace DotNext
 {
+    using Intrinsics = Runtime.Intrinsics;
     using Runtime.CompilerServices;
 
     /// <summary>
@@ -287,7 +288,7 @@ namespace DotNext
         {
             get
             {
-                Ldftn(new M(typeof(ObjectExtensions), nameof(ObjectExtensions.DefaultOf)).MakeGenericMethod(typeof(R)));
+                Ldftn(new M(typeof(Intrinsics), nameof(Intrinsics.DefaultOf)).MakeGenericMethod(typeof(R)));
                 Newobj(M.Constructor(typeof(ValueFunc<R>), new TR(typeof(IntPtr)).WithRequiredModifier(typeof(ManagedMethodPointer))));
                 return Return<ValueFunc<R>>();
             }

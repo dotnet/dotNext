@@ -5,6 +5,8 @@ using System;
 
 namespace DotNext
 {
+    using static Runtime.Intrinsics;
+
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class BitwiseEqualityBenchmark
@@ -57,7 +59,7 @@ namespace DotNext
         {
             var value = NonEmptyGuid;
             var span1 = new ReadOnlySpan<byte>(&value, sizeof(Guid));
-            var empty = default(Guid);
+            var empty = DefaultOf<Guid>();
             var span2 = new ReadOnlySpan<byte>(&empty, sizeof(Guid));
             span1.SequenceEqual(span2);
         }
@@ -79,7 +81,7 @@ namespace DotNext
         {
             var value = NonEmptyBigStruct;
             var span1 = new ReadOnlySpan<byte>(&value, sizeof(LargeStruct));
-            var empty = default(LargeStruct);
+            var empty = DefaultOf<LargeStruct>();
             var span2 = new ReadOnlySpan<byte>(&empty, sizeof(LargeStruct));
             span1.SequenceEqual(span2);
         }

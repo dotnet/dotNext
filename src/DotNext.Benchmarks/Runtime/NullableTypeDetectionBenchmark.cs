@@ -3,8 +3,10 @@ using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using System.Text;
 
-namespace DotNext.Reflection
+namespace DotNext.Runtime
 {
+    
+
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class NullableTypeDetectionBenchmark
@@ -12,8 +14,8 @@ namespace DotNext.Reflection
         [Benchmark]
         public void DetectNullableType()
         {
-            var vt = TypeExtensions.IsNullable<ValueFunc<int, int>>();
-            vt |= TypeExtensions.IsNullable<StringBuilder>();
+            var vt = Intrinsics.IsNullable<ValueFunc<int, int>>();
+            vt |= Intrinsics.IsNullable<StringBuilder>();
         }
 
         [Benchmark]
