@@ -85,6 +85,8 @@
       href: unsafe/unstruct.md
     - name: Calling Function by Pointer
       href: unsafe/funcptr.md
+    - name: Low-Level Memory Manipulations
+      href: unsafe/memory.md
 - name: Cluster and Distributed Consensus
   href: cluster/index.md
   items:
