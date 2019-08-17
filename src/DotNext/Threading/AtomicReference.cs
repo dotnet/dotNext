@@ -23,7 +23,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet<T>(ref T value, T expected, T update)
             where T : class
-            => Atomic.Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
+            => ReferenceEquals(Interlocked.CompareExchange(ref value, update, expected), expected);
 
         private static (T OldValue, T NewValue) Update<T>(ref T value, in ValueFunc<T, T> updater)
             where T : class

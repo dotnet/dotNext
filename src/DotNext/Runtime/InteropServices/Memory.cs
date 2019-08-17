@@ -8,7 +8,7 @@ using M = InlineIL.MethodRef;
 
 namespace DotNext.Runtime.InteropServices
 {
-    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
+    using RuntimeFeaturesAttribute = CompilerServices.RuntimeFeaturesAttribute;
     using typedref = TypedReference;    //IL compliant alias to TypedReference
 
     /// <summary>
@@ -418,7 +418,7 @@ namespace DotNext.Runtime.InteropServices
         {
             do
             {
-                var count = (int)length.Min(int.MaxValue);
+                var count = (int)Math.Min(length, int.MaxValue);
                 Unsafe.InitBlockUnaligned(address.ToPointer(), 0, (uint)count);
                 address += count;
                 length -= count;
@@ -447,7 +447,7 @@ namespace DotNext.Runtime.InteropServices
         {
             do
             {
-                var count = (int)length.Min(int.MaxValue);
+                var count = (int)Math.Min(length, int.MaxValue);
                 if (new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceEqual(new ReadOnlySpan<byte>(second.ToPointer(), count)))
                 {
                     first += count;
@@ -525,7 +525,7 @@ namespace DotNext.Runtime.InteropServices
             int comparison;
             do
             {
-                var count = (int)length.Min(int.MaxValue);
+                var count = (int)Math.Min(length, int.MaxValue);
                 comparison = new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceCompareTo(new ReadOnlySpan<byte>(second.ToPointer(), count));
                 if (comparison == 0)
                 {
@@ -566,7 +566,7 @@ namespace DotNext.Runtime.InteropServices
                     Push(second);
                     Unaligned(1);
                     Ldind_U1();
-                    Call(new M(typeof(byte), nameof(ulong.CompareTo), typeof(byte)));
+                    Call(new M(typeof(byte), nameof(byte.CompareTo), typeof(byte)));
                     break;
                 case 2:
                     Push(first);
@@ -697,7 +697,6 @@ namespace DotNext.Runtime.InteropServices
         public static IntPtr AddressOf<T>(in T value)
         {
             Ldarg(nameof(value));
-            Conv_I();
             return Return<IntPtr>();
         }
 
@@ -724,6 +723,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="second">The second value to be replaced with <paramref name="first"/>.</param>
         /// <typeparam name="T">The type of the value.</typeparam>
         [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Swap<T>(T* first, T* second)
             where T : unmanaged
         {
@@ -755,6 +755,9 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="box">The boxed value.</param>
         /// <typeparam name="T">The value type.</typeparam>
         /// <returns>The managed pointer to the boxed value.</returns>
+        /// <exception cref="NullReferenceException"><paramref name="box"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidCastException"><paramref name="box"/> is not a boxed value type.</exception>
+        /// <seealso href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">III.1.8.1.2.2 ("Controlled-muttability managed pointers")</seealso>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T GetBoxedValue<T>(object box)
             where T : struct
@@ -804,6 +807,7 @@ namespace DotNext.Runtime.InteropServices
         {
             Ldarg(nameof(value));
             Ldnull();
+            Conv_I();
             Ceq();
             return Return<bool>();
         }
