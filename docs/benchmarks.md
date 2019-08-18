@@ -138,12 +138,12 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 
 | Method | Mean | Error | StdDev | Median |
 | ---- | ---- | ---- | ---- | --- |
-| Instance method, regular delegate, has implicit **this** | 2.747 ns | 0.0379 ns | 0.0336 ns | 2.741 ns |
-| Instance method, Value Delegate, has implicit **this** | 4.108 ns | 0.0652 ns | 0.0578 ns | 4.101 ns |
-| Static method, regular delegate, large size of param type, no implicitly captured object | 6.590 ns | 0.3193 ns | 0.9366 ns | 6.435 ns |
-| Static method, Value Delegate, large size of param type, no implicitly captured object | 17.790 ns | 0.5467 ns | 1.0268 ns | 17.582 ns |
-| Static method, regular delegate, small size of param type, no implicitly captured object | 85.961 ns | 1.7877 ns | 4.1076 ns | 84.270 ns |
-| Static method, Value Delegate, small size of param type, no implicitly captured object | 80.220 ns | 0.7253 ns | 0.6430 ns | 80.184 ns |
+| Instance method, regular delegate, has implicit **this** |  3.042 ns | 0.0969 ns | 0.2842 ns |  2.880 ns |
+| Instance method, Value Delegate, has implicit **this** |  4.209 ns | 0.1174 ns | 0.1793 ns |  4.243 ns |
+| Static method, regular delegate, large size of param type, no implicitly captured object | 20.651 ns | 0.1441 ns | 0.1277 ns | 20.650 ns |
+| Static method, Value Delegate, large size of param type, no implicitly captured object | 27.066 ns | 0.2038 ns | 0.1807 ns | 27.046 ns |
+| Static method, regular delegate, small size of param type, no implicitly captured object | 78.562 ns | 0.4298 ns | 0.3810 ns | 78.526 ns |
+| Static method, Value Delegate, small size of param type, no implicitly captured object | 68.681 ns | 1.0735 ns | 0.9517 ns | 68.466 ns |
 
 _Large size of param type_ means that the type of the parameter is larger than 64 bit.
 
