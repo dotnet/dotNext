@@ -86,7 +86,7 @@ namespace DotNext.Threading
         }
 
         [Benchmark]
-        public void ReadWriteUsingVolatileAccess()
+        public void ReadWriteUsingAtomicAccess()
         {
             vWrite.Start();
             vRead1.Start();
