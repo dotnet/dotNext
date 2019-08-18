@@ -52,10 +52,10 @@ Bitwise equality is an absolute winner for equality check between arrays of any 
 
 | Method | Mean | Error | StdDev | Median |
 | ---- | ---- | ---- | ---- | ---- |
-| `Guid.GetHashCode` |  2.418 ns | 0.0308 ns | 0.0273 ns |  2.414 ns |
-| `BitwiseComparer<Guid>.GetHashCode` |  2.371 ns | 0.0333 ns | 0.0295 ns |  2.385 ns |
-| `BitwiseComparer<LargeStructure>.GetHashCode` |  6.345 ns | 0.1794 ns | 0.2515 ns |  6.189 ns |
-| `LargeStructure.GetHashCode` | 49.470 ns | 0.9415 ns | 0.8346 ns | 49.189 ns |
+| `Guid.GetHashCode` |  2.637 ns | 0.0121 ns | 0.0101 ns |
+| `BitwiseComparer<Guid>.GetHashCode` |  6.924 ns | 0.0240 ns | 0.0225 ns |
+| `BitwiseComparer<LargeStructure>.GetHashCode` | 23.206 ns | 0.4926 ns | 0.6743 ns |
+| `LargeStructure.GetHashCode` | 51.915 ns | 0.0751 ns | 0.0666 ns |
 
 Bitwise hash code algorithm is very efficient for hashing of large value types.
 
