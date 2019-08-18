@@ -50,12 +50,12 @@ Bitwise equality is an absolute winner for equality check between arrays of any 
 # Bitwise Hash Code
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs) compares performance of [BitwiseComparer&lt;T&gt;.GetHashCode](./api/DotNext.BitwiseComparer-1.yml) and `GetHashCode` instance method for the types [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
-| Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- |
-| `Guid.GetHashCode` | 2.704 ns | 0.0207 ns | 0.0183 ns |
-| `BitwiseComparer<Guid>.GetHashCode` | 8.798 ns | 0.0854 ns | 0.0757 ns |
-| `BitwiseComparer<LargeStructure>.GetHashCode` | 23.087 ns | 0.1273 ns | 0.1191 ns |
-| `LargeStructure.GetHashCode` | 49.613 ns | 0.1804 ns | 0.1506 ns |
+| Method | Mean | Error | StdDev | Median |
+| ---- | ---- | ---- | ---- | ---- |
+| `Guid.GetHashCode` |  2.418 ns | 0.0308 ns | 0.0273 ns |  2.414 ns |
+| `BitwiseComparer<Guid>.GetHashCode` |  2.371 ns | 0.0333 ns | 0.0295 ns |  2.385 ns |
+| `BitwiseComparer<LargeStructure>.GetHashCode` |  6.345 ns | 0.1794 ns | 0.2515 ns |  6.189 ns |
+| `LargeStructure.GetHashCode` | 49.470 ns | 0.9415 ns | 0.8346 ns | 49.189 ns |
 
 Bitwise hash code algorithm is very efficient for hashing of large value types.
 
