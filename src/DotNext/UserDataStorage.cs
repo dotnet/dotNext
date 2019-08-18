@@ -15,7 +15,7 @@ namespace DotNext
     /// This is by-ref struct because user data should have
     /// the same lifetime as its owner.
 	/// </remarks>
-    [SuppressMessage("Design", "CA1066")]
+    [SuppressMessage("Design", "CA1066", Justification = "By-ref value type cannot implements interfaces")]
     public readonly ref struct UserDataStorage
     {
         private readonly struct Supplier<T, V> : ISupplier<V>
