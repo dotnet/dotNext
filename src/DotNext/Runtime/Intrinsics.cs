@@ -54,6 +54,19 @@ namespace DotNext.Runtime
             /// <returns>A value that indicates the relative order of the objects being compared.</returns>
             /// <seealso cref="BitwiseCompare{T1, T2}(T1, T2)"/>
             public int Compare(T first, T second) => BitwiseCompare(ref first, ref second);
+
+            /// <summary>
+            /// Determines whether the current comparer is equal to the specified object.
+            /// </summary>
+            /// <param name="other">The object to compare.</param>
+            /// <returns><see langword="true"/> if this comparer is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+            public override bool Equals(object other) => other is BitwiseComparer<T>;
+
+            /// <summary>
+            /// Computes hash code for this comparer.
+            /// </summary>
+            /// <returns>The hash code of this object.</returns>
+            public override int GetHashCode() => typeof(T).GetHashCode();
         }
 
         /// <summary>
