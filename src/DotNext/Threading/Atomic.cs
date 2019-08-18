@@ -146,7 +146,7 @@ namespace DotNext.Threading
         {
             Lock();
             var current = value;
-            if (ValueType<T>.BitwiseEquals(current, expected))
+            if (BitwiseComparer<T>.Equals(current, expected))
                 Copy(in update, out value);
             Copy(in current, out result);
             Unlock();
@@ -162,7 +162,7 @@ namespace DotNext.Threading
         {
             Lock();
             bool result;
-            if (result = ValueType<T>.BitwiseEquals(value, expected))
+            if (result = BitwiseComparer<T>.Equals(value, expected))
                 Copy(in update, out value);
             Unlock();
             return result;

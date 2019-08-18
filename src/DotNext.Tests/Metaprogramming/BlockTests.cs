@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Xunit;
 
@@ -18,9 +19,9 @@ namespace DotNext.Metaprogramming
 
         private struct DisposableStruct
         {
-            internal readonly ValueType<bool> Disposed;
+            internal readonly StrongBox<bool> Disposed;
 
-            internal DisposableStruct(ValueType<bool> disposedFlag)
+            internal DisposableStruct(StrongBox<bool> disposedFlag)
                 => Disposed = disposedFlag;
 
             public void Dispose() => Disposed.Value = true;
@@ -39,11 +40,11 @@ namespace DotNext.Metaprogramming
                 });
             })
            .Compile();
-            var flag = new ValueType<bool>(false);
+            var flag = new StrongBox<bool>(false);
             var value = new DisposableStruct(flag);
-            False(flag);
+            False(flag.Value);
             lambda(ref value);
-            True(flag);
+            True(flag.Value);
             Null(value.Disposed);
         }
 

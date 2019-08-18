@@ -236,20 +236,6 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Determines whether two arrays contain the same set of elements.
-        /// </summary>
-        /// <remarks>
-        /// This method calls <see cref="IEquatable{T}.Equals(T)"/> for each element type.
-        /// </remarks>
-        /// <typeparam name="T">Type of array elements.</typeparam>
-        /// <param name="first">First array for equality check.</param>
-        /// <param name="second">Second array for equality check.</param>
-        /// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
-        public static bool SequenceEqual<T>(this T[] first, T[] second)
-            where T : IEquatable<T>
-            => first is null ? second is null : new ReadOnlySpan<T>(first).SequenceEqual(new ReadOnlySpan<T>(second));
-
-        /// <summary>
         /// Determines whether two arrays contain the same set of bits.
         /// </summary>
         /// <remarks>
@@ -270,7 +256,7 @@ namespace DotNext
                 return true;
             else
                 fixed (T* firstPtr = first, secondPtr = second)
-                    return Memory.EqualsAligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * ValueType<T>.Size);
+                    return Memory.EqualsAligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * sizeof(T));
         }
 
         /// <summary>
@@ -286,7 +272,7 @@ namespace DotNext
             if (array.IsNullOrEmpty())
                 return 0;
             fixed (T* ptr = array)
-                return Memory.GetHashCode32Aligned(new IntPtr(ptr), array.LongLength * ValueType<T>.Size, salted);
+                return Memory.GetHashCode32Aligned(new IntPtr(ptr), array.LongLength * sizeof(T), salted);
         }
 
         /// <summary>
@@ -304,7 +290,7 @@ namespace DotNext
             if (array.IsNullOrEmpty())
                 return hash;
             fixed (T* ptr = array)
-                return Memory.GetHashCode32Aligned(new IntPtr(ptr), array.LongLength * ValueType<T>.Size, hash, hashFunction, salted);
+                return Memory.GetHashCode32Aligned(new IntPtr(ptr), array.LongLength * sizeof(T), hash, hashFunction, salted);
         }
 
         /// <summary>
@@ -335,7 +321,7 @@ namespace DotNext
             if (array.IsNullOrEmpty())
                 return hash;
             fixed (T* ptr = array)
-                return Memory.GetHashCode64Aligned(new IntPtr(ptr), array.LongLength * ValueType<T>.Size, hash, hashFunction, salted);
+                return Memory.GetHashCode64Aligned(new IntPtr(ptr), array.LongLength * sizeof(T), hash, hashFunction, salted);
         }
 
         /// <summary>
@@ -364,7 +350,7 @@ namespace DotNext
             if (array.IsNullOrEmpty())
                 return 0;
             fixed (T* ptr = array)
-                return Memory.GetHashCode64Aligned(new IntPtr(ptr), array.LongLength * ValueType<T>.Size, salted);
+                return Memory.GetHashCode64Aligned(new IntPtr(ptr), array.LongLength * sizeof(T), salted);
         }
 
         /// <summary>
@@ -407,7 +393,7 @@ namespace DotNext
             else if (first.LongLength != second.LongLength)
                 return first.LongLength.CompareTo(second.LongLength);
             fixed (T* firstPtr = first, secondPtr = second)
-                return Memory.CompareUnaligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * ValueType<T>.Size);
+                return Memory.CompareUnaligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * sizeof(T));
         }
     }
 }

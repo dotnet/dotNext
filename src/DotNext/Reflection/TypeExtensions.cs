@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using Var = InlineIL.LocalVar;
+
 
 namespace DotNext.Reflection
 {
@@ -133,6 +130,7 @@ namespace DotNext.Reflection
         /// </remarks>
         public static MethodInfo GetMethod(this Type type, string methodName, BindingFlags flags, long genericParamCount, params Type[] parameters)
         {
+            //TODO: Should be deprecated for .NET Standard 2.1 and replaced with native implementation
             foreach (var method in type.GetMethods(flags))
                 if (method.Name == methodName && method.GetGenericArguments().LongLength == genericParamCount)
                 {
@@ -144,7 +142,7 @@ namespace DotNext.Reflection
                         {
                             var actual = actualParams[i];
                             var expected = parameters[i];
-                            success = IsGenericParameter(actual) && expected is null || actual == expected;
+                            success = IsGenericParameter(actual) && expected is null || actual == expected || actual.IsConstructedGenericType && actual.GetGenericTypeDefinition() == expected;
                         }
                     if (success)
                         return method;
@@ -249,26 +247,6 @@ namespace DotNext.Reflection
                 return obj;
             else
                 throw new InvalidCastException();
-        }
-
-        /// <summary>
-        /// Provides the fast way to check whether the specified type accepts  <see langword="null"/> value as valid value.
-        /// </summary>
-        /// <remarks>
-        /// This method always returns <see langword="true"/> for all reference types and <see cref="Nullable{T}"/>.
-        /// </remarks>
-        /// <typeparam name="T">The type to check.</typeparam>
-        /// <returns><see langword="true"/> if <typeparamref name="T"/> is nullable type; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullable<T>()
-        {
-            const string DefaultVar = "default";
-            DeclareLocals(true, new Var(DefaultVar, typeof(T)));
-            Ldloc(DefaultVar);
-            Box(typeof(T));
-            Ldnull();
-            Ceq();
-            return Return<bool>();
         }
     }
 }

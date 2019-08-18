@@ -38,7 +38,7 @@ namespace DotNext
         }
 
         private static readonly Guid NonEmptyGuid = Guid.NewGuid();
-        private static readonly LargeStruct NonEmptyBigStruct = new LargeStruct { C = 30 };
+        private static readonly LargeStruct NonEmptyLargeStruct = new LargeStruct { C = 30 };
 
         [Benchmark]
         public void GuidEqualsMethod()
@@ -49,7 +49,7 @@ namespace DotNext
         [Benchmark]
         public void GuidBitwiseEqualsMethod()
         {
-            ValueType<Guid>.BitwiseEquals(NonEmptyGuid, default);
+            BitwiseComparer<Guid>.Equals(NonEmptyGuid, default);
         }
 
         [Benchmark]
@@ -65,19 +65,19 @@ namespace DotNext
         [Benchmark]
         public void LargeStructEqualsMethod()
         {
-            NonEmptyBigStruct.Equals(default);
+            NonEmptyLargeStruct.Equals(default);
         }
 
         [Benchmark]
         public void LargeStructBitwiseEqualsMethod()
         {
-            ValueType<LargeStruct>.BitwiseEquals(NonEmptyBigStruct, default);
+            BitwiseComparer<LargeStruct>.Equals(NonEmptyLargeStruct, default);
         }
 
         [Benchmark]
         public unsafe void LargeStructEqualsUsingSpan()
         {
-            var value = NonEmptyBigStruct;
+            var value = NonEmptyLargeStruct;
             var span1 = new ReadOnlySpan<byte>(&value, sizeof(LargeStruct));
             var empty = default(LargeStruct);
             var span2 = new ReadOnlySpan<byte>(&empty, sizeof(LargeStruct));

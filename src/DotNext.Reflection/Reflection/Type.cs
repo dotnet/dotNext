@@ -6,6 +6,8 @@ using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext.Reflection
 {
+    using Intrinsics = Runtime.Intrinsics;
+
     /// <summary>
     /// Provides typed access to class or value type metadata.
     /// </summary>
@@ -20,12 +22,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Returns default value for this type.
         /// </summary>
-        public static T Default => default;
-
-        /// <summary>
-        /// Checks whether the specified value is default value.
-        /// </summary>
-        public static readonly Predicate<T> IsDefault;
+        public static T Default => Intrinsics.DefaultOf<T>();
 
         /// <summary>
         /// Provides smart hash code computation.
@@ -33,7 +30,7 @@ namespace DotNext.Reflection
         /// <remarks>
         /// For reference types, this delegate always calls <see cref="object.GetHashCode"/> virtual method.
         /// For value type, it calls <see cref="object.GetHashCode"/> if it is overridden by the value type; otherwise,
-        /// it calls <see cref="ValueType{T}.BitwiseHashCode(T, bool)"/>.
+        /// it calls <see cref="BitwiseComparer{T}.GetHashCode(T, bool)"/>.
         /// </remarks>
         public static new readonly Operator<T, int> GetHashCode;
 
@@ -44,7 +41,7 @@ namespace DotNext.Reflection
         /// If type <typeparamref name="T"/> has equality operator then use it.
         /// Otherwise, for reference types, this delegate always calls <see cref="object.Equals(object, object)"/> method.
         /// For value type, it calls equality operator or <see cref="IEquatable{T}.Equals(T)"/> if it is implemented by the value type; else,
-        /// it calls <see cref="ValueType{T}.BitwiseEquals(T, T)"/>.
+        /// it calls <see cref="BitwiseComparer{T}.Equals{G}"/>.
         /// </remarks>
         public static new readonly Operator<T, T, bool> Equals;
 
@@ -56,16 +53,13 @@ namespace DotNext.Reflection
             Equals = Operator<T>.Get<bool>(BinaryOperator.Equal, OperatorLookup.Overloaded);
             if (RuntimeType.IsValueType)
             {
-                //default checker
-                var method = typeof(ValueType<>).MakeGenericType(RuntimeType).GetMethod(nameof(ValueType<int>.IsDefault));
-                IsDefault = method.CreateDelegate<Predicate<T>>();
                 //hash code calculator
-                method = RuntimeType.GetHashCodeMethod();
+                var method = RuntimeType.GetHashCodeMethod();
                 if (method is null)
                 {
-                    method = typeof(ValueType<>)
+                    method = typeof(BitwiseComparer<>)
                                 .MakeGenericType(RuntimeType)
-                                .GetMethod(nameof(ValueType<int>.BitwiseHashCode), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, typeof(T), typeof(bool));
+                                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new []{ RuntimeType, typeof(bool) });
                     Debug.Assert(!(method is null));
                     GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam, Constant(true)), inputParam).Compile();
                 }
@@ -83,17 +77,16 @@ namespace DotNext.Reflection
                     //3. Use bitwise equality
                     else
                     {
-                        method = typeof(ValueType<>)
+                        method = typeof(BitwiseComparer<>)
                             .MakeGenericType(RuntimeType)
-                            .GetMethod(nameof(ValueType<int>.BitwiseEquals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public, typeof(T), typeof(T));
+                            .GetMethod(nameof(BitwiseComparer<int>.Equals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
+                            .MakeGenericMethod(RuntimeType);
                         Debug.Assert(!(method is null));
                         Equals = Lambda<Operator<T, T, bool>>(Call(null, method, inputParam, secondParam), inputParam, secondParam).Compile();
                     }
             }
             else
             {
-                //default checker
-                IsDefault = new Predicate<object>(input => input is null).ChangeType<Predicate<T>>();
                 //hash code calculator
                 GetHashCode = Lambda<Operator<T, int>>(Call(inputParam, typeof(object).GetHashCodeMethod()), inputParam).Compile();
                 //equality checker

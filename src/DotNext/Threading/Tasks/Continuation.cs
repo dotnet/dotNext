@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Threading.Tasks
 {
+    using static Runtime.Intrinsics;
     using Generic;
 
     internal static class Continuation<T, C>
@@ -33,7 +34,7 @@ namespace DotNext.Threading.Tasks
         /// <returns><paramref name="task"/> in final state.</returns>
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<Task> OnCompleted(this Task task)
-            => task.ContinueWith(Func.Identity<Task>(), default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+            => task.ContinueWith(Func.Identity<Task>(), DefaultOf<CancellationToken>(), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
         /// <summary>
         /// Allows to obtain original <see cref="Task{R}"/> in its final state after <c>await</c> without
@@ -44,7 +45,7 @@ namespace DotNext.Threading.Tasks
         /// <returns><paramref name="task"/> in final state.</returns>
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<Task<R>> OnCompleted<R>(this Task<R> task)
-            => task.ContinueWith(Func.Identity<Task<R>>(), default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+            => task.ContinueWith(Func.Identity<Task<R>>(), DefaultOf<CancellationToken>(), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
         /// <summary>
         /// Returns constant value if underlying task is failed.
@@ -61,7 +62,7 @@ namespace DotNext.Threading.Tasks
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<T> OnFaulted<T, C>(this Task<T> task, TaskScheduler scheduler = null)
             where C : Constant<T>, new()
-            => ContinueWithConstant<T, C>(task, task.IsFaulted, Continuation<T, C>.WhenFaulted, default, scheduler);
+            => ContinueWithConstant<T, C>(task, task.IsFaulted, Continuation<T, C>.WhenFaulted, DefaultOf<CancellationToken>(), scheduler);
 
         /// <summary>
         /// Returns constant value if underlying task is failed or canceled.
@@ -78,7 +79,7 @@ namespace DotNext.Threading.Tasks
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<T> OnFaultedOrCanceled<T, C>(this Task<T> task, TaskScheduler scheduler = null)
             where C : Constant<T>, new()
-            => ContinueWithConstant<T, C>(task, task.IsFaulted | task.IsCanceled, Continuation<T, C>.WhenFaultedOrCanceled, default, scheduler);
+            => ContinueWithConstant<T, C>(task, task.IsFaulted | task.IsCanceled, Continuation<T, C>.WhenFaultedOrCanceled, DefaultOf<CancellationToken>(), scheduler);
 
         /// <summary>
         /// Returns constant value if underlying task is canceled.
@@ -95,6 +96,6 @@ namespace DotNext.Threading.Tasks
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
         public static Task<T> OnCanceled<T, C>(this Task<T> task, TaskScheduler scheduler = null)
             where C : Constant<T>, new()
-            => ContinueWithConstant<T, C>(task, task.IsCanceled, Continuation<T, C>.WhenCanceled, default, scheduler);
+            => ContinueWithConstant<T, C>(task, task.IsCanceled, Continuation<T, C>.WhenCanceled, DefaultOf<CancellationToken>(), scheduler);
     }
 }

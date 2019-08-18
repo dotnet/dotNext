@@ -4,7 +4,7 @@ using BenchmarkDotNet.Order;
 using System;
 
 
-namespace DotNext.Benchmarks
+namespace DotNext
 {
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
@@ -33,7 +33,7 @@ namespace DotNext.Benchmarks
         [Benchmark]
         public void ShortGuidArraySequenceEqual()
         {
-            ShortGuidArray1.SequenceEqual(ShortGuidArray2);
+            new ReadOnlySpan<Guid>(ShortGuidArray1).SequenceEqual(ShortGuidArray2);
         }
 
         [Benchmark]
@@ -53,7 +53,7 @@ namespace DotNext.Benchmarks
         [Benchmark]
         public void LongGuidArraySequenceEqual()
         {
-            LongGuidArray1.SequenceEqual(LongGuidArray2);
+            new ReadOnlySpan<Guid>(LongGuidArray1).SequenceEqual(LongGuidArray2);
         }
 
         [Benchmark]
