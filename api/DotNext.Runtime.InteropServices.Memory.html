@@ -156,7 +156,7 @@ public static readonly void *NullPtr</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_AddressOf__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.AddressOf%60%601(%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L696">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L714">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_AddressOf_" data-uid="DotNext.Runtime.InteropServices.Memory.AddressOf*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_AddressOf__1___0__" data-uid="DotNext.Runtime.InteropServices.Memory.AddressOf``1(``0@)">AddressOf&lt;T&gt;(T)</h4>
@@ -226,7 +226,7 @@ not the address of the object itself.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_AreSame__1___0____0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.AreSame%60%601(%60%600%40%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L677">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L695">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_AreSame_" data-uid="DotNext.Runtime.InteropServices.Memory.AreSame*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_AreSame__1___0____0__" data-uid="DotNext.Runtime.InteropServices.Memory.AreSame``1(``0@,``0@)">AreSame&lt;T&gt;(T, T)</h4>
@@ -298,7 +298,7 @@ not the address of the object itself.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_AsRef__1_System_TypedReference_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.AsRef%60%601(System.TypedReference)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L742">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L760">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_AsRef_" data-uid="DotNext.Runtime.InteropServices.Memory.AsRef*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_AsRef__1_System_TypedReference_" data-uid="DotNext.Runtime.InteropServices.Memory.AsRef``1(System.TypedReference)">AsRef&lt;T&gt;(TypedReference)</h4>
@@ -381,7 +381,7 @@ public static T AsRef&lt;T&gt;(this TypedReference reference)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_AsSpan__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.AsSpan%60%601(%60%600*)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L777">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L795">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_AsSpan_" data-uid="DotNext.Runtime.InteropServices.Memory.AsSpan*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_AsSpan__1___0__" data-uid="DotNext.Runtime.InteropServices.Memory.AsSpan``1(``0*)">AsSpan&lt;T&gt;(T*)</h4>
@@ -393,7 +393,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static Span&lt;byte&gt; AsSpan&lt;T&gt;(T*pointer)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -451,7 +450,7 @@ public static Span&lt;byte&gt; AsSpan&lt;T&gt;(T*pointer)
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ClearBits_System_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ClearBits(System.IntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L417">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L435">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_ClearBits_" data-uid="DotNext.Runtime.InteropServices.Memory.ClearBits*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_ClearBits_System_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.ClearBits(System.IntPtr,System.Int64)">ClearBits(IntPtr, Int64)</h4>
@@ -495,7 +494,7 @@ without restriction on <a class="xref" href="https://docs.microsoft.com/dotnet/a
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ClearBits_System_Void__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ClearBits(System.Void*%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L433">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L451">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_ClearBits_" data-uid="DotNext.Runtime.InteropServices.Memory.ClearBits*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_ClearBits_System_Void__System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.ClearBits(System.Void*,System.Int64)">ClearBits(Void*, Int64)</h4>
@@ -536,7 +535,7 @@ public static void ClearBits(void *address, long length)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Compare_System_IntPtr_System_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Compare(System.IntPtr%2CSystem.IntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L549">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L567">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Compare_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_Compare_System_IntPtr_System_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare(System.IntPtr,System.IntPtr,System.Int64)">Compare(IntPtr, IntPtr, Int64)</h4>
@@ -598,7 +597,7 @@ public static void ClearBits(void *address, long length)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Compare_System_Void__System_Void__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Compare(System.Void*%2CSystem.Void*%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L619">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L637">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Compare_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_Compare_System_Void__System_Void__System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare(System.Void*,System.Void*,System.Int64)">Compare(Void*, Void*, Int64)</h4>
@@ -754,7 +753,7 @@ public static void Copy(void *source, void *destination, long length)</code></pr
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Copy__1___0____0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Copy%60%601(%60%600%40%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L788">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L806">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Copy_" data-uid="DotNext.Runtime.InteropServices.Memory.Copy*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_Copy__1___0____0__" data-uid="DotNext.Runtime.InteropServices.Memory.Copy``1(``0@,``0@)">Copy&lt;T&gt;(T, out T)</h4>
@@ -764,7 +763,6 @@ public static void Copy(void *source, void *destination, long length)</code></pr
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(in T input, out T output)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -812,7 +810,7 @@ public static void Copy(void *source, void *destination, long length)</code></pr
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Equals_System_IntPtr_System_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Equals(System.IntPtr%2CSystem.IntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L470">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L488">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Equals_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_Equals_System_IntPtr_System_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals(System.IntPtr,System.IntPtr,System.Int64)">Equals(IntPtr, IntPtr, Int64)</h4>
@@ -874,7 +872,7 @@ public static void Copy(void *source, void *destination, long length)</code></pr
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Equals_System_Void__System_Void__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Equals(System.Void*%2CSystem.Void*%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L443">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L461">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Equals_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_Equals_System_Void__System_Void__System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals(System.Void*,System.Void*,System.Int64)">Equals(Void*, Void*, Int64)</h4>
@@ -937,7 +935,7 @@ public static bool Equals(void *first, void *second, long length)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetBoxedValue__1_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetBoxedValue%60%601(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L761">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L779">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_GetBoxedValue_" data-uid="DotNext.Runtime.InteropServices.Memory.GetBoxedValue*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_GetBoxedValue__1_System_Object_" data-uid="DotNext.Runtime.InteropServices.Memory.GetBoxedValue``1(System.Object)">GetBoxedValue&lt;T&gt;(Object)</h4>
@@ -947,7 +945,6 @@ public static bool Equals(void *first, void *second, long length)</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetBoxedValue&lt;T&gt;(object box)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1255,7 +1252,7 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_Void__System_Int64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.Void*%2CSystem.Int64%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L404">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L422">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_Void__System_Int64_System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.Void*,System.Int64,System.Boolean)">GetHashCode32(Void*, Int64, Boolean)</h4>
@@ -1936,7 +1933,7 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_IsNull__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.IsNull%60%601(%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L805">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L823">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_IsNull_" data-uid="DotNext.Runtime.InteropServices.Memory.IsNull*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_IsNull__1___0__" data-uid="DotNext.Runtime.InteropServices.Memory.IsNull``1(``0@)">IsNull&lt;T&gt;(T)</h4>
@@ -2013,7 +2010,6 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(ref IntPtr source)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2083,7 +2079,6 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T ReadUnaligned&lt;T&gt;(ref IntPtr source)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2141,7 +2136,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Swap__1___0____0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Swap%60%601(%60%600*%2C%60%600*)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L725">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L743">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Swap_" data-uid="DotNext.Runtime.InteropServices.Memory.Swap*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_Swap__1___0____0__" data-uid="DotNext.Runtime.InteropServices.Memory.Swap``1(``0*,``0*)">Swap&lt;T&gt;(T*, T*)</h4>
@@ -2152,7 +2147,6 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static void Swap&lt;T&gt;(T*first, T*second)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2200,7 +2194,7 @@ public static void Swap&lt;T&gt;(T*first, T*second)
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Swap__1___0____0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Swap%60%601(%60%600%40%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L712">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L730">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Swap_" data-uid="DotNext.Runtime.InteropServices.Memory.Swap*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_Swap__1___0____0__" data-uid="DotNext.Runtime.InteropServices.Memory.Swap``1(``0@,``0@)">Swap&lt;T&gt;(ref T, ref T)</h4>
@@ -2256,7 +2250,7 @@ public static void Swap&lt;T&gt;(T*first, T*second)
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ThrowIfNull__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ThrowIfNull%60%601(%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L821">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L839">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_ThrowIfNull_" data-uid="DotNext.Runtime.InteropServices.Memory.ThrowIfNull*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_ThrowIfNull__1___0__" data-uid="DotNext.Runtime.InteropServices.Memory.ThrowIfNull``1(``0@)">ThrowIfNull&lt;T&gt;(T)</h4>
@@ -2333,7 +2327,6 @@ public static void Swap&lt;T&gt;(T*first, T*second)
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static T*ToPointer&lt;T&gt;(this IntPtr source)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2403,7 +2396,6 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(ref IntPtr destination, T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2463,7 +2455,6 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void WriteUnaligned&lt;T&gt;(ref IntPtr destination, T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
