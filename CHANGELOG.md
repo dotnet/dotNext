@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 08-XX-209
+# 08-18-209
 <a href="https://www.nuget.org/packages/dotnext/0.12.0">DotNext 0.12.0</a>
 * Value (struct) Delegates are introduced as allocation-free alternative to classic delegates
 * Atomic&lt;T&gt; is added to provide atomic memory access operations for arbitrary value types

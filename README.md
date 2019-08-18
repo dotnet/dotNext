@@ -35,7 +35,7 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-XX-2019
+Release Date: 08-18-2019
 
 <a href="https://www.nuget.org/packages/dotnext/0.12.0">DotNext 0.12.0</a>
 * Value (struct) Delegates are introduced as allocation-free alternative to classic delegates
