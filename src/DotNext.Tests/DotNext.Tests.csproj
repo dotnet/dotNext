@@ -4,7 +4,8 @@
 	  <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.11.1</Version>
+    <Version>0.12.0</Version>
+    <IsPackable>false</IsPackable>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Unit tests for .NEXT Familiy of Libraries</Description>
@@ -33,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\aug\DotNext.Augmentation.Test\DotNext.Augmentation.Test.csproj" />
     <ProjectReference Include="..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj" />
     <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" />
     <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" />

@@ -235,7 +235,17 @@ namespace DotNext.Metaprogramming
         /// <param name="delegate">The expression providing delegate to be invoked.</param>
         /// <param name="arguments">Delegate invocation arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Invoke(Expression @delegate, IEnumerable<Expression> arguments) => LexicalScope.Current.AddStatement(Expression.Invoke(@delegate, arguments));
+        public static void Invoke(Expression @delegate, IEnumerable<Expression> arguments)
+            => LexicalScope.Current.AddStatement(Expression.Invoke(@delegate, arguments));
+
+        /// <summary>
+        /// Adds invocation statement which is not invoked if <paramref name="delegate"/> is <see langword="null"/>.
+        /// </summary>
+        /// <param name="delegate">The expression providing delegate to be invoked.</param>
+        /// <param name="arguments">Delegate invocation arguments.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void NullSafeInvoke(Expression @delegate, IEnumerable<Expression> arguments)
+            => LexicalScope.Current.AddStatement(@delegate.IfNotNull(target => Expression.Invoke(target, arguments)));
 
         /// <summary>
         /// Adds invocation statement.
@@ -244,6 +254,15 @@ namespace DotNext.Metaprogramming
         /// <param name="arguments">Delegate invocation arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Invoke(Expression @delegate, params Expression[] arguments) => Invoke(@delegate, (IEnumerable<Expression>)arguments);
+
+        /// <summary>
+        /// Adds invocation statement which is not invoked if <paramref name="delegate"/> is <see langword="null"/>.
+        /// </summary>
+        /// <param name="delegate">The expression providing delegate to be invoked.</param>
+        /// <param name="arguments">Delegate invocation arguments.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void NullSafeInvoke(Expression @delegate, params Expression[] arguments)
+            => NullSafeInvoke(@delegate, (IEnumerable<Expression>)arguments);
 
         /// <summary>
         /// Inserts expression tree as a statement.
@@ -266,6 +285,16 @@ namespace DotNext.Metaprogramming
             => LexicalScope.Current.AddStatement(Expression.Call(instance, method, arguments));
 
         /// <summary>
+        /// Adds instance method call statement which is not invoked if <paramref name="instance"/> is <see langword="null"/>.
+        /// </summary>
+        /// <param name="instance"><c>this</c> argument.</param>
+        /// <param name="method">The method to be called.</param>
+        /// <param name="arguments">Method call arguments.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void NullSafeCall(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
+            => LexicalScope.Current.AddStatement(instance.IfNotNull(target => Expression.Call(target, method, arguments)));
+
+        /// <summary>
         /// Adds instance method call statement.
         /// </summary>
         /// <param name="instance"><c>this</c> argument.</param>
@@ -274,6 +303,16 @@ namespace DotNext.Metaprogramming
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
         public static void Call(Expression instance, MethodInfo method, params Expression[] arguments)
             => Call(instance, method, (IEnumerable<Expression>)arguments);
+
+        /// <summary>
+        /// Adds instance method call statement which is not invoked if <paramref name="instance"/> is <see langword="null"/>.
+        /// </summary>
+        /// <param name="instance"><c>this</c> argument.</param>
+        /// <param name="method">The method to be called.</param>
+        /// <param name="arguments">Method call arguments.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void NullSafeCall(Expression instance, MethodInfo method, params Expression[] arguments)
+            => NullSafeCall(instance, method, (IEnumerable<Expression>)arguments);
 
         /// <summary>
         /// Adds instance method call statement.
@@ -286,12 +325,22 @@ namespace DotNext.Metaprogramming
             => LexicalScope.Current.AddStatement(instance.Call(methodName, arguments));
 
         /// <summary>
-        /// Adds static method call statement.,
+        /// Adds instance method call statement which is not invoked if <paramref name="instance"/> is <see langword="null"/>.
+        /// </summary>
+        /// <param name="instance"><c>this</c> argument.</param>
+        /// <param name="methodName">The method to be called.</param>
+        /// <param name="arguments">Method call arguments.</param>
+        /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+        public static void NullSafeCall(Expression instance, string methodName, params Expression[] arguments)
+            => LexicalScope.Current.AddStatement(instance.IfNotNull(target => target.Call(methodName, arguments)));
+
+        /// <summary>
+        /// Adds static method call statement.
         /// </summary>
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Call(MethodInfo method, IEnumerable<Expression> arguments)
+        public static void CallStatic(MethodInfo method, IEnumerable<Expression> arguments)
             => LexicalScope.Current.AddStatement(Expression.Call(null, method, arguments));
 
         /// <summary>
@@ -300,8 +349,8 @@ namespace DotNext.Metaprogramming
         /// <param name="method">The method to be called.</param>
         /// <param name="arguments">Method call arguments.</param>
         /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-        public static void Call(MethodInfo method, params Expression[] arguments)
-            => Call(method, (IEnumerable<Expression>)arguments);
+        public static void CallStatic(MethodInfo method, params Expression[] arguments)
+            => CallStatic(method, (IEnumerable<Expression>)arguments);
 
         /// <summary>
         /// Adds static method call.

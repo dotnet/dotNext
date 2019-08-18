@@ -89,7 +89,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Size of type <typeparamref name="T"/>, in bytes.
         /// </summary>
-        public static int Size => ValueType<T>.Size;
+        public unsafe static int Size => sizeof(T);
 
         private readonly unsafe T* value;
 
@@ -152,6 +152,11 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The number of elements located in the unmanaged memory identified by this pointer.</param>
         /// <returns><see cref="Span{T}"/> representing elements in the unmanaged memory.</returns>
         public unsafe Span<T> ToSpan(int length) => new Span<T>(value, length);
+
+        /// <summary>
+        /// Converts this pointer into span of bytes.
+        /// </summary>
+        public unsafe Span<byte> Bytes => Memory.AsSpan(value);
 
         /// <summary>
 		/// Gets or sets pointer value at the specified position in the memory.

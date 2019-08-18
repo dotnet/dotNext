@@ -8,11 +8,57 @@ namespace DotNext.Threading.Tasks
     /// <summary>
     /// Represents lightweight version of <see cref="Task"/>.
     /// </summary>
-    public abstract class Future
+    /// <remarks>
+    /// This data type is primarily used for bridging between synchronous or legacy asynchronous code into
+    /// <c>await</c>-friendly form. It is NOT a replacement of <see cref="Task"/> in general.
+    /// </remarks>
+    /// <seealso href="https://en.wikipedia.org/wiki/Futures_and_promises">Futures and Promises</seealso>
+    public abstract class Future : IFuture
     {
+        /// <summary>
+        /// Represents awaiter of the asynchronous computation result represented by future object.
+        /// </summary>
+        public interface IAwaiter : IFuture
+        {
+            /// <summary>
+            /// Ends the wait for the completion of the asynchronous task.
+            /// </summary>
+            /// <exception cref="OperationCanceledException">Cancellation requested and caller specified that exception should be thrown.</exception>
+            /// <exception cref="IncompletedFutureException">The current future is not completed.</exception>
+            void GetResult();
+        }
+
+        /// <summary>
+        /// Represents awaiter of the asynchronous computation result represented by future object.
+        /// </summary>
+        /// <typeparam name="R"></typeparam>
+        public interface IAwaiter<out R> : IFuture
+        {
+            /// <summary>
+            /// Ends the wait for the completion of the asynchronous task.
+            /// </summary>
+            /// <returns>The result of asynchronous computation.</returns>
+            /// <exception cref="OperationCanceledException">Cancellation requested and caller specified that exception should be thrown.</exception>
+            /// <exception cref="IncompletedFutureException">The current future is not completed.</exception>
+            R GetResult();
+        }
+
+        /// <summary>
+        /// Represents exception indicating that the result is requested from incompleted Future object.
+        /// </summary>
+        protected sealed class IncompletedFutureException : InvalidOperationException
+        {
+            /// <summary>
+            /// Initializes a new exception.
+            /// </summary>
+            public IncompletedFutureException()
+            {
+            }
+        }
+
         private sealed class Continuation
         {
-            private static readonly Func<object, Action> ContinuationWithoutContextFactory = DelegateHelpers.CreateClosedDelegateFactory<Action>(() => QueueContinuation(null));
+            private static readonly Func<Action, Action> ContinuationWithoutContextFactory = DelegateHelpers.CreateClosedDelegateFactory<Action>(() => QueueContinuation(null));
 
             private readonly Action callback;
             private readonly SynchronizationContext context;
@@ -68,11 +114,10 @@ namespace DotNext.Threading.Tasks
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void OnCompleted(Action callback)
         {
-            callback = Continuation.Create(callback);
             if (IsCompleted)
                 callback();
             else
-                continuation += callback;
+                continuation += Continuation.Create(callback);
         }
     }
 
@@ -88,8 +133,8 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <remarks>
         /// This method can cause extra allocation of memory. Do not use it for <c>await</c> scenario.
-        /// It is suitable only for interop with <see cref="Task.WhenAll(System.Collections.Generic.IEnumerable{System.Threading.Tasks.Task})"/>
-        /// or <see cref="Task.WhenAny(System.Collections.Generic.IEnumerable{System.Threading.Tasks.Task})"/>.
+        /// It is suitable only for interop with <see cref="Task.WhenAll(System.Collections.Generic.IEnumerable{Task})"/>
+        /// or <see cref="Task.WhenAny(System.Collections.Generic.IEnumerable{Task})"/>.
         /// </remarks>
         /// <returns>The task representing the current awaitable object.</returns>
         public abstract T AsTask();

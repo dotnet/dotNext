@@ -1,4 +1,5 @@
 ﻿using System;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
 {
@@ -10,12 +11,16 @@ namespace DotNext
     {
         private static class TruePredicate<T>
         {
-            internal static readonly Predicate<T> Value = input => true;
+            internal static readonly Predicate<T> Value = AlwaysTrue;
+
+            private static bool AlwaysTrue(T value) => true;
         }
 
         private static class FalsePredicate<T>
         {
-            internal static readonly Predicate<T> Value = input => false;
+            internal static readonly Predicate<T> Value = AlwaysFalse;
+
+            private static bool AlwaysFalse(T value) => false;
         }
 
         private static class IsNullPredicate<T>
@@ -33,7 +38,9 @@ namespace DotNext
         private static class HasValuePredicate<T>
             where T : struct
         {
-            internal static readonly Predicate<T?> Value = value => value.HasValue;
+            internal static readonly Predicate<T?> Value = HasValue;
+
+            private static bool HasValue(T? nullable) => nullable.HasValue;
         }
 
         /// <summary>
@@ -169,5 +176,15 @@ namespace DotNext
                 return new Result<bool>(e);
             }
         }
+
+        /// <summary>
+        /// Converts predicate into <see cref="ValueFunc{T, R}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to check.</typeparam>
+        /// <param name="predicate">The predicate.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="predicate"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
+        /// <returns>The value delegate representing predicate.</returns>
+        public static ValueFunc<T, bool> AsValueFunc<T>(this Predicate<T> predicate, bool wrap = false)
+            => new ValueFunc<T, bool>(As<Func<T, bool>>(predicate), wrap);
     }
 }

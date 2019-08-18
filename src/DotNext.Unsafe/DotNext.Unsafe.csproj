@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.11.1</Version>
+    <Version>0.12.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Rich data types to work with unmanaged memory in CLS-compliant way</Description>
@@ -15,7 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>unsafe;unmanaged;pointer;pinvoke;interop</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Updated .NEXT dependencies</PackageReleaseNotes>
+    <PackageReleaseNotes>UnmanagedFunction and UnmanagedFunction&lt;R&gt; classes are introduced to call unmanaged functions by pointer</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -35,9 +35,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.4" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="5.1.1" PrivateAssets="all" />
+    <PackageReference Include="InlineIL.Fody" Version="1.2.0" PrivateAssets="all" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.11.1" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.12.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
   <ItemGroup>

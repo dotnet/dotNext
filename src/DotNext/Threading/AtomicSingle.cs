@@ -15,21 +15,9 @@ namespace DotNext.Threading
 	/// <seealso cref="Interlocked"/>
     public static class AtomicSingle
     {
-        private sealed class Operations : Atomic<float>
-        {
-            internal Operations() { }
+        private static readonly ValueFunc<float, float, float> Sum = new ValueFunc<float, float, float>(SumImpl);
 
-            internal override float Exchange(ref float value, float update) => Interlocked.Exchange(ref value, update);
-
-            internal override float CompareExchange(ref float value, float update, float expected)
-                => Interlocked.CompareExchange(ref value, update, expected);
-
-            internal override float VolatileRead(ref float value) => Volatile.Read(ref value);
-
-            private protected override bool Equals(float x, float y) => x.Equals(y);
-        }
-
-        internal static readonly Atomic<float> Atomic = new Operations();
+        private static float SumImpl(float x, float y) => x + y;
 
         /// <summary>
         /// Reads the value of the specified field. On systems that require it, inserts a
@@ -44,7 +32,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float VolatileRead(ref this float value) => Volatile.Read(ref value);
+        public static float VolatileRead(ref this float value) => Atomic.Read(ref value);
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -59,7 +47,7 @@ namespace DotNext.Threading
         /// </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileWrite(ref this float value, float newValue)
-            => Volatile.Write(ref value, newValue);
+            => Atomic.Write(ref value, newValue);
 
         /// <summary>
 		/// Atomically increments by one referenced value.
@@ -67,7 +55,7 @@ namespace DotNext.Threading
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <returns>Incremented value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float IncrementAndGet(ref this float value) => UpdateAndGet(ref value, x => x + 1F);
+        public static float IncrementAndGet(ref this float value) => AccumulateAndGet(ref value, 1F, Sum);
 
         /// <summary>
 		/// Atomically decrements by one the current value.
@@ -75,7 +63,7 @@ namespace DotNext.Threading
 		/// <param name="value">Reference to a value to be modified.</param>
 		/// <returns>Decremented value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float DecrementAndGet(ref this float value) => UpdateAndGet(ref value, x => x - 1F);
+        public static float DecrementAndGet(ref this float value) => AccumulateAndGet(ref value, -1F, Sum);
 
         /// <summary>
 		/// Adds two 64-bit floating-point numbers and replaces referenced storage with the sum, 
@@ -85,7 +73,7 @@ namespace DotNext.Threading
 		/// <param name="operand">The value to be added to the currently stored integer.</param>
 		/// <returns>Result of sum operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Add(ref this float value, float operand) => AccumulateAndGet(ref value, operand, (x, y) => x + y);
+        public static float Add(ref this float value, float operand) => AccumulateAndGet(ref value, operand, Sum);
 
         /// <summary>
         /// Atomically sets referenced value to the given updated value if the current value == the expected value.
@@ -96,7 +84,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet(ref this float value, float expected, float update)
-            => Atomic.CompareAndSet(ref value, expected, update);
+            => Atomic<float>.Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
 
         /// <summary>
 		/// Modifies referenced value atomically.
@@ -121,6 +109,28 @@ namespace DotNext.Threading
             return update;
         }
 
+        private static (float OldValue, float NewValue) Update(ref float value, in ValueFunc<float, float> updater)
+        {
+            float oldValue, newValue;
+            do
+            {
+                newValue = updater.Invoke(oldValue = VolatileRead(ref value));
+            }
+            while (!CompareAndSet(ref value, oldValue, newValue));
+            return (oldValue, newValue);
+        }
+
+        private static (float OldValue, float NewValue) Accumulate(ref float value, float x, in ValueFunc<float, float, float> accumulator)
+        {
+            float oldValue, newValue;
+            do
+            {
+                newValue = accumulator.Invoke(oldValue = VolatileRead(ref value), x);
+            }
+            while (!CompareAndSet(ref value, oldValue, newValue));
+            return (oldValue, newValue);
+        }
+
         /// <summary>
 		/// Atomically updates the current value with the results of applying the given function 
 		/// to the current and given values, returning the updated value.
@@ -134,7 +144,22 @@ namespace DotNext.Threading
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float AccumulateAndGet(ref this float value, float x, Func<float, float, float> accumulator)
-            => Atomic.Accumulate(ref value, x, accumulator).NewValue;
+            => AccumulateAndGet(ref value, x, new ValueFunc<float, float, float>(accumulator, true));
+
+        /// <summary>
+		/// Atomically updates the current value with the results of applying the given function 
+		/// to the current and given values, returning the updated value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the current value as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="value">Reference to a value to be modified.</param>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments</param>
+		/// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float AccumulateAndGet(ref this float value, float x, in ValueFunc<float, float, float> accumulator)
+            => Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function 
@@ -149,7 +174,22 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float GetAndAccumulate(ref this float value, float x, Func<float, float, float> accumulator)
-            => Atomic.Accumulate(ref value, x, accumulator).OldValue;
+            => GetAndAccumulate(ref value, x, new ValueFunc<float, float, float>(accumulator, true));
+
+        /// <summary>
+        /// Atomically updates the current value with the results of applying the given function 
+        /// to the current and given values, returning the original value.
+        /// </summary>
+        /// <remarks>
+        /// The function is applied with the current value as its first argument, and the given update as the second argument.
+        /// </remarks>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <param name="x">Accumulator operand.</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float GetAndAccumulate(ref this float value, float x, in ValueFunc<float, float, float> accumulator)
+            => Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
 		/// Atomically updates the stored value with the results 
@@ -160,7 +200,18 @@ namespace DotNext.Threading
 		/// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float UpdateAndGet(ref this float value, Func<float, float> updater)
-            => Atomic.Update(ref value, updater).NewValue;
+            => UpdateAndGet(ref value, new ValueFunc<float, float>(updater, true));
+
+        /// <summary>
+		/// Atomically updates the stored value with the results 
+		/// of applying the given function, returning the updated value.
+		/// </summary>
+		/// <param name="value">Reference to a value to be modified.</param>
+		/// <param name="updater">A side-effect-free function</param>
+		/// <returns>The updated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float UpdateAndGet(ref this float value, in ValueFunc<float, float> updater)
+            => Update(ref value, updater).NewValue;
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -171,7 +222,18 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float GetAndUpdate(ref this float value, Func<float, float> updater)
-            => Atomic.Update(ref value, updater).OldValue;
+            => GetAndUpdate(ref value, new ValueFunc<float, float>(updater, true));
+
+        /// <summary>
+        /// Atomically updates the stored value with the results 
+        /// of applying the given function, returning the original value.
+        /// </summary>
+        /// <param name="value">Reference to a value to be modified.</param>
+        /// <param name="updater">A side-effect-free function</param>
+        /// <returns>The original value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float GetAndUpdate(ref this float value, in ValueFunc<float, float> updater)
+            => Update(ref value, updater).OldValue;
 
         /// <summary>
         /// Performs volatile read of the array element.
@@ -287,6 +349,21 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The updated value.</returns>
 		public static float AccumulateAndGet(this float[] array, long index, float x, Func<float, float, float> accumulator)
+            => AccumulateAndGet(array, index, x, new ValueFunc<float, float, float>(accumulator, true));
+
+        /// <summary>
+		/// Atomically updates the array element with the results of applying the given function 
+		/// to the array element and given values, returning the updated value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the array element as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
+		/// <returns>The updated value.</returns>
+		public static float AccumulateAndGet(this float[] array, long index, float x, in ValueFunc<float, float, float> accumulator)
             => AccumulateAndGet(ref array[index], x, accumulator);
 
         /// <summary>
@@ -302,6 +379,21 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The original value of the array element.</returns>
 		public static float GetAndAccumulate(this float[] array, long index, float x, Func<float, float, float> accumulator)
+            => GetAndAccumulate(array, index, x, new ValueFunc<float, float, float>(accumulator, true));
+
+        /// <summary>
+		/// Atomically updates the array element with the results of applying the given function 
+		/// to the array element and given values, returning the original value.
+		/// </summary>
+		/// <remarks>
+		/// The function is applied with the array element as its first argument, and the given update as the second argument.
+		/// </remarks>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="x">Accumulator operand.</param>
+		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
+		/// <returns>The original value of the array element.</returns>
+		public static float GetAndAccumulate(this float[] array, long index, float x, in ValueFunc<float, float, float> accumulator)
             => GetAndAccumulate(ref array[index], x, accumulator);
 
         /// <summary>
@@ -313,6 +405,17 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
 		public static float UpdateAndGet(this float[] array, long index, Func<float, float> updater)
+            => UpdateAndGet(array, index, new ValueFunc<float, float>(updater, true));
+
+        /// <summary>
+		/// Atomically updates the array element with the results 
+		/// of applying the given function, returning the updated value.
+		/// </summary>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="updater">A side-effect-free function</param>
+		/// <returns>The updated value.</returns>
+		public static float UpdateAndGet(this float[] array, long index, in ValueFunc<float, float> updater)
             => UpdateAndGet(ref array[index], updater);
 
         /// <summary>
@@ -324,6 +427,17 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value of the array element.</returns>
 		public static float GetAndUpdate(this float[] array, long index, Func<float, float> updater)
+            => GetAndUpdate(array, index, new ValueFunc<float, float>(updater, true));
+
+        /// <summary>
+		/// Atomically updates the array element with the results 
+		/// of applying the given function, returning the original value.
+		/// </summary>
+		/// <param name="array">The array to be modified.</param>
+        /// <param name="index">The index of the array element to be modified.</param>
+		/// <param name="updater">A side-effect-free function</param>
+		/// <returns>The original value of the array element.</returns>
+		public static float GetAndUpdate(this float[] array, long index, in ValueFunc<float, float> updater)
             => GetAndUpdate(ref array[index], updater);
     }
 }

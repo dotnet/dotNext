@@ -98,5 +98,339 @@ namespace DotNext
         /// <exception cref="ArgumentException">Cannot convert delegate type.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static D ChangeType<D>(this Delegate d) where D : Delegate => d.Method.CreateDelegate<D>(d.Target);
+
+        private static D BindUnsafe<T, D>(this Delegate del, T obj)
+            where T : class
+            where D : Delegate
+        {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            if (!(del.Target is null))
+                throw new InvalidOperationException();
+            return del.Method.CreateDelegate<D>(obj);
+        }
+
+        /// <summary>
+        /// Produces delegate which first parameter is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of the first parameter to bind.</typeparam>
+        /// <param name="action">The action to bind.</param>
+        /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The delegate targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
+        public static Action Bind<T>(this Action<T> action, T obj)
+            where T : class
+            => action.BindUnsafe<T, Action>(obj);
+
+        /// <summary>
+        /// Produces delegate which first parameter is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of the first parameter to bind.</typeparam>
+        /// <typeparam name="R">The type of the return value of the method that the delegate encapsulates.</typeparam>
+        /// <param name="func">The action to bind.</param>
+        /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The delegate targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
+        public static Func<R> Bind<T, R>(this Func<T, R> func, T obj)
+            where T : class
+            => func.BindUnsafe<T, Func<R>>(obj);
+
+        /// <summary>
+        /// Produces delegate which first parameter is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter.</typeparam>
+        /// <typeparam name="R">The type of the return value of the method that the delegate encapsulates.</typeparam>
+        /// <param name="func">The action to bind.</param>
+        /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The delegate targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
+        public static Func<T2, R> Bind<T1, T2, R>(this Func<T1, T2, R> func, T1 obj)
+            where T1 : class
+            => func.BindUnsafe<T1, Func<T2, R>>(obj);
+
+        /// <summary>
+        /// Produces delegate which first parameter is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter.</typeparam>
+        /// <param name="action">The action to bind.</param>
+        /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The delegate targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
+        public static Action<T2> Bind<T1, T2>(this Action<T1, T2> action, T1 obj)
+            where T1 : class
+            => action.BindUnsafe<T1, Action<T2>>(obj);
+
+        /// <summary>
+        /// Produces delegate which first parameter is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter.</typeparam>
+        /// <typeparam name="T3">The type of the third parameter.</typeparam>
+        /// <typeparam name="R">The type of the return value of the method that the delegate encapsulates.</typeparam>
+        /// <param name="func">The action to bind.</param>
+        /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The delegate targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
+        public static Func<T2, T3, R> Bind<T1, T2, T3, R>(this Func<T1, T2, T3, R> func, T1 obj)
+            where T1 : class
+            => func.BindUnsafe<T1, Func<T2, T3, R>>(obj);
+
+        /// <summary>
+        /// Produces delegate which first parameter is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter.</typeparam>
+        /// <typeparam name="T3">The type of the third parameter.</typeparam>
+        /// <param name="action">The action to bind.</param>
+        /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The delegate targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
+        public static Action<T2, T3> Bind<T1, T2, T3>(this Action<T1, T2, T3> action, T1 obj)
+            where T1 : class
+            => action.BindUnsafe<T1, Action<T2, T3>>(obj);
+
+        /// <summary>
+        /// Produces delegate which first parameter is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter.</typeparam>
+        /// <typeparam name="T3">The type of the third parameter.</typeparam>
+        /// <typeparam name="T4">The type of the fourth parameter.</typeparam>
+        /// <typeparam name="R">The type of the return value of the method that the delegate encapsulates.</typeparam>
+        /// <param name="func">The action to bind.</param>
+        /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The delegate targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
+        public static Func<T2, T3, T4, R> Bind<T1, T2, T3, T4, R>(this Func<T1, T2, T3, T4, R> func, T1 obj)
+            where T1 : class
+            => func.BindUnsafe<T1, Func<T2, T3, T4, R>>(obj);
+
+        /// <summary>
+        /// Produces delegate which first parameter is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter.</typeparam>
+        /// <typeparam name="T3">The type of the third parameter.</typeparam>
+        /// <typeparam name="T4">The type of the fourth parameter.</typeparam>
+        /// <param name="action">The action to bind.</param>
+        /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The delegate targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
+        public static Action<T2, T3, T4> Bind<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action, T1 obj)
+            where T1 : class
+            => action.BindUnsafe<T1, Action<T2, T3, T4>>(obj);
+
+        /// <summary>
+        /// Produces delegate which first parameter is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter.</typeparam>
+        /// <typeparam name="T3">The type of the third parameter.</typeparam>
+        /// <typeparam name="T4">The type of the fourth parameter.</typeparam>
+        /// <typeparam name="T5">The type of the fifth parameter.</typeparam>
+        /// <typeparam name="R">The type of the return value of the method that the delegate encapsulates.</typeparam>
+        /// <param name="func">The action to bind.</param>
+        /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The delegate targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
+        public static Func<T2, T3, T4, T5, R> Bind<T1, T2, T3, T4, T5, R>(this Func<T1, T2, T3, T4, T5, R> func, T1 obj)
+            where T1 : class
+            => func.BindUnsafe<T1, Func<T2, T3, T4, T5, R>>(obj);
+
+        /// <summary>
+        /// Produces delegate which first parameter is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first parameter to bind.</typeparam>
+        /// <typeparam name="T2">The type of the second parameter.</typeparam>
+        /// <typeparam name="T3">The type of the third parameter.</typeparam>
+        /// <typeparam name="T4">The type of the fourth parameter.</typeparam>
+        /// <typeparam name="T5">The type of the fifth parameter.</typeparam>
+        /// <param name="action">The action to bind.</param>
+        /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The delegate targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
+        public static Action<T2, T3, T4, T5> Bind<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action, T1 obj)
+            where T1 : class
+            => action.BindUnsafe<T1, Action<T2, T3, T4, T5>>(obj);
+
+        private static U UnsafeUnbind<U>(this Delegate del, Type targetType)
+            where U : MulticastDelegate
+            => ObjectExtensions.IsContravariant(del.Target, targetType) ? del.Method.CreateDelegate<U>() : throw new InvalidOperationException();
+
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="T">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <param name="action">The delegate to unbind.</param>
+        /// <returns>Unbound version of the delegate.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="T"/>.</exception>
+        public static Action<T> Unbind<T>(this Action action) where T : class => action.UnsafeUnbind<Action<T>>(typeof(T));
+
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="T">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <typeparam name="R">The type of the return value of the method that the delegate encapsulates.</typeparam>
+        /// <param name="func">The delegate to unbind.</param>
+        /// <returns>Unbound version of the delegate.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="T"/>.</exception>
+        public static Func<T, R> Unbind<T, R>(this Func<R> func) where T : class => func.UnsafeUnbind<Func<T, R>>(typeof(T));
+
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <typeparam name="T">The type of the first explicit parameter.</typeparam>
+        /// <typeparam name="R">The type of the return value of the method that the delegate encapsulates.</typeparam>
+        /// <param name="func">The delegate to unbind.</param>
+        /// <returns>Unbound version of the delegate.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
+        public static Func<G, T, R> Unbind<G, T, R>(this Func<T, R> func)
+            where G : class
+            => func.UnsafeUnbind<Func<G, T, R>>(typeof(G));
+
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <typeparam name="T">The type of the first explicit parameter.</typeparam>
+        /// <param name="action">The delegate to unbind.</param>
+        /// <returns>Unbound version of the delegate.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
+        public static Action<G, T> Unbind<G, T>(this Action<T> action)
+            where G : class
+            => action.UnsafeUnbind<Action<G, T>>(typeof(G));
+
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <typeparam name="T1">The type of the first explicit parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second explicit parameter.</typeparam>
+        /// <typeparam name="R">The type of the return value of the method that the delegate encapsulates.</typeparam>
+        /// <param name="func">The delegate to unbind.</param>
+        /// <returns>Unbound version of the delegate.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
+        public static Func<G, T1, T2, R> Unbind<G, T1, T2, R>(this Func<T1, T2, R> func)
+            where G : class
+            => func.UnsafeUnbind<Func<G, T1, T2, R>>(typeof(G));
+
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <typeparam name="T1">The type of the first explicit parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second explicit parameter.</typeparam>
+        /// <param name="action">The delegate to unbind.</param>
+        /// <returns>Unbound version of the delegate.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
+        public static Action<G, T1, T2> Unbind<G, T1, T2>(this Action<T1, T2> action)
+            where G : class
+            => action.UnsafeUnbind<Action<G, T1, T2>>(typeof(G));
+
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <typeparam name="T1">The type of the first explicit parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second explicit parameter.</typeparam>
+        /// <typeparam name="T3">The type of the third explicit parameter.</typeparam>
+        /// <typeparam name="R">The type of the return value of the method that the delegate encapsulates.</typeparam>
+        /// <param name="func">The delegate to unbind.</param>
+        /// <returns>Unbound version of the delegate.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
+        public static Func<G, T1, T2, T3, R> Unbind<G, T1, T2, T3, R>(this Func<T1, T2, T3, R> func)
+            where G : class
+            => func.UnsafeUnbind<Func<G, T1, T2, T3, R>>(typeof(G));
+
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <typeparam name="T1">The type of the first explicit parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second explicit parameter.</typeparam>
+        /// <typeparam name="T3">The type of the third explicit parameter.</typeparam>
+        /// <param name="action">The delegate to unbind.</param>
+        /// <returns>Unbound version of the delegate.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
+        public static Action<G, T1, T2, T3> Unbind<G, T1, T2, T3>(this Action<T1, T2, T3> action)
+            where G : class
+            => action.UnsafeUnbind<Action<G, T1, T2, T3>>(typeof(G));
+
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <typeparam name="T1">The type of the first explicit parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second explicit parameter.</typeparam>
+        /// <typeparam name="T3">The type of the third explicit parameter.</typeparam>
+        /// <typeparam name="T4">The type of the fourth explicit parameter.</typeparam>
+        /// <typeparam name="R">The type of the return value of the method that the delegate encapsulates.</typeparam>
+        /// <param name="func">The delegate to unbind.</param>
+        /// <returns>Unbound version of the delegate.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
+        public static Func<G, T1, T2, T3, T4, R> Unbind<G, T1, T2, T3, T4, R>(this Func<T1, T2, T3, T4, R> func)
+            where G : class
+            => func.UnsafeUnbind<Func<G, T1, T2, T3, T4, R>>(typeof(G));
+
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <typeparam name="T1">The type of the first explicit parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second explicit parameter.</typeparam>
+        /// <typeparam name="T3">The type of the third explicit parameter.</typeparam>
+        /// <typeparam name="T4">The type of the fourth explicit parameter.</typeparam>
+        /// <param name="action">The delegate to unbind.</param>
+        /// <returns>Unbound version of the delegate.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
+        public static Action<G, T1, T2, T3, T4> Unbind<G, T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action)
+            where G : class
+            => action.UnsafeUnbind<Action<G, T1, T2, T3, T4>>(typeof(G));
+
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <typeparam name="T1">The type of the first explicit parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second explicit parameter.</typeparam>
+        /// <typeparam name="T3">The type of the third explicit parameter.</typeparam>
+        /// <typeparam name="T4">The type of the fourth explicit parameter.</typeparam>
+        /// <typeparam name="T5">The type of the fifth explicit parameter.</typeparam>
+        /// <typeparam name="R">The type of the return value of the method that the delegate encapsulates.</typeparam>
+        /// <param name="func">The delegate to unbind.</param>
+        /// <returns>Unbound version of the delegate.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
+        public static Func<G, T1, T2, T3, T4, T5, R> Unbind<G, T1, T2, T3, T4, T5, R>(this Func<T1, T2, T3, T4, T5, R> func)
+            where G : class
+            => func.UnsafeUnbind<Func<G, T1, T2, T3, T4, T5, R>>(typeof(G));
+
+        /// <summary>
+        /// Converts implicitly bound delegate into its unbound version.
+        /// </summary>
+        /// <typeparam name="G">The expected type of <see cref="Delegate.Target"/>.</typeparam>
+        /// <typeparam name="T1">The type of the first explicit parameter.</typeparam>
+        /// <typeparam name="T2">The type of the second explicit parameter.</typeparam>
+        /// <typeparam name="T3">The type of the third explicit parameter.</typeparam>
+        /// <typeparam name="T4">The type of the fourth explicit parameter.</typeparam>
+        /// <typeparam name="T5">The type of the fifth explicit parameter.</typeparam>
+        /// <param name="action">The delegate to unbind.</param>
+        /// <returns>Unbound version of the delegate.</returns>
+        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
+        public static Action<G, T1, T2, T3, T4, T5> Unbind<G, T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action)
+            where G : class
+            => action.UnsafeUnbind<Action<G, T1, T2, T3, T4, T5>>(typeof(G));
     }
 }

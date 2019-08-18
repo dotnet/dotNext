@@ -17,5 +17,7 @@ namespace DotNext
         internal static string ReplicationRejected => Resources.GetString("ReplicationRejected");
 
         internal static string EntrySetIsEmpty => Resources.GetString("EntrySetIsEmpty");
+
+        internal static string LocalNodeNotLeader => Resources.GetString("LocalNodeNotLeader");
     }
 }

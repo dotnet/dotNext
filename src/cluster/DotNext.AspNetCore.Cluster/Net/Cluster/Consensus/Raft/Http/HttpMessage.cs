@@ -131,7 +131,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected virtual void FillRequest(HttpRequestMessage request)
         {
             request.Headers.Add(NodeIpHeader, Sender.Address.ToString());
-            request.Headers.Add(NodePortHeader, Convert.ToString(Sender.Port, InvariantCulture));
+            request.Headers.Add(NodePortHeader, Sender.Port.ToString(InvariantCulture));
             request.Headers.Add(MessageTypeHeader, MessageType);
             request.Headers.Add(RequestIdHeader, Id);
             request.Method = HttpMethod.Post;
@@ -154,7 +154,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected static Task SaveResponse(HttpResponse response, bool result)
         {
             response.StatusCode = StatusCodes.Status200OK;
-            return response.WriteAsync(Convert.ToString(result, InvariantCulture));
+            return response.WriteAsync(result.ToString(InvariantCulture));
         }
 
         private protected static T ParseHeader<THeaders, T>(string headerName, HeadersReader<THeaders> reader,

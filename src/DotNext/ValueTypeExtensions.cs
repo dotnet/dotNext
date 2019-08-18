@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
 
 namespace DotNext
 {
@@ -10,69 +12,10 @@ namespace DotNext
     public static class ValueTypeExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static byte ToByte<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToByte(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static sbyte ToSByte<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToSByte(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static short ToInt16<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToInt16(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ushort ToUInt16<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToUInt16(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int ToInt32<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToInt32(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static uint ToUInt32<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToUInt32(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static long ToInt64<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToInt64(provider);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ulong ToUInt64<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToUInt64(provider);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string ToString<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToString(provider);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string ToString<T>(T value, string format, IFormatProvider provider = null) where T : struct, IFormattable => value.ToString(format, provider);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static TypeCode GetTypeCode<T>() where T : struct, IConvertible => new T().GetTypeCode();
-
-        /// <summary>
-        /// Obtain a value of type <typeparamref name="To"/> by 
-        /// reinterpreting the object representation of <typeparamref name="From"/>.
-        /// </summary>
-        /// <param name="input">A value to convert.</param>
-        /// <param name="output">Conversion result.</param>
-        /// <typeparam name="From">The type of input struct.</typeparam>
-        /// <typeparam name="To">The type of output struct.</typeparam>
-        /// <seealso cref="ValueType{T}.Bitcast{To}"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Bitcast<From, To>(this From input, out To output)
-            where From : unmanaged
-            where To : unmanaged
-            => ValueType<From>.Bitcast(in input, out output);
-
-        /// <summary>
-        /// Obtain a value of type <typeparamref name="To"/> by 
-        /// reinterpreting the object representation of <typeparamref name="From"/>. 
-        /// </summary>
-        /// <remarks>
-        /// Every bit in the value representation of the returned <typeparamref name="To"/> object 
-        /// is equal to the corresponding bit in the object representation of <typeparamref name="From"/>. 
-        /// The values of padding bits in the returned <typeparamref name="To"/> object are unspecified. 
-        /// The method takes into account size of <typeparamref name="From"/> and <typeparamref name="To"/> types
-        /// and able to provide conversion between types of different size.
-        /// </remarks>
-        /// <param name="input">A value to convert.</param>
-        /// <typeparam name="From">The type of input struct.</typeparam>
-        /// <typeparam name="To">The type of output struct.</typeparam>
-        /// <returns>Conversion result.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static To Bitcast<From, To>(this From input)
-            where From : unmanaged
-            where To : unmanaged
-        {
-            ValueType<From>.Bitcast<To>(in input, out var output);
-            return output;
-        }
 
         /// <summary>
 		/// Checks whether the specified value is equal to one
@@ -112,27 +55,6 @@ namespace DotNext
             => value.IsOneOf((IEnumerable<T>)values);
 
         /// <summary>
-        /// Create boxed representation of the value type.
-        /// </summary>
-        /// <param name="value">Value to be placed into heap.</param>
-        /// <typeparam name="T">Value type.</typeparam>
-        /// <returns>Boxed representation of value type.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ValueType<T> Box<T>(this T value)
-            where T : struct
-            => new ValueType<T>(value);
-
-        /// <summary>
-        /// Create boxed representation of the nullable value type.
-        /// </summary>
-        /// <param name="value">Value to be placed into heap.</param>
-        /// <typeparam name="T">Value type.</typeparam>
-        /// <returns>Boxed representation of nullable value type; or <see langword="null"/>.</returns>        
-        public static ValueType<T> Box<T>(this T? value)
-            where T : struct
-            => value.HasValue ? new ValueType<T>(value.Value) : null;
-
-        /// <summary>
         /// Attempts to get value from nullable container.
         /// </summary>
         /// <typeparam name="T">The underlying value type of the nullable type.</typeparam>
@@ -144,5 +66,576 @@ namespace DotNext
             value = nullable.GetValueOrDefault();
             return nullable.HasValue;
         }
+
+        /// <summary>
+        /// Converts <see cref="IntPtr"/> into <see cref="UIntPtr"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The converted <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr ToUIntPtr(this IntPtr value)
+        {
+            Push(value);
+            Conv_U();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Converts <see cref="bool"/> into <see cref="int"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><see cref="int"/> representation of <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int ToInt32(this bool value)
+        {
+            Push(value);
+            Conv_I4();
+            return Return<int>();
+        }
+
+        /// <summary>
+        /// Converts <see cref="int"/> into <see cref="bool"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><see langword="true"/> if value != 0</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ToBoolean(this int value) => value != 0;
+
+        /// <summary>
+        /// Converts <see cref="UIntPtr"/> into <see cref="IntPtr"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The converted <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static IntPtr ToIntPtr(this UIntPtr value)
+        {
+            Push(value);
+            Conv_I();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Determines whether the native integer is less than the specified value.
+        /// </summary>
+        /// <param name="value">The value to compare with other value.</param>
+        /// <param name="comparand">he value that is compared by value to <paramref name="value"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="value"/> is less than <paramref name="comparand"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool LessThan(this IntPtr value, IntPtr comparand)
+        {
+            Push(value);
+            Push(comparand);
+            Clt();
+            return Return<bool>();
+        }
+
+        /// <summary>
+        /// Determines whether the native integer is greater than the specified value.
+        /// </summary>
+        /// <param name="value">The value to compare with other value.</param>
+        /// <param name="comparand">he value that is compared by value to <paramref name="value"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="value"/> is greater than <paramref name="comparand"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool GreaterThan(this IntPtr value, IntPtr comparand)
+        {
+            Push(value);
+            Push(comparand);
+            Cgt();
+            return Return<bool>();
+        }
+
+        /// <summary>
+        /// Determines whether the native integer is greater than or equal to specified value.
+        /// </summary>
+        /// <param name="value">The value to compare with other value.</param>
+        /// <param name="comparand">he value that is compared by value to <paramref name="value"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="value"/> is greater than or equal to <paramref name="comparand"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool GreaterThanOrEqual(this IntPtr value, IntPtr comparand)
+        {
+            Push(value);
+            Push(comparand);
+            Clt();
+            Ldc_I4_0();
+            Ceq();
+            return Return<bool>();
+        }
+
+        /// <summary>
+        /// Determines whether the native integer is less than or equal to specified value.
+        /// </summary>
+        /// <param name="value">The value to compare with other value.</param>
+        /// <param name="comparand">he value that is compared by value to <paramref name="value"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="value"/> is less than or equal to <paramref name="comparand"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool LessThanOrEqual(this IntPtr value, IntPtr comparand)
+        {
+            Push(value);
+            Push(comparand);
+            Cgt();
+            Ldc_I4_0();
+            Ceq();
+            return Return<bool>();
+        }
+
+        /// <summary>
+        /// Determines whether the native integer is less than the specified value.
+        /// </summary>
+        /// <param name="value">The value to compare with other value.</param>
+        /// <param name="comparand">he value that is compared by value to <paramref name="value"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="value"/> is less than <paramref name="comparand"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static bool LessThan(this UIntPtr value, UIntPtr comparand)
+        {
+            Push(value);
+            Push(comparand);
+            Clt_Un();
+            return Return<bool>();
+        }
+
+        /// <summary>
+        /// Determines whether the native integer is greater than the specified value.
+        /// </summary>
+        /// <param name="value">The value to compare with other value.</param>
+        /// <param name="comparand">he value that is compared by value to <paramref name="value"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="value"/> is greater than <paramref name="comparand"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static bool GreaterThan(this UIntPtr value, UIntPtr comparand)
+        {
+            Push(value);
+            Push(comparand);
+            Cgt_Un();
+            return Return<bool>();
+        }
+
+        /// <summary>
+        /// Determines whether the native integer is greater than or equal to specified value.
+        /// </summary>
+        /// <param name="value">The value to compare with other value.</param>
+        /// <param name="comparand">he value that is compared by value to <paramref name="value"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="value"/> is greater than or equal to <paramref name="comparand"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static bool GreaterThanOrEqual(this UIntPtr value, UIntPtr comparand)
+        {
+            Push(value);
+            Push(comparand);
+            Clt_Un();
+            Ldc_I4_0();
+            Ceq();
+            return Return<bool>();
+        }
+
+        /// <summary>
+        /// Determines whether the native integer is less than or equal to specified value.
+        /// </summary>
+        /// <param name="value">The value to compare with other value.</param>
+        /// <param name="comparand">he value that is compared by value to <paramref name="value"/>.</param>
+        /// <returns><see langword="true"/> if <paramref name="value"/> is less than or equal to <paramref name="comparand"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static bool LessThanOrEqual(this UIntPtr value, UIntPtr comparand)
+        {
+            Push(value);
+            Push(comparand);
+            Cgt_Un();
+            Ldc_I4_0();
+            Ceq();
+            return Return<bool>();
+        }
+
+        /// <summary>
+        /// Negates native integer value.
+        /// </summary>
+        /// <param name="value">The value to negate.</param>
+        /// <returns>The negated value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Negate(this IntPtr value)
+        {
+            Push(value);
+            Neg();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Adds twp specified native integers.
+        /// </summary>
+        /// <param name="x">The first value to add.</param>
+        /// <param name="y">The second value to add.</param>
+        /// <returns>The result of adding <paramref name="x"/> and <paramref name="y"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Add(this IntPtr x, IntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Emit.Add();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Adds twp specified native integers.
+        /// </summary>
+        /// <param name="x">The first value to add.</param>
+        /// <param name="y">The second value to add.</param>
+        /// <returns>The result of adding <paramref name="x"/> and <paramref name="y"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr Add(this UIntPtr x, UIntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Emit.Add();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Adds two specified native integers.
+        /// </summary>
+        /// <param name="x">The first value to add.</param>
+        /// <param name="y">The second value to add.</param>
+        /// <returns>The result of adding <paramref name="x"/> and <paramref name="y"/>.</returns>
+        /// <exception cref="OverflowException">The result of an operation is outside the bounds of the <see cref="IntPtr"/> data type.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr AddChecked(this IntPtr x, IntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Add_Ovf();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Adds two specified native integers.
+        /// </summary>
+        /// <param name="x">The first value to add.</param>
+        /// <param name="y">The second value to add.</param>
+        /// <returns>The result of adding <paramref name="x"/> and <paramref name="y"/>.</returns>
+        /// <exception cref="OverflowException">The result of an operation is outside the bounds of the <see cref="UIntPtr"/> data type.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr AddChecked(this UIntPtr x, UIntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Add_Ovf_Un();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Subtracts two native integers.
+        /// </summary>
+        /// <param name="x">The minuend.</param>
+        /// <param name="y">The subtrahend.</param>
+        /// <returns>The result of subtracting <paramref name="y"/> from <paramref name="x"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Subtract(this IntPtr x, IntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Sub();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Subtracts two native integers.
+        /// </summary>
+        /// <param name="x">The minuend.</param>
+        /// <param name="y">The subtrahend.</param>
+        /// <returns>The result of subtracting <paramref name="y"/> from <paramref name="x"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr Subtract(this UIntPtr x, UIntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Sub();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Subtracts two native integers.
+        /// </summary>
+        /// <param name="x">The minuend.</param>
+        /// <param name="y">The subtrahend.</param>
+        /// <returns>The result of subtracting <paramref name="y"/> from <paramref name="x"/>.</returns>
+        /// <exception cref="OverflowException">The result of an operation is outside the bounds of the <see cref="IntPtr"/> data type.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr SubtractChecked(this IntPtr x, IntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Sub_Ovf();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Subtracts two native integers.
+        /// </summary>
+        /// <param name="x">The minuend.</param>
+        /// <param name="y">The subtrahend.</param>
+        /// <returns>The result of subtracting <paramref name="y"/> from <paramref name="x"/>.</returns>
+        /// <exception cref="OverflowException">The result of an operation is outside the bounds of the <see cref="UIntPtr"/> data type.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr SubtractChecked(this UIntPtr x, UIntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Sub_Ovf_Un();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Multiplies two specified native integers.
+        /// </summary>
+        /// <param name="x">The first value to multiply.</param>
+        /// <param name="y">The second value to mulitply.</param>
+        /// <returns>The result of multiplying <paramref name="x"/> by <paramref name="y"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Multiply(this IntPtr x, IntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Mul();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Multiplies two specified native integers.
+        /// </summary>
+        /// <param name="x">The first value to multiply.</param>
+        /// <param name="y">The second value to mulitply.</param>
+        /// <returns>The result of multiplying <paramref name="x"/> by <paramref name="y"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr Multiply(this UIntPtr x, UIntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Mul();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Multiplies two specified native integers.
+        /// </summary>
+        /// <param name="x">The first value to multiply.</param>
+        /// <param name="y">The second value to mulitply.</param>
+        /// <returns>The result of multiplying <paramref name="x"/> by <paramref name="y"/>.</returns>
+        /// <exception cref="OverflowException">The result of an operation is outside the bounds of the <see cref="IntPtr"/> data type.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr MultiplyChecked(this IntPtr x, IntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Mul_Ovf();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Multiplies two specified native integers.
+        /// </summary>
+        /// <param name="x">The first value to multiply.</param>
+        /// <param name="y">The second value to mulitply.</param>
+        /// <returns>The result of multiplying <paramref name="x"/> by <paramref name="y"/>.</returns>
+        /// <exception cref="OverflowException">The result of an operation is outside the bounds of the <see cref="IntPtr"/> data type.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr MultiplyChecked(this UIntPtr x, UIntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Mul_Ovf_Un();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Divides two specified native integers.
+        /// </summary>
+        /// <param name="x">The dividend.</param>
+        /// <param name="y">The divisor.</param>
+        /// <returns>The result of dividing <paramref name="x"/> by <paramref name="y"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Divide(this IntPtr x, IntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Div();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Divides two specified native integers.
+        /// </summary>
+        /// <param name="x">The dividend.</param>
+        /// <param name="y">The divisor.</param>
+        /// <returns>The result of dividing <paramref name="x"/> by <paramref name="y"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr Divide(this UIntPtr x, UIntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Div_Un();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Computes the bitwise XOR of two native integer values.
+        /// </summary>
+        /// <param name="x">The first operand.</param>
+        /// <param name="y">The second operand.</param>
+        /// <returns>The bitwise XOR.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Xor(this IntPtr x, IntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Emit.Xor();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Computes the bitwise XOR of two native integer values.
+        /// </summary>
+        /// <param name="x">The first operand.</param>
+        /// <param name="y">The second operand.</param>
+        /// <returns>The bitwise XOR.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr Xor(this UIntPtr x, UIntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Emit.Xor();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Computes the bitwise AND of two native integer values.
+        /// </summary>
+        /// <param name="x">The first operand.</param>
+        /// <param name="y">The second operand.</param>
+        /// <returns>The bitwise AND.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr And(this UIntPtr x, UIntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Emit.And();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Computes the bitwise AND of two native integer values.
+        /// </summary>
+        /// <param name="x">The first operand.</param>
+        /// <param name="y">The second operand.</param>
+        /// <returns>The bitwise AND.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr And(this IntPtr x, IntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Emit.And();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Computes the bitwise OR of two native integer values.
+        /// </summary>
+        /// <param name="x">The first operand.</param>
+        /// <param name="y">The second operand.</param>
+        /// <returns>The bitwise OR.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Or(this IntPtr x, IntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Emit.Or();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Computes the bitwise OR of two native integer values.
+        /// </summary>
+        /// <param name="x">The first operand.</param>
+        /// <param name="y">The second operand.</param>
+        /// <returns>The bitwise OR.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr Or(this UIntPtr x, UIntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Emit.Or();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Computes the bitwise complement of native integer value.
+        /// </summary>
+        /// <param name="value">The operand.</param>
+        /// <returns>The result of bitwise complement.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr OnesComplement(this IntPtr value)
+        {
+            Push(value);
+            Not();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Computes the bitwise complement of native integer value.
+        /// </summary>
+        /// <param name="value">The operand.</param>
+        /// <returns>The result of bitwise complement.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr OnesComplement(this UIntPtr value)
+        {
+            Push(value);
+            Not();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Increments native integer by 1.
+        /// </summary>
+        /// <param name="value">The value to increment.</param>
+        /// <returns>The incremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Increment(this IntPtr value) => Add(value, new IntPtr(1));
+
+        /// <summary>
+        /// Decrements native integer by 1.
+        /// </summary>
+        /// <param name="value">The value to increment.</param>
+        /// <returns>The decremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Decrement(this IntPtr value) => Subtract(value, new IntPtr(1));
+
+        /// <summary>
+        /// Increments native integer by 1.
+        /// </summary>
+        /// <param name="value">The value to increment.</param>
+        /// <returns>The incremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr Increment(this UIntPtr value) => Add(value, new UIntPtr(1));
+
+        /// <summary>
+        /// Decrements native integer by 1.
+        /// </summary>
+        /// <param name="value">The value to increment.</param>
+        /// <returns>The decremented value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr Decrement(this UIntPtr value) => Subtract(value, new UIntPtr(1));
     }
 }

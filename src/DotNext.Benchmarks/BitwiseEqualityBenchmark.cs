@@ -9,12 +9,12 @@ namespace DotNext
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class BitwiseEqualityBenchmark
     {
-        public struct BigStructure
+        public struct LargeStruct
         {
             public decimal X, Y, Z, C, A, B;
             public short F;
 
-            public bool Equals(BigStructure other)
+            public bool Equals(LargeStruct other)
                 => X == other.X &&
                     Y == other.Y &&
                     Z == other.Z &&
@@ -38,7 +38,7 @@ namespace DotNext
         }
 
         private static readonly Guid NonEmptyGuid = Guid.NewGuid();
-        private static readonly BigStructure NonEmptyBigStruct = new BigStructure { C = 30 };
+        private static readonly LargeStruct NonEmptyLargeStruct = new LargeStruct { C = 30 };
 
         [Benchmark]
         public void GuidEqualsMethod()
@@ -49,19 +49,39 @@ namespace DotNext
         [Benchmark]
         public void GuidBitwiseEqualsMethod()
         {
-            ValueType<Guid>.BitwiseEquals(NonEmptyGuid, default);
+            BitwiseComparer<Guid>.Equals(NonEmptyGuid, default);
         }
 
         [Benchmark]
-        public void BigStructEqualsMethod()
+        public unsafe void GuidBitwiseEqualsUsingSpan()
         {
-            NonEmptyBigStruct.Equals(default);
+            var value = NonEmptyGuid;
+            var span1 = new ReadOnlySpan<byte>(&value, sizeof(Guid));
+            var empty = default(Guid);
+            var span2 = new ReadOnlySpan<byte>(&empty, sizeof(Guid));
+            span1.SequenceEqual(span2);
         }
 
         [Benchmark]
-        public void BigStructBitwiseEqualsMethod()
+        public void LargeStructEqualsMethod()
         {
-            ValueType<BigStructure>.BitwiseEquals(NonEmptyBigStruct, default);
+            NonEmptyLargeStruct.Equals(default);
+        }
+
+        [Benchmark]
+        public void LargeStructBitwiseEqualsMethod()
+        {
+            BitwiseComparer<LargeStruct>.Equals(NonEmptyLargeStruct, default);
+        }
+
+        [Benchmark]
+        public unsafe void LargeStructEqualsUsingSpan()
+        {
+            var value = NonEmptyLargeStruct;
+            var span1 = new ReadOnlySpan<byte>(&value, sizeof(LargeStruct));
+            var empty = default(LargeStruct);
+            var span2 = new ReadOnlySpan<byte>(&empty, sizeof(LargeStruct));
+            span1.SequenceEqual(span2);
         }
     }
 }

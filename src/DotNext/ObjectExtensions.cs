@@ -81,9 +81,24 @@ namespace DotNext
         /// <param name="result2">Second decomposition result.</param>
         public static void Decompose<T, R1, R2>(this T obj, Func<T, R1> decomposer1, Func<T, R2> decomposer2, out R1 result1, out R2 result2)
             where T : class
+            => Decompose(obj, new ValueFunc<T, R1>(decomposer1, true), new ValueFunc<T, R2>(decomposer2, true), out result1, out result2);
+
+        /// <summary>
+        /// Performs decomposition of object into two values.
+        /// </summary>
+        /// <typeparam name="T">Type of object to decompose.</typeparam>
+        /// <typeparam name="R1">Type of the first decomposition result.</typeparam>
+        /// <typeparam name="R2">Type of the second decomposition result.</typeparam>
+        /// <param name="obj">An object to decompose.</param>
+        /// <param name="decomposer1">First decomposition function.</param>
+        /// <param name="decomposer2">Second decomposition function.</param>
+        /// <param name="result1">First decomposition result.</param>
+        /// <param name="result2">Second decomposition result.</param>
+        public static void Decompose<T, R1, R2>(this T obj, in ValueFunc<T, R1> decomposer1, in ValueFunc<T, R2> decomposer2, out R1 result1, out R2 result2)
+            where T : class
         {
-            result1 = decomposer1(obj);
-            result2 = decomposer2(obj);
+            result1 = decomposer1.Invoke(obj);
+            result2 = decomposer2.Invoke(obj);
         }
 
         /// <summary>
@@ -98,32 +113,26 @@ namespace DotNext
         /// <returns>Decomposition result.</returns>
         public static (R1, R2) Decompose<T, R1, R2>(this T obj, Func<T, R1> decomposer1, Func<T, R2> decomposer2)
             where T : class
+            => Decompose(obj, new ValueFunc<T, R1>(decomposer1, true), new ValueFunc<T, R2>(decomposer2, true));
+
+        /// <summary>
+        /// Performs decomposition of object into tuple.
+        /// </summary>
+        /// <typeparam name="T">Type of object to decompose.</typeparam>
+        /// <typeparam name="R1">Type of the first decomposition result.</typeparam>
+        /// <typeparam name="R2">Type of the second decomposition result.</typeparam>
+        /// <param name="obj">An object to decompose.</param>
+        /// <param name="decomposer1">First decomposition function.</param>
+        /// <param name="decomposer2">Second decomposition function.</param>
+        /// <returns>Decomposition result.</returns>
+        public static (R1, R2) Decompose<T, R1, R2>(this T obj, in ValueFunc<T, R1> decomposer1, in ValueFunc<T, R2> decomposer2)
+            where T : class
         {
             var tuple = default((R1 result1, R2 result2));
             obj.Decompose(decomposer1, decomposer2, out tuple.result1, out tuple.result2);
             return tuple;
         }
 
-        /// <summary>
-        /// Attempts to unbox value type.
-        /// </summary>
-        /// <param name="boxed">The boxed struct.</param>
-        /// <typeparam name="T">The type of the struct.</typeparam>
-        /// <returns>Unboxed representation of <typeparamref name="T"/>.</returns>
-        public static T? TryUnbox<T>(this object boxed)
-            where T : struct
-        {
-            switch (boxed)
-            {
-                case T vt:
-                    return vt;
-                case Optional<T> optional:
-                    return optional.OrNull();
-                case ValueType<T> vt:
-                    return vt.Value;
-                default:
-                    return null;
-            }
-        }
+        internal static bool IsContravariant(object obj, Type type) => obj != null && obj.GetType().IsAssignableFrom(type);
     }
 }

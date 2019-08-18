@@ -167,7 +167,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static long GetSize(int length) => Math.BigMul(length, Pointer<T>.Size);
+        private static unsafe long GetSize(int length) => Math.BigMul(length, sizeof(T));
 
         /// <summary>
         /// Creates bitwise copy of the unmanaged memory.

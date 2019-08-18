@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -28,11 +27,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private protected override void FillRequest(HttpRequestMessage request)
         {
-            request.Headers.Add(TermHeader, Convert.ToString(ConsensusTerm, InvariantCulture));
+            request.Headers.Add(TermHeader, ConsensusTerm.ToString(InvariantCulture));
             base.FillRequest(request);
         }
 
-        private protected new static async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response)
+        private protected static new async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response)
         {
             var result = await HttpMessage.ParseBoolResponse(response).ConfigureAwait(false);
             var term = ParseHeader<IEnumerable<string>, long>(TermHeader, response.Headers.TryGetValues, Int64Parser);
@@ -42,8 +41,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected static Task SaveResponse(HttpResponse response, Result<bool> result)
         {
             response.StatusCode = StatusCodes.Status200OK;
-            response.Headers.Add(TermHeader, Convert.ToString(result.Term, InvariantCulture));
-            return response.WriteAsync(Convert.ToString(result.Value, InvariantCulture));
+            response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
+            return response.WriteAsync(result.Value.ToString(InvariantCulture));
         }
     }
 }

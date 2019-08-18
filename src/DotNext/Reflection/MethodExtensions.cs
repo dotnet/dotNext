@@ -6,7 +6,7 @@ namespace DotNext.Reflection
     /// <summary>
     /// Various extension methods for method reflection.
     /// </summary>
-    public static class Method
+    public static class MethodExtensions
     {
         /// <summary>
         /// Returns method parameter types respecting order of parameters.
@@ -24,11 +24,11 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if the method parameters have the same set of types as types passed as array; otherwise, <see langword="false"/>.</returns>
 		public static bool SignatureEquals(this MethodBase method, Type[] parameters)
         {
-            var firstParams = method.GetParameters();
+            var firstParams = method.GetParameterTypes();
             if (firstParams.LongLength != parameters.LongLength)
                 return false;
             for (long i = 0; i < firstParams.LongLength; i++)
-                if (firstParams[i].ParameterType != parameters[i])
+                if (firstParams[i] != parameters[i])
                     return false;
             return true;
         }
@@ -38,9 +38,10 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="method">The first method to compare.</param>
         /// <param name="other">The second method to compare.</param>
+        /// <param name="respectCallingConvention"><see langword="true"/> to check calling convention; <see langword="false"/> to ignore calling convention.</param>
         /// <returns><see langword="true"/>, if both methods have the same number of formal parameters and parameters are equal by type; otherwise, <see langword="false"/>.</returns>
-		public static bool SignatureEquals(this MethodBase method, MethodBase other)
-            => method.SignatureEquals(other.GetParameterTypes());
+		public static bool SignatureEquals(this MethodBase method, MethodBase other, bool respectCallingConvention = false)
+            => (!respectCallingConvention || method.CallingConvention == other.CallingConvention) && method.SignatureEquals(other.GetParameterTypes());
 
         /// <summary>
         /// Determines whether formal parameters of both methods are equal by type
@@ -48,8 +49,9 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="method">The first method to compare.</param>
         /// <param name="other">The second method to compare.</param>
+        /// <param name="respectCallingConvention"><see langword="true"/> to check calling convention; <see langword="false"/> to ignore calling convention.</param>
         /// <returns><see langword="true"/>, if both methods have the same number of formal parameters, parameters are equal by type and return types are equal; otherwise, <see langword="false"/>.</returns>
-		public static bool SignatureEquals(this MethodInfo method, MethodInfo other)
-            => SignatureEquals((MethodBase)method, other) && method.ReturnType == other.ReturnType;
+		public static bool SignatureEquals(this MethodInfo method, MethodInfo other, bool respectCallingConvention = false)
+            => SignatureEquals((MethodBase)method, other, respectCallingConvention) && method.ReturnType == other.ReturnType;
     }
 }

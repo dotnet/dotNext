@@ -9,13 +9,15 @@ namespace DotNext.Collections.Generic
     public static class Collection
     {
         /// <summary>
-        /// Returns read-only view of the collection. 
+        /// Returns lazily converted read-only collection.
         /// </summary>
-        /// <param name="collection">A collection to be wrapped into read-only representation.</param>
-        /// <typeparam name="T">Type of items in the collection.</typeparam>
-        /// <returns>Read-only view of the collection.</returns>
-        public static ReadOnlyCollectionView<T> AsReadOnlyView<T>(this ICollection<T> collection)
-            => new ReadOnlyCollectionView<T>(collection);
+        /// <typeparam name="I">Type of items in the source collection.</typeparam>
+        /// <typeparam name="O">Type of items in the target collection.</typeparam>
+        /// <param name="collection">Read-only collection to convert.</param>
+        /// <param name="converter">A collection item conversion function.</param>
+        /// <returns>Lazily converted read-only collection.</returns>
+        public static ReadOnlyCollectionView<I, O> Convert<I, O>(this IReadOnlyCollection<I> collection, in ValueFunc<I, O> converter)
+            => new ReadOnlyCollectionView<I, O>(collection, converter);
 
         /// <summary>
         /// Returns lazily converted read-only collection.
@@ -26,7 +28,7 @@ namespace DotNext.Collections.Generic
         /// <param name="converter">A collection item conversion function.</param>
         /// <returns>Lazily converted read-only collection.</returns>
         public static ReadOnlyCollectionView<I, O> Convert<I, O>(this IReadOnlyCollection<I> collection, Converter<I, O> converter)
-            => new ReadOnlyCollectionView<I, O>(collection, converter);
+            => Convert(collection, converter.AsValueFunc(true));
 
         private static T[] ToArray<C, T>(C collection, int count)
             where C : class, IEnumerable<T>

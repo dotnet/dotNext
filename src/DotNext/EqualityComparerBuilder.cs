@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -45,7 +46,7 @@ namespace DotNext
             set => salted = value;
         }
 
-        private readonly struct ConstructedEqualityComparer : IEqualityComparer<T>
+        private sealed class ConstructedEqualityComparer : IEqualityComparer<T>
         {
             private readonly Func<T, T, bool> equality;
             private readonly Func<T, int> hashCode;
@@ -61,19 +62,37 @@ namespace DotNext
             int IEqualityComparer<T>.GetHashCode(T obj) => hashCode(obj);
         }
 
-        private static MethodInfo EqualsMethodForValueType(Type type)
-            => typeof(ValueType<>).MakeGenericType(type).GetMethod(nameof(ValueType<int>.BitwiseEquals), new[] { type, type });
+        private static MethodCallExpression EqualsMethodForValueType(MemberExpression first, MemberExpression second)
+        {
+            var method = typeof(BitwiseComparer<>)
+                .MakeGenericType(first.Type)
+                .GetMethod(nameof(BitwiseComparer<int>.Equals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+                .MakeGenericMethod(second.Type);
+            return Expression.Call(method, first, second);
+        }
 
-        private static MethodInfo HashCodeMethodForValueType(Type type)
-            => typeof(ValueType<>).MakeGenericType(type).GetMethod(nameof(ValueType<int>.BitwiseHashCode), new[] { type, typeof(bool) });
+        private static MethodCallExpression HashCodeMethodForValueType(Expression expr, ConstantExpression salted)
+        {
+            var method = typeof(BitwiseComparer<>)
+                .MakeGenericType(expr.Type)
+                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[]{ expr.Type, typeof(bool) });
+            return Expression.Call(method, expr, salted);
+        }
 
         private static MethodInfo EqualsMethodForArrayElementType(Type itemType)
             => itemType.IsValueType ?
-                    typeof(OneDimensionalArray)
+                typeof(OneDimensionalArray)
                         .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, null)
-                        .MakeGenericMethod(itemType) :
-                        typeof(OneDimensionalArray)
-                        .GetMethod(nameof(OneDimensionalArray.SequenceEqual), new[] { typeof(object[]), typeof(object[]) });
+                        .MakeGenericMethod(itemType) 
+                : typeof(Enumerable)
+                    .GetMethod(nameof(Enumerable.SequenceEqual), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1L, typeof(IEnumerable<>), typeof(IEnumerable<>))
+                    .MakeGenericMethod(itemType);
+        
+        private static MethodCallExpression EqualsMethodForArrayElementType(MemberExpression fieldX, MemberExpression fieldY)
+        {
+            var method = EqualsMethodForArrayElementType(fieldX.Type.GetElementType());
+            return Expression.Call(method, fieldX, fieldY);
+        }
 
         private static MethodInfo HashCodeMethodForArrayElementType(Type itemType)
             => itemType.IsValueType ?
@@ -82,6 +101,12 @@ namespace DotNext
                         .MakeGenericMethod(itemType) :
                 typeof(Sequence)
                         .GetMethod(nameof(Sequence.SequenceHashCode), new[] { typeof(IEnumerable<object>), typeof(bool) });
+
+        private static MethodCallExpression HashCodeMethodForArrayElementType(Expression expr, ConstantExpression salted)
+        {
+            var method = HashCodeMethodForArrayElementType(expr.Type.GetElementType());
+            return Expression.Call(method, expr, salted);
+        }
 
         private static IEnumerable<FieldInfo> GetAllFields(Type type)
         {
@@ -92,18 +117,18 @@ namespace DotNext
 
         private Func<T, T, bool> BuildEquals()
         {
-            var type = typeof(T);
-            if (type.IsPrimitive)
+            var x = Expression.Parameter(typeof(T));
+            if (x.Type.IsPrimitive)
                 return EqualityComparer<T>.Default.Equals;
-            else if (type.IsArray && type.GetArrayRank() == 1)
-                return EqualsMethodForArrayElementType(type.GetElementType()).CreateDelegate<Func<T, T, bool>>();
+            else if (x.Type.IsArray && x.Type.GetArrayRank() == 1)
+                return EqualsMethodForArrayElementType(x.Type.GetElementType()).CreateDelegate<Func<T, T, bool>>();
             else
             {
-                var x = Expression.Parameter(type);
-                var y = Expression.Parameter(type);
+                var y = Expression.Parameter(x.Type);
                 //collect all fields in the hierarchy
-                Expression expr = type.IsClass ? Expression.ReferenceNotEqual(y, Expression.Constant(null, y.Type)) : null;
-                foreach (var field in GetAllFields(type))
+                Expression expr = x.Type.IsClass ? Expression.ReferenceNotEqual(y, Expression.Constant(null, y.Type)) : null;
+                foreach (var field in GetAllFields(x.Type
+                ))
                     if (IsIncluded(field))
                     {
                         var fieldX = Expression.Field(x, field);
@@ -112,14 +137,14 @@ namespace DotNext
                         if (field.FieldType.IsPointer || field.FieldType.IsPrimitive || field.FieldType.IsEnum)
                             condition = Expression.Equal(fieldX, fieldY);
                         else if (field.FieldType.IsValueType)
-                            condition = Expression.Call(EqualsMethodForValueType(field.FieldType), fieldX, fieldY);
+                            condition = EqualsMethodForValueType(fieldX, fieldY);
                         else if (field.FieldType.IsArray && field.FieldType.GetArrayRank() == 1)
-                            condition = Expression.Call(EqualsMethodForArrayElementType(field.FieldType.GetElementType()), fieldX, fieldY);
+                            condition = EqualsMethodForArrayElementType(fieldX, fieldY);
                         else
                             condition = Expression.Call(typeof(object).GetMethod(nameof(Equals), new[] { typeof(object), typeof(object) }), fieldX, fieldY);
                         expr = expr is null ? condition : Expression.AndAlso(expr, condition);
                     }
-                if (type.IsClass)
+                if (x.Type.IsClass)
                     expr = Expression.OrElse(Expression.ReferenceEqual(x, y), expr);
                 return Expression.Lambda<Func<T, T, bool>>(expr, false, x, y).Compile();
             }
@@ -127,14 +152,13 @@ namespace DotNext
 
         private Func<T, int> BuildGetHashCode()
         {
-            var type = typeof(T);
             Expression expr;
-            var inputParam = Expression.Parameter(type);
-            if (type.IsPrimitive)
+            var inputParam = Expression.Parameter(typeof(T));
+            if (inputParam.Type.IsPrimitive)
                 return EqualityComparer<T>.Default.GetHashCode;
-            else if (type.IsArray && type.GetArrayRank() == 1)
+            else if (inputParam.Type.IsArray && inputParam.Type.GetArrayRank() == 1)
             {
-                expr = Expression.Call(HashCodeMethodForArrayElementType(type.GetElementType()), inputParam, Expression.Constant(salted));
+                expr = HashCodeMethodForArrayElementType(inputParam, Expression.Constant(salted));
                 return Expression.Lambda<Func<T, int>>(expr, true, inputParam).Compile();
             }
             else
@@ -142,7 +166,7 @@ namespace DotNext
                 var hashCodeTemp = Expression.Parameter(typeof(int));
                 ICollection<Expression> expressions = new LinkedList<Expression>();
                 //collect all fields in the hierarchy
-                foreach (var field in GetAllFields(type))
+                foreach (var field in GetAllFields(inputParam.Type))
                     if (IsIncluded(field))
                     {
                         expr = Expression.Field(inputParam, field);
@@ -151,9 +175,9 @@ namespace DotNext
                         else if (field.FieldType.IsPrimitive)
                             expr = Expression.Call(expr, nameof(GetHashCode), Array.Empty<Type>());
                         else if (field.FieldType.IsValueType)
-                            expr = Expression.Call(HashCodeMethodForValueType(field.FieldType), expr, Expression.Constant(salted));
+                            expr = HashCodeMethodForValueType(expr, Expression.Constant(salted));
                         else if (field.FieldType.IsArray && field.FieldType.GetArrayRank() == 1)
-                            expr = Expression.Call(HashCodeMethodForArrayElementType(field.FieldType.GetElementType()), expr, Expression.Constant(salted));
+                            expr = HashCodeMethodForArrayElementType(expr, Expression.Constant(salted));
                         else
                         {
                             expr = Expression.Condition(

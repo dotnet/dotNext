@@ -49,5 +49,11 @@ namespace DotNext
         internal static string StaticCtorDetected => Resources.GetString("StaticCtorDetected");
 
         internal static string ModuleMemberDetected(MemberInfo member) => string.Format(Resources.GetString("ModuleMemberDetected"), member.Name);
+
+        internal static string InvalidFieldType => Resources.GetString("InvalidFieldType");
+
+        internal static string StaticFieldExpected => Resources.GetString("StaticFieldExpected");
+
+        internal static string InstanceFieldExpected => Resources.GetString("InstanceFieldExpected");
     }
 }

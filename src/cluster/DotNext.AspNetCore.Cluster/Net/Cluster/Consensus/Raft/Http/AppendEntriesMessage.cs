@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             internal LogEntryContent(ILogEntry entry)
                 : base(entry)
             {
-                Headers.Add(RequestVoteMessage.RecordTermHeader, Convert.ToString(entry.Term, InvariantCulture));
+                Headers.Add(RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
             }
         }
 
@@ -105,9 +105,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected override void FillRequest(HttpRequestMessage request)
         {
             base.FillRequest(request);
-            request.Headers.Add(PrecedingRecordIndexHeader, Convert.ToString(PrevLogIndex, InvariantCulture));
-            request.Headers.Add(PrecedingRecordTermHeader, Convert.ToString(PrevLogTerm, InvariantCulture));
-            request.Headers.Add(CommitIndexHeader, Convert.ToString(CommitIndex, InvariantCulture));
+            request.Headers.Add(PrecedingRecordIndexHeader, PrevLogIndex.ToString(InvariantCulture));
+            request.Headers.Add(PrecedingRecordTermHeader, PrevLogTerm.ToString(InvariantCulture));
+            request.Headers.Add(CommitIndexHeader, CommitIndex.ToString(InvariantCulture));
             if (Entries.Count > 0)
             {
                 var content = new MultipartContent(MimeSubType);

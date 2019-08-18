@@ -89,7 +89,7 @@ namespace DotNext.Reflection
 
         internal static bool NormalizePrimitive(this ref Operand operand)
         {
-            switch (operand.Argument.Type.GetTypeCode())
+            switch (Type.GetTypeCode(operand.Argument.Type))
             {
                 case TypeCode.Byte:
                 case TypeCode.UInt16:

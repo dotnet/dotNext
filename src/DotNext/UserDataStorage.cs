@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace DotNext
 {
-    using System.Runtime.CompilerServices;
-    using static Threading.LockAcquisition;
+    using AtomicBoolean = Threading.AtomicBoolean;
 
     /// <summary>
     /// Provides access to user data associated with the object.
@@ -15,161 +15,161 @@ namespace DotNext
     /// This is by-ref struct because user data should have
     /// the same lifetime as its owner.
 	/// </remarks>
-    [SuppressMessage("Design", "CA1066")]
+    [SuppressMessage("Design", "CA1066", Justification = "By-ref value type cannot implements interfaces")]
     public readonly ref struct UserDataStorage
     {
-        private interface ISupplier<V>
-        {
-            V Supply();
-        }
-
-        private readonly struct FuncSupplier<V> : ISupplier<V>
-        {
-            private readonly Func<V> factory;
-
-            internal FuncSupplier(Func<V> factory) => this.factory = factory;
-
-            V ISupplier<V>.Supply() => factory();
-        }
-
-        private readonly struct FuncSupplier<T, V> : ISupplier<V>
+        private readonly struct Supplier<T, V> : ISupplier<V>
         {
             private readonly T arg;
-            private readonly Func<T, V> factory;
+            private readonly ValueFunc<T, V> factory;
 
-            internal FuncSupplier(T arg, Func<T, V> factory)
+            internal Supplier(T arg, in ValueFunc<T, V> factory)
             {
                 this.arg = arg;
                 this.factory = factory;
             }
 
-            V ISupplier<V>.Supply() => factory(arg);
+            V ISupplier<V>.Invoke() => factory.Invoke(arg);
         }
 
-        private readonly struct FuncSupplier<T1, T2, V> : ISupplier<V>
+        private readonly struct Supplier<T1, T2, V> : ISupplier<V>
         {
             private readonly T1 arg1;
             private readonly T2 arg2;
-            private readonly Func<T1, T2, V> factory;
+            private readonly ValueFunc<T1, T2, V> factory;
 
-            internal FuncSupplier(T1 arg1, T2 arg2, Func<T1, T2, V> factory)
+            internal Supplier(T1 arg1, T2 arg2, in ValueFunc<T1, T2, V> factory)
             {
                 this.arg1 = arg1;
                 this.arg2 = arg2;
                 this.factory = factory;
             }
 
-            V ISupplier<V>.Supply() => factory(arg1, arg2);
-        }
-
-        private readonly struct CtorSupplier<V> : ISupplier<V>
-            where V : new()
-        {
-            V ISupplier<V>.Supply() => new V();
-        }
-
-        private readonly struct CtorSupplier<B, D> : ISupplier<B>
-            where D : class, B, new()
-        {
-            B ISupplier<B>.Supply() => new D();
+            V ISupplier<V>.Invoke() => factory.Invoke(arg1, arg2);
         }
 
         [SuppressMessage("Performance", "CA1812", Justification = "It is instantiated by method GetOrCreateValue")]
-        private sealed class BackingStorage : Dictionary<long, object>, IDisposable
+        private sealed class BackingStorage : Dictionary<long, object>
         {
-            private readonly ReaderWriterLockSlim synchronizer = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+
+            //ReaderWriterLockSlim is not used because it is heavyweight
+            //atomic-based lock is used instead because it is very low probability of concurrent
+            //updates of the same backing storage.
+
+            private AtomicBoolean lockState;
+
+            internal BackingStorage() : base(3) => lockState = new AtomicBoolean(false);
+
+            private void Acquire()
+            {
+                for(SpinWait spinner; lockState.CompareExchange(false, true); spinner.SpinOnce()) {}
+            }
+
+            private void Release() => lockState.Value = false;
 
             internal V Get<V>(UserDataSlot<V> slot, V defaultValue)
             {
-                using (synchronizer.AcquireReadLock())
+                Acquire();
+                try
                 {
                     return slot.GetUserData(this, defaultValue);
+                }
+                finally
+                {
+                    Release();
                 }
             }
 
             internal V GetOrSet<V, S>(UserDataSlot<V> slot, ref S valueFactory)
                 where S : struct, ISupplier<V>
             {
-                V userData;
-                //fast path - read user data if it is already exists
-                //do not use UpgradeableReadLock due to performance reasons
-                using (synchronizer.AcquireReadLock())
+                Acquire();
+                try
                 {
-                    if (slot.GetUserData(this, out userData))
-                        return userData;
-                }
-                //non-fast path, no user data presented
-                using (synchronizer.AcquireWriteLock())
-                {
-                    if (!slot.GetUserData(this, out userData))
-                        slot.SetUserData(this, userData = valueFactory.Supply());
+                    if (!slot.GetUserData(this, out var userData))
+                        slot.SetUserData(this, userData = valueFactory.Invoke());
                     return userData;
+                }
+                finally
+                {
+                    Release();
                 }
             }
 
             internal bool Get<V>(UserDataSlot<V> slot, out V userData)
             {
-                using (synchronizer.AcquireReadLock())
+                Acquire();
+                try
                 {
                     return slot.GetUserData(this, out userData);
+                }
+                finally
+                {
+                    Release();
                 }
             }
 
             internal void Set<V>(UserDataSlot<V> slot, V userData)
             {
-                using (synchronizer.AcquireWriteLock())
+                Acquire();
+                try
                 {
                     slot.SetUserData(this, userData);
+                }
+                finally
+                {
+                    Release();
                 }
             }
 
             internal bool Remove<V>(UserDataSlot<V> slot)
             {
-                using (synchronizer.AcquireWriteLock())
+                Acquire();
+                try
                 {
                     return slot.RemoveUserData(this);
+                }
+                finally
+                {
+                    Release();
                 }
             }
 
             internal bool Remove<V>(UserDataSlot<V> slot, out V userData)
             {
                 //fast path if user data doesn't exist
-                using (synchronizer.AcquireReadLock())
+                Acquire();
+                try
                 {
-                    if (!slot.Contains(this))
+                    if(slot.GetUserData(this, out userData))
                     {
-                        userData = default;
-                        return false;
+                        slot.RemoveUserData(this);
+                        return true;
                     }
+                    return false;
                 }
-                //non-fast path, user data exists, so remove it
-                using (synchronizer.AcquireWriteLock())
+                finally
                 {
-                    userData = slot.GetUserData(this, default);
-                    return slot.RemoveUserData(this);
+                    Release();
                 }
-            }
-
-            void IDisposable.Dispose()
-            {
-                synchronizer.Dispose();
-                Clear();
-                GC.SuppressFinalize(this);
             }
         }
 
         private static readonly ConditionalWeakTable<object, BackingStorage> UserData = new ConditionalWeakTable<object, BackingStorage>();
+        private static readonly ConditionalWeakTable<object, BackingStorage>.CreateValueCallback Factory = CreateStorage;
 
         private readonly object owner;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal UserDataStorage(object owner)
             => this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
+        
+        private static BackingStorage CreateStorage(object key) => new BackingStorage();
 
         private BackingStorage GetStorage(bool createIfNeeded)
         {
             if (createIfNeeded)
-                return UserData.GetOrCreateValue(owner);
+                return UserData.GetValue(owner, Factory);
             else if (UserData.TryGetValue(owner, out var storage))
                 return storage;
             else
@@ -198,8 +198,8 @@ namespace DotNext
         public V GetOrSet<V>(UserDataSlot<V> slot)
             where V : new()
         {
-            var supplier = new CtorSupplier<V>();
-            return GetStorage(true).GetOrSet(slot, ref supplier);
+            var activator = ValueFunc<V>.Activator;
+            return GetStorage(true).GetOrSet(slot, ref activator);
         }
 
         /// <summary>
@@ -212,8 +212,8 @@ namespace DotNext
         public B GetOrSet<B, D>(UserDataSlot<B> slot)
             where D : class, B, new()
         {
-            var supplier = new CtorSupplier<B, D>();
-            return GetStorage(true).GetOrSet(slot, ref supplier);
+            var activator = ValueFunc<D>.Activator;
+            return GetStorage(true).GetOrSet(slot, ref activator);
         }
 
         /// <summary>
@@ -223,11 +223,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<V>(UserDataSlot<V> slot, Func<V> valueFactory)
-        {
-            var supplier = new FuncSupplier<V>(valueFactory);
-            return GetStorage(true).GetOrSet(slot, ref supplier);
-        }
+        public V GetOrSet<V>(UserDataSlot<V> slot, Func<V> valueFactory) => GetOrSet(slot, new ValueFunc<V>(valueFactory, true));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -239,8 +235,44 @@ namespace DotNext
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
         public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, Func<T, V> valueFactory)
+            => GetOrSet(slot, arg, new ValueFunc<T, V>(valueFactory, true));
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="T1">The type of the first argument to be passed into factory.</typeparam>
+        /// <typeparam name="T2">The type of the first argument to be passed into factory.</typeparam>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="arg1">The first argument to be passed into factory.</param>
+        /// <param name="arg2">The second argument to be passed into factory.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, Func<T1, T2, V> valueFactory)
+            => GetOrSet(slot, arg1, arg2, new ValueFunc<T1, T2, V>(valueFactory, true));
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public V GetOrSet<V>(UserDataSlot<V> slot, in ValueFunc<V> valueFactory)
+            => GetStorage(true).GetOrSet(slot, ref Unsafe.AsRef(valueFactory));
+
+        /// <summary>
+        /// Gets existing user data or creates a new data and return it.
+        /// </summary>
+        /// <typeparam name="T">The type of the argument to be passed into factory.</typeparam>
+        /// <typeparam name="V">The type of user data associated with arbitrary object.</typeparam>
+        /// <param name="slot">The slot identifying user data.</param>
+        /// <param name="arg">The argument to be passed into factory.</param>
+        /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
+        /// <returns>The data associated with the slot.</returns>
+        public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, in ValueFunc<T, V> valueFactory)
         {
-            var supplier = new FuncSupplier<T, V>(arg, valueFactory);
+            var supplier = new Supplier<T, V>(arg, valueFactory);
             return GetStorage(true).GetOrSet(slot, ref supplier);
         }
 
@@ -255,9 +287,9 @@ namespace DotNext
         /// <param name="arg2">The second argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, Func<T1, T2, V> valueFactory)
+        public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, in ValueFunc<T1, T2, V> valueFactory)
         {
-            var supplier = new FuncSupplier<T1, T2, V>(arg1, arg2, valueFactory);
+            var supplier = new Supplier<T1, T2, V>(arg1, arg2, valueFactory);
             return GetStorage(true).GetOrSet(slot, ref supplier);
         }
 

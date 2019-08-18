@@ -1,4 +1,9 @@
 using System;
+using System.Runtime.CompilerServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using M = InlineIL.MethodRef;
+using Var = InlineIL.LocalVar;
 
 namespace DotNext
 {
@@ -32,9 +37,10 @@ namespace DotNext
         /// <returns>The string in inverse order of characters.</returns>
         public static unsafe string Reverse(this string str)
         {
+            //TODO: Should be rewritten for .NET Standard 2.1
             if (str.Length == 0)
                 return str;
-            var result = str.Length < 1024 ? stackalloc char[str.Length] : new Span<char>(new char[str.Length]);
+            var result = str.Length <= 1024 ? stackalloc char[str.Length] : new Span<char>(new char[str.Length]);
             str.AsSpan().CopyTo(result);
             result.Reverse();
             fixed (char* ptr = result)
@@ -67,5 +73,28 @@ namespace DotNext
         /// <param name="chunkSize">The maximum length of the substring in the sequence.</param>
         /// <returns>The sequence of substrings.</returns>
         public static ChunkSequence<char> Split(this string str, int chunkSize) => new ChunkSequence<char>(str.AsMemory(), chunkSize);
+
+        /// <summary>
+        /// Gets managed pointer to the first character in the string.
+        /// </summary>
+        /// <param name="str">The string data.</param>
+        /// <returns>The managed pointer to the first character in the string.</returns>
+        public static ref readonly char GetRawData(this string str)
+        {
+            const string pinnedString = "pinnedStr";
+            const string methodExit = "exit";
+            DeclareLocals(true, new Var(pinnedString, typeof(string)).Pinned());
+            Push(str);
+            Stloc(pinnedString);
+            Ldloc(pinnedString);
+            Conv_U();
+            Dup();
+            Brfalse(methodExit);
+            Call(M.PropertyGet(typeof(RuntimeHelpers), nameof(RuntimeHelpers.OffsetToStringData)));
+            Conv_U();
+            Add();
+            MarkLabel(methodExit);
+            return ref ReturnRef<char>();
+        }
     }
 }

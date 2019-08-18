@@ -11,50 +11,9 @@ namespace DotNext.Runtime.CompilerServices
     /// <summary>
     /// Future representing asynchronous execution of multiple delegates.
     /// </summary>
-    public abstract class AsyncDelegateFuture : Threading.Tasks.Future<Task>
+    public abstract class AsyncDelegateFuture : Threading.Tasks.Future<Task>, Threading.Tasks.Future.IAwaiter
     {
-        /// <summary>
-        /// Represents object that is used to monitor the completion of an asynchronous operation.
-        /// </summary>
-        public readonly struct Awaiter : INotifyCompletion
-        {
-            private readonly AsyncDelegateFuture future;
-
-            internal Awaiter(AsyncDelegateFuture future) => this.future = future;
-
-            /// <summary>
-            /// Indicates that all delegates in invocation list are completed.
-            /// </summary>
-            public bool IsCompleted => future is null || future.IsCompleted;
-
-            /// <summary>
-            /// Checks whether the all delegates are completed.
-            /// </summary>
-            /// <exception cref="AggregateException">One or more delegates raise exception during execution.</exception>
-            public void GetResult()
-            {
-                if (future is null)
-                    return;
-                else if (future.IsCompleted)
-                    future.ThrowIfNeeded();
-                else
-                    throw new InvalidOperationException();
-            }
-
-            /// <summary>
-            /// Sets the continuation to invoke.
-            /// </summary>
-            /// <param name="continuation">The action to invoke asynchronously.</param>
-            public void OnCompleted(Action continuation)
-            {
-                if (IsCompleted)
-                    continuation();
-                else
-                    future.OnCompleted(continuation);
-            }
-        }
-
-        private protected CancellationToken token;
+        private protected readonly CancellationToken token;
 
         private protected AsyncDelegateFuture(CancellationToken token) => this.token = token;
 
@@ -64,7 +23,15 @@ namespace DotNext.Runtime.CompilerServices
         /// Retrieves awaiter.
         /// </summary>
         /// <returns>The object that is used to monitor the completion of an asynchronous operation.</returns>
-        public Awaiter GetAwaiter() => new Awaiter(this);
+        public IAwaiter GetAwaiter() => this;
+
+        void IAwaiter.GetResult()
+        {
+            if (IsCompleted)
+                ThrowIfNeeded();
+            else
+                throw new IncompletedFutureException();
+        }
 
         private async Task ExecuteAsTask() => await this;
 

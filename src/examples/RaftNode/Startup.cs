@@ -1,11 +1,10 @@
-﻿using System.Net.Http;
-using DotNext.Net.Cluster.Consensus.Raft;
+﻿using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
-using DotNext.Net.Cluster.Messaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 
 namespace RaftNode
 {
@@ -23,7 +22,6 @@ namespace RaftNode
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IRaftClusterConfigurator, ClusterConfigurator>()
-                .AddSingleton<IMessageHandler, MessageHandler>()
                 .AddSingleton<FileListener>()
                 .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
                 .AddOptions().BecomeClusterMember(configuration);

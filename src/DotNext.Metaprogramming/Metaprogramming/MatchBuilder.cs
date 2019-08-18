@@ -65,7 +65,7 @@ namespace DotNext.Metaprogramming
 
         private sealed class MatchByMemberStatement : MatchStatement<Action<MemberExpression>>
         {
-            private readonly new struct CaseStatementBuilder : ICaseStatementBuilder
+            private new readonly struct CaseStatementBuilder : ICaseStatementBuilder
             {
                 private readonly string memberName;
                 private readonly Action<MemberExpression> memberHandler;
@@ -146,7 +146,7 @@ namespace DotNext.Metaprogramming
 
         private sealed class MatchByThreeMembersStatement : MatchStatement<Action<MemberExpression, MemberExpression, MemberExpression>>
         {
-            private readonly new struct CaseStatementBuilder : ICaseStatementBuilder
+            private new readonly struct CaseStatementBuilder : ICaseStatementBuilder
             {
                 private readonly string memberName1, memberName2, memberName3;
                 private readonly Action<MemberExpression, MemberExpression, MemberExpression> memberHandler;

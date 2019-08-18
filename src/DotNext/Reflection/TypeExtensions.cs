@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+
 namespace DotNext.Reflection
 {
     /// <summary>
@@ -80,6 +81,41 @@ namespace DotNext.Reflection
                     yield return iface;
         }
 
+        private static bool CheckBaseDefinition(MemberInfo candidate, object criteria)
+            => candidate is MethodInfo method && method.GetBaseDefinition().Equals(criteria);
+
+        /// <summary>
+        /// Returns method that overrides the specified method.
+        /// </summary>
+        /// <param name="type">The type that contains overridden method.</param>
+        /// <param name="abstractMethod">The abstract method definition.</param>
+        /// <returns>The method that overrides <paramref name="abstractMethod"/>.</returns>
+        public static MethodInfo Devirtualize(this Type type, MethodInfo abstractMethod)
+        {
+            if (abstractMethod.IsFinal || !abstractMethod.IsVirtual)
+                return abstractMethod;
+            if (type.IsInterface)
+                goto exit;
+            if (abstractMethod.DeclaringType.IsInterface && abstractMethod.DeclaringType.IsAssignableFrom(type))
+            {
+                //Interface maps for generic interfaces on arrays cannot be retrieved.
+                if (type.IsArray && abstractMethod.DeclaringType.IsGenericType)
+                    goto exit;
+                var interfaceMap = type.GetInterfaceMap(abstractMethod.DeclaringType);
+                for (var i = 0L; i < interfaceMap.InterfaceMethods.LongLength; i++)
+                    if (interfaceMap.InterfaceMethods[i] == abstractMethod)
+                        return interfaceMap.TargetMethods[i];
+                goto exit;
+            }
+            //handle virtual method
+            foreach (var lookup in GetBaseTypes(type, includeTopLevel: true))
+                foreach (var candidate in lookup.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+                    if (candidate.GetBaseDefinition() == abstractMethod)
+                        return candidate;
+                    exit:
+            return null;
+        }
+
         /// <summary>
         /// Searches for the generic method in the specified type.
         /// </summary>
@@ -94,6 +130,7 @@ namespace DotNext.Reflection
         /// </remarks>
         public static MethodInfo GetMethod(this Type type, string methodName, BindingFlags flags, long genericParamCount, params Type[] parameters)
         {
+            //TODO: Should be deprecated for .NET Standard 2.1 and replaced with native implementation
             foreach (var method in type.GetMethods(flags))
                 if (method.Name == methodName && method.GetGenericArguments().LongLength == genericParamCount)
                 {
@@ -105,7 +142,7 @@ namespace DotNext.Reflection
                         {
                             var actual = actualParams[i];
                             var expected = parameters[i];
-                            success = IsGenericParameter(actual) && expected is null || actual == expected;
+                            success = IsGenericParameter(actual) && expected is null || actual == expected || actual.IsConstructedGenericType && actual.GetGenericTypeDefinition() == expected;
                         }
                     if (success)
                         return method;
@@ -173,51 +210,6 @@ namespace DotNext.Reflection
         /// </example>
 		public static Type[] GetGenericArguments(this Type type, Type genericDefinition)
             => FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? Array.Empty<Type>();
-
-        /// <summary>
-        /// Gets type code for the specified type.
-        /// </summary>
-        /// <param name="t">The type to convert into type code.</param>
-        /// <returns>Type code.</returns>
-		public static TypeCode GetTypeCode(this Type t)
-        {
-            if (t is null)
-                return TypeCode.Empty;
-            else if (t == typeof(bool))
-                return TypeCode.Boolean;
-            else if (t == typeof(byte))
-                return TypeCode.Byte;
-            else if (t == typeof(sbyte))
-                return TypeCode.SByte;
-            else if (t == typeof(short))
-                return TypeCode.Int16;
-            else if (t == typeof(ushort))
-                return TypeCode.UInt16;
-            else if (t == typeof(int))
-                return TypeCode.Int32;
-            else if (t == typeof(uint))
-                return TypeCode.UInt32;
-            else if (t == typeof(long))
-                return TypeCode.Int64;
-            else if (t == typeof(ulong))
-                return TypeCode.UInt64;
-            else if (t == typeof(float))
-                return TypeCode.Single;
-            else if (t == typeof(double))
-                return TypeCode.Double;
-            else if (t == typeof(string))
-                return TypeCode.String;
-            else if (t == typeof(DateTime))
-                return TypeCode.DateTime;
-            else if (t == typeof(decimal))
-                return TypeCode.Decimal;
-            else if (t == typeof(char))
-                return TypeCode.Char;
-            else if (t == typeof(DBNull))
-                return TypeCode.DBNull;
-            else
-                return TypeCode.Object;
-        }
 
         /// <summary>
         /// Indicates that object of one type can be implicitly converted into another without boxing.

@@ -138,6 +138,8 @@ namespace DotNext.Threading
             True(value.NegateAndGet());
             True(value.GetAndNegate());
             False(value.Value);
+            value.Value = true;
+            True(value.Value);
         }
 
         [Fact]

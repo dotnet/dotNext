@@ -52,5 +52,23 @@ namespace DotNext.Reflection
         /// <param name="method">A method to unreflect.</param>
         /// <returns>Unreflected method.</returns>
         public static Method<D> Unreflect<D>(this MethodInfo method) where D : MulticastDelegate => Method<D>.GetOrCreate(method);
+
+        /// <summary>
+        /// Obtains managed pointer to the static field.
+        /// </summary>
+        /// <typeparam name="V">The field type.</typeparam>
+        /// <param name="field">The field to unreflect.</param>
+        /// <returns>The managed pointer to the field.</returns>
+        public static ref V Unreflect<V>(this FieldInfo field) => ref Field<V>.GetOrCreate(field).Value;
+
+        /// <summary>
+        /// Obtains managed pointer to the instance field.
+        /// </summary>
+        /// <typeparam name="T">The type of the object that declares instance field.</typeparam>
+        /// <typeparam name="V">The field type.</typeparam>
+        /// <param name="field">The field to unreflect.</param>
+        /// <param name="instance">The object that contains instance field.</param>
+        /// <returns>The managed pointer to the field.</returns>
+        public static ref V Unreflect<T, V>(this FieldInfo field, in T instance) => ref Field<T, V>.GetOrCreate(field)[instance];
     }
 }

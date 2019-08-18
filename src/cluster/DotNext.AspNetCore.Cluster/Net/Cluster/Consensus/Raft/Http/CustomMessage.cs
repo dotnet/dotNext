@@ -61,7 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             base.FillRequest(request);
             request.Headers.Add(DeliveryModeHeader, Mode.ToString());
-            request.Headers.Add(RespectLeadershipHeader, Convert.ToString(RespectLeadership, InvariantCulture));
+            request.Headers.Add(RespectLeadershipHeader, RespectLeadership.ToString(InvariantCulture));
             request.Content = new OutboundMessageContent(Message);
         }
 
