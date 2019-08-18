@@ -18,46 +18,46 @@ The configuration of all benchmarks:
 | RAM | 24 GB |
 
 # Bitwise Equality
-[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs) compares performance of [ValueType&lt;T&gt;.BitwiseEquals](./api/DotNext.ValueType-1.yml) with overloaded equality `==` operator. Testing data types: [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
+[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs) compares performance of [BitwiseComparer&lt;T&gt;.Equals](./api/DotNext.BitwiseComparer-1.yml) with overloaded equality `==` operator. Testing data types: [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
-| `ValueType<Guid>.BitwiseEquals` | 5.104 ns | 0.1364 ns | 0.2459 ns |
+| `BitwiseComparer<Guid>.Equals` | 5.104 ns | 0.1364 ns | 0.2459 ns |
 | `Guid.Equals` | 12.320 ns | 0.2798 ns | 0.4101 ns |
 | `ReadOnlySpan.SequenceEqual` for `Guid` | 12.981 ns | 0.2523 ns | 0.2360 ns |
-| `ValueType<LargeStruct>.BitwiseEquals` | 22.542 ns | 0.4742 ns | 0.5461 ns |
+| `BitwiseComparer<LargeStruct>.Equals` | 22.542 ns | 0.4742 ns | 0.5461 ns |
 | `LargeStruct.Equals` | 53.299 ns | 0.8754 ns | 0.7760 ns |
 | `ReadOnlySpan.SequenceEqual` for `LargeStruct` | 24.184 ns | 0.6122 ns | 0.8973 ns |
 
 Bitwise equality method has the better performance than field-by-field equality check because `BitwiseEquals` utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD. Additionally, it uses [aligned memory access](https://en.wikipedia.org/wiki/Data_structure_alignment) in constrast to [SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal) method.
 
 # Equality of Arrays
-[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs) compares performance of [OneDimensionalArray.SequenceEqual](./api/DotNext.OneDimensionalArray.yml), [OneDimensionalArray.BitwiseEquals](./api/DotNext.OneDimensionalArray.yml) and manual equality check between two arrays using `for` loop. The benchmark is applied to the array of [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) elements.
+[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs) compares performance of [ReadOnlySpan.SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__), [OneDimensionalArray.BitwiseEquals](./api/DotNext.OneDimensionalArray.yml) and manual equality check between two arrays using `for` loop. The benchmark is applied to the array of [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) elements.
 
 `SequenceEqual` requires that array element type should implement [IEquatable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.iequatable-1) interface and calls `Equals(T other)` for each element.
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
 | `Guid[].BitwiseEquals`, small arrays (~10 elements) | 9.758 ns | 0.0195 ns | 0.0163 ns |
-| `Guid[].SequenceEqual`, small arrays (~10 elements) | 31.963 ns | 0.3506 ns | 0.3279 ns |
+| `ReadOnlySpan<Guid>.SequenceEqual`, small arrays (~10 elements) | 31.963 ns | 0.3506 ns | 0.3279 ns |
 | `for` loop, small arrays (~10 elements) | 58.506 ns | 0.1090 ns | 0.0910 ns |
 | `Guid[].BitwiseEquals`, large arrays (~100 elements) | 45.525 ns | 0.1935 ns | 0.1715 ns |
-| `Guid[].SequenceEqual`, large arrays (~100 elements) | 309.409 ns | 6.0189 ns | 7.3917 ns |
+| `ReadOnlySpan<Guid>.SequenceEqual`, large arrays (~100 elements) | 309.409 ns | 6.0189 ns | 7.3917 ns |
 | `for` loop, large arrays (~100 elements) | 727.733 ns | 14.5560 ns | 23.9160 ns |
 
-`BitwiseEquals` is an absolute winner for equality check between arrays of any size.
+Bitwise equality is an absolute winner for equality check between arrays of any size.
 
 # Bitwise Hash Code
-[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs) compares performance of [ValueType&lt;T&gt;.BitwiseHashCode](./api/DotNext.ValueType-1.yml) and `GetHashCode` instance method for the types [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
+[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs) compares performance of [BitwiseComparer&lt;T&gt;.GetHashCode](./api/DotNext.BitwiseComparer-1.yml) and `GetHashCode` instance method for the types [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
 | `Guid.GetHashCode` | 2.704 ns | 0.0207 ns | 0.0183 ns |
-| `ValueType<Guid>.BitwiseHashCode` | 8.798 ns | 0.0854 ns | 0.0757 ns |
-| `ValueType<BigStructure>.BitwiseHashCode` | 23.087 ns | 0.1273 ns | 0.1191 ns |
-| `BigStructure.GetHashCode` | 49.613 ns | 0.1804 ns | 0.1506 ns |
+| `BitwiseComparer<Guid>.GetHashCode` | 8.798 ns | 0.0854 ns | 0.0757 ns |
+| `BitwiseComparer<LargeStructure>.GetHashCode` | 23.087 ns | 0.1273 ns | 0.1191 ns |
+| `LargeStructure.GetHashCode` | 49.613 ns | 0.1804 ns | 0.1506 ns |
 
-`BitwiseHashCode` is very efficient for hashing of large value types.
+Bitwise hash code algorithm is very efficient for hashing of large value types.
 
 # Fast Reflection
 The next series of benchmarks demonstrate performance of strongly typed reflection provided by DotNext Reflection library.

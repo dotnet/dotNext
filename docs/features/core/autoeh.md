@@ -37,7 +37,7 @@ Constructed methods rely on the instance fields (public and private) declared in
 
 Automatically generated implementation of equality check follows certain rules:
 * If field is of reference type then equality comparison between two values of the field based on [Object.Equals](https://docs.microsoft.com/en-us/dotnet/api/system.object.equals) method
-* If field is of value type then equality comparison between two values of the field based on bitwise equality provided by [ValueType&lt;T&gt;](../../api/DotNext.ValueType-1.yml) class.
+* If field is of value type then equality comparison between two values of the field based on bitwise equality provided by [BitwiseComparer&lt;T&gt;](../../api/DotNext.BitwiseComparer-1.yml) class.
 * Simple equality check is performed for field of primitive or pointer type
 * [Bitwise equality](../../api/DotNext.OneDimensionalArray.yml) is performed for field of array type whose elements are of value type
 * [Object.Equals](https://docs.microsoft.com/en-us/dotnet/api/system.object.equals) is used to compare elements in the array if field has array type whose elements are of reference type.
@@ -45,6 +45,6 @@ Automatically generated implementation of equality check follows certain rules:
 Automatically generated implementation of hash code function follows the similar rules:
 * For field of primite type, conversion to `int` is performed
 * [Object.GetHashCode](https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode) is used for field of reference type
-* Bitwise hash code located in [ValueType&lt;T&gt;](../../api/DotNext.ValueType-1.yml) class is performed for field of value type
+* Bitwise hash code located in [BitwiseComparer&lt;T&gt;](../../api/DotNext.BitwiseComparer-1.yml) class is performed for field of value type
 * Bitwise hash code located in [OneDimensionalArray](../../api/DotNext.OneDimensionalArray.yml) is performed for field of array type whose elements are of value type
 * Sequence hash code located in [Sequence](../../api/DotNext.Sequence.yml) is performed for field of array type whose elements are of reference type
